@@ -1,0 +1,15 @@
+language: java
+jdk:
+- oraclejdk8
+
+cache:
+  directories:
+  - "$HOME/.m2/repository"
+  - "$HOME/.npm-cache"
+
+before_install:
+  - npm config set cache "$HOME/.npm-cache"
+  - openssl aes-256-cbc -K $encrypted_44c02787e156_key -iv $encrypted_44c02787e156_iv -in secrets.tar.enc -out secrets.tar -d
+
+script:
+  - mvn verify
