@@ -83,9 +83,10 @@ class ApplicationLayout extends React.Component {
             </div>
 
           </Toolbar>
-        </AppBar>)
+        </AppBar>
+      </React.Fragment>)
+  }
 }
-        }
 
 
-        export default withStyles(styles)(ApplicationLayout)
+export default withStyles(styles)(ApplicationLayout)
