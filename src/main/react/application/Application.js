@@ -8,10 +8,9 @@ const styles = theme => ({})
 class Application extends React.Component {
 
   render() {
-    return (<React.Fragment></React.Fragment>
-
-    </ApplicationLayout>
-    )
+    return (<React.Fragment>
+      <ApplicationLayout/>
+    </React.Fragment>)
   }
 }
 
