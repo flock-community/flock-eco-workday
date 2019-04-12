@@ -12,8 +12,3 @@ node_modules
 *.log
 
 release.properties
-
-settings.xml
-.npmrc
-.secrets
-secrets.tar
