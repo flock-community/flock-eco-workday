@@ -53,7 +53,7 @@ class ApplicationLayout extends React.Component {
               <MenuIcon/>
             </IconButton>
             <Typography variant="h6" color="inherit" className={classes.grow}>
-              Photos
+              Holidays
             </Typography>
 
             <div>

@@ -11,6 +11,7 @@ data class Holiday (
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long = 0,
+        val name: String,
         val fromDate: LocalDate = LocalDate.now(),
         val toDate: LocalDate = LocalDate.now().plusDays(7)
 )
