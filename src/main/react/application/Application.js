@@ -88,14 +88,14 @@ class Application extends React.Component {
     this.postHoliday(
         {
           id: 0,
-          name: "Ibiza",
+          name: "New Holiday",
           fromDate: this.parseDate(moment()),
           toDate: this.parseDate(moment())
         }
     )
   }
 
-  render() {
+  render(props) {
     return (<div>
       <ApplicationLayout/>
       <Fab color="primary" style={{   position: 'absolute',
@@ -112,8 +112,8 @@ class Application extends React.Component {
                 <CardContent>
                   <MuiPickersUtilsProvider utils={MomentUtils}>
                     <TextField label="Title" type="text" value={holiday.name} onChange={(event) => this.handleNameChange(event, holiday)}/>
-                    <DatePicker label="From" value={holiday.fromDate} autoOk onChange={(date) => this.handleFromDateChange(date, holiday)} />
-                    <DatePicker label="To" value={holiday.toDate} autoOk onChange={(date) => this.handleToDateChange(date, holiday, holiday.toDate)} />
+                    <DatePicker label="From" value={holiday.fromDate} autoOk format={"DD-MM-YYYY"} onChange={(date) => this.handleFromDateChange(date, holiday)} />
+                    <DatePicker label="To" value={holiday.toDate} autoOk format={"DD-MM-YYYY"} onChange={(date) => this.handleToDateChange(date, holiday, holiday.toDate)} />
                     <Fab style={{float: "right"}} color="secondary" key={holiday} onClick={() => this.deleteHoliday(holiday)}>
                       <DeleteIcon />
                     </Fab>
