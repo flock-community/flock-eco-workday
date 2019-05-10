@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 
 
@@ -30,10 +31,15 @@ fun main(args: Array<String>) {
 
 
 @Component
-class UploadData(private val userRepository: UserRepository){
+class UploadData(private val userRepository: UserRepository, passwordEncoder: PasswordEncoder) {
 
     init {
-        userRepository.save(User(reference = "user", email = "user", name="user", authorities = setOf()))
+        userRepository.save(User(
+                reference = "user",
+                email = "user",
+                name = "user",
+                secret = passwordEncoder.encode("user"),
+                authorities = setOf()))
     }
 
 }

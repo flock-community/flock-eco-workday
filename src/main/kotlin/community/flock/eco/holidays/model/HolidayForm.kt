@@ -1,5 +1,6 @@
 package community.flock.eco.holidays.model
 
+import community.flock.eco.feature.user.model.User
 import java.time.LocalDate
 
 data class HolidayForm (
@@ -9,6 +10,10 @@ data class HolidayForm (
         val fromDate: LocalDate,
         val toDate: LocalDate
 ) {
-    fun createHoliday(holidayForm: HolidayForm) : Holiday = Holiday(0, holidayForm.name, holidayForm.fromDate, holidayForm.toDate)
-    fun updateHoliday() : Holiday = Holiday(id, name, fromDate, toDate)
+    fun createHoliday(holidayForm: HolidayForm, user: User) : Holiday = Holiday(
+            name = holidayForm.name,
+            fromDate= holidayForm.fromDate,
+            toDate = holidayForm.toDate,
+            user = user)
+    fun updateHoliday(user: User) : Holiday = Holiday(id, name, fromDate, toDate, user)
 }
