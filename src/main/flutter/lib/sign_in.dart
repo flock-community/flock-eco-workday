@@ -156,8 +156,15 @@ class SignInDemoState extends State<SignInDemo> {
             onPressed: _callApi,
           ),
           RaisedButton(
-            child: const Text('CALL API'),
-            onPressed: () => api.addHoliday(currentUser, Holiday(name: 'my holiday', fromDate: DateTime.now(), toDate: DateTime.now())),
+            child: const Text('ADD HOLIDAY'),
+            onPressed: () => api.addHoliday(
+                  currentUser,
+                  Holiday(
+                    name: 'my holiday',
+                    fromDate: DateTime.now(),
+                    toDate: DateTime.now(),
+                  ),
+                ),
           ),
         ],
       );
