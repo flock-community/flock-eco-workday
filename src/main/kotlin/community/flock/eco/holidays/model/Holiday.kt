@@ -14,5 +14,7 @@ data class Holiday(
         val name: String,
         val fromDate: LocalDate = LocalDate.now(),
         val toDate: LocalDate = LocalDate.now().plusDays(7),
+
+        @ManyToOne
         val user: User
 )
