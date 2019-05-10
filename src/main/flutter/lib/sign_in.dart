@@ -10,6 +10,8 @@ import "package:http/http.dart" as http;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'holiday.dart';
+
 GoogleSignIn googleSingIn = GoogleSignIn(
   scopes: <String>[
     'email',
@@ -22,6 +24,9 @@ void main() {
     MaterialApp(
       title: 'Google Sign In',
       home: SignInDemo(),
+      theme: ThemeData(
+        primarySwatch: Colors.yellow,
+      ),
     ),
   );
 }
@@ -31,16 +36,27 @@ class SignInDemo extends StatefulWidget {
   State createState() => SignInDemoState();
 }
 
+enum Page { SignIn, Holidays }
+
 class SignInDemoState extends State<SignInDemo> {
   GoogleSignInAccount currentUser;
   String contactText;
+  List<Holiday> holidays;
+  Page page = Page.SignIn;
 
   @override
   void initState() {
     super.initState();
+    holidays = [];
+
     googleSingIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       setState(() {
         currentUser = account;
+        api.allHolidays(currentUser).then((holidays) {
+          setState(() {
+            this.holidays = holidays;
+          });
+        });
       });
       if (currentUser != null) {
         _handleGetContact();
@@ -55,7 +71,7 @@ class SignInDemoState extends State<SignInDemo> {
     });
     final http.Response response = await http.get(
       'https://people.googleapis.com/v1/people/me/connections'
-          '?requestMask.includeField=person.names',
+      '?requestMask.includeField=person.names',
       headers: await currentUser.authHeaders,
     );
     if (response.statusCode != 200) {
@@ -77,21 +93,23 @@ class SignInDemoState extends State<SignInDemo> {
     });
   }
 
-
   Future<void> _callApi() async {
     var holidays = await api.allHolidays(currentUser);
+    setState(() {
+      this.holidays = holidays;
+    });
     print(holidays);
-
   }
+
   String _pickFirstNamedContact(Map<String, dynamic> data) {
     final List<dynamic> connections = data['connections'];
     final Map<String, dynamic> contact = connections?.firstWhere(
-          (dynamic contact) => contact['names'] != null,
+      (dynamic contact) => contact['names'] != null,
       orElse: () => null,
     );
     if (contact != null) {
       final Map<String, dynamic> name = contact['names'].firstWhere(
-            (dynamic name) => name['displayName'] != null,
+        (dynamic name) => name['displayName'] != null,
         orElse: () => null,
       );
       if (name != null) {
@@ -115,13 +133,11 @@ class SignInDemoState extends State<SignInDemo> {
 
   Widget _buildBody() {
     if (currentUser != null) {
+      print([1, holidays]);
       return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           ListTile(
-            leading: GoogleUserCircleAvatar(
-              identity: currentUser,
-            ),
             title: Text(currentUser.displayName ?? ''),
             subtitle: Text(currentUser.email ?? ''),
           ),
@@ -139,9 +155,14 @@ class SignInDemoState extends State<SignInDemo> {
             child: const Text('CALL API'),
             onPressed: _callApi,
           ),
+          RaisedButton(
+            child: const Text('CALL API'),
+            onPressed: () => api.addHoliday(currentUser, Holiday(name: 'my holiday', fromDate: DateTime.now(), toDate: DateTime.now())),
+          ),
         ],
       );
     } else {
+      print(2);
       return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
@@ -159,11 +180,80 @@ class SignInDemoState extends State<SignInDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Google Sign In'),
+          title: const Text('Flock Holidays'),
         ),
-        body: ConstrainedBox(
-          constraints: const BoxConstraints.expand(),
-          child: _buildBody(),
+        body: page == Page.Holidays
+            ? Holidays(holidays: holidays)
+            : ConstrainedBox(
+                constraints: const BoxConstraints.expand(),
+                child: _buildBody(),
+              ),
+        drawer: Drawer(
+          child: ListView(
+            // Important: Remove any padding from the ListView.
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                child: Text('Flock Holidays', style: TextStyle(fontSize: 23)),
+                decoration: BoxDecoration(
+                  color: Colors.yellow,
+                ),
+              ),
+              ListTile(
+                title: Text('Sign in'),
+                leading: Icon(Icons.person_outline),
+                onTap: () {
+                  setState(() {
+                    page = Page.SignIn;
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+              ListTile(
+                title: Text('Holidays'),
+                leading: Icon(Icons.wb_sunny),
+                onTap: () {
+                  setState(() {
+                    page = Page.Holidays;
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+            ],
+          ),
         ));
+  }
+}
+
+class Holidays extends StatelessWidget {
+  const Holidays({
+    Key key,
+    @required this.holidays,
+  }) : super(key: key);
+
+  final List<Holiday> holidays;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: <Widget>[
+        for (var holiday in holidays)
+          Dismissible(
+            key: Key(holidays.indexOf(holiday).toString()),
+            child: ListTile(
+              title: Text(holiday.name),
+              leading: Icon(Icons.wb_sunny, color: Colors.orange[200]),
+              subtitle: Text(holiday.formatHoliday()),
+            ),
+            background: Container(
+              color: Colors.white,
+            ),
+            secondaryBackground: Container(
+              color: Colors.red,
+              child: Icon(Icons.cancel),
+            ),
+          ),
+      ],
+    );
   }
 }
