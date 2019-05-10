@@ -9,7 +9,7 @@ import "package:http/http.dart" as http;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-GoogleSignIn _googleSignIn = GoogleSignIn(
+GoogleSignIn googleSingIn = GoogleSignIn(
   scopes: <String>[
     'email',
     'https://www.googleapis.com/auth/contacts.readonly',
@@ -31,35 +31,35 @@ class SignInDemo extends StatefulWidget {
 }
 
 class SignInDemoState extends State<SignInDemo> {
-  GoogleSignInAccount _currentUser;
-  String _contactText;
+  GoogleSignInAccount currentUser;
+  String contactText;
 
   @override
   void initState() {
     super.initState();
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+    googleSingIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       setState(() {
-        _currentUser = account;
+        currentUser = account;
       });
-      if (_currentUser != null) {
+      if (currentUser != null) {
         _handleGetContact();
       }
     });
-    _googleSignIn.signInSilently();
+    googleSingIn.signInSilently();
   }
 
   Future<void> _handleGetContact() async {
     setState(() {
-      _contactText = "Loading contact info...";
+      contactText = "Loading contact info...";
     });
     final http.Response response = await http.get(
       'https://people.googleapis.com/v1/people/me/connections'
           '?requestMask.includeField=person.names',
-      headers: await _currentUser.authHeaders,
+      headers: await currentUser.authHeaders,
     );
     if (response.statusCode != 200) {
       setState(() {
-        _contactText = "People API gave a ${response.statusCode} "
+        contactText = "People API gave a ${response.statusCode} "
             "response. Check logs for details.";
       });
       print('People API ${response.statusCode} response: ${response.body}');
@@ -69,9 +69,9 @@ class SignInDemoState extends State<SignInDemo> {
     final String namedContact = _pickFirstNamedContact(data);
     setState(() {
       if (namedContact != null) {
-        _contactText = "I see you know $namedContact!";
+        contactText = "I see you know $namedContact!";
       } else {
-        _contactText = "No contacts to display.";
+        contactText = "No contacts to display.";
       }
     });
   }
@@ -96,30 +96,30 @@ class SignInDemoState extends State<SignInDemo> {
 
   Future<void> _handleSignIn() async {
     try {
-      await _googleSignIn.signIn();
+      await googleSingIn.signIn();
     } catch (error) {
       print(error);
     }
   }
 
   Future<void> _handleSignOut() async {
-    _googleSignIn.disconnect();
+    googleSingIn.disconnect();
   }
 
   Widget _buildBody() {
-    if (_currentUser != null) {
+    if (currentUser != null) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           ListTile(
             leading: GoogleUserCircleAvatar(
-              identity: _currentUser,
+              identity: currentUser,
             ),
-            title: Text(_currentUser.displayName ?? ''),
-            subtitle: Text(_currentUser.email ?? ''),
+            title: Text(currentUser.displayName ?? ''),
+            subtitle: Text(currentUser.email ?? ''),
           ),
           const Text("Signed in successfully."),
-          Text(_contactText ?? ''),
+          Text(contactText ?? ''),
           RaisedButton(
             child: const Text('SIGN OUT'),
             onPressed: _handleSignOut,
