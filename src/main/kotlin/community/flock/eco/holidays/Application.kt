@@ -1,5 +1,7 @@
 package community.flock.eco.holidays
 
+import community.flock.eco.feature.user.model.User
+import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.fundraising.config.WebMvcConfig
 import community.flock.eco.fundraising.config.WebSecurityConfig
 import org.springframework.boot.SpringApplication
@@ -9,6 +11,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
+import org.springframework.stereotype.Component
 
 
 @Configuration
@@ -25,6 +28,15 @@ fun main(args: Array<String>) {
     SpringApplication.run(Application::class.java, *args)
 }
 
+
+@Component
+class UploadData(private val userRepository: UserRepository){
+
+    init {
+        userRepository.save(User(reference = "user", email = "user", name="user", authorities = setOf()))
+    }
+
+}
 
 
 
