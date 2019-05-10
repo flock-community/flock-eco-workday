@@ -36,7 +36,6 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     @Autowired
     lateinit var userSecurityService: UserSecurityService
 
-
     @Autowired
     lateinit var userRepository: UserRepository
 
@@ -53,9 +52,9 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         http
                 .cors()
 
-        http.addFilterBefore(JwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
+        http.addFilterBefore(JwtTokenFilter(userRepository), UsernamePasswordAuthenticationFilter::class.java)
 
-        userSecurityService.testLogin(http)
+        //userSecurityService.testLogin(http)
     }
 }
 
