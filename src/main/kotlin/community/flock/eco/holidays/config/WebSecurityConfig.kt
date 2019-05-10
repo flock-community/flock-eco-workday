@@ -6,6 +6,7 @@ import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.feature.user.services.UserSecurityService
 import community.flock.eco.holidays.authorities.HolidaysAuthority
+import community.flock.eco.holidays.filters.JwtTokenFilter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
@@ -16,6 +17,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority
 import org.springframework.security.core.userdetails.User as UserDetail
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+
+
 
 
 @Configuration
@@ -48,6 +52,8 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 .antMatchers("/_ah/**").permitAll()
         http
                 .cors()
+
+        http.addFilterBefore(JwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
 
         userSecurityService.testLogin(http)
     }
