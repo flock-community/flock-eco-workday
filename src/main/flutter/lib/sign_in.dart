@@ -22,7 +22,7 @@ GoogleSignIn googleSingIn = GoogleSignIn(
 void main() {
   runApp(
     MaterialApp(
-      title: 'Google Sign In',
+      title: 'Google Sign  In',
       home: SignInDemo(),
       theme: ThemeData(
         primarySwatch: Colors.yellow,
