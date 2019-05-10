@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:convert' show json;
 
+import 'package:flock_eco_holidays/api.dart';
 import "package:http/http.dart" as http;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -76,6 +77,12 @@ class SignInDemoState extends State<SignInDemo> {
     });
   }
 
+
+  Future<void> _callApi() async {
+    var holidays = await api.allHolidays(currentUser);
+    print(holidays);
+
+  }
   String _pickFirstNamedContact(Map<String, dynamic> data) {
     final List<dynamic> connections = data['connections'];
     final Map<String, dynamic> contact = connections?.firstWhere(
@@ -127,6 +134,10 @@ class SignInDemoState extends State<SignInDemo> {
           RaisedButton(
             child: const Text('REFRESH'),
             onPressed: _handleGetContact,
+          ),
+          RaisedButton(
+            child: const Text('CALL API'),
+            onPressed: _callApi,
           ),
         ],
       );
