@@ -7,7 +7,6 @@ import community.flock.eco.fundraising.config.WebSecurityConfig
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Configuration
@@ -35,14 +34,20 @@ fun main(args: Array<String>) {
 class UploadData(private val userRepository: UserRepository, passwordEncoder: PasswordEncoder) {
 
     init {
-        userRepository.save(User(
-                reference = "user",
-                email = "user",
-                name = "user",
-                secret = passwordEncoder.encode("user"),
-                authorities = setOf()))
-    }
+        userRepository
+                .findByReference("user")
+                .orElseGet {
+                    User(
+                            reference = "user",
+                            email = "user",
+                            name = "user",
+                            secret = passwordEncoder.encode("user"),
+                            authorities = setOf()
+                    ).let { userRepository.save(it) }
+                }
 
+
+    }
 }
 
 

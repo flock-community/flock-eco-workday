@@ -10,10 +10,10 @@ data class HolidayForm (
         val fromDate: LocalDate,
         val toDate: LocalDate
 ) {
-    fun createHoliday(holidayForm: HolidayForm, user: User) : Holiday = Holiday(
-            name = holidayForm.name,
-            fromDate= holidayForm.fromDate,
-            toDate = holidayForm.toDate,
+    fun createHoliday(user: User) : Holiday = Holiday(
+            name = this.name,
+            fromDate= this.fromDate,
+            toDate = this.toDate,
             user = user)
     fun updateHoliday(user: User) : Holiday = Holiday(id, name, fromDate, toDate, user)
 }
