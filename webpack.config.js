@@ -10,7 +10,7 @@ module.exports = {
   entry: path.join(__dirname, 'src/main/react'),
 
   output: {
-    path: path.join(__dirname, 'target/generated-resources'),
+    path: path.resolve(__dirname, 'src/main/webapp')
   },
 
   devtool: 'eval-source-map',
@@ -36,6 +36,7 @@ module.exports = {
     host: '0.0.0.0',
     proxy: {
       '/api/**': 'http://localhost:8080',
+      '/oauth2/**': 'http://localhost:8080',
       '/login': 'http://localhost:8080',
     },
   },
