@@ -4,8 +4,8 @@ import 'package:flock_eco_holidays/holiday.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import "package:http/http.dart" as http;
 
-const url = 'http://de5ad3db.ngrok.io/api/';
-//const url = 'https://flock-community.appspot.com/api/';
+//const url = 'http://de5ad3db.ngrok.io/api/';
+const url = 'https://flock-community.appspot.com/api/';
 
 class Api {
   Future<List<Holiday>> allHolidays(currentUser) async {
