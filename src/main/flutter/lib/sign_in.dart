@@ -191,13 +191,6 @@ class Holidays extends StatelessWidget {
               background: Container(
                 color: Colors.red,
               ),
-              confirmDismiss: (_) async {
-                print(1);
-                return true;
-              },
-              onResize: () {
-                print(2);
-              },
               secondaryBackground: Container(
                 color: Colors.red,
                 child: Row(
