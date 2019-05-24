@@ -1,4 +1,4 @@
-package com.flock.flock_eco_holidays
+package community.flock.app
 
 import android.os.Bundle
 
