@@ -18,8 +18,7 @@ import org.springframework.stereotype.Component
 
 @Configuration
 @SpringBootApplication(exclude = arrayOf(
-        RepositoryRestMvcAutoConfiguration::class,
-        UserDetailsServiceAutoConfiguration::class
+        RepositoryRestMvcAutoConfiguration::class
 ))
 @Import(ApplicationConfiguration::class,
         WebMvcConfig::class,
