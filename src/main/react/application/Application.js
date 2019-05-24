@@ -27,6 +27,13 @@ class Application extends React.Component {
     // this.handleDateChange = this.handleDateChange.bind(this);
   }
 
+  getUrl(url, userId) {
+    var urlIncludingUser = new URL("http://localhost:3000" + url);
+    var params = {userId: userId};
+    Object.keys(params).forEach(key => urlIncludingUser.searchParams.append(key, params[key]));
+    return urlIncludingUser
+  }
+
   getHolidays() {
     return fetch("/api/holidays", {method: "GET"})
       .then(response => {
