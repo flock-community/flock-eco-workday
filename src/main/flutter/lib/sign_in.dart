@@ -1,31 +1,25 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
-import 'dart:convert' show json;
 
 import 'package:flock_eco_holidays/api.dart';
-import "package:http/http.dart" as http;
+import 'package:flock_eco_holidays/create_holiday.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
+import 'package:provider/provider.dart';
 import 'holiday.dart';
 
-GoogleSignIn googleSingIn = GoogleSignIn(
-  scopes: <String>[
-    'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
-  ],
-);
+GoogleSignIn googleSingIn = GoogleSignIn(scopes: ['email']);
 
 void main() {
   runApp(
-    MaterialApp(
-      title: 'Google Sign  In',
-      home: SignInDemo(),
-      theme: ThemeData(
-        primarySwatch: Colors.yellow,
+    ChangeNotifierProvider<HolidaysModel>(
+      builder: (_) => HolidaysModel([]),
+      child: MaterialApp(
+        title: 'Google Sign  In',
+        home: SignInDemo(),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.yellow,
+        ),
       ),
     ),
   );
@@ -33,16 +27,16 @@ void main() {
 
 class SignInDemo extends StatefulWidget {
   @override
-  State createState() => SignInDemoState();
+  State createState() => MyApp();
 }
 
 enum Page { SignIn, Holidays }
 
-class SignInDemoState extends State<SignInDemo> {
+class MyApp extends State<SignInDemo> {
   GoogleSignInAccount currentUser;
   String contactText;
   List<Holiday> holidays;
-  Page page = Page.SignIn;
+  Page page = Page.Holidays;
 
   @override
   void initState() {
@@ -52,71 +46,13 @@ class SignInDemoState extends State<SignInDemo> {
     googleSingIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       setState(() {
         currentUser = account;
-        api.allHolidays(currentUser).then((holidays) {
-          setState(() {
-            this.holidays = holidays;
-          });
+        api.currentUser = currentUser;
+        api.allHolidays().then((holidays) {
+          Provider.of<HolidaysModel>(context).setHolidays(holidays);
         });
       });
-      if (currentUser != null) {
-        _handleGetContact();
-      }
     });
     googleSingIn.signInSilently();
-  }
-
-  Future<void> _handleGetContact() async {
-    setState(() {
-      contactText = "Loading contact info...";
-    });
-    final http.Response response = await http.get(
-      'https://people.googleapis.com/v1/people/me/connections'
-      '?requestMask.includeField=person.names',
-      headers: await currentUser.authHeaders,
-    );
-    if (response.statusCode != 200) {
-      setState(() {
-        contactText = "People API gave a ${response.statusCode} "
-            "response. Check logs for details.";
-      });
-      print('People API ${response.statusCode} response: ${response.body}');
-      return;
-    }
-    final Map<String, dynamic> data = json.decode(response.body);
-    final String namedContact = _pickFirstNamedContact(data);
-    setState(() {
-      if (namedContact != null) {
-        contactText = "I see you know $namedContact!";
-      } else {
-        contactText = "No contacts to display.";
-      }
-    });
-  }
-
-  Future<void> _callApi() async {
-    var holidays = await api.allHolidays(currentUser);
-    setState(() {
-      this.holidays = holidays;
-    });
-    print(holidays);
-  }
-
-  String _pickFirstNamedContact(Map<String, dynamic> data) {
-    final List<dynamic> connections = data['connections'];
-    final Map<String, dynamic> contact = connections?.firstWhere(
-      (dynamic contact) => contact['names'] != null,
-      orElse: () => null,
-    );
-    if (contact != null) {
-      final Map<String, dynamic> name = contact['names'].firstWhere(
-        (dynamic name) => name['displayName'] != null,
-        orElse: () => null,
-      );
-      if (name != null) {
-        return name['displayName'];
-      }
-    }
-    return null;
   }
 
   Future<void> _handleSignIn() async {
@@ -141,41 +77,21 @@ class SignInDemoState extends State<SignInDemo> {
             title: Text(currentUser.displayName ?? ''),
             subtitle: Text(currentUser.email ?? ''),
           ),
-          const Text("Signed in successfully."),
+          Text("Signed in successfully."),
           Text(contactText ?? ''),
           RaisedButton(
-            child: const Text('SIGN OUT'),
+            child: Text('SIGN OUT'),
             onPressed: _handleSignOut,
-          ),
-          RaisedButton(
-            child: const Text('REFRESH'),
-            onPressed: _handleGetContact,
-          ),
-          RaisedButton(
-            child: const Text('CALL API'),
-            onPressed: _callApi,
-          ),
-          RaisedButton(
-            child: const Text('ADD HOLIDAY'),
-            onPressed: () => api.addHoliday(
-                  currentUser,
-                  Holiday(
-                    name: 'my holiday',
-                    fromDate: DateTime.now(),
-                    toDate: DateTime.now(),
-                  ),
-                ),
           ),
         ],
       );
     } else {
-      print(2);
       return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          const Text("You are not currently signed in."),
+          Text("You are not currently signed in."),
           RaisedButton(
-            child: const Text('SIGN IN'),
+            child: Text('SIGN IN'),
             onPressed: _handleSignIn,
           ),
         ],
@@ -187,14 +103,26 @@ class SignInDemoState extends State<SignInDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Flock Holidays'),
+          title: Text('Flock Holidays'),
         ),
-        body: page == Page.Holidays
-            ? Holidays(holidays: holidays)
-            : ConstrainedBox(
-                constraints: const BoxConstraints.expand(),
-                child: _buildBody(),
-              ),
+        body: () {
+          switch (page) {
+            case Page.SignIn:
+              return ConstrainedBox(constraints: BoxConstraints.expand(), child: _buildBody());
+            case Page.Holidays:
+              return Holidays();
+          }
+        }(),
+        floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CreateHoliday(),
+                ),
+              );
+            },
+            child: Icon(Icons.add)),
         drawer: Drawer(
           child: ListView(
             // Important: Remove any padding from the ListView.
@@ -233,34 +161,58 @@ class SignInDemoState extends State<SignInDemo> {
 }
 
 class Holidays extends StatelessWidget {
-  const Holidays({
-    Key key,
-    @required this.holidays,
-  }) : super(key: key);
-
-  final List<Holiday> holidays;
-
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        for (var holiday in holidays)
-          Dismissible(
-            key: Key(holidays.indexOf(holiday).toString()),
-            child: ListTile(
-              title: Text(holiday.name),
-              leading: Icon(Icons.wb_sunny, color: Colors.orange[200]),
-              subtitle: Text(holiday.formatHoliday()),
+    var holidays = Provider.of<HolidaysModel>(context).holidays;
+    return RefreshIndicator(
+      onRefresh: () async {
+        await api.allHolidays().then((holidays) {
+          Provider.of<HolidaysModel>(context).setHolidays(holidays);
+          print(holidays);
+        });
+      },
+      child: ListView(
+        children: <Widget>[
+          for (var holiday in holidays)
+            Dismissible(
+              onDismissed: (_) async {
+                await api.deleteHoliday(holiday);
+                Provider.of<HolidaysModel>(context).delete(holiday);
+                Scaffold.of(context)
+                    .showSnackBar(SnackBar(content: Text("Holiday ${holiday.name} deleted")));
+              },
+              direction: DismissDirection.endToStart,
+              key: Key(holidays.indexOf(holiday).toString()),
+              child: ListTile(
+                title: Text(holiday.name),
+                leading: Icon(Icons.wb_sunny, color: Colors.orange[200]),
+                subtitle: Text(holiday.formatHoliday()),
+              ),
+              background: Container(
+                color: Colors.red,
+              ),
+              confirmDismiss: (_) async {
+                print(1);
+                return true;
+              },
+              onResize: () {
+                print(2);
+              },
+              secondaryBackground: Container(
+                color: Colors.red,
+                child: Row(
+                  children: [
+                    Spacer(),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Icon(Icons.delete, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            background: Container(
-              color: Colors.white,
-            ),
-            secondaryBackground: Container(
-              color: Colors.red,
-              child: Icon(Icons.cancel),
-            ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

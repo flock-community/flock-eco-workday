@@ -18,5 +18,7 @@ class Holiday {
   String formatHoliday() {
     return 'from ${DateFormat('yyyy-MM-dd').format(fromDate)} until ${DateFormat('yyyy-MM-dd').format(toDate)}';
   }
+
+  String toString() => toJson().toString();
 }
 
