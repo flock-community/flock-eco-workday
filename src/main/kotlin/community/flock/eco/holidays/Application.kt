@@ -1,5 +1,6 @@
 package community.flock.eco.holidays
 
+import community.flock.eco.feature.gcp.mail.GcpMailConfiguration
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.fundraising.config.WebMvcConfig
@@ -22,7 +23,8 @@ import org.springframework.stereotype.Component
 ))
 @Import(ApplicationConfiguration::class,
         WebMvcConfig::class,
-        WebSecurityConfig::class)
+        WebSecurityConfig::class,
+        GcpMailConfiguration::class)
 class Application : SpringBootServletInitializer()
 
 fun main(args: Array<String>) {
