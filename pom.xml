@@ -6,7 +6,7 @@
     <parent>
         <artifactId>flock-eco-application-parent</artifactId>
         <groupId>com.github.flock-community.flock-eco</groupId>
-        <version>1.2.1-c135a6c</version>
+        <version>1.2.2-db8633a</version>
     </parent>
 
     <groupId>flock.community.eco.holidays</groupId>
@@ -32,10 +32,22 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.flock-community.flock-eco</groupId>
             <artifactId>flock-eco-feature-user</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.github.flock-community.flock-eco</groupId>
+            <artifactId>flock-eco-feature-gcp-mail</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>
