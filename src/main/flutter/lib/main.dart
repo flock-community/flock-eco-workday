@@ -1,111 +1,210 @@
+import 'dart:async';
+
+import 'package:flock_eco_holidays/api.dart';
+import 'package:flock_eco_holidays/create_holiday.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
+import 'holiday.dart';
 
-void main() => runApp(MyApp());
+GoogleSignIn googleSingIn = GoogleSignIn(scopes: ['email']);
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter--;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
+void main() {
+  runApp(
+    ChangeNotifierProvider<HolidaysModel>(
+      builder: (_) => HolidaysModel([]),
+      child: MaterialApp(
+        title: 'Google Sign  In',
+        home: SignInDemo(),
+        theme: ThemeData(
+          primarySwatch: Colors.yellow,
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.close),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    ),
+  );
+}
+
+class SignInDemo extends StatefulWidget {
+  @override
+  State createState() => MyApp();
+}
+
+enum Page { SignIn, Holidays }
+
+class MyApp extends State<SignInDemo> {
+  GoogleSignInAccount currentUser;
+  String contactText;
+  List<Holiday> holidays;
+  Page page = Page.Holidays;
+
+  @override
+  void initState() {
+    super.initState();
+    holidays = [];
+
+    googleSingIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+      setState(() {
+        currentUser = account;
+        api.currentUser = currentUser;
+        api.allHolidays().then((holidays) {
+          Provider.of<HolidaysModel>(context).setHolidays(holidays);
+        });
+      });
+    });
+    googleSingIn.signInSilently();
+  }
+
+  Future<void> _handleSignIn() async {
+    try {
+      await googleSingIn.signIn();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> _handleSignOut() async {
+    googleSingIn.disconnect();
+  }
+
+  Widget _buildBody() {
+    if (currentUser != null) {
+      print([1, holidays]);
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          ListTile(
+            title: Text(currentUser.displayName ?? ''),
+            subtitle: Text(currentUser.email ?? ''),
+          ),
+          Text("Signed in successfully."),
+          Text(contactText ?? ''),
+          RaisedButton(
+            child: Text('SIGN OUT'),
+            onPressed: _handleSignOut,
+          ),
+        ],
+      );
+    } else {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Text("You are not currently signed in."),
+          RaisedButton(
+            child: Text('SIGN IN'),
+            onPressed: _handleSignIn,
+          ),
+        ],
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Flock Holidays'),
+        ),
+        body: () {
+          switch (page) {
+            case Page.SignIn:
+              return ConstrainedBox(constraints: BoxConstraints.expand(), child: _buildBody());
+            case Page.Holidays:
+              return Holidays();
+          }
+        }(),
+        floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CreateHoliday(),
+                ),
+              );
+            },
+            child: Icon(Icons.add)),
+        drawer: Drawer(
+          child: ListView(
+            // Important: Remove any padding from the ListView.
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                child: Text('Flock Holidays', style: TextStyle(fontSize: 23)),
+                decoration: BoxDecoration(
+                  color: Colors.yellow,
+                ),
+              ),
+              ListTile(
+                title: Text('Sign in'),
+                leading: Icon(Icons.person_outline),
+                onTap: () {
+                  setState(() {
+                    page = Page.SignIn;
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+              ListTile(
+                title: Text('Holidays'),
+                leading: Icon(Icons.wb_sunny),
+                onTap: () {
+                  setState(() {
+                    page = Page.Holidays;
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+            ],
+          ),
+        ));
+  }
+}
+
+class Holidays extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var holidays = Provider.of<HolidaysModel>(context).holidays;
+    return RefreshIndicator(
+      onRefresh: () async {
+        await api.allHolidays().then((holidays) {
+          Provider.of<HolidaysModel>(context).setHolidays(holidays);
+          print(holidays);
+        });
+      },
+      child: ListView(
+        children: <Widget>[
+          for (var holiday in holidays)
+            Dismissible(
+              onDismissed: (_) async {
+                await api.deleteHoliday(holiday);
+                Provider.of<HolidaysModel>(context).delete(holiday);
+                Scaffold.of(context)
+                    .showSnackBar(SnackBar(content: Text("Holiday ${holiday.name} deleted")));
+              },
+              direction: DismissDirection.endToStart,
+              key: Key(holidays.indexOf(holiday).toString()),
+              child: ListTile(
+                title: Text(holiday.name),
+                leading: Icon(Icons.wb_sunny, color: Colors.orange[200]),
+                subtitle: Text(holiday.formatHoliday()),
+              ),
+              background: Container(
+                color: Colors.red,
+              ),
+              secondaryBackground: Container(
+                color: Colors.red,
+                child: Row(
+                  children: [
+                    Spacer(),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Icon(Icons.delete, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

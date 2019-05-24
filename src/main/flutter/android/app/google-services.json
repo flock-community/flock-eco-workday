@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1005171984962",
+    "firebase_url": "https://flock-community.firebaseio.com",
+    "project_id": "flock-community",
+    "storage_bucket": "flock-community.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1005171984962:android:9023796725ccdb18",
+        "android_client_info": {
+          "package_name": "community.flock.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1005171984962-17s8vjkjv3u4lj7hdo7pgtjs29edf3r4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "community.flock.app",
+            "certificate_hash": "80a30f807ec0bb7cc54409914d80bdbd2825c23f"
+          }
+        },
+        {
+          "client_id": "1005171984962-amgmshlr3as9fts09qq338noft99u4r3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVqGhunfmyeAsS5Gv3DS_V9EidGuiYaZM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1005171984962-amgmshlr3as9fts09qq338noft99u4r3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1005171984962-sksfre2sg0mf9blo9r9lsrnr9cem6cob.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.flock.flockEcoHolidays"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
