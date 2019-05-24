@@ -76,7 +76,7 @@ class CreateHolidayFormState extends State<CreateHolidayForm> {
               onPressed: () async {
                 if (formKey.currentState.validate()) {
                   Scaffold.of(context).showSnackBar(SnackBar(content: Text('Adding holiday...')));
-                  Provider.of<HolidaysModel>(context).add(await api.addHoliday(
+                  Provider.of<HolidayProvider>(context).add(await api.addHoliday(
                     Holiday(
                       name: controller.text,
                       fromDate: fromDate,
@@ -135,7 +135,6 @@ class DateTimePicker extends StatelessWidget {
 class InputDropdown extends StatelessWidget {
   const InputDropdown({
     Key key,
-    this.child,
     this.labelText,
     this.valueText,
     this.onPressed,
@@ -144,7 +143,6 @@ class InputDropdown extends StatelessWidget {
   final String labelText;
   final String valueText;
   final VoidCallback onPressed;
-  final Widget child;
 
   @override
   Widget build(BuildContext context) {

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import "package:http/http.dart" as http;
 
-//const url = 'http://de5ad3db.ngrok.io/api/';
 const url = 'https://flock-community.appspot.com/api/';
 
 class Api {
@@ -13,8 +12,7 @@ class Api {
 
   Future<List<Holiday>> allHolidays() async {
     var response = await http.get(url + 'holidays', headers: await currentUser.authHeaders);
-    var list = json.decode(response.body) as List<dynamic>;
-    return list.map((it) => Holiday.fromJson(it)).toList();
+    return json.decode(response.body).map((it) => Holiday.fromJson(it)).toList();
   }
 
   Future<Holiday> addHoliday(Holiday holiday) async {
@@ -24,26 +22,32 @@ class Api {
           'Content-Type': 'application/json',
         },
         body: json.encode(holiday));
+
     return Holiday.fromJson(json.decode(response.body));
   }
 
   Future<Holiday> deleteHoliday(Holiday holiday) async {
-    print(holiday);
-    var response = await http.delete(url + 'holidays/${holiday.id}', headers: {
+    await http.delete(url + 'holidays/${holiday.id}', headers: {
       ...await currentUser.authHeaders,
       'Content-Type': 'application/json',
     });
-    print(response.body);
     return holiday;
   }
 }
 
 var api = new Api();
 
-class HolidaysModel with ChangeNotifier {
-  List<Holiday> holidays;
+class HolidayProvider with ChangeNotifier {
+  List<Holiday> _holidays;
 
-  HolidaysModel(this.holidays);
+  List<Holiday> get holidays => _holidays;
+
+  set holidays(List<Holiday> holidays) {
+    this.holidays = holidays;
+    notifyListeners();
+  }
+
+  HolidayProvider(this._holidays);
 
   void setHolidays(List<Holiday> holidays) {
     this.holidays = holidays;
