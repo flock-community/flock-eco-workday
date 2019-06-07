@@ -37,15 +37,12 @@ class MyApp extends State<SignInDemo> {
   @override
   void initState() {
     super.initState();
-    var holidayProvider = Provider.of<HolidayProvider>(context);
 
     googleSingIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       setState(() {
         currentUser = account;
         api.currentUser = currentUser;
-        api.allHolidays().then((holidays) {
-          holidayProvider.setHolidays(holidays);
-        });
+
       });
     });
     googleSingIn.signInSilently();
@@ -91,6 +88,13 @@ class MyApp extends State<SignInDemo> {
 
   @override
   Widget build(BuildContext context) {
+    if (currentUser != null) {
+      var holidayProvider = Provider.of<HolidayProvider>(context);
+
+      api.allHolidays().then((holidays) {
+        holidayProvider.setHolidays(holidays);
+      });
+    }
     return Scaffold(
         appBar: AppBar(
           title: Text('Flock Holidays'),
