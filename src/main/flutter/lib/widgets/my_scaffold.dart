@@ -1,13 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
+
+import 'package:flock_eco_holidays/app.dart';
 import 'package:flock_eco_holidays/holiday/holiday_provider.dart';
 import 'package:flock_eco_holidays/user/user_provider.dart';
 import 'package:flock_eco_holidays/widgets/create_holiday.dart';
 import 'package:flock_eco_holidays/widgets/holiday_list.dart';
 import 'package:flock_eco_holidays/widgets/sign_in.dart';
-import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:provider/provider.dart';
-
-import '../app.dart';
 
 enum Page { SignIn, Holidays }
 
