@@ -16,9 +16,6 @@ class HolidayList extends StatelessWidget {
             Dismissible(
               onDismissed: (_) async {
                 holidayProvider.delete(holiday);
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(content: Text("Holiday ${holiday.name} deleted")),
-                );
               },
               direction: DismissDirection.endToStart,
               key: Key(holidayProvider.holidays.indexOf(holiday).toString()),
