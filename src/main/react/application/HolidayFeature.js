@@ -1,8 +1,6 @@
 import React from 'react'
 import {withStyles} from '@material-ui/core'
 
-import ApplicationLayout from "./ApplicationLayout";
-
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 
@@ -16,7 +14,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import moment from 'moment';
 import MomentUtils from '@date-io/moment';
-import Textarea from "@material-ui/core/es/InputBase/Textarea";
+import Grid from "@material-ui/core/Grid";
 
 const styles = theme => ({});
 
@@ -38,9 +36,9 @@ class HolidayFeature extends React.Component {
 
   getHolidays() {
     return fetch("/api/holidays", {method: "GET"})
-        .then(response => {
-          return response.json()
-        }).then(holidays => this.updateHolidays(holidays))
+      .then(response => {
+        return response.json()
+      }).then(holidays => this.updateHolidays(holidays))
   }
 
   putHoliday(holiday) {
@@ -74,9 +72,9 @@ class HolidayFeature extends React.Component {
 
   getRemainingHolidays() {
     return fetch("/api/holidays/remaining", {method: "GET"})
-        .then(response => {
-          return response.json()
-        }).then(remaining => console.log(remaining))
+      .then(response => {
+        return response.json()
+      }).then(remaining => console.log(remaining))
   }
 
   updateHolidays(holidays) {
@@ -89,27 +87,23 @@ class HolidayFeature extends React.Component {
   }
 
   handleFromDateChange(date, holiday) {
-    holiday.fromDate = this.parseDate(date);
+    holiday.fromDate = date;
     this.putHoliday(holiday)
   }
 
   handleToDateChange(date, holiday) {
-    holiday.toDate = this.parseDate(date);
+    holiday.toDate = date;
     this.putHoliday(holiday);
-  }
-
-  parseDate(date) {
-    return date.format("YYYY-MM-DD")
   }
 
   addHoliday() {
     this.postHoliday(
-        {
-          id: 0,
-          name: "New Holiday",
-          fromDate: this.parseDate(moment()),
-          toDate: this.parseDate(moment())
-        }
+      {
+        id: 0,
+        name: "New Holiday",
+        fromDate: moment(),
+        toDate: moment()
+      }
     )
   }
 
@@ -123,29 +117,57 @@ class HolidayFeature extends React.Component {
         <AddIcon/>
       </Fab>
       {this.state.holidays.map(
-          holiday => {
-            return (
-                <Card style={{
-                  margin: "10px"
-                }}>
-                  <CardContent>
-                    <MuiPickersUtilsProvider utils={MomentUtils}>
-                      <TextField label="Username" type="text" value={holiday.user.name}></TextField>
-                      <TextField label="Title" type="text" value={holiday.name}
+        holiday => {
+          return (
+            <Card style={{
+              margin: "10px"
+            }}>
+              <CardContent>
+                <MuiPickersUtilsProvider utils={MomentUtils}>
+                  <Grid container spacing={16}>
+                    <Grid item xs={3}>
+                      <TextField label="Username"
+                                 fullWidth
+                                 type="text"
+                                 disabled
+                                 value={holiday.user.name}/>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <TextField label="Title"
+                                 fullWidth
+                                 type="text"
+                                 value={holiday.name}
                                  onChange={(event) => this.handleNameChange(event, holiday)}/>
-                      <DatePicker label="From" value={holiday.fromDate} autoOk format={"DD-MM-YYYY"}
-                                  onChange={(date) => this.handleFromDateChange(date, holiday)}/>
-                      <DatePicker label="To" value={holiday.toDate} autoOk format={"DD-MM-YYYY"}
+                    </Grid>
+                    <Grid item xs={2}>
+                      <DatePicker label="From"
+                                  fullWidth
+                                  format={"DD-MM-YYYY"}
+                                  value={holiday.fromDate}
+                                  autoOk onChange={(date) => this.handleFromDateChange(date, holiday)}/>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <DatePicker label="To"
+                                  fullWidth
+                                  format={"DD-MM-YYYY"}
+                                  value={holiday.toDate}
+                                  autoOk
                                   onChange={(date) => this.handleToDateChange(date, holiday, holiday.toDate)}/>
-                      <Fab style={{float: "right"}} color="secondary" key={holiday}
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Fab style={{float: "right"}}
+                           color="secondary"
+                           key={holiday}
                            onClick={() => this.deleteHoliday(holiday)}>
                         <DeleteIcon/>
                       </Fab>
-                    </MuiPickersUtilsProvider>
-                  </CardContent>
-                </Card>
-            )
-          })}
+                    </Grid>
+                  </Grid>
+                </MuiPickersUtilsProvider>
+              </CardContent>
+            </Card>
+          )
+        })}
     </div>)
   }
 }
