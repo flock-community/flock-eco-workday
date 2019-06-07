@@ -1,10 +1,8 @@
-import 'package:flock_eco_holidays/api.dart';
+import 'package:flock_eco_holidays/holiday/holiday.dart';
+import 'package:flock_eco_holidays/holiday/holiday_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import 'holiday.dart';
-
 class CreateHoliday extends StatelessWidget {
   const CreateHoliday({
     Key key,
@@ -27,8 +25,8 @@ class CreateHolidayForm extends StatefulWidget {
 }
 
 class CreateHolidayFormState extends State<CreateHolidayForm> {
-  DateTime fromDate = DateTime.now();
-  DateTime toDate = DateTime.now();
+  var fromDate = DateTime.now();
+  var toDate = DateTime.now();
   final formKey = GlobalKey<FormState>();
 
   TextEditingController controller = TextEditingController(text: '');
@@ -76,13 +74,13 @@ class CreateHolidayFormState extends State<CreateHolidayForm> {
               onPressed: () async {
                 if (formKey.currentState.validate()) {
                   Scaffold.of(context).showSnackBar(SnackBar(content: Text('Adding holiday...')));
-                  Provider.of<HolidayProvider>(context).add(await api.addHoliday(
+                  await Provider.of<HolidayProvider>(context).add(
                     Holiday(
                       name: controller.text,
                       fromDate: fromDate,
                       toDate: toDate,
                     ),
-                  ));
+                  );
                   Navigator.of(context).pop();
                 }
               },
