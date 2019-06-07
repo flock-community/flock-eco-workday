@@ -41,8 +41,8 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 .csrf().disable()
         http
                 .authorizeRequests()
-                .antMatchers("/login").permitAll()
                 .antMatchers("/_ah/**").permitAll()
+                .antMatchers("/login/**").permitAll()
                 .anyRequest().authenticated()
 
         http
@@ -51,7 +51,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         http
                 .addFilterBefore(GoogleTokenFilter(userRepository), UsernamePasswordAuthenticationFilter::class.java)
 
-        userSecurityService.databaseLogin(http)
+        userSecurityService.googleLogin(http)
     }
 }
 
