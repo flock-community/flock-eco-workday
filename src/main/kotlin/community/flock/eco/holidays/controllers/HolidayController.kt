@@ -8,6 +8,7 @@ import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.holidays.authorities.HolidaysAuthority
 import community.flock.eco.holidays.model.Holiday
 import community.flock.eco.holidays.model.HolidayForm
+import community.flock.eco.holidays.model.RemainingDays
 import community.flock.eco.holidays.repository.HolidayRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,11 +18,12 @@ import java.time.LocalDate
 import java.util.*
 
 @RestController
+@RequestMapping(*["/api/holidays"])
 class HolidayController(
         private val userRepository: UserRepository,
         private val holidayRepository: HolidayRepository) {
 
-    @GetMapping("/api/holidays")
+    @GetMapping
     fun findAllFromUserHolidays(@RequestParam(required = false) userId: Long?, principal: Principal): ResponseEntity<Iterable<Holiday>> {
             return principal
                     .findUser()
@@ -33,7 +35,7 @@ class HolidayController(
                                 listOf()
                             }
                         } else {
-                            if(it.authorities.contains(HolidaysAuthority.SUPER_USER.toName())) {
+                            if(isAdmin(it)) {
                                 holidayRepository.findAll()
                             } else {
                                 holidayRepository.findAllByUser(it)
@@ -45,14 +47,14 @@ class HolidayController(
     }
 
 
-    @PostMapping("/api/holidays")
+    @PostMapping
     fun postHolidays(@RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Holiday> = principal
             .findUser()
             ?.let { form.createHoliday(it) }
             ?.let { holidayRepository.save(it) }
             .toResponse()
 
-    @PutMapping("/api/holidays/{id}")
+    @PutMapping("/{id}")
     fun putMapping(@PathVariable id: Long, @RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Holiday> {
         return holidayRepository.findById(id)
                 .toNullable()
@@ -65,7 +67,7 @@ class HolidayController(
                 .toResponse()
     }
 
-    @DeleteMapping("/api/holidays/{id}")
+    @DeleteMapping("/{id}")
     fun deleteHolidays(@PathVariable id: Long, principal: Principal) {
         return holidayRepository.findById(id).get()
                 .let {
@@ -76,8 +78,17 @@ class HolidayController(
                     }}
     }
 
+    @GetMapping("/remaining")
+    fun getRemainingDays(principal: Principal) : ResponseEntity<RemainingDays> {
+        return RemainingDays(1).toResponse()
+    }
+
     private fun Principal.findUser(): User? = userRepository
             .findByReference(this.name)
             .toNullable()
+
+    private fun isAdmin(user: User) : Boolean {
+        return user.authorities.contains(HolidaysAuthority.SUPER_USER.toName())
+    }
 
 }

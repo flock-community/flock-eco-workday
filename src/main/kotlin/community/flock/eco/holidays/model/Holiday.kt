@@ -3,6 +3,7 @@ package community.flock.eco.holidays.model
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.feature.user.model.User
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
@@ -12,8 +13,8 @@ data class Holiday(
         @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long = 0,
         val name: String,
-        val fromDate: LocalDate = LocalDate.now(),
-        val toDate: LocalDate = LocalDate.now().plusDays(7),
+        val fromDate: LocalDateTime = LocalDateTime.now(),
+        val toDate: LocalDateTime = LocalDateTime.now().plusDays(7),
 
         @ManyToOne
         val user: User

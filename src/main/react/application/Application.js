@@ -11,15 +11,15 @@ const styles = theme => ({});
 class Application extends React.Component {
 
 
-  render() {
-    return (<HashRouter>
-      <div>
-        <ApplicationLayout/>
-        <Route path="/" exact component={HolidayFeature}/>
-        <Route path="/users" exact component={UserFeature}/>
-      </div>
-    </HashRouter>)
-  }
+    render() {
+        return (<HashRouter>
+            <div>
+                <ApplicationLayout/>
+                <Route path="/" exact component={HolidayFeature}/>
+                <Route path="/users" exact component={UserFeature}/>
+            </div>
+        </HashRouter>)
+    }
 }
 
 export default withStyles(styles)(Application)
