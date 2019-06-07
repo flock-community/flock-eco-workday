@@ -11,7 +11,6 @@ import '../app.dart';
 
 enum Page { SignIn, Holidays }
 
-
 class MyScaffold extends StatefulWidget {
   @override
   State createState() => MyScaffoldState();
@@ -25,12 +24,12 @@ class MyScaffoldState extends State<MyScaffold> {
     super.initState();
 
     app.googleSingIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
-      var userProvider = Provider.of<UserProvider>(context);
-      var holidayProvider = Provider.of<HolidayProvider>(context);
+      var users = Provider.of<UserProvider>(context);
+      var holidays = Provider.of<HolidayProvider>(context);
 
-      userProvider.currentUser = account;
+      users.currentUser = account;
       if (account != null) {
-        holidayProvider.get();
+        holidays.get();
       }
     });
 
@@ -39,7 +38,7 @@ class MyScaffoldState extends State<MyScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    var userProvider = Provider.of<UserProvider>(context);
+    var users = Provider.of<UserProvider>(context);
     return Scaffold(
         appBar: AppBar(
           title: Text('Flock Holidays'),
@@ -47,15 +46,17 @@ class MyScaffoldState extends State<MyScaffold> {
         body: () {
           switch (page) {
             case Page.Holidays:
-              if (userProvider.currentUser == null) {
+              if (users.currentUser == null) {
                 return SignIn();
               }
               return HolidayList();
             case Page.SignIn:
               return new SignIn();
+            default:
+              return new SignIn();
           }
         }(),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: page != Page.Holidays ? null : FloatingActionButton(
             onPressed: () {
               Navigator.push(
                 context,

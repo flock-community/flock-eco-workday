@@ -3,12 +3,8 @@ import 'package:flock_eco_holidays/holiday/holiday_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-class CreateHoliday extends StatelessWidget {
-  const CreateHoliday({
-    Key key,
-  }) : super(key: key);
 
-  @override
+class CreateHoliday extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -32,6 +28,11 @@ class CreateHolidayFormState extends State<CreateHolidayForm> {
   TextEditingController controller = TextEditingController(text: '');
   @override
   Widget build(BuildContext context) {
+    var holidays = Provider.of<HolidayProvider>(context);
+    var scaffold = Scaffold.of(context);
+    var navigator = Navigator.of(context);
+    var theme = Theme.of(context);
+
     return Form(
       key: formKey,
       child: ListView(
@@ -46,8 +47,9 @@ class CreateHolidayFormState extends State<CreateHolidayForm> {
               if (value.isEmpty) {
                 return 'Please enter a description for your holiday.';
               }
+              return null;
             },
-            style: Theme.of(context).textTheme.display1.copyWith(fontSize: 20.0),
+            style: theme.textTheme.display1.copyWith(fontSize: 20.0),
           ),
           DateTimePicker(
             labelText: 'From',
@@ -73,15 +75,15 @@ class CreateHolidayFormState extends State<CreateHolidayForm> {
             child: RaisedButton(
               onPressed: () async {
                 if (formKey.currentState.validate()) {
-                  Scaffold.of(context).showSnackBar(SnackBar(content: Text('Adding holiday...')));
-                  await Provider.of<HolidayProvider>(context).add(
+                  scaffold.showSnackBar(SnackBar(content: Text('Adding holiday...')));
+                  await holidays.add(
                     Holiday(
                       name: controller.text,
                       fromDate: fromDate,
                       toDate: toDate,
                     ),
                   );
-                  Navigator.of(context).pop();
+                  navigator.pop();
                 }
               },
               child: Text('Submit'),
