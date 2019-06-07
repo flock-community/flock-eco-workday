@@ -56,16 +56,18 @@ class MyScaffoldState extends State<MyScaffold> {
               return new SignIn();
           }
         }(),
-        floatingActionButton: page != Page.Holidays ? null : FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CreateHoliday(),
-                ),
-              );
-            },
-            child: Icon(Icons.add)),
+        floatingActionButton: page != Page.Holidays
+            ? null
+            : FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreateHoliday(),
+                    ),
+                  );
+                },
+                child: Icon(Icons.add)),
         drawer: Drawer(
           child: ListView(
             // Important: Remove any padding from the ListView.
