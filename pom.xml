@@ -6,7 +6,7 @@
     <parent>
         <artifactId>flock-eco-application-parent</artifactId>
         <groupId>com.github.flock-community.flock-eco</groupId>
-        <version>1.2.2-db8633a</version>
+        <version>1.2.2-a227a92</version>
     </parent>
 
     <groupId>flock.community.eco.holidays</groupId>
@@ -109,7 +109,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>community.flock.eco.fundraising.ApplicationKt</mainClass>
+                    <mainClass>community.flock.eco.holidays.ApplicationKt</mainClass>
                 </configuration>
             </plugin>
 
