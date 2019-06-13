@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@date-io/moment": "^1.3.5",
-    "@flock-eco/feature-user": "^1.2.2-next.a227a92",
+    "@flock-eco/feature-user": "^1.2.3-next.2b95491",
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.1",
     "babel-polyfill": "^6.26.0",

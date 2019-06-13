@@ -42,6 +42,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         http
                 .authorizeRequests()
                 .antMatchers("/_ah/**").permitAll()
+                .antMatchers("/login/**").permitAll()
                 .anyRequest().authenticated()
 
         http
