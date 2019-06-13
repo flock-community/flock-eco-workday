@@ -30,6 +30,9 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     @Autowired
     lateinit var userSecurityService: UserSecurityService
 
+    @Autowired
+    lateinit var userRepository: UserRepository
+
     override fun configure(http: HttpSecurity) {
 
         userAuthorityService.addAuthority(HolidaysAuthority::class.java)
@@ -44,6 +47,9 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
         http
                 .cors()
+
+        http
+                .addFilterBefore(GoogleTokenFilter(userRepository), UsernamePasswordAuthenticationFilter::class.java)
 
         userSecurityService.googleLogin(http)
     }
