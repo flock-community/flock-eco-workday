@@ -1,25 +1,30 @@
 import 'package:flock_eco_holidays/app.dart';
 import 'package:flock_eco_holidays/user/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var userProvider = Provider.of<UserProvider>(context);
-
+    var users = Provider.of<UserProvider>(context);
     return ConstrainedBox(
       constraints: BoxConstraints.expand(),
       child: () {
-        if ((userProvider.currentUser != null)) {
+        if ((users.currentUser != null)) {
           return Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ListTile(
-                title: Text(userProvider.currentUser.displayName ?? ''),
-                subtitle: Text(userProvider.currentUser.email ?? ''),
+                leading: GoogleUserCircleAvatar(
+                  identity: users.currentUser,
+                ),
+                title: Text(users.currentUser.displayName ?? ''),
+                subtitle: Text(users.currentUser.email ?? ''),
               ),
-              Text("Signed in successfully."),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text("Signed in successfully."),
+              ),
               RaisedButton(
                 child: Text('SIGN OUT'),
                 onPressed: () {
@@ -50,4 +55,3 @@ class SignIn extends StatelessWidget {
     );
   }
 }
-

@@ -3,31 +3,26 @@ import 'package:flock_eco_holidays/holiday/holiday.dart';
 import 'package:flutter/material.dart';
 
 class HolidayProvider with ChangeNotifier {
-  List<Holiday> _holidays;
-
   HolidayProvider(this._holidays);
 
-  List<Holiday> get holidays => _holidays;
+  List<Holiday> _holidays;
 
-  set holidays(List<Holiday> holidays) {
-    this._holidays = holidays;
+  List<Holiday> get all => _holidays;
+
+  Future<void> get() async {
+    _holidays = await app.holidayService.get();
     notifyListeners();
   }
 
   Future<void> add(Holiday holiday) async {
     var dbHoliday = await app.holidayService.add(holiday);
-    holidays.add(dbHoliday);
+    _holidays.add(dbHoliday);
     notifyListeners();
   }
 
-  void delete(Holiday holiday) async {
+  Future<void> delete(Holiday holiday) async {
     await app.holidayService.delete(holiday);
-    holidays.remove(holiday);
-    notifyListeners();
-  }
-
-  Future get() async {
-    _holidays = await app.holidayService.get();
+    _holidays.remove(holiday);
     notifyListeners();
   }
 }

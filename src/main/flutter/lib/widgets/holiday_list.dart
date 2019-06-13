@@ -5,23 +5,20 @@ import 'package:provider/provider.dart';
 class HolidayList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var holidayProvider = Provider.of<HolidayProvider>(context);
+    var holidays = Provider.of<HolidayProvider>(context);
     return RefreshIndicator(
       onRefresh: () async {
-        holidayProvider.get();
+        holidays.get();
       },
       child: ListView(
         children: <Widget>[
-          for (var holiday in holidayProvider.holidays)
+          for (var holiday in holidays.all)
             Dismissible(
               onDismissed: (_) async {
-                holidayProvider.delete(holiday);
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(content: Text("Holiday ${holiday.name} deleted")),
-                );
+                await holidays.delete(holiday);
               },
               direction: DismissDirection.endToStart,
-              key: Key(holidayProvider.holidays.indexOf(holiday).toString()),
+              key: Key(holidays.all.indexOf(holiday).toString()),
               child: ListTile(
                 title: Text(holiday.name),
                 leading: Icon(Icons.wb_sunny, color: Colors.orange[200]),
