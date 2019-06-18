@@ -18,10 +18,10 @@
     "date-fns": "^2.0.0-alpha.27",
     "material-ui-pickers": "^2.2.4",
     "moment": "^2.24.0",
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2",
-    "react-material-ui-form-validator": "^2.0.1",
-    "react-router-dom": "^4.3.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-material-ui-form-validator": "^2.0.8",
+    "react-router-dom": "^5.0.1",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {

@@ -1,31 +1,47 @@
 package community.flock.eco.holidays.controllers;
 
-import community.flock.eco.core.utils.toNullable
 import community.flock.eco.core.utils.toResponse
-import community.flock.eco.feature.user.model.User
-import community.flock.eco.feature.user.model.getUserDetails
-import community.flock.eco.feature.user.repositories.UserRepository
-import community.flock.eco.holidays.authorities.HolidaysAuthority
-import community.flock.eco.holidays.model.Event
-import community.flock.eco.holidays.model.Holiday
-import community.flock.eco.holidays.model.HolidayForm
-import community.flock.eco.holidays.model.RemainingDays
+import community.flock.eco.holidays.model.*
 import community.flock.eco.holidays.repository.EventRepository
-import community.flock.eco.holidays.repository.HolidayRepository
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
-import java.security.Principal
 import java.time.LocalDate
-import java.util.*
+import java.time.LocalDateTime
+import java.time.Period
 
 @RestController
 @RequestMapping("/api/events")
 class EventController(
         private val eventRepository: EventRepository) {
 
+
+    data class FlockDay(
+            val isToday: Boolean,
+            val next: Int
+    )
+
     @GetMapping
-    fun findAll(): ResponseEntity<Iterable<Event>> = eventRepository
+    fun findAll(pageable: Pageable) = eventRepository
+            .findAll(pageable)
+            .toResponse(pageable)
+
+    @GetMapping("/flock_day")
+    fun isFlockDay() = eventRepository
             .findAll()
+            .filter { it.type == EventType.FLOCK_DAY }
+            .filter { it.date.toLocalDate() >= LocalDate.now() }
+            .sortedBy { it.date }
+            .first()
+            .let {
+                val now = LocalDate.now()
+                val date = it.date.toLocalDate()
+                FlockDay(
+                        isToday = now == date,
+                        next = Period
+                                .between(now, date)
+                                .days
+                )
+            }
             .toResponse()
+
 }

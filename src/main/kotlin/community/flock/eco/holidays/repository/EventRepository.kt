@@ -4,7 +4,8 @@ import community.flock.eco.feature.user.model.User
 import community.flock.eco.holidays.model.Event
 import community.flock.eco.holidays.model.Holiday
 import org.springframework.data.repository.CrudRepository
+import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Service
 
 @Service
-interface EventRepository : CrudRepository<Event, Long>
+interface EventRepository : PagingAndSortingRepository<Event, Long>

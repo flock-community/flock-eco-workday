@@ -14,7 +14,7 @@ data class Event(
         val id: Long = 0,
 
         val name: String,
-        val data: LocalDateTime = LocalDateTime.now(),
+        val date: LocalDateTime = LocalDateTime.now(),
 
         @Enumerated(EnumType.STRING)
         val type: EventType
