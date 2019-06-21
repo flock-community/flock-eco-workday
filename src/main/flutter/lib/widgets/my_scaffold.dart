@@ -104,7 +104,7 @@ class MyScaffoldState extends State<MyScaffold> {
               ),
               ListTile(
                 title: Text('Flock day?'),
-                leading: Icon(Icons.wb_sunny),
+                leading: Icon(Icons.cake),
                 onTap: () {
                   setState(() {
                     page = Page.FlockDay;

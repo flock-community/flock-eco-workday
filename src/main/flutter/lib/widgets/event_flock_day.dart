@@ -13,13 +13,23 @@ class EventFlockDay extends StatelessWidget {
         if (snapshot.hasData) {
           return Center(
               child: snapshot.data.today ?
-              Text("Today it is Flock. day") :
+              Text.rich(
+                  TextSpan(
+                    children: <TextSpan>[
+                      TextSpan(text: 'Today ',
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                      TextSpan(text: 'it is Flock. day',
+                          style: TextStyle(fontSize: 18))
+                    ],
+                  )
+              ):
               Text.rich(
                   TextSpan(
                     children: <TextSpan>[
                       TextSpan(text: '${snapshot.data.next} days ',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      TextSpan(text: 'until the next Flock. day')
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                      TextSpan(text: 'until the next Flock. day.',
+                          style: TextStyle(fontSize: 18))
                     ],
                   )
               )
