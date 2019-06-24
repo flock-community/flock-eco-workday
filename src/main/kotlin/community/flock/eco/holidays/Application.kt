@@ -39,13 +39,25 @@ class LoadData(
         Event(
                 name = "Flock. day",
                 type = EventType.FLOCK_DAY,
+                date = LocalDateTime.of(2019, 7, 19, 0,0)
+        ).save()
+
+        Event(
+                name = "Flock. day",
+                type = EventType.FLOCK_DAY,
+                date = LocalDateTime.of(2019, 7, 5, 0,0)
+        ).save()
+
+        Event(
+                name = "Flock. day",
+                type = EventType.FLOCK_DAY,
                 date = LocalDateTime.of(2019, 6, 21, 0,0)
         ).save()
 
         Event(
                 name = "Flock. day",
                 type = EventType.FLOCK_DAY,
-                date = LocalDateTime.of(2019, 6, 16, 0,0)
+                date = LocalDateTime.of(2019, 6, 7, 0,0)
         ).save()
     }
 
