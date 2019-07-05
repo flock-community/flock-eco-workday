@@ -12,38 +12,48 @@ class EventFlockDay extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Center(
-              child: snapshot.data.today ?
-              Text.rich(
+            child: () {
+              if (snapshot.data.today) {
+                return Text.rich(
                   TextSpan(
                     children: <TextSpan>[
-                      TextSpan(text: 'Today ',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                      TextSpan(text: 'it is Flock. day',
-                          style: TextStyle(fontSize: 18))
+                      TextSpan(
+                        text: 'Today ',
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: 'it is Flock. day',
+                        style: TextStyle(fontSize: 18),
+                      )
                     ],
-                  )
-              ):
-              Text.rich(
+                  ),
+                );
+              } else {
+                return Text.rich(
                   TextSpan(
                     children: <TextSpan>[
-                      TextSpan(text: '${snapshot.data.next} days ',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                      TextSpan(text: 'until the next Flock. day.',
-                          style: TextStyle(fontSize: 18))
+                      TextSpan(
+                        text: '${snapshot.data.next} days ',
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: 'until the next Flock. day.',
+                        style: TextStyle(fontSize: 18),
+                      )
                     ],
-                  )
-              )
+                  ),
+                );
+              }
+            }(),
           );
-          } else
-              if (snapshot.hasError)
-          {
-            return Text("${snapshot.error}");
-          }
-
-          // By default, show a loading spinner.
-          return CircularProgressIndicator();
-        },
-    );;
+        } else if (snapshot.hasError) {
+          return Text("${snapshot.error}");
+        }
+        // By default, show a loading spinner.
+        return CircularProgressIndicator();
+      },
+    );
+    ;
   }
 
   Future<FlockDay> fetchData() async {
