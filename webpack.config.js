@@ -20,11 +20,17 @@ module.exports = {
         test: /\.js|jsx$/,
         exclude: /node_modules\/(?!(@flock-eco)\/).*/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
           options: {
-            presets: ['env', 'react', 'stage-2'],
-          },
-        },
+            "plugins": [
+              "@babel/plugin-proposal-class-properties"
+            ],
+            "presets": [
+              "@babel/preset-env",
+              "@babel/preset-react"
+            ]
+          }
+        }
       },
     ],
   },
@@ -33,7 +39,6 @@ module.exports = {
 
   devServer: {
     port: 3000,
-    host: '0.0.0.0',
     proxy: {
       '/api/**': 'http://localhost:8080',
       '/oauth2/**': 'http://localhost:8080',
