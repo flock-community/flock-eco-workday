@@ -5,34 +5,37 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --mode development --open",
-    "build": "webpack --mode production ./src/main/react"
+    "build": "webpack --mode production ./src/main/react",
+    "storybook": "start-storybook"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@date-io/moment": "^1.3.5",
     "@flock-eco/feature-user": "^1.2.3-next.2b95491",
-    "@material-ui/core": "^3.9.3",
-    "@material-ui/icons": "^3.0.1",
+    "@material-ui/core": "^4.1.1",
+    "@material-ui/icons": "^4.2.0",
+    "@material-ui/lab": "^4.0.0-alpha.16",
+    "@material-ui/styles": "^4.1.1",
     "babel-polyfill": "^6.26.0",
-    "date-fns": "^2.0.0-alpha.27",
     "material-ui-pickers": "^2.2.4",
     "moment": "^2.24.0",
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2",
-    "react-material-ui-form-validator": "^2.0.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-material-ui-form-validator": "^2.0.8",
     "react-router-dom": "^4.3.1",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "html-webpack-plugin": "^3.2.0",
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.3.0",
-    "webpack-dev-server": "^3.2.1"
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-react": "^7.0.0",
+    "@storybook/react": "^5.1.4",
+    "babel-loader": "^8.0.6",
+    "prettier": "^1.15.3",
+    "webpack": "^4.28.2",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": ">=3.1.11"
   }
 }

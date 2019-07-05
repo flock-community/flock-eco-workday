@@ -1,3 +1,4 @@
+import 'package:flock_eco_holidays/widgets/event_flock_day.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +10,7 @@ import 'package:flock_eco_holidays/widgets/create_holiday.dart';
 import 'package:flock_eco_holidays/widgets/holiday_list.dart';
 import 'package:flock_eco_holidays/widgets/sign_in.dart';
 
-enum Page { SignIn, Holidays }
+enum Page { SignIn, Holidays, FlockDay}
 
 class MyScaffold extends StatefulWidget {
   @override
@@ -50,6 +51,8 @@ class MyScaffoldState extends State<MyScaffold> {
                 return SignIn();
               }
               return HolidayList();
+            case Page.FlockDay:
+              return EventFlockDay();
             case Page.SignIn:
               return new SignIn();
             default:
@@ -74,7 +77,7 @@ class MyScaffoldState extends State<MyScaffold> {
             padding: EdgeInsets.zero,
             children: <Widget>[
               DrawerHeader(
-                child: Text('Flock Holidays', style: TextStyle(fontSize: 23)),
+                child: Text('Flock Community', style: TextStyle(fontSize: 23)),
                 decoration: BoxDecoration(
                   color: Colors.yellow,
                 ),
@@ -95,6 +98,16 @@ class MyScaffoldState extends State<MyScaffold> {
                 onTap: () {
                   setState(() {
                     page = Page.Holidays;
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+              ListTile(
+                title: Text('Flock day?'),
+                leading: Icon(Icons.cake),
+                onTap: () {
+                  setState(() {
+                    page = Page.FlockDay;
                     Navigator.pop(context);
                   });
                 },
