@@ -1,19 +1,19 @@
 package community.flock.eco.holidays.model
 
 import community.flock.eco.core.events.EventEntityListeners
-import java.time.LocalDateTime
+import java.time.LocalDate
 import javax.persistence.*
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-data class Event(
+data class DayOff(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0,
 
-        val name: String,
-        val date: LocalDateTime = LocalDateTime.now(),
-
         @Enumerated(EnumType.STRING)
-        val type: EventType
+        val type: DayType,
+
+        val data: LocalDate = LocalDate.now(),
+        val hours: Int
 )
