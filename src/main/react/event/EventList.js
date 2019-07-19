@@ -17,8 +17,14 @@ export function EventList() {
     findAllEvents().then(events =>  setEvent(events))
   }
 
-  return events.map(event => <Card>
-    {event.name}
-  </Card>)
+  if(events.length > 0){
+    return events.map(event => <Card>
+      {event.name}
+    </Card>)
+  }else{
+    return <h1>No Events</h1>
+  }
+
+
 
 }

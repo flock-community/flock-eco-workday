@@ -10,9 +10,10 @@ import UserIcon from '@material-ui/icons/Person';
 
 import Drawer from "@material-ui/core/Drawer";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import {withRouter} from "react-router-dom";
 
 const useStyles = makeStyles({
-  head:{
+  head: {
     height: 60
   },
   list: {
@@ -23,7 +24,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ApplicationDrawer({open, onClickItem, onClose}) {
+export const ApplicationDrawer = withRouter( ({open, onClickItem, onClose, history}) => {
 
   const classes = useStyles();
 
@@ -34,25 +35,27 @@ export default function ApplicationDrawer({open, onClickItem, onClose}) {
     onClose && onClose()
   };
 
-  const handleClickItem = () => {
-    onClickItem && onClickItem()
+  const handleClickItem = (item) => () => {
+    history.push(item.url)
   }
+
+
 
   const items = [
     {
       name: "Holidays",
       icon: HolidayIcon,
-      url: "holidays"
+      url: "/holidays"
     },
     {
       name: "Events",
       icon: EventIcon,
-      url: "events"
+      url: "/events"
     },
     {
       name: "User",
       icon: UserIcon,
-      url: "events"
+      url: "/users"
     }
   ]
 
@@ -65,10 +68,11 @@ export default function ApplicationDrawer({open, onClickItem, onClose}) {
     >
       <List>
         {items
-          .map(item => (<ListItem button key={`menu-item-${item.name}`} onClick={handleClickItem}>
-            <ListItemIcon>{React.createElement(item.icon)}</ListItemIcon>
-            <ListItemText primary={item.name}/>
-          </ListItem>))
+          .map(item => (
+            <ListItem button key={`menu-item-${item.name}`} onClick={handleClickItem(item)}>
+              <ListItemIcon>{React.createElement(item.icon)}</ListItemIcon>
+              <ListItemText primary={item.name}/>
+            </ListItem>))
         }
 
       </List>
@@ -78,4 +82,4 @@ export default function ApplicationDrawer({open, onClickItem, onClose}) {
     <div className={classes.head}/>
     {sideList()}
   </Drawer>)
-}
+})
