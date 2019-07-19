@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 
 import {withStyles} from '@material-ui/core'
 
@@ -11,8 +11,9 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import Menu from "@material-ui/core/Menu";
 import Typography from "@material-ui/core/Typography";
 import MenuItem from "@material-ui/core/MenuItem";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
-const styles = theme => ({
+const useStyles = makeStyles({
   root: {
     flexGrow: 1,
   },
@@ -25,70 +26,68 @@ const styles = theme => ({
   },
 })
 
-class ApplicationLayout extends React.Component {
+export function ApplicationLayout({onDrawer}) {
 
-  state = {
+  const classes = useStyles();
+
+  const [state, setState] = useState({
     anchorEl: null,
+  });
+
+  const handleMenu = event => {
+    setState({anchorEl: event.currentTarget});
   };
 
-  handleMenu = event => {
-    this.setState({anchorEl: event.currentTarget});
+  const handleClose = () => {
+    setState({anchorEl: null});
   };
 
-  handleClose = () => {
-    this.setState({anchorEl: null});
-  };
-
-
-  render() {
-    const {classes} = this.props;
-    const {anchorEl} = this.state;
-    const open = Boolean(anchorEl);
-
-    return (
-      <React.Fragment>
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-              <MenuIcon/>
-            </IconButton>
-            <Typography variant="h6" color="inherit" className={classes.grow}>
-              Holidays
-            </Typography>
-
-            <div>
-              <IconButton
-                aria-owns={open ? 'menu-appbar' : undefined}
-                aria-haspopup="true"
-                onClick={this.handleMenu}
-                color="inherit"
-              >
-                <AccountCircle/>
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={open}
-                onClose={this.handleClose}
-              >
-                <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                <MenuItem onClick={this.handleClose}>My account</MenuItem>
-              </Menu>
-            </div>
-
-          </Toolbar>
-        </AppBar>
-      </React.Fragment>)
+  const handleClickDrawer = () => {
+    onDrawer && onDrawer()
   }
+
+
+  return (
+    <React.Fragment>
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={handleClickDrawer}>
+            <MenuIcon/>
+          </IconButton>
+          <Typography variant="h6" color="inherit" className={classes.grow}>
+            Flock.
+          </Typography>
+
+          <div>
+            <IconButton
+              aria-owns={open ? 'menu-appbar' : undefined}
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit"
+            >
+              <AccountCircle/>
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={state.anchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={state.anchorEl != null}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleClose}>My account</MenuItem>
+            </Menu>
+          </div>
+
+        </Toolbar>
+      </AppBar>
+    </React.Fragment>)
+
 }
-
-
-export default withStyles(styles)(ApplicationLayout)
