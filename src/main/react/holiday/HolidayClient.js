@@ -1,8 +1,7 @@
-function fetchAll() {
+function fetchById(userId) {
 
-  return fetch(`/api/holidays`)
+  return fetch(`/api/holidays?userId=${userId}`)
     .then(res => res.json())
-
 }
 
 function postHoliday(holiday) {
@@ -18,7 +17,20 @@ function postHoliday(holiday) {
 
 }
 
+function getUsers() {
+  return fetch(`/api/users/`)
+      .then(res => res.json())
+}
+
+function getUserById(id) {
+  return fetch(`/api/user/` + id)
+      .then(res => res.json())
+}
+
 export default {
-  fetchAll,
-  postHoliday
+  fetchById,
+  postHoliday,
+  getUsers,
+  getUserById
+
 }

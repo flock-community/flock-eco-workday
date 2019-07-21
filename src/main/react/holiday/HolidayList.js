@@ -2,14 +2,16 @@ import React, {useEffect, useState} from "react";
 import HolidayClient from "./HolidayClient";
 import {Card, Typography} from "@material-ui/core";
 
-export function HolidayList({value, refresh, onClickRow}) {
+export function HolidayList({userId, value, refresh, onClickRow}) {
 
-  const [list, setList] = useState([])
+  const [list, setList] = useState([]);
 
   useEffect(() => {
-    HolidayClient.fetchAll()
-      .then(res => setList(res))
-  }, [value, refresh])
+    if(userId) {
+      HolidayClient.fetchById(userId)
+          .then(res => setList(res))
+      }
+    }, [userId, value, refresh]);
 
   function handleClickRow(item) {
     return function(ev){
