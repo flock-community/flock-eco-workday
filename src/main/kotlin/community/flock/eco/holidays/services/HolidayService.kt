@@ -23,7 +23,7 @@ class HolidayService(
                 dayOff = form.dayOff.mapIndexed { index, hours ->
                     DayOff(
                             type = DayType.HOLIDAY,
-                            data = form.from.plusDays(index.toLong()),
+                            date = form.from.plusDays(index.toLong()),
                             hours = hours
                     )
                 }.toSet(),

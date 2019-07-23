@@ -14,6 +14,6 @@ data class DayOff(
         @Enumerated(EnumType.STRING)
         val type: DayType,
 
-        val data: LocalDate = LocalDate.now(),
+        val date: LocalDate = LocalDate.now(),
         val hours: Int
 )
