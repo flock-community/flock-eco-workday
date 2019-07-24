@@ -27,12 +27,18 @@ export function HolidayDialog({value, open, onChange, onComplete}) {
     })
   }
 
-  return (<Dialog open={open}>
+  function handleClose (ev) {
+    onComplete && onComplete()
+  }
+
+
+  return (<Dialog open={open} onClose={handleClose}>
     <DialogTitle>Holiday form</DialogTitle>
     <DialogContent>
-      <HolidayForm onChange={handleOnChangeForm}/>
+      <HolidayForm value={value} onChange={handleOnChangeForm}/>
     </DialogContent>
     <DialogActions>
+      <Button onClick={handleClose}>Close</Button>
       <Button onClick={handleClickSave}>Save</Button>
     </DialogActions>
   </Dialog>)

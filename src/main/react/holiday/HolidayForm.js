@@ -1,42 +1,43 @@
 import React, {useEffect, useState} from 'react'
 import {Grid, TextField} from "@material-ui/core";
 import {DatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-import Typography from "@material-ui/core/Typography";
+import MomentUtils from '@date-io/moment';
 import Divider from "@material-ui/core/Divider";
+import moment from "moment";
+import Typography from "@material-ui/core/Typography";
 
 export function HolidayForm({value = {}, onChange}) {
 
   const days = ['Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za']
 
-  const newDate = (date) => {
-    date.setHours(0, 0, 0, 0)
-    return date
-  }
-
+  const [grid, setGrid] = useState([])
   const [state, setState] = useState({
     description: null,
     dates: [
-      newDate(value.from || new Date()),
-      newDate(value.to || new Date())
+      value.from || moment().startOf('day'),
+      value.to || moment().startOf('day')
     ],
     dayOff: {}
   })
 
   useEffect(() => {
+
+    const dayOff = calcDates()
+      .reduce((acc, cur) => {
+        const key = stringifyDate(cur)
+        if (state.dayOff[key]) {
+          acc[key] = state.dayOff[key]
+        } else {
+          acc[key] = inWeekday(cur) ? 8 : 0;
+        }
+        return acc
+      }, {})
+
     setState({
       ...state,
-      dayOff: calcDates()
-        .reduce((acc, cur) => {
-          const key = stringifyDate(cur)
-          if (state.dayOff[key]) {
-            acc[key] = state.dayOff[key]
-          } else {
-            acc[key] = inWeekday(cur) ? 8 : 0;
-          }
-          return acc
-        }, {})
+      dayOff
     })
+
   }, [value, state.dates]);
 
   useEffect(() => {
@@ -46,6 +47,7 @@ export function HolidayForm({value = {}, onChange}) {
         .keys(state.dayOff)
         .map(key => (state.dayOff[key]))
     })
+    setGrid(calcGrid())
   }, [state]);
 
   function handleDescriptionChange(ev) {
@@ -81,61 +83,32 @@ export function HolidayForm({value = {}, onChange}) {
   }
 
   function calcWeeks() {
-    const start = calcSunday()
-    const end = state.dates[1].getTime()
-    const diffTime = Math.abs(end - start);
-    const diffWeeks = Math.ceil((diffTime + 1) / (1000 * 60 * 60 * 24 * 7));
-    return [...Array(diffWeeks).keys()]
+    const start = moment(state.dates[0]).week();
+    const end = moment(state.dates[1]).week()
+    const diff = Math.abs(end - start) + 1;
+    return [...Array(diff).keys()]
   }
 
   function calcDates() {
-    const start = state.dates[0].getTime()
-    const end = state.dates[1].getTime()
-    const diffTime = Math.abs(end - start);
-    const diffDays = Math.ceil((diffTime + 1) / (1000 * 60 * 60 * 24));
-    return [...Array(diffDays).keys()]
-      .map((it) => new Date(start + (it * (1000 * 60 * 60 * 24))))
+    const start = moment(state.dates[0])
+    const end = moment(state.dates[1])
+    const diff = end.diff(start, 'days')
+    return [...Array(diff).keys()]
+      .map((it) => moment(start).add(it, 'days'))
   }
 
-  function calcWeekNr(date) {
-    const onejan = new Date(date.getFullYear(), 0, 1);
-    return Math.ceil((((date - onejan) / 86400000) + onejan.getDay()) / 7);
-  }
+  function calcGrid() {
+    const start = moment(state.dates[0]).startOf('week');
 
-  function calcSunday() {
-    const day = state.dates[0].getDay()
-    const diff = state.dates[0].getDate() - day;
-    return new Date(state.dates[0]).setDate(diff);
-  }
-
-  function inRange(date) {
-    const [start, end] = state.dates
-    const beforeStart = (start.getTime() <= date.getTime())
-    const afterEnd = (end.getTime() >= date.getTime())
-    return beforeStart && afterEnd
-  }
-
-  function inWeekday(date) {
-    return ![0, 6].includes(date.getDay())
-  }
-
-  function addDays(date, days) {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  }
-
-  function getGrid() {
-    const start = calcSunday()
     return calcWeeks()
-      .map((week) => {
-        const day = addDays(start, (week * 7))
-        const weekNumber = calcWeekNr(day)
+      .map(week => {
+        const day = moment(start).add(week, 'weeks')
+        const weekNumber = day.week()
         return {
           weekNumber,
           days: [...Array(7).keys()]
             .map((dayDiff) => {
-              const date = addDays(day, dayDiff)
+              const date = moment(day).add(dayDiff, 'days')
               const enabled = inRange(date)
               const key = stringifyDate(date)
               return {
@@ -149,17 +122,17 @@ export function HolidayForm({value = {}, onChange}) {
       })
   }
 
+  function inRange(date) {
+    const [start, end] = state.dates
+    return date.isBetween(start, end, 'day', '[]')
+  }
+
+  function inWeekday(date) {
+    return date.day(0) || date.day(6)
+  }
+
   function stringifyDate(date) {
-    let dd = date.getDate();
-    let mm = date.getMonth() + 1;
-    const yyyy = date.getFullYear();
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-    return `${yyyy}${mm}${dd}`;
+    return date.format('YYYYMMDD');
   }
 
   if (state.dates.length === 0) return [];
@@ -171,24 +144,24 @@ export function HolidayForm({value = {}, onChange}) {
           <TextField
             fullWidth
             label="Description"
-            value={state.description}
+            value={state.description || ''}
             onChange={handleDescriptionChange}/>
         </Grid>
         <Grid item xs={6}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <MuiPickersUtilsProvider utils={MomentUtils}>
             <DatePicker
               fullWidth
               label="From"
-              value={state.dates[0]}
+              value={state.dates[0] || ''}
               onChange={handleDateFromChange}/>
           </MuiPickersUtilsProvider>
         </Grid>
         <Grid item xs={6}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <MuiPickersUtilsProvider utils={MomentUtils}>
             <DatePicker
               fullWidth
               label="To"
-              value={state.dates[1]}
+              value={state.dates[1] || ''}
               minDate={state.dates[0]}
               onChange={handleDateToChange}/>
           </MuiPickersUtilsProvider>
@@ -211,13 +184,14 @@ export function HolidayForm({value = {}, onChange}) {
           <Typography>Total</Typography>
         </Grid>
       </Grid>
-      {getGrid().map(week => {
-        return (<Grid container spacing={1} key={`week-${week}`}>
+
+      {grid.map(week => {
+        return (<Grid container spacing={1} key={`week-${week.weekNumber}`}>
           <Grid item xs={2}>
             <Typography>{week.weekNumber}</Typography>
           </Grid>
           {week.days.map(day => (<Grid item xs={1} key={`day-${day.key}`}>
-            <TextField value={day.value} disabled={day.disabled} onChange={handleDayChange(day.key)}/>
+            <TextField value={day.value || ''} disabled={day.disabled} onChange={handleDayChange(day.key)}/>
           </Grid>))}
           <Grid item xs={1}/>
           <Grid item xs={2}>
@@ -229,7 +203,6 @@ export function HolidayForm({value = {}, onChange}) {
           </Grid>
         </Grid>)
       })}
-
 
     </>)
 

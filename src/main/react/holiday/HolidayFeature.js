@@ -9,6 +9,9 @@ import {HolidayUserSelector} from "./HolidayUserSelector";
 import HolidayClient from "./HolidayClient";
 
 const useStyles = makeStyles({
+  root:{
+    padding: 20
+  },
   fab: {
     position: 'absolute',
     bottom: "25px",
@@ -27,22 +30,21 @@ export function HolidayFeature() {
   const [users, setUsers] = useState([])
 
   useEffect(() => {
-    HolidayClient.getUsers()
-        .then(res => {
-          if(res.status === 200) {
-            setUsers(res)
-          } else {
-            setUsers([])
-          }
+    console.log(123)
+    HolidayClient.getAllUsers()
+        .then(users => {
+          setUsers(users)
         })
-  }, []);
+  },[]);
 
   function handleCompleteDialog(){
     setRefresh(!refresh)
     setOpen(false)
+    setValue(null)
   }
 
   function handleClickAdd(){
+    setValue(null)
     setOpen(true)
   }
 
@@ -53,20 +55,21 @@ export function HolidayFeature() {
       .map(key => (item.dayOff[key]))
       .map(it => it.hours)
 
-
     setValue({
       ...item,
       dayOff
-    })
+    });
+
     setOpen(true)
   }
 
-  function handleUserChange(user) {
-    setUserId(user.id);
+  function handleChangeUser(user) {
+    user && setUserId(user.id);
   }
 
-  return (<>
-    <HolidayUserSelector users={users} onUserChange={handleUserChange} />
+  return (<div className={classes.root}>
+
+    <HolidayUserSelector users={users} onChange={handleChangeUser} />
 
     <HolidayList userId={userId} refresh={refresh} onClickRow={handleClickRow}/>
 
@@ -76,5 +79,5 @@ export function HolidayFeature() {
       <AddIcon/>
     </Fab>
 
-  </>)
+  </div>)
 }

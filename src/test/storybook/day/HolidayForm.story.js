@@ -1,6 +1,6 @@
 import React from 'react';
 import {storiesOf} from '@storybook/react';
-import HolidayForm from "../../../main/react/holiday/HolidayForm";
+import {HolidayForm} from "../../../main/react/holiday/HolidayForm";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import {DialogActions, DialogContent} from "@material-ui/core";
