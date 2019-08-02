@@ -8,7 +8,7 @@ import javax.persistence.*
 @EntityListeners(EventEntityListeners::class)
 data class Event(
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long = 0,
 
         val name: String,

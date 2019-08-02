@@ -62,7 +62,7 @@ export function HolidayDialog({value, userCode, open, onChange, onComplete}) {
     <DialogActions>
       <Button onClick={handleClose}>Close</Button>
       <Button onClick={handleDelete}>Delete</Button>
-      <Button onClick={handleClickSave}>Save</Button>
+      <Button onClick={handleClickSave} variant="contained" color="primary">Save</Button>
     </DialogActions>
   </Dialog>)
 

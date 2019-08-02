@@ -2,8 +2,6 @@ import React, {useEffect, useState} from "react";
 import HolidayClient from "./HolidayClient";
 import {Card, Typography} from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions"
-import Button from '@material-ui/core/Button';
 import Grid from "@material-ui/core/Grid";
 
 export function HolidayList({userCode, refresh, onClickRow}) {
@@ -16,7 +14,7 @@ export function HolidayList({userCode, refresh, onClickRow}) {
         .then(res => setList(res))
     } else {
       HolidayClient.fetchAll()
-          .then(res => setList(res))
+        .then(res => setList(res))
     }
   }, [userCode, refresh]);
 
@@ -28,17 +26,13 @@ export function HolidayList({userCode, refresh, onClickRow}) {
 
   function renderItem(item) {
     return (<Grid item xs={12} key={`holiday-list-item-${item.id}`}>
-      <Card>
+      <Card onClick={handleClickRow(item)}>
         <CardContent>
-          <Typography>{item.description ? item.description : 'Vakantie zonder beschrijving'}</Typography>
-          <Typography>Van: {item.from.toString()}</Typography>
-          <Typography>Tot: {item.to.toString()}</Typography>
-          <Typography>Dagen: {item.dayOff.length}</Typography>
+          <Typography variant="h6" >{item.description ? item.description : 'empty'}</Typography>
+          <Typography>Van: {item.from.format("DD-MM-YYYY")}</Typography>
+          <Typography>Tot: {item.to.format("DD-MM-YYYY")}</Typography>
+          <Typography>Aantal dagen: {item.dayOff.length}</Typography>
         </CardContent>
-        <CardActions>
-          <Button size="small" onClick={handleClickRow(item)}>Edit</Button>
-          <Button size="small" onClick={handleClickRow(item)}>Delete</Button>
-        </CardActions>
       </Card>
     </Grid>)
   }

@@ -8,6 +8,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import {HolidayUserSelector} from "./HolidayUserSelector";
 import HolidayClient from "./HolidayClient";
 import {ApplicationContext} from "../application/ApplicationContext";
+import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles({
   root: {
@@ -33,11 +34,11 @@ export function HolidayFeature() {
 
   useEffect(() => {
 
-    if(isSuperUser()) {
-        HolidayClient.getAllUsers()
-            .then(users => {
-                setUsers(users)
-            })
+    if (isSuperUser()) {
+      HolidayClient.getAllUsers()
+        .then(users => {
+          setUsers(users)
+        })
     }
 
 
@@ -75,10 +76,14 @@ export function HolidayFeature() {
 
   return (<div className={classes.root}>
 
-    {isSuperUser() && <HolidayUserSelector users={users} onChange={handleChangeUser} />}
-
-    <HolidayList userCode={userCode} refresh={refresh} onClickRow={handleClickRow}/>
-
+    <Grid container spacing={1}>
+      <Grid item xs={12}>
+        {isSuperUser() && <HolidayUserSelector users={users} onChange={handleChangeUser}/>}
+      </Grid>
+      <Grid item xs={12}>
+        <HolidayList userCode={userCode} refresh={refresh} onClickRow={handleClickRow}/>
+      </Grid>
+    </Grid>
     <HolidayDialog open={open} userCode={userCode} value={value} onComplete={handleCompleteDialog}/>
 
     <Fab color="primary" className={classes.fab} onClick={handleClickAdd}>

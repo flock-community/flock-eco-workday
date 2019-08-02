@@ -8,7 +8,7 @@ import javax.persistence.*
 @EntityListeners(EventEntityListeners::class)
 data class DayOff(
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long = 0,
 
         @Enumerated(EnumType.STRING)

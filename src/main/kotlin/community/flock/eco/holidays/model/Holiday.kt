@@ -13,7 +13,7 @@ import javax.persistence.*
 data class Holiday(
 
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long = 0,
         val description: String?,
 
