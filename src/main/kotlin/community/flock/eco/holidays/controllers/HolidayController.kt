@@ -12,8 +12,6 @@ import community.flock.eco.holidays.services.HolidayService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/holidays")
@@ -53,8 +51,29 @@ class HolidayController(
                     holidayService.create(form, user)
                 }
                 .toResponse()
+    }
 
+    @PutMapping
+    fun put(@RequestParam id: Long, @RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Holiday> {
+        return principal
+                .findUser()
+                ?.let { user ->
+                    holidayService.findById(id)
+                            .toNullable()
+                            ?.let { holiday -> holidayService.update(holiday.id, form) }
 
+                }
+                .toResponse()
+    }
+
+    @DeleteMapping
+    fun delete(@RequestParam id: Long, principal: Principal): ResponseEntity<Unit> {
+        return principal
+                .findUser()
+                ?.let { user ->
+                    holidayService.delete(id)
+                }
+                .toResponse()
     }
 
     private fun Principal.findUser(): User? = userRepository

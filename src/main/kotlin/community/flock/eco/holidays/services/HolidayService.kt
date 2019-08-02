@@ -8,11 +8,14 @@ import community.flock.eco.holidays.model.Holiday
 import community.flock.eco.holidays.repository.HolidayRepository
 import org.springframework.stereotype.Service
 import java.time.Period
+import java.util.*
 
 
 @Service
 class HolidayService(
         val holidayRepository: HolidayRepository) {
+
+    fun findById(id:Long): Optional<Holiday> = holidayRepository.findById(id)
 
     fun create(form: HolidayForm, user: User): Holiday {
         form.validate()
@@ -31,9 +34,23 @@ class HolidayService(
                 .save()
     }
 
-    fun update(id: Long, form: HolidayForm) {
+    fun update(id: Long, form: HolidayForm): Holiday {
         form.validate()
+        return Holiday(
+                description = form.description,
+                from = form.from,
+                to = form.to,
+                dayOff = form.dayOff.mapIndexed { index, hours ->
+                    DayOff(
+                            type = DayType.HOLIDAY,
+                            date = form.from.plusDays(index.toLong()),
+                            hours = hours
+                    )
+                }.toSet())
+                .save()
     }
+
+    fun delete(id:Long) = holidayRepository.deleteById(id)
 
     private fun Holiday.save() = holidayRepository
             .save(this)

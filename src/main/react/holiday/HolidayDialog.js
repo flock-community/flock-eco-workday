@@ -2,43 +2,52 @@ import {Button, Dialog, DialogActions, DialogContent, DialogTitle} from "@materi
 import {HolidayForm} from "./HolidayForm";
 import React, {useEffect, useState} from "react";
 import HolidayClient from "./HolidayClient";
+import * as moment from "moment";
 
 
 export function HolidayDialog({value, open, onChange, onComplete}) {
 
   const [state, setState] = useState(value)
 
-  useEffect(()=> {
+  useEffect(() => {
     onChange && onChange(state)
   }, [state])
 
-  function handleOnChangeForm(it){
+  function handleChangeForm(it) {
+    console.log(it)
     setState(it)
   }
 
-  function handleClickSave(){
+  function handleClickSave() {
     HolidayClient.postHoliday({
       description: state.description,
-      from: state.dates[0],
-      to: state.dates[1],
-      dayOff:state.dayOff
+      from: state.dates[0].format(moment.HTML5_FMT.DATE),
+      to: state.dates[1].format(moment.HTML5_FMT.DATE),
+      dayOff: state.dayOff
     }).then((res) => {
       onComplete && onComplete(res)
     })
   }
 
-  function handleClose (ev) {
+  function handleClose(ev) {
     onComplete && onComplete()
+  }
+
+  function handleDelete(ev) {
+    HolidayClient.deleteHoliday(state.id).then(() => {
+      onComplete && onComplete()
+    })
   }
 
 
   return (<Dialog open={open} onClose={handleClose}>
     <DialogTitle>Holiday form</DialogTitle>
     <DialogContent>
-      <HolidayForm value={value} onChange={handleOnChangeForm}/>
+      <HolidayForm value={value} onChange={handleChangeForm}/>
     </DialogContent>
     <DialogActions>
       <Button onClick={handleClose}>Close</Button>
+      <Button onClick={handleDelete}>Delete</Button>
       <Button onClick={handleClickSave}>Save</Button>
     </DialogActions>
   </Dialog>)

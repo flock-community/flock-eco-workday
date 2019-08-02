@@ -31,6 +31,29 @@ function postHoliday(holiday) {
 
 }
 
+
+function putHoliday(id, holiday) {
+  const opts = {
+    method: 'PUT',
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(holiday)
+  }
+  return fetch(`/api/holidays/${id}`, opts)
+    .then(res => res.json())
+
+}
+
+function deleteHoliday(id) {
+  const opts = {
+    method: 'DELETE',
+  }
+  return fetch(`/api/holidays/${id}`, opts)
+    .then(res => res.json())
+
+}
+
 function getAllUsers() {
   return fetch(`/api/users/`)
     .then(res => {
@@ -57,6 +80,8 @@ function getUserById(id) {
 export default {
   fetchById,
   postHoliday,
+  putHoliday,
+  deleteHoliday,
   getAllUsers,
   getUserById
 

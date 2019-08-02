@@ -6,9 +6,9 @@ import Divider from "@material-ui/core/Divider";
 import moment from "moment";
 import Typography from "@material-ui/core/Typography";
 
-export function HolidayForm({value = {}, onChange}) {
+const days = ['Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za']
 
-  const days = ['Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za']
+export function HolidayForm({value = {}, onChange}) {
 
   const [grid, setGrid] = useState([])
   const [state, setState] = useState({
@@ -93,7 +93,7 @@ export function HolidayForm({value = {}, onChange}) {
     const start = moment(state.dates[0])
     const end = moment(state.dates[1])
     const diff = end.diff(start, 'days')
-    return [...Array(diff).keys()]
+    return (diff < 0) ? [] : [...Array(diff).keys()]
       .map((it) => moment(start).add(it, 'days'))
   }
 
