@@ -14,8 +14,8 @@ export function HolidayForm({value = {}, onChange}) {
   const [state, setState] = useState({
     description: null,
     dates: [
-      value.from || moment().startOf('day'),
-      value.to || moment().startOf('day')
+      (value && value.from) || moment().startOf('day'),
+      (value && value.to) || moment().startOf('day')
     ],
     dayOff: {}
   })
