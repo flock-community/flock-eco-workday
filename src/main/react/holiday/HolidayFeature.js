@@ -21,6 +21,9 @@ const useStyles = makeStyles({
   }
 });
 
+/**
+ * @return {null}
+ */
 export function HolidayFeature() {
 
   const classes = useStyles();
@@ -30,7 +33,7 @@ export function HolidayFeature() {
   const [value, setValue] = useState(null)
   const [userCode, setUserCode] = useState(null)
   const [users, setUsers] = useState([])
-  const {authorities} = useContext(ApplicationContext);
+  const {authorities, user} = useContext(ApplicationContext);
 
   useEffect(() => {
 
@@ -41,8 +44,9 @@ export function HolidayFeature() {
         })
     }
 
+    user && setUserCode(user.code)
 
-  }, [authorities]);
+  }, [authorities, user]);
 
   function handleCompleteDialog() {
     setRefresh(!refresh)
@@ -72,6 +76,10 @@ export function HolidayFeature() {
 
   function handleChangeUser(user) {
     user && setUserCode(user.code);
+  }
+
+  if (!userCode) {
+    return null
   }
 
   return (<div className={classes.root}>

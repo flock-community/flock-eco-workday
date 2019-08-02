@@ -53,7 +53,6 @@ export function HolidayDialog({value, userCode, open, onChange, onComplete}) {
     })
   }
 
-
   return (<Dialog open={open} onClose={handleClose}>
     <DialogTitle>Holiday form</DialogTitle>
     <DialogContent>

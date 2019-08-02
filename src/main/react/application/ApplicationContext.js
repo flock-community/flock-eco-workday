@@ -1,5 +1,6 @@
 import {createContext} from "react";
 
 export const ApplicationContext = createContext({
-   authorities: null
+   authorities: null,
+   user:null
 });
