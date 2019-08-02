@@ -11,6 +11,7 @@ import community.flock.eco.holidays.repository.HolidayRepository
 import community.flock.eco.holidays.services.HolidayService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
@@ -22,6 +23,7 @@ class HolidayController(
         private val holidayService: HolidayService) {
 
     @GetMapping
+    @PreAuthorize("hasAuthority('HolidaysAuthority.READ')")
     fun findAll(@RequestParam(required = false) userCode: String?, principal: Principal): ResponseEntity<Iterable<Holiday>> {
 
         return principal
@@ -46,6 +48,7 @@ class HolidayController(
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('HolidaysAuthority.WRITE')")
     fun post(@RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Holiday> {
         return principal
                 .findUser()
@@ -63,6 +66,7 @@ class HolidayController(
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('HolidaysAuthority.WRITE')")
     fun put(@PathVariable id: Long, @RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Any> {
         return principal
                 .findUser()
@@ -77,6 +81,7 @@ class HolidayController(
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('HolidaysAuthority.WRITE')")
     fun delete(@PathVariable  id: Long, principal: Principal): ResponseEntity<Any> {
         return principal
                 .findUser()
@@ -96,7 +101,7 @@ class HolidayController(
             .toNullable()
 
     private fun User.isAdmin(): Boolean {
-        return this.authorities.contains(HolidaysAuthority.SUPER_USER.toName())
+        return this.authorities.contains(HolidaysAuthority.ADMIN.toName())
     }
 
     private fun User.isAuthorizedForUserCode(userCode: String?): Boolean {

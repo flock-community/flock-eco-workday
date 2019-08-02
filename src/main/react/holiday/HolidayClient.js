@@ -86,7 +86,7 @@ function getAllUsers() {
 function getMe() {
     return fetch(`/api/users/me`)
         .then(res => {
-            if (res.status === 200) {
+            if (res.ok) {
                 return res.json()
             } else {
                 throw res.json()

@@ -36,7 +36,6 @@ export function HolidayFeature() {
   const {authorities, user} = useContext(ApplicationContext);
 
   useEffect(() => {
-
     if (isSuperUser()) {
       HolidayClient.getAllUsers()
         .then(users => {
@@ -60,7 +59,7 @@ export function HolidayFeature() {
   }
 
   function isSuperUser() {
-    return authorities && authorities.includes("HolidaysAuthority.SUPER_USER");
+    return authorities && authorities.includes("HolidaysAuthority.ADMIN");
   }
 
   function handleClickRow(item) {

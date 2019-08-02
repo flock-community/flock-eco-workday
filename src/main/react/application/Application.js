@@ -19,21 +19,21 @@ export const Application = () => {
 
 
   useEffect(() => {
-
-    const fetchStatus = fetch(`/login/status`)
+    fetch(`/login/status`)
       .then(res => res.json())
-      .then(status => ({
-        loggedIn: status.loggedIn,
-        authorities: status.authorities,
-      }))
-
-    const fetchMe = HolidayClient.getMe()
-      .then(user => ({user}))
-
-    Promise.all([fetchStatus, fetchMe])
-      .then(res => {
-        setState({...res[0], ...res[1]})
-      })
+      .then(status => {
+        return HolidayClient.getMe()
+          .then(user => {
+            setState({
+              loggedIn: status.loggedIn,
+              authorities: status.authorities,
+              user,
+            })
+          })
+          .catch(() => setState({
+            loggedIn: status.loggedIn,
+          }))
+      });
 
   }, [])
 
