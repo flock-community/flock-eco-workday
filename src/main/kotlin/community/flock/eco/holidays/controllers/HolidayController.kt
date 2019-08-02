@@ -23,11 +23,7 @@ class HolidayController(
 
     @GetMapping
     fun findAll(@RequestParam(required = false) userCode: String?, principal: Principal): ResponseEntity<Iterable<Holiday>> {
-
-        val jerre = User(name = "Jerre van Veluw", email = "jerre@flock-se.com", authorities = setOf(HolidaysAuthority.USER.name), reference = "jerre");
-        if(!userRepository.findByReference(jerre.reference).isPresent) {
-            userRepository.save(jerre)
-        }
+        
         return principal
                 .findUser()
                 ?.let {
