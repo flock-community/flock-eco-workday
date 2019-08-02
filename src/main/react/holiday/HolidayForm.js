@@ -11,16 +11,16 @@ const days = ['Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za']
 export function HolidayForm({value, onChange}) {
 
   const initFrom = (value && value.from) || moment().startOf('day')
-  const initTo = (value && value.from) || moment().startOf('day')
+  const initTo = (value && value.to) || moment().startOf('day')
 
   const [grid, setGrid] = useState([])
   const [state, setState] = useState({
-    description: null,
+    description: value && value.description,
     dates: [initFrom, initTo],
     dayOff: calcDates(initFrom, initTo)
       .reduce((acc, cur, i) => {
         const key = stringifyDate(cur)
-        if (value && value.dayOff) {
+        if (value && value.dayOff[i]) {
           acc[key] = value.dayOff[i]
         } else {
           acc[key] = inWeekday(cur) ? 8 : 0;

@@ -21,6 +21,7 @@ data class Holiday(
         val to: LocalDate = LocalDate.now(),
 
         @OneToMany(cascade = [CascadeType.ALL])
+        @OrderBy("date")
         val dayOff: Set<DayOff>,
 
         @ManyToOne

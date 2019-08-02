@@ -10,7 +10,7 @@ import HolidayClient from "./HolidayClient";
 import {ApplicationContext} from "../application/ApplicationContext";
 
 const useStyles = makeStyles({
-  root:{
+  root: {
     padding: 20
   },
   fab: {
@@ -33,28 +33,25 @@ export function HolidayFeature() {
 
   useEffect(() => {
 
-    console.log(showUserSelector())
     HolidayClient.getMe()
-        .then(user => {
-          setUserCode(user.id)
-        })
-
-    console.log("useEffect")
+      .then(user => {
+        setUserCode(user.id)
+      })
 
     HolidayClient.getAllUsers()
-        .then(users => {
-          setUsers(users)
-        })
+      .then(users => {
+        setUsers(users)
+      })
 
-  },[]);
+  }, []);
 
-  function handleCompleteDialog(){
+  function handleCompleteDialog() {
     setRefresh(!refresh)
     setOpen(false)
     setValue(null)
   }
 
-  function handleClickAdd(){
+  function handleClickAdd() {
     setValue(null)
     setOpen(true)
   }
@@ -63,16 +60,12 @@ export function HolidayFeature() {
     return authorities ? authorities.includes("HolidaysAuthority.SUPER_USER") : false;
   }
 
-  function handleClickRow(item){
-
-    const dayOff = Object
-      .keys(item.dayOff)
-      .map(key => (item.dayOff[key]))
-      .map(it => it.hours)
+  function handleClickRow(item) {
 
     setValue({
       ...item,
-      dayOff
+      dayOff: item.dayOff
+        .map(it => it.hours)
     });
 
     setOpen(true)
@@ -86,7 +79,7 @@ export function HolidayFeature() {
 
     Selected userCode: {userCode}
 
-    {showUserSelector() && <HolidayUserSelector users={users} onChange={handleChangeUser} />}
+    {showUserSelector() && <HolidayUserSelector users={users} onChange={handleChangeUser}/>}
 
     <HolidayList userCode={userCode} refresh={refresh} onClickRow={handleClickRow}/>
 

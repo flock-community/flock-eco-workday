@@ -21,7 +21,6 @@ export function HolidayDialog({value, userCode, open, onChange, onComplete}) {
   }
 
   function handleClickSave() {
-    console.log(userCode);
     if (state.id) {
       HolidayClient.putHoliday(state.id, {
         description: state.description,
