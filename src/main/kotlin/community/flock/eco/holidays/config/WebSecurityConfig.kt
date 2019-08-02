@@ -1,5 +1,6 @@
 package community.flock.eco.fundraising.config
 
+import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.feature.user.services.UserSecurityService

@@ -9,6 +9,7 @@ import community.flock.eco.holidays.forms.HolidayForm
 import community.flock.eco.holidays.model.Holiday
 import community.flock.eco.holidays.repository.HolidayRepository
 import community.flock.eco.holidays.services.HolidayService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
@@ -21,13 +22,18 @@ class HolidayController(
         private val holidayService: HolidayService) {
 
     @GetMapping
-    fun findAll(@RequestParam(required = false) userId: Long?, principal: Principal): ResponseEntity<Iterable<Holiday>> {
+    fun findAll(@RequestParam(required = false) userCode: String?, principal: Principal): ResponseEntity<Iterable<Holiday>> {
+
+        val jerre = User(name = "Jerre van Veluw", email = "jerre@flock-se.com", authorities = setOf(HolidaysAuthority.USER.name), reference = "jerre");
+        if(!userRepository.findByReference(jerre.reference).isPresent) {
+            userRepository.save(jerre)
+        }
         return principal
                 .findUser()
                 ?.let {
-                    if (userId != null) {
-                        if (userRepository.findById(userId).isPresent) {
-                            holidayRepository.findAllByUser(userRepository.findById(userId).get())
+                    if (userCode != null) {
+                        if (userRepository.findByCode(userCode).isPresent) {
+                            holidayRepository.findAllByUser(userRepository.findByCode(userCode).get())
                         } else {
                             listOf()
                         }
@@ -47,8 +53,15 @@ class HolidayController(
     fun post(@RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Holiday> {
         return principal
                 .findUser()
-                ?.let { user ->
-                    holidayService.create(form, user)
+                ?.let {
+                    if(!it.isAdmin()) {
+                        form.copy(userCode = it.code)
+                    } else {
+                        form
+                    }
+                }
+                ?.let {
+                    holidayService.create(form)
                 }
                 .toResponse()
     }

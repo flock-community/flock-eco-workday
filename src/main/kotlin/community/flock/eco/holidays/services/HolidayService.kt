@@ -2,6 +2,7 @@ package community.flock.eco.holidays.services
 
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.feature.user.model.User
+import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.holidays.forms.HolidayForm
 import community.flock.eco.holidays.model.DayOff
 import community.flock.eco.holidays.model.DayType
@@ -15,19 +16,24 @@ import java.util.*
 
 @Service
 class HolidayService(
-        val holidayRepository: HolidayRepository) {
+        val holidayRepository: HolidayRepository, val userRepository: UserRepository) {
 
     fun findById(id: Long): Optional<Holiday> = holidayRepository.findById(id)
 
-    fun create(form: HolidayForm, user: User): Holiday {
+    fun create(form: HolidayForm): Holiday {
         form.validate()
-        return Holiday(
-                description = form.description,
-                from = form.from,
-                to = form.to,
-                dayOff = convertDayOff(form.dayOff, form.from),
-                user = user)
-                .save()
+        form.userCode?.let{
+            userRepository.findByCode(it).toNullable()
+        }?.let{
+            return Holiday(
+                    description = form.description,
+                    from = form.from,
+                    to = form.to,
+                    dayOff = convertDayOff(form.dayOff, form.from),
+                    user = it)
+                    .save()
+        }?:throw RuntimeException("Cannot create holiday")
+
     }
 
     fun update(id: Long, form: HolidayForm): Holiday {

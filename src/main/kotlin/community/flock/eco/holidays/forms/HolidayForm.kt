@@ -18,5 +18,7 @@ data class HolidayForm(
         @JsonSerialize(using = LocalDateSerializer::class)
         val to: LocalDate,
 
-        val dayOff: Array<Int>
+        val dayOff: Array<Int>,
+
+        val userCode: String?
 )

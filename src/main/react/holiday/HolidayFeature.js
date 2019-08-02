@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
@@ -7,6 +7,7 @@ import {HolidayList} from "./HolidayList";
 import {makeStyles} from "@material-ui/core/styles";
 import {HolidayUserSelector} from "./HolidayUserSelector";
 import HolidayClient from "./HolidayClient";
+import {ApplicationContext} from "../application/ApplicationContext";
 
 const useStyles = makeStyles({
   root:{
@@ -26,14 +27,25 @@ export function HolidayFeature() {
   const [refresh, setRefresh] = useState(false)
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(null)
-  const [userId, setUserId] = useState(null)
+  const [userCode, setUserCode] = useState(null)
   const [users, setUsers] = useState([])
+  const {authorities} = useContext(ApplicationContext);
 
   useEffect(() => {
+
+    console.log(showUserSelector())
+    HolidayClient.getMe()
+        .then(user => {
+          setUserCode(user.id)
+        })
+
+    console.log("useEffect")
+
     HolidayClient.getAllUsers()
         .then(users => {
           setUsers(users)
         })
+
   },[]);
 
   function handleCompleteDialog(){
@@ -45,6 +57,10 @@ export function HolidayFeature() {
   function handleClickAdd(){
     setValue(null)
     setOpen(true)
+  }
+
+  function showUserSelector() {
+    return authorities ? authorities.includes("HolidaysAuthority.SUPER_USER") : false;
   }
 
   function handleClickRow(item){
@@ -63,16 +79,18 @@ export function HolidayFeature() {
   }
 
   function handleChangeUser(user) {
-    user && setUserId(user.id);
+    user && setUserCode(user.code);
   }
 
   return (<div className={classes.root}>
 
-    <HolidayUserSelector users={users} onChange={handleChangeUser} />
+    Selected userCode: {userCode}
 
-    <HolidayList userId={userId} refresh={refresh} onClickRow={handleClickRow}/>
+    {showUserSelector() && <HolidayUserSelector users={users} onChange={handleChangeUser} />}
 
-    <HolidayDialog open={open} value={value} onComplete={handleCompleteDialog}/>
+    <HolidayList userCode={userCode} refresh={refresh} onClickRow={handleClickRow}/>
+
+    <HolidayDialog open={open} userCode={userCode} value={value} onComplete={handleCompleteDialog}/>
 
     <Fab color="primary" className={classes.fab} onClick={handleClickAdd}>
       <AddIcon/>

@@ -1,8 +1,8 @@
 import moment from "moment";
 
-function fetchById(userId) {
+function fetchAllByUserCode(userCode) {
 
-  return fetch(`/api/holidays?userId=${userId}`)
+  return fetch(`/api/holidays?userCode=${userCode}`)
     .then(res => {
       if (res.status === 200) {
         return res.json()
@@ -26,7 +26,7 @@ function postHoliday(holiday) {
     },
     body: JSON.stringify(holiday)
   }
-  return fetch('/api/holidays', opts)
+  return fetch(`/api/holidays`, opts)
     .then(res => res.json())
 
 }
@@ -65,6 +65,17 @@ function getAllUsers() {
     })
 }
 
+function getMe() {
+    return fetch(`/api/users/me`)
+        .then(res => {
+            if (res.status === 200) {
+                return res.json()
+            } else {
+                throw res.json()
+            }
+        })
+}
+
 function getUserById(id) {
   return fetch(`/api/user/` + id)
     .then(res => {
@@ -78,11 +89,12 @@ function getUserById(id) {
 }
 
 export default {
-  fetchById,
+  fetchAllByUserCode,
   postHoliday,
   putHoliday,
   deleteHoliday,
   getAllUsers,
-  getUserById
+  getUserById,
+  getMe
 
 }

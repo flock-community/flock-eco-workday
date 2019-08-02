@@ -6,12 +6,14 @@ import UserFeature from "@flock-eco/feature-user/src/main/react/user/UserFeature
 import {ApplicationLayout} from "./ApplicationLayout";
 import {EventFeature} from "../event/EventFeature";
 import {ApplicationDrawer} from "./ApplicationDrawer";
+import {ApplicationContext} from "./ApplicationContext";
 
 export const Application = () => {
 
   const [state, setState] = useState({
     openDrawer: false,
-    loggedIn: null
+    loggedIn: null,
+    authorities: null,
   });
 
   useEffect(() => {
@@ -19,7 +21,8 @@ export const Application = () => {
       .then(res => res.json())
       .then(status => setState({
         ...state,
-        loggedIn: status.loggedIn
+        loggedIn: status.loggedIn,
+        authorities: status.authorities,
       }))
   }, [])
 
@@ -41,7 +44,9 @@ export const Application = () => {
   if(state.loggedIn != null && !state.loggedIn){
     return window.location.href = '/login'
   }
-  return (<HashRouter>
+  return (
+      <ApplicationContext.Provider value={{authorities: state.authorities}}>
+      <HashRouter>
     <div>
       <ApplicationDrawer open={state.openDrawer} onClose={handleDrawerClose}/>
       <ApplicationLayout onDrawer={handleDrawerOpen}/>
@@ -49,6 +54,8 @@ export const Application = () => {
       <Route path="/events" exact component={EventFeature}/>
       <Route path="/users" exact component={UserFeature}/>
     </div>
-  </HashRouter>)
+  </HashRouter>
+      </ApplicationContext.Provider>
+        )
 
 }

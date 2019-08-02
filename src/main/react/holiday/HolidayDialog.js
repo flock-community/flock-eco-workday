@@ -5,7 +5,7 @@ import HolidayClient from "./HolidayClient";
 import * as moment from "moment";
 
 
-export function HolidayDialog({value, open, onChange, onComplete}) {
+export function HolidayDialog({value, userCode, open, onChange, onComplete}) {
 
   const [state, setState] = useState(value)
 
@@ -21,12 +21,13 @@ export function HolidayDialog({value, open, onChange, onComplete}) {
   }
 
   function handleClickSave() {
+    console.log(userCode);
     if (state.id) {
       HolidayClient.putHoliday(state.id, {
         description: state.description,
         from: state.dates[0].format(moment.HTML5_FMT.DATE),
         to: state.dates[1].format(moment.HTML5_FMT.DATE),
-        dayOff: state.dayOff
+        dayOff: state.dayOff,
       }).then((res) => {
         onComplete && onComplete(res)
       })
@@ -35,7 +36,8 @@ export function HolidayDialog({value, open, onChange, onComplete}) {
         description: state.description,
         from: state.dates[0].format(moment.HTML5_FMT.DATE),
         to: state.dates[1].format(moment.HTML5_FMT.DATE),
-        dayOff: state.dayOff
+        dayOff: state.dayOff,
+        userCode,
       }).then((res) => {
         onComplete && onComplete(res)
       })
