@@ -14,6 +14,9 @@ export function HolidayList({userCode, refresh, onClickRow}) {
     if (userCode) {
       HolidayClient.fetchAllByUserCode(userCode)
         .then(res => setList(res))
+    } else {
+      HolidayClient.fetchAll()
+          .then(res => setList(res))
     }
   }, [userCode, refresh]);
 

@@ -23,7 +23,7 @@ class HolidayController(
 
     @GetMapping
     fun findAll(@RequestParam(required = false) userCode: String?, principal: Principal): ResponseEntity<Iterable<Holiday>> {
-        
+
         return principal
                 .findUser()
                 ?.let {
@@ -53,11 +53,11 @@ class HolidayController(
                     if(!it.isAuthorizedForUserCode(form.userCode)) {
                         form.copy(userCode = it.code)
                     } else {
-                        form
+                        form.copy(userCode = form.userCode?:it.code)
                     }
                 }
                 ?.let {
-                    holidayService.create(form)
+                    holidayService.create(it)
                 }
                 .toResponse()
     }

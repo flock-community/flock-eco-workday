@@ -33,17 +33,15 @@ export function HolidayFeature() {
 
   useEffect(() => {
 
-    HolidayClient.getMe()
-      .then(user => {
-        setUserCode(user.id)
-      })
+    if(isSuperUser()) {
+        HolidayClient.getAllUsers()
+            .then(users => {
+                setUsers(users)
+            })
+    }
 
-    HolidayClient.getAllUsers()
-      .then(users => {
-        setUsers(users)
-      })
 
-  }, []);
+  }, [authorities]);
 
   function handleCompleteDialog() {
     setRefresh(!refresh)
@@ -56,8 +54,8 @@ export function HolidayFeature() {
     setOpen(true)
   }
 
-  function showUserSelector() {
-    return authorities ? authorities.includes("HolidaysAuthority.SUPER_USER") : false;
+  function isSuperUser() {
+    return authorities && authorities.includes("HolidaysAuthority.SUPER_USER");
   }
 
   function handleClickRow(item) {
@@ -77,7 +75,7 @@ export function HolidayFeature() {
 
   return (<div className={classes.root}>
 
-    {showUserSelector() && <HolidayUserSelector users={users} onChange={handleChangeUser} />}
+    {isSuperUser() && <HolidayUserSelector users={users} onChange={handleChangeUser} />}
 
     <HolidayList userCode={userCode} refresh={refresh} onClickRow={handleClickRow}/>
 

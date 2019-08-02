@@ -18,6 +18,24 @@ function fetchAllByUserCode(userCode) {
       })))
 }
 
+function fetchAll() {
+
+    return fetch(`/api/holidays`)
+        .then(res => {
+            if (res.status === 200) {
+                return res.json()
+            } else {
+                throw res.json()
+            }
+        })
+        .then(data => data
+            .map(it => ({
+                ...it,
+                from: moment(it.from, "YYYY-MM-DD"),
+                to: moment(it.to, "YYYY-MM-DD")
+            })))
+}
+
 function postHoliday(holiday) {
   const opts = {
     method: 'POST',
@@ -95,6 +113,6 @@ export default {
   deleteHoliday,
   getAllUsers,
   getUserById,
+  fetchAll,
   getMe
-
 }
