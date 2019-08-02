@@ -54,7 +54,7 @@ class HolidayController(
         return principal
                 .findUser()
                 ?.let {
-                    if(!it.isAdmin()) {
+                    if(!it.isAuthorizedForUserCode(form.userCode)) {
                         form.copy(userCode = it.code)
                     } else {
                         form
@@ -67,22 +67,30 @@ class HolidayController(
     }
 
     @PutMapping("/{id}")
-    fun put(@PathVariable id: Long, @RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Holiday> {
+    fun put(@PathVariable id: Long, @RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Any> {
         return principal
                 .findUser()
-                ?.let { user ->
-                    holidayService.update(id, form)
-
+                ?.let {
+                    if(it.isAuthorizedForUserCode(form.userCode)){
+                        holidayService.update(id, form)
+                    } else {
+                        ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    }
                 }
                 .toResponse()
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable  id: Long, principal: Principal): ResponseEntity<Unit> {
+    fun delete(@PathVariable  id: Long, principal: Principal): ResponseEntity<Any> {
         return principal
                 .findUser()
-                ?.let { user ->
-                    holidayService.delete(id)
+                ?.let {
+                    if(it.isAuthorizedForHoliday(id)) {
+                        holidayService.delete(id)
+                    } else {
+                        ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    }
+
                 }
                 .toResponse()
     }
@@ -93,6 +101,14 @@ class HolidayController(
 
     private fun User.isAdmin(): Boolean {
         return this.authorities.contains(HolidaysAuthority.SUPER_USER.toName())
+    }
+
+    private fun User.isAuthorizedForUserCode(userCode: String?): Boolean {
+        return this.isAdmin() || this.code.equals(userCode)
+    }
+
+    private fun User.isAuthorizedForHoliday(id: Long): Boolean {
+        return this.isAdmin() || this.equals(holidayRepository.findById(id).get().user)
     }
 
 }

@@ -77,9 +77,7 @@ export function HolidayFeature() {
 
   return (<div className={classes.root}>
 
-    Selected userCode: {userCode}
-
-    {showUserSelector() && <HolidayUserSelector users={users} onChange={handleChangeUser}/>}
+    {showUserSelector() && <HolidayUserSelector users={users} onChange={handleChangeUser} />}
 
     <HolidayList userCode={userCode} refresh={refresh} onClickRow={handleClickRow}/>
 
