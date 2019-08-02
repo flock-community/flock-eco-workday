@@ -14,19 +14,32 @@ export function HolidayDialog({value, open, onChange, onComplete}) {
   }, [state])
 
   function handleChangeForm(it) {
-    console.log(it)
-    setState(it)
+    setState({
+      ...value,
+      ...it
+    })
   }
 
   function handleClickSave() {
-    HolidayClient.postHoliday({
-      description: state.description,
-      from: state.dates[0].format(moment.HTML5_FMT.DATE),
-      to: state.dates[1].format(moment.HTML5_FMT.DATE),
-      dayOff: state.dayOff
-    }).then((res) => {
-      onComplete && onComplete(res)
-    })
+    if (state.id) {
+      HolidayClient.putHoliday(state.id, {
+        description: state.description,
+        from: state.dates[0].format(moment.HTML5_FMT.DATE),
+        to: state.dates[1].format(moment.HTML5_FMT.DATE),
+        dayOff: state.dayOff
+      }).then((res) => {
+        onComplete && onComplete(res)
+      })
+    } else {
+      HolidayClient.postHoliday({
+        description: state.description,
+        from: state.dates[0].format(moment.HTML5_FMT.DATE),
+        to: state.dates[1].format(moment.HTML5_FMT.DATE),
+        dayOff: state.dayOff
+      }).then((res) => {
+        onComplete && onComplete(res)
+      })
+    }
   }
 
   function handleClose(ev) {

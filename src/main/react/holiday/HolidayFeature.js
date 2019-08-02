@@ -30,7 +30,6 @@ export function HolidayFeature() {
   const [users, setUsers] = useState([])
 
   useEffect(() => {
-    console.log(123)
     HolidayClient.getAllUsers()
         .then(users => {
           setUsers(users)

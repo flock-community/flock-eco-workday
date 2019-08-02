@@ -15,7 +15,6 @@ export const Application = () => {
   });
 
   useEffect(() => {
-    console.log('test')
     fetch(`/login/status`)
       .then(res => res.json())
       .then(status => setState({

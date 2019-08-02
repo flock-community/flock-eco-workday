@@ -8,21 +8,30 @@ import Typography from "@material-ui/core/Typography";
 
 const days = ['Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za']
 
-export function HolidayForm({value = {}, onChange}) {
+export function HolidayForm({value, onChange}) {
+
+  const initFrom = (value && value.from) || moment().startOf('day')
+  const initTo = (value && value.from) || moment().startOf('day')
 
   const [grid, setGrid] = useState([])
   const [state, setState] = useState({
     description: null,
-    dates: [
-      (value && value.from) || moment().startOf('day'),
-      (value && value.to) || moment().startOf('day')
-    ],
-    dayOff: {}
+    dates: [initFrom, initTo],
+    dayOff: calcDates(initFrom, initTo)
+      .reduce((acc, cur, i) => {
+        const key = stringifyDate(cur)
+        if (value && value.dayOff) {
+          acc[key] = value.dayOff[i]
+        } else {
+          acc[key] = inWeekday(cur) ? 8 : 0;
+        }
+        return acc
+      }, {})
   })
 
   useEffect(() => {
 
-    const dayOff = calcDates()
+    const dayOff = calcDates(state.dates[0], state.dates[1])
       .reduce((acc, cur) => {
         const key = stringifyDate(cur)
         if (state.dayOff[key]) {
@@ -89,10 +98,10 @@ export function HolidayForm({value = {}, onChange}) {
     return [...Array(diff).keys()]
   }
 
-  function calcDates() {
-    const start = moment(state.dates[0])
-    const end = moment(state.dates[1])
-    const diff = end.diff(start, 'days')
+  function calcDates(from, to) {
+    const start = moment(from)
+    const end = moment(to)
+    const diff = end.diff(start, 'days') + 1
     return (diff < 0) ? [] : [...Array(diff).keys()]
       .map((it) => moment(start).add(it, 'days'))
   }
@@ -102,11 +111,9 @@ export function HolidayForm({value = {}, onChange}) {
 
     return calcWeeks()
       .map(week => {
-        const day = moment(start).add(week, 'weeks')
-        const weekNumber = day.week()
-        return {
-          weekNumber,
-          days: [...Array(7).keys()]
+          const day = moment(start).add(week, 'weeks')
+          const weekNumber = day.week()
+          const days = [...Array(7).keys()]
             .map((dayDiff) => {
               const date = moment(day).add(dayDiff, 'days')
               const enabled = inRange(date)
@@ -115,11 +122,14 @@ export function HolidayForm({value = {}, onChange}) {
                 key,
                 date,
                 disabled: !enabled,
-                value: enabled ? state.dayOff[key] : ''
+                value: enabled ? state.dayOff[key] : 0
               }
             })
+          const total = days.filter(it => !it.disabled)
+            .reduce((acc, cur) => (acc + parseInt(state.dayOff[cur.key]) || acc), 0)
+          return {weekNumber, days, total}
         }
-      })
+      )
   }
 
   function inRange(date) {
@@ -128,7 +138,7 @@ export function HolidayForm({value = {}, onChange}) {
   }
 
   function inWeekday(date) {
-    return date.day(0) || date.day(6)
+    return ![0, 6].includes(date.weekday())
   }
 
   function stringifyDate(date) {
@@ -196,9 +206,7 @@ export function HolidayForm({value = {}, onChange}) {
           <Grid item xs={1}/>
           <Grid item xs={2}>
             <Typography>
-              {week.days
-                .filter(it => !it.disabled)
-                .reduce((acc, cur) => (acc + parseInt(state.dayOff[cur.key]) || 0), 0)}
+              {week.total}
             </Typography>
           </Grid>
         </Grid>)

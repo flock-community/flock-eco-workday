@@ -8,6 +8,7 @@ import community.flock.eco.holidays.model.DayType
 import community.flock.eco.holidays.model.Holiday
 import community.flock.eco.holidays.repository.HolidayRepository
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import java.time.Period
 import java.util.*
 
@@ -24,13 +25,7 @@ class HolidayService(
                 description = form.description,
                 from = form.from,
                 to = form.to,
-                dayOff = form.dayOff.mapIndexed { index, hours ->
-                    DayOff(
-                            type = DayType.HOLIDAY,
-                            date = form.from.plusDays(index.toLong()),
-                            hours = hours
-                    )
-                }.toSet(),
+                dayOff = convertDayOff(form.dayOff, form.from),
                 user = user)
                 .save()
     }
@@ -40,24 +35,27 @@ class HolidayService(
         return holidayRepository.findById(id)
                 .toNullable()
                 ?.let { holiday ->
-                    Holiday(
+                    holiday.copy(
                             description = form.description,
                             from = form.from,
                             to = form.to,
-                            dayOff = form.dayOff.mapIndexed { index, hours ->
-                                DayOff(
-                                        type = DayType.HOLIDAY,
-                                        date = form.from.plusDays(index.toLong()),
-                                        hours = hours
-                                )
-                            }.toSet(),
-                            user = holiday.user)
+                            dayOff = convertDayOff(form.dayOff, form.from))
                 }
                 ?.save()
                 ?: throw java.lang.RuntimeException("Cannot update Holiday")
     }
 
     fun delete(id: Long) = holidayRepository.deleteById(id)
+
+    private fun convertDayOff(dayOff: Array<Int>, from: LocalDate) = dayOff
+            .mapIndexed { index, hours ->
+                DayOff(
+                        type = DayType.HOLIDAY,
+                        date = from.plusDays(index.toLong()),
+                        hours = hours
+                )
+            }
+            .toSet()
 
     private fun Holiday.save() = holidayRepository
             .save(this)

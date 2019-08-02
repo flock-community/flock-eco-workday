@@ -53,21 +53,19 @@ class HolidayController(
                 .toResponse()
     }
 
-    @PutMapping
-    fun put(@RequestParam id: Long, @RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Holiday> {
+    @PutMapping("/{id}")
+    fun put(@PathVariable id: Long, @RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Holiday> {
         return principal
                 .findUser()
                 ?.let { user ->
-                    holidayService.findById(id)
-                            .toNullable()
-                            ?.let { holiday -> holidayService.update(holiday.id, form) }
+                    holidayService.update(id, form)
 
                 }
                 .toResponse()
     }
 
-    @DeleteMapping
-    fun delete(@RequestParam id: Long, principal: Principal): ResponseEntity<Unit> {
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable  id: Long, principal: Principal): ResponseEntity<Unit> {
         return principal
                 .findUser()
                 ?.let { user ->
