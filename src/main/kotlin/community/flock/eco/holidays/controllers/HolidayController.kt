@@ -71,7 +71,7 @@ class HolidayController(
         return principal
                 .findUser()
                 ?.let {
-                    if(it.isAuthorizedForUserCode(form.userCode)){
+                    if(it.isAuthorizedForHoliday(id)){
                         holidayService.update(id, form)
                     } else {
                         ResponseEntity.status(HttpStatus.UNAUTHORIZED)
