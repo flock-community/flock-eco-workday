@@ -29,7 +29,7 @@ class HolidayService(
                     description = form.description,
                     from = form.from,
                     to = form.to,
-                    dayOff = convertDayOff(form.dayOff, form.from),
+                    dayOff = convertDayOff(form.dayOff, form.from, form.type),
                     user = it)
                     .save()
         }?:throw RuntimeException("Cannot create holiday")
@@ -45,7 +45,7 @@ class HolidayService(
                             description = form.description,
                             from = form.from,
                             to = form.to,
-                            dayOff = convertDayOff(form.dayOff, form.from))
+                            dayOff = convertDayOff(form.dayOff, form.from, form.type))
                 }
                 ?.save()
                 ?: throw java.lang.RuntimeException("Cannot update Holiday")
@@ -53,10 +53,10 @@ class HolidayService(
 
     fun delete(id: Long) = holidayRepository.deleteById(id)
 
-    private fun convertDayOff(dayOff: Array<Int>, from: LocalDate) = dayOff
+    private fun convertDayOff(dayOff: Array<Int>, from: LocalDate, dayType: DayType) = dayOff
             .mapIndexed { index, hours ->
                 DayOff(
-                        type = DayType.HOLIDAY,
+                        type = dayType,
                         date = from.plusDays(index.toLong()),
                         hours = hours
                 )

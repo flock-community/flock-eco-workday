@@ -29,6 +29,7 @@ export function HolidayList({userCode, refresh, onClickRow}) {
       <Card onClick={handleClickRow(item)}>
         <CardContent>
           <Typography variant="h6" >{item.description ? item.description : 'empty'}</Typography>
+          <Typography>Type: {item.dayOff[0].type}</Typography>
           <Typography>Van: {item.from.format("DD-MM-YYYY")}</Typography>
           <Typography>Tot: {item.to.format("DD-MM-YYYY")}</Typography>
           <Typography>Aantal dagen: {item.dayOff.length}</Typography>

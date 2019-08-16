@@ -6,6 +6,7 @@ import {HolidayDialog} from "./HolidayDialog";
 import {HolidayList} from "./HolidayList";
 import {makeStyles} from "@material-ui/core/styles";
 import {HolidayUserSelector} from "./HolidayUserSelector";
+import {HolidaySummary} from "./HolidaySummary";
 import HolidayClient from "./HolidayClient";
 import {ApplicationContext} from "../application/ApplicationContext";
 import Grid from "@material-ui/core/Grid";
@@ -67,7 +68,8 @@ export function HolidayFeature() {
     setValue({
       ...item,
       dayOff: item.dayOff
-        .map(it => it.hours)
+        .map(it => it.hours),
+      type: item.dayOff[0].type
     });
 
     setOpen(true)
@@ -84,6 +86,9 @@ export function HolidayFeature() {
   return (<div className={classes.root}>
 
     <Grid container spacing={1}>
+      <Grid item xs={12}>
+        {isSuperUser() && <HolidaySummary users={users}/>}
+      </Grid>
       <Grid item xs={12}>
         {isSuperUser() && <HolidayUserSelector users={users} onChange={handleChangeUser}/>}
       </Grid>

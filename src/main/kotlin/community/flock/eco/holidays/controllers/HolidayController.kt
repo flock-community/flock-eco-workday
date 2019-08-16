@@ -6,9 +6,12 @@ import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.holidays.authorities.HolidaysAuthority
 import community.flock.eco.holidays.forms.HolidayForm
+import community.flock.eco.holidays.model.DayType
 import community.flock.eco.holidays.model.Holiday
+import community.flock.eco.holidays.model.HolidaySummary
 import community.flock.eco.holidays.repository.HolidayRepository
 import community.flock.eco.holidays.services.HolidayService
+import community.flock.eco.holidays.services.HolidaysSummaryService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -20,7 +23,8 @@ import java.security.Principal
 class HolidayController(
         private val userRepository: UserRepository,
         private val holidayRepository: HolidayRepository,
-        private val holidayService: HolidayService) {
+        private val holidayService: HolidayService,
+        private val holidaysSummaryService: HolidaysSummaryService) {
 
     @GetMapping
     @PreAuthorize("hasAuthority('HolidaysAuthority.READ')")
@@ -45,6 +49,23 @@ class HolidayController(
                     }
                 }
                 .toResponse()
+    }
+
+    @GetMapping("/summary")
+    @PreAuthorize("hasAuthority('HolidaysAuthority.ADMIN')")
+    fun getSummary(@RequestParam(name = "type") typeFilter: DayType?, principal: Principal): ResponseEntity<HolidaySummary> {
+
+        return principal
+                .findUser()
+                ?.let{
+                    if(it.isAdmin()) {
+                        holidaysSummaryService.getSummary(typeFilter)
+                    } else {
+                        HolidaySummary(0)
+                    }
+                }
+                .toResponse()
+
     }
 
     @PostMapping

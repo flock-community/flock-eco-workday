@@ -106,6 +106,21 @@ function getUserById(id) {
 
 }
 
+function getSummary(filter) {
+
+    var typeFilter = filter.length > 0 ? `?type=${filter}` : filter;
+
+    return fetch(`/api/holidays/summary` + typeFilter)
+        .then(res => {
+            if (res.status === 200) {
+                return res.json()
+            } else {
+                throw res.json()
+            }
+        })
+
+}
+
 export default {
   fetchAllByUserCode,
   postHoliday,
@@ -114,5 +129,6 @@ export default {
   getAllUsers,
   getUserById,
   fetchAll,
-  getMe
+  getMe,
+  getSummary
 }

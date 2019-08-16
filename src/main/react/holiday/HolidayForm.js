@@ -1,12 +1,16 @@
 import React, {useEffect, useState} from 'react'
-import {Grid, TextField} from "@material-ui/core";
+import {Dialog, DialogContent, Grid, TextField} from "@material-ui/core";
 import {DatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import MomentUtils from '@date-io/moment';
 import Divider from "@material-ui/core/Divider";
 import moment from "moment";
 import Typography from "@material-ui/core/Typography";
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem'
 
 const days = ['Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za']
+const dayTypes = ['HOLIDAY', 'SICK_DAY', 'EVENT_DAY']
 
 export function HolidayForm({value, onChange}) {
 
@@ -16,6 +20,7 @@ export function HolidayForm({value, onChange}) {
   const [grid, setGrid] = useState([])
   const [state, setState] = useState({
     description: value && value.description,
+    type: value && value.type || dayTypes[0],
     dates: [initFrom, initTo],
     dayOff: calcDates(initFrom, initTo)
       .reduce((acc, cur, i) => {
@@ -147,6 +152,17 @@ export function HolidayForm({value, onChange}) {
 
   if (state.dates.length === 0) return [];
 
+    function handleTypeChange(ev) {
+        setState({
+            ...state,
+            type: ev.target.value
+        })
+    }
+
+    function renderMenuItem(type) {
+        return (<MenuItem value={type} key={type}>{type}</MenuItem>)
+    }
+
   return (
     <>
       <Grid container spacing={1}>
@@ -156,6 +172,14 @@ export function HolidayForm({value, onChange}) {
             label="Description"
             value={state.description || ''}
             onChange={handleDescriptionChange}/>
+        </Grid>
+        <Grid item xs={12}>
+            <InputLabel shrink={true}>Select Type</InputLabel>
+            <Select value={state.type} onChange={handleTypeChange}>
+                {dayTypes.map(function (type) {
+                    return renderMenuItem(type)
+                })}
+            </Select>
         </Grid>
         <Grid item xs={6}>
           <MuiPickersUtilsProvider utils={MomentUtils}>
