@@ -1,7 +1,6 @@
 package community.flock.eco.fundraising.config
 
-import community.flock.eco.feature.user.model.User
-import community.flock.eco.feature.user.repositories.UserRepository
+import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.feature.user.services.UserSecurityService
 import community.flock.eco.holidays.authorities.HolidaysAuthority
@@ -13,8 +12,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.core.userdetails.User as UserDetail
 
 
 @Configuration
@@ -23,16 +22,13 @@ import org.springframework.security.core.userdetails.User as UserDetail
 class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Autowired
-    lateinit var environment: Environment
-
-    @Autowired
     lateinit var userAuthorityService: UserAuthorityService
 
     @Autowired
     lateinit var userSecurityService: UserSecurityService
 
     @Autowired
-    lateinit var userRepository: UserRepository
+    lateinit var userAccountService: UserAccountService
 
     override fun configure(http: HttpSecurity) {
 
@@ -44,15 +40,18 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 .authorizeRequests()
                 .antMatchers("/_ah/**").permitAll()
                 .antMatchers("/login/**").permitAll()
+                .antMatchers("/oauth2/**").permitAll()
                 .anyRequest().authenticated()
 
         http
                 .cors()
 
         http
-                .addFilterBefore(GoogleTokenFilter(userRepository), UsernamePasswordAuthenticationFilter::class.java)
+                .addFilterBefore(GoogleTokenFilter(userAccountService), UsernamePasswordAuthenticationFilter::class.java)
 
         userSecurityService.googleLogin(http)
+
     }
+
 }
 

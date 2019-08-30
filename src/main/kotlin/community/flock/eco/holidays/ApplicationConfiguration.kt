@@ -1,7 +1,6 @@
 package community.flock.eco.holidays
 
 import community.flock.eco.feature.user.UserConfiguration
-import community.flock.eco.feature.user.repositories.UserRepository
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -17,6 +16,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     "community.flock.eco.holidays.controllers"
 ])
 @Import(UserConfiguration::class)
-class ApplicationConfiguration(private val userRepository: UserRepository) {
+class ApplicationConfiguration() {
 
 }

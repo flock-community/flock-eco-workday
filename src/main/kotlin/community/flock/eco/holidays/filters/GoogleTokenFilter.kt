@@ -1,15 +1,10 @@
 package community.flock.eco.holidays.filters
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import community.flock.eco.feature.user.model.User
-import community.flock.eco.feature.user.model.getPrincipal
-import community.flock.eco.feature.user.repositories.UserRepository
+import community.flock.eco.feature.user.services.UserAccountService
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.filter.GenericFilterBean
 import javax.servlet.FilterChain
@@ -19,7 +14,7 @@ import javax.servlet.http.HttpServletRequest
 
 
 class GoogleTokenFilter(
-        private val userRepository: UserRepository) : GenericFilterBean() {
+        private val userAccountService: UserAccountService) : GenericFilterBean() {
 
     override fun doFilter(req: ServletRequest, res: ServletResponse, filterChain: FilterChain) {
         val request = req as HttpServletRequest
@@ -37,22 +32,20 @@ class GoogleTokenFilter(
 
             val email = obj.body.get("email").asText()
 
-            val user = userRepository.findByReference(email).orElseGet {
-                User(
-                        name = email,
-                        reference = email,
-                        email = email
-                ).let {
-                    userRepository.save(it)
-                }
-            }
-
-            val authorities = user.authorities
-                    .map { SimpleGrantedAuthority(it) }
-                    .plus(SimpleGrantedAuthority("USER_ROLE"))
-
-            val authToken = PreAuthenticatedAuthenticationToken(user.getPrincipal(), null, authorities)
-            SecurityContextHolder.getContext().authentication = authToken
+//            val user = userAccountService.findUserAccountOauthByReference(email)
+//                    .let {
+//                    it ?: userAccountService.register()
+//
+//                    }
+//
+//            }
+//
+//            val authorities = user.authorities
+//                    .map { SimpleGrantedAuthority(it) }
+//                    .plus(SimpleGrantedAuthority("USER_ROLE"))
+//
+//            val authToken = PreAuthenticatedAuthenticationToken(user.getPrincipal(), null, authorities)
+//            SecurityContextHolder.getContext().authentication = authToken
         }
 
         filterChain.doFilter(req, res)

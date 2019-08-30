@@ -65,7 +65,6 @@ class HolidayController(
                     }
                 }
                 .toResponse()
-
     }
 
     @PostMapping
@@ -118,7 +117,7 @@ class HolidayController(
     }
 
     private fun Principal.findUser(): User? = userRepository
-            .findByReference(this.name)
+            .findByCode(this.name)
             .toNullable()
 
     private fun User.isAdmin(): Boolean {

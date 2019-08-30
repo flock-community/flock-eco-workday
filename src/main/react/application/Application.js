@@ -17,24 +17,25 @@ export const Application = () => {
     authorities: null,
   });
 
-
   useEffect(() => {
     fetch(`/login/status`)
       .then(res => res.json())
       .then(status => {
-        return HolidayClient.getMe()
-          .then(user => {
-            setState({
-              loggedIn: status.loggedIn,
-              authorities: status.authorities,
-              user,
+        if (status.loggedIn) {
+          HolidayClient.getMe()
+            .then(user => {
+              setState({
+                loggedIn: status.loggedIn,
+                authorities: status.authorities,
+                user,
+              })
             })
-          })
-          .catch(() => setState({
+        } else {
+          setState({
             loggedIn: status.loggedIn,
-          }))
+          })
+        }
       });
-
   }, [])
 
   function handleDrawerClose() {
