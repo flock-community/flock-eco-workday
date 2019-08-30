@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
           title: 'Google Sign  In',
           home: MyScaffold(),
           theme: ThemeData(
-            primarySwatch: Colors.yellow,
+            primarySwatch: Colors.amber,
           ),
         ),
       ),

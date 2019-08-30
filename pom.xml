@@ -6,11 +6,11 @@
     <parent>
         <artifactId>flock-eco-application-parent</artifactId>
         <groupId>com.github.flock-community.flock-eco</groupId>
-        <version>1.2.3-2b95491</version>
+        <version>1.4.10</version>
     </parent>
 
-    <groupId>flock.community.eco.holidays</groupId>
-    <artifactId>flock-eco-holidays</artifactId>
+    <groupId>flock.community.eco.workday</groupId>
+    <artifactId>flock-eco-workday</artifactId>
     <version>develop-SNAPSHOT</version>
     <packaging>war</packaging>
 
@@ -31,13 +31,6 @@
             <version>${google.appengine.version}</version>
         </dependency>
 
-        <!-- Spring -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>
-        </dependency>
-
-
         <!--Flock Eco -->
         <dependency>
             <groupId>com.github.flock-community.flock-eco</groupId>
@@ -45,8 +38,22 @@
         </dependency>
         <dependency>
             <groupId>com.github.flock-community.flock-eco</groupId>
-            <artifactId>flock-eco-feature-gcp-mail</artifactId>
+            <artifactId>flock-eco-cloud-gcp</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.flock-community.flock-eco</groupId>
+            <artifactId>flock-eco-cloud-stub</artifactId>
+        </dependency>
+
+<!--        &lt;!&ndash; Gcp &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-gcp-starter</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-gcp-starter-sql-mysql</artifactId>-->
+<!--        </dependency>-->
 
     </dependencies>
 
