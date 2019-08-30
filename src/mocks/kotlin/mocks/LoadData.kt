@@ -1,8 +1,8 @@
 package mocks
 
-import community.flock.eco.holidays.model.Event
-import community.flock.eco.holidays.model.EventType
-import community.flock.eco.holidays.repository.EventRepository
+import community.flock.eco.workday.model.Event
+import community.flock.eco.workday.model.EventType
+import community.flock.eco.workday.repository.EventRepository
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 

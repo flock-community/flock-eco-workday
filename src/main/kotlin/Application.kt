@@ -30,18 +30,18 @@ class Application(
 
     @EventListener(CreateUserEvent::class)
     fun handleCreateUserEvent(ev: CreateUserEvent) {
-        println("---------------")
-        println(ev.entity)
-        val authorities = userAuthorityService.allAuthorities()
-                .map { it.toName() }
-                .toSet()
-        userRepository.findByCode(ev.entity.code)
-                .toNullable()
-                ?.let {
-                    userRepository.save(it.copy(authorities = authorities))
-                }
-        println("---------------")
-
+        // Make first user super admin
+        val total = userRepository.count()
+        if (total == 0L) {
+            val authorities = userAuthorityService.allAuthorities()
+                    .map { it.toName() }
+                    .toSet()
+            userRepository.findByCode(ev.entity.code)
+                    .toNullable()
+                    ?.let {
+                        userRepository.save(it.copy(authorities = authorities))
+                    }
+        }
     }
 }
 
