@@ -1,30 +1,30 @@
 package community.flock.eco.workday.services
 
-import community.flock.eco.workday.model.DayType
-import community.flock.eco.workday.model.HolidaySummary
-import community.flock.eco.workday.repository.HolidayRepository
+import community.flock.eco.workday.controllers.WorkdayController
+import community.flock.eco.workday.model.Type
+import community.flock.eco.workday.repository.PeriodRepository
 import org.springframework.stereotype.Service
 
 @Service
-class HolidaysSummaryService(val holidayRepository: HolidayRepository) {
-    fun getSummary(dayType: DayType?) : HolidaySummary {
-        var holidays = holidayRepository.findAll();
+class HolidaysSummaryService(val periodRepository: PeriodRepository) {
+    fun getSummary(type: Type?): WorkdayController.HolidaySummary {
+        var holidays = periodRepository.findAll();
 
-        dayType?.let {
+        type?.let {
             holidays = holidays.filter { holiday ->
-                it.equals(holiday.dayOff.first().type)
+                it.equals(holiday.day.first().type)
             }
         }
 
-        var totalHours : Long = 0
-        var totalDays : Long = 0
+        var totalHours: Long = 0
+        var totalDays: Long = 0
 
         holidays.forEach {
-            totalHours += it.dayOff.stream().mapToInt { dayOff -> dayOff.hours }.sum()
-            totalDays += it.dayOff.size
+            totalHours += it.day.stream().mapToInt { dayOff -> dayOff.hours }.sum()
+            totalDays += it.day.size
 
         }
 
-        return HolidaySummary(totalHours, totalDays)
+        return WorkdayController.HolidaySummary(totalHours, totalDays)
     }
 }

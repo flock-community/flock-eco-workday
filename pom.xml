@@ -6,7 +6,7 @@
     <parent>
         <artifactId>flock-eco-application-parent</artifactId>
         <groupId>com.github.flock-community.flock-eco</groupId>
-        <version>1.4.10</version>
+        <version>1.4.13</version>
     </parent>
 
     <groupId>flock.community.eco.workday</groupId>
@@ -45,15 +45,10 @@
             <artifactId>flock-eco-cloud-stub</artifactId>
         </dependency>
 
-<!--        &lt;!&ndash; Gcp &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-gcp-starter</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-gcp-starter-sql-mysql</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
 
     </dependencies>
 

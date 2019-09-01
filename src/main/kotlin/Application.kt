@@ -24,26 +24,7 @@ import org.springframework.context.event.EventListener
         WebMvcConfig::class,
         WebSecurityConfig::class,
         StubCloudConfiguration::class)
-class Application(
-        val userRepository: UserRepository,
-        val userAuthorityService: UserAuthorityService) : SpringBootServletInitializer() {
-
-    @EventListener(CreateUserEvent::class)
-    fun handleCreateUserEvent(ev: CreateUserEvent) {
-        // Make first user super admin
-        val total = userRepository.count()
-        if (total == 0L) {
-            val authorities = userAuthorityService.allAuthorities()
-                    .map { it.toName() }
-                    .toSet()
-            userRepository.findByCode(ev.entity.code)
-                    .toNullable()
-                    ?.let {
-                        userRepository.save(it.copy(authorities = authorities))
-                    }
-        }
-    }
-}
+class Application() : SpringBootServletInitializer()
 
 fun main(args: Array<String>) {
     SpringApplication.run(Application::class.java, *args)

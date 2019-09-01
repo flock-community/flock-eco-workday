@@ -40,12 +40,9 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 .authorizeRequests()
                 .antMatchers("/_ah/**").permitAll()
                 .antMatchers("/login/**").permitAll()
-                .antMatchers("/oauth2/**").permitAll()
                 .anyRequest().authenticated()
-
         http
                 .cors()
-
         http
                 .addFilterBefore(GoogleTokenFilter(userAccountService), UsernamePasswordAuthenticationFilter::class.java)
 
