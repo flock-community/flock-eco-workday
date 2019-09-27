@@ -9,6 +9,7 @@ import {ApplicationContext} from "./ApplicationContext";
 import {HomeFeature} from "../features/home/HomeFeature";
 import {ClientFeature} from "../features/client/ClientFeature";
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient";
+import {WorkdayFeature} from "../features/workday/WorkdayFeature";
 
 export const Application = () => {
 
@@ -67,6 +68,7 @@ export const Application = () => {
           <Route path="/clients" exact component={ClientFeature}/>
           <Route path="/holidays" exact component={HolidayFeature}/>
           <Route path="/users" exact component={UserFeature}/>
+          <Route path="/workday" exact component={WorkdayFeature}/>
         </div>
       </HashRouter>
     </ApplicationContext.Provider>
