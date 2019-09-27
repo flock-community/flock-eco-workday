@@ -8,7 +8,7 @@ import {ApplicationDrawer} from "./ApplicationDrawer";
 import {ApplicationContext} from "./ApplicationContext";
 import {HomeFeature} from "../features/home/HomeFeature";
 import {ClientFeature} from "../features/client/ClientFeature";
-import UserClient from "../../../../../eco/eco-feature/eco-feature-user/src/main/react/user/UserClient";
+import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient";
 
 export const Application = () => {
 
