@@ -31,6 +31,9 @@ export const Application = () => {
                 user,
               })
             })
+            .catch(ex => {
+              console.log('Cannot connect to service')
+            })
         } else {
           setState({
             loggedIn: status.loggedIn,
@@ -57,6 +60,7 @@ export const Application = () => {
   if (state.loggedIn != null && !state.loggedIn) {
     return window.location.href = '/login'
   }
+
   return (
     <ApplicationContext.Provider value={{authorities: state.authorities, user: state.user}}>
       <HashRouter>

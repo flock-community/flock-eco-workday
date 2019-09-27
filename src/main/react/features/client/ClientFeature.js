@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 
-import {ClientClient} from "../../clients/ClientClient";
-import Card from "@material-ui/core/Card";
-import {CardContent, makeStyles} from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import {makeStyles} from "@material-ui/core";
+import {ClientList} from "./ClientList";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from '@material-ui/icons/Add';
+import {ClientDialog} from "./ClientDialog";
 
 const useStyles = makeStyles({
   root: {
@@ -21,24 +21,41 @@ export function ClientFeature() {
 
   const classes = useStyles();
 
-  const [list, setList] = useState([])
+  const [reload, setReload] = useState(false)
 
-  useEffect(() => {
-    ClientClient.findAllByPage(0).then(res => {
-      setList(res)
+  const [dialog, setDialog] = useState({
+    open: false,
+    code: null
+  })
+
+  const handleAdd = () => {
+    setDialog({
+      open: true,
+      code: null
     })
-  }, [])
+  }
 
+  const handleItem = (it) => {
+    console.log(it)
+    setDialog({
+      open: true,
+      code: it.code
+    })
+  }
 
-  return (<Grid container className={classes.root} spacing={1}>
-    {list.map(item => (<Grid item xs={12}>
-      <Card>
-        <CardContent>
-          <Typography variant="h5" component="h2">
-            {item.name}
-          </Typography>
-        </CardContent>
-      </Card>
-    </Grid>))}
-  </Grid>)
+  const handleClose = () => {
+    setDialog({
+      open: false,
+      code: null
+    })
+    setReload(!reload)
+  }
+
+  return (<>
+    <ClientList reload={reload} onItemClick={handleItem}/>
+    <ClientDialog code={dialog.code} open={dialog.open} onClose={handleClose}/>
+    <Fab color="primary" className={classes.fab} onClick={handleAdd}>
+      <AddIcon/>
+    </Fab>
+  </>)
 }

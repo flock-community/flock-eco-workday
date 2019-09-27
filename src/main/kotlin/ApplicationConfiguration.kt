@@ -2,7 +2,7 @@ package community.flock.eco.workday
 
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.feature.user.UserConfiguration
-import community.flock.eco.feature.user.events.CreateUserEvent
+import community.flock.eco.feature.user.events.UserCreateEvent
 import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.feature.user.services.UserAuthorityService
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -24,8 +24,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 class ApplicationConfiguration(private val userRepository: UserRepository,
                                private val userAuthorityService: UserAuthorityService) {
 
-    @EventListener(CreateUserEvent::class)
-    fun handleCreateUserEvent(ev: CreateUserEvent) {
+    @EventListener(UserCreateEvent::class)
+    fun handleCreateUserEvent(ev: UserCreateEvent) {
         // Make first user super admin
         val total = userRepository.count()
         if (total >= 1L) {

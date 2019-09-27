@@ -4,8 +4,6 @@ import React, {useEffect, useState} from "react";
 import HolidayClient from "../../clients/HolidayClient";
 import * as moment from "moment";
 
-
-
 export function HolidayDialog({value, userCode, open, onChange, onComplete}) {
 
   const [state, setState] = useState(value)

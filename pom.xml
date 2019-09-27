@@ -6,7 +6,7 @@
     <parent>
         <artifactId>flock-eco-application-parent</artifactId>
         <groupId>com.github.flock-community.flock-eco</groupId>
-        <version>1.4.13</version>
+        <version>1.4.20</version>
     </parent>
 
     <groupId>flock.community.eco.workday</groupId>
