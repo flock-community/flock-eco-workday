@@ -42,6 +42,10 @@ export function ApplicationLayout({onDrawer}) {
     setState({anchorEl: null});
   };
 
+  const handleLogout = () => {
+    window.location.href = '/logout';
+  };
+
   const handleClickDrawer = () => {
     onDrawer && onDrawer()
   }
@@ -82,7 +86,7 @@ export function ApplicationLayout({onDrawer}) {
               onClose={handleClose}
             >
               <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>
 

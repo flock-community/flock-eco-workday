@@ -3,16 +3,14 @@ package community.flock.eco.fundraising.config
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.feature.user.services.UserSecurityService
-import community.flock.eco.workday.authorities.HolidaysAuthority
+import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.filters.GoogleTokenFilter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.env.Environment
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 
@@ -32,7 +30,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {
 
-        userAuthorityService.addAuthority(HolidaysAuthority::class.java)
+        userAuthorityService.addAuthority(HolidayAuthority::class.java)
 
         http
                 .csrf().disable()
@@ -46,7 +44,8 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         http
                 .addFilterBefore(GoogleTokenFilter(userAccountService), UsernamePasswordAuthenticationFilter::class.java)
 
-        userSecurityService.googleLogin(http)
+        //userSecurityService.googleLogin(http)
+        userSecurityService.testLogin(http)
 
     }
 

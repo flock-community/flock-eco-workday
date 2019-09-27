@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonIdentityReference
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.core.events.EventEntityListeners
+import community.flock.eco.core.model.AbstractIdEntity
 import community.flock.eco.feature.user.model.User
 import java.time.LocalDate
 import javax.persistence.*
@@ -12,9 +13,8 @@ import javax.persistence.*
 @EntityListeners(EventEntityListeners::class)
 data class Period(
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        val id: Long = 0,
+        override val id: Long = 0,
+
         val description: String?,
 
         val from: LocalDate = LocalDate.now(),
@@ -22,10 +22,14 @@ data class Period(
 
         @OneToMany(cascade = [CascadeType.ALL])
         @OrderBy("date")
-        val day: Set<Day>,
+        val days: Set<Day>,
 
         @ManyToOne
         @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator::class, property="code")
         @JsonIdentityReference(alwaysAsId=true)
         val user: User
-)
+): AbstractIdEntity(id) {
+        override fun equals(other: Any?) = super.equals(other)
+        override fun hashCode(): Int = super.hashCode()
+}
+

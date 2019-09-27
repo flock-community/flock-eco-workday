@@ -4,7 +4,6 @@ import community.flock.eco.core.utils.toNullable
 import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.workday.forms.HolidayForm
 import community.flock.eco.workday.model.Day
-import community.flock.eco.workday.model.Type
 import community.flock.eco.workday.repository.PeriodRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -16,8 +15,6 @@ import java.util.*
 class PeriodService(
         val periodRepository: PeriodRepository, val userRepository: UserRepository) {
 
-    fun findById(id: Long): Optional<community.flock.eco.workday.model.Period> = periodRepository.findById(id)
-
     fun create(form: HolidayForm): community.flock.eco.workday.model.Period {
         form.validate()
         form.userCode?.let{
@@ -27,7 +24,7 @@ class PeriodService(
                     description = form.description,
                     from = form.from,
                     to = form.to,
-                    day = convertDayOff(form.dayOff, form.from, form.type),
+                    days = convertDayOff(form.days, form.from),
                     user = it)
                     .save()
         }?:throw RuntimeException("Cannot create holiday")
@@ -43,7 +40,7 @@ class PeriodService(
                             description = form.description,
                             from = form.from,
                             to = form.to,
-                            day = convertDayOff(form.dayOff, form.from, form.type))
+                            days = convertDayOff(form.days, form.from))
                 }
                 ?.save()
                 ?: throw java.lang.RuntimeException("Cannot update Holiday")
@@ -51,10 +48,9 @@ class PeriodService(
 
     fun delete(id: Long) = periodRepository.deleteById(id)
 
-    private fun convertDayOff(dayOff: Array<Int>, from: LocalDate, type: Type) = dayOff
+    private fun convertDayOff(dayOff: List<Int>, from: LocalDate) = dayOff
             .mapIndexed { index, hours ->
                 Day(
-                        type = type,
                         date = from.plusDays(index.toLong()),
                         hours = hours
                 )
@@ -66,7 +62,7 @@ class PeriodService(
 
     private fun HolidayForm.validate() {
         val daysBetween = Period.between(this.from, this.to).days + 1
-        if (this.dayOff.size != daysBetween) {
+        if (this.days.size != daysBetween) {
             throw RuntimeException("amount of DayOff not equal to period")
         }
     }

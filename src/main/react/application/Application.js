@@ -1,13 +1,14 @@
 import React, {useEffect, useState} from 'react'
 
 import {HashRouter, Route} from "react-router-dom";
-import {HolidayFeature} from "../holiday/HolidayFeature";
+import {HolidayFeature} from "../features/holiday/HolidayFeature";
 import {UserFeature} from "@flock-eco/feature-user/src/main/react/user/UserFeature";
 import {ApplicationLayout} from "./ApplicationLayout";
 import {ApplicationDrawer} from "./ApplicationDrawer";
 import {ApplicationContext} from "./ApplicationContext";
-import HolidayClient from "../holiday/HolidayClient";
-import {HomeFeature} from "../home/HomeFeature";
+import {HomeFeature} from "../features/home/HomeFeature";
+import {ClientFeature} from "../features/client/ClientFeature";
+import UserClient from "../../../../../eco/eco-feature/eco-feature-user/src/main/react/user/UserClient";
 
 export const Application = () => {
 
@@ -22,7 +23,7 @@ export const Application = () => {
       .then(res => res.json())
       .then(status => {
         if (status.loggedIn) {
-          HolidayClient.getMe()
+          UserClient.findUserByCode('me')
             .then(user => {
               setState({
                 loggedIn: status.loggedIn,
@@ -63,6 +64,7 @@ export const Application = () => {
           <ApplicationDrawer open={state.openDrawer} onClose={handleDrawerClose}/>
           <ApplicationLayout onDrawer={handleDrawerOpen}/>
           <Route path="/" exact component={HomeFeature}/>
+          <Route path="/clients" exact component={ClientFeature}/>
           <Route path="/holidays" exact component={HolidayFeature}/>
           <Route path="/users" exact component={UserFeature}/>
         </div>
