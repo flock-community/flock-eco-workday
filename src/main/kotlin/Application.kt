@@ -2,7 +2,7 @@ package community.flock.eco.workday
 
 import community.flock.eco.cloud.stub.StubCloudConfiguration
 import community.flock.eco.core.utils.toNullable
-import community.flock.eco.feature.user.events.CreateUserEvent
+import community.flock.eco.feature.user.events.UserCreateEvent
 import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.fundraising.config.WebMvcConfig
@@ -28,11 +28,11 @@ class Application(
         val userRepository: UserRepository,
         val userAuthorityService: UserAuthorityService) : SpringBootServletInitializer() {
 
-    @EventListener(CreateUserEvent::class)
-    fun handleCreateUserEvent(ev: CreateUserEvent) {
+    @EventListener(UserCreateEvent::class)
+    fun handleCreateUserEvent(ev: UserCreateEvent) {
         // Make first user super admin
         val total = userRepository.count()
-        if (total == 0L) {
+        if (total == 1L) {
             val authorities = userAuthorityService.allAuthorities()
                     .map { it.toName() }
                     .toSet()

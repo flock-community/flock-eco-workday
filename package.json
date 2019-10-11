@@ -11,8 +11,8 @@
   "dependencies": {
     "@date-io/date-fns": "^1.3.8",
     "@date-io/moment": "^1.3.8",
-    "@flock-eco/application": "^1.4.10",
-    "@flock-eco/feature-user": "^1.4.10",
+    "@flock-eco/application": "^1.5.5",
+    "@flock-eco/feature-user": "^1.5.5",
     "@material-ui/pickers": "^3.2.4",
     "moment": "^2.24.0"
   },
