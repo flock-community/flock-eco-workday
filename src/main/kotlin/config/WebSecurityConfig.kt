@@ -44,8 +44,8 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         http
                 .addFilterBefore(GoogleTokenFilter(userAccountService), UsernamePasswordAuthenticationFilter::class.java)
 
-        userSecurityService.googleLogin(http)
-        //userSecurityService.testLogin(http)
+        //userSecurityService.googleLogin(http)
+        userSecurityService.testLogin(http)
 
     }
 
