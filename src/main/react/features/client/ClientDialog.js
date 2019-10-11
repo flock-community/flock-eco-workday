@@ -8,6 +8,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import {CLIENT_FORM_ID, ClientForm} from "./ClientForm";
 import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
+import {ClientClient} from "../../clients/ClientClient";
 
 const useStyles = makeStyles({});
 
@@ -17,6 +18,8 @@ export function ClientDialog({open, code, onClose}) {
 
   const handleSubmit = (value) => {
     console.log(value)
+    ClientClient.post(value)
+      .then()
     onClose && onClose()
   }
 

@@ -28,22 +28,6 @@ class Application(
         val userRepository: UserRepository,
         val userAuthorityService: UserAuthorityService) : SpringBootServletInitializer() {
 
-
-    @EventListener(UserCreateEvent::class)
-    fun handleCreateUserEvent(ev: UserCreateEvent) {
-        // Make first user super admin
-        val total = userRepository.count()
-        if (total == 1L) {
-            val authorities = userAuthorityService.allAuthorities()
-                    .map { it.toName() }
-                    .toSet()
-            userRepository.findByCode(ev.entity.code)
-                    .toNullable()
-                    ?.let {
-                        userRepository.save(it.copy(authorities = authorities))
-                    }
-        }
-    }
 }
 
 fun main(args: Array<String>) {
