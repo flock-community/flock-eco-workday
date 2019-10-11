@@ -115,7 +115,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>community.flock.eco.holidays.ApplicationKt</mainClass>
+                    <mainClass>community.flock.eco.workday.ApplicationKt</mainClass>
                 </configuration>
             </plugin>
 
