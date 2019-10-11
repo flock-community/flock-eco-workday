@@ -66,9 +66,11 @@ export function HolidayFeature() {
 
     setValue({
       ...item,
-      days: item.days
-        .map(it => it.hours),
-      type: item.days[0].type
+      period:{
+        ...item.period,
+        days: item.period.days
+          .map(it => it.hours),
+      }
     });
 
     setOpen(true)

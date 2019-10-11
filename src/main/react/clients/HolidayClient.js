@@ -2,10 +2,17 @@ import moment from "moment";
 
 const internalize = (it) =>({
   ...it,
-  from: moment(it.from, "YYYY-MM-DD"),
-  to: moment(it.to, "YYYY-MM-DD")
+  period:{
+    ...it.period,
+    from: moment(it.period.from, "YYYY-MM-DD"),
+    to: moment(it.period.to, "YYYY-MM-DD"),
+    days: it.period.days.map(it => ({
+      ...it,
+      date:  moment(it.date, "YYYY-MM-DD"),
+    }))
+  }
 })
-function fetchAllByUserCode(userCode) {
+function findAllByUserCode(userCode) {
 
   return fetch(`/api/holidays?userCode=${userCode}`)
     .then(res => {
@@ -19,7 +26,20 @@ function fetchAllByUserCode(userCode) {
       .map(internalize))
 }
 
-function fetchAll() {
+function findByCode(code) {
+
+  return fetch(`/api/holidays/${code}`)
+    .then(res => {
+      if (res.status === 200) {
+        return res.json()
+      } else {
+        throw res.json()
+      }
+    })
+    .then(internalize)
+}
+
+function findAll() {
 
     return fetch(`/api/holidays`)
         .then(res => {
@@ -119,13 +139,11 @@ function getSummary(filter) {
 }
 
 export default {
-  fetchAllByUserCode,
+  findAll,
+  findByCode,
+  findAllByUserCode,
   postHoliday,
   putHoliday,
   deleteHoliday,
-  getAllUsers,
-  getUserById,
-  fetchAll,
-  getMe,
-  getSummary
+  getAllUsers
 }

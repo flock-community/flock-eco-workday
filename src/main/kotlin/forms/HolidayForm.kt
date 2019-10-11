@@ -20,5 +20,5 @@ data class HolidayForm(
 
         val days: List<Int>,
 
-        val userCode: String?
+        val userCode: String
 )

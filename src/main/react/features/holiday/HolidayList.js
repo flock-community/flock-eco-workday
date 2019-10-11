@@ -10,8 +10,8 @@ export function HolidayList({userCode, refresh, onClickRow}) {
 
   useEffect(() => {
     if (userCode) {
-      HolidayClient.fetchAllByUserCode(userCode)
-        .then(res => {console.log(res);setList(res)})
+      HolidayClient.findAllByUserCode(userCode)
+        .then(res => {setList(res)})
     } else {
       HolidayClient.fetchAll()
         .then(res => setList(res))
@@ -29,9 +29,9 @@ export function HolidayList({userCode, refresh, onClickRow}) {
       <Card onClick={handleClickRow(item)}>
         <CardContent>
           <Typography variant="h6" >{item.description ? item.description : 'empty'}</Typography>
-          <Typography>Type: {item.days[0].type}</Typography>
-          <Typography>Period: {item.from.format("DD-MM-YYYY")} - {item.to.format("DD-MM-YYYY")}</Typography>
-          <Typography>Aantal dagen: {item.days.filter(day => day.hours > 0).length}</Typography>
+          <Typography>Type: {item.period.days[0].type}</Typography>
+          <Typography>Period: {item.period.from.format("DD-MM-YYYY")} - {item.period.to.format("DD-MM-YYYY")}</Typography>
+          <Typography>Aantal dagen: {item.period.days.filter(day => day.hours > 0).length}</Typography>
         </CardContent>
       </Card>
     </Grid>)

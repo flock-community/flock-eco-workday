@@ -15,19 +15,13 @@ data class Period(
 
         override val id: Long = 0,
 
-        val description: String?,
-
         val from: LocalDate = LocalDate.now(),
         val to: LocalDate = LocalDate.now(),
 
         @OneToMany(cascade = [CascadeType.ALL])
         @OrderBy("date")
-        val days: Set<Day>,
+        val days: Set<Day>
 
-        @ManyToOne
-        @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator::class, property="code")
-        @JsonIdentityReference(alwaysAsId=true)
-        val user: User
 ): AbstractIdEntity(id) {
         override fun equals(other: Any?) = super.equals(other)
         override fun hashCode(): Int = super.hashCode()

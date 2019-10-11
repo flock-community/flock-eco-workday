@@ -3,41 +3,30 @@ import {PeriodForm} from "../../components/PeriodForm";
 import React, {useEffect, useState} from "react";
 import HolidayClient from "../../clients/HolidayClient";
 import * as moment from "moment";
+import {CLIENT_FORM_ID} from "../client/ClientForm";
+import {HOLIDAY_FORM_ID, HolidayForm} from "./HolidayForm";
 
-export function HolidayDialog({value, userCode, open, onChange, onComplete}) {
+export function HolidayDialog({value, userCode, open, onComplete}) {
 
-  const [state, setState] = useState(value)
 
-  useEffect(() => {
-    onChange && onChange(state)
-  }, [state])
-
-  function handleChangeForm(it) {
-    setState({
-      ...value,
-      ...it
-    })
-  }
-
-  function handleClickSave() {
-    if (state.id) {
-      HolidayClient.putHoliday(state.id, {
-        description: state.description,
-        from: state.dates[0].format(moment.HTML5_FMT.DATE),
-        to: state.dates[1].format(moment.HTML5_FMT.DATE),
-        days: state.days,
-        type: state.type
+  const handleSubmit = (it) => {
+    console.log('---', it)
+    if (it.id) {
+      HolidayClient.putHoliday(it.id, {
+        description: it.description,
+        from: it.dates[0].format(moment.HTML5_FMT.DATE),
+        to: it.dates[1].format(moment.HTML5_FMT.DATE),
+        days: it.days,
       }).then((res) => {
         onComplete && onComplete(res)
       })
     } else {
       HolidayClient.postHoliday({
-        description: state.description,
-        from: state.dates[0].format(moment.HTML5_FMT.DATE),
-        to: state.dates[1].format(moment.HTML5_FMT.DATE),
-        days: state.days,
-        type: state.type,
-        userCode,
+        description: it.description,
+        from: it.dates[0].format(moment.HTML5_FMT.DATE),
+        to: it.dates[1].format(moment.HTML5_FMT.DATE),
+        days: it.days,
+        user: userCode,
       }).then((res) => {
         onComplete && onComplete(res)
       })
@@ -49,7 +38,7 @@ export function HolidayDialog({value, userCode, open, onChange, onComplete}) {
   }
 
   function handleDelete(ev) {
-    HolidayClient.deleteHoliday(state.id).then(() => {
+    HolidayClient.deleteHoliday(state.code).then(() => {
       onComplete && onComplete()
     })
   }
@@ -57,13 +46,18 @@ export function HolidayDialog({value, userCode, open, onChange, onComplete}) {
   return (<Dialog open={open} onClose={handleClose}>
     <DialogTitle>Holiday form</DialogTitle>
     <DialogContent>
-      <PeriodForm value={value} onChange={handleChangeForm}/>
+      <HolidayForm code={value && value.code} onSubmit={handleSubmit}/>
     </DialogContent>
     <DialogActions>
       <Button onClick={handleClose}>Close</Button>
       <Button onClick={handleDelete}>Delete</Button>
-      <Button onClick={handleClickSave} variant="contained" color="primary">Save</Button>
-    </DialogActions>
+      <DialogActions>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          form={HOLIDAY_FORM_ID}>Save</Button>
+      </DialogActions>    </DialogActions>
   </Dialog>)
 
 }
