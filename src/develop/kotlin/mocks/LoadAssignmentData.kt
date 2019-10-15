@@ -17,7 +17,7 @@ class LoadAssignmentData(
     val data: MutableSet<Assignment> = mutableSetOf()
 
     init {
-        create("willem.veelenturf@gmail.com", "ing", LocalDate.of(2018, 6, 1))
+        create("ieniemienie@sesam.straat", "ing", LocalDate.of(2018, 6, 1))
         create("pino@sesam.straat", "bolcom", LocalDate.of(2019, 2, 1), LocalDate.of(2020, 1, 1))
     }
 
