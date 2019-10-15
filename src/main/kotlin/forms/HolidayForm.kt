@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
-import community.flock.eco.workday.model.DayType
 import java.time.LocalDate
 
 data class HolidayForm(
@@ -19,9 +18,7 @@ data class HolidayForm(
         @JsonSerialize(using = LocalDateSerializer::class)
         val to: LocalDate,
 
-        val type: DayType,
+        val days: List<Int>,
 
-        val dayOff: Array<Int>,
-
-        val userCode: String?
+        val userCode: String
 )

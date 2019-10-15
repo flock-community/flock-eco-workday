@@ -4,9 +4,12 @@ import React from "react";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 
+import AssignmentIcon from '@material-ui/icons/Assignment';
 import HolidayIcon from '@material-ui/icons/WbSunny';
+import SickdayIcon from '@material-ui/icons/LocalHospital';
 import EventIcon from '@material-ui/icons/CalendarToday';
 import UserIcon from '@material-ui/icons/Person';
+import ClientIcon from '@material-ui/icons/Business';
 
 import Drawer from "@material-ui/core/Drawer";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -39,13 +42,26 @@ export const ApplicationDrawer = withRouter( ({open, onClickItem, onClose, histo
     history.push(item.url)
   }
 
-
-
   const items = [
+    {
+      name: "Clients",
+      icon: ClientIcon,
+      url: "/clients"
+    },
+    {
+      name: "Assignments",
+      icon: AssignmentIcon,
+      url: "/assignments"
+    },
     {
       name: "Holidays",
       icon: HolidayIcon,
       url: "/holidays"
+    },
+    {
+      name: "Sickday",
+      icon: SickdayIcon,
+      url: "/sickdays"
     },
     {
       name: "Events",

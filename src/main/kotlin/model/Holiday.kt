@@ -4,28 +4,34 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonIdentityReference
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.core.events.EventEntityListeners
+import community.flock.eco.core.model.AbstractCodeEntity
+import community.flock.eco.core.model.AbstractIdEntity
 import community.flock.eco.feature.user.model.User
-import java.time.LocalDate
+import java.util.*
 import javax.persistence.*
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
 data class Holiday(
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        val id: Long = 0,
+        override val id: Long = 0,
+        override val code: String = UUID.randomUUID().toString(),
+
         val description: String?,
 
-        val from: LocalDate = LocalDate.now(),
-        val to: LocalDate = LocalDate.now(),
+        @Enumerated(EnumType.STRING)
+        val status: HolidayStatus,
 
-        @OneToMany(cascade = [CascadeType.ALL])
-        @OrderBy("date")
-        val dayOff: Set<DayOff>,
+        @OneToOne
+        val period: Period,
 
         @ManyToOne
-        @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator::class, property="code")
-        @JsonIdentityReference(alwaysAsId=true)
+        @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
+        @JsonIdentityReference(alwaysAsId = true)
         val user: User
-)
+
+) : AbstractCodeEntity(id, code) {
+    override fun equals(other: Any?) = super.equals(other)
+    override fun hashCode(): Int = super.hashCode()
+}
+

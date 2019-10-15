@@ -4,14 +4,11 @@ import community.flock.eco.core.utils.toNullable
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.repositories.UserRepository
-import community.flock.eco.workday.authorities.HolidaysAuthority
+import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HolidayForm
-import community.flock.eco.workday.model.DayType
 import community.flock.eco.workday.model.Holiday
-import community.flock.eco.workday.model.HolidaySummary
-import community.flock.eco.workday.repository.HolidayRepository
+import community.flock.eco.workday.repository.PeriodRepository
 import community.flock.eco.workday.services.HolidayService
-import community.flock.eco.workday.services.HolidaysSummaryService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -22,92 +19,67 @@ import java.security.Principal
 @RequestMapping("/api/holidays")
 class HolidayController(
         private val userRepository: UserRepository,
-        private val holidayRepository: HolidayRepository,
-        private val holidayService: HolidayService,
-        private val holidaysSummaryService: HolidaysSummaryService) {
+        private val periodRepository: PeriodRepository,
+        private val holidayService: HolidayService) {
+
+    @GetMapping("/{code}")
+    @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
+    fun findByCode(@PathVariable code: String, principal: Principal): ResponseEntity<Holiday> = principal.findUser()
+            ?.let { user ->
+                holidayService.findByCode(code)
+            }.toResponse()
 
     @GetMapping
-    @PreAuthorize("hasAuthority('HolidaysAuthority.READ')")
-    fun findAll(@RequestParam(required = false) userCode: String?, principal: Principal): ResponseEntity<Iterable<Holiday>> {
-
-        return principal
-                .findUser()
-                ?.let {
-                    if (userCode != null) {
-                        if (userRepository.findByCode(userCode).isPresent) {
-                            holidayRepository.findAllByUser(userRepository.findByCode(userCode).get())
+    @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
+    fun findAll(@RequestParam(required = false) userCode: String?, principal: Principal): ResponseEntity<Iterable<Holiday>> =
+            principal.findUser()
+                    ?.let { user ->
+                        if (user.isAdmin() && userCode != null) {
+                            holidayService.findAllByUserCode(userCode)
                         } else {
-                            listOf()
-                        }
-                    } else {
-                        if (it.isAdmin()) {
-                            holidayRepository.findAll()
-                        } else {
-                            holidayRepository.findAllByUser(it)
+                            holidayService.findAllByUserCode(user.code)
                         }
 
-                    }
-                }
-                .toResponse()
-    }
-
-    @GetMapping("/summary")
-    @PreAuthorize("hasAuthority('HolidaysAuthority.ADMIN')")
-    fun getSummary(@RequestParam(name = "type") typeFilter: DayType?, principal: Principal): ResponseEntity<HolidaySummary> {
-
-        return principal
-                .findUser()
-                ?.let{
-                    if(it.isAdmin()) {
-                        holidaysSummaryService.getSummary(typeFilter)
-                    } else {
-                        HolidaySummary(0)
-                    }
-                }
-                .toResponse()
-    }
+                    }.toResponse()
 
     @PostMapping
-    @PreAuthorize("hasAuthority('HolidaysAuthority.WRITE')")
-    fun post(@RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Holiday> {
-        return principal
-                .findUser()
-                ?.let {
-                    if(!it.isAuthorizedForUserCode(form.userCode)) {
-                        form.copy(userCode = it.code)
-                    } else {
-                        form.copy(userCode = form.userCode?:it.code)
-                    }
+    @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
+    fun post(@RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Holiday> = principal
+            .findUser()
+            ?.let {
+                if (!it.isAuthorizedForUserCode(form.userCode)) {
+                    form.copy(userCode = it.code)
+                } else {
+                    form.copy(userCode = form.userCode ?: it.code)
                 }
-                ?.let {
-                    holidayService.create(it)
-                }
-                .toResponse()
-    }
+            }
+            ?.let {
+                holidayService.create(it)
+            }
+            .toResponse()
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('HolidaysAuthority.WRITE')")
-    fun put(@PathVariable id: Long, @RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Any> {
-        return principal
-                .findUser()
-                ?.let {
-                    if(it.isAuthorizedForHoliday(id)){
-                        holidayService.update(id, form)
-                    } else {
-                        ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+    @PutMapping("/{code}")
+    @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
+    fun put(@PathVariable code: String, @RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Any> =
+            principal
+                    .findUser()
+                    ?.let {
+                        if (it.isAuthorizedForHoliday(code)) {
+                            holidayService.update(code, form)
+                        } else {
+                            ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        }
                     }
-                }
-                .toResponse()
-    }
+                    .toResponse()
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('HolidaysAuthority.WRITE')")
-    fun delete(@PathVariable  id: Long, principal: Principal): ResponseEntity<Any> {
+    @DeleteMapping("/{code}")
+    @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
+    fun delete(@PathVariable code: String, principal: Principal): ResponseEntity<Any> {
         return principal
                 .findUser()
                 ?.let {
-                    if(it.isAuthorizedForHoliday(id)) {
-                        holidayService.delete(id)
+                    if (it.isAuthorizedForHoliday(code)) {
+                        holidayService.delete(code)
                     } else {
                         ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     }
@@ -120,16 +92,11 @@ class HolidayController(
             .findByCode(this.name)
             .toNullable()
 
-    private fun User.isAdmin(): Boolean {
-        return this.authorities.contains(HolidaysAuthority.ADMIN.toName())
-    }
+    private fun User.isAdmin(): Boolean = this.authorities
+            .contains(HolidayAuthority.ADMIN.toName())
 
-    private fun User.isAuthorizedForUserCode(userCode: String?): Boolean {
-        return this.isAdmin() || this.code.equals(userCode)
-    }
+    private fun User.isAuthorizedForUserCode(userCode: String?): Boolean = this.isAdmin() || this.code.equals(userCode)
 
-    private fun User.isAuthorizedForHoliday(id: Long): Boolean {
-        return this.isAdmin() || this.equals(holidayRepository.findById(id).get().user)
-    }
+    private fun User.isAuthorizedForHoliday(code: String): Boolean = this.isAdmin() || this.equals(holidayService.findByCode(code)?.user)
 
 }

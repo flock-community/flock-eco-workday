@@ -1,75 +1,91 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.core.utils.toNullable
-import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.workday.forms.HolidayForm
-import community.flock.eco.workday.model.DayOff
-import community.flock.eco.workday.model.DayType
+import community.flock.eco.workday.model.Day
 import community.flock.eco.workday.model.Holiday
+import community.flock.eco.workday.model.HolidayStatus
+import community.flock.eco.workday.model.Period
 import community.flock.eco.workday.repository.HolidayRepository
+import community.flock.eco.workday.repository.PeriodRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.time.Period
-import java.util.*
 
 
 @Service
 class HolidayService(
-        val holidayRepository: HolidayRepository, val userRepository: UserRepository) {
+        private val holidayRepository: HolidayRepository,
+        private val periodRepository: PeriodRepository,
+        private val userRepository: UserRepository) {
 
-    fun findById(id: Long): Optional<Holiday> = holidayRepository.findById(id)
+    fun findByCode(code:String) = holidayRepository.findByCode(code).toNullable()
+    fun findAllByUserCode(userCode: String) = holidayRepository.findAllByUserCode(userCode)
 
     fun create(form: HolidayForm): Holiday {
+
         form.validate()
-        form.userCode?.let{
-            userRepository.findByCode(it).toNullable()
-        }?.let{
-            return Holiday(
-                    description = form.description,
-                    from = form.from,
-                    to = form.to,
-                    dayOff = convertDayOff(form.dayOff, form.from, form.type),
-                    user = it)
-                    .save()
-        }?:throw RuntimeException("Cannot create holiday")
+
+        val user = form.userCode
+                .let { userRepository.findByCode(it).toNullable() }
+                ?: throw RuntimeException("User not found")
+
+        val period = Period(
+                from = form.from,
+                to = form.to,
+                days = convertDayOff(form.days, form.from))
+                .save()
+
+        return Holiday(
+                description = form.description,
+                user = user,
+                period = period,
+                status = HolidayStatus.REQUESTED)
+                .save()
 
     }
 
-    fun update(id: Long, form: HolidayForm): Holiday {
+    fun update(code: String, form: HolidayForm): Holiday? {
         form.validate()
-        return holidayRepository.findById(id)
-                .toNullable()
+        return findByCode(code)
                 ?.let { holiday ->
-                    holiday.copy(
-                            description = form.description,
+
+                    val period = Period(
                             from = form.from,
                             to = form.to,
-                            dayOff = convertDayOff(form.dayOff, form.from, form.type))
+                            days = convertDayOff(form.days, form.from))
+                            .save()
+
+                    holiday.copy(
+                            description = form.description,
+                            period = period)
                 }
                 ?.save()
-                ?: throw java.lang.RuntimeException("Cannot update Holiday")
     }
 
-    fun delete(id: Long) = holidayRepository.deleteById(id)
+    fun delete(code: String) = holidayRepository.deleteByCode(code)
 
-    private fun convertDayOff(dayOff: Array<Int>, from: LocalDate, dayType: DayType) = dayOff
+    private fun convertDayOff(dayOff: List<Int>, from: LocalDate) = dayOff
             .mapIndexed { index, hours ->
-                DayOff(
-                        type = dayType,
+                Day(
                         date = from.plusDays(index.toLong()),
                         hours = hours
                 )
             }
             .toSet()
 
+
     private fun Holiday.save() = holidayRepository
             .save(this)
 
+    private fun Period.save() = periodRepository
+            .save(this)
+
     private fun HolidayForm.validate() {
-        val daysBetween = Period.between(this.from, this.to).days + 1
-        if (this.dayOff.size != daysBetween) {
+        val daysBetween = java.time.Period.between(this.from, this.to).days + 1
+        if (this.days.size != daysBetween) {
             throw RuntimeException("amount of DayOff not equal to period")
         }
     }
+
 }
