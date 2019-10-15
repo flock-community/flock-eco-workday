@@ -14,4 +14,3 @@ before_install:
 script:
   - mvn surefire:test
   - mvn spring-boot:start -Pdevelop -Dspring.profiles.active=local
-  - mvn spring-boot:stop
