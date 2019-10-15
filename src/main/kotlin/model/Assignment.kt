@@ -1,9 +1,11 @@
 package community.flock.eco.workday.model
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
 import community.flock.eco.feature.user.model.User
 import java.time.LocalDate
+import java.util.*
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
 import javax.persistence.ManyToOne
@@ -12,16 +14,18 @@ import javax.persistence.ManyToOne
 @EntityListeners(EventEntityListeners::class)
 data class Assignment(
 
-        override val id: Long,
-        override val code: String,
+        override val id: Long = 0,
+        override val code: String = UUID.randomUUID().toString(),
 
         val startDate: LocalDate,
-        val endDate: LocalDate,
+        val endDate: LocalDate?,
 
         @ManyToOne
+        @JsonIdentityReference(alwaysAsId=true)
         val client: Client,
 
         @ManyToOne
+        @JsonIdentityReference(alwaysAsId=true)
         val user: User
 
 ) : AbstractCodeEntity(id, code) {

@@ -4,7 +4,12 @@ export function PageableClient(path) {
     const opts = {
       method: 'GET',
     }
-    return fetch(`${path}?page=${page || 0}&size=${size || 20}`, opts)
+    const params = {page, size, sort}
+    const query = Object.keys(params)
+      .filter(key => params[key])
+      .map(key => (`${key}=${params[key]}`))
+      .join("&")
+    return fetch(`${path}?${query}`, opts)
       .then(res => res.json())
   }
 

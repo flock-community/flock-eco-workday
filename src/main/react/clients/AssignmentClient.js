@@ -6,12 +6,16 @@ const path = '/api/assignments'
 const resourceClient = ResourceClient(path)
 const pageableClient = PageableClient(path)
 
-const findAll = () => {
-
+export const findByCode = (code) => {
+  const opts = {
+    method: 'GET',
+  }
+  return fetch(`${path}/${code}`, opts)
+    .then(res => res.json())
 }
 
-export const AssignmentClient = {
+export const AssignmentClient  = {
   ...resourceClient,
   ...pageableClient,
-  findAll
+  findByCode
 }

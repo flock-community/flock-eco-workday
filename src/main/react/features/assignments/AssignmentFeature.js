@@ -1,12 +1,9 @@
-import {useState} from "react";
+import React, {useState} from "react";
+import {AssignmentList} from "./AssignmentList";
 
-export function AssignmentFeature(){
+export function AssignmentFeature() {
 
-  const [page, setPage] = useState()
-
-  AssignmentClient.findAllByPage(0).then(res => {
-    setPage(res)
-  })
-
-  return (<h1>{page.size}</h1>)
+  return (<>
+    <AssignmentList/>
+  </>)
 }

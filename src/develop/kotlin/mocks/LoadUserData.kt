@@ -11,7 +11,7 @@ class LoadUserData(
         private val userService: UserService,
         private val userAuthorityService: UserAuthorityService
 ) {
-    val users: MutableSet<User> = mutableSetOf()
+    val data: MutableSet<User> = mutableSetOf()
 
     private val authorities = userAuthorityService.allAuthorities()
             .map { it.toName() }
@@ -19,11 +19,14 @@ class LoadUserData(
 
     init {
         create("Willem Veelenturf", "willem.veelenturf@gmail.com")
+        create("Pino", "pino@sesam.straat")
+        create("Bert", "bert@sesam.straat")
+        create("Ernie", "ernie@sesam.straat")
     }
 
     private final fun create(name: String, email: String) = UserForm(name = name, email = email, authorities = authorities).save()
 
     private fun UserForm.save(): User = userService.create(this)
-            .also { users.add(it) }
+            .also { data.add(it) }
 
 }

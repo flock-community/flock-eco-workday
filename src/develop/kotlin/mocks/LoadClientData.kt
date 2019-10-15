@@ -8,19 +8,22 @@ import org.springframework.stereotype.Component
 class LoadClientData(
         private val clientRepository: ClientRepository
 ) {
-    val clients: MutableSet<Client> = mutableSetOf()
+    val data: MutableSet<Client> = mutableSetOf()
 
     init {
-        create("ING")
-        create("bol.com")
-        create("NS International")
-        create("Rabobank")
+        create("ing", "ING")
+        create("bolcom", "bol.com")
+        create("ns", "NS International")
+        create("rabobank", "Rabobank")
     }
 
-    private final fun create(name: String) = Client(name = name).save()
+    private final fun create(code: String, name: String) = Client(
+            code = code,
+            name = name)
+            .save()
 
     fun Client.save(): Client = clientRepository
             .save(this)
-            .also { clients.add(it) }
+            .also { data.add(it) }
 
 }

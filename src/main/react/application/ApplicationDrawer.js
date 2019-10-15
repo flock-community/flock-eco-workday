@@ -4,6 +4,7 @@ import React from "react";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 
+import AssignmentIcon from '@material-ui/icons/Assignment';
 import HolidayIcon from '@material-ui/icons/WbSunny';
 import SickdayIcon from '@material-ui/icons/LocalHospital';
 import EventIcon from '@material-ui/icons/CalendarToday';
@@ -41,13 +42,16 @@ export const ApplicationDrawer = withRouter( ({open, onClickItem, onClose, histo
     history.push(item.url)
   }
 
-
-
   const items = [
     {
       name: "Clients",
       icon: ClientIcon,
       url: "/clients"
+    },
+    {
+      name: "Assignments",
+      icon: AssignmentIcon,
+      url: "/assignments"
     },
     {
       name: "Holidays",

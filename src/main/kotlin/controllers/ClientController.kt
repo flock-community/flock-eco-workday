@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.*
 class ClientController(
         private val clientService: ClientService) {
 
+    @GetMapping
+    @PreAuthorize("hasAuthority('ClientAuthority.READ')")
+    fun findAll(pageable: Pageable): ResponseEntity<List<Client>> = clientService
+            .findAll(pageable)
+            .toResponse()
+
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('ClientAuthority.READ')")
     fun findByCode(@PathVariable code:String): ResponseEntity<Client> = clientService
                     .findByCode(code)
-                    .toResponse()
-
-    @GetMapping
-    @PreAuthorize("hasAuthority('ClientAuthority.READ')")
-    fun findAll(pageable: Pageable): ResponseEntity<List<Client>> = clientService
-                    .findAll(pageable)
                     .toResponse()
 
     @PostMapping

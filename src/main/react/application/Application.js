@@ -9,6 +9,7 @@ import {ApplicationContext} from "./ApplicationContext";
 import {HomeFeature} from "../features/home/HomeFeature";
 import {ClientFeature} from "../features/client/ClientFeature";
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient";
+import {AssignmentFeature} from "../features/assignments/AssignmentFeature";
 
 export const Application = () => {
 
@@ -69,6 +70,7 @@ export const Application = () => {
           <ApplicationLayout onDrawer={handleDrawerOpen}/>
           <Route path="/" exact component={HomeFeature}/>
           <Route path="/clients" exact component={ClientFeature}/>
+          <Route path="/assignments" exact component={AssignmentFeature}/>
           <Route path="/holidays" exact component={HolidayFeature}/>
           <Route path="/users" exact component={UserFeature}/>
         </div>
