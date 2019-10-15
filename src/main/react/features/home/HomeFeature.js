@@ -31,7 +31,7 @@ export function HomeFeature() {
   }, [])
 
   return (<div className={classes.root}>
-    <Typography variant="h2">Welcome in workday</Typography>
+    <Typography variant="h2">Welcome in workday 123</Typography>
     <Typography>You are logged in as {user && user.name}</Typography>
   </div>)
 }

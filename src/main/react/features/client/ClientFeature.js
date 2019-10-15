@@ -36,7 +36,6 @@ export function ClientFeature() {
   }
 
   const handleItem = (it) => {
-    console.log(it)
     setDialog({
       open: true,
       code: it.code

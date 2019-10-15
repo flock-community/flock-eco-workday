@@ -10,14 +10,18 @@ export const CLIENT_FORM_ID = 'client-form-id'
 
 const useStyles = makeStyles({});
 
-export function ClientForm({code, onSubmit}) {
+export function ClientForm({code, value, onSubmit}) {
 
   const classes = useStyles();
 
-  const [state, setState] = useState(false)
+  const [state, setState] = useState(null)
 
   useEffect(() => {
-    code && ClientClient.findByCode(code)
+    setState(value)
+  }, [value])
+
+  useEffect(() => {
+    !value && code && ClientClient.findByCode(code)
       .then(res => setState(res))
   }, [code])
 

@@ -1,3 +1,16 @@
+const internalize = (res) => {
+  if(res.ok){
+    if(res.status === 204){
+      return;
+    }
+    return res.json()
+  } else{
+    return res.text((text) => {
+      throw new Error(text)
+    })
+  }
+}
+
 export function ResourceClient(path) {
 
   const get = (id) => {
@@ -5,7 +18,7 @@ export function ResourceClient(path) {
       method: 'GET',
     }
     return fetch(`${path}/${id}`, opts)
-      .then(res => res.json())
+      .then(internalize)
   }
 
 
@@ -18,7 +31,7 @@ export function ResourceClient(path) {
       body: JSON.stringify(item)
     }
     return fetch(path, opts)
-      .then(res => res.json())
+      .then(internalize)
   }
 
   const put = (id, item) => {
@@ -30,15 +43,16 @@ export function ResourceClient(path) {
       body: JSON.stringify(item)
     }
     return fetch(`${path}/${id}`, opts)
-      .then(res => res.json())}
+      .then(internalize)
+  }
 
   const del = (id) => {
     const opts = {
       method: 'DELETE',
     }
     return fetch(`${path}/${id}`, opts)
-      .then(res => res.json())}
-
+      .then(internalize)
+  }
 
   return {get, post, put, delete:del}
 

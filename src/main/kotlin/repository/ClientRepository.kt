@@ -11,4 +11,5 @@ import java.util.*
 interface ClientRepository : PagingAndSortingRepository<Client, Long>{
 
     fun findByCode(code:String): Optional<Client>
+    fun deleteByCode(code:String)
 }

@@ -10,7 +10,7 @@ export const findByCode = (code) => {
   const opts = {
     method: 'GET',
   }
-  return fetch(`/api/clients/${code}`, opts)
+  return fetch(`${path}/${code}`, opts)
     .then(res => res.json())
 }
 

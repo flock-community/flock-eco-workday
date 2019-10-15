@@ -15,7 +15,6 @@ export function HolidayForm({code, onSubmit}) {
     if (code) {
       HolidayClient.findByCode(code)
         .then(res => {
-          console.log(res)
           setState({
             ...res,
             period:{

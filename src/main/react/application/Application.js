@@ -31,7 +31,7 @@ export const Application = () => {
                 user,
               })
             })
-            .catch(ex => {
+            .catch(err => {
               console.log('Cannot connect to service')
             })
         } else {

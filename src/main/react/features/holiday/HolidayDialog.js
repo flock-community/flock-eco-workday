@@ -8,9 +8,7 @@ import {HOLIDAY_FORM_ID, HolidayForm} from "./HolidayForm";
 
 export function HolidayDialog({value, userCode, open, onComplete}) {
 
-
   const handleSubmit = (it) => {
-    console.log('---', it)
     if (it.id) {
       HolidayClient.putHoliday(it.id, {
         description: it.description,
