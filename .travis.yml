@@ -1,14 +1,16 @@
 language: java
+
 jdk:
-- oraclejdk8
+  - openjdk8
 
 cache:
   directories:
-  - "$HOME/.m2/repository"
-  - "$HOME/.npm-cache"
+    - "$HOME/.m2/repository"
+    - "$HOME/.npm-cache"
 
 before_install:
   - npm config set cache "$HOME/.npm-cache"
 
 script:
-  - mvn verify
+  - mvn surefire:test
+  - mvn spring-boot:run -Pdevelop -Dspring.profiles.active=local
