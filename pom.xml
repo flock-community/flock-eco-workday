@@ -24,6 +24,7 @@
         <!-- installed node/npm version: lts/carbon -->
         <node.version>v8.16.2</node.version>
         <npm.version>6.4.1</npm.version>
+        <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -34,7 +35,7 @@
             <version>${google.appengine.version}</version>
         </dependency>
 
-        <!--Flock Eco -->
+        <!-- Flock Eco -->
         <dependency>
             <groupId>com.github.flock-community.flock-eco</groupId>
             <artifactId>flock-eco-feature-user</artifactId>
@@ -135,7 +136,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.5</version>
+                <version>${build.helper.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>add-test-source</id>
@@ -243,7 +244,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>3.0.0</version>
+                        <version>${build.helper.maven.plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>add-source</id>
