@@ -21,6 +21,9 @@
         <google.datastore.version>1.28.0</google.datastore.version>
         <google.appengine.version>1.9.64</google.appengine.version>
         <google.store.version>1.28.0</google.store.version>
+        <!-- installed node/npm version: lts/carbon -->
+        <node.version>v8.16.2</node.version>
+        <npm.version>6.4.1</npm.version>
     </properties>
 
     <dependencies>
@@ -182,6 +185,11 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
+                        <configuration>
+                            <nodeVersion>${node.version}</nodeVersion>
+                            <npmVersion>${npm.version}</npmVersion>
+                            <installDirectory>${project.build.directory}</installDirectory>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>npm install</id>
@@ -202,10 +210,6 @@
                         </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <nodeVersion>v8.15.1</nodeVersion>
-                    <installDirectory>${project.build.directory}</installDirectory>
-                </configuration>
             </plugin>
 
         </plugins>
