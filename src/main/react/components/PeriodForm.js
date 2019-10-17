@@ -15,40 +15,22 @@ export function PeriodForm({value, onChange}) {
 
   const [grid, setGrid] = useState([])
   const [dates, setDates] = useState([now, now])
-  const [days, setDays] = useState({})
-  const [pet, setPet] = useState({})
+  const [days, setDays] = useState([])
 
   useEffect(() => {
-    const initFrom = (value && value.from) || now
-    const initTo = (value && value.to) || now
-    setDates([initFrom, initTo])
-    setDays(calcDates(initFrom, initTo)
-      .reduce((acc, cur, i) => {
-        const key = stringifyDate(cur)
-        if (value && value.days[i]) {
-          acc[key] = value.days[i]
-        } else {
-          acc[key] = inWeekday(cur) ? 8 : 0;
-        }
-        return acc
-      }, {}))
-
+    const from = (value && moment(value.from)) || now
+    const to = (value && moment(value.to)) || now
+    setDates([from, to])
   }, [value]);
 
   useEffect(() => {
-    setDays(calcDates(dates[0], dates[1])
-      .reduce((acc, cur) => {
-        const key = stringifyDate(cur)
-        if (days[key]) {
-          acc[key] = days[key]
-        } else {
-          acc[key] = inWeekday(cur) ? 8 : 0;
-        }
-        return acc
-      }, {}))
+    setDays(calcDates(dates[0], dates[1]))
     setGrid(calcGrid())
-
   }, [dates]);
+
+  useEffect(() => {
+    setGrid(calcGrid())
+  }, [days]);
 
   function handleDateFromChange(date) {
     setDates([date, dates[1]])
@@ -62,33 +44,37 @@ export function PeriodForm({value, onChange}) {
     const value = ev.target.value
     setDays({
       ...days,
-      [key]: value
+      [key]: parseInt(value)
     })
   }
 
-  function calcWeeks() {
-    const start = moment(dates[0]).week();
-    const end = moment(dates[1]).week()
-    const diff = Math.abs(end - start) + 1;
-    return [...Array(diff).keys()]
-  }
-
   function calcDates(from, to) {
-    const start = moment(from)
-    const end = moment(to)
-    const diff = end.diff(start, 'days') + 1
+    const diff = to.diff(from, 'days') + 1
     return (diff < 0) ? [] : [...Array(diff).keys()]
-      .map((it) => moment(start).add(it, 'days'))
+      .map((it) => moment(from).add(it, 'days'))
+      .reduce((acc, cur) => {
+        const key = stringifyDate(cur)
+        if (days[key]) {
+          acc[key] = days[key]
+        } else {
+          acc[key] = inWeekday(cur) ? 8 : 0;
+        }
+        return acc
+      }, {})
   }
 
   function calcGrid() {
+    console.log('calcGrid')
     const start = moment(dates[0]).startOf('week');
+    const end = moment(dates[1]).startOf('week');
+    const diff = Math.abs(end.week() - start.week()) + 1;
+    const weeks = [...Array(diff).keys()]
 
-    return calcWeeks()
+    return weeks
       .map(week => {
           const day = moment(start).add(week, 'weeks')
           const weekNumber = day.week()
-          const x = [...Array(7).keys()]
+          const it = [...Array(7).keys()]
             .map((dayDiff) => {
               const date = moment(day).add(dayDiff, 'days')
               const enabled = inRange(date)
@@ -100,9 +86,10 @@ export function PeriodForm({value, onChange}) {
                 value: enabled ? days[key] : 0
               }
             })
-          const total = days.filter(it => !it.disabled)
+          const total = it
+            .filter(it => !it.disabled)
             .reduce((acc, cur) => (acc + parseInt(days[cur.key]) || acc), 0)
-          return {weekNumber, days, total}
+          return {weekNumber, days:it, total}
         }
       )
   }
@@ -168,7 +155,7 @@ export function PeriodForm({value, onChange}) {
           <Grid item xs={2}>
             <Typography>{week.weekNumber}</Typography>
           </Grid>
-          {week.days.map(day => (<Grid item xs={1} key={`day-${day.key}`}>
+          {week.days && week.days.map(day => (<Grid item xs={1} key={`day-${day.key}`}>
             <TextField value={day.value || ''} disabled={day.disabled} onChange={handleDayChange(day.key)}/>
           </Grid>))}
           <Grid item xs={1}/>

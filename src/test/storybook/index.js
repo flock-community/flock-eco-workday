@@ -1,3 +1,2 @@
-require('./calendar/Calendar.story.js')
-
+require('./components/PeriodForm.story.js')
 require('./day/HolidayForm.story.js')
