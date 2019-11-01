@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 
-import {HashRouter, Route} from "react-router-dom";
+import {HashRouter as Router, Route} from "react-router-dom";
 import {HolidayFeature} from "../features/holiday/HolidayFeature";
 import {UserFeature} from "@flock-eco/feature-user/src/main/react/user/UserFeature";
 import {ApplicationLayout} from "./ApplicationLayout";
@@ -64,7 +64,7 @@ export const Application = () => {
 
   return (
     <ApplicationContext.Provider value={{authorities: state.authorities, user: state.user}}>
-      <HashRouter>
+      <Router>
         <div>
           <ApplicationDrawer open={state.openDrawer} onClose={handleDrawerClose}/>
           <ApplicationLayout onDrawer={handleDrawerOpen}/>
@@ -74,7 +74,7 @@ export const Application = () => {
           <Route path="/holidays" exact component={HolidayFeature}/>
           <Route path="/users" exact component={UserFeature}/>
         </div>
-      </HashRouter>
+      </Router>
     </ApplicationContext.Provider>
   )
 
