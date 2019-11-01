@@ -2,4 +2,16 @@
 root: true
 extends:
   - "airbnb-base"
+  - "plugin:react/recommended"
   - "plugin:prettier/recommended"
+
+env:
+  browser: true
+
+rules:
+  import/prefer-default-export: "off"
+  import/no-extraneous-dependencies: "off"
+
+settings:
+  react:
+    version: "detect"
