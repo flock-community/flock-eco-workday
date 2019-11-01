@@ -15,7 +15,7 @@ export function PeriodForm({value, onChange}) {
 
   const [grid, setGrid] = useState([])
   const [dates, setDates] = useState([now, now])
-  const [days, setDays] = useState([])
+  const [days, setDays] = useState({})
 
   useEffect(() => {
     const from = (value && moment(value.from)) || now
@@ -64,7 +64,6 @@ export function PeriodForm({value, onChange}) {
   }
 
   function calcGrid() {
-    console.log('calcGrid')
     const start = moment(dates[0]).startOf('week');
     const end = moment(dates[1]).startOf('week');
     const diff = Math.abs(end.week() - start.week()) + 1;
