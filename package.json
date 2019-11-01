@@ -2,7 +2,7 @@
   "name": "flock-eco-workday",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --mode development --open",
+    "start": "webpack-dev-server --mode development --host 0.0.0.0",
     "build": "webpack --mode production ./src/main/react",
     "storybook": "start-storybook"
   },
@@ -30,7 +30,13 @@
   "devDependencies": {
     "@flock-eco/webpack": "^1.4.20",
     "@flock/graphql-to-rest": "^0.1.0",
-    "graphql-import": "latest"
+    "eslint": "6.6.0",
+    "eslint-config-airbnb-base": "14.0.0",
+    "eslint-config-prettier": "6.5.0",
+    "eslint-plugin-import": "2.18.2",
+    "eslint-plugin-prettier": "3.1.1",
+    "graphql-import": "latest",
+    "prettier": "1.18.2"
   },
   "homepage": "https://github.com/flock-community/flock-eco-holidays#readme",
   "repository": {
