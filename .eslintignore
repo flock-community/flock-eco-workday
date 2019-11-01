@@ -1,0 +1,4 @@
+# node_modules/ ignored by default
+src/main/webapp/**/*
+src/main/resources/**/*
+*.properties
