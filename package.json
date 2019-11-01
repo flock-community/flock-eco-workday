@@ -31,5 +31,13 @@
     "@flock-eco/webpack": "^1.4.20",
     "@flock/graphql-to-rest": "^0.1.0",
     "graphql-import": "latest"
+  },
+  "homepage": "https://github.com/flock-community/flock-eco-holidays#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flock-community/flock-eco-holidays.git"
+  },
+  "bugs": {
+    "url": "https://github.com/flock-community/flock-eco-holidays/issues"
   }
 }
