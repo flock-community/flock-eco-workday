@@ -1,0 +1,54 @@
+package community.flock.eco.workday.services
+
+import community.flock.eco.core.utils.toNullable
+import community.flock.eco.workday.model.Person
+import community.flock.eco.workday.repository.PersonRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
+
+@Service
+class PersonService(
+    private val personRepository: PersonRepository
+) {
+    private fun Person.render(p: Person? = null) = Person(
+        id = p?.id ?: 0,
+        firstname = p?.firstname ?: this.firstname,
+        lastname = p?.lastname ?: this.lastname,
+        email = p?.email ?: this.email
+    )
+    private fun Person.save(): Person = personRepository.save(this)
+
+    fun findAll(pageable: Pageable): Page<Person> = personRepository
+        .findAll(pageable)
+
+    fun findById(id: Long): Person? = personRepository
+        .findById(id)
+        .toNullable()
+
+    fun create(person: Person): Person? = Person(
+        firstname = person.firstname,
+        lastname = person.lastname,
+        email = person.email ?: ""
+    ).save()
+
+    fun update(id: Long, person: Person? = null) = this.findById(id)
+        ?.let {
+            Person(
+                id = it.id, // updates the Person with the same id
+                firstname = person!!.firstname,
+                lastname = person.lastname,
+                email = person.email
+            ).save()
+        }
+
+    fun deleteById(id: Long) /* = personRepository.deleteById(id) */ {
+        // TODO: elvis operator instead delete ?: ifNull
+        if (!personRepository.existsById(id)) {
+            println("Jo No Things there")
+            return
+        }
+
+        personRepository.deleteById(id)
+    }
+}
