@@ -27,10 +27,9 @@ class ClientService(
             .save()
 
     @Transactional
-    fun update(code: String, form: ClientForm): Client? = clientRepository
-            .findByCode(code)
-            .toNullable()
-            ?.let { form.internalize(it).save() }
+    fun update(code: String, form: ClientForm): Client? = this.findByCode(code)
+            ?.let {
+                form.internalize(it).save() }
 
     @Transactional
     fun delete(code: String):Unit = clientRepository
