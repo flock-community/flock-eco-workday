@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/assignments")
 class AssignmentController(
-        private val assignmentService: AssignmentService) {
+    private val assignmentService: AssignmentService
+) {
 
     @GetMapping
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")

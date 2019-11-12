@@ -13,11 +13,11 @@ import javax.persistence.EntityListeners
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
 data class Client(
 
-        override val id: Long = 0,
+    override val id: Long = 0,
 
-        override val code: String = UUID.randomUUID().toString(),
+    override val code: String = UUID.randomUUID().toString(),
 
-        val name:String
+    val name: String
 
 ) : AbstractCodeEntity(id, code) {
     override fun equals(other: Any?) = super.equals(other)

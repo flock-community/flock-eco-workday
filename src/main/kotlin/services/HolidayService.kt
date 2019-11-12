@@ -14,9 +14,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class HolidayService(
-        private val holidayRepository: HolidayRepository,
-        private val periodRepository: PeriodRepository,
-        private val userRepository: UserRepository) {
+    private val holidayRepository: HolidayRepository,
+    private val periodRepository: PeriodRepository,
+    private val userRepository: UserRepository
+) {
 
     fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
     fun findAllByUserCode(userCode: String) = holidayRepository.findAllByUserCode(userCode)

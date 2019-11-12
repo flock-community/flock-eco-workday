@@ -20,8 +20,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     "community.flock.eco.workday.controllers"
 ])
 @Import(UserConfiguration::class)
-class ApplicationConfiguration(private val userRepository: UserRepository,
-                               private val userAuthorityService: UserAuthorityService) {
+class ApplicationConfiguration(
+    private val userRepository: UserRepository,
+    private val userAuthorityService: UserAuthorityService
+) {
 
     @EventListener(UserCreateEvent::class)
     fun handleCreateUserEvent(ev: UserCreateEvent) {

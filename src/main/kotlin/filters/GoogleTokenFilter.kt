@@ -13,7 +13,8 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.filter.GenericFilterBean
 
 class GoogleTokenFilter(
-        private val userAccountService: UserAccountService) : GenericFilterBean() {
+    private val userAccountService: UserAccountService
+) : GenericFilterBean() {
 
     override fun doFilter(req: ServletRequest, res: ServletResponse, filterChain: FilterChain) {
         val request = req as HttpServletRequest

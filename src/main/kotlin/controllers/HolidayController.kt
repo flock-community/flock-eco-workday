@@ -26,9 +26,10 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/holidays")
 class HolidayController(
-        private val userRepository: UserRepository,
-        private val periodRepository: PeriodRepository,
-        private val holidayService: HolidayService) {
+    private val userRepository: UserRepository,
+    private val periodRepository: PeriodRepository,
+    private val holidayService: HolidayService
+) {
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")

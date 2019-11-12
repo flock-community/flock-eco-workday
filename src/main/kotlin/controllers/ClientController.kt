@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/clients")
 class ClientController(
-        private val clientService: ClientService) {
+    private val clientService: ClientService
+) {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ClientAuthority.READ')")

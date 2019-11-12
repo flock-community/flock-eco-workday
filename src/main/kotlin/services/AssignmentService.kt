@@ -13,9 +13,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class AssignmentService(
-        private val clientRepository: ClientRepository,
-        private val userRepository: UserRepository,
-        private val assignmentRepository: AssignmentRepository) {
+    private val clientRepository: ClientRepository,
+    private val userRepository: UserRepository,
+    private val assignmentRepository: AssignmentRepository
+) {
 
     fun findAll(page: Pageable): Page<Assignment> = assignmentRepository
             .findAll(page)

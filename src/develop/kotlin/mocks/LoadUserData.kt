@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component
 
 @Component
 class LoadUserData(
-        private val userAccountService: UserAccountService,
-        private val userAuthorityService: UserAuthorityService
+    private val userAccountService: UserAccountService,
+    private val userAuthorityService: UserAuthorityService
 ) {
     val data: MutableSet<User> = mutableSetOf()
 

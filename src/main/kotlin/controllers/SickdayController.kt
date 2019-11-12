@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/sickdays")
 class SickdayController(
-        private val userRepository: UserRepository,
-        private val periodRepository: PeriodRepository,
-        private val holidayService: HolidayService) {
-
-
-}
+    private val userRepository: UserRepository,
+    private val periodRepository: PeriodRepository,
+    private val holidayService: HolidayService
+)

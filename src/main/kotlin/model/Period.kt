@@ -13,14 +13,14 @@ import javax.persistence.OrderBy
 @EntityListeners(EventEntityListeners::class)
 data class Period(
 
-        override val id: Long = 0,
+    override val id: Long = 0,
 
-        val from: LocalDate = LocalDate.now(),
-        val to: LocalDate = LocalDate.now(),
+    val from: LocalDate = LocalDate.now(),
+    val to: LocalDate = LocalDate.now(),
 
-        @OneToMany(cascade = [CascadeType.ALL])
-        @OrderBy("date")
-        val days: Set<Day>
+    @OneToMany(cascade = [CascadeType.ALL])
+    @OrderBy("date")
+    val days: Set<Day>
 
 ) : AbstractIdEntity(id) {
         override fun equals(other: Any?) = super.equals(other)

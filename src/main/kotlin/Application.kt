@@ -21,10 +21,9 @@ import org.springframework.context.annotation.Import
         WebSecurityConfig::class,
         StubCloudConfiguration::class)
 class Application(
-        val userRepository: UserRepository,
-        val userAuthorityService: UserAuthorityService) : SpringBootServletInitializer() {
-
-}
+    val userRepository: UserRepository,
+    val userAuthorityService: UserAuthorityService
+) : SpringBootServletInitializer()
 
 fun main(args: Array<String>) {
     SpringApplication.run(Application::class.java, *args)

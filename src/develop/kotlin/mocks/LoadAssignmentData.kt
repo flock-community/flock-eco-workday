@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class LoadAssignmentData(
-        private val loadUserData: LoadUserData,
-        private val loadClientData: LoadClientData,
-        private val assignmentRepository: AssignmentRepository
+    private val loadUserData: LoadUserData,
+    private val loadClientData: LoadClientData,
+    private val assignmentRepository: AssignmentRepository
 ) {
 
     val data: MutableSet<Assignment> = mutableSetOf()
