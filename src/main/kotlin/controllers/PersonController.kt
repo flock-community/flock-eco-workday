@@ -1,9 +1,11 @@
 package community.flock.eco.workday.controllers
 
+import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.PersonService
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -20,7 +22,9 @@ class PersonController(
     private val personService: PersonService
 ) {
     @GetMapping
-    fun findAll(pageable: Pageable) = personService.findAll(pageable)
+    fun findAll(pageable: Pageable): ResponseEntity<List<Person>> = personService
+            .findAll(pageable)
+            .toResponse()
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long) = personService.findById(id)
