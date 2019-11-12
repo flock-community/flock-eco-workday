@@ -1,13 +1,13 @@
 package community.flock.eco.workday.model
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo
-import com.fasterxml.jackson.annotation.JsonIdentityReference
-import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractIdEntity
-import community.flock.eco.feature.user.model.User
 import java.time.LocalDate
-import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Entity
+import javax.persistence.EntityListeners
+import javax.persistence.OneToMany
+import javax.persistence.OrderBy
 
 @Entity
 @EntityListeners(EventEntityListeners::class)

@@ -9,9 +9,8 @@ import community.flock.eco.workday.model.HolidayStatus
 import community.flock.eco.workday.model.Period
 import community.flock.eco.workday.repository.HolidayRepository
 import community.flock.eco.workday.repository.PeriodRepository
-import org.springframework.stereotype.Service
 import java.time.LocalDate
-
+import org.springframework.stereotype.Service
 
 @Service
 class HolidayService(

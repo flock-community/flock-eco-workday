@@ -2,10 +2,7 @@ package community.flock.eco.workday.controllers;
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Client
-import community.flock.eco.workday.repository.AssignmentRepository
 import community.flock.eco.workday.services.AssignmentService
-import community.flock.eco.workday.services.ClientService
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize

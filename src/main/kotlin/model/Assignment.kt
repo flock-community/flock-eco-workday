@@ -5,7 +5,7 @@ import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
 import community.flock.eco.feature.user.model.User
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
 import javax.persistence.ManyToOne

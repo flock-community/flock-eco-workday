@@ -2,8 +2,8 @@ package community.flock.eco.workday.mocks
 
 import community.flock.eco.workday.forms.HolidayForm
 import community.flock.eco.workday.services.HolidayService
-import org.springframework.stereotype.Component
 import java.time.LocalDate
+import org.springframework.stereotype.Component
 
 @Component
 class LoadHolidayData(
