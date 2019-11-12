@@ -34,5 +34,4 @@ class LoadUserData(
     private fun UserAccountPasswordForm.save(): User = userAccountService.createUserAccountPassword(this)
             .let { it.user }
             .also { data.add(it) }
-
 }

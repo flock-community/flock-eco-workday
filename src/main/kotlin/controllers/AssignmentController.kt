@@ -24,8 +24,7 @@ class AssignmentController(
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
-    fun findByCode(@PathVariable code:String): ResponseEntity<Assignment> = assignmentService
+    fun findByCode(@PathVariable code: String): ResponseEntity<Assignment> = assignmentService
             .findByCode(code)
             .toResponse()
-
 }

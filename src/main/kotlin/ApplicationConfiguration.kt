@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
-
 @Configuration
 @EnableJpaRepositories
 @EntityScan

@@ -15,9 +15,7 @@ data class Day(
         val date: LocalDate = LocalDate.now(),
         val hours: Int
 
-): AbstractIdEntity(id) {
+) : AbstractIdEntity(id) {
         override fun equals(other: Any?) = super.equals(other)
         override fun hashCode(): Int = super.hashCode()
 }
-
-

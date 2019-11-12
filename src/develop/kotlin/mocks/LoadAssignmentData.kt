@@ -39,5 +39,4 @@ class LoadAssignmentData(
     private fun Assignment.save(): Assignment = assignmentRepository
             .save(this)
             .also { data.add(it) }
-
 }

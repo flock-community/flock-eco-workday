@@ -47,7 +47,6 @@ class HolidayController(
                         } else {
                             holidayService.findAllByUserCode(user.code)
                         }
-
                     }.toResponse()
 
     @PostMapping
@@ -91,7 +90,6 @@ class HolidayController(
                     } else {
                         ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     }
-
                 }
                 .toResponse()
     }
@@ -106,5 +104,4 @@ class HolidayController(
     private fun User.isAuthorizedForUserCode(userCode: String?): Boolean = this.isAdmin() || this.code.equals(userCode)
 
     private fun User.isAuthorizedForHoliday(code: String): Boolean = this.isAdmin() || this.equals(holidayService.findByCode(code)?.user)
-
 }

@@ -22,8 +22,7 @@ data class Period(
         @OrderBy("date")
         val days: Set<Day>
 
-): AbstractIdEntity(id) {
+) : AbstractIdEntity(id) {
         override fun equals(other: Any?) = super.equals(other)
         override fun hashCode(): Int = super.hashCode()
 }
-

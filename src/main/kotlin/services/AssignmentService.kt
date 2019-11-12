@@ -52,7 +52,4 @@ class AssignmentService(
     )
 
     private fun Assignment.save() = assignmentRepository.save(this)
-
 }
-
-

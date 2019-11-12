@@ -6,8 +6,8 @@ import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ClientRepository : PagingAndSortingRepository<Client, Long>{
+interface ClientRepository : PagingAndSortingRepository<Client, Long> {
 
-    fun findByCode(code:String): Optional<Client>
-    fun deleteByCode(code:String)
+    fun findByCode(code: String): Optional<Client>
+    fun deleteByCode(code: String)
 }

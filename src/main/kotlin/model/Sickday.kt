@@ -38,4 +38,3 @@ data class Sickday(
     override fun equals(other: Any?) = super.equals(other)
     override fun hashCode(): Int = super.hashCode()
 }
-

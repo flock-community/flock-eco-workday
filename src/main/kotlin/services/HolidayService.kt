@@ -18,7 +18,7 @@ class HolidayService(
         private val periodRepository: PeriodRepository,
         private val userRepository: UserRepository) {
 
-    fun findByCode(code:String) = holidayRepository.findByCode(code).toNullable()
+    fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
     fun findAllByUserCode(userCode: String) = holidayRepository.findAllByUserCode(userCode)
 
     fun create(form: HolidayForm): Holiday {
@@ -41,7 +41,6 @@ class HolidayService(
                 period = period,
                 status = HolidayStatus.REQUESTED)
                 .save()
-
     }
 
     fun update(code: String, form: HolidayForm): Holiday? {
@@ -73,7 +72,6 @@ class HolidayService(
             }
             .toSet()
 
-
     private fun Holiday.save() = holidayRepository
             .save(this)
 
@@ -86,5 +84,4 @@ class HolidayService(
             throw RuntimeException("amount of DayOff not equal to period")
         }
     }
-
 }

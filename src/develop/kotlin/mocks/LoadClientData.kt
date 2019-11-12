@@ -25,5 +25,4 @@ class LoadClientData(
     fun Client.save(): Client = clientRepository
             .save(this)
             .also { data.add(it) }
-
 }

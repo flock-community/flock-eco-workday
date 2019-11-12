@@ -19,7 +19,6 @@ class LoadHolidayData(
                     days = listOf(8, 8, 8, 8, 8, 8),
                     userCode = it.code
             ).create()
-
         }
     }
 
