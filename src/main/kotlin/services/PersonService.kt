@@ -29,7 +29,7 @@ class PersonService(
     fun create(person: Person): Person? = Person(
         firstname = person.firstname,
         lastname = person.lastname,
-        email = person.email ?: ""
+        email = person.email
     ).save()
 
     fun update(id: Long, person: Person? = null) = this.findById(id)
