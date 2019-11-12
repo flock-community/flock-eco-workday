@@ -27,8 +27,15 @@ class PersonController(
             .toResponse()
 
     @GetMapping("/{id}")
-    fun findById(@PathVariable id: Long) = personService.findById(id)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Person with given id: $id")
+    fun findById(@PathVariable id: Long): ResponseEntity<Person> = personService
+            .findById(id)
+            .toResponse()
+            .also {
+                when (it.statusCodeValue) {
+                    404 -> throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Item found with this id")
+                    else -> it
+                }
+            }
 
     @PostMapping
     fun post(@RequestBody person: Person) = personService.create(person)
