@@ -42,13 +42,10 @@ class PersonService(
             ).save()
         }
 
-    fun deleteById(id: Long) /* = personRepository.deleteById(id) */ {
-        // TODO: elvis operator instead delete ?: ifNull
-        if (!personRepository.existsById(id)) {
-            println("Jo No Things there")
-            return
+    fun deleteById(id: Long): Unit? {
+        return when {
+            personRepository.existsById(id) -> personRepository.deleteById(id)
+            else -> null
         }
-
-        personRepository.deleteById(id)
     }
 }
