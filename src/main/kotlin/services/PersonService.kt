@@ -11,11 +11,12 @@ import org.springframework.stereotype.Service
 class PersonService(
     private val personRepository: PersonRepository
 ) {
-    private fun Person.render(p: Person? = null) = Person(
-        id = p?.id ?: 0,
-        firstname = p?.firstname ?: this.firstname,
-        lastname = p?.lastname ?: this.lastname,
-        email = p?.email ?: this.email
+    private fun Person.render(it: Person? = null): Person = Person(
+                id = this.id,
+                code = this.code,
+                firstname = it?.firstname ?: this.firstname,
+                lastname = it?.lastname ?: this.lastname,
+                email = it?.email ?: this.email
     )
     private fun Person.save(): Person = personRepository.save(this)
 
