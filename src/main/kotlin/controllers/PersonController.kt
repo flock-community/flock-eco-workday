@@ -46,6 +46,15 @@ class PersonController(
             ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "firstname & lastname are required")
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: Long) = personService.deleteById(id)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Item to delete was found")
+    fun delete(@PathVariable id: Long) = personService
+            .deleteById(id)
+            .toResponse()
+            .apply {
+                when (this.statusCodeValue) {
+                    404 -> throw ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "No item found with this id. Has item already been deleted?"
+                    )
+                }
+            }
 }
