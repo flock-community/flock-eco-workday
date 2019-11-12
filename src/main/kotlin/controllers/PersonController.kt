@@ -42,8 +42,17 @@ class PersonController(
             ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "firstname & lastname are required")
 
     @PutMapping("/{id}")
-    fun put(@PathVariable id: Long, @RequestBody updatedPerson: Person) = personService.update(id, updatedPerson)
-            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "firstname & lastname are required")
+    fun put(@PathVariable id: Long, @RequestBody updatedPerson: Person) = personService
+            .update(id, updatedPerson)
+            .apply {
+                when (this) {
+                    is Person -> this.toResponse()
+                    else -> throw ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Cannot perform PUT on given item. Id cannot be found. Use POST Method"
+                    )
+                }
+            }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long) = personService
