@@ -33,15 +33,14 @@ class PersonService(
         email = person.email
     ).save()
 
-    fun update(id: Long, person: Person? = null) = this.findById(id)
-        ?.let {
-            Person(
-                id = it.id, // updates the Person with the same id
-                firstname = person!!.firstname,
-                lastname = person.lastname,
-                email = person.email
-            ).save()
+    fun update(id: Long, person: Person? = null): Person? {
+        val obj = this.findById(id)
+
+        return when (obj) {
+            is Person -> obj.render(person).save()
+            else -> null
         }
+    }
 
     fun deleteById(id: Long): Unit? {
         return when {
