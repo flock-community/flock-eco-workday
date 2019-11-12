@@ -1,4 +1,4 @@
-package community.flock.eco.workday.controllers;
+package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.core.utils.toResponse

@@ -1,4 +1,4 @@
-package community.flock.eco.workday.controllers;
+package community.flock.eco.workday.controllers
 
 import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.workday.repository.PeriodRepository
