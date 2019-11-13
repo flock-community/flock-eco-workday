@@ -74,6 +74,11 @@ export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
       icon: UserIcon,
       url: "/users",
     },
+    {
+      name: "Person",
+      icon: UserIcon,
+      url: "/person",
+    },
   ]
 
   const sideList = () => (
