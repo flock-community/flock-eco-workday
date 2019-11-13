@@ -20,8 +20,10 @@ class PersonService(
     )
     private fun Person.save(): Person = personRepository.save(this)
 
-    fun findAll(pageable: Pageable): Page<Person> = personRepository
-        .findAll(pageable)
+    fun findAll(pageable: Pageable): Page<Person> {
+        return personRepository
+                .findAll(pageable)
+    }
 
     fun findById(id: Long): Person? = personRepository
         .findById(id)
