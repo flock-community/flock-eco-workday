@@ -1,16 +1,16 @@
 import React, {useEffect, useState} from "react"
 
 import {HashRouter as Router, Route} from "react-router-dom"
-import {UserFeature} from "@flock-eco/feature-user/src/main/react/user/UserFeature"
-import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
-import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {HolidayFeature} from "../features/holiday/HolidayFeature"
+import {UserFeature} from "@flock-eco/feature-user/src/main/react/user/UserFeature"
 import {ApplicationLayout} from "./ApplicationLayout"
 import {ApplicationDrawer} from "./ApplicationDrawer"
 import {ApplicationContext} from "./ApplicationContext"
 import {HomeFeature} from "../features/home/HomeFeature"
 import {ClientFeature} from "../features/client/ClientFeature"
+import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
 import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
+import {PersonFeature} from "../features/person/PersonFeature"
 
 export function Application() {
   const [state, setState] = useState({
@@ -76,6 +76,7 @@ export function Application() {
           <Route path="/assignments" exact component={AssignmentFeature} />
           <Route path="/holidays" exact component={HolidayFeature} />
           <Route path="/users" exact component={UserFeature} />
+          <Route path="/person" exact component={PersonFeature} />
         </div>
       </Router>
     </ApplicationContext.Provider>
