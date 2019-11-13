@@ -12,7 +12,7 @@ import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
 import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
 import {PersonFeature} from "../features/person/PersonFeature"
 
-export function Application() {
+export const Application = () => {
   const [state, setState] = useState({
     openDrawer: false,
     loggedIn: null,

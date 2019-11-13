@@ -27,16 +27,25 @@ const useStyles = makeStyles({
   },
 })
 
+<<<<<<< HEAD
 export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
+=======
+// eslint-disable-next-line no-unused-vars
+export const ApplicationDrawer = withRouter(({open, onClickItem, onClose, history}) => {
+>>>>>>> acf41f4... eslint fix
   const classes = useStyles()
 
   const handleClose = event => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return
     }
+<<<<<<< HEAD
     if (onClose) {
       onClose()
     }
+=======
+    onClose()
+>>>>>>> acf41f4... eslint fix
   }
 
   const handleClickItem = item => () => {
