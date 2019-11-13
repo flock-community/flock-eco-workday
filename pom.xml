@@ -213,6 +213,56 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>ktlint</id>
+                        <phase>verify</phase>
+                        <configuration>
+                        <target name="ktlint">
+                            <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                classname="com.pinterest.ktlint.Main" classpathref="maven.plugin.classpath">
+                                <arg value="--reporter=plain?group_by_file"/>
+                                <arg value="--reporter=checkstyle,output=${project.basedir}/ktlint.xml"/>
+                                <arg value="--color"/>
+                                <arg value="src/**/*.kt"/>
+                                <!-- see https://github.com/pinterest/ktlint#usage for more -->
+                            </java>
+                        </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>ktlint-format</id>
+                        <configuration>
+                        <target name="ktlint">
+                            <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                classname="com.pinterest.ktlint.Main" classpathref="maven.plugin.classpath">
+                                <arg value="-F"/>
+                                <arg value="--color"/>
+                                <arg value="src/**/*.kt"/>
+                            </java>
+                        </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.pinterest</groupId>
+                        <artifactId>ktlint</artifactId>
+                        <version>0.35.0</version>
+                    </dependency>
+                    <!-- additional 3rd party ruleset(s) can be specified here -->
+                </dependencies>
+            </plugin>
 
         </plugins>
 
