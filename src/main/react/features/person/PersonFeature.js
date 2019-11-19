@@ -1,5 +1,9 @@
 import React from "react"
+import Grid from "@material-ui/core/Grid"
 import {makeStyles} from "@material-ui/styles"
+import {PersonTable} from "./table/PersonTable"
+import {Paper} from "@material-ui/core"
+
 const persons = [
   {
     firstname: "Workday",
@@ -36,7 +40,7 @@ const useStyles = makeStyles(() => ({
     margin: 0,
     width: "auto",
   },
-  card: {
+  paper: {
     margin: 16,
     maxWidth: 1200, // should represent a @screen break-point
     width: "100%",
@@ -44,5 +48,13 @@ const useStyles = makeStyles(() => ({
 }))
 
 export const PersonFeature = () => {
-    return (<div>Mau</div>)
+  const classes = useStyles()
+
+  return (
+    <Grid container className={classes.root} spacing={1}>
+      <Paper className={classes.paper}>
+        <PersonTable persons={persons}></PersonTable>
+      </Paper>
+    </Grid>
+  )
 }
