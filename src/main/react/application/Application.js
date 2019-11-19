@@ -11,6 +11,7 @@ import {ClientFeature} from "../features/client/ClientFeature"
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
 import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
 import {PersonFeature} from "../features/person/PersonFeature"
+import { PersonDetails } from "../features/person/PersonDetails";
 
 export const Application = () => {
   const [state, setState] = useState({
@@ -77,6 +78,7 @@ export const Application = () => {
           <Route path="/holidays" exact component={HolidayFeature} />
           <Route path="/users" exact component={UserFeature} />
           <Route path="/person" exact component={PersonFeature} />
+          <Route path="/person/:personId" component={PersonDetails} />
         </div>
       </Router>
     </ApplicationContext.Provider>
