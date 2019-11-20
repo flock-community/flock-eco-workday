@@ -15,6 +15,8 @@ import {makeStyles} from "@material-ui/styles"
 
 const useStyles = makeStyles({
   root: {
+    margin: 16,
+    maxWidth: 1200, // should represent a @screen break-point
     width: "100%",
   },
   tableWrapper: {
