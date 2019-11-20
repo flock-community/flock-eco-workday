@@ -11,7 +11,7 @@ import {ClientFeature} from "../features/client/ClientFeature"
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
 import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
 import {PersonFeature} from "../features/person/PersonFeature"
-import { PersonDetails } from "../features/person/PersonDetails";
+import {PersonDetails} from "../features/person/PersonDetails"
 
 export const Application = () => {
   const [state, setState] = useState({
@@ -69,17 +69,15 @@ export const Application = () => {
       value={{authorities: state.authorities, user: state.user}}
     >
       <Router>
-        <div>
-          <ApplicationDrawer open={state.openDrawer} onClose={handleDrawerClose} />
-          <ApplicationLayout onDrawer={handleDrawerOpen} />
-          <Route path="/" exact component={HomeFeature} />
-          <Route path="/clients" exact component={ClientFeature} />
-          <Route path="/assignments" exact component={AssignmentFeature} />
-          <Route path="/holidays" exact component={HolidayFeature} />
-          <Route path="/users" exact component={UserFeature} />
-          <Route path="/person" exact component={PersonFeature} />
-          <Route path="/person/:personId" component={PersonDetails} />
-        </div>
+        <ApplicationDrawer open={state.openDrawer} onClose={handleDrawerClose} />
+        <ApplicationLayout onDrawer={handleDrawerOpen} />
+        <Route path="/" exact component={HomeFeature} />
+        <Route path="/clients" exact component={ClientFeature} />
+        <Route path="/assignments" exact component={AssignmentFeature} />
+        <Route path="/holidays" exact component={HolidayFeature} />
+        <Route path="/users" exact component={UserFeature} />
+        <Route path="/person" exact component={PersonFeature} />
+        <Route path="/person/:personId" component={PersonDetails} />
       </Router>
     </ApplicationContext.Provider>
   )
