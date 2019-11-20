@@ -2,6 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import {Paper, Breadcrumbs, Link} from "@material-ui/core"
 import {makeStyles} from "@material-ui/styles"
+import {NavLink} from "./NavLinks"
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -30,12 +31,17 @@ export const PersonSubNav = props => {
         separator=">"
         aria-label="breadcrumb"
       >
-        <Link color="inherit" href="/" onClick={handleClick}>
+        <NavLink breadcrumbs to={`${baseUrl}`} onClick={handleClick}>
           User
-        </Link>
-        <Link color="inherit" href="/" onClick={handleClick}>
+        </NavLink>
+        <NavLink
+          breadcrumbs
+          color="inherit"
+          to={`${baseUrl}/id/2`}
+          onClick={handleClick}
+        >
           Flock workday
-        </Link>
+        </NavLink>
       </Breadcrumbs>
     </Paper>
   )
