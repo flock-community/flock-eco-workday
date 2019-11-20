@@ -22,7 +22,6 @@ const useStyles = makeStyles({
 })
 
 export const PersonTable = props => {
-  const {persons} = props
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const classes = useStyles()
