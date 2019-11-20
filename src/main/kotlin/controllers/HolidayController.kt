@@ -9,6 +9,7 @@ import community.flock.eco.workday.forms.HolidayForm
 import community.flock.eco.workday.model.Holiday
 import community.flock.eco.workday.repository.PeriodRepository
 import community.flock.eco.workday.services.HolidayService
+import community.flock.eco.workday.services.isAdmin
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -92,11 +93,8 @@ class HolidayController(
             .findByCode(this.name)
             .toNullable()
 
-    private fun User.isAdmin(): Boolean = this.authorities
-            .contains(HolidayAuthority.ADMIN.toName())
+    fun User.isAuthorizedForUserCode(userCode: String?): Boolean = this.isAdmin() || this.code.equals(userCode)
 
-    private fun User.isAuthorizedForUserCode(userCode: String?): Boolean = this.isAdmin() || this.code.equals(userCode)
-
-    private fun User.isAuthorizedForHoliday(code: String): Boolean = this.isAdmin() || this.equals(holidayService.findByCode(code)?.user)
+    fun User.isAuthorizedForHoliday(code: String): Boolean = this.isAdmin() || this.equals(holidayService.findByCode(code)?.user)
 
 }

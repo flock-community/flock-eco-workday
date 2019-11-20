@@ -9,6 +9,7 @@ import {UserSelector} from "../../components/UserSelector";
 import HolidayClient from "../../clients/HolidayClient";
 import {ApplicationContext} from "../../application/ApplicationContext";
 import Grid from "@material-ui/core/Grid";
+import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil";
 
 const useStyles = makeStyles({
   root: {
@@ -32,19 +33,10 @@ export function HolidayFeature() {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(null)
   const [userCode, setUserCode] = useState(null)
-  const [users, setUsers] = useState([])
   const {authorities, user} = useContext(ApplicationContext);
 
   useEffect(() => {
-    if (isSuperUser()) {
-      HolidayClient.getAllUsers()
-        .then(users => {
-          setUsers(users)
-        })
-    }
-
     user && setUserCode(user.code)
-
   }, [authorities, user]);
 
   function handleCompleteDialog() {
@@ -58,15 +50,11 @@ export function HolidayFeature() {
     setOpen(true)
   }
 
-  function isSuperUser() {
-    return authorities && authorities.includes("HolidayAuthority.ADMIN");
-  }
-
   function handleClickRow(item) {
 
     setValue({
       ...item,
-      period:{
+      period: {
         ...item.period,
         days: item.period.days
           .map(it => it.hours),
@@ -87,9 +75,11 @@ export function HolidayFeature() {
   return (<div className={classes.root}>
 
     <Grid container spacing={1}>
-      <Grid item xs={12}>
-        {isSuperUser() && <UserSelector users={users} onChange={handleChangeUser}/>}
-      </Grid>
+      <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+        <Grid item xs={12}>
+          <UserSelector onChange={handleChangeUser}/>
+        </Grid>
+      </UserAuthorityUtil>
       <Grid item xs={12}>
         <HolidayList userCode={userCode} refresh={refresh} onClickRow={handleClickRow}/>
       </Grid>

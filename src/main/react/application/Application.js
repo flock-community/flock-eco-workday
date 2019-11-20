@@ -10,6 +10,7 @@ import {HomeFeature} from "../features/home/HomeFeature";
 import {ClientFeature} from "../features/client/ClientFeature";
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient";
 import {AssignmentFeature} from "../features/assignments/AssignmentFeature";
+import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil";
 
 export const Application = () => {
 
@@ -31,6 +32,7 @@ export const Application = () => {
                 authorities: status.authorities,
                 user,
               })
+              UserAuthorityUtil.setAuthorities(status.authorities)
             })
             .catch(err => {
               console.log('Cannot connect to service')

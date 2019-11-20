@@ -5,7 +5,6 @@ import MomentUtils from '@date-io/moment';
 import Divider from "@material-ui/core/Divider";
 import moment from "moment";
 import Typography from "@material-ui/core/Typography";
-import MenuItem from '@material-ui/core/MenuItem'
 
 const daysOfWeek = ['Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za']
 
@@ -14,42 +13,90 @@ export function PeriodForm({value, onChange}) {
   const now = moment().startOf('day')
 
   const [grid, setGrid] = useState([])
-  const [dates, setDates] = useState([now, now])
-  const [days, setDays] = useState({})
+  const [{dates, days}, setState] = useState({
+    dates: [now, now],
+    days: []
+  })
 
   useEffect(() => {
-    const from = (value && moment(value.from)) || now
-    const to = (value && moment(value.to)) || now
-    setDates([from, to])
+    console.log(value)
+    if (value) {
+      const from = moment(value.dates[0])
+      const to = moment(value.dates[1])
+      console.log(from, to)
+      if (value.days) {
+        setState({
+          dates: [from, to],
+          days: value.days
+            .reduce((acc, cur, index) => {
+              const key = stringifyDate(moment(from).add(index, 'day'))
+              return {
+                ...acc,
+                [key]: cur
+              }
+            }, {})
+        })
+      } else {
+        setState({
+          dates: [from, to],
+          days: calcDays(from, to)
+        })
+      }
+    } else {
+      setState({
+        dates: [now, now],
+        days: calcDays(now, now)
+      })
+    }
   }, [value]);
 
   useEffect(() => {
-    setDays(calcDates(dates[0], dates[1]))
     setGrid(calcGrid())
-  }, [dates]);
-
-  useEffect(() => {
-    setGrid(calcGrid())
-  }, [days]);
+  }, [dates, days]);
 
   function handleDateFromChange(date) {
-    setDates([date, dates[1]])
+    const days = calcDays(date, dates[1])
+    setState({
+      dates: [date, dates[1]],
+      days: days
+    })
+    onChange({
+      dates: [date, dates[1]],
+      days: Object.keys(days).map(key => days[key])
+    })
   }
 
   function handleDateToChange(date) {
-    setDates([dates[0], date])
+    const days = calcDays(dates[0], date)
+    setState({
+      dates: [dates[0], date],
+      days: days
+    })
+    onChange({
+      dates: [dates[0], date],
+      days: Object.keys(days).map(key => days[key])
+    })
   }
 
   const handleDayChange = (key) => (ev) => {
     const value = ev.target.value
-    setDays({
+    const val = {
       ...days,
       [key]: parseInt(value)
+    }
+    setState({
+      dates: [dates[0], dates[1]],
+      days: val
+    })
+    onChange({
+      dates: [dates[0], dates[1]],
+      days: Object.keys(val)
+        .map(key => val[key])
     })
   }
 
-  function calcDates(from, to) {
-    const diff = to.diff(from, 'days') + 1
+  function calcDays(from, to) {
+    const diff = to.diff(from, 'days') + 2
     return (diff < 0) ? [] : [...Array(diff).keys()]
       .map((it) => moment(from).add(it, 'days'))
       .reduce((acc, cur) => {
@@ -66,7 +113,7 @@ export function PeriodForm({value, onChange}) {
   function calcGrid() {
     const start = moment(dates[0]).startOf('week');
     const end = moment(dates[1]).startOf('week');
-    const diff = Math.abs(end.week() - start.week()) + 1;
+    const diff = Math.ceil(end.diff(start, 'days') / 7) + 1
     const weeks = [...Array(diff).keys()]
 
     return weeks
@@ -88,7 +135,7 @@ export function PeriodForm({value, onChange}) {
           const total = it
             .filter(it => !it.disabled)
             .reduce((acc, cur) => (acc + parseInt(days[cur.key]) || acc), 0)
-          return {weekNumber, days:it, total}
+          return {weekNumber, days: it, total}
         }
       )
   }
@@ -105,8 +152,6 @@ export function PeriodForm({value, onChange}) {
   function stringifyDate(date) {
     return date.format('YYYYMMDD');
   }
-
-  if (dates.length === 0) return null;
 
   return (
     <>

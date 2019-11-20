@@ -21,11 +21,9 @@ data class Assignment(
         val endDate: LocalDate?,
 
         @ManyToOne
-        @JsonIdentityReference(alwaysAsId=true)
         val client: Client,
 
         @ManyToOne
-        @JsonIdentityReference(alwaysAsId=true)
         val user: User
 
 ) : AbstractCodeEntity(id, code) {

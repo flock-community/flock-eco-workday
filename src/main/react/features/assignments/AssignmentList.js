@@ -17,28 +17,27 @@ const useStyles = makeStyles({
   }
 });
 
-export function AssignmentList({reload, onItemClick}) {
+export function AssignmentList({reload, userCode, onItemClick}) {
 
   const classes = useStyles();
 
   const [list, setList] = useState([])
 
   useEffect(() => {
-    AssignmentClient.findAllByPage(0)
+    AssignmentClient.findAllByUserCode(userCode)
       .then(res => setList(res))
-  }, [reload])
+  }, [userCode, reload])
 
-  const handleItem = (it) => (ev) => {
+  const handleClickItem = (it) => () => {
     onItemClick && onItemClick(it)
   }
 
-  return (<Grid container className={classes.root} spacing={1}>
-    {list.map(it => (<Grid item xs={12} key={`clients-${it.code}`}>
-      <Card  onClick={handleItem(it)}>
+  return (<Grid container spacing={1}>
+    {list.map(it => (<Grid item xs={12} key={`assignment-${it.code}`}>
+      <Card  onClick={handleClickItem(it)}>
         <CardContent>
-          <Typography variant="h6" >
-            {it.user}
-          </Typography>
+          <Typography variant="h6" >{it.client.name}</Typography>
+          <Typography>Period: {it.startDate.format("DD-MM-YYYY")} - {it.endDate.format("DD-MM-YYYY")}</Typography>
         </CardContent>
       </Card>
     </Grid>))}
