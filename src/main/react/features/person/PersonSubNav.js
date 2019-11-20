@@ -1,4 +1,5 @@
 import React from "react"
+import PropTypes from "prop-types"
 import {Paper, Breadcrumbs, Link} from "@material-ui/core"
 import {makeStyles} from "@material-ui/styles"
 
@@ -14,7 +15,8 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export const PersonSubNav = () => {
+export const PersonSubNav = props => {
+  const {baseUrl} = props
   const classes = useStyles()
 
   const handleClick = e => {
@@ -39,4 +41,6 @@ export const PersonSubNav = () => {
   )
 }
 
-PersonSubNav.propTypes = {}
+PersonSubNav.propTypes = {
+  baseUrl: PropTypes.string.isRequired,
+}
