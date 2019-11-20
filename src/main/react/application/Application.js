@@ -77,7 +77,6 @@ export const Application = () => {
         <Route path="/holidays" exact component={HolidayFeature} />
         <Route path="/users" exact component={UserFeature} />
         <Route path="/person" exact component={PersonFeature} />
-        <Route path="/person/:personId" component={PersonDetails} />
       </Router>
     </ApplicationContext.Provider>
   )
