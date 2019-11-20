@@ -1,5 +1,4 @@
 import React, {useState} from "react"
-import PropTypes from "prop-types"
 import {Link as RouterLink} from "react-router-dom"
 import {
   Table,
@@ -85,8 +84,4 @@ export const PersonTable = props => {
       />
     </Paper>
   )
-}
-
-PersonTable.propTypes = {
-  persons: PropTypes.array.isRequired,
 }
