@@ -25,6 +25,8 @@ const useStyles = makeStyles({
 })
 
 export const PersonTable = props => {
+  const {match} = props
+  const {url} = match
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const classes = useStyles()
@@ -53,7 +55,7 @@ export const PersonTable = props => {
                   <TableCell component="th" scope="row">
                     <Link
                       component={RouterLink}
-                      to={`/person/${index}`}
+                      to={`/person/id/${index}`}
                       underline="none"
                     >
                       {person.firstname} {person.lastname}
