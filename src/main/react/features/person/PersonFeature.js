@@ -41,11 +41,6 @@ const useStyles = makeStyles(() => ({
     margin: 0,
     width: "auto",
   },
-  paper: {
-    margin: 16,
-    maxWidth: 1200, // should represent a @screen break-point
-    width: "100%",
-  },
 }))
 
 export const PersonFeature = () => {
