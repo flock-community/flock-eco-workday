@@ -8,6 +8,7 @@ import {
   TableCell,
   Link,
   TablePagination,
+  Paper,
 } from "@material-ui/core"
 import {PersonTableHead} from "./PersonTableHead"
 import {makeStyles} from "@material-ui/styles"
@@ -39,7 +40,7 @@ export const PersonTable = props => {
   }
 
   return (
-    <div className={classes.root}>
+    <Paper className={classes.root}>
       <div className={classes.tableWrapper}>
         <Table>
           <PersonTableHead></PersonTableHead>
@@ -78,7 +79,7 @@ export const PersonTable = props => {
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
       />
-    </div>
+    </Paper>
   )
 }
 
