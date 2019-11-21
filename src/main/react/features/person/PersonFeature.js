@@ -19,10 +19,12 @@ export const PersonFeature = props => {
   const classes = useStyles()
 
   return (
-    <Grid container className={classes.root} spacing={1}>
+    <Grid container className={classes.root} spacing={4}>
       <PersonSubNav baseUrl={url} />
-      <PersonRouter {...props} />
-      {props.children}
+      <Grid item xs={12}>
+        <PersonRouter {...props} />
+        {props.children}
+      </Grid>
     </Grid>
   )
 }
