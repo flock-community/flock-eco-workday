@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react"
+import PropTypes from "prop-types"
 import {PersonService} from "./PersonService"
 import {Paper} from "@material-ui/core"
 
@@ -8,7 +9,7 @@ export const PersonDetails = props => {
   const [person, setPerson] = useState({})
 
   useEffect(() => {
-    PersonService.getById(57).then(person => setPerson(person))
+    PersonService.getById(params.personId).then(person => setPerson(person))
   }, [])
 
   return (
@@ -21,4 +22,12 @@ export const PersonDetails = props => {
       ))}
     </Paper>
   )
+}
+
+PersonDetails.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      personId: PropTypes.string.isRequired,
+    }),
+  }),
 }
