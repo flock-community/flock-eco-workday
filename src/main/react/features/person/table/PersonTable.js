@@ -19,9 +19,7 @@ import {PersonService} from "./../PersonService"
 // tableWrapper: div - making the table scrollable
 const useStyles = makeStyles({
   root: {
-    margin: 16,
     maxWidth: 1200, // should represent a @screen break-point
-    width: "100%",
   },
   tableWrapper: {
     overflow: "auto",
