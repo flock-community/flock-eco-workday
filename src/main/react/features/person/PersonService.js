@@ -1,5 +1,16 @@
 const path = "/api/person"
 
+const getAll = () => {
+  const opts = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }
+
+  return fetch(`${path}/`).then(res => res.json())
+}
+
 const getById = id => {
   const opts = {
     method: "GET",
@@ -8,5 +19,6 @@ const getById = id => {
 }
 
 export const PersonService = {
+  getAll,
   getById,
 }
