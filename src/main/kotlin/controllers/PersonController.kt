@@ -18,9 +18,6 @@ class PersonController(
         private val personRepository: PersonRepository,
         private val personService: PersonService) {
 
-    @GetMapping("/test")
-    fun findAll(principal: Principal, pageable: Pageable) = personRepository.findAll(pageable).toResponse()
-
     @GetMapping
     fun findAll(pageable: Pageable) = personService
             .findAll(pageable)
