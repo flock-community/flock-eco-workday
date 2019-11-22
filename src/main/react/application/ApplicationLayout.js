@@ -98,6 +98,6 @@ export function ApplicationLayout({open, onDrawer}) {
   )
 }
 ApplicationLayout.propTypes = {
-  open: PropTypes.boolean,
+  open: PropTypes.func,
   onDrawer: PropTypes.func,
 }
