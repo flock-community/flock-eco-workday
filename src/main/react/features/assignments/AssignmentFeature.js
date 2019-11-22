@@ -64,7 +64,6 @@ export function AssignmentFeature() {
       <Fab color="primary" className={classes.fab} onClick={handleClickAdd}>
         <AddIcon />
       </Fab>
-      {dialog}
     </div>
   )
 }
