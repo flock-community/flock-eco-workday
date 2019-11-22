@@ -1,16 +1,15 @@
 import React, {useState} from "react"
+import PropTypes from "prop-types"
 
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
 import IconButton from "@material-ui/core/IconButton"
-
+import Menu from "@material-ui/core/Menu"
 import MenuIcon from "@material-ui/icons/Menu"
 import AccountCircle from "@material-ui/icons/AccountCircle"
-import Menu from "@material-ui/core/Menu"
 import Typography from "@material-ui/core/Typography"
 import MenuItem from "@material-ui/core/MenuItem"
 import makeStyles from "@material-ui/core/styles/makeStyles"
-import {PropTypes} from "@material-ui/core"
 
 const useStyles = makeStyles({
   root: {
@@ -99,6 +98,6 @@ export function ApplicationLayout({open, onDrawer}) {
   )
 }
 ApplicationLayout.propTypes = {
-  open: PropTypes.boolean,
+  open: PropTypes.func,
   onDrawer: PropTypes.func,
 }

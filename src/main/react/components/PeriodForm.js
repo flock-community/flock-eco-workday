@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react"
-import {Grid, PropTypes, TextField} from "@material-ui/core"
+import PropTypes from "prop-types"
+import {Grid, TextField} from "@material-ui/core"
 import {DatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers"
 import MomentUtils from "@date-io/moment"
 import Divider from "@material-ui/core/Divider"

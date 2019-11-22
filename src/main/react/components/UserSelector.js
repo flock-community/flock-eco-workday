@@ -1,15 +1,16 @@
 import React, {useEffect, useState} from "react"
+import PropTypes from "prop-types"
 import Select from "@material-ui/core/Select"
 import MenuItem from "@material-ui/core/MenuItem"
 import InputLabel from "@material-ui/core/InputLabel"
-import {Card, PropTypes} from "@material-ui/core"
+import {Card} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import FormControl from "@material-ui/core/FormControl"
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
 
-export function UserSelector({value, onChange}) {
+export function UserSelector({onChange}) {
   const [users, setUsers] = useState(null)
-  const [selected, setSelected] = useState(value)
+  const [selected, setSelected] = useState("")
 
   useEffect(() => {
     UserClient.findAllUsers("", 0, 100).then(res => {
@@ -39,7 +40,7 @@ export function UserSelector({value, onChange}) {
           <InputLabel>Select user</InputLabel>
           <Select value={selected || {}} onChange={handleChange}>
             {users &&
-              users.map(function(user) {
+              users.map(user => {
                 return renderMenuItem(user)
               })}
           </Select>
@@ -48,7 +49,7 @@ export function UserSelector({value, onChange}) {
     </Card>
   )
 }
+
 UserSelector.propTypes = {
-  value: PropTypes.object,
   onChange: PropTypes.func,
 }

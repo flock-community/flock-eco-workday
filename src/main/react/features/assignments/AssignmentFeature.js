@@ -3,10 +3,11 @@ import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils
 import Grid from "@material-ui/core/Grid"
 import {makeStyles} from "@material-ui/core"
 import Fab from "@material-ui/core/Fab"
-import AddIcon from "@material-ui/core/SvgIcon/SvgIcon"
+import AddIcon from "@material-ui/icons/Add"
 import {UserSelector} from "../../components/UserSelector"
 import {AssignmentList} from "./AssignmentList"
 import {ApplicationContext} from "../../application/ApplicationContext"
+import {ClientDialog} from "../client/ClientDialog"
 
 const useStyles = makeStyles({
   root: {
@@ -35,6 +36,10 @@ export function AssignmentFeature() {
     setDialog({open: true, code: null})
   }
 
+  function handleClose() {
+    setDialog({open: false, code: null})
+  }
+
   function handleChangeUser(it) {
     if (it) setUserCode(it.code)
   }
@@ -48,7 +53,7 @@ export function AssignmentFeature() {
       <Grid container spacing={1}>
         <UserAuthorityUtil has={"AssignmentAuthority.ADMIN"}>
           <Grid item xs={12}>
-            <UserSelector value={userCode} onChange={handleChangeUser} />
+            <UserSelector onChange={handleChangeUser} />
           </Grid>
         </UserAuthorityUtil>
 
@@ -57,10 +62,12 @@ export function AssignmentFeature() {
         </Grid>
       </Grid>
 
+      <ClientDialog code={dialog.code} open={dialog.open} onClose={handleClose} />
       <Fab color="primary" className={classes.fab} onClick={handleClickAdd}>
         <AddIcon />
       </Fab>
-      {dialog}
     </div>
   )
 }
+
+AssignmentFeature.propTypes = {}
