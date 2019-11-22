@@ -4,14 +4,14 @@ import community.flock.eco.feature.user.model.User
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Client
 import community.flock.eco.workday.repository.AssignmentRepository
-import org.springframework.stereotype.Component
 import java.time.LocalDate
+import org.springframework.stereotype.Component
 
 @Component
 class LoadAssignmentData(
-        private val loadUserData: LoadUserData,
-        private val loadClientData: LoadClientData,
-        private val assignmentRepository: AssignmentRepository
+    private val loadUserData: LoadUserData,
+    private val loadClientData: LoadClientData,
+    private val assignmentRepository: AssignmentRepository
 ) {
 
     val data: MutableSet<Assignment> = mutableSetOf()
@@ -39,5 +39,4 @@ class LoadAssignmentData(
     private fun Assignment.save(): Assignment = assignmentRepository
             .save(this)
             .also { data.add(it) }
-
 }

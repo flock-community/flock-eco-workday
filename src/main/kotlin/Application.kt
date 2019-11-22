@@ -1,8 +1,6 @@
 package community.flock.eco.workday
 
 import community.flock.eco.cloud.stub.StubCloudConfiguration
-import community.flock.eco.core.utils.toNullable
-import community.flock.eco.feature.user.events.UserCreateEvent
 import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.fundraising.config.WebMvcConfig
@@ -13,8 +11,6 @@ import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoCon
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
-import org.springframework.context.event.EventListener
-
 
 @Configuration
 @SpringBootApplication(exclude = arrayOf(
@@ -25,14 +21,10 @@ import org.springframework.context.event.EventListener
         WebSecurityConfig::class,
         StubCloudConfiguration::class)
 class Application(
-        val userRepository: UserRepository,
-        val userAuthorityService: UserAuthorityService) : SpringBootServletInitializer() {
-
-}
+    val userRepository: UserRepository,
+    val userAuthorityService: UserAuthorityService
+) : SpringBootServletInitializer()
 
 fun main(args: Array<String>) {
     SpringApplication.run(Application::class.java, *args)
 }
-
-
-

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class LoadClientData(
-        private val clientRepository: ClientRepository
+    private val clientRepository: ClientRepository
 ) {
     val data: MutableSet<Client> = mutableSetOf()
 
@@ -25,5 +25,4 @@ class LoadClientData(
     fun Client.save(): Client = clientRepository
             .save(this)
             .also { data.add(it) }
-
 }

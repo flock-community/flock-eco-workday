@@ -1,11 +1,8 @@
-package community.flock.eco.workday.controllers;
+package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Client
-import community.flock.eco.workday.repository.AssignmentRepository
 import community.flock.eco.workday.services.AssignmentService
-import community.flock.eco.workday.services.ClientService
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -17,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/assignments")
 class AssignmentController(
-        private val assignmentService: AssignmentService) {
+    private val assignmentService: AssignmentService
+) {
 
     @GetMapping
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
@@ -27,8 +25,7 @@ class AssignmentController(
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
-    fun findByCode(@PathVariable code:String): ResponseEntity<Assignment> = assignmentService
+    fun findByCode(@PathVariable code: String): ResponseEntity<Assignment> = assignmentService
             .findByCode(code)
             .toResponse()
-
 }

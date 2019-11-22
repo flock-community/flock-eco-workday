@@ -5,5 +5,5 @@ import org.springframework.stereotype.Component
 
 @Component
 class LoadData(
-        val dayRepository: DayRepository
+    val dayRepository: DayRepository
 )
