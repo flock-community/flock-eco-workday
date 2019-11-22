@@ -4,10 +4,12 @@ import community.flock.eco.feature.user.model.User
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Client
 import community.flock.eco.workday.repository.AssignmentRepository
+import org.springframework.context.annotation.Profile
 import java.time.LocalDate
 import org.springframework.stereotype.Component
 
 @Component
+@Profile("local")
 class LoadAssignmentData(
     private val loadUserData: LoadUserData,
     private val loadClientData: LoadClientData,

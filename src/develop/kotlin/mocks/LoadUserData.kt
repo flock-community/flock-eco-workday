@@ -4,9 +4,11 @@ import community.flock.eco.feature.user.forms.UserAccountPasswordForm
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
+@Profile("local")
 class LoadUserData(
     private val userAccountService: UserAccountService,
     private val userAuthorityService: UserAuthorityService
