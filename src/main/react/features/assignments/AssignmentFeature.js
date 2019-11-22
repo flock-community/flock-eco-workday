@@ -64,3 +64,5 @@ export function AssignmentFeature() {
     </div>
   )
 }
+
+AssignmentFeature.propTypes = {}

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react"
-
+import PropTypes from "prop-types"
 import Card from "@material-ui/core/Card"
 import {CardContent, makeStyles} from "@material-ui/core"
 import Grid from "@material-ui/core/Grid"
@@ -47,4 +47,10 @@ export function AssignmentList({reload, userCode, onItemClick}) {
       ))}
     </Grid>
   )
+}
+
+AssignmentList.propTypes = {
+  reload: PropTypes.bool,
+  userCode: PropTypes.string,
+  onItemClick: PropTypes.func,
 }
