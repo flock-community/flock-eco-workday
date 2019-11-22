@@ -52,7 +52,7 @@ export function AssignmentFeature() {
       <Grid container spacing={1}>
         <UserAuthorityUtil has={"AssignmentAuthority.ADMIN"}>
           <Grid item xs={12}>
-            <UserSelector value={userCode} onChange={handleChangeUser} />
+            <UserSelector onChange={handleChangeUser} />
           </Grid>
         </UserAuthorityUtil>
 
