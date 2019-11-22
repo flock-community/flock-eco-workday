@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="flock-eco-workday:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>flock-eco-workday</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="flock-eco-workday-develop-SNAPSHOT.war">
+      <element id="artifact" artifact-name="flock-eco-workday:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,7 +1,7 @@
 package community.flock.eco.workday.repository
 
 import community.flock.eco.workday.model.Client
-import java.util.*
+import java.util.Optional
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 

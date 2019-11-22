@@ -1,5 +1,6 @@
 package community.flock.eco.workday.controllers
 
+
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserService
@@ -11,11 +12,12 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
+
 @RestController
 @RequestMapping("/api/assignments")
 class AssignmentController(
-    private val userService: UserService,
-    private val assignmentService: AssignmentService
+        private val userService: UserService,
+        private val assignmentService: AssignmentService
 ) {
 
     @GetMapping

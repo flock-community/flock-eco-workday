@@ -1,0 +1,20 @@
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{java|kt|gradle}]
+indent_size = 4
+
+[*.{yaml|yml}]
+indent_size = 2
+
+[*.{xml}]
+indent_size = 4
+
+[*.{js|jsx|ts|tsx|css|sass|scss|html}]
+indent_size = 2

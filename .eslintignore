@@ -1,0 +1,12 @@
+# node_modules/ ignored by default
+src/main/webapp/**/*
+src/main/resources/**/*
+target/**/*
+*.properties
+
+src/main/react/features/assignments/**/*
+src/main/react/features/client/**/*
+src/main/react/features/holiday/**/*
+src/main/react/features/home/**/*
+src/main/react/features/sickday/**/*
+

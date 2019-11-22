@@ -3,7 +3,8 @@ package community.flock.eco.workday.model
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractIdEntity
 import java.time.LocalDate
-import javax.persistence.*
+import javax.persistence.Entity
+import javax.persistence.EntityListeners
 
 @Entity
 @EntityListeners(EventEntityListeners::class)

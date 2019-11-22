@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
-import java.util.*
+import java.util.UUID
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
 

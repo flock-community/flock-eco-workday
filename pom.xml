@@ -21,6 +21,10 @@
         <google.datastore.version>1.28.0</google.datastore.version>
         <google.appengine.version>1.9.64</google.appengine.version>
         <google.store.version>1.28.0</google.store.version>
+        <!-- installed node/npm version: lts/carbon -->
+        <node.version>v8.16.2</node.version>
+        <npm.version>6.4.1</npm.version>
+        <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -31,7 +35,7 @@
             <version>${google.appengine.version}</version>
         </dependency>
 
-        <!--Flock Eco -->
+        <!-- Flock Eco -->
         <dependency>
             <groupId>com.github.flock-community.flock-eco</groupId>
             <artifactId>flock-eco-feature-user</artifactId>
@@ -109,6 +113,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.1.5.RELEASE</version>
                 <configuration>
                     <mainClass>community.flock.eco.workday.ApplicationKt</mainClass>
                 </configuration>
@@ -132,7 +137,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.5</version>
+                <version>${build.helper.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>add-test-source</id>
@@ -182,6 +187,11 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
+                        <configuration>
+                            <nodeVersion>${node.version}</nodeVersion>
+                            <npmVersion>${npm.version}</npmVersion>
+                            <installDirectory>${project.build.directory}</installDirectory>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>npm install</id>
@@ -202,10 +212,56 @@
                         </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <nodeVersion>v8.15.1</nodeVersion>
-                    <installDirectory>${project.build.directory}</installDirectory>
-                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>ktlint</id>
+                        <phase>verify</phase>
+                        <configuration>
+                        <target name="ktlint">
+                            <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                classname="com.pinterest.ktlint.Main" classpathref="maven.plugin.classpath">
+                                <arg value="--reporter=plain?group_by_file"/>
+                                <arg value="--reporter=checkstyle,output=${project.basedir}/ktlint.xml"/>
+                                <arg value="--color"/>
+                                <arg value="src/**/*.kt"/>
+                                <!-- see https://github.com/pinterest/ktlint#usage for more -->
+                            </java>
+                        </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>ktlint-format</id>
+                        <configuration>
+                        <target name="ktlint">
+                            <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                classname="com.pinterest.ktlint.Main" classpathref="maven.plugin.classpath">
+                                <arg value="-F"/>
+                                <arg value="--color"/>
+                                <arg value="src/**/*.kt"/>
+                            </java>
+                        </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.pinterest</groupId>
+                        <artifactId>ktlint</artifactId>
+                        <version>0.35.0</version>
+                    </dependency>
+                    <!-- additional 3rd party ruleset(s) can be specified here -->
+                </dependencies>
             </plugin>
 
         </plugins>
@@ -239,7 +295,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>3.0.0</version>
+                        <version>${build.helper.maven.plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>add-source</id>
