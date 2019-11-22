@@ -40,7 +40,7 @@ export function UserSelector({onChange}) {
           <InputLabel>Select user</InputLabel>
           <Select value={selected || {}} onChange={handleChange}>
             {users &&
-              users.map(function(user) {
+              users.map(user => {
                 return renderMenuItem(user)
               })}
           </Select>
