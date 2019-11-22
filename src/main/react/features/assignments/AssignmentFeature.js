@@ -7,6 +7,7 @@ import AddIcon from "@material-ui/icons/Add"
 import {UserSelector} from "../../components/UserSelector"
 import {AssignmentList} from "./AssignmentList"
 import {ApplicationContext} from "../../application/ApplicationContext"
+import {ClientDialog} from "../client/ClientDialog"
 
 const useStyles = makeStyles({
   root: {
@@ -61,6 +62,7 @@ export function AssignmentFeature() {
         </Grid>
       </Grid>
 
+      <ClientDialog code={dialog.code} open={dialog.open} onClose={handleClose} />
       <Fab color="primary" className={classes.fab} onClick={handleClickAdd}>
         <AddIcon />
       </Fab>
