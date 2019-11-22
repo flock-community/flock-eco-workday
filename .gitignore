@@ -1,5 +1,5 @@
 # *-- Custom Ignores --*
-
+ktlint.xml  # kotlin linter report file
 
 # Created by https://www.gitignore.io/api/windows,macos,linux,sublimetext,intellij,visualstudiocode,git,node,react,maven,kotlin,java,dart,flutter
 # Edit at https://www.gitignore.io/?templates=windows,macos,linux,sublimetext,intellij,visualstudiocode,git,node,react,maven,kotlin,java,dart,flutter

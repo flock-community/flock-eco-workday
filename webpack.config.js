@@ -1,5 +1,5 @@
 const path = require('path')
-const HtmlWebPackPlugin = require('html-webpack-plugin')
+const HtmlWebPackPlugin = require('html-webpack-plugin') // eslint-disable-line import/no-extraneous-dependencies
 
 const htmlPlugin = new HtmlWebPackPlugin({
   template: path.join(__dirname, 'src/main/react/index.html'),
