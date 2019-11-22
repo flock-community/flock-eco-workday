@@ -35,6 +35,10 @@ export function AssignmentFeature() {
     setDialog({open: true, code: null})
   }
 
+  function handleClose() {
+    setDialog({open: false, code: null})
+  }
+
   function handleChangeUser(it) {
     if (it) setUserCode(it.code)
   }
