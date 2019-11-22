@@ -25,6 +25,9 @@ class AssignmentService(
             .findByCode(code)
             .toNullable()
 
+    fun findAllByUserCode(userCode: String) = assignmentRepository
+            .findAllByUserCode(userCode)
+
     @Transactional
     fun create(form: AssignmentForm): Assignment? = form
             .internalize()

@@ -1,4 +1,4 @@
-package community.flock.eco.fundraising.config
+package community.flock.eco.workday.config
 
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 

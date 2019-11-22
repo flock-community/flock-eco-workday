@@ -1,13 +1,16 @@
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle} from "@material-ui/core";
-import {PeriodForm} from "../../components/PeriodForm";
-import React, {useEffect, useState} from "react";
-import SickdayClient from "./SickdayClient";
-import * as moment from "moment";
-
-
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@material-ui/core"
+import React, {useEffect, useState} from "react"
+import * as moment from "moment"
+import {PeriodForm} from "../../components/PeriodForm"
+import SickdayClient from "./SickdayClient"
 
 export function SickdayDialog({value, userCode, open, onChange, onComplete}) {
-
   const [state, setState] = useState(value)
 
   useEffect(() => {
@@ -17,7 +20,7 @@ export function SickdayDialog({value, userCode, open, onChange, onComplete}) {
   function handleChangeForm(it) {
     setState({
       ...value,
-      ...it
+      ...it,
     })
   }
 
@@ -28,8 +31,8 @@ export function SickdayDialog({value, userCode, open, onChange, onComplete}) {
         from: state.dates[0].format(moment.HTML5_FMT.DATE),
         to: state.dates[1].format(moment.HTML5_FMT.DATE),
         days: state.days,
-        type: state.type
-      }).then((res) => {
+        type: state.type,
+      }).then(res => {
         onComplete && onComplete(res)
       })
     } else {
@@ -40,7 +43,7 @@ export function SickdayDialog({value, userCode, open, onChange, onComplete}) {
         days: state.days,
         type: state.type,
         userCode,
-      }).then((res) => {
+      }).then(res => {
         onComplete && onComplete(res)
       })
     }
@@ -56,16 +59,19 @@ export function SickdayDialog({value, userCode, open, onChange, onComplete}) {
     })
   }
 
-  return (<Dialog open={open} onClose={handleClose}>
-    <DialogTitle>Sickday form</DialogTitle>
-    <DialogContent>
-      <PeriodForm value={value} onChange={handleChangeForm}/>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={handleClose}>Close</Button>
-      <Button onClick={handleDelete}>Delete</Button>
-      <Button onClick={handleClickSave} variant="contained" color="primary">Save</Button>
-    </DialogActions>
-  </Dialog>)
-
+  return (
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>Sickday form</DialogTitle>
+      <DialogContent>
+        <PeriodForm value={value} onChange={handleChangeForm} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Close</Button>
+        <Button onClick={handleDelete}>Delete</Button>
+        <Button onClick={handleClickSave} variant="contained" color="primary">
+          Save
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
 }

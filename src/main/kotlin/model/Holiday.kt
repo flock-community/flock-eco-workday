@@ -26,6 +26,8 @@ data class Holiday(
     @Enumerated(EnumType.STRING)
     val status: HolidayStatus,
 
+    val hours: Int,
+
     @OneToOne
     val period: Period,
 

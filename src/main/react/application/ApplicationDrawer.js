@@ -1,44 +1,45 @@
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import React from "react";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
+import React from "react"
+import ListItemText from "@material-ui/core/ListItemText"
+import ListItemIcon from "@material-ui/core/ListItemIcon"
 
-import AssignmentIcon from '@material-ui/icons/Assignment';
-import HolidayIcon from '@material-ui/icons/WbSunny';
-import SickdayIcon from '@material-ui/icons/LocalHospital';
-import EventIcon from '@material-ui/icons/CalendarToday';
-import UserIcon from '@material-ui/icons/Person';
-import ClientIcon from '@material-ui/icons/Business';
+import AssignmentIcon from "@material-ui/icons/Assignment"
+import HolidayIcon from "@material-ui/icons/WbSunny"
+import SickdayIcon from "@material-ui/icons/LocalHospital"
+import EventIcon from "@material-ui/icons/CalendarToday"
+import UserIcon from "@material-ui/icons/Person"
+import ClientIcon from "@material-ui/icons/Business"
 
-import Drawer from "@material-ui/core/Drawer";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import {withRouter} from "react-router-dom";
+import Drawer from "@material-ui/core/Drawer"
+import makeStyles from "@material-ui/core/styles/makeStyles"
+import {withRouter} from "react-router-dom"
 
 const useStyles = makeStyles({
   head: {
-    height: 60
+    height: 60,
   },
   list: {
     width: 250,
   },
   fullList: {
-    width: 'auto',
+    width: "auto",
   },
-});
+})
 
-export const ApplicationDrawer = withRouter( ({open, onClickItem, onClose, history}) => {
-
-  const classes = useStyles();
+export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
+  const classes = useStyles()
 
   const handleClose = event => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
+      return
     }
-    onClose && onClose()
-  };
+    if (onClose) {
+      onClose()
+    }
+  }
 
-  const handleClickItem = (item) => () => {
+  const handleClickItem = item => () => {
     history.push(item.url)
   }
 
@@ -46,33 +47,33 @@ export const ApplicationDrawer = withRouter( ({open, onClickItem, onClose, histo
     {
       name: "Clients",
       icon: ClientIcon,
-      url: "/clients"
+      url: "/clients",
     },
     {
       name: "Assignments",
       icon: AssignmentIcon,
-      url: "/assignments"
+      url: "/assignments",
     },
     {
       name: "Holidays",
       icon: HolidayIcon,
-      url: "/holidays"
+      url: "/holidays",
     },
     {
       name: "Sickday",
       icon: SickdayIcon,
-      url: "/sickdays"
+      url: "/sickdays",
     },
     {
       name: "Events",
       icon: EventIcon,
-      url: "/events"
+      url: "/events",
     },
     {
       name: "User",
       icon: UserIcon,
-      url: "/users"
-    }
+      url: "/users",
+    },
   ]
 
   const sideList = () => (
@@ -83,19 +84,23 @@ export const ApplicationDrawer = withRouter( ({open, onClickItem, onClose, histo
       onKeyDown={handleClose}
     >
       <List>
-        {items
-          .map(item => (
-            <ListItem button key={`menu-item-${item.name}`} onClick={handleClickItem(item)}>
-              <ListItemIcon>{React.createElement(item.icon)}</ListItemIcon>
-              <ListItemText primary={item.name}/>
-            </ListItem>))
-        }
-
+        {items.map(item => (
+          <ListItem
+            button
+            key={`menu-item-${item.name}`}
+            onClick={handleClickItem(item)}
+          >
+            <ListItemIcon>{React.createElement(item.icon)}</ListItemIcon>
+            <ListItemText primary={item.name} />
+          </ListItem>
+        ))}
       </List>
     </div>
-  );
-  return (<Drawer open={open} onClose={handleClose}>
-    <div className={classes.head}/>
-    {sideList()}
-  </Drawer>)
+  )
+  return (
+    <Drawer open={open} onClose={handleClose}>
+      <div className={classes.head} />
+      {sideList()}
+    </Drawer>
+  )
 })

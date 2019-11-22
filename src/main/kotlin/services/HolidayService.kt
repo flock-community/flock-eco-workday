@@ -1,7 +1,9 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.core.utils.toNullable
+import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.repositories.UserRepository
+import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HolidayForm
 import community.flock.eco.workday.model.Day
 import community.flock.eco.workday.model.Holiday
@@ -27,7 +29,7 @@ class HolidayService(
         form.validate()
 
         val user = form.userCode
-                .let { userRepository.findByCode(it).toNullable() }
+                ?.let { userRepository.findByCode(it).toNullable() }
                 ?: throw RuntimeException("User not found")
 
         val period = Period(
@@ -40,6 +42,7 @@ class HolidayService(
                 description = form.description,
                 user = user,
                 period = period,
+                hours = form.hours,
                 status = HolidayStatus.REQUESTED)
                 .save()
     }
@@ -57,6 +60,10 @@ class HolidayService(
 
                     holiday.copy(
                             description = form.description,
+                            status = form.status
+                                    ?.takeIf { holiday.user.isAdmin() }
+                                    ?.run { form.status }
+                                    ?: holiday.status,
                             period = period)
                 }
                 ?.save()
@@ -86,3 +93,6 @@ class HolidayService(
         }
     }
 }
+
+fun User.isAdmin(): Boolean = this.authorities
+        .contains(HolidayAuthority.ADMIN.toName())

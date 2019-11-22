@@ -13,10 +13,11 @@ class LoadHolidayData(
     init {
         loadUserData.data.forEach {
             HolidayForm(
-                    description = "Test holiday",
+                    description = "Test holiday ${it.name}",
                     from = LocalDate.of(2019, 4, 4),
                     to = LocalDate.of(2019, 4, 9),
                     days = listOf(8, 8, 8, 8, 8, 8),
+                    hours = 48,
                     userCode = it.code
             ).create()
         }

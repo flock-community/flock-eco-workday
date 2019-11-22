@@ -1,4 +1,4 @@
-package community.flock.eco.fundraising.config
+package community.flock.eco.workday.config
 
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService

@@ -4,11 +4,11 @@ import community.flock.eco.core.utils.toNullable
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.repositories.UserRepository
-import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HolidayForm
 import community.flock.eco.workday.model.Holiday
 import community.flock.eco.workday.repository.PeriodRepository
 import community.flock.eco.workday.services.HolidayService
+import community.flock.eco.workday.services.isAdmin
 import java.security.Principal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-
 @RestController
 @RequestMapping("/api/holidays")
 class HolidayController(
@@ -99,10 +98,7 @@ class HolidayController(
             .findByCode(this.name)
             .toNullable()
 
-    private fun User.isAdmin(): Boolean = this.authorities
-            .contains(HolidayAuthority.ADMIN.toName())
+    fun User.isAuthorizedForUserCode(userCode: String?): Boolean = this.isAdmin() || this.code.equals(userCode)
 
-    private fun User.isAuthorizedForUserCode(userCode: String?): Boolean = this.isAdmin() || this.code.equals(userCode)
-
-    private fun User.isAuthorizedForHoliday(code: String): Boolean = this.isAdmin() || this.equals(holidayService.findByCode(code)?.user)
+    fun User.isAuthorizedForHoliday(code: String): Boolean = this.isAdmin() || this.equals(holidayService.findByCode(code)?.user)
 }
