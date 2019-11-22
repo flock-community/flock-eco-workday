@@ -1,4 +1,4 @@
-const path = "/api/person"
+const path = "/api/persons"
 
 const getAll = () => {
   const opts = {
