@@ -3,7 +3,7 @@ import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils
 import Grid from "@material-ui/core/Grid"
 import {makeStyles} from "@material-ui/core"
 import Fab from "@material-ui/core/Fab"
-import AddIcon from "@material-ui/core/SvgIcon/SvgIcon"
+import AddIcon from "@material-ui/icons/Add"
 import {UserSelector} from "../../components/UserSelector"
 import {AssignmentList} from "./AssignmentList"
 import {ApplicationContext} from "../../application/ApplicationContext"
