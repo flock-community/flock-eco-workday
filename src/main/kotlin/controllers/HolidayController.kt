@@ -1,27 +1,27 @@
-package community.flock.eco.workday.controllers;
+package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.repositories.UserRepository
-import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HolidayForm
 import community.flock.eco.workday.model.Holiday
 import community.flock.eco.workday.repository.PeriodRepository
 import community.flock.eco.workday.services.HolidayService
 import community.flock.eco.workday.services.isAdmin
+import java.security.Principal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
-import java.security.Principal
 
 @RestController
 @RequestMapping("/api/holidays")
 class HolidayController(
-        private val userRepository: UserRepository,
-        private val periodRepository: PeriodRepository,
-        private val holidayService: HolidayService) {
+    private val userRepository: UserRepository,
+    private val periodRepository: PeriodRepository,
+    private val holidayService: HolidayService
+) {
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
@@ -40,7 +40,6 @@ class HolidayController(
                         } else {
                             holidayService.findAllByUserCode(user.code)
                         }
-
                     }.toResponse()
 
     @PostMapping
@@ -84,7 +83,6 @@ class HolidayController(
                     } else {
                         ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     }
-
                 }
                 .toResponse()
     }
@@ -96,5 +94,4 @@ class HolidayController(
     fun User.isAuthorizedForUserCode(userCode: String?): Boolean = this.isAdmin() || this.code.equals(userCode)
 
     fun User.isAuthorizedForHoliday(code: String): Boolean = this.isAdmin() || this.equals(holidayService.findByCode(code)?.user)
-
 }

@@ -1,28 +1,22 @@
-package community.flock.eco.workday.controllers;
+package community.flock.eco.workday.controllers
 
-import community.flock.eco.core.utils.toNullable
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.authorities.AssignmentAuthority
-import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Client
-import community.flock.eco.workday.model.Holiday
-import community.flock.eco.workday.repository.AssignmentRepository
 import community.flock.eco.workday.services.AssignmentService
-import community.flock.eco.workday.services.ClientService
-import org.springframework.data.domain.Pageable
+import java.security.Principal
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
-import java.security.Principal
 
 @RestController
 @RequestMapping("/api/assignments")
 class AssignmentController(
-        private val userService: UserService,
-        private val assignmentService: AssignmentService) {
+    private val userService: UserService,
+    private val assignmentService: AssignmentService
+) {
 
     @GetMapping
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
@@ -38,7 +32,7 @@ class AssignmentController(
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
-    fun findByCode(@PathVariable code:String): ResponseEntity<Assignment> = assignmentService
+    fun findByCode(@PathVariable code: String): ResponseEntity<Assignment> = assignmentService
             .findByCode(code)
             .toResponse()
 

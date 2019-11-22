@@ -9,14 +9,12 @@ import javax.persistence.*
 @EntityListeners(EventEntityListeners::class)
 data class Day(
 
-        override val id: Long = 0,
+    override val id: Long = 0,
 
-        val date: LocalDate = LocalDate.now(),
-        val hours: Int
+    val date: LocalDate = LocalDate.now(),
+    val hours: Int
 
-): AbstractIdEntity(id) {
+) : AbstractIdEntity(id) {
         override fun equals(other: Any?) = super.equals(other)
         override fun hashCode(): Int = super.hashCode()
 }
-
-

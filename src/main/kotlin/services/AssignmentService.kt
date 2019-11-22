@@ -6,17 +6,17 @@ import community.flock.eco.workday.forms.AssignmentForm
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.repository.AssignmentRepository
 import community.flock.eco.workday.repository.ClientRepository
+import javax.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import javax.transaction.Transactional
-
 
 @Service
 class AssignmentService(
-        private val clientRepository: ClientRepository,
-        private val userRepository: UserRepository,
-        private val assignmentRepository: AssignmentRepository) {
+    private val clientRepository: ClientRepository,
+    private val userRepository: UserRepository,
+    private val assignmentRepository: AssignmentRepository
+) {
 
     fun findAll(page: Pageable): Page<Assignment> = assignmentRepository
             .findAll(page)
@@ -56,7 +56,4 @@ class AssignmentService(
     )
 
     private fun Assignment.save() = assignmentRepository.save(this)
-
 }
-
-

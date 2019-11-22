@@ -11,15 +11,15 @@ import community.flock.eco.workday.model.HolidayStatus
 import community.flock.eco.workday.model.Period
 import community.flock.eco.workday.repository.HolidayRepository
 import community.flock.eco.workday.repository.PeriodRepository
-import org.springframework.stereotype.Service
 import java.time.LocalDate
-
+import org.springframework.stereotype.Service
 
 @Service
 class HolidayService(
-        private val holidayRepository: HolidayRepository,
-        private val periodRepository: PeriodRepository,
-        private val userRepository: UserRepository) {
+    private val holidayRepository: HolidayRepository,
+    private val periodRepository: PeriodRepository,
+    private val userRepository: UserRepository
+) {
 
     fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
     fun findAllByUserCode(userCode: String) = holidayRepository.findAllByUserCode(userCode)
@@ -45,7 +45,6 @@ class HolidayService(
                 hours = form.hours,
                 status = HolidayStatus.REQUESTED)
                 .save()
-
     }
 
     fun update(code: String, form: HolidayForm): Holiday? {
@@ -62,7 +61,7 @@ class HolidayService(
                     holiday.copy(
                             description = form.description,
                             status = form.status
-                                    ?.takeIf { holiday.user.isAdmin()}
+                                    ?.takeIf { holiday.user.isAdmin() }
                                     ?.run { form.status }
                                     ?: holiday.status,
                             period = period)
@@ -80,7 +79,6 @@ class HolidayService(
                 )
             }
             .toSet()
-
 
     private fun Holiday.save() = holidayRepository
             .save(this)

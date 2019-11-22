@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
-
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
@@ -44,10 +43,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         http
                 .addFilterBefore(GoogleTokenFilter(userAccountService), UsernamePasswordAuthenticationFilter::class.java)
 
-        //userSecurityService.googleLogin(http)
+        // userSecurityService.googleLogin(http)
         userSecurityService.databaseLogin(http)
-
     }
-
 }
-

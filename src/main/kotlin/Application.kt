@@ -12,7 +12,6 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 
-
 @Configuration
 @SpringBootApplication(exclude = arrayOf(
         RepositoryRestMvcAutoConfiguration::class
@@ -22,14 +21,10 @@ import org.springframework.context.annotation.Import
         WebSecurityConfig::class,
         StubCloudConfiguration::class)
 class Application(
-        val userRepository: UserRepository,
-        val userAuthorityService: UserAuthorityService) : SpringBootServletInitializer() {
-
-}
+    val userRepository: UserRepository,
+    val userAuthorityService: UserAuthorityService
+) : SpringBootServletInitializer()
 
 fun main(args: Array<String>) {
     SpringApplication.run(Application::class.java, *args)
 }
-
-
-
