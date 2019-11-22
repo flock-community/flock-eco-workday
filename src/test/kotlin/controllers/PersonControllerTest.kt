@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
 @AutoConfigureMockMvc
-@ActiveProfiles(profiles = ["local"])
+@ActiveProfiles(profiles = ["test"])
 class PersonControllerTest {
 
 
