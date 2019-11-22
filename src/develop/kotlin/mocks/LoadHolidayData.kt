@@ -2,10 +2,12 @@ package community.flock.eco.workday.mocks
 
 import community.flock.eco.workday.forms.HolidayForm
 import community.flock.eco.workday.services.HolidayService
+import org.springframework.context.annotation.Profile
 import java.time.LocalDate
 import org.springframework.stereotype.Component
 
 @Component
+@Profile("local")
 class LoadHolidayData(
     private val loadUserData: LoadUserData,
     private val holidayService: HolidayService
