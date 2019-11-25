@@ -1,6 +1,7 @@
 // For a detailed explanation regarding each configuration property, visit:
 // https://jestjs.io/docs/en/configuration.html
 
+/* eslint-disable prettier/prettier */
 module.exports = {
   // All imported modules in your tests should be mocked automatically
   // automock: false,
@@ -19,6 +20,7 @@ module.exports = {
 
   // Indicates whether the coverage information should be collected while executing the test
   // collectCoverage: false,
+  collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
   // collectCoverageFrom: null,
@@ -186,3 +188,4 @@ module.exports = {
   // Whether to use watchman for file crawling
   // watchman: true,
 }
+/* eslint-enable prettier/prettier */
