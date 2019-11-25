@@ -5,7 +5,8 @@
     "lint": "eslint --fix .",
     "start": "webpack-dev-server --mode development --host 0.0.0.0",
     "build": "webpack --mode production ./src/main/react",
-    "storybook": "start-storybook"
+    "storybook": "start-storybook",
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -31,6 +32,9 @@
   "devDependencies": {
     "@flock-eco/webpack": "^1.4.20",
     "@flock/graphql-to-rest": "^0.1.0",
+    "@testing-library/react": "^9.3.2",
+    "@types/jest": "^24.0.23",
+    "babel-jest": "^24.9.0",
     "eslint": "6.6.0",
     "eslint-config-airbnb-base": "14.0.0",
     "eslint-config-prettier": "6.5.0",
@@ -40,8 +44,10 @@
     "eslint-plugin-react": "7.16.0",
     "graphql-import": "latest",
     "husky": "3.0.9",
+    "jest": "^24.9.0",
     "lint-staged": "9.4.2",
-    "prettier": "1.18.2"
+    "prettier": "1.18.2",
+    "react-test-renderer": "^16.12.0"
   },
   "husky": {
     "hooks": {
