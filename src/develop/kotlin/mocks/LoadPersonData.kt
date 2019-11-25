@@ -28,7 +28,7 @@ class LoadPersonData(
      * @param lastname lastname of the person
      * @param email (optional) the email of the person.
      */
-    private final fun createPerson(firstname: String, lastname: String, email: String = "")  = Person(
+    private final fun createPerson(firstname: String, lastname: String, email: String = "") = Person(
             firstname = firstname,
             lastname = lastname,
             email = email

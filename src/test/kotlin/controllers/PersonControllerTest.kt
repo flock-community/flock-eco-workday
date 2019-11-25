@@ -28,7 +28,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @ActiveProfiles(profiles = ["test"])
 class PersonControllerTest {
 
-
     private val baseUrl: String = "/api/persons"
 
     // Added the Autowiring of the mvc inside the class and initialized before running tests in @Before

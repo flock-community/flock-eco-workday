@@ -20,8 +20,9 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @RequestMapping("/api/persons")
 class PersonController(
-        private val personRepository: PersonRepository,
-        private val personService: PersonService) {
+    private val personRepository: PersonRepository,
+    private val personService: PersonService
+) {
 
     @GetMapping
     fun findAll(pageable: Pageable) = personService

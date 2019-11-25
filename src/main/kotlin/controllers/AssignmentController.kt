@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/assignments")
 class AssignmentController(
-        private val userService: UserService,
-        private val assignmentService: AssignmentService
+    private val userService: UserService,
+    private val assignmentService: AssignmentService
 ) {
 
     @GetMapping
