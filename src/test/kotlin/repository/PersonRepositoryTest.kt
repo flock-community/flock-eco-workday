@@ -1,6 +1,5 @@
 package community.flock.eco.workday.repository
 
-import community.flock.eco.feature.user.UserConfiguration
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.model.Person
 import org.assertj.core.api.Assertions.assertThat
