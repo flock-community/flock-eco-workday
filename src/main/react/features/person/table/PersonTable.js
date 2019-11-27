@@ -42,11 +42,22 @@ export const PersonTable = props => {
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [personList, setPersonList] = useState([])
+  const [dialog, setDialog] = useState({open: false, code: null})
   const classes = useStyles()
 
   useEffect(() => {
     PersonService.getAll().then(personList => setPersonList(personList))
   }, [])
+
+  const handleDialogOpen = () => {
+    console.log("Open")
+    setDialog({open: true, code: null})
+  }
+
+  const handleDialogClose = () => {
+    console.log("Close")
+    setDialog({open: false, code: null})
+  }
 
   const handleChangePage = (_, newPage) => {
     // TODO: query user endpoint to retrieve user list for page
