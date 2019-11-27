@@ -1,19 +1,12 @@
 import React, {useState} from "react"
-
 import {makeStyles} from "@material-ui/core"
-import Fab from "@material-ui/core/Fab"
-import AddIcon from "@material-ui/icons/Add"
 import {ClientList} from "./ClientList"
 import {ClientDialog} from "./ClientDialog"
+import {AddActionFab} from "../../components/FabButtons"
 
 const useStyles = makeStyles({
   root: {
     padding: 10,
-  },
-  fab: {
-    position: "absolute",
-    bottom: "25px",
-    right: "25px",
   },
 })
 
@@ -53,9 +46,7 @@ export function ClientFeature() {
     <>
       <ClientList reload={reload} onItemClick={handleItem} />
       <ClientDialog code={dialog.code} open={dialog.open} onClose={handleClose} />
-      <Fab color="primary" className={classes.fab} onClick={handleAdd}>
-        <AddIcon />
-      </Fab>
+      <AddActionFab color="primary" onClick={handleAdd} />
     </>
   )
 }

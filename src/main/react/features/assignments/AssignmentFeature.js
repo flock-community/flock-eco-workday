@@ -2,21 +2,15 @@ import React, {useContext, useEffect, useState} from "react"
 import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import Grid from "@material-ui/core/Grid"
 import {makeStyles} from "@material-ui/core"
-import Fab from "@material-ui/core/Fab"
-import AddIcon from "@material-ui/icons/Add"
 import {UserSelector} from "../../components/UserSelector"
 import {AssignmentList} from "./AssignmentList"
 import {ApplicationContext} from "../../application/ApplicationContext"
 import {ClientDialog} from "../client/ClientDialog"
+import {AddActionFab} from "../../components/FabButtons"
 
 const useStyles = makeStyles({
   root: {
     padding: 20,
-  },
-  fab: {
-    position: "absolute",
-    bottom: "25px",
-    right: "25px",
   },
 })
 
@@ -63,9 +57,7 @@ export function AssignmentFeature() {
       </Grid>
 
       <ClientDialog code={dialog.code} open={dialog.open} onClose={handleClose} />
-      <Fab color="primary" className={classes.fab} onClick={handleClickAdd}>
-        <AddIcon />
-      </Fab>
+      <AddActionFab color="primary" onClick={handleClickAdd} />
     </div>
   )
 }
