@@ -13,6 +13,7 @@ import {
 import {PersonTableHead} from "./PersonTableHead"
 import {makeStyles} from "@material-ui/styles"
 import {PersonService} from "./../PersonService"
+import {AddActionFab} from "../../../components/FabButtons"
 import {PersonDialog} from "../PersonDialog"
 
 // add additional styles
@@ -123,6 +124,8 @@ export const PersonTable = props => {
         />
       </Paper>
       <PersonDialog open={dialog.open} onClose={handleDialogClose} />
+      <AddActionFab color="primary" onClick={handleDialogOpen} />
+    </div>
   )
 }
 
