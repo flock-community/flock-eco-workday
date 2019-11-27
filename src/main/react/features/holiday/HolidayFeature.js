@@ -1,7 +1,4 @@
 import React, {useContext, useEffect, useState} from "react"
-
-import Fab from "@material-ui/core/Fab"
-import AddIcon from "@material-ui/icons/Add"
 import {makeStyles} from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
 import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
@@ -10,15 +7,11 @@ import {HolidayList} from "./HolidayList"
 import {UserSelector} from "../../components/UserSelector"
 import HolidayClient from "../../clients/HolidayClient"
 import {ApplicationContext} from "../../application/ApplicationContext"
+import {AddActionFab} from "../../components/FabButtons"
 
 const useStyles = makeStyles({
   root: {
     padding: 20,
-  },
-  fab: {
-    position: "absolute",
-    bottom: "25px",
-    right: "25px",
   },
 })
 
@@ -92,9 +85,7 @@ export function HolidayFeature() {
         onComplete={handleCompleteDialog}
       />
 
-      <Fab color="primary" className={classes.fab} onClick={handleClickAdd}>
-        <AddIcon />
-      </Fab>
+      <AddActionFab color="primary" onClick={handleClickAdd} />
     </div>
   )
 }
