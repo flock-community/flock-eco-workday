@@ -13,6 +13,7 @@ import {
 import {PersonTableHead} from "./PersonTableHead"
 import {makeStyles} from "@material-ui/styles"
 import {PersonService} from "./../PersonService"
+import {PersonDialog} from "../PersonDialog"
 
 // add additional styles
 // root: Paper - @material-ui
@@ -121,6 +122,7 @@ export const PersonTable = props => {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
+      <PersonDialog open={dialog.open} onClose={handleDialogClose} />
   )
 }
 
