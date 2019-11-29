@@ -2,8 +2,11 @@ import React from "react"
 import PropTypes from "prop-types"
 import Grid from "@material-ui/core/Grid"
 import {makeStyles} from "@material-ui/styles"
-import {PersonSubNav} from "./PersonSubNav"
 import {PersonRouter} from "./PersonRouter"
+import {
+  BreadcrumbsContextProvider,
+  BreadcrumbsNavigation,
+} from "../../components/breadcrumb"
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -14,23 +17,21 @@ const useStyles = makeStyles(() => ({
 }))
 
 export const PersonFeature = props => {
-  const {match} = props
-  const {url} = match
   const classes = useStyles()
 
   return (
     <Grid container className={classes.root} spacing={4}>
-      <PersonSubNav baseUrl={url} />
-      <Grid item xs={12}>
-        <PersonRouter {...props} />
-        {props.children}
-      </Grid>
+      <BreadcrumbsContextProvider>
+        <BreadcrumbsNavigation />
+        <Grid item xs={12}>
+          <PersonRouter />
+          {props.children}
+        </Grid>
+      </BreadcrumbsContextProvider>
     </Grid>
   )
 }
 
 PersonFeature.propTypes = {
-  match: PropTypes.shape({
-    url: PropTypes.string.isRequired,
-  }),
+  children: PropTypes.any,
 }
