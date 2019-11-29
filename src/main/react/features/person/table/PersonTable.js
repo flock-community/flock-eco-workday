@@ -9,11 +9,12 @@ import {
   TablePagination,
   Paper,
 } from "@material-ui/core"
-import {PersonTableHead} from "./PersonTableHead"
 import {makeStyles} from "@material-ui/styles"
-import {PersonService} from "./../PersonService"
+import {PersonTableHead} from "./PersonTableHead"
+import {PersonService} from "../PersonService"
 import {AddActionFab} from "../../../components/FabButtons"
 import {PersonDialog} from "../PersonDialog"
+import {useBreadcrumbs} from "../../../components/breadcrumb"
 
 // add additional styles
 // root: Paper - @material-ui
@@ -50,18 +51,19 @@ export const PersonTable = () => {
   const [personList, setPersonList] = useState([])
   const [dialog, setDialog] = useState({open: false, code: null})
   const classes = useStyles()
+  const [, setLinkList] = useBreadcrumbs()
 
   useEffect(() => {
+    // eslint-disable-next-line no-shadow
     PersonService.getAll().then(personList => setPersonList(personList))
+    setLinkList([{url, name: "Person"}])
   }, [])
 
   const handleDialogOpen = () => {
-    console.log("Open")
     setDialog({open: true, code: null})
   }
 
   const handleDialogClose = () => {
-    console.log("Close")
     setDialog({open: false, code: null})
   }
 
