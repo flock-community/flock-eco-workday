@@ -1,19 +1,26 @@
 import React, {useEffect, useState} from "react"
-import {PersonService} from "./PersonService"
-import {Grid} from "@material-ui/core"
 import {useRouteMatch} from "react-router-dom"
+import {Grid} from "@material-ui/core"
 import {makeStyles} from "@material-ui/styles"
+import {PersonService} from "./PersonService"
 import {PersonWidget} from "./widgets/PersonWidget"
+import {useBreadcrumbs} from "../../components/breadcrumb"
 
 const useStyle = makeStyles(() => ({}))
 
 export const PersonDetails = () => {
   const {params, url} = useRouteMatch()
   const [person, setPerson] = useState({})
+  const [linkList, setLinkList] = useBreadcrumbs()
   const classes = useStyle()
 
   useEffect(() => {
-    PersonService.getById(params.personId).then(person => setPerson(person))
+    // eslint-disable-next-line no-shadow
+    PersonService.getById(params.personId).then(person => {
+      const breadcrumbItem = {url, name: `${person.firstname} ${person.lastname}`}
+      setLinkList([...linkList, breadcrumbItem])
+      setPerson(person)
+    })
   }, [])
 
   return (
