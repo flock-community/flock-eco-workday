@@ -1,15 +1,14 @@
 import React, {useEffect, useState} from "react"
-import PropTypes from "prop-types"
 import {PersonService} from "./PersonService"
 import {Grid} from "@material-ui/core"
+import {useRouteMatch} from "react-router-dom"
 import {makeStyles} from "@material-ui/styles"
 import {PersonWidget} from "./widgets/PersonWidget"
 
 const useStyle = makeStyles(() => ({}))
 
-export const PersonDetails = props => {
-  const {match} = props
-  const {path, url, isExact, params} = match
+export const PersonDetails = () => {
+  const {params, url} = useRouteMatch()
   const [person, setPerson] = useState({})
   const classes = useStyle()
 
@@ -25,10 +24,4 @@ export const PersonDetails = props => {
   )
 }
 
-PersonDetails.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      personId: PropTypes.string.isRequired,
-    }),
-  }),
-}
+PersonDetails.propTypes = {}

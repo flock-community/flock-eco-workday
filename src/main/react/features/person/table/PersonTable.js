@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react"
-import PropTypes from "prop-types"
-import {Link as RouterLink} from "react-router-dom"
+import {Link as RouterLink, useRouteMatch} from "react-router-dom"
 import {
   Table,
   TableBody,
@@ -44,9 +43,8 @@ const useStyles = makeStyles({
  *
  * @param {*} props - React props
  */
-export const PersonTable = props => {
-  const {match} = props
-  const {url} = match
+export const PersonTable = () => {
+  const {url} = useRouteMatch()
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [personList, setPersonList] = useState([])
@@ -129,8 +127,4 @@ export const PersonTable = props => {
   )
 }
 
-PersonTable.propTypes = {
-  match: PropTypes.shape({
-    url: PropTypes.string.isRequired,
-  }),
-}
+PersonTable.propTypes = {}
