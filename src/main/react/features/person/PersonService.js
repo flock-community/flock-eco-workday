@@ -46,7 +46,7 @@ const del = id => {
   const opts = {
     method: "DELETE",
   }
-  return fetch(`${path}/${id}`, opts).then(res => res.json())
+  return fetch(`${path}/${id}`, opts).then(res => res)
 }
 
 export const PersonService = {
