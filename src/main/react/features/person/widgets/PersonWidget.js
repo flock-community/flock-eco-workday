@@ -1,5 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
+import clsx from "clsx"
 import {
   Card,
   CardHeader,
@@ -34,6 +35,11 @@ const useStyles = makeStyles(() => ({
   avatar: {
     backgroundColor: blue[500],
   },
+  dflex: {display: "flex"},
+  flexColumn: {flexDirection: "column"},
+  p1: {padding: "1rem"},
+  m1: {margin: "1rem"},
+  mb1: {marginBottom: "1rem"},
 }))
 
 export const PersonWidget = props => {
@@ -41,7 +47,7 @@ export const PersonWidget = props => {
   const classes = useStyles()
 
   return (
-    <Card className={classes.card}>
+    <Card className={clsx(classes.card, classes.mb1)}>
       <div className={classes.chipWrapper}>
         <Chip
           icon={<FaceIcon />}
@@ -61,10 +67,12 @@ export const PersonWidget = props => {
         subheader={person.email}
       />
       <Divider />
-      <CardContent>
-        <Typography variant="caption">Organization</Typography>
-        <Typography variant="body2">Flock.community</Typography>
-        <div>
+      <div className={clsx(classes.dflex, classes.flexColumn, classes.p1)}>
+        <div className={classes.mb1}>
+          <Typography variant="caption">Organization</Typography>
+          <Typography variant="body2">Flock.community</Typography>
+        </div>
+        <div className={clsx(classes.dflex, classes.flexColumn, classes.mb1)}>
           <Typography variant="caption">Status</Typography>
           <Chip
             color="default"
@@ -74,7 +82,7 @@ export const PersonWidget = props => {
             size="small"
           />
         </div>
-      </CardContent>
+      </div>
       <Divider />
       <div>
         <List component="nav" aria-label="main mailbox folders" dense>
