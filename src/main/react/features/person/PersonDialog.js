@@ -60,7 +60,7 @@ const useStyles = makeStyles(() => ({
  * @param {*} props
  */
 export const PersonDialog = props => {
-  const {open, onClose} = props
+  const {open, onClose, item} = props
   const classes = useStyles()
 
   const handleSubmit = (values, actions) => {
@@ -91,7 +91,7 @@ export const PersonDialog = props => {
         </div>
       </DialogTitle>
       <DialogContent className={classes.dialogContent}>
-        <PersonForm onSubmit={handleSubmit} />
+        <PersonForm item={item} onSubmit={handleSubmit} />
       </DialogContent>
       <Divider />
       {/* reverse the DialogActions with `flex-direction: row-reverse` to enable
