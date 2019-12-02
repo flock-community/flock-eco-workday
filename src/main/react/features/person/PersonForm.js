@@ -20,7 +20,7 @@ export const PERSON_FORM_ID = "person-form"
  * @param {*} props
  */
 export const PersonForm = props => {
-  const {onSubmit} = props
+  const {item, onSubmit} = props
   const classes = useStyles()
 
   const schema = Yup.object().shape({
@@ -80,7 +80,7 @@ export const PersonForm = props => {
 
   return (
     <Formik
-      initialValues={{...schema.cast()}}
+      initialValues={{...schema.cast(), ...item}}
       onSubmit={onSubmit} // use onSubmit func @PersonDialog
       validationSchema={schema}
       enableReinitialize
@@ -90,5 +90,6 @@ export const PersonForm = props => {
 }
 
 PersonForm.propTypes = {
+  item: PropTypes.object,
   onSubmit: PropTypes.func.isRequired,
 }
