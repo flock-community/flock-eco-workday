@@ -6,7 +6,15 @@ import {PersonService} from "./PersonService"
 import {PersonWidget} from "./widgets/PersonWidget"
 import {useBreadcrumbs} from "../../components/breadcrumb"
 
-const useStyle = makeStyles(() => ({}))
+const useStyle = makeStyles(() => ({
+  root: {margin: "-8px"},
+  marginLeft: {
+    marginLeft: "1rem",
+  },
+  defaultPadding: {
+    padding: "1rem",
+  },
+}))
 
 export const PersonDetails = () => {
   const {params, url} = useRouteMatch()
