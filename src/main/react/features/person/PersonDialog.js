@@ -71,9 +71,15 @@ export const PersonDialog = props => {
   }, [item])
 
   const handleSubmit = (values, actions) => {
-    PersonService.post(values)
-      .then(() => onClose())
-      .catch(err => console.log(err))
+    if (isDefined(item)) {
+      PersonService.put(values)
+        .then(() => onClose())
+        .catch(err => console.log(err))
+    } else {
+      PersonService.post(values)
+        .then(() => onClose())
+        .catch(err => console.log(err))
+    }
   }
 
   return (
