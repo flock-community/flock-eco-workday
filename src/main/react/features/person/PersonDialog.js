@@ -1,4 +1,4 @@
-import React, {forwardRef} from "react"
+import React, {forwardRef, useEffect, useState} from "react"
 import PropTypes from "prop-types"
 import clsx from "clsx"
 import {
@@ -55,6 +55,7 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
+const isDefined = elem => elem !== undefined
 /** PersonDialog
  *
  * @param {*} props
@@ -62,6 +63,12 @@ const useStyles = makeStyles(() => ({
 export const PersonDialog = props => {
   const {open, onClose, item} = props
   const classes = useStyles()
+
+  const [person, setPerson] = useState(null)
+  useEffect(() => {
+    // eslint-disable-next-line no-unused-expressions
+    isDefined(item) ? setPerson(item) : setPerson(null)
+  }, [item])
 
   const handleSubmit = (values, actions) => {
     PersonService.post(values)
