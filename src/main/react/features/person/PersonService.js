@@ -30,6 +30,17 @@ const post = item => {
   return fetch(`${path}`, opts).then(res => res.json())
 }
 
+const put = item => {
+  const opts = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(item),
+  }
+
+  return fetch(`${path}/${item.id}`, opts).then(res => res.json())
+}
 
 const del = id => {
   const opts = {
@@ -42,5 +53,6 @@ export const PersonService = {
   getAll,
   getById,
   post,
+  put,
   delete: del,
 }
