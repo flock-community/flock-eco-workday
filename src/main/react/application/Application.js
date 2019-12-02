@@ -11,8 +11,10 @@ import {ApplicationContext} from "./ApplicationContext"
 import {HomeFeature} from "../features/home/HomeFeature"
 import {ClientFeature} from "../features/client/ClientFeature"
 import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
+import {PersonFeature} from "../features/person/PersonFeature"
+import {PersonDetails} from "../features/person/PersonDetails"
 
-export function Application() {
+export const Application = () => {
   const [state, setState] = useState({
     openDrawer: false,
     loggedIn: null,
@@ -68,15 +70,14 @@ export function Application() {
       value={{authorities: state.authorities, user: state.user}}
     >
       <Router>
-        <div>
-          <ApplicationDrawer open={state.openDrawer} onClose={handleDrawerClose} />
-          <ApplicationLayout onDrawer={handleDrawerOpen} />
-          <Route path="/" exact component={HomeFeature} />
-          <Route path="/clients" exact component={ClientFeature} />
-          <Route path="/assignments" exact component={AssignmentFeature} />
-          <Route path="/holidays" exact component={HolidayFeature} />
-          <Route path="/users" exact component={UserFeature} />
-        </div>
+        <ApplicationDrawer open={state.openDrawer} onClose={handleDrawerClose} />
+        <ApplicationLayout onDrawer={handleDrawerOpen} />
+        <Route path="/" exact component={HomeFeature} />
+        <Route path="/clients" exact component={ClientFeature} />
+        <Route path="/assignments" exact component={AssignmentFeature} />
+        <Route path="/holidays" exact component={HolidayFeature} />
+        <Route path="/users" exact component={UserFeature} />
+        <Route path="/person" component={PersonFeature} />
       </Router>
     </ApplicationContext.Provider>
   )
