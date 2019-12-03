@@ -15,6 +15,8 @@ import {PersonAdd, Close} from "@material-ui/icons"
 import {makeStyles} from "@material-ui/styles"
 import {PersonForm, PERSON_FORM_ID} from "./PersonForm"
 import {PersonService} from "./PersonService"
+import {usePerson} from "./context/PersonContext"
+import {isEmptyObject} from "../../utils/validation"
 
 // eslint-disable-next-line react/display-name
 const TransitionComponent = forwardRef((props, ref) => (
@@ -55,7 +57,6 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-const isDefined = elem => elem !== undefined
 /** PersonDialog
  *
  * @param {*} props
@@ -63,21 +64,21 @@ const isDefined = elem => elem !== undefined
 export const PersonDialog = props => {
   const {open, onClose} = props
   const classes = useStyles()
+  const [person, setPerson] = usePerson()
 
-  const [person, setPerson] = useState(null)
-  useEffect(() => {
-    // eslint-disable-next-line no-unused-expressions
-    isDefined(item) ? setPerson(item) : setPerson(null)
-  }, [item])
+  const successfulSubmit = () => {
+    setPerson(person) // update Person
+    onClose()
+  }
 
   const handleSubmit = (values, actions) => {
-    if (isDefined(item)) {
-      PersonService.put(values)
-        .then(() => onClose())
+    if (isEmptyObject(person)) {
+      PersonService.post(values)
+        .then(() => successfulSubmit())
         .catch(err => console.log(err))
     } else {
-      PersonService.post(values)
-        .then(() => onClose())
+      PersonService.put(values)
+        .then(() => successfulSubmit())
         .catch(err => console.log(err))
     }
   }
