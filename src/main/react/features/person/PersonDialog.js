@@ -61,7 +61,7 @@ const isDefined = elem => elem !== undefined
  * @param {*} props
  */
 export const PersonDialog = props => {
-  const {open, onClose, item} = props
+  const {open, onClose} = props
   const classes = useStyles()
 
   const [person, setPerson] = useState(null)
@@ -104,7 +104,7 @@ export const PersonDialog = props => {
         </div>
       </DialogTitle>
       <DialogContent className={classes.dialogContent}>
-        <PersonForm item={item} onSubmit={handleSubmit} />
+        <PersonForm item={person} onSubmit={handleSubmit} />
       </DialogContent>
       <Divider />
       {/* reverse the DialogActions with `flex-direction: row-reverse` to enable
