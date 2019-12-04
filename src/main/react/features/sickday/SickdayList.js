@@ -4,6 +4,7 @@ import {Card, Typography} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import Grid from "@material-ui/core/Grid"
 import SickdayClient from "./SickdayClient"
+import {isDefined} from "../../utils/validation"
 
 export function SickdayList({userCode, refresh, onClickRow}) {
   const [list, setList] = useState([])
@@ -20,8 +21,8 @@ export function SickdayList({userCode, refresh, onClickRow}) {
   }, [userCode, refresh])
 
   function handleClickRow(item) {
-    return function(ev) {
-      onClickRow && onClickRow(item)
+    return () => {
+      if (isDefined(onClickRow)) onClickRow(item)
     }
   }
 
