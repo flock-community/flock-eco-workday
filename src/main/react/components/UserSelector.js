@@ -40,10 +40,7 @@ export function UserSelector(props) {
         <FormControl fullWidth>
           <InputLabel>Select user</InputLabel>
           <Select value={selected || {}} onChange={handleChange}>
-            {users &&
-              users.map(user => {
-                return renderMenuItem(user)
-              })}
+            {users.map(renderMenuItem)}
           </Select>
         </FormControl>
       </CardContent>
