@@ -12,6 +12,8 @@ import {HomeFeature} from "../features/home/HomeFeature"
 import {ClientFeature} from "../features/client/ClientFeature"
 import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
 import {PersonFeature} from "../features/person/PersonFeature"
+// TODO: replace by UserStatusClient from @flock-eco/feature-user
+import {UserStatusClient} from "../clients/UserStatusClient"
 
 export const Application = () => {
   const [state, setState] = useState({
@@ -21,28 +23,26 @@ export const Application = () => {
   })
 
   useEffect(() => {
-    fetch(`/login/status`)
-      .then(res => res.json())
-      .then(status => {
-        if (status.loggedIn) {
-          UserClient.findUserByCode("me")
-            .then(user => {
-              setState({
-                loggedIn: status.loggedIn,
-                authorities: status.authorities,
-                user,
-              })
-              UserAuthorityUtil.setAuthorities(status.authorities)
+    UserStatusClient.get().then(status => {
+      if (status.loggedIn) {
+        UserClient.findUsersMe()
+          .then(user => {
+            setState({
+              loggedIn: status.loggedIn,
+              authorities: status.authorities,
+              user,
             })
-            .catch(() => {
-              console.log("Cannot connect to service")
-            })
-        } else {
-          setState({
-            loggedIn: status.loggedIn,
+            UserAuthorityUtil.setAuthorities(status.authorities)
           })
-        }
-      })
+          .catch(() => {
+            console.log("Cannot connect to service")
+          })
+      } else {
+        setState({
+          loggedIn: status.loggedIn,
+        })
+      }
+    })
   }, [])
 
   function handleDrawerClose() {
