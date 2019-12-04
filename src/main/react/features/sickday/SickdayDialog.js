@@ -1,3 +1,5 @@
+import React, {useEffect, useState} from "react"
+import PropTypes from "prop-types"
 import {
   Button,
   Dialog,
@@ -5,16 +7,17 @@ import {
   DialogContent,
   DialogTitle,
 } from "@material-ui/core"
-import React, {useEffect, useState} from "react"
 import * as moment from "moment"
 import {PeriodForm} from "../../components/PeriodForm"
 import SickdayClient from "./SickdayClient"
+import {isDefined} from "../../utils/validation"
 
-export function SickdayDialog({value, userCode, open, onChange, onComplete}) {
+export function SickdayDialog(props) {
+  const {value, userCode, open, onChange, onComplete} = props
   const [state, setState] = useState(value)
 
   useEffect(() => {
-    onChange && onChange(state)
+    if (isDefined(onChange)) onChange(state)
   }, [state])
 
   function handleChangeForm(it) {
@@ -33,7 +36,7 @@ export function SickdayDialog({value, userCode, open, onChange, onComplete}) {
         days: state.days,
         type: state.type,
       }).then(res => {
-        onComplete && onComplete(res)
+        if (isDefined(onComplete)) onComplete(res)
       })
     } else {
       SickdayClient.postSickday({
@@ -44,18 +47,18 @@ export function SickdayDialog({value, userCode, open, onChange, onComplete}) {
         type: state.type,
         userCode,
       }).then(res => {
-        onComplete && onComplete(res)
+        if (isDefined(onComplete)) onComplete(res)
       })
     }
   }
 
-  function handleClose(ev) {
-    onComplete && onComplete()
+  function handleClose() {
+    if (isDefined(onComplete)) onComplete()
   }
 
-  function handleDelete(ev) {
+  function handleDelete() {
     SickdayClient.deleteSickday(state.id).then(() => {
-      onComplete && onComplete()
+      if (isDefined(onComplete)) onComplete()
     })
   }
 
@@ -74,4 +77,12 @@ export function SickdayDialog({value, userCode, open, onChange, onComplete}) {
       </DialogActions>
     </Dialog>
   )
+}
+
+SickdayDialog.propTypes = {
+  value: PropTypes.any,
+  userCode: PropTypes.any,
+  open: PropTypes.any,
+  onChange: PropTypes.any,
+  onComplete: PropTypes.any,
 }
