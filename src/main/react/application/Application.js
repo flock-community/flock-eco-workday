@@ -46,11 +46,13 @@ export const Application = () => {
   }, [])
 
   function handleDrawerClose() {
-    setState({openDrawer: false})
+    // change openDrawer from state, but keep loggedIn and authorities
+    setState({openDrawer: false, ...state})
   }
 
   function handleDrawerOpen() {
-    setState({openDrawer: true})
+    // change openDrawer from state, but keep loggedIn and authorities
+    setState({openDrawer: true, ...state})
   }
 
   if (state.loggedIn != null && !state.loggedIn) {
