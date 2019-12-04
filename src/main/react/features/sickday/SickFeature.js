@@ -9,6 +9,7 @@ import {SickdayList} from "./SickdayList"
 import {UserSelector} from "../../components/UserSelector"
 import SickdayClient from "./SickdayClient"
 import {ApplicationContext} from "../../application/ApplicationContext"
+import {isDefined} from "../../utils/validation"
 
 const useStyles = makeStyles({
   root: {
@@ -34,14 +35,19 @@ export function SickdayFeature() {
   const [users, setUsers] = useState([])
   const {authorities, user} = useContext(ApplicationContext)
 
+  function isSuperUser() {
+    return authorities && authorities.includes("SickdayAuthority.ADMIN")
+  }
+
   useEffect(() => {
     if (isSuperUser()) {
+      // eslint-disable-next-line no-shadow
       SickdayClient.getAllUsers().then(users => {
         setUsers(users)
       })
     }
 
-    user && setUserCode(user.code)
+    if (isDefined(user)) setUserCode(user.code)
   }, [authorities, user])
 
   function handleCompleteDialog() {
@@ -55,10 +61,6 @@ export function SickdayFeature() {
     setOpen(true)
   }
 
-  function isSuperUser() {
-    return authorities && authorities.includes("SickdayAuthority.ADMIN")
-  }
-
   function handleClickRow(item) {
     setValue({
       ...item,
@@ -69,8 +71,9 @@ export function SickdayFeature() {
     setOpen(true)
   }
 
+  // eslint-disable-next-line no-shadow
   function handleChangeUser(user) {
-    user && setUserCode(user.code)
+    if (isDefined(user)) setUserCode(user.code)
   }
 
   if (!userCode) {
@@ -104,3 +107,5 @@ export function SickdayFeature() {
     </div>
   )
 }
+
+SickdayFeature.propTypes = {}
