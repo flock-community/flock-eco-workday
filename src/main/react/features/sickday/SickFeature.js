@@ -1,7 +1,5 @@
 import React, {useContext, useEffect, useState} from "react"
 
-import Fab from "@material-ui/core/Fab"
-import AddIcon from "@material-ui/icons/Add"
 import {makeStyles} from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
 import {SickdayDialog} from "./SickdayDialog"
@@ -10,6 +8,7 @@ import {UserSelector} from "../../components/UserSelector"
 import SickdayClient from "./SickdayClient"
 import {ApplicationContext} from "../../application/ApplicationContext"
 import {isDefined} from "../../utils/validation"
+import {AddActionFab} from "../../components/FabButtons"
 
 const useStyles = makeStyles({
   root: {
@@ -101,9 +100,7 @@ export function SickdayFeature() {
         onComplete={handleCompleteDialog}
       />
 
-      <Fab color="primary" className={classes.fab} onClick={handleClickAdd}>
-        <AddIcon />
-      </Fab>
+      <AddActionFab color="primary" onClick={handleClickAdd} />
     </div>
   )
 }
