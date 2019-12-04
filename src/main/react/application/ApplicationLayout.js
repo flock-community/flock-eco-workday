@@ -24,7 +24,8 @@ const useStyles = makeStyles({
   },
 })
 
-export function ApplicationLayout({open, onDrawer}) {
+export function ApplicationLayout(props) {
+  const {open, onDrawer} = props
   const classes = useStyles()
 
   const [state, setState] = useState({

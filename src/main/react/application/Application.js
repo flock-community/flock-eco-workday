@@ -46,17 +46,11 @@ export const Application = () => {
   }, [])
 
   function handleDrawerClose() {
-    setState({
-      ...state,
-      openDrawer: false,
-    })
+    setState({openDrawer: false})
   }
 
   function handleDrawerOpen() {
-    setState({
-      ...state,
-      openDrawer: true,
-    })
+    setState({openDrawer: true})
   }
 
   if (state.loggedIn != null && !state.loggedIn) {

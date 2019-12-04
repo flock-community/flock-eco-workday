@@ -4,9 +4,6 @@ import {Card, CardContent, Typography, CardActions, IconButton} from "@material-
 import CreateIcon from "@material-ui/icons/Create"
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded"
 import {makeStyles} from "@material-ui/styles"
-import {PersonDialog} from "../PersonDialog"
-import {PersonService} from "../PersonService"
-import {ConfirmDialog} from "@flock-eco/core/src/main/react/components/ConfirmDialog"
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -30,27 +27,8 @@ const useStyles = makeStyles(() => ({
 }))
 
 export const Feed = props => {
-  const {title, item} = props
-  const [dialog, setDialog] = useState({open: false, item: null})
-  const [dialogDelete, setDialogDelete] = useState(false)
+  const {title, onEdit, onDelete} = props
   const classes = useStyles()
-
-  const handleDialogOpen = () => {
-    setDialog({open: true, item})
-  }
-  const handleDialogClose = () => {
-    setDialog({open: false, item: null})
-  }
-
-  const handleDeleteDialog = () => {
-    setDialogDelete(!dialogDelete)
-  }
-
-  const handleDelete = () => {
-    PersonService.delete(item.id)
-      .then(() => handleDeleteDialog())
-      .catch(err => console.log(err))
-  }
 
   return (
     <Card className={classes.root}>
@@ -64,33 +42,27 @@ export const Feed = props => {
           {title}
         </Typography>
         <CardActions>
-          <IconButton size="small" aria-label="edit" onClick={handleDialogOpen}>
+          <IconButton size="small" aria-label="edit" onClick={onEdit}>
             <CreateIcon />
           </IconButton>
           <IconButton
             color="secondary"
             size="small"
             aria-label="delete"
-            onClick={handleDeleteDialog}
+            onClick={onDelete}
           >
             <DeleteRoundedIcon />
           </IconButton>
         </CardActions>
       </header>
       <CardContent>{props.children}</CardContent>
-      <PersonDialog open={dialog.open} onClose={handleDialogClose} item={dialog.item} />
-      <ConfirmDialog
-        open={dialogDelete}
-        onConfirm={handleDelete}
-        onClose={handleDeleteDialog}
-      >
-        Surely you can't be serious? Delete {item.firstname} {item.lastname}
-      </ConfirmDialog>
     </Card>
   )
 }
 
 Feed.propTypes = {
   title: PropTypes.string.isRequired,
-  item: PropTypes.any,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
+  children: PropTypes.any,
 }
