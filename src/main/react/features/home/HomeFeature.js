@@ -16,15 +16,10 @@ const useStyles = makeStyles({
 
 export function HomeFeature() {
   const classes = useStyles()
-
   const [user, setUser] = useState()
 
   useEffect(() => {
-    fetch("/api/users/me").then(res => {
-      if (res.ok) {
-        res.json().then(setUser)
-      }
-    })
+    UserClient.findUsersMe().then(setUser)
   }, [])
 
   return (
