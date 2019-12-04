@@ -67,7 +67,7 @@ export function HolidayFeature() {
       <Grid container spacing={1}>
         <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
           <Grid item xs={12}>
-            <UserSelector onChange={handleChangeUser} />
+            <UserSelector defaultUser={user} onChange={handleChangeUser} />
           </Grid>
         </UserAuthorityUtil>
         <Grid item xs={12}>
