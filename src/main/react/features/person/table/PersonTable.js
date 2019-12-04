@@ -49,7 +49,8 @@ export const PersonTable = () => {
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [personList, setPersonList] = useState([])
-  const [dialog, setDialog] = useState({open: false, code: null})
+  const [dialog, setDialog] = useState({open: false})
+  const [reload, setReload] = useState(false)
   const classes = useStyles()
   const [, setLinkList] = useBreadcrumbs()
 
@@ -57,14 +58,15 @@ export const PersonTable = () => {
     // eslint-disable-next-line no-shadow
     PersonService.getAll().then(personList => setPersonList(personList))
     setLinkList([{url, name: "Person"}])
-  }, [])
+  }, [reload])
 
   const handleDialogOpen = () => {
-    setDialog({open: true, code: null})
+    setDialog({open: true})
   }
 
-  const handleDialogClose = () => {
-    setDialog({open: false, code: null})
+  const handleDialogClose = status => {
+    if (status) setReload(!reload)
+    setDialog({open: false})
   }
 
   const handleChangePage = (_, newPage) => {

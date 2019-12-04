@@ -7,6 +7,7 @@ import {
   BreadcrumbsContextProvider,
   BreadcrumbsNavigation,
 } from "../../components/breadcrumb"
+import {PersonContextProvider} from "./context/PersonContext"
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -21,13 +22,15 @@ export const PersonFeature = props => {
 
   return (
     <Grid container className={classes.root} spacing={4}>
-      <BreadcrumbsContextProvider>
-        <BreadcrumbsNavigation />
-        <Grid item xs={12}>
-          <PersonRouter />
-          {props.children}
-        </Grid>
-      </BreadcrumbsContextProvider>
+      <PersonContextProvider>
+        <BreadcrumbsContextProvider>
+          <BreadcrumbsNavigation />
+          <Grid item xs={12}>
+            <PersonRouter />
+            {props.children}
+          </Grid>
+        </BreadcrumbsContextProvider>
+      </PersonContextProvider>
     </Grid>
   )
 }

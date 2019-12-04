@@ -1,4 +1,4 @@
-import {isDefined, isUndefined} from "./definedVars"
+import {isDefined, isUndefined, isEmptyObject} from "./definedVars"
 
 describe("isUndefined() util function", () => {
   it("should validate undefined parameters and return true", () => {
@@ -40,5 +40,21 @@ describe("isDefined() util function", () => {
   it("should validate passed parameters as false", () => {
     expect(isDefined(undefined)).toBeDefined()
     expect(isDefined(undefined)).toBeFalsy()
+  })
+})
+
+describe("isEmptyObject() util function", () => {
+  it("should evaluate an empty object as truthy", () => {
+    expect(isEmptyObject({})).toBeDefined()
+    expect(isEmptyObject({})).toBeTruthy()
+  })
+
+  it("should evaluate an non-epmty object as falsy", () => {
+    expect(isEmptyObject({item: 3})).toBeDefined()
+    expect(isEmptyObject({item: 3})).toBeFalsy()
+  })
+
+  it("should throw an TypeError if no object is passed as parameter", () => {
+    expect(() => isEmptyObject(13)).toThrowError(TypeError)
   })
 })
