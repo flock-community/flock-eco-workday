@@ -7,22 +7,36 @@ import {Card} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import FormControl from "@material-ui/core/FormControl"
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
+import {isUndefined} from "../utils/validation"
 
-export function UserSelector({onChange}) {
-  const [users, setUsers] = useState(null)
-  const [selected, setSelected] = useState("")
+export function UserSelector(props) {
+  const {defaultUser, onChange} = props
+  const [users, setUsers] = useState([])
+  const [selected, setSelected] = useState({})
 
   useEffect(() => {
     UserClient.findAllUsers("", 0, 100).then(res => {
+      let selectedItem = null
       console.log(res)
       setUsers(res.list)
-      setSelected(res.list[0])
+      if (isUndefined(defaultUser)) {
+        ;[selectedItem] = res.list
+        onChange(selectedItem)
+      } else {
+        ;[selectedItem] = res.list.filter(it =>
+          it.code === defaultUser.code ? it : null
+        )
+      }
+
+      setSelected(selectedItem)
     })
   }, [])
 
   function handleChange(event) {
-    setSelected(event.target.value)
-    if (onChange) onChange(selected)
+    // eslint-disable-next-line no-shadow
+    const selected = event.target.value
+    setSelected(selected)
+    onChange(selected)
   }
 
   function renderMenuItem(user) {
@@ -39,10 +53,7 @@ export function UserSelector({onChange}) {
         <FormControl fullWidth>
           <InputLabel>Select user</InputLabel>
           <Select value={selected || {}} onChange={handleChange}>
-            {users &&
-              users.map(user => {
-                return renderMenuItem(user)
-              })}
+            {users.map(renderMenuItem)}
           </Select>
         </FormControl>
       </CardContent>
@@ -51,5 +62,8 @@ export function UserSelector({onChange}) {
 }
 
 UserSelector.propTypes = {
-  onChange: PropTypes.func,
+  defaultUser: PropTypes.shape({
+    code: PropTypes.string.isRequired,
+  }),
+  onChange: PropTypes.func.isRequired,
 }
