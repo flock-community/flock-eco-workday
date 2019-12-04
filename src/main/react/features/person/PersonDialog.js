@@ -1,9 +1,7 @@
-import React, {forwardRef} from "react"
 import PropTypes from "prop-types"
 import clsx from "clsx"
 import {
   Dialog,
-  Slide,
   Button,
   DialogTitle,
   DialogContent,
@@ -17,11 +15,6 @@ import {PersonForm, PERSON_FORM_ID} from "./PersonForm"
 import {PersonService} from "./PersonService"
 import {usePerson} from "./context/PersonContext"
 import {isEmptyObject} from "../../utils/validation"
-
-// eslint-disable-next-line react/display-name
-const TransitionComponent = forwardRef((props, ref) => (
-  <Slide direction="right" ref={ref} {...props} />
-))
 
 const useStyles = makeStyles(() => ({
   flex: {
@@ -88,7 +81,6 @@ export const PersonDialog = props => {
       fullScreen
       open={open}
       onClose={onClose}
-      TransitionComponent={TransitionComponent}
     >
       <DialogTitle>
         <div className={classes.dialogTitle}>
