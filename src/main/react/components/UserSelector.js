@@ -52,5 +52,8 @@ export function UserSelector(props) {
 }
 
 UserSelector.propTypes = {
-  onChange: PropTypes.func,
+  defaultUser: PropTypes.shape({
+    code: PropTypes.string.isRequired,
+  }),
+  onChange: PropTypes.func.isRequired,
 }
