@@ -12,7 +12,6 @@ import {HomeFeature} from "../features/home/HomeFeature"
 import {ClientFeature} from "../features/client/ClientFeature"
 import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
 import {PersonFeature} from "../features/person/PersonFeature"
-import {PersonDetails} from "../features/person/PersonDetails"
 
 export const Application = () => {
   const [state, setState] = useState({
@@ -47,17 +46,11 @@ export const Application = () => {
   }, [])
 
   function handleDrawerClose() {
-    setState({
-      ...state,
-      openDrawer: false,
-    })
+    setState({openDrawer: false})
   }
 
   function handleDrawerOpen() {
-    setState({
-      ...state,
-      openDrawer: true,
-    })
+    setState({openDrawer: true})
   }
 
   if (state.loggedIn != null && !state.loggedIn) {
