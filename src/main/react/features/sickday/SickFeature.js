@@ -28,7 +28,7 @@ const useStyles = makeStyles({
 export function SickdayFeature() {
   const classes = useStyles()
 
-  const [refresh, setRefresh] = useState(false)
+  const [reload, setReload] = useState(false)
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(null)
   const [userCode, setUserCode] = useState(null)
@@ -51,7 +51,7 @@ export function SickdayFeature() {
   }, [authorities, user])
 
   function handleCompleteDialog() {
-    setRefresh(!refresh)
+    setReload(reload)
     setOpen(false)
     setValue(null)
   }
@@ -89,9 +89,9 @@ export function SickdayFeature() {
         <Grid item xs={12}>
           <SickdayList
             userCode={userCode}
-            refresh={refresh}
             onClickRow={handleClickRow}
           />
+              refresh={reload}
         </Grid>
       </Grid>
       <SickdayDialog
