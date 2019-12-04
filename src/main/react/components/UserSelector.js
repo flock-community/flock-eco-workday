@@ -8,10 +8,10 @@ import CardContent from "@material-ui/core/CardContent"
 import FormControl from "@material-ui/core/FormControl"
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
 
-  const [users, setUsers] = useState(null)
-  const [selected, setSelected] = useState("")
 export function UserSelector(props) {
   const {defaultUser, onChange} = props
+  const [users, setUsers] = useState([])
+  const [selected, setSelected] = useState({})
 
   useEffect(() => {
     UserClient.findAllUsers("", 0, 100).then(res => {
