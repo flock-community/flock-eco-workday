@@ -22,8 +22,10 @@ export function UserSelector(props) {
   }, [])
 
   function handleChange(event) {
-    setSelected(event.target.value)
-    if (onChange) onChange(selected)
+    // eslint-disable-next-line no-shadow
+    const selected = event.target.value
+    setSelected(selected)
+    onChange(selected)
   }
 
   function renderMenuItem(user) {
