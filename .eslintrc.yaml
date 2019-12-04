@@ -4,6 +4,8 @@ extends:
   - "airbnb-base"
   - "plugin:react/recommended"
   - "plugin:prettier/recommended"
+  - "plugin:jest/recommended"
+  - "plugin:jest/style"
 
 env:
   browser: true
