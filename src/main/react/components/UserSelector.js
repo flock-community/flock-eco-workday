@@ -7,6 +7,7 @@ import {Card} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import FormControl from "@material-ui/core/FormControl"
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
+import {isUndefined} from "../utils/validation"
 
 export function UserSelector(props) {
   const {defaultUser, onChange} = props
@@ -15,9 +16,19 @@ export function UserSelector(props) {
 
   useEffect(() => {
     UserClient.findAllUsers("", 0, 100).then(res => {
+      let selectedItem = null
       console.log(res)
       setUsers(res.list)
-      setSelected(res.list[0])
+      if (isUndefined(defaultUser)) {
+        ;[selectedItem] = res.list
+        onChange(selectedItem)
+      } else {
+        ;[selectedItem] = res.list.filter(it =>
+          it.code === defaultUser.code ? it : null
+        )
+      }
+
+      setSelected(selectedItem)
     })
   }, [])
 
