@@ -32,7 +32,7 @@ data class Sickday(
     @ManyToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)
-    val user: User
+    val person: Person
 
 ) : AbstractCodeEntity(id, code) {
     override fun equals(other: Any?) = super.equals(other)
