@@ -24,7 +24,7 @@ data class Sickday(
     val description: String?,
 
     @Enumerated(EnumType.STRING)
-    val status: HolidayStatus,
+    val status: SickdayStatus,
 
     @OneToOne
     val period: Period,
