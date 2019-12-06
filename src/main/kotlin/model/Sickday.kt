@@ -29,6 +29,8 @@ data class Sickday(
     @OneToOne
     val period: Period,
 
+    val hours: Int,
+
     @ManyToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)
