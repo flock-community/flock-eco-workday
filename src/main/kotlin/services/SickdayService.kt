@@ -1,9 +1,13 @@
 package community.flock.eco.workday.services
 
+import community.flock.eco.core.utils.toNullable
+import community.flock.eco.workday.filters.SickdayFilters
 import community.flock.eco.workday.forms.SickdayForm
 import community.flock.eco.workday.model.Sickday
+import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.repository.PersonRepository
 import community.flock.eco.workday.repository.SickdayRepository
+import java.lang.RuntimeException
 import org.springframework.stereotype.Service
 
 @Service
