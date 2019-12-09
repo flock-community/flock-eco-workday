@@ -22,7 +22,7 @@ class SickdayRepositoryImpl(
         val query: Query = entity.createNativeQuery("""
             SELECT *
             FROM "sickday"
-            WHERE "status" = :filterStatus AND "person_id" = :filterPersonCode
+            WHERE "status" LIKE :filterStatus AND "person_id" LIKE :filterPersonCode
             """.trimIndent(),
             Sickday::class.java)
         query.setParameter("filterStatus", status?.name ?: "%")
