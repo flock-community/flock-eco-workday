@@ -38,4 +38,13 @@ class SickdayService(
         ).save()
     }
 
+    fun update(code: String, form: SickdayForm): Sickday? {
+        val sickday = repository.findByCode(code)
+
+        return when (sickday) {
+            is Sickday -> sickday.render(form).save()
+            else -> null
+        }
+    }
+
 }
