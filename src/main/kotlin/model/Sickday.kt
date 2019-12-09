@@ -37,6 +37,6 @@ data class Sickday(
     val person: Person
 
 ) : AbstractCodeEntity(id, code) {
-    override fun equals(other: Any?) = super.equals(other)
+    override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 }
