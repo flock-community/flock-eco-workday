@@ -18,14 +18,15 @@ class SickdayRepositoryImpl(
 //    @Query("SELECT s.* FROM sickday WHERE status = :status", nativeQuery = true)
 //    override fun filterBy(@Param("status") filter: SickdayFilters): MutableList<Sickday>
 
-    override fun filterBy(filter: SickdayFilters): Iterable<Any?> {
+    override fun filterBy(status: SickdayFilters?, personCode: String?): Iterable<Any?> {
         val query: Query = entity.createNativeQuery("""
             SELECT *
             FROM "sickday"
-            WHERE "status" = ?
+            WHERE "status" = :filterStatus AND "person_id" = :filterPersonCode
             """.trimIndent(),
             Sickday::class.java)
-        query.setParameter(1, filter.name)
+        query.setParameter("filterStatus", status?.name ?: "%")
+        query.setParameter("filterPersonCode", personCode ?: "%")
 
         return query.resultList.toMutableList().asIterable()
     }
