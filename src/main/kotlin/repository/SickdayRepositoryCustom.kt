@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface SickdayRepositoryCustom {
-    fun filterBy(status: SickdayFilters?, personCode: String?): Iterable<Any?>
+    fun filterBy(status: SickdayFilters?, personCode: Int?): Iterable<Any?>
 }

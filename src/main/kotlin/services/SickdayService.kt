@@ -28,7 +28,7 @@ class SickdayService(
     }
 
 
-    fun findAll(status: SickdayFilters? = null, code: String? = null): Any? {
+    fun findAll(status: SickdayFilters? = null, code: Int? = null): Any? {
         return repository.filterBy(status, code)
     }
 
