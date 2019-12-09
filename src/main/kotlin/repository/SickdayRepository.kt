@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface SickdayRepository : CrudRepository<Sickday, Long> {
+interface SickdayRepository : CrudRepository<Sickday, Long>, SickdayRepositoryCustom {
     fun findByCode(code: String): Sickday?
     fun deleteByCode(code: String)
 }
