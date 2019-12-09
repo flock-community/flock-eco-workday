@@ -23,6 +23,11 @@ class SickdayService(
         )
     }
 
+
+    fun findAll(status: SickdayFilters? = null, code: String? = null): Any? {
+        return repository.filterBy(status, code)
+    }
+
     fun create(form: SickdayForm): Sickday {
         val person = form.personId
             ?.let { personRepository.findById(it).toNullable() }
