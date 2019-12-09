@@ -22,4 +22,20 @@ class SickdayService(
             hours = it?.hours ?: this.hours
         )
     }
+
+    fun create(form: SickdayForm): Sickday {
+        val person = form.personId
+            ?.let { personRepository.findById(it).toNullable() }
+            ?: throw RuntimeException("Person not found.")
+
+        val hours = form.hours
+
+        return Sickday(
+            description = form.description,
+            person = person,
+            hours = hours,
+            status = SickdayStatus.SICK
+        ).save()
+    }
+
 }
