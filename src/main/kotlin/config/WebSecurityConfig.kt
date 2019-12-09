@@ -32,11 +32,16 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         userAuthorityService.addAuthority(HolidayAuthority::class.java)
 
         http
+            .headers()
+            .frameOptions()
+            .sameOrigin()
+        http
                 .csrf().disable()
         http
                 .authorizeRequests()
                 .antMatchers("/_ah/**").permitAll()
                 .antMatchers("/login/**").permitAll()
+                .antMatchers("/h2/**").permitAll()
                 .anyRequest().authenticated()
         http
                 .cors()
