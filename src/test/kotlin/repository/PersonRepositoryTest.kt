@@ -35,6 +35,18 @@ class PersonRepositoryTest {
         assertThat(res.first()).isEqualTo(person)
     }
 
+    @Test
+    fun `should create person with email`() {
+        val person = createPersonAndPersist(
+                Person(firstname = "Roy", lastname = "Trennerman", email = "roy@reynholm-industries.co.uk")
+        )
+
+        val res = repository.findAll()
+
+        assertThat(res.toSet().size).isEqualTo(1)
+        assertThat(res.first()).isEqualTo(person)
+    }
+
     private final fun createPersonAndPersist(person: Person): Person {
         entity.persist(person)
         entity.flush()
