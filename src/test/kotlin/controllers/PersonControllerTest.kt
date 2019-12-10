@@ -89,6 +89,7 @@ class PersonControllerTest {
             .andExpect(jsonPath("\$.email").isEmpty)
     }
 
+    @Test
     }
 
     @Test
@@ -104,6 +105,6 @@ class PersonControllerTest {
     }
 
     private fun findUser(email: String) = user(userAccountService
-            .findUserAccountPasswordByUserEmail(email)
-            ?.let { UserSecurityService.UserSecurityPassword(it) })
+        .findUserAccountPasswordByUserEmail(email)
+        ?.let { UserSecurityService.UserSecurityPassword(it) })
 }
