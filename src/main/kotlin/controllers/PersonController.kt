@@ -27,14 +27,13 @@ class PersonController(
             .findAll(pageable)
             .toResponse()
 
-    @GetMapping("/{id}")
-    fun findById(@PathVariable id: Long): ResponseEntity<Person> = personService
-            .findById(id)
+    @GetMapping("/{code}")
+    fun findById(@PathVariable code: String): ResponseEntity<Person> = personService
+            .findByCode(code)
             .toResponse()
             .also {
                 when (it.statusCodeValue) {
-                    404 -> throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Item found with this id")
-                    else -> it
+                    404 -> throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Item found with this PersonCode")
                 }
             }
 
