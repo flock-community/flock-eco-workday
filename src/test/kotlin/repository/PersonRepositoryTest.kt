@@ -24,10 +24,16 @@ class PersonRepositoryTest {
     private lateinit var repository: PersonRepository
 
     @Test
-    fun `s`() {
-        val p1 = Person(firstname = "Hello", lastname = "World", email = "")
-        entity.persist(p1)
+    fun `should create person without email`() {
+        val person = createPersonAndPersist(
+                Person(firstname = "Maurice", lastname = "Moss", email = null)
+        )
+
         val res = repository.findAll()
+
+        assertThat(res.toSet().size).isEqualTo(1)
+        assertThat(res.first()).isEqualTo(person)
+    }
 
     private final fun createPersonAndPersist(person: Person): Person {
         entity.persist(person)
