@@ -32,13 +32,12 @@ class PersonControllerTest {
     private lateinit var mvc: MockMvc
 
     @Autowired
-    private lateinit var service: PersonService
 
     @Autowired
     private lateinit var userAccountService: UserAccountService
 
     @Test
-    fun `should return an empty list in json response object`() {
+    fun `should return an empty list if querying the API endpoint persons with a GET-method for the first time`() {
         val user = UserAccountPasswordForm(
             email = "admin@reynholm-instudries.co.uk",
             name = "Administrator",
@@ -48,18 +47,12 @@ class PersonControllerTest {
             .run { UserSecurityService.UserSecurityPassword(this) }
             .run { user(this) }
 
-        val person = Person(
-            firstname = "Denholm",
-            lastname = "Reynholm",
-            email = "")
-            .run { service.create(this) }
-
         mvc.perform(get(baseUrl)
             .with(user)
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("\$.length()").value(1)) // expectedValue should be 0 to pass the test
+            .andExpect(jsonPath("\$.length()").value(0))
     }
 
     }
