@@ -41,15 +41,15 @@ class PersonController(
     fun post(@RequestBody person: Person) = personService.create(person)
             ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "firstname & lastname are required")
 
-    @PutMapping("/{id}")
-    fun put(@PathVariable id: Long, @RequestBody updatedPerson: Person) = personService
-            .update(id, updatedPerson)
+    @PutMapping("/{code}")
+    fun put(@PathVariable code: String, @RequestBody updatedPerson: Person) = personService
+            .update(code, updatedPerson)
             .apply {
                 when (this) {
                     is Person -> this.toResponse()
                     else -> throw ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
-                            "Cannot perform PUT on given item. Id cannot be found. Use POST Method"
+                            "Cannot perform PUT on given item. PersonCode cannot be found. Use POST Method"
                     )
                 }
             }
