@@ -34,8 +34,8 @@ class PersonService(
         email = person.email
     ).save()
 
-    fun update(id: Long, person: Person? = null): Person? {
-        val obj = this.findById(id)
+    fun update(code: String, person: Person? = null): Person? {
+        val obj = this.findByCode(code)
 
         return when (obj) {
             is Person -> obj.render(person).save()
