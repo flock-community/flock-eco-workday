@@ -28,8 +28,10 @@ class PersonRepositoryTest {
         val p1 = Person(firstname = "Hello", lastname = "World", email = "")
         entity.persist(p1)
         val res = repository.findAll()
+
+    private final fun createPersonAndPersist(person: Person): Person {
+        entity.persist(person)
         entity.flush()
-        assertThat(res.first()).isEqualTo(p1)
-//        assertEquals(expected = p1, actual = res, message = "meh!")
+        return person
     }
 }
