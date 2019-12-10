@@ -12,17 +12,18 @@ class PersonService(
     private val personRepository: PersonRepository
 ) {
     private fun Person.render(it: Person? = null): Person = Person(
-                id = this.id,
-                code = this.code,
-                firstname = it?.firstname ?: this.firstname,
-                lastname = it?.lastname ?: this.lastname,
-                email = it?.email ?: this.email
+        id = this.id,
+        code = this.code,
+        firstname = it?.firstname ?: this.firstname,
+        lastname = it?.lastname ?: this.lastname,
+        email = it?.email ?: this.email
     )
+
     private fun Person.save(): Person = personRepository.save(this)
 
     fun findAll(pageable: Pageable): Page<Person> {
         return personRepository
-                .findAll(pageable)
+            .findAll(pageable)
     }
 
     fun findByCode(code: String): Person? = personRepository
