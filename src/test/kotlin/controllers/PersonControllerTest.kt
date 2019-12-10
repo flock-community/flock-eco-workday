@@ -40,26 +40,28 @@ class PersonControllerTest {
     @Test
     fun `should return an empty list in json response object`() {
         val user = UserAccountPasswordForm(
-                email = "test@test.org",
-                name = "Test",
-                authorities = setOf(),
-                password = "test")
-                .run { userAccountService.createUserAccountPassword(this) }
-                .run { UserSecurityService.UserSecurityPassword(this) }
-                .run { user(this) }
+            email = "admin@reynholm-instudries.co.uk",
+            name = "Administrator",
+            authorities = setOf(),
+            password = "admin")
+            .run { userAccountService.createUserAccountPassword(this) }
+            .run { UserSecurityService.UserSecurityPassword(this) }
+            .run { user(this) }
 
         val person = Person(
-                firstname = "Denholm",
-                lastname = "Reynholm",
-                email = "")
-                .run { service.create(this) }
+            firstname = "Denholm",
+            lastname = "Reynholm",
+            email = "")
+            .run { service.create(this) }
 
         mvc.perform(get(baseUrl)
-                .with(user)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("\$.length()").value(1)) // expectedValue should be 0 to pass the test
+            .with(user)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("\$.length()").value(1)) // expectedValue should be 0 to pass the test
+    }
+
     }
 
     @Test
