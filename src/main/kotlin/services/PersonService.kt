@@ -25,9 +25,8 @@ class PersonService(
                 .findAll(pageable)
     }
 
-    fun findById(id: Long): Person? = personRepository
-        .findById(id)
-        .toNullable()
+    fun findByCode(code: String): Person? = personRepository
+        .findByCode(code)
 
     fun create(person: Person): Person? = Person(
         firstname = person.firstname,
