@@ -1,6 +1,5 @@
 package community.flock.eco.workday.services
 
-import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.repository.PersonRepository
 import org.springframework.data.domain.Page
