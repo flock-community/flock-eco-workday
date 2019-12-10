@@ -21,15 +21,14 @@ class PersonRepositoryTest {
     private lateinit var entity: TestEntityManager
 
     @Autowired
-    private lateinit var personRepository: PersonRepository
+    private lateinit var repository: PersonRepository
 
     @Test
     fun `s`() {
         val p1 = Person(firstname = "Hello", lastname = "World", email = "")
         entity.persist(p1)
+        val res = repository.findAll()
         entity.flush()
-        val res = personRepository.findAll()
-        println(res)
         assertThat(res.first()).isEqualTo(p1)
 //        assertEquals(expected = p1, actual = res, message = "meh!")
     }
