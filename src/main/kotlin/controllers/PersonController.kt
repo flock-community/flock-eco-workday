@@ -54,15 +54,15 @@ class PersonController(
                 }
             }
 
-    @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: Long) = personService
-            .deleteById(id)
+    @DeleteMapping("/{code}")
+    fun delete(@PathVariable code: String) = personService
+            .deleteByCode(code)
             .toResponse()
             .apply {
                 when (this.statusCodeValue) {
                     404 -> throw ResponseStatusException(
                             HttpStatus.NOT_FOUND,
-                            "No item found with this id. Has item already been deleted?"
+                            "No item found with this PersonCode. Has item already been deleted?"
                     )
                 }
             }
