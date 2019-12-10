@@ -2,7 +2,6 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.repository.PersonRepository
 import community.flock.eco.workday.services.PersonService
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -20,7 +19,6 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @RequestMapping("/api/persons")
 class PersonController(
-    private val personRepository: PersonRepository,
     private val personService: PersonService
 ) {
 
