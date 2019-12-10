@@ -17,12 +17,6 @@ import org.springframework.test.context.junit4.SpringRunner
 @DataJpaTest
 @AutoConfigureTestDatabase
 class PersonRepositoryTest {
-
-    /* if added here error is raised:
-        *  java.lang.Exception: Test class should have exactly one public zero-argument constructor
-        *  I do not understand since the official guide of spring kotlin does add variables here.
-        */
-
     @Autowired
     private lateinit var entity: TestEntityManager
 
