@@ -88,7 +88,7 @@ class SickdayRepositoryTest {
             hours = 48,
             person = person
         )
-        val test = repository.save(sickday)
+        repository.save(sickday)
         res = repository.findAll()
 
         assertThat(res.toSet().size).isEqualTo(1)
