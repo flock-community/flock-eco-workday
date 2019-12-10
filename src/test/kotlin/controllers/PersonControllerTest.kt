@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -128,6 +129,57 @@ class PersonControllerTest {
             .andExpect(jsonPath("\$.code").value(person("code")))
             .andExpect(jsonPath("\$.firstname").value(person("firstname")))
             .andExpect(jsonPath("\$.lastname").value(person("lastname")))
+    }
+
+    @Test
+    fun `should update a valid person correctly via PUT-method`() {
+        /* DRY-Block */
+        val user = UserAccountPasswordForm(
+            email = "admin@reynholm-instudries.co.uk",
+            name = "Administrator",
+            authorities = setOf(),
+            password = "admin")
+            .run { userAccountService.createUserAccountPassword(this) }
+            .run { UserSecurityService.UserSecurityPassword(this) }
+            .run { user(this) }
+
+        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = null)
+
+        // need this user to compare generated fields
+        var person: JsonNode? = null
+        mvc.perform(post(baseUrl).with(user)
+            .content(mapper.writeValueAsString(personForm))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andReturn()
+            .response
+            .contentAsString
+            .apply { person = mapper.readTree(this) }
+
+        fun person(key: String): String = person!!.get(key).textValue()
+        /* DRY-Block */
+
+        val personUpdate = PersonForm(
+            firstname = "Morris",
+            lastname = "Moss",
+            email = "morris@reynholm-industires.co.uk"
+        )
+
+        mvc.perform(put("$baseUrl/${person("code")}")
+            .with(user)
+            .content(mapper.writeValueAsString(personUpdate))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("\$.code").isNotEmpty)
+            .andExpect(jsonPath("\$.code").isString)
+            .andExpect(jsonPath("\$.code").value(person("code")))
+            .andExpect(jsonPath("\$.firstname").value(personUpdate.firstname))
+            .andExpect(jsonPath("\$.lastname").value(personUpdate.lastname))
+            .andExpect(jsonPath("\$.email").isNotEmpty)
+            .andExpect(jsonPath("\$.email").isString)
+            .andExpect(jsonPath("\$.email").value(personUpdate.email))
     }
 
     @Test
