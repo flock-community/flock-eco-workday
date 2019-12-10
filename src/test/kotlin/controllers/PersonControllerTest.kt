@@ -17,7 +17,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -27,11 +26,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @AutoConfigureMockMvc
 @ActiveProfiles(profiles = ["test"])
 class PersonControllerTest {
-
     private val baseUrl: String = "/api/persons"
 
-    // Added the Autowiring of the mvc inside the class and initialized before running tests in @Before
-    // otherwise I get not initialized errors, understandably.
     @Autowired
     private lateinit var mvc: MockMvc
 
@@ -41,17 +37,8 @@ class PersonControllerTest {
     @Autowired
     private lateinit var userAccountService: UserAccountService
 
-    /* Anyhow with this setup I get it running until it fails with another error.
-    *  java.lang.IllegalStateException: Failed to load ApplicationContext
-    *
-    *  I do see that it is mentioned what I should do: Consider defining a bean named 'entityManagerFactory' in your configuration.
-    *  and Parameter 0 of constructor in community.flock.eco.workday.Application required a bean named 'entityManagerFactory' that could not be found.
-    *  I do not understand where this entityManagerFactory comes from and why I need to implement it
-    *  further I cannot find the configurations anywhere.
-    */
     @Test
     fun `should return an empty list in json response object`() {
-
         val user = UserAccountPasswordForm(
                 email = "test@test.org",
                 name = "Test",
@@ -62,15 +49,14 @@ class PersonControllerTest {
                 .run { user(this) }
 
         val person = Person(
-                firstname = "Hello",
-                lastname = "World",
+                firstname = "Denholm",
+                lastname = "Reynholm",
                 email = "")
                 .run { service.create(this) }
 
         mvc.perform(get(baseUrl)
                 .with(user)
                 .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("\$.length()").value(1)) // expectedValue should be 0 to pass the test
