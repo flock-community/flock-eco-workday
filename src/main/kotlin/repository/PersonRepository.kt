@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PersonRepository : PagingAndSortingRepository<Person, Long> {
-    fun deleteByCode(code: String)
     fun findByCode(code: String): Person?
+    fun deleteByCode(code: String): Unit
 }
