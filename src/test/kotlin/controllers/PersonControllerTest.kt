@@ -18,6 +18,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
@@ -180,6 +181,59 @@ class PersonControllerTest {
             .andExpect(jsonPath("\$.email").isNotEmpty)
             .andExpect(jsonPath("\$.email").isString)
             .andExpect(jsonPath("\$.email").value(personUpdate.email))
+    }
+
+    @Test
+    fun `should send a valid delete request to remove a person via DELETE-method`() {
+        /* DRY-Block */
+        val user = UserAccountPasswordForm(
+            email = "admin@reynholm-instudries.co.uk",
+            name = "Administrator",
+            authorities = setOf(),
+            password = "admin")
+            .run { userAccountService.createUserAccountPassword(this) }
+            .run { UserSecurityService.UserSecurityPassword(this) }
+            .run { user(this) }
+
+        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = null)
+
+        // need this user to compare generated fields
+        // create a person so one can query that person via the PersonCode
+        var person: JsonNode? = null
+        mvc.perform(post(baseUrl).with(user)
+            .content(mapper.writeValueAsString(personForm))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andReturn()
+            .response
+            .contentAsString
+            .apply { person = mapper.readTree(this) }
+
+        fun person(key: String): String = person!!.get(key).textValue()
+
+        mvc.perform(get("$baseUrl/${person("code")}")
+            .with(user)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("\$.code").exists())
+            .andExpect(jsonPath("\$.code").isString)
+            .andExpect(jsonPath("\$.code").value(person("code")))
+            .andExpect(jsonPath("\$.firstname").value(person("firstname")))
+            .andExpect(jsonPath("\$.lastname").value(person("lastname")))
+        /* DRY-Block */
+
+        mvc.perform(delete("$baseUrl/${person("code")}")
+            .with(user)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isNoContent)
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+            .andExpect(content().json(""))
+
+        /* DRY-Bock */
+        mvc.perform(get("$baseUrl/${person("code")}").with(user).accept(APPLICATION_JSON))
+            .andExpect(status().isNotFound)
+        /* DRY-Bock */
     }
 
     @Test
