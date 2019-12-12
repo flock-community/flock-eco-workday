@@ -227,8 +227,6 @@ class PersonControllerTest {
             .with(user)
             .accept(APPLICATION_JSON))
             .andExpect(status().isNoContent)
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(content().json(""))
 
         /* DRY-Bock */
         mvc.perform(get("$baseUrl/${person("code")}").with(user).accept(APPLICATION_JSON))
