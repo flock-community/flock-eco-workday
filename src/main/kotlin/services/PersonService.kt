@@ -5,6 +5,7 @@ import community.flock.eco.workday.repository.PersonRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class PersonService(
@@ -43,10 +44,6 @@ class PersonService(
         }
     }
 
-    fun deleteById(id: Long): Unit? {
-        return when {
-            personRepository.existsById(id) -> personRepository.deleteById(id)
-            else -> null
-        }
-    }
+    @Transactional
+    fun deleteByCode(code: String) = personRepository.deleteByCode(code)
 }
