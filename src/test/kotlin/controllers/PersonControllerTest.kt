@@ -42,10 +42,6 @@ class PersonControllerTest {
     @Autowired
     private lateinit var userAccountService: UserAccountService
 
-    @Test
-    fun `should return an empty list if querying the API endpoint persons with a GET-method for the first time`() {
-        val user = UserAccountPasswordForm(
-            email = "admin@reynholm-instudries.co.uk",
             name = "Administrator",
             authorities = setOf(),
             password = "admin")
@@ -53,12 +49,6 @@ class PersonControllerTest {
             .run { UserSecurityService.UserSecurityPassword(this) }
             .run { user(this) }
 
-        mvc.perform(get(baseUrl)
-            .with(user)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("\$.length()").value(0))
     }
 
     @Test
