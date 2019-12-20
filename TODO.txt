@@ -1,0 +1,19 @@
+Done:
+- Edit form day field
+ - Fix PeriodForm
+
+TODO:
+-
+Backlog:
+- Behaviour if BE doesn't work
+- Only show delete form button when opening form from existing field (holiday)
+- Profile page
+- Clients page
+ - Behaviour if no data (currently blank page, no top bar)
+- Users page
+ - SearchBar
+  - Don't send BE requests while typing?
+ - Behaviour without Authorizations (SideDrawer)
+- Person page
+ - Behaviour if no data (currently blank page, no top bar)
+Whishes:
