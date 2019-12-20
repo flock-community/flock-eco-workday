@@ -5,8 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.feature.user.forms.UserAccountPasswordForm
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserSecurityService
+import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.forms.PersonForm
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delet
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
+import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -32,6 +36,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @ActiveProfiles(profiles = ["test"])
 class PersonControllerTest {
     private val baseUrl: String = "/api/persons"
+    private val email: String = "admin@reynholm-instudries.co.uk"
 
     @Autowired
     private lateinit var mvc: MockMvc
@@ -42,13 +47,27 @@ class PersonControllerTest {
     @Autowired
     private lateinit var userAccountService: UserAccountService
 
+    @Autowired
+    private lateinit var userService: UserService
+
+    private lateinit var user: RequestPostProcessor
+
+    @Before
+    fun setup() {
+        user = UserAccountPasswordForm(
+            email = email,
             name = "Administrator",
             authorities = setOf(),
             password = "admin")
             .run { userAccountService.createUserAccountPassword(this) }
             .run { UserSecurityService.UserSecurityPassword(this) }
             .run { user(this) }
+    }
 
+    @After
+    fun teardown() {
+        userAccountService.findUserAccountPasswordByUserEmail(email)
+            ?.apply { userService.delete(this.user.code) }
     }
 
     @Test
