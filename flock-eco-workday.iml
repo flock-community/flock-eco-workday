@@ -53,6 +53,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/develop/kotlin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/develop/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/kotlin" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/flutter/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/flutter/build" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/flutter/ios/.symlinks/plugins/google_sign_in/.pub" />
