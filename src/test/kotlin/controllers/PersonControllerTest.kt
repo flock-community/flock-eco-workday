@@ -72,17 +72,6 @@ class PersonControllerTest {
 
     @Test
     fun `should create a valid person via POST-method`() {
-        /* DRY-Block */
-        val user = UserAccountPasswordForm(
-            email = "admin@reynholm-instudries.co.uk",
-            name = "Administrator",
-            authorities = setOf(),
-            password = "admin")
-            .run { userAccountService.createUserAccountPassword(this) }
-            .run { UserSecurityService.UserSecurityPassword(this) }
-            .run { user(this) }
-        /* DRY-Block */
-
         // TODO: create arrayListOf<PersonForm>() of all possible valid persons
         val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = null)
 
@@ -103,15 +92,6 @@ class PersonControllerTest {
     @Test
     fun `should get a person by code via GET-method`() {
         /* DRY-Block */
-        val user = UserAccountPasswordForm(
-            email = "admin@reynholm-instudries.co.uk",
-            name = "Administrator",
-            authorities = setOf(),
-            password = "admin")
-            .run { userAccountService.createUserAccountPassword(this) }
-            .run { UserSecurityService.UserSecurityPassword(this) }
-            .run { user(this) }
-
         val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = null)
 
         // need this user to compare generated fields
@@ -144,15 +124,6 @@ class PersonControllerTest {
     @Test
     fun `should update a valid person correctly via PUT-method`() {
         /* DRY-Block */
-        val user = UserAccountPasswordForm(
-            email = "admin@reynholm-instudries.co.uk",
-            name = "Administrator",
-            authorities = setOf(),
-            password = "admin")
-            .run { userAccountService.createUserAccountPassword(this) }
-            .run { UserSecurityService.UserSecurityPassword(this) }
-            .run { user(this) }
-
         val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = null)
 
         // need this user to compare generated fields
@@ -195,15 +166,6 @@ class PersonControllerTest {
     @Test
     fun `should send a valid delete request to remove a person via DELETE-method`() {
         /* DRY-Block */
-        val user = UserAccountPasswordForm(
-            email = "admin@reynholm-instudries.co.uk",
-            name = "Administrator",
-            authorities = setOf(),
-            password = "admin")
-            .run { userAccountService.createUserAccountPassword(this) }
-            .run { UserSecurityService.UserSecurityPassword(this) }
-            .run { user(this) }
-
         val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = null)
 
         // need this user to compare generated fields
