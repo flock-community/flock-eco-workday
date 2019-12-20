@@ -9,6 +9,7 @@ import community.flock.eco.workday.repository.PersonRepository
 import community.flock.eco.workday.repository.SickdayRepository
 import java.lang.RuntimeException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class SickdayService(
@@ -56,4 +57,6 @@ class SickdayService(
         }
     }
 
+    @Transactional
+    fun delete(code: String) = repository.deleteByCode(code)
 }
