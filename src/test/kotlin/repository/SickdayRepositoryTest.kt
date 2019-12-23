@@ -101,7 +101,9 @@ class SickdayRepositoryTest {
         val sickdayList: MutableList<Sickday> = mutableListOf()
 
         for (i in 0..4) {
-            sickdayList.add(Sickday(description = "$i sickday", status = SickdayStatus.SICK, hours = i * 8, person = person))
+            sickdayList.add(
+                Sickday(description = "$i sickday", status = SickdayStatus.SICK, hours = i * 8, person = person)
+            )
         }
 
         val iterator: Iterator<Sickday> = sickdayList.iterator()
