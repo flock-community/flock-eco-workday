@@ -24,6 +24,9 @@ class SickdayController(
         .findAll(status, code)
         .toResponse()
 
+    @GetMapping("/{code}")
+    fun findByCode(@PathVariable code: String) = service.findByCode(code).toResponse()
+
     @PostMapping
     fun post(@RequestBody form: SickdayForm) = service.create(form).toResponse()
 
