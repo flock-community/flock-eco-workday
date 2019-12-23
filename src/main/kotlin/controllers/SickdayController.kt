@@ -1,8 +1,8 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
-import community.flock.eco.workday.filters.SickdayFilters
 import community.flock.eco.workday.forms.SickdayForm
+import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.services.SickdayService
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -20,7 +20,10 @@ class SickdayController(
     private val service: SickdayService
 ) {
     @GetMapping
-    fun getAll(@RequestParam status: SickdayFilters?, @RequestParam code: Int?) = service
+    fun getAll(
+        @RequestParam(required = false) status: SickdayStatus?,
+        @RequestParam(required = false) code: String?
+    ) = service
         .findAll(status, code)
         .toResponse()
 
