@@ -1,20 +1,16 @@
 package community.flock.eco.workday.services
 
-import community.flock.eco.core.utils.toNullable
-import community.flock.eco.workday.filters.SickdayFilters
 import community.flock.eco.workday.forms.SickdayForm
 import community.flock.eco.workday.model.Sickday
 import community.flock.eco.workday.model.SickdayStatus
-import community.flock.eco.workday.repository.PersonRepository
 import community.flock.eco.workday.repository.SickdayRepository
-import java.lang.RuntimeException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class SickdayService(
     private val repository: SickdayRepository,
-    private val personRepository: PersonRepository
+    private val personService: PersonService
 ) {
     private fun Sickday.save() = repository.save(this)
     private fun Sickday.render(it: SickdayForm? = null): Sickday {
@@ -29,8 +25,15 @@ class SickdayService(
     }
 
 
-    fun findAll(status: SickdayFilters? = null, code: Int? = null): Any? {
-        return repository.filterBy(status, code)
+    fun findAll(status: SickdayStatus? = null, code: String? = null): Iterable<Sickday> {
+        if (status is SickdayStatus && code is String) {
+            return repository.findAllByStatusAndPersonCode(status, code)
+        } else if (status is SickdayStatus) {
+            return repository.findAllByStatus(status)
+        } else if (code is String) {
+            return repository.findAllByPersonCode(code)
+        }
+        return repository.findAll()
     }
 
     fun findByCode(code: String) = repository.findByCode(code)
