@@ -33,17 +33,15 @@ class SickdayService(
         return repository.filterBy(status, code)
     }
 
-    fun create(form: SickdayForm): Sickday {
-        val person = form.personId
-            ?.let { personRepository.findById(it).toNullable() }
-            ?: throw RuntimeException("Person not found.")
+    fun findByCode(code: String) = repository.findByCode(code)
 
-        val hours = form.hours
+    fun create(form: SickdayForm): Sickday {
+        val person = personService.findByCode(form.personCode)!!
 
         return Sickday(
             description = form.description,
             person = person,
-            hours = hours,
+            hours = form.hours,
             status = SickdayStatus.SICK
         ).save()
     }
