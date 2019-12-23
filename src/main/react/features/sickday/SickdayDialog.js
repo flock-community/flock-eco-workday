@@ -11,10 +11,16 @@ import * as moment from "moment"
 import {PeriodForm} from "../../components/PeriodForm"
 import SickdayClient from "./SickdayClient"
 import {isDefined} from "../../utils/validation"
+import {TransitionSlider} from "../../components/transitions/Slide"
+import {makeStyles} from "@material-ui/styles"
+
+const useStyles = makeStyles(() => ({}))
 
 export function SickdayDialog(props) {
   const {value, userCode, open, onChange, onComplete} = props
   const [state, setState] = useState(value)
+
+  const classes = useStyles()
 
   useEffect(() => {
     if (isDefined(onChange)) onChange(state)
@@ -63,7 +69,13 @@ export function SickdayDialog(props) {
   }
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog
+      fullScreen
+      open={open}
+      onClose={handleClose}
+      TransitionComponent={TransitionSlider}
+      TransitionProps={{direction: "right"}}
+    >
       <DialogTitle>Sickday form</DialogTitle>
       <DialogContent>
         <PeriodForm value={value} onChange={handleChangeForm} />
