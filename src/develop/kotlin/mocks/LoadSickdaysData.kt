@@ -31,16 +31,20 @@ class LoadSickdaysData(
         loadPersonData.data.forEach {
             SickdayForm(
                 description = "Sick - ${it.firstname} ${it.lastname}",
+                status = SickdayStatus.SICK,
                 hours = 48,
-                personId = it.id
+                personCode = it.code
             ).create()
 
             SickdayForm(
                 description = "Healthy - ${it.firstname} ${it.lastname}",
                 status = SickdayStatus.HEALTHY,
                 hours = 24,
-                personId = it.id
-            ).create()
+                personCode = it.code
+            ).run {
+                val sickday = service.create(this)
+                service.update(sickday.code, this)
+            }
         }
     }
 }
