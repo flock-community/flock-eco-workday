@@ -40,10 +40,7 @@ export function SickdayFeature() {
 
   useEffect(() => {
     if (isSuperUser()) {
-      // eslint-disable-next-line no-shadow
-      SickdayClient.getAllUsers().then(users => {
-        setUsers(users)
-      })
+      PersonService.getAll().then(it => setPersons(it))
     }
 
     if (isDefined(user)) setUserCode(user.code)
