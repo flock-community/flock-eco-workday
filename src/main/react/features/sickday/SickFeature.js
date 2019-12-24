@@ -86,8 +86,11 @@ export function SickdayFeature() {
           )}
         </Grid>
         <Grid item xs={12}>
-          <SickdayList personCode={userCode} onClickRow={handleClickRow} />
-          refresh={reload}
+          <SickdayList
+            personCode={userCode}
+            onClickRow={handleClickRow}
+            refresh={reload}
+          />
         </Grid>
       </Grid>
       <SickdayDialog
