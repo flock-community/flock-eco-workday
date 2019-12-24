@@ -1,4 +1,6 @@
 import moment from "moment"
+import {ResourceClient} from "../../utils/ResourceClient"
+
 const path = {
   sickdays: `/api/sickdays`,
   persons: `/api/persons`,
@@ -73,6 +75,7 @@ export default {
   fetchAllByUserCode,
   getAllUsers,
   getUserById,
+  ...ResourceClient(path),
   fetchAll,
   getMe,
   getSummary,
