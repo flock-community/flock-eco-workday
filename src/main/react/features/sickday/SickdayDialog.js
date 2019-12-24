@@ -1,18 +1,14 @@
 import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@material-ui/core"
+import {Button, Dialog, DialogContent, Divider} from "@material-ui/core"
 import * as moment from "moment"
 import {PeriodForm} from "../../components/PeriodForm"
 import SickdayClient from "./SickdayClient"
 import {isDefined} from "../../utils/validation"
 import {TransitionSlider} from "../../components/transitions/Slide"
 import {makeStyles} from "@material-ui/styles"
+import {DialogHeader, DialogFooter} from "../../components/dialog"
+import HealingIcon from "@material-ui/icons/Healing"
 
 const useStyles = makeStyles(() => ({}))
 
@@ -76,17 +72,24 @@ export function SickdayDialog(props) {
       TransitionComponent={TransitionSlider}
       TransitionProps={{direction: "right"}}
     >
-      <DialogTitle>Sickday form</DialogTitle>
+      <DialogHeader
+        icon={<HealingIcon />}
+        headline="Create Sickday"
+        subheadline="Add your sickdays. Hope you feel better soon."
+        onClose={handleClose}
+      />
       <DialogContent>
         <PeriodForm value={value} onChange={handleChangeForm} />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Close</Button>
-        <Button onClick={handleDelete}>Delete</Button>
-        <Button onClick={handleClickSave} variant="contained" color="primary">
-          Save
-        </Button>
-      </DialogActions>
+      <Divider />
+      <DialogFooter
+        submitButton={
+          <Button type="submit" form="" color="primary">
+            Save
+          </Button>
+        }
+        onClose={handleClose}
+      />
     </Dialog>
   )
 }
