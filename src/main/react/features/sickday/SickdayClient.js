@@ -1,4 +1,8 @@
 import moment from "moment"
+const path = {
+  sickdays: `/api/sickdays`,
+  persons: `/api/persons`,
+}
 
 const internalize = it => ({
   ...it,
