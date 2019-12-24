@@ -11,8 +11,9 @@ const internalize = it => ({
   from: moment(it.from, "YYYY-MM-DD"),
   to: moment(it.to, "YYYY-MM-DD"),
 })
-function fetchAllByUserCode(userCode) {
-  return fetch(`/api/sickdays?userCode=${userCode}`)
+
+const fetchAll = () => {
+  return fetch(path.sickdays)
     .then(res => {
       if (res.status === 200) {
         return res.json()
@@ -22,8 +23,11 @@ function fetchAllByUserCode(userCode) {
     .then(data => data.map(internalize))
 }
 
-function fetchAll() {
-  return fetch(`/api/sickdays`)
+const fetchAllActive = () => fetchAllByStatus("SICK")
+const fetchAllArchive = () => fetchAllByStatus("HEALTHY")
+
+const fetchAllByPersonCode = personCode => {
+  return fetch(`${path.sickdays}?code=${personCode}`)
     .then(res => {
       if (res.status === 200) {
         return res.json()
@@ -33,10 +37,15 @@ function fetchAll() {
     .then(data => data.map(internalize))
 }
 
+const fetchAllByStatus = status => {
+  return fetch(`${path.sickdays}?status=${status}`).then(res => res.json())
 }
 
-export default {
-  fetchAllByUserCode,
+export const SickdayClient = {
   ...ResourceClient(path),
   fetchAll,
+  fetchAllArchive,
+  fetchAllArchive,
+  fetchAllByStatus,
+  fetchAllByPersonCode,
 }
