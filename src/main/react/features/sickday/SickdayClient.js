@@ -31,35 +31,6 @@ function fetchAll() {
     .then(data => data.map(internalize))
 }
 
-function postSickday(sickday) {
-  const opts = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(sickday),
-  }
-  return fetch(`/api/sickdays`, opts).then(res => res.json())
-}
-
-function putSickday(id, sickday) {
-  const opts = {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(sickday),
-  }
-  return fetch(`/api/sickdays/${id}`, opts).then(res => res.json())
-}
-
-function deleteSickday(id) {
-  const opts = {
-    method: "DELETE",
-  }
-  return fetch(`/api/sickdays/${id}`, opts).then(res => res.json())
-}
-
 function getAllUsers() {
   return fetch(`/api/users/`).then(res => {
     if (res.status === 200) {
@@ -100,9 +71,6 @@ function getSummary(filter) {
 
 export default {
   fetchAllByUserCode,
-  postSickday,
-  putSickday,
-  deleteSickday,
   getAllUsers,
   getUserById,
   fetchAll,
