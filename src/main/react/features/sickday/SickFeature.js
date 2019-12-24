@@ -9,6 +9,7 @@ import {SickdayClient} from "./SickdayClient"
 import {ApplicationContext} from "../../application/ApplicationContext"
 import {isDefined} from "../../utils/validation"
 import {AddActionFab} from "../../components/FabButtons"
+import {PersonService} from "../person/PersonService"
 
 const useStyles = makeStyles({
   root: {
@@ -31,7 +32,7 @@ export function SickdayFeature() {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(null)
   const [userCode, setUserCode] = useState(null)
-  const [users, setUsers] = useState([])
+  const [persons, setPersons] = useState([])
   const {authorities, user} = useContext(ApplicationContext)
 
   function isSuperUser() {
@@ -80,14 +81,13 @@ export function SickdayFeature() {
     <div className={classes.root}>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          {isSuperUser() && <UserSelector users={users} onChange={handleChangeUser} />}
+          {isSuperUser() && (
+            <UserSelector users={persons} onChange={handleChangeUser} />
+          )}
         </Grid>
         <Grid item xs={12}>
-          <SickdayList
-            userCode={userCode}
-            onClickRow={handleClickRow}
-          />
-              refresh={reload}
+          <SickdayList personCode={userCode} onClickRow={handleClickRow} />
+          refresh={reload}
         </Grid>
       </Grid>
       <SickdayDialog
