@@ -33,20 +33,10 @@ function fetchAll() {
     .then(data => data.map(internalize))
 }
 
-function getSummary(filter) {
-  const typeFilter = filter.length > 0 ? `?type=${filter}` : filter
-
-  return fetch(`/api/sickdays/summary${typeFilter}`).then(res => {
-    if (res.status === 200) {
-      return res.json()
-    }
-    throw res.json()
-  })
 }
 
 export default {
   fetchAllByUserCode,
   ...ResourceClient(path),
   fetchAll,
-  getSummary,
 }
