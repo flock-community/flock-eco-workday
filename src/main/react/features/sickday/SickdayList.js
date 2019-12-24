@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import {Card, Typography} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import Grid from "@material-ui/core/Grid"
-import SickdayClient from "./SickdayClient"
+import {SickdayClient} from "./SickdayClient"
 import {isDefined} from "../../utils/validation"
 
 export function SickdayList({userCode, refresh, onClickRow}) {
