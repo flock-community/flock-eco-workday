@@ -6,19 +6,20 @@ import Grid from "@material-ui/core/Grid"
 import {SickdayClient} from "./SickdayClient"
 import {isDefined} from "../../utils/validation"
 
-export function SickdayList({userCode, refresh, onClickRow}) {
+export function SickdayList(props) {
+  const {personCode, refresh, onClickRow} = props
   const [list, setList] = useState([])
 
   useEffect(() => {
-    if (userCode) {
-      SickdayClient.fetchAllByUserCode(userCode).then(res => {
+    if (personCode) {
+      SickdayClient.fetchAllByPersonCode(personCode).then(res => {
         console.log(res)
         setList(res)
       })
     } else {
       SickdayClient.fetchAll().then(res => setList(res))
     }
-  }, [userCode, refresh])
+  }, [personCode, refresh])
 
   function handleClickRow(item) {
     return () => {
@@ -55,7 +56,7 @@ export function SickdayList({userCode, refresh, onClickRow}) {
 }
 
 SickdayList.propTypes = {
-  userCode: PropTypes.string.isRequired,
   refresh: PropTypes.boolean,
+  personCode: PropTypes.string.isRequired,
   onClickRow: PropTypes.func,
 }
