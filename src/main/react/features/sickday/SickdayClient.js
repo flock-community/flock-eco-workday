@@ -33,33 +33,6 @@ function fetchAll() {
     .then(data => data.map(internalize))
 }
 
-function getAllUsers() {
-  return fetch(`/api/users/`).then(res => {
-    if (res.status === 200) {
-      return res.json()
-    }
-    throw res.json()
-  })
-}
-
-function getMe() {
-  return fetch(`/api/users/me`).then(res => {
-    if (res.ok) {
-      return res.json()
-    }
-    throw res.json()
-  })
-}
-
-function getUserById(id) {
-  return fetch(`/api/user/${id}`).then(res => {
-    if (res.status === 200) {
-      return res.json()
-    }
-    throw res.json()
-  })
-}
-
 function getSummary(filter) {
   const typeFilter = filter.length > 0 ? `?type=${filter}` : filter
 
@@ -73,10 +46,7 @@ function getSummary(filter) {
 
 export default {
   fetchAllByUserCode,
-  getAllUsers,
-  getUserById,
   ...ResourceClient(path),
   fetchAll,
-  getMe,
   getSummary,
 }
