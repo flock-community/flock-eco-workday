@@ -1,6 +1,7 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
+import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.PersonService
 import org.springframework.data.domain.Pageable
@@ -38,7 +39,7 @@ class PersonController(
             }
 
     @PostMapping
-    fun post(@RequestBody person: Person) = personService.create(person)
+    fun post(@RequestBody form: PersonForm) = personService.create(form)
             ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "firstname & lastname are required")
 
     @PutMapping("/{code}")
