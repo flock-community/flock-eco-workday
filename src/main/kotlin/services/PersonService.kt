@@ -17,7 +17,9 @@ class PersonService(
         code = this.code,
         firstname = it?.firstname ?: this.firstname,
         lastname = it?.lastname ?: this.lastname,
-        email = it?.email ?: this.email
+        email = it?.email ?: this.email,
+        position = it?.position ?: this.position,
+        user = null
     )
 
     private fun Person.save(): Person = personRepository.save(this)
