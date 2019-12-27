@@ -1,5 +1,6 @@
 package community.flock.eco.workday.services
 
+import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.repository.PersonRepository
 import org.springframework.data.domain.Page
@@ -28,10 +29,12 @@ class PersonService(
         .findByCode(code)
         ?: throw RuntimeException("No person found!")
 
-    fun create(person: Person): Person? = Person(
-        firstname = person.firstname,
-        lastname = person.lastname,
-        email = person.email
+    fun create(form: PersonForm): Person? = Person(
+        firstname = form.firstname,
+        lastname = form.lastname,
+        email = form.email,
+        position = form.position,
+        user = null
     ).save()
 
     fun update(code: String, person: Person? = null): Person? {
