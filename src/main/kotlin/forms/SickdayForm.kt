@@ -8,5 +8,5 @@ data class SickdayForm(
 
 
     val hours: Int,
-    val personId: Long
+    val personCode: String
 )
