@@ -31,6 +31,9 @@ class PersonService(
         .findByCode(code)
         ?: throw RuntimeException("No person found!")
 
+    fun findByUserCode(userCode: String) = personRepository
+        .findByUserCode(userCode)
+
     fun create(form: PersonForm): Person? = Person(
         firstname = form.firstname,
         lastname = form.lastname,
