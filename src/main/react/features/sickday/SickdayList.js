@@ -24,9 +24,9 @@ export function SickdayList(props) {
     }
   }
 
-  function renderItem(item) {
+  function renderItem(item, key) {
     return (
-      <Grid item xs={12} key={`sickday-list-item-${item.id}`}>
+      <Grid key={`sickday-list-item-${key}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
           <CardContent>
             <Typography variant="h6">
