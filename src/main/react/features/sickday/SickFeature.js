@@ -4,7 +4,7 @@ import {makeStyles} from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
 import {SickdayDialog} from "./SickdayDialog"
 import {SickdayList} from "./SickdayList"
-import {UserSelector} from "../../components/selector/UserSelector"
+import {PersonSelector} from "../../components/selector"
 import {SickdayClient} from "./SickdayClient"
 import {ApplicationContext} from "../../application/ApplicationContext"
 import {isDefined} from "../../utils/validation"
@@ -68,22 +68,18 @@ export function SickdayFeature() {
     setOpen(true)
   }
 
-  // eslint-disable-next-line no-shadow
-  function handleChangeUser(user) {
-    if (isDefined(user)) setUserCode(user.code)
-  }
 
   if (!userCode) {
     return null
+  function handlePersonChangeByCode(code) {
+    setPersonCode(code)
   }
 
   return (
     <div className={classes.root}>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          {isSuperUser() && (
-            <UserSelector users={persons} onChange={handleChangeUser} />
-          )}
+          {isSuperUser() && <PersonSelector onChange={handlePersonChangeByCode} />}
         </Grid>
         <Grid item xs={12}>
           <SickdayList
