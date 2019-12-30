@@ -43,8 +43,6 @@ export function SickdayFeature() {
     if (isSuperUser()) {
       PersonService.getAll().then(it => setPersons(it))
     }
-
-    if (isDefined(user)) setUserCode(user.code)
   }, [authorities, user])
 
   function handleCompleteDialog() {
