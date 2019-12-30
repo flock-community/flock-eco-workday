@@ -1,9 +1,11 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.forms.SickdayForm
+import community.flock.eco.workday.model.Day
 import community.flock.eco.workday.model.Sickday
 import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.repository.SickdayRepository
+import java.time.LocalDate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -60,4 +62,12 @@ class SickdayService(
 
     @Transactional
     fun delete(code: String) = repository.deleteByCode(code)
+    private fun convertDayOff(dayOff: List<Int>, from: LocalDate) = dayOff
+        .mapIndexed { index, hours ->
+            Day(
+                date = from.plusDays(index.toLong()),
+                hours = hours
+            )
+        }
+        .toSet()
 }
