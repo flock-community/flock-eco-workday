@@ -25,6 +25,15 @@ const fetchAll = () => {
       throw res.json()
     })
     .then(data => data.map(internalize))
+const createFilter = (personCode, status) => {
+  const filters = ["?"]
+  if (personCode) filters.push(`code=${personCode}`, "&")
+  if (status) filters.push(`status=${status}`, "&")
+
+  return filters
+    .toString()
+    .replace(/,/gi, "")
+    .slice(0, -1)
 }
 
     .then(data => data.map(internalize))
