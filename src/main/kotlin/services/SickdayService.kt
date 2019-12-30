@@ -14,19 +14,6 @@ class SickdayService(
     private val repository: SickdayRepository,
     private val personService: PersonService
 ) {
-    private fun Sickday.save() = repository.save(this)
-    private fun Sickday.render(it: SickdayForm? = null): Sickday {
-        return Sickday(
-            id = this.id,
-            code = this.code,
-            person = this.person,
-            description = it?.description ?: this.description,
-            status = it?.status ?: this.status,
-            hours = it?.hours ?: this.hours
-        )
-    }
-
-
     fun findAll(status: SickdayStatus? = null, code: String? = null): Iterable<Sickday> {
         if (status is SickdayStatus && code is String) {
             return repository.findAllByStatusAndPersonCode(status, code)
@@ -62,6 +49,23 @@ class SickdayService(
 
     @Transactional
     fun delete(code: String) = repository.deleteByCode(code)
+
+    //
+    // *-- Utility functions --*
+    //
+    private fun Sickday.save() = repository.save(this)
+
+    private fun Sickday.render(it: SickdayForm? = null): Sickday {
+        return Sickday(
+            id = this.id,
+            code = this.code,
+            person = this.person,
+            description = it?.description ?: this.description,
+            status = it?.status ?: this.status,
+            hours = it?.hours ?: this.hours
+        )
+    }
+
     private fun convertDayOff(dayOff: List<Int>, from: LocalDate) = dayOff
         .mapIndexed { index, hours ->
             Day(
