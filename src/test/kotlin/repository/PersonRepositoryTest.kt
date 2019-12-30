@@ -26,7 +26,13 @@ class PersonRepositoryTest {
     @Test
     fun `should create person without email`() {
         val person = createPersonAndPersist(
-                Person(firstname = "Maurice", lastname = "Moss", email = null)
+                Person(
+                    firstname = "Maurice",
+                    lastname = "Moss",
+                    email = null,
+                    position = null,
+                    user = null
+                )
         )
 
         val res = repository.findAll()
@@ -38,7 +44,13 @@ class PersonRepositoryTest {
     @Test
     fun `should create person with email`() {
         val person = createPersonAndPersist(
-                Person(firstname = "Roy", lastname = "Trennerman", email = "roy@reynholm-industries.co.uk")
+                Person(
+                    firstname = "Roy",
+                    lastname = "Trennerman",
+                    email = "roy@reynholm-industries.co.uk",
+                    position = null,
+                    user = null
+                )
         )
 
         val res = repository.findAll()

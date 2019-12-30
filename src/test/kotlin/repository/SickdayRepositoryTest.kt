@@ -35,7 +35,8 @@ class SickdayRepositoryTest {
             firstname = "Denholm",
             lastname = "Reynholm",
             email = "denholm@reynholm-industries.co.uk",
-            position = "Chief Executive Officer"
+            position = "Chief Executive Officer",
+            user = null
         ))
         entity.flush()
         person = personRepository.findAll().first()
