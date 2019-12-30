@@ -38,10 +38,6 @@ export function AssignmentFeature() {
     if (it) setUserCode(it.code)
   }
 
-  if (!userCode) {
-    return null
-  }
-
   return (
     <div className={classes.root}>
       <Grid container spacing={1}>
