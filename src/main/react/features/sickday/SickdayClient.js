@@ -3,6 +3,11 @@ import {ResourceClient} from "../../utils/ResourceClient"
 
 const path = "/api/sickdays"
 
+const validateResponse = res => {
+  if (!res.ok) throw new Error(res.statusText)
+  if (res.status === 204) return null
+
+  return res.json()
 }
 
 const internalize = it => ({
