@@ -35,7 +35,7 @@ export function AssignmentFeature() {
   }
 
   function handleChangeUser(it) {
-    if (it) setUserCode(it.code)
+    if (it) setUserCode(it)
   }
 
   return (
