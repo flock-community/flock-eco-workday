@@ -1,9 +1,13 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
+import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.forms.SickdayForm
+import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickdayStatus
+import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.SickdayService
+import java.security.Principal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,7 +21,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/sickdays")
 class SickdayController(
-    private val service: SickdayService
+    private val service: SickdayService,
+    private val personService: PersonService
 ) {
     @GetMapping
     fun getAll(
@@ -40,4 +45,23 @@ class SickdayController(
 
     @DeleteMapping("/{code}")
     fun delete(@PathVariable code: String) = service.delete(code).toResponse()
+
+    // *-- utility functions --*
+    /**
+     * add findPerson() function to Principal
+     * @return <code>Person?</code> if a person can be found with given user code in the db
+     */
+    private fun Principal.findPerson(): Person? = personService.findByUserCode(this.name)
+
+    /**
+     * Evaluate if user has admin authorities on Sickday
+     * @return <code>true</code> if user is admin or has admin authorities
+     */
+    private fun Person.isAdmin(): Boolean = this.user?.authorities?.contains(SickdayAuthority.ADMIN.toName()) ?: false
+
+    /**
+     * Evaluate if user has no admin authorities on Sickday
+     * @return <code>true</code> if user is not admin or has admin authorities
+     */
+    private fun Person.isNotAdmin(): Boolean = !this.isAdmin()
 }
