@@ -12,10 +12,7 @@ export function SickdayList(props) {
 
   useEffect(() => {
     if (personCode) {
-      SickdayClient.fetchAllByPersonCode(personCode).then(res => {
-        console.log(res)
-        setList(res)
-      })
+      SickdayClient.fetchAllWithFilters(personCode).then(res => setList(res))
     } else {
       SickdayClient.fetchAll().then(res => setList(res))
     }
