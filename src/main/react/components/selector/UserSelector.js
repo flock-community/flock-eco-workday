@@ -7,7 +7,7 @@ import {Card} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import FormControl from "@material-ui/core/FormControl"
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
-import {isUndefined} from "../utils/validation"
+import {isUndefined} from "../../utils/validation"
 
 export function UserSelector(props) {
   const {defaultUser, onChange} = props
