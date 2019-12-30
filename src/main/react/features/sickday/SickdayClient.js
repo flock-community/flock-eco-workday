@@ -16,15 +16,6 @@ const internalize = it => ({
   to: moment(it.to, "YYYY-MM-DD"),
 })
 
-const fetchAll = () => {
-  return fetch(path.sickdays)
-    .then(res => {
-      if (res.status === 200) {
-        return res.json()
-      }
-      throw res.json()
-    })
-    .then(data => data.map(internalize))
 const createFilter = (personCode, status) => {
   const filters = ["?"]
   if (personCode) filters.push(`code=${personCode}`, "&")
@@ -36,12 +27,16 @@ const createFilter = (personCode, status) => {
     .slice(0, -1)
 }
 
+const fetchAll = (filter = "") =>
+  fetch(`${path}${filter}`)
+    .then(validateResponse)
     .then(data => data.map(internalize))
-}
 
-}
+const fetchAllWithFilters = (personCode, status) =>
+  fetchAll(createFilter(personCode, status))
 
 export const SickdayClient = {
   ...ResourceClient(path),
   fetchAll,
+  fetchAllWithFilters,
 }
