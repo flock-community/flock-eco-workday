@@ -47,7 +47,7 @@ export function SickdayList(props) {
 
   return (
     <Grid container spacing={1}>
-      {list && list.map(renderItem)}
+      {list.map(renderItem)}
     </Grid>
   )
 }
