@@ -13,8 +13,8 @@ import HealingIcon from "@material-ui/icons/Healing"
 const useStyles = makeStyles(() => ({}))
 
 export function SickdayDialog(props) {
-  const {value, userCode, open, onChange, onComplete} = props
   const [state, setState] = useState(value)
+  const {value, personCode, open, onChange, onComplete} = props
 
   const classes = useStyles()
 
@@ -47,7 +47,7 @@ export function SickdayDialog(props) {
         to: state.dates[1].format(moment.HTML5_FMT.DATE),
         days: state.days,
         type: state.type,
-        userCode,
+        personCode,
       }).then(res => {
         if (isDefined(onComplete)) onComplete(res)
       })
@@ -96,7 +96,7 @@ export function SickdayDialog(props) {
 
 SickdayDialog.propTypes = {
   value: PropTypes.any,
-  userCode: PropTypes.any,
+  personCode: PropTypes.any,
   open: PropTypes.any,
   onChange: PropTypes.any,
   onComplete: PropTypes.any,

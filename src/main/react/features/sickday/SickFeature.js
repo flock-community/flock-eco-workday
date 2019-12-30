@@ -31,7 +31,7 @@ export function SickdayFeature() {
   const [reload, setReload] = useState(false)
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(null)
-  const [userCode, setUserCode] = useState(null)
+  const [personCode, setPersonCode] = useState("")
   const [persons, setPersons] = useState([])
   const {authorities, user} = useContext(ApplicationContext)
 
@@ -80,7 +80,7 @@ export function SickdayFeature() {
         </Grid>
         <Grid item xs={12}>
           <SickdayList
-            personCode={userCode}
+            personCode={personCode}
             onClickRow={handleClickRow}
             refresh={reload}
           />
@@ -88,7 +88,7 @@ export function SickdayFeature() {
       </Grid>
       <SickdayDialog
         open={open}
-        userCode={userCode}
+        personCode={personCode}
         value={value}
         onComplete={handleCompleteDialog}
       />
