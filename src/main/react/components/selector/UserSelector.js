@@ -1,35 +1,23 @@
 import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
-import Select from "@material-ui/core/Select"
-import MenuItem from "@material-ui/core/MenuItem"
-import InputLabel from "@material-ui/core/InputLabel"
-import {Card} from "@material-ui/core"
-import CardContent from "@material-ui/core/CardContent"
-import FormControl from "@material-ui/core/FormControl"
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
-import {isUndefined} from "../../utils/validation"
+import {
+  Card,
+  CardContent,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@material-ui/core"
 
 export function UserSelector(props) {
-  const {defaultUser, onChange} = props
+  const {onChange, label, selectedItem} = props
   const [users, setUsers] = useState([])
-  const [selected, setSelected] = useState({})
+  const [selected, setSelected] = useState("")
 
   useEffect(() => {
-    UserClient.findAllUsers("", 0, 100).then(res => {
-      let selectedItem = null
-      console.log(res)
-      setUsers(res.list)
-      if (isUndefined(defaultUser)) {
-        ;[selectedItem] = res.list
-        onChange(selectedItem)
-      } else {
-        ;[selectedItem] = res.list.filter(it =>
-          it.code === defaultUser.code ? it : null
-        )
-      }
-
-      setSelected(selectedItem)
-    })
+    UserClient.findAllUsers("", 0, 100).then(res => setUsers(res.list))
+    setSelected(selectedItem.code)
   }, [])
 
   function handleChange(event) {
@@ -39,9 +27,9 @@ export function UserSelector(props) {
     onChange(selected)
   }
 
-  function renderMenuItem(user) {
+  function renderMenuItem(user, key) {
     return (
-      <MenuItem value={user} key={user.code}>
+      <MenuItem key={`user-selector-menu-item-${key}`} value={user.code}>
         {user.name}
       </MenuItem>
     )
@@ -51,8 +39,11 @@ export function UserSelector(props) {
     <Card>
       <CardContent>
         <FormControl fullWidth>
-          <InputLabel>Select user</InputLabel>
-          <Select value={selected || {}} onChange={handleChange}>
+          <InputLabel shrink>{label}</InputLabel>
+          <Select value={selected} displayEmpty onChange={handleChange}>
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
             {users.map(renderMenuItem)}
           </Select>
         </FormControl>
@@ -62,8 +53,18 @@ export function UserSelector(props) {
 }
 
 UserSelector.propTypes = {
-  defaultUser: PropTypes.shape({
-    code: PropTypes.string.isRequired,
-  }),
   onChange: PropTypes.func.isRequired,
+  label: PropTypes.string,
+  selectedItem: PropTypes.shape({
+    code: PropTypes.string,
+    name: PropTypes.string,
+  }),
+}
+
+UserSelector.defaultProps = {
+  selectedItem: {
+    code: "",
+    name: null,
+  },
+  label: "Select User",
 }
