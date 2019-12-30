@@ -68,9 +68,6 @@ export function SickdayFeature() {
     setOpen(true)
   }
 
-
-  if (!userCode) {
-    return null
   function handlePersonChangeByCode(code) {
     setPersonCode(code)
   }
