@@ -32,13 +32,17 @@ export function SickdayList(props) {
             <Typography variant="h6">
               {item.description ? item.description : "empty"}
             </Typography>
-            <Typography>Type: {item.days[0].type}</Typography>
             <Typography>
-              Period: {item.from.format("DD-MM-YYYY")} - {item.to.format("DD-MM-YYYY")}
+              Period: {item.period.from.format("DD-MM-YYYY")} -{" "}
+              {item.period.to.format("DD-MM-YYYY")}
             </Typography>
             <Typography>
-              Aantal dagen: {item.days.filter(day => day.hours > 0).length}
+              Aantal dagen: {item.period.days.filter(day => day.hours > 0).length}
             </Typography>
+            <Typography>
+              Aantal uren: {item.period.days.reduce((acc, cur) => cur.hours + acc, 0)}
+            </Typography>
+            <Typography>{item.status}</Typography>
           </CardContent>
         </Card>
       </Grid>
