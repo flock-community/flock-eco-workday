@@ -13,6 +13,7 @@ import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.repository.SickdayRepository
 import community.flock.eco.workday.services.PersonService
+import community.flock.eco.workday.utils.dayFromLocalDate
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -199,6 +200,9 @@ class SickdayControllerTest {
         val sickdayForm = SickdayForm(
             description = "Fire! Fire!",
             status = SickdayStatus.SICK,
+            from = dayFromLocalDate(),
+            to = dayFromLocalDate(4),
+            days = listOf(8, 8, 8, 8),
             hours = 42,
             personCode = person.code
         )
@@ -213,6 +217,9 @@ class SickdayControllerTest {
         val sickdayForm = SickdayForm(
             description = "Fire! Fire!",
             status = SickdayStatus.SICK,
+            from = dayFromLocalDate(),
+            to = dayFromLocalDate(4),
+            days = listOf(8, 8, 8, 8),
             hours = 42,
             personCode = person.code
         )
@@ -227,6 +234,9 @@ class SickdayControllerTest {
         val sickdayForm = SickdayForm(
             description = "Fire! Fire!",
             status = SickdayStatus.SICK,
+            from = dayFromLocalDate(),
+            to = dayFromLocalDate(4),
+            days = listOf(8, 8, 8, 8),
             hours = 42,
             personCode = person.code
         )
@@ -246,6 +256,9 @@ class SickdayControllerTest {
         val sickdayForm = SickdayForm(
             description = "Fire! Fire!",
             status = SickdayStatus.SICK,
+            from = dayFromLocalDate(),
+            to = dayFromLocalDate(4),
+            days = listOf(8, 8, 8, 8),
             hours = 42,
             personCode = person.code
         )
@@ -392,12 +405,18 @@ class SickdayControllerTest {
                 SickdayForm(
                     description = "Sick - ${it.firstname}",
                     status = SickdayStatus.SICK,
+                    from = dayFromLocalDate(),
+                    to = dayFromLocalDate(4),
+                    days = listOf(8, 8, 8, 8),
                     hours = 42,
                     personCode = it.code
                 ),
                 SickdayForm(
                     description = "Healthy - ${it.firstname}",
                     status = SickdayStatus.SICK,
+                    from = dayFromLocalDate(),
+                    to = dayFromLocalDate(4),
+                    days = listOf(8, 8, 8, 8),
                     hours = 42,
                     personCode = it.code
                 )
