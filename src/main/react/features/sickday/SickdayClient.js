@@ -12,8 +12,16 @@ const validateResponse = res => {
 
 const internalize = it => ({
   ...it,
-  from: moment(it.from, "YYYY-MM-DD"),
-  to: moment(it.to, "YYYY-MM-DD"),
+  period: {
+    ...it.period,
+    from: moment(it.period.from, "YYYY-MM-DD"),
+    to: moment(it.period.to, "YYYY-MM-DD"),
+    days: it.period.days.map(day => ({
+      ...day,
+      date: moment(day.date, "YYYY-MM-DD"),
+    })),
+  },
+  dates: [moment(it.period.from, "YYYY-MM-DD"), moment(it.period.to, "YYYY-MM-DD")],
 })
 
 const createFilter = (personCode, status) => {
