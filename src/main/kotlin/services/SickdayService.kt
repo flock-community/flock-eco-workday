@@ -4,6 +4,7 @@ import community.flock.eco.workday.forms.SickdayForm
 import community.flock.eco.workday.model.Period
 import community.flock.eco.workday.model.Sickday
 import community.flock.eco.workday.model.SickdayStatus
+import community.flock.eco.workday.repository.PeriodRepository
 import community.flock.eco.workday.repository.SickdayRepository
 import community.flock.eco.workday.utils.convertDayOff
 import org.springframework.stereotype.Service
@@ -12,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class SickdayService(
     private val repository: SickdayRepository,
-    private val personService: PersonService
+    private val personService: PersonService,
+    private val periodRepository: PeriodRepository
 ) {
     fun findAll(status: SickdayStatus? = null, code: String? = null): Iterable<Sickday> {
         if (status is SickdayStatus && code is String) {
@@ -30,9 +32,16 @@ class SickdayService(
     fun create(form: SickdayForm): Sickday {
         val person = personService.findByCode(form.personCode)!!
 
+        val period = Period(
+            from = form.from,
+            to = form.to,
+            days = convertDayOff(form.days, form.from)
+        ).save()
+
         return Sickday(
             description = form.description,
             person = person,
+            period = period,
             hours = form.hours,
             status = SickdayStatus.SICK
         ).save()
@@ -54,15 +63,23 @@ class SickdayService(
     // *-- Utility functions --*
     //
     private fun Sickday.save() = repository.save(this)
+    private fun Period.save() = periodRepository.save(this)
+
     private fun Sickday.render(it: SickdayForm): Sickday {
+        val period = Period(
+            from = it.from,
+            to = it.to,
+            days = convertDayOff(it.days, it.from)
+        ).save()
 
         return Sickday(
             id = this.id,
             code = this.code,
             person = this.person,
-            description = it?.description ?: this.description,
-            status = it?.status ?: this.status,
-            hours = it?.hours ?: this.hours
+            description = it.description,
+            status = it.status,
+            hours = it.hours,
+            period = period
         )
     }
 }
