@@ -5,13 +5,12 @@ import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HolidayForm
-import community.flock.eco.workday.model.Day
 import community.flock.eco.workday.model.Holiday
 import community.flock.eco.workday.model.HolidayStatus
 import community.flock.eco.workday.model.Period
 import community.flock.eco.workday.repository.HolidayRepository
 import community.flock.eco.workday.repository.PeriodRepository
-import java.time.LocalDate
+import community.flock.eco.workday.utils.convertDayOff
 import org.springframework.stereotype.Service
 
 @Service
@@ -70,15 +69,6 @@ class HolidayService(
     }
 
     fun delete(code: String) = holidayRepository.deleteByCode(code)
-
-    private fun convertDayOff(dayOff: List<Int>, from: LocalDate) = dayOff
-            .mapIndexed { index, hours ->
-                Day(
-                        date = from.plusDays(index.toLong()),
-                        hours = hours
-                )
-            }
-            .toSet()
 
     private fun Holiday.save() = holidayRepository
             .save(this)
