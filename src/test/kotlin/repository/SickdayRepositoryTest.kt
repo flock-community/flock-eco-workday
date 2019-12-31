@@ -1,9 +1,12 @@
 package community.flock.eco.workday.repository
 
 import community.flock.eco.workday.ApplicationConfiguration
+import community.flock.eco.workday.model.Period
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.Sickday
 import community.flock.eco.workday.model.SickdayStatus
+import community.flock.eco.workday.utils.convertDayOff
+import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -43,11 +46,20 @@ class SickdayRepositoryTest {
     }
 
     private final fun createSickdayAndPersist(): Sickday {
+        val startDate = LocalDate.of(1970, 1, 1)
+
+        val period = Period(
+            from = startDate,
+            to = LocalDate.of(1970, 1, 6),
+            days = convertDayOff(listOf(8, 8, 8, 8, 8), startDate)
+        )
+
         val sickday = Sickday(
             description = "Jumped out of an open Window",
             status = SickdayStatus.SICK,
             hours = 8,
-            person = person
+            person = person,
+            period = period
         )
 
         entity.persist(sickday)
@@ -87,7 +99,8 @@ class SickdayRepositoryTest {
             description = "Jumped out of an open Window",
             status = SickdayStatus.HEALTHY,
             hours = 48,
-            person = person
+            person = person,
+            period = res.first().period
         )
         repository.save(sickday)
         res = repository.findAll()
@@ -100,10 +113,23 @@ class SickdayRepositoryTest {
     fun `should delete sickday from repository`() {
         var res: MutableIterable<Sickday>
         val sickdayList: MutableList<Sickday> = mutableListOf()
+        val startDate = LocalDate.of(1970, 1, 1)
 
-        for (i in 0..4) {
+        for (i in 1..5) {
+            var period = Period(
+                from = startDate,
+                to = LocalDate.of(1970, 1, i),
+                days = convertDayOff(listOf(8, 8, 8, 8, 8), startDate)
+            )
+
             sickdayList.add(
-                Sickday(description = "$i sickday", status = SickdayStatus.SICK, hours = i * 8, person = person)
+                Sickday(
+                    description = "$i sickday",
+                    status = SickdayStatus.SICK,
+                    hours = i * 8,
+                    person = person,
+                    period = period
+                )
             )
         }
 
