@@ -11,6 +11,7 @@ import javax.persistence.EntityListeners
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.ManyToOne
+import javax.persistence.OneToOne
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
@@ -25,8 +26,8 @@ data class Sickday(
     @Enumerated(EnumType.STRING)
     val status: SickdayStatus,
 
-//    @OneToOne
-//    val period: Period,
+    @OneToOne
+    val period: Period,
 
     @ManyToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
