@@ -54,8 +54,8 @@ class SickdayService(
     // *-- Utility functions --*
     //
     private fun Sickday.save() = repository.save(this)
+    private fun Sickday.render(it: SickdayForm): Sickday {
 
-    private fun Sickday.render(it: SickdayForm? = null): Sickday {
         return Sickday(
             id = this.id,
             code = this.code,
