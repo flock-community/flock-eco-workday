@@ -57,11 +57,7 @@ export function SickdayFeature() {
   }
 
   function handleClickRow(item) {
-    setValue({
-      ...item,
-      days: item.days.map(it => it.hours),
-      type: item.days[0].type,
-    })
+    setValue(item)
 
     setOpen(true)
   }
