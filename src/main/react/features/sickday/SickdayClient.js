@@ -2,6 +2,7 @@ import moment from "moment"
 import {ResourceClient} from "../../utils/ResourceClient"
 
 const path = "/api/sickdays"
+const client = ResourceClient(path)
 
 const validateResponse = res => {
   if (!res.ok) throw new Error(res.statusText)
@@ -52,8 +53,12 @@ const fetchAll = (filter = "") =>
 const fetchAllWithFilters = (personCode, status) =>
   fetchAll(createFilter(personCode, status))
 
+const post = sickday => client.post(reprApi(sickday))
+const put = sickday => client.put(reprApi(sickday))
+
 export const SickdayClient = {
-  ...ResourceClient(path),
   fetchAll,
   fetchAllWithFilters,
+  post,
+  put,
 }
