@@ -24,6 +24,15 @@ const internalize = it => ({
   dates: [moment(it.period.from, "YYYY-MM-DD"), moment(it.period.to, "YYYY-MM-DD")],
 })
 
+const reprApi = it => {
+  return {
+    from: it.dates[0].format(moment.HTML5_FMT.DATE),
+    to: it.dates[1].format(moment.HTML5_FMT.DATE),
+    days: it.days,
+    hours: it.hours,
+  }
+}
+
 const createFilter = (personCode, status) => {
   const filters = ["?"]
   if (personCode) filters.push(`code=${personCode}`, "&")
