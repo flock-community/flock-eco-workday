@@ -54,7 +54,7 @@ const fetchAllWithFilters = (personCode, status) =>
   fetchAll(createFilter(personCode, status))
 
 const post = sickday => client.post(reprApi(sickday))
-const put = sickday => client.put(reprApi(sickday))
+const put = (code, sickday) => client.put(code, reprApi(sickday))
 
 export const SickdayClient = {
   fetchAll,
