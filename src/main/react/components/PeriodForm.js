@@ -137,7 +137,7 @@ export function PeriodForm({value, onChange}) {
   const handleDayChange = it => ev => {
     const val = {
       ...days,
-      [it]: parseInt(ev.target, 10),
+      [it]: parseInt(ev.target.value, 10) % 10,
     }
     setState({
       dates: [dates[0], dates[1]],
