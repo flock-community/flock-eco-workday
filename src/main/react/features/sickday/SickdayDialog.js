@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
-import {Button, Dialog, DialogContent, Divider} from "@material-ui/core"
+import {Dialog, DialogContent, Divider} from "@material-ui/core"
 import * as moment from "moment"
 import {PeriodForm} from "../../components/PeriodForm"
 import {SickdayClient} from "./SickdayClient"
@@ -89,11 +89,6 @@ export function SickdayDialog(props) {
       </DialogContent>
       <Divider />
       <DialogFooter
-        submitButton={
-          <Button type="submit" form="" color="primary">
-            Save
-          </Button>
-        }
         onClose={handleClose}
       />
     </Dialog>
