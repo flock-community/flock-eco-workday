@@ -1,0 +1,19 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="PersonControllerTest" type="JUnit" factoryName="JUnit" folderName="ControllerTests" nameIsGenerated="true">
+    <module name="flock-eco-workday" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="community.flock.eco.workday.controllers.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="PACKAGE_NAME" value="controllers" />
+    <option name="MAIN_CLASS_NAME" value="community.flock.eco.workday.controllers.PersonControllerTest" />
+    <option name="METHOD_NAME" value="should return an empty list if querying the API endpoint persons with a GET-method for the first time" />
+    <option name="TEST_OBJECT" value="class" />
+    <option name="PARAMETERS" value="" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
