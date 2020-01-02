@@ -36,28 +36,15 @@ export function SickdayDialog(props) {
     })
   }
 
-  function handleClickSave() {
-    if (state.id) {
-      SickdayClient.putSickday(state.id, {
-        description: state.description,
-        from: state.dates[0].format(moment.HTML5_FMT.DATE),
-        to: state.dates[1].format(moment.HTML5_FMT.DATE),
-        days: state.days,
-        type: state.type,
-      }).then(res => {
-        if (isDefined(onComplete)) onComplete(res)
-      })
+  function handleSubmit() {
+    if (state.code) {
+      SickdayClient.put(state.code, [state, personCode])
+        .then(() => onClose())
+        .catch(err => console.log(err))
     } else {
-      SickdayClient.postSickday({
-        description: state.description,
-        from: state.dates[0].format(moment.HTML5_FMT.DATE),
-        to: state.dates[1].format(moment.HTML5_FMT.DATE),
-        days: state.days,
-        type: state.type,
-        personCode,
-      }).then(res => {
-        if (isDefined(onComplete)) onComplete(res)
-      })
+      SickdayClient.post([state, personCode])
+        .then(() => onClose())
+        .catch(err => console.log(err))
     }
   }
 
