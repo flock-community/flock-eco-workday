@@ -26,11 +26,15 @@ const internalize = it => ({
 })
 
 const reprApi = it => {
+  const [period, personCode] = it
   return {
-    from: it.dates[0].format(moment.HTML5_FMT.DATE),
-    to: it.dates[1].format(moment.HTML5_FMT.DATE),
-    days: it.days,
-    hours: it.hours,
+    description: "Sick",
+    from: period.dates[0].format(moment.HTML5_FMT.DATE),
+    to: period.dates[1].format(moment.HTML5_FMT.DATE),
+    status: "SICK",
+    days: period.days,
+    hours: period.hours,
+    personCode,
   }
 }
 
