@@ -6,7 +6,8 @@
     "start": "webpack-dev-server --mode development --host 0.0.0.0",
     "build": "webpack --mode production ./src/main/react",
     "storybook": "start-storybook",
-    "test": "jest"
+    "test": "jest",
+    "test:tdd": "nodemon -w ./src -e js --exec npm test"
   },
   "author": "",
   "license": "ISC",
@@ -47,6 +48,7 @@
     "husky": "3.0.9",
     "jest": "^24.9.0",
     "lint-staged": "9.4.2",
+    "nodemon": "^2.0.2",
     "prettier": "1.18.2",
     "react-test-renderer": "^16.12.0"
   },
