@@ -84,7 +84,7 @@ export function SickdayFeature() {
         open={open}
         personCode={personCode}
         value={value}
-        onComplete={handleCompleteDialog}
+        onClose={handleCompleteDialog}
       />
 
       <AddActionFab color="primary" onClick={handleClickAdd} />
