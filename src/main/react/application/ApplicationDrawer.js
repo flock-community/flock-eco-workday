@@ -6,7 +6,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon"
 
 import AssignmentIcon from "@material-ui/icons/Assignment"
 import HolidayIcon from "@material-ui/icons/WbSunny"
-import SickdayIcon from "@material-ui/icons/LocalHospital"
+import HealingIcon from "@material-ui/icons/Healing"
 import EventIcon from "@material-ui/icons/CalendarToday"
 import UserIcon from "@material-ui/icons/Person"
 import ClientIcon from "@material-ui/icons/Business"
@@ -61,7 +61,7 @@ export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
     },
     {
       name: "Sickday",
-      icon: SickdayIcon,
+      icon: HealingIcon,
       url: "/sickdays",
     },
     {

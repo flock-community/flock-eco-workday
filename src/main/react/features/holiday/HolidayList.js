@@ -27,7 +27,7 @@ export function HolidayList({userCode, refresh, onClickRow}) {
         setList(res)
       })
     } else {
-      HolidayClient.fetchAll().then(res => setList(res))
+      HolidayClient.findAll().then(res => setList(res))
     }
   }, [userCode, refresh])
 

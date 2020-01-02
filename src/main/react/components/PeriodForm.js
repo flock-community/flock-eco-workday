@@ -9,7 +9,8 @@ import Typography from "@material-ui/core/Typography"
 
 const daysOfWeek = ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"]
 
-export function PeriodForm({value, onChange}) {
+export function PeriodForm(props) {
+  const {value, onChange} = props
   const now = moment().startOf("day")
 
   const [grid, setGrid] = useState([])
