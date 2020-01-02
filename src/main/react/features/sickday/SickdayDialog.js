@@ -20,7 +20,7 @@ const useStyles = makeStyles(() => ({
 
 export function SickdayDialog(props) {
   const [state, setState] = useState(value)
-  const {value, personCode, open, onChange, onComplete} = props
+  const {value, personCode, open, onClose} = props
 
   const classes = useStyles()
 
@@ -60,21 +60,11 @@ export function SickdayDialog(props) {
     }
   }
 
-  function handleClose() {
-    if (isDefined(onComplete)) onComplete()
-  }
-
-  function handleDelete() {
-    SickdayClient.deleteSickday(state.id).then(() => {
-      if (isDefined(onComplete)) onComplete()
-    })
-  }
-
   return (
     <Dialog
       fullScreen
       open={open}
-      onClose={handleClose}
+      onClose={onClose}
       TransitionComponent={TransitionSlider}
       TransitionProps={{direction: "right"}}
     >
@@ -82,14 +72,14 @@ export function SickdayDialog(props) {
         icon={<HealingIcon />}
         headline="Create Sickday"
         subheadline="Add your sickdays. Hope you feel better soon."
-        onClose={handleClose}
+        onClose={onClose}
       />
         <PeriodForm value={value} onChange={handleChangeForm} />
       <DialogContent className={classes.dialogContent}>
       </DialogContent>
       <Divider />
       <DialogFooter
-        onClose={handleClose}
+        onClose={onClose}
       />
     </Dialog>
   )
@@ -99,6 +89,5 @@ SickdayDialog.propTypes = {
   value: PropTypes.any,
   personCode: PropTypes.any,
   open: PropTypes.any,
-  onChange: PropTypes.any,
-  onComplete: PropTypes.any,
+  onClose: PropTypes.func,
 }
