@@ -17,16 +17,17 @@ const useStyles = makeStyles(() => ({
 }))
 
 export function DialogFooter(props) {
-  const {formId, onClose} = props
+  const {formId, onClose, onSubmit} = props
 
-  const classes = useStyles()
   // reverse the DialogActions with `flex-direction: row-reverse` to enable
   // navigating via tab to the save button first, but position the save button last
+  const classes = useStyles()
+
   return (
     <DialogActions
       className={clsx(classes.flex, classes.flexRowReverse, classes.justifyContentEnd)}
     >
-      <Button type="submit" form={formId} color="primary">
+      <Button type="submit" form={formId} color="primary" onClick={onSubmit}>
         Save
       </Button>
       <Button color="secondary" onClick={onClose}>
@@ -39,4 +40,9 @@ export function DialogFooter(props) {
 DialogFooter.propTypes = {
   onClose: PropTypes.func.isRequired,
   formId: PropTypes.string.isRequired,
+  onSubmit: PropTypes.func,
+}
+
+DialogFooter.defaultProps = {
+  onSubmit: null,
 }
