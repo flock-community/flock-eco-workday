@@ -17,6 +17,7 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
+export const SICKDAY_FORM_ID = "sickday-form"
 
 export function SickdayDialog(props) {
   const [state, setState] = useState(value)
@@ -74,13 +75,13 @@ export function SickdayDialog(props) {
         subheadline="Add your sickdays. Hope you feel better soon."
         onClose={onClose}
       />
-        <PeriodForm value={value} onChange={handleChangeForm} />
       <DialogContent className={classes.dialogContent}>
+        <form id={SICKDAY_FORM_ID} noValidate onSubmit={handleSubmit}>
+          <PeriodForm value={value} onChange={handleChangePeriod} />
+        </form>
       </DialogContent>
       <Divider />
-      <DialogFooter
-        onClose={onClose}
-      />
+      <DialogFooter formId={SICKDAY_FORM_ID} onClose={onClose} />
     </Dialog>
   )
 }
