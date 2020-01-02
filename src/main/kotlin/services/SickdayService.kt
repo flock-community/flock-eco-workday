@@ -7,8 +7,10 @@ import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.repository.PeriodRepository
 import community.flock.eco.workday.repository.SickdayRepository
 import community.flock.eco.workday.utils.convertDayOff
+import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class SickdayService(
@@ -30,7 +32,9 @@ class SickdayService(
     fun findByCode(code: String) = repository.findByCode(code)
 
     fun create(form: SickdayForm): Sickday {
-        val person = personService.findByCode(form.personCode)!!
+        val person = personService
+            .findByCode(form.personCode)
+            ?: throw ResponseStatusException(NOT_FOUND, "No Person found.")
 
         val period = Period(
             from = form.from,
