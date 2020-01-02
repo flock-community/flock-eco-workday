@@ -10,7 +10,13 @@ import {makeStyles} from "@material-ui/styles"
 import {DialogHeader, DialogFooter} from "../../components/dialog"
 import HealingIcon from "@material-ui/icons/Healing"
 
-const useStyles = makeStyles(() => ({}))
+const useStyles = makeStyles(() => ({
+  dialogContent: {
+    margin: "auto",
+    maxWidth: 768, // should be a decent medium-sized breakpoint
+  },
+}))
+
 
 export function SickdayDialog(props) {
   const [state, setState] = useState(value)
@@ -78,8 +84,8 @@ export function SickdayDialog(props) {
         subheadline="Add your sickdays. Hope you feel better soon."
         onClose={handleClose}
       />
-      <DialogContent>
         <PeriodForm value={value} onChange={handleChangeForm} />
+      <DialogContent className={classes.dialogContent}>
       </DialogContent>
       <Divider />
       <DialogFooter
