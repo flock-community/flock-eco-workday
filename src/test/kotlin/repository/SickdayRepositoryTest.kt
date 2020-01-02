@@ -28,6 +28,8 @@ class SickdayRepositoryTest {
     @Autowired
     private lateinit var personRepository: PersonRepository
     @Autowired
+    private lateinit var periodRepository: PeriodRepository
+    @Autowired
     private lateinit var repository: SickdayRepository
 
     lateinit var person: Person
@@ -52,7 +54,7 @@ class SickdayRepositoryTest {
             from = startDate,
             to = LocalDate.of(1970, 1, 6),
             days = convertDayOff(listOf(8, 8, 8, 8, 8), startDate)
-        )
+        ).save()
 
         val sickday = Sickday(
             description = "Jumped out of an open Window",
@@ -120,7 +122,7 @@ class SickdayRepositoryTest {
                 from = startDate,
                 to = LocalDate.of(1970, 1, i),
                 days = convertDayOff(listOf(8, 8, 8, 8, 8), startDate)
-            )
+            ).save()
 
             sickdayList.add(
                 Sickday(
@@ -146,4 +148,6 @@ class SickdayRepositoryTest {
         res = repository.findAll()
         assertThat(res.toSet().size).isEqualTo(4)
     }
+
+    private fun Period.save() = periodRepository.save(this)
 }
