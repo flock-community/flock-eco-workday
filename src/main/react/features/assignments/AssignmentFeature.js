@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from "react"
 import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import Grid from "@material-ui/core/Grid"
 import {makeStyles} from "@material-ui/core"
-import {UserSelector} from "../../components/UserSelector"
+import {UserSelector} from "../../components/selector"
 import {AssignmentList} from "./AssignmentList"
 import {ApplicationContext} from "../../application/ApplicationContext"
 import {ClientDialog} from "../client/ClientDialog"
@@ -19,7 +19,6 @@ export function AssignmentFeature() {
 
   const [userCode, setUserCode] = useState(null)
   const [dialog, setDialog] = useState({open: false, code: null})
-
   const {authorities, user} = useContext(ApplicationContext)
 
   useEffect(() => {
@@ -35,11 +34,7 @@ export function AssignmentFeature() {
   }
 
   function handleChangeUser(it) {
-    if (it) setUserCode(it.code)
-  }
-
-  if (!userCode) {
-    return null
+    if (it) setUserCode(it)
   }
 
   return (

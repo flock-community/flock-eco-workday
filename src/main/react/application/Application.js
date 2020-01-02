@@ -14,6 +14,7 @@ import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
 import {PersonFeature} from "../features/person/PersonFeature"
 // TODO: replace by UserStatusClient from @flock-eco/feature-user
 import {UserStatusClient} from "../clients/UserStatusClient"
+import {SickdayFeature} from "../features/sickday/SickFeature"
 
 export const Application = () => {
   const [state, setState] = useState({
@@ -71,6 +72,7 @@ export const Application = () => {
         <Route path="/clients" exact component={ClientFeature} />
         <Route path="/assignments" exact component={AssignmentFeature} />
         <Route path="/holidays" exact component={HolidayFeature} />
+        <Route path="/sickdays" component={SickdayFeature} />
         <Route path="/users" exact component={UserFeature} />
         <Route path="/person" component={PersonFeature} />
       </Router>

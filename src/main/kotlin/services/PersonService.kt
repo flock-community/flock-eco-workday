@@ -1,5 +1,6 @@
 package community.flock.eco.workday.services
 
+import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.repository.PersonRepository
 import org.springframework.data.domain.Page
@@ -16,23 +17,28 @@ class PersonService(
         code = this.code,
         firstname = it?.firstname ?: this.firstname,
         lastname = it?.lastname ?: this.lastname,
-        email = it?.email ?: this.email
+        email = it?.email ?: this.email,
+        position = it?.position ?: this.position,
+        user = null
     )
 
     private fun Person.save(): Person = personRepository.save(this)
 
-    fun findAll(pageable: Pageable): Page<Person> {
-        return personRepository
-            .findAll(pageable)
-    }
+    fun findAll(pageable: Pageable): Page<Person> = personRepository
+        .findAll(pageable)
 
     fun findByCode(code: String): Person? = personRepository
         .findByCode(code)
 
-    fun create(person: Person): Person? = Person(
-        firstname = person.firstname,
-        lastname = person.lastname,
-        email = person.email
+    fun findByUserCode(userCode: String) = personRepository
+        .findByUserCode(userCode)
+
+    fun create(form: PersonForm): Person? = Person(
+        firstname = form.firstname,
+        lastname = form.lastname,
+        email = form.email,
+        position = form.position,
+        user = null
     ).save()
 
     fun update(code: String, person: Person? = null): Person? {

@@ -3,43 +3,46 @@ import PropTypes from "prop-types"
 import {Card, Typography} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import Grid from "@material-ui/core/Grid"
-import SickdayClient from "./SickdayClient"
+import {SickdayClient} from "./SickdayClient"
+import {isDefined} from "../../utils/validation"
 
-export function SickdayList({userCode, refresh, onClickRow}) {
+export function SickdayList(props) {
+  const {personCode, refresh, onClickRow} = props
   const [list, setList] = useState([])
 
   useEffect(() => {
-    if (userCode) {
-      SickdayClient.fetchAllByUserCode(userCode).then(res => {
-        console.log(res)
-        setList(res)
-      })
+    if (personCode) {
+      SickdayClient.fetchAllWithFilters(personCode).then(res => setList(res))
     } else {
       SickdayClient.fetchAll().then(res => setList(res))
     }
-  }, [userCode, refresh])
+  }, [personCode, refresh])
 
   function handleClickRow(item) {
-    return function(ev) {
-      onClickRow && onClickRow(item)
+    return () => {
+      if (isDefined(onClickRow)) onClickRow(item)
     }
   }
 
-  function renderItem(item) {
+  function renderItem(item, key) {
     return (
-      <Grid item xs={12} key={`sickday-list-item-${item.id}`}>
+      <Grid key={`sickday-list-item-${key}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
           <CardContent>
             <Typography variant="h6">
               {item.description ? item.description : "empty"}
             </Typography>
-            <Typography>Type: {item.days[0].type}</Typography>
             <Typography>
-              Period: {item.from.format("DD-MM-YYYY")} - {item.to.format("DD-MM-YYYY")}
+              Period: {item.period.from.format("DD-MM-YYYY")} -{" "}
+              {item.period.to.format("DD-MM-YYYY")}
             </Typography>
             <Typography>
-              Aantal dagen: {item.days.filter(day => day.hours > 0).length}
+              Aantal dagen: {item.period.days.filter(day => day.hours > 0).length}
             </Typography>
+            <Typography>
+              Aantal uren: {item.period.days.reduce((acc, cur) => cur.hours + acc, 0)}
+            </Typography>
+            <Typography>{item.status}</Typography>
           </CardContent>
         </Card>
       </Grid>
@@ -48,13 +51,13 @@ export function SickdayList({userCode, refresh, onClickRow}) {
 
   return (
     <Grid container spacing={1}>
-      {list && list.map(renderItem)}
+      {list.map(renderItem)}
     </Grid>
   )
 }
 
 SickdayList.propTypes = {
-  userCode: PropTypes.string.isRequired,
   refresh: PropTypes.boolean,
+  personCode: PropTypes.string.isRequired,
   onClickRow: PropTypes.func,
 }

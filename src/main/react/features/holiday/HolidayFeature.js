@@ -4,7 +4,7 @@ import Grid from "@material-ui/core/Grid"
 import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {HolidayDialog} from "./HolidayDialog"
 import {HolidayList} from "./HolidayList"
-import {UserSelector} from "../../components/UserSelector"
+import {UserSelector} from "../../components/selector"
 import HolidayClient from "../../clients/HolidayClient"
 import {ApplicationContext} from "../../application/ApplicationContext"
 import {AddActionFab} from "../../components/FabButtons"
@@ -54,12 +54,8 @@ export function HolidayFeature() {
     setOpen(true)
   }
 
-  function handleChangeUser(user) {
-    user && setUserCode(user.code)
-  }
-
-  if (!userCode) {
-    return null
+  function handleUserChangeByCode(code) {
+    setUserCode(code)
   }
 
   return (
@@ -67,7 +63,7 @@ export function HolidayFeature() {
       <Grid container spacing={1}>
         <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
           <Grid item xs={12}>
-            <UserSelector defaultUser={user} onChange={handleChangeUser} />
+            <UserSelector selectedItem={user} onChange={handleUserChangeByCode} />
           </Grid>
         </UserAuthorityUtil>
         <Grid item xs={12}>

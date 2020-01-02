@@ -1,107 +1,70 @@
 import moment from "moment"
+import {ResourceClient} from "../../utils/ResourceClient"
+
+const path = "/api/sickdays"
+const client = ResourceClient(path)
+
+const validateResponse = res => {
+  if (!res.ok) throw new Error(res.statusText)
+  if (res.status === 204) return null
+
+  return res.json()
+}
 
 const internalize = it => ({
   ...it,
-  from: moment(it.from, "YYYY-MM-DD"),
-  to: moment(it.to, "YYYY-MM-DD"),
+  period: {
+    ...it.period,
+    from: moment(it.period.from, "YYYY-MM-DD"),
+    to: moment(it.period.to, "YYYY-MM-DD"),
+    days: it.period.days.map(day => ({
+      ...day,
+      date: moment(day.date, "YYYY-MM-DD"),
+    })),
+  },
+  dates: [moment(it.period.from, "YYYY-MM-DD"), moment(it.period.to, "YYYY-MM-DD")],
 })
-function fetchAllByUserCode(userCode) {
-  return fetch(`/api/sickdays?userCode=${userCode}`)
-    .then(res => {
-      if (res.status === 200) {
-        return res.json()
-      }
-      throw res.json()
-    })
+
+const reprApi = it => {
+  const [period, personCode] = it
+  period.days = period.days.slice(0, -1)
+
+  return {
+    description: "Sick",
+    from: period.dates[0].format(moment.HTML5_FMT.DATE),
+    to: period.dates[1].format(moment.HTML5_FMT.DATE),
+    status: "SICK",
+    days: period.days,
+    hours: period.hours,
+    personCode,
+  }
+}
+
+const createFilter = (personCode, status) => {
+  const filters = ["?"]
+  if (personCode) filters.push(`code=${personCode}`, "&")
+  if (status) filters.push(`status=${status}`, "&")
+
+  return filters
+    .toString()
+    .replace(/,/gi, "")
+    .slice(0, -1)
+}
+
+const fetchAll = (filter = "") =>
+  fetch(`${path}${filter}`)
+    .then(validateResponse)
     .then(data => data.map(internalize))
-}
 
-function fetchAll() {
-  return fetch(`/api/sickdays`)
-    .then(res => {
-      if (res.status === 200) {
-        return res.json()
-      }
-      throw res.json()
-    })
-    .then(data => data.map(internalize))
-}
+const fetchAllWithFilters = (personCode, status) =>
+  fetchAll(createFilter(personCode, status))
 
-function postSickday(sickday) {
-  const opts = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(sickday),
-  }
-  return fetch(`/api/sickdays`, opts).then(res => res.json())
-}
+const post = sickday => client.post(reprApi(sickday))
+const put = (code, sickday) => client.put(code, reprApi(sickday))
 
-function putSickday(id, sickday) {
-  const opts = {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(sickday),
-  }
-  return fetch(`/api/sickdays/${id}`, opts).then(res => res.json())
-}
-
-function deleteSickday(id) {
-  const opts = {
-    method: "DELETE",
-  }
-  return fetch(`/api/sickdays/${id}`, opts).then(res => res.json())
-}
-
-function getAllUsers() {
-  return fetch(`/api/users/`).then(res => {
-    if (res.status === 200) {
-      return res.json()
-    }
-    throw res.json()
-  })
-}
-
-function getMe() {
-  return fetch(`/api/users/me`).then(res => {
-    if (res.ok) {
-      return res.json()
-    }
-    throw res.json()
-  })
-}
-
-function getUserById(id) {
-  return fetch(`/api/user/${id}`).then(res => {
-    if (res.status === 200) {
-      return res.json()
-    }
-    throw res.json()
-  })
-}
-
-function getSummary(filter) {
-  const typeFilter = filter.length > 0 ? `?type=${filter}` : filter
-
-  return fetch(`/api/sickdays/summary${typeFilter}`).then(res => {
-    if (res.status === 200) {
-      return res.json()
-    }
-    throw res.json()
-  })
-}
-
-export default {
-  fetchAllByUserCode,
-  postSickday,
-  putSickday,
-  deleteSickday,
-  getAllUsers,
-  getUserById,
+export const SickdayClient = {
   fetchAll,
-  getMe,
-  getSummary,
+  fetchAllWithFilters,
+  post,
+  put,
 }
