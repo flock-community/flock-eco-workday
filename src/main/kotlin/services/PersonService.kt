@@ -29,7 +29,6 @@ class PersonService(
 
     fun findByCode(code: String): Person? = personRepository
         .findByCode(code)
-        ?: throw RuntimeException("No person found!")
 
     fun findByUserCode(userCode: String) = personRepository
         .findByUserCode(userCode)
