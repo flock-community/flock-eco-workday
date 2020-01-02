@@ -1,0 +1,19 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="PeriodRepositoryTest" type="JUnit" factoryName="JUnit" folderName="RepositoryTests" nameIsGenerated="true">
+    <module name="flock-eco-workday" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="community.flock.eco.workday.repository.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="PACKAGE_NAME" value="repository" />
+    <option name="MAIN_CLASS_NAME" value="community.flock.eco.workday.repository.PeriodRepositoryTest" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="class" />
+    <option name="PARAMETERS" value="" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
