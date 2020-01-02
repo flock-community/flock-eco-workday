@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React, {useState} from "react"
 import PropTypes from "prop-types"
 import {Dialog, DialogContent, Divider} from "@material-ui/core"
 import {PeriodForm} from "../../components/PeriodForm"
@@ -22,10 +22,6 @@ export function SickdayDialog(props) {
   const {value, personCode, open, onClose} = props
 
   const classes = useStyles()
-
-  useEffect(() => {
-    if (isDefined(onChange)) onChange(state)
-  }, [state])
 
   function handleChangeForm(it) {
     setState({
