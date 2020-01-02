@@ -23,11 +23,8 @@ export function SickdayDialog(props) {
 
   const classes = useStyles()
 
-  function handleChangeForm(it) {
-    setState({
-      ...value,
-      ...it,
-    })
+  function handleChangePeriod(it) {
+    setState({...it, ...value})
   }
 
   function handleSubmit() {
