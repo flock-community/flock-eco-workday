@@ -17,26 +17,51 @@ import org.springframework.test.context.junit4.SpringRunner
 @DataJpaTest
 @AutoConfigureTestDatabase
 class PersonRepositoryTest {
-
-    /* if added here error is raised:
-        *  java.lang.Exception: Test class should have exactly one public zero-argument constructor
-        *  I do not understand since the official guide of spring kotlin does add variables here.
-        */
-
     @Autowired
     private lateinit var entity: TestEntityManager
 
     @Autowired
-    private lateinit var personRepository: PersonRepository
+    private lateinit var repository: PersonRepository
 
     @Test
-    fun `s`() {
-        val p1 = Person(firstname = "Hello", lastname = "World", email = "")
-        entity.persist(p1)
+    fun `should create person without email`() {
+        val person = createPersonAndPersist(
+                Person(
+                    firstname = "Maurice",
+                    lastname = "Moss",
+                    email = null,
+                    position = null,
+                    user = null
+                )
+        )
+
+        val res = repository.findAll()
+
+        assertThat(res.toSet().size).isEqualTo(1)
+        assertThat(res.first()).isEqualTo(person)
+    }
+
+    @Test
+    fun `should create person with email`() {
+        val person = createPersonAndPersist(
+                Person(
+                    firstname = "Roy",
+                    lastname = "Trennerman",
+                    email = "roy@reynholm-industries.co.uk",
+                    position = null,
+                    user = null
+                )
+        )
+
+        val res = repository.findAll()
+
+        assertThat(res.toSet().size).isEqualTo(1)
+        assertThat(res.first()).isEqualTo(person)
+    }
+
+    private final fun createPersonAndPersist(person: Person): Person {
+        entity.persist(person)
         entity.flush()
-        val res = personRepository.findAll()
-        println(res)
-        assertThat(res.first()).isEqualTo(p1)
-//        assertEquals(expected = p1, actual = res, message = "meh!")
+        return person
     }
 }
