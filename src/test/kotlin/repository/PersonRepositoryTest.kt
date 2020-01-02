@@ -29,8 +29,8 @@ class PersonRepositoryTest {
                 Person(
                     firstname = "Maurice",
                     lastname = "Moss",
-                    email = null,
-                    position = null,
+                    email = "",
+                    position = "",
                     user = null
                 )
         )
@@ -48,7 +48,7 @@ class PersonRepositoryTest {
                     firstname = "Roy",
                     lastname = "Trennerman",
                     email = "roy@reynholm-industries.co.uk",
-                    position = null,
+                    position = "",
                     user = null
                 )
         )

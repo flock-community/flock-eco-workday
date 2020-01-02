@@ -381,25 +381,29 @@ class SickdayControllerTest {
             firstname = "Maurice",
             lastname = "Moss",
             email = "maurice@reynholm-industries.co.uk",
-            position = "Software application developer")
+            position = "Software application developer",
+            userCode = null)
             .run { personService.create(this)!! },
         PersonForm(
             firstname = "Roy",
             lastname = "Trenneman",
             email = "roy@reynholm-industries.co.uk",
-            position = "Support technican")
+            position = "Support technican",
+            userCode = null)
             .run { personService.create(this)!! },
         PersonForm(
             firstname = "Jen",
             lastname = "Barber",
             email = "jen@reynholm-industries.co.uk",
-            position = "Head of IT")
+            position = "Head of IT",
+            userCode = null)
             .run { personService.create(this)!! },
         PersonForm(
             firstname = "Richmond",
             lastname = "Avenal",
-            email = null,
-            position = null)
+            email = "",
+            position = "",
+            userCode = null)
             .run { personService.create(this)!! }
     )
 
