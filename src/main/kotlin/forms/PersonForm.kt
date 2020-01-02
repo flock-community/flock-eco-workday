@@ -5,4 +5,5 @@ data class PersonForm(
     val lastname: String,
     val email: String?,
     val position: String?
+    val userCode: String?
 )
