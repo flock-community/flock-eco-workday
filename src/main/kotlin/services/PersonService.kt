@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class PersonService(
-    private val personRepository: PersonRepository
+    private val repository: PersonRepository,
 ) {
     private fun Person.render(it: Person? = null): Person = Person(
         id = this.id,
@@ -22,15 +22,15 @@ class PersonService(
         user = null
     )
 
-    private fun Person.save(): Person = personRepository.save(this)
+    private fun Person.save(): Person = repository.save(this)
 
-    fun findAll(pageable: Pageable): Page<Person> = personRepository
+    fun findAll(pageable: Pageable): Page<Person> = repository
         .findAll(pageable)
 
-    fun findByCode(code: String): Person? = personRepository
+    fun findByCode(code: String): Person? = repository
         .findByCode(code)
 
-    fun findByUserCode(userCode: String) = personRepository
+    fun findByUserCode(userCode: String) = repository
         .findByUserCode(userCode)
 
     fun create(form: PersonForm): Person? = Person(
@@ -51,5 +51,5 @@ class PersonService(
     }
 
     @Transactional
-    fun deleteByCode(code: String) = personRepository.deleteByCode(code)
+    fun deleteByCode(code: String) = repository.deleteByCode(code)
 }
