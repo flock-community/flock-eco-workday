@@ -27,6 +27,8 @@ const internalize = it => ({
 
 const reprApi = it => {
   const [period, personCode] = it
+  period.days = period.days.slice(0, -1)
+
   return {
     description: "Sick",
     from: period.dates[0].format(moment.HTML5_FMT.DATE),
