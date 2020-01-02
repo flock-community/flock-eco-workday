@@ -37,6 +37,16 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 .authorizeRequests()
                 .antMatchers("/_ah/**").permitAll()
                 .antMatchers("/login/**").permitAll()
+                // adding Swagger2/SwaggerUI resources
+                // via: https://stackoverflow.com/a/37683455
+                .antMatchers(
+                    "/v2/api-docs",
+                    "/configuration/ui",
+                    "/swagger-resources/**",
+                    "/configuration/security",
+                    "/swagger-ui.html",
+                    "/webjars/**"
+                ).permitAll()
                 .anyRequest().authenticated()
         http
                 .cors()
