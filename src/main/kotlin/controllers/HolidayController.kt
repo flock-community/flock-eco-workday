@@ -28,13 +28,23 @@ class HolidayController(
     private val personService: PersonService,
     private val userService: UserService
 ) {
-
-    @GetMapping("/{code}")
+    @GetMapping
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
-    fun findByCode(@PathVariable code: String, principal: Principal): ResponseEntity<Holiday> = principal.findUser()
-            ?.let { user ->
-                service.findByCode(code)
-            }.toResponse()
+    fun findAll(
+        @RequestParam(required = false) personCode: String?,
+        principal: Principal
+    ): ResponseEntity<Iterable<Holiday>> = principal
+        .findUser()
+        ?.let {
+            return@let when {
+                it.isAdmin() && personCode != null -> service.findAllByPersonCode(personCode)
+                else -> personService
+                    .findByUserCode(it.code)
+                    .run { service.findAllByPersonCode(this!!.code) }
+            }
+        }
+        ?.toResponse()
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @GetMapping
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
