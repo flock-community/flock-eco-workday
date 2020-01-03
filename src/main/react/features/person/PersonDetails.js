@@ -95,7 +95,7 @@ export const PersonDetails = props => {
         onConfirm={handleDelete}
         onClose={handleDelDialog}
       >
-        Surely you can't be serious? Delete {person.firstname} {person.lastname}
+        Surely you cant be serious? Delete {person.firstname} {person.lastname}
       </ConfirmDialog>
     </div>
   )
