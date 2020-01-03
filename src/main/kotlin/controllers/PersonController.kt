@@ -56,8 +56,19 @@ class PersonController(
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @PostMapping
-    fun post(@RequestBody form: PersonForm) = personService.create(form)
-            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "firstname & lastname are required")
+    @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
+    fun post(@RequestBody form: PersonForm, principal: Principal) = principal
+        .findUser()
+        ?.let {
+            val userCode = when {
+                it.isAdmin() -> form.userCode
+                else -> it.code
+            }
+            form.copy(userCode = userCode)
+
+            return@let service.create(form)
+        }
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @PutMapping("/{code}")
     fun put(@PathVariable code: String, @RequestBody updatedPerson: Person) = personService
