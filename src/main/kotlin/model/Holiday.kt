@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
-import community.flock.eco.feature.user.model.User
 import java.util.UUID
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
@@ -34,7 +33,7 @@ data class Holiday(
     @ManyToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)
-    val user: User
+    val person: Person
 
 ) : AbstractCodeEntity(id, code) {
     override fun equals(other: Any?) = super.equals(other)
