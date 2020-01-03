@@ -33,6 +33,8 @@ export const PersonForm = props => {
     email: Yup.string()
       .email()
       .default(""),
+    position: Yup.string().default(""),
+    userCode: Yup.string(),
   })
 
   const form = () => (
