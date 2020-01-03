@@ -15,6 +15,10 @@ const getAll = () => {
   return fetch(`${path}`, opts).then(res => res.json())
 }
 
+const get = code => {
+  return client.get(code).then(toPersonForm)
+}
+
 const post = async personForm => {
   return client.post(await toPersonForm(personForm))
 }
@@ -26,6 +30,7 @@ const put = async (code, personForm) => {
 export const PersonService = {
   ...client,
   getAll,
+  get,
   post,
   put,
 }
