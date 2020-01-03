@@ -8,7 +8,7 @@ const getAll = () => {
     },
   }
 
-  return fetch(`${path}/`).then(res => res.json())
+  return fetch(`${path}`, opts).then(res => res.json())
 }
 
 const getById = id => {
