@@ -2,7 +2,6 @@ package community.flock.eco.workday.services
 
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.feature.user.model.User
-import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HolidayForm
 import community.flock.eco.workday.model.Holiday
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional
 class HolidayService(
     private val holidayRepository: HolidayRepository,
     private val periodRepository: PeriodRepository,
-    private val userRepository: UserRepository
 ) {
 
     fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
