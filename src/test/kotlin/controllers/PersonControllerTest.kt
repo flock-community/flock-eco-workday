@@ -57,7 +57,11 @@ class PersonControllerTest {
         user = UserAccountPasswordForm(
             email = email,
             name = "Administrator",
-            authorities = setOf(),
+            authorities = setOf(
+                "PersonAuthority.ADMIN",
+                "PersonAuthority.READ",
+                "PersonAuthority.WRITE"
+            ),
             password = "admin")
             .run { userAccountService.createUserAccountPassword(this) }
             .run { UserSecurityService.UserSecurityPassword(this) }
