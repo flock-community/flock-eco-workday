@@ -45,26 +45,27 @@ class HolidayService(
         ).save()
     }
 
-    fun update(code: String, form: HolidayForm): Holiday? {
+    fun update(code: String, form: HolidayForm, isAdmin: Boolean): Holiday? {
         form.validate()
         return findByCode(code)
-                ?.let { holiday ->
+            ?.let { holiday ->
+                val period = Period(
+                    from = form.from,
+                    to = form.to,
+                    days = convertDayOff(form.days, form.from)
+                ).save()
 
-                    val period = Period(
-                            from = form.from,
-                            to = form.to,
-                            days = convertDayOff(form.days, form.from))
-                            .save()
-
-                    holiday.copy(
-                            description = form.description,
-                            status = form.status
-                                    ?.takeIf { holiday.user.isAdmin() }
-                                    ?.run { form.status }
-                                    ?: holiday.status,
-                            period = period)
-                }
-                ?.save()
+                return@let holiday.copy(
+                    description = form.description,
+                    status = form.status
+                        ?.takeIf { isAdmin }
+                        ?.run { form.status }
+                        ?: holiday.status,
+                    period = period
+                )
+            }
+            ?.save()
+            ?: throw RuntimeException("Holiday not found")
     }
 
     @Transactional
