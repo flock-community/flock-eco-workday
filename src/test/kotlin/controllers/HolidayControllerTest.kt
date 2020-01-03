@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @RunWith(SpringRunner::class)
@@ -223,7 +224,13 @@ class HolidayControllerTest {
             .accept(APPLICATION_JSON))
         .andExpect(status().isOk)
         .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-        .andExpect(content().json(mapper.writeValueAsString(holidayForm)))
+        .andExpect(jsonPath("\$.id").exists())
+        .andExpect(jsonPath("\$.code").exists())
+        .andExpect(jsonPath("\$.code").isString)
+        .andExpect(jsonPath("\$.description").value(holidayForm.description.toString()))
+        .andExpect(jsonPath("\$.status").value(holidayForm.status.toString()))
+        .andExpect(jsonPath("\$.hours").value(holidayForm.hours))
+        .andExpect(jsonPath("\$.person").value(holidayForm.personCode.toString()))
 
     /**
      *
@@ -236,7 +243,13 @@ class HolidayControllerTest {
             .accept(APPLICATION_JSON))
         .andExpect(status().isOk)
         .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-        .andExpect(content().json(mapper.writeValueAsString(holidayForm)))
+        .andExpect(jsonPath("\$.id").exists())
+        .andExpect(jsonPath("\$.code").exists())
+        .andExpect(jsonPath("\$.code").isString)
+        .andExpect(jsonPath("\$.description").value(holidayForm.description.toString()))
+        .andExpect(jsonPath("\$.status").value(holidayForm.status.toString()))
+        .andExpect(jsonPath("\$.hours").value(holidayForm.hours))
+        .andExpect(jsonPath("\$.person").value(holidayForm.personCode.toString()))
 
     /**
      *
@@ -244,9 +257,16 @@ class HolidayControllerTest {
     private fun put(holidayForm: HolidayForm, holidayCode: String) = mvc.perform(
         put("$baseUrl/$holidayCode")
             .with(user)
+            .content(mapper.writeValueAsString(holidayForm))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
         .andExpect(status().isOk)
         .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-        .andExpect(content().json(mapper.writeValueAsString(holidayForm)))
+        .andExpect(jsonPath("\$.id").exists())
+        .andExpect(jsonPath("\$.code").exists())
+        .andExpect(jsonPath("\$.code").isString)
+        .andExpect(jsonPath("\$.description").value(holidayForm.description.toString()))
+        .andExpect(jsonPath("\$.status").value(holidayForm.status.toString()))
+        .andExpect(jsonPath("\$.hours").value(holidayForm.hours))
+        .andExpect(jsonPath("\$.person").value(holidayForm.personCode.toString()))
 }
