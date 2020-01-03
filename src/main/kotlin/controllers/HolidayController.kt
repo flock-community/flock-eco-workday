@@ -70,17 +70,21 @@ class HolidayController(
 
     @PutMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
-    fun put(@PathVariable code: String, @RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Any> =
-            principal
-                    .findUser()
-                    ?.let {
-                        if (it.isAuthorizedForHoliday(code)) {
-                            service.update(code, form)
-                        } else {
-                            ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        }
-                    }
-                    .toResponse()
+    fun put(
+        @PathVariable code: String,
+        @RequestBody form: HolidayForm,
+        principal: Principal
+    ): ResponseEntity<Holiday> = principal
+        .findUser()
+        ?.let {
+            val personCode = when {
+                it.isAdmin() -> form.personCode
+                else -> personService.findByUserCode(it.code)?.code ?: throw ResponseStatusException(UNAUTHORIZED)
+            }
+            form.copy(personCode = personCode)
+            return@let service.update(code, form, it.isAdmin()).toResponse()
+        }
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
