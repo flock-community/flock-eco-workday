@@ -94,8 +94,8 @@ class HolidayControllerTest {
             description = "Wimbledon",
             status = HolidayStatus.REQUESTED,
             from = dayFromLocalDate(),
-            to = dayFromLocalDate(1),
-            days = listOf(8),
+            to = dayFromLocalDate(2),
+            days = listOf(8, 8),
             hours = 8,
             personCode = person.code
         )
@@ -127,9 +127,9 @@ class HolidayControllerTest {
             description = "Wimbledon",
             status = HolidayStatus.REQUESTED,
             from = dayFromLocalDate(),
-            to = dayFromLocalDate(1),
-            days = listOf(8),
-            hours = 8,
+            to = dayFromLocalDate(2),
+            days = listOf(8, 8),
+            hours = 16,
             personCode = person.code
         )
 
@@ -151,9 +151,9 @@ class HolidayControllerTest {
             description = "Wimbledon",
             status = HolidayStatus.REQUESTED,
             from = dayFromLocalDate(),
-            to = dayFromLocalDate(1),
-            days = listOf(8),
-            hours = 8,
+            to = dayFromLocalDate(2),
+            days = listOf(8, 8),
+            hours = 16,
             personCode = person.code
         )
 
@@ -184,9 +184,9 @@ class HolidayControllerTest {
             description = "Wimbledon",
             status = HolidayStatus.REQUESTED,
             from = dayFromLocalDate(),
-            to = dayFromLocalDate(1),
-            days = listOf(8),
-            hours = 8,
+            to = dayFromLocalDate(2),
+            days = listOf(8, 8),
+            hours = 16,
             personCode = person.code
         )
 
