@@ -57,18 +57,16 @@ class HolidayController(
     @PostMapping
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
     fun post(@RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Holiday> = principal
-            .findUser()
-            ?.let {
-                if (!it.isAuthorizedForUserCode(form.userCode)) {
-                    form.copy(userCode = it.code)
-                } else {
-                    form.copy(userCode = form.userCode ?: it.code)
-                }
+        .findUser()
+        ?.let {
+            val personCode = when {
+                it.isAdmin() -> form.personCode
+                else -> personService.findByUserCode(it.code)?.code ?: throw ResponseStatusException(UNAUTHORIZED)
             }
-            ?.let {
-                service.create(it)
-            }
-            .toResponse()
+            form.copy(personCode = personCode)
+            return@let service.create(form).toResponse()
+        }
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @PutMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
