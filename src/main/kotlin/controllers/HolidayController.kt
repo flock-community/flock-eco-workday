@@ -1,6 +1,5 @@
 package community.flock.eco.workday.controllers
 
-import community.flock.eco.core.utils.toNullable
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.repositories.UserRepository
@@ -8,7 +7,6 @@ import community.flock.eco.workday.forms.HolidayForm
 import community.flock.eco.workday.model.Holiday
 import community.flock.eco.workday.repository.PeriodRepository
 import community.flock.eco.workday.services.HolidayService
-import community.flock.eco.workday.services.isAdmin
 import java.security.Principal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -99,7 +97,16 @@ class HolidayController(
             .findByCode(this.name)
             .toNullable()
 
-    fun User.isAuthorizedForUserCode(userCode: String?): Boolean = this.isAdmin() || this.code.equals(userCode)
+    // *-- utility functions --*
+    /**
+     * add findUser() function to Principal
+     * @return <code>User?</code> a user if found with given user code in the db
+     */
+    private fun Principal.findUser(): User? = userService.findByCode(this.name)
 
-    fun User.isAuthorizedForHoliday(code: String): Boolean = this.isAdmin() || this.equals(service.findByCode(code)?.user)
+    /**
+     * Evaluate if user has admin authorities on Holiday
+     * @return <code>true</code> if user is admin or has admin authorities
+     */
+    private fun User.isAdmin(): Boolean = this.authorities.contains(HolidayAuthority.ADMIN.toName())
 }
