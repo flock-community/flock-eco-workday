@@ -105,4 +105,17 @@ class PersonController(
                     .toResponse()
             }
             ?: throw ResponseStatusException(UNAUTHORIZED)
+
+    // *-- utility functions --*
+    /**
+     * add findUser() function to Principal
+     * @return <code>User?</code> a user if found with given user code in the db
+     */
+    private fun Principal.findUser(): User? = userService.findByCode(this.name)
+
+    /**
+     * Evaluate if user has admin authorities on Sickday
+     * @return <code>true</code> if user is admin or has admin authorities
+     */
+    private fun User.isAdmin(): Boolean = this.authorities.contains(PersonAuthority.ADMIN.toName())
 }
