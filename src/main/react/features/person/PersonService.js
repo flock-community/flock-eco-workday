@@ -1,4 +1,7 @@
+import {ResourceClient} from "../../utils/ResourceClient"
+
 const path = "/api/persons"
+const client = ResourceClient(path)
 
 const getAll = () => {
   const opts = {
@@ -50,6 +53,7 @@ const del = id => {
 }
 
 export const PersonService = {
+  ...client,
   getAll,
   getById,
   post,
