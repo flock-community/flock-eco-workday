@@ -37,7 +37,7 @@ export const PersonDialog = props => {
         .then(() => successfulSubmit())
         .catch(err => console.log(err))
     } else {
-      PersonService.put(values)
+      PersonService.put(person.code, values)
         .then(() => successfulSubmit())
         .catch(err => console.log(err))
     }

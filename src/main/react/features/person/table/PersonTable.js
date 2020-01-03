@@ -76,6 +76,7 @@ export const PersonTable = () => {
 
   const handleChangeRowsPerPage = event => {
     // TODO: query user GET endpoint with limit param and page=0
+    // eslint-disable-next-line no-shadow
     const rowsPerPage = event.target.value
     setRowsPerPage(+rowsPerPage)
     setPage(0)
@@ -94,7 +95,7 @@ export const PersonTable = () => {
                     <TableCell className={classes.tblName} component="th" scope="row">
                       <Link
                         component={RouterLink}
-                        to={`${url}/id/${person.id}`}
+                        to={`${url}/code/${person.code}`}
                         underline="none"
                       >
                         {person.firstname} {person.lastname}
@@ -118,7 +119,7 @@ export const PersonTable = () => {
           component="div"
           count={personList.length}
           // remove labelDisplayRows by replacing it with an empty return
-          labelDisplayedRows={(from, to, count) => {}}
+          labelDisplayedRows={() => {}}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}

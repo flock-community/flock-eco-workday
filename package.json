@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@babel/preset-typescript": "^7.6.0",
+    "@babel/runtime": "^7.7.7",
     "@date-io/date-fns": "^1.3.8",
     "@date-io/moment": "^1.3.8",
     "@flock-eco/application": "^1.5.7",
@@ -31,6 +32,7 @@
     "yup": "^0.27.0"
   },
   "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.7.6",
     "@flock-eco/webpack": "^1.4.20",
     "@flock/graphql-to-rest": "^0.1.0",
     "@testing-library/react": "^9.3.2",

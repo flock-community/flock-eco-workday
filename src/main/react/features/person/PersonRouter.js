@@ -9,7 +9,7 @@ export const PersonRouter = () => {
   return (
     <Switch>
       <Route exact path={url} component={PersonTable}></Route>
-      <Route exact path={`${url}/id/:personId`} component={PersonDetails}></Route>
+      <Route exact path={`${url}/code/:personCode`} component={PersonDetails}></Route>
     </Switch>
   )
 }

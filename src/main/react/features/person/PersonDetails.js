@@ -32,7 +32,7 @@ export const PersonDetails = props => {
 
   useEffect(() => {
     // eslint-disable-next-line no-shadow
-    PersonService.getById(params.personId).then(person => {
+    PersonService.get(params.personCode).then(person => {
       // hacky way to update the breadcrumbs. It only works if the item updated
       // is actually the last item in the list, otherwise it will remove that item
       // but append it to the end of the list
@@ -55,7 +55,7 @@ export const PersonDetails = props => {
   }
 
   const handleDelete = () => {
-    PersonService.delete(person.id)
+    PersonService.delete(person.code)
       .then(() => {
         handleDelDialog()
         // remove link to person from linkList after deleting the person
@@ -95,7 +95,7 @@ export const PersonDetails = props => {
         onConfirm={handleDelete}
         onClose={handleDelDialog}
       >
-        Surely you can't be serious? Delete {person.firstname} {person.lastname}
+        Surely you cant be serious? Delete {person.firstname} {person.lastname}
       </ConfirmDialog>
     </div>
   )
