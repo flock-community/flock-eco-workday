@@ -12,6 +12,7 @@ import community.flock.eco.workday.repository.HolidayRepository
 import community.flock.eco.workday.repository.PeriodRepository
 import community.flock.eco.workday.utils.convertDayOff
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class HolidayService(
@@ -68,6 +69,7 @@ class HolidayService(
                 ?.save()
     }
 
+    @Transactional
     fun delete(code: String) = holidayRepository.deleteByCode(code)
 
     private fun Holiday.save() = holidayRepository
