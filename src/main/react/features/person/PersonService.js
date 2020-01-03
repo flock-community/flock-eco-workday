@@ -14,13 +14,6 @@ const getAll = () => {
   return fetch(`${path}`, opts).then(res => res.json())
 }
 
-const getById = id => {
-  const opts = {
-    method: "GET",
-  }
-  return fetch(`${path}/${id}`, opts).then(res => res.json())
-}
-
 const post = item => {
   const opts = {
     method: "POST",
@@ -55,7 +48,6 @@ const del = id => {
 export const PersonService = {
   ...client,
   getAll,
-  getById,
   post,
   put,
   delete: del,
