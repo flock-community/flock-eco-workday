@@ -20,7 +20,7 @@ class HolidayService(
 ) {
 
     fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
-    fun findAllByUserCode(userCode: String) = holidayRepository.findAllByUserCode(userCode)
+    fun findAllByPersonCode(personCode: String) = holidayRepository.findAllByPersonCode(personCode)
 
     fun create(form: HolidayForm): Holiday {
 
