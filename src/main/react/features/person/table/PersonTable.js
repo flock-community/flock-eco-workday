@@ -95,7 +95,7 @@ export const PersonTable = () => {
                     <TableCell className={classes.tblName} component="th" scope="row">
                       <Link
                         component={RouterLink}
-                        to={`${url}/id/${person.id}`}
+                        to={`${url}/code/${person.code}`}
                         underline="none"
                       >
                         {person.firstname} {person.lastname}
