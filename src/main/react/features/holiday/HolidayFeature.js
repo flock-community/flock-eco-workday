@@ -5,9 +5,9 @@ import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils
 import {HolidayDialog} from "./HolidayDialog"
 import {HolidayList} from "./HolidayList"
 import {UserSelector} from "../../components/selector"
-import HolidayClient from "../../clients/HolidayClient"
 import {ApplicationContext} from "../../application/ApplicationContext"
 import {AddActionFab} from "../../components/FabButtons"
+import {isDefined} from "../../utils/validation"
 
 const useStyles = makeStyles({
   root: {
@@ -28,7 +28,7 @@ export function HolidayFeature() {
   const {authorities, user} = useContext(ApplicationContext)
 
   useEffect(() => {
-    user && setUserCode(user.code)
+    if (isDefined(user)) setUserCode(user.code)
   }, [authorities, user])
 
   function handleCompleteDialog() {

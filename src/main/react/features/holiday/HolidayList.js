@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from "react"
+import PropTypes from "prop-types"
 import {Card, makeStyles, Typography} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import Grid from "@material-ui/core/Grid"
 import HolidayClient from "../../clients/HolidayClient"
+import {isDefined} from "../../utils/validation"
 
 const useStyles = makeStyles(theme => ({
   content: {
@@ -16,7 +18,8 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export function HolidayList({userCode, refresh, onClickRow}) {
+export function HolidayList(props) {
+  const {userCode, refresh, onClickRow} = props
   const classes = useStyles()
 
   const [list, setList] = useState([])
@@ -32,8 +35,8 @@ export function HolidayList({userCode, refresh, onClickRow}) {
   }, [userCode, refresh])
 
   function handleClickRow(item) {
-    return function(ev) {
-      onClickRow && onClickRow(item)
+    return () => {
+      if (isDefined(onClickRow)) onClickRow(item)
     }
   }
 
@@ -67,4 +70,10 @@ export function HolidayList({userCode, refresh, onClickRow}) {
       {list && list.map(renderItem)}
     </Grid>
   )
+}
+
+HolidayList.propTypes = {
+  userCode: PropTypes.string,
+  refresh: PropTypes.bool,
+  onClickRow: PropTypes.func,
 }
