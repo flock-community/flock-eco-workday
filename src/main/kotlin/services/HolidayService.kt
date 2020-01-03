@@ -17,32 +17,32 @@ import org.springframework.transaction.annotation.Transactional
 class HolidayService(
     private val holidayRepository: HolidayRepository,
     private val periodRepository: PeriodRepository,
+    private val personService: PersonService
 ) {
 
     fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
     fun findAllByPersonCode(personCode: String) = holidayRepository.findAllByPersonCode(personCode)
 
     fun create(form: HolidayForm): Holiday {
-
         form.validate()
 
-        val user = form.userCode
-                ?.let { userRepository.findByCode(it).toNullable() }
-                ?: throw RuntimeException("User not found")
+        val person = form.personCode
+            ?.let { personService.findByCode(it) }
+            ?: throw RuntimeException("Person not found")
 
         val period = Period(
-                from = form.from,
-                to = form.to,
-                days = convertDayOff(form.days, form.from))
-                .save()
+            from = form.from,
+            to = form.to,
+            days = convertDayOff(form.days, form.from)
+        ).save()
 
         return Holiday(
-                description = form.description,
-                user = user,
-                period = period,
-                hours = form.hours,
-                status = HolidayStatus.REQUESTED)
-                .save()
+            description = form.description,
+            status = HolidayStatus.REQUESTED,
+            hours = form.hours,
+            period = period,
+            person = person
+        ).save()
     }
 
     fun update(code: String, form: HolidayForm): Holiday? {
