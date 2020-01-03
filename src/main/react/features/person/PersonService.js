@@ -38,17 +38,9 @@ const put = item => {
   return fetch(`${path}/${item.id}`, opts).then(res => res.json())
 }
 
-const del = id => {
-  const opts = {
-    method: "DELETE",
-  }
-  return fetch(`${path}/${id}`, opts).then(res => res)
-}
-
 export const PersonService = {
   ...client,
   getAll,
   post,
   put,
-  delete: del,
 }
