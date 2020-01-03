@@ -19,8 +19,8 @@ data class Person(
 
     val firstname: String,
     val lastname: String,
-    val email: String?,
-    val position: String?,
+    val email: String,
+    val position: String,
 
     @OneToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")

@@ -40,7 +40,7 @@ class LoadPersonData(
         firstname: String,
         lastname: String,
         email: String = "",
-        position: String? = null,
+        position: String = "",
         user: User? = null
     ) = Person(
             firstname = firstname,

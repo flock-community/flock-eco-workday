@@ -5,6 +5,7 @@ import {makeStyles} from "@material-ui/styles"
 import * as Yup from "yup"
 import {Form, Formik, Field} from "formik"
 import {TextField as FormikTextField} from "formik-material-ui"
+import {UserSelectorFormInput} from "../../components/selector"
 
 const useStyles = makeStyles(() => ({
   h70: {height: 70},
@@ -33,6 +34,8 @@ export const PersonForm = props => {
     email: Yup.string()
       .email()
       .default(""),
+    position: Yup.string().default(""),
+    userCode: Yup.string(),
   })
 
   const form = () => (
@@ -73,6 +76,9 @@ export const PersonForm = props => {
               component={FormikTextField}
             />
           </FormControl>
+          <FormControl className={classes.h79} fullWidth>
+            <UserSelectorFormInput />
+          </FormControl>
         </Grid>
       </Grid>
     </Form>
@@ -90,6 +96,22 @@ export const PersonForm = props => {
 }
 
 PersonForm.propTypes = {
-  item: PropTypes.object,
+  item: PropTypes.shape({
+    firstname: PropTypes.string,
+    lastname: PropTypes.string,
+    email: PropTypes.string,
+    position: PropTypes.string,
+    user: PropTypes.any,
+  }),
   onSubmit: PropTypes.func.isRequired,
+}
+
+PersonForm.defaultProps = {
+  item: {
+    firstname: null,
+    lastname: null,
+    email: null,
+    position: null,
+    user: null,
+  },
 }

@@ -73,9 +73,10 @@ class PersonControllerTest {
     @Test
     fun `should create a valid person via POST-method`() {
         // TODO: create arrayListOf<PersonForm>() of all possible valid persons
-        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = null, position = null)
+        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
 
-        mvc.perform(post(baseUrl).with(user)
+        mvc.perform(post(baseUrl)
+            .with(user)
             .content(mapper.writeValueAsString(personForm))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
@@ -92,7 +93,7 @@ class PersonControllerTest {
     @Test
     fun `should get a person by code via GET-method`() {
         /* DRY-Block */
-        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = null, position = null)
+        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
 
         // need this user to compare generated fields
         // create a person so one can query that person via the PersonCode
@@ -124,7 +125,7 @@ class PersonControllerTest {
     @Test
     fun `should update a valid person correctly via PUT-method`() {
         /* DRY-Block */
-        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = null, position = null)
+        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
 
         // need this user to compare generated fields
         var person: JsonNode? = null
@@ -144,7 +145,8 @@ class PersonControllerTest {
             firstname = "Morris",
             lastname = "Moss",
             email = "morris@reynholm-industires.co.uk",
-            position = null
+            position = "",
+            userCode = null
         )
 
         mvc.perform(put("$baseUrl/${person("code")}")
@@ -167,7 +169,7 @@ class PersonControllerTest {
     @Test
     fun `should send a valid delete request to remove a person via DELETE-method`() {
         /* DRY-Block */
-        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = null, position = null)
+        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
 
         // need this user to compare generated fields
         // create a person so one can query that person via the PersonCode

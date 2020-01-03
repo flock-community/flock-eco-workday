@@ -11,13 +11,13 @@ import {
 } from "@material-ui/core"
 
 export function UserSelector(props) {
-  const {onChange, label, selectedItem} = props
+  const {embedded, onChange, label, selectedItem} = props
   const [users, setUsers] = useState([])
   const [selected, setSelected] = useState("")
 
   useEffect(() => {
     UserClient.findAllUsers("", 0, 100).then(res => setUsers(res.list))
-    setSelected(selectedItem.code)
+    setSelected(selectedItem)
   }, [])
 
   function handleChange(event) {
@@ -35,36 +35,36 @@ export function UserSelector(props) {
     )
   }
 
-  return (
+  const selectInput = (
+    <FormControl fullWidth>
+      <InputLabel shrink>{label}</InputLabel>
+      <Select value={selected} displayEmpty onChange={handleChange}>
+        <MenuItem value="">
+          <em>None</em>
+        </MenuItem>
+        {users.map(renderMenuItem)}
+      </Select>
+    </FormControl>
+  )
+
+  return embedded ? (
+    <div>{selectInput}</div>
+  ) : (
     <Card>
-      <CardContent>
-        <FormControl fullWidth>
-          <InputLabel shrink>{label}</InputLabel>
-          <Select value={selected} displayEmpty onChange={handleChange}>
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {users.map(renderMenuItem)}
-          </Select>
-        </FormControl>
-      </CardContent>
+      <CardContent>{selectInput}</CardContent>
     </Card>
   )
 }
 
 UserSelector.propTypes = {
+  embedded: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string,
-  selectedItem: PropTypes.shape({
-    code: PropTypes.string,
-    name: PropTypes.string,
-  }),
+  selectedItem: PropTypes.string,
 }
 
 UserSelector.defaultProps = {
-  selectedItem: {
-    code: "",
-    name: null,
-  },
+  embedded: false,
+  selectedItem: "",
   label: "Select User",
 }
