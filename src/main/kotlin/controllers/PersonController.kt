@@ -32,9 +32,15 @@ class PersonController(
 ) {
 
     @GetMapping
-    fun findAll(pageable: Pageable) = personService
-            .findAll(pageable)
-            .toResponse()
+    @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
+    fun findAll(pageable: Pageable, principal: Principal) = principal
+        .findUser()
+        ?.let {
+            service
+                .findAll(pageable)
+                .toResponse()
+        }
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @GetMapping("/{code}")
     fun findByCode(@PathVariable code: String): ResponseEntity<Person> = personService
