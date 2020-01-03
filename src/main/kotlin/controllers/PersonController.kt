@@ -71,17 +71,28 @@ class PersonController(
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @PutMapping("/{code}")
-    fun put(@PathVariable code: String, @RequestBody updatedPerson: Person) = personService
-            .update(code, updatedPerson)
-            .apply {
-                when (this) {
-                    is Person -> this.toResponse()
-                    else -> throw ResponseStatusException(
-                            HttpStatus.BAD_REQUEST,
-                            "Cannot perform PUT on given item. PersonCode cannot be found. Use POST Method"
-                    )
-                }
+    @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
+    fun put(
+        @PathVariable code: String,
+        @RequestBody form: PersonForm,
+        principal: Principal
+    ) = principal
+        .findUser()
+        ?.let {
+            val userCode = when {
+                it.isAdmin() -> form.userCode
+                else -> it.code
             }
+            form.copy(userCode = userCode)
+
+            return@let service
+                .update(code, form)
+                ?.toResponse()
+                ?: throw ResponseStatusException(
+                    BAD_REQUEST, "Cannot perform PUT on given item. PersonCode cannot be found. Use POST Method"
+                )
+        }
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @DeleteMapping("/{code}")
     fun delete(@PathVariable code: String) = personService
