@@ -1,3 +1,5 @@
+import React from "react"
+import PropTypes from "prop-types"
 import {
   Button,
   Dialog,
@@ -5,12 +7,14 @@ import {
   DialogContent,
   DialogTitle,
 } from "@material-ui/core"
-import React from "react"
 import moment, {HTML5_FMT} from "moment"
 import HolidayClient from "../../clients/HolidayClient"
 import {HOLIDAY_FORM_ID, HolidayForm} from "./HolidayForm"
+import {isDefined} from "../../utils/validation"
 
-export function HolidayDialog({value, userCode, open, onComplete}) {
+export function HolidayDialog(props) {
+  const {value, userCode, open, onComplete} = props
+
   const handleSubmit = it => {
     if (it.id) {
       HolidayClient.putHoliday(it.code, {
@@ -20,7 +24,7 @@ export function HolidayDialog({value, userCode, open, onComplete}) {
         to: it.period.dates[1].format(HTML5_FMT.DATE),
         days: it.period.days,
       }).then(res => {
-        onComplete && onComplete(res)
+        if (isDefined(onComplete)) onComplete(res)
       })
     } else {
       console.log(it)
@@ -31,18 +35,18 @@ export function HolidayDialog({value, userCode, open, onComplete}) {
         days: it.period.days,
         userCode,
       }).then(res => {
-        onComplete && onComplete(res)
+        if (isDefined(onComplete)) onComplete(res)
       })
     }
   }
 
-  function handleClose(ev) {
-    onComplete && onComplete()
+  function handleClose() {
+    if (isDefined(onComplete)) onComplete()
   }
 
-  function handleDelete(ev) {
-    HolidayClient.deleteHoliday(state.code).then(() => {
-      onComplete && onComplete()
+  function handleDelete() {
+    HolidayClient.deleteHoliday(value.code).then(() => {
+      if (isDefined(onComplete)) onComplete()
     })
   }
 
@@ -68,4 +72,11 @@ export function HolidayDialog({value, userCode, open, onComplete}) {
       </DialogActions>
     </Dialog>
   )
+}
+
+HolidayDialog.propTypes = {
+  value: PropTypes.string,
+  userCode: PropTypes.string,
+  open: PropTypes.bool,
+  onComplete: PropTypes.func,
 }

@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react"
+import PropTypes from "prop-types"
 import * as Yup from "yup"
 import {Field, Form, Formik} from "formik"
 import {TextField} from "formik-material-ui"
@@ -8,10 +9,12 @@ import MenuItem from "@material-ui/core/MenuItem"
 import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {PeriodForm} from "../../components/PeriodForm"
 import HolidayClient from "../../clients/HolidayClient"
+import {isDefined} from "../../utils/validation"
 
 export const HOLIDAY_FORM_ID = "holiday-form-id"
 
-export function HolidayForm({code, onSubmit}) {
+export function HolidayForm(props) {
+  const {code, onSubmit} = props
   const [state, setState] = useState(null)
 
   useEffect(() => {
@@ -38,7 +41,7 @@ export function HolidayForm({code, onSubmit}) {
 
   const handleSubmit = value => {
     console.log(state, value)
-    onSubmit &&
+    if (isDefined(onSubmit))
       onSubmit({
         ...state,
         ...value,
@@ -110,4 +113,9 @@ export function HolidayForm({code, onSubmit}) {
       </Grid>
     </Grid>
   )
+}
+
+HolidayForm.propTypes = {
+  code: PropTypes.string,
+  onSubmit: PropTypes.func,
 }
