@@ -46,17 +46,13 @@ class HolidayController(
         ?.toResponse()
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
-    @GetMapping
+    @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
-    fun findAll(@RequestParam(required = false) userCode: String?, principal: Principal): ResponseEntity<Iterable<Holiday>> =
-            principal.findUser()
-                    ?.let { user ->
-                        if (user.isAdmin() && userCode != null) {
-                            service.findAllByUserCode(userCode)
-                        } else {
-                            service.findAllByUserCode(user.code)
-                        }
-                    }.toResponse()
+    fun findByCode(@PathVariable code: String, principal: Principal): ResponseEntity<Holiday> = principal
+        .findUser()
+        ?.let {
+            service.findByCode(code)
+        }.toResponse()
 
     @PostMapping
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
