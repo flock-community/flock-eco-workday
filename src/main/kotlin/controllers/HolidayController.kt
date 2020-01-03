@@ -2,11 +2,11 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.feature.user.model.User
-import community.flock.eco.feature.user.repositories.UserRepository
+import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.forms.HolidayForm
 import community.flock.eco.workday.model.Holiday
-import community.flock.eco.workday.repository.PeriodRepository
 import community.flock.eco.workday.services.HolidayService
+import community.flock.eco.workday.services.PersonService
 import java.security.Principal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/holidays")
 class HolidayController(
-    private val userRepository: UserRepository,
-    private val periodRepository: PeriodRepository,
-    private val service: HolidayService
+    private val service: HolidayService,
+    private val personService: PersonService,
+    private val userService: UserService
 ) {
 
     @GetMapping("/{code}")
