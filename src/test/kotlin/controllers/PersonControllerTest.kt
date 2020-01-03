@@ -76,7 +76,6 @@ class PersonControllerTest {
 
     @Test
     fun `should create a valid person via POST-method`() {
-        // TODO: create arrayListOf<PersonForm>() of all possible valid persons
         val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
 
         mvc.perform(post(baseUrl)
