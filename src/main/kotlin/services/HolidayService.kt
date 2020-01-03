@@ -70,11 +70,9 @@ class HolidayService(
     @Transactional
     fun delete(code: String) = holidayRepository.deleteByCode(code)
 
-    private fun Holiday.save() = holidayRepository
-            .save(this)
-
-    private fun Period.save() = periodRepository
-            .save(this)
+    // *-- utility functions --*
+    private fun Holiday.save() = holidayRepository.save(this)
+    private fun Period.save() = periodRepository.save(this)
 
     private fun HolidayForm.validate() {
         val daysBetween = java.time.Period.between(this.from, this.to).days + 1
