@@ -11,5 +11,6 @@ interface HolidayRepository : CrudRepository<Holiday, Long> {
     fun findByCode(code: String): Optional<Holiday>
     fun findAllByUser(user: User): Iterable<Holiday>
     fun findAllByUserCode(userCode: String): Iterable<Holiday>
+    fun findAllByPersonCode(personCode: String): Iterable<Holiday>
     fun deleteByCode(code: String): Unit
 }
