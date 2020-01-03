@@ -2,10 +2,10 @@ import React from "react"
 import PropTypes from "prop-types"
 import {FormControl, Grid} from "@material-ui/core"
 import {makeStyles} from "@material-ui/styles"
-import * as Yup from "yup"
 import {Form, Formik, Field} from "formik"
 import {TextField as FormikTextField} from "formik-material-ui"
 import {UserSelectorFormInput} from "../../components/selector"
+import {PERSON_FORM_SCHEMA} from "./schema"
 
 const useStyles = makeStyles(() => ({
   h70: {height: 70},
@@ -23,20 +23,6 @@ export const PERSON_FORM_ID = "person-form"
 export const PersonForm = props => {
   const {item, onSubmit} = props
   const classes = useStyles()
-
-  const schema = Yup.object().shape({
-    firstname: Yup.string()
-      .required("Required")
-      .default(""),
-    lastname: Yup.string()
-      .required("Required")
-      .default(""),
-    email: Yup.string()
-      .email()
-      .default(""),
-    position: Yup.string().default(""),
-    userCode: Yup.string(),
-  })
 
   const form = () => (
     <Form id={PERSON_FORM_ID}>
@@ -86,9 +72,9 @@ export const PersonForm = props => {
 
   return (
     <Formik
-      initialValues={{...schema.cast(), ...item}}
+      initialValues={{...PERSON_FORM_SCHEMA.cast(), ...item}}
       onSubmit={onSubmit} // use onSubmit func @PersonDialog
-      validationSchema={schema}
+      validationSchema={PERSON_FORM_SCHEMA}
       enableReinitialize
       render={form}
     />
