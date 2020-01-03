@@ -32,7 +32,7 @@ export const PersonDetails = props => {
 
   useEffect(() => {
     // eslint-disable-next-line no-shadow
-    PersonService.getById(params.personId).then(person => {
+    PersonService.get(params.personCode).then(person => {
       // hacky way to update the breadcrumbs. It only works if the item updated
       // is actually the last item in the list, otherwise it will remove that item
       // but append it to the end of the list
