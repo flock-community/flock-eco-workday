@@ -299,12 +299,7 @@ class SickdayControllerTest {
     fun `expect to retrieve a NOT_AUTHORIZED 403 return for deleting a sickday of another person without admin permissions`() {
     }
 
-    /*
-     * ----
-     * utility functions
-     * ----
-     */
-
+    // *-- utility functions --*
     /**
      *
      */

@@ -15,15 +15,22 @@ class PersonService(
     private val repository: PersonRepository,
     private val userRepository: UserRepository
 ) {
-    private fun Person.render(it: Person? = null): Person = Person(
-        id = this.id,
-        code = this.code,
-        firstname = it?.firstname ?: this.firstname,
-        lastname = it?.lastname ?: this.lastname,
-        email = it?.email ?: this.email,
-        position = it?.position ?: this.position,
-        user = null
-    )
+    private fun Person.render(it: PersonForm): Person {
+        val user = when (it.userCode) {
+            is String -> userRepository.findByCode(it.userCode).toNullable()
+            else -> null
+        }
+
+        return Person(
+            id = this.id,
+            code = this.code,
+            firstname = it.firstname,
+            lastname = it.lastname,
+            email = it.email,
+            position = it.position,
+            user = user
+        )
+    }
 
     private fun Person.save(): Person = repository.save(this)
 
@@ -53,11 +60,11 @@ class PersonService(
         ).save()
     }
 
-    fun update(code: String, person: Person? = null): Person? {
+    fun update(code: String, form: PersonForm): Person? {
         val obj = this.findByCode(code)
 
         return when (obj) {
-            is Person -> obj.render(person).save()
+            is Person -> obj.render(form).save()
             else -> null
         }
     }

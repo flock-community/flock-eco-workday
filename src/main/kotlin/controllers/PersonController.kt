@@ -1,12 +1,19 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
+import community.flock.eco.feature.user.model.User
+import community.flock.eco.feature.user.services.UserService
+import community.flock.eco.workday.authorities.PersonAuthority
 import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.PersonService
+import java.security.Principal
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.NOT_FOUND
+import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -20,47 +27,95 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @RequestMapping("/api/persons")
 class PersonController(
-    private val personService: PersonService
+    private val service: PersonService,
+    private val userService: UserService
 ) {
 
     @GetMapping
-    fun findAll(pageable: Pageable) = personService
-            .findAll(pageable)
-            .toResponse()
+    @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
+    fun findAll(pageable: Pageable, principal: Principal) = principal
+        .findUser()
+        ?.let {
+            service
+                .findAll(pageable)
+                .toResponse()
+        }
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @GetMapping("/{code}")
-    fun findByCode(@PathVariable code: String): ResponseEntity<Person> = personService
-            .findByCode(code)
-            ?.toResponse()
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Item found with this PersonCode")
+    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
+    fun findByCode(@PathVariable code: String, principal: Principal): ResponseEntity<Person> = principal
+        .findUser()
+        ?.let {
+            return@let when {
+                it.isAdmin() -> service.findByCode(code)?.toResponse()
+                else -> service.findByUserCode(it.code)?.toResponse()
+            }
+            ?: throw ResponseStatusException(NOT_FOUND, "No Item found with this PersonCode")
+        }
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @PostMapping
-    fun post(@RequestBody form: PersonForm) = personService.create(form)
-            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "firstname & lastname are required")
+    @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
+    fun post(@RequestBody form: PersonForm, principal: Principal) = principal
+        .findUser()
+        ?.let {
+            val userCode = when {
+                it.isAdmin() -> form.userCode
+                else -> it.code
+            }
+            form.copy(userCode = userCode)
+
+            return@let service.create(form)
+        }
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @PutMapping("/{code}")
-    fun put(@PathVariable code: String, @RequestBody updatedPerson: Person) = personService
-            .update(code, updatedPerson)
-            .apply {
-                when (this) {
-                    is Person -> this.toResponse()
-                    else -> throw ResponseStatusException(
-                            HttpStatus.BAD_REQUEST,
-                            "Cannot perform PUT on given item. PersonCode cannot be found. Use POST Method"
-                    )
-                }
+    @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
+    fun put(
+        @PathVariable code: String,
+        @RequestBody form: PersonForm,
+        principal: Principal
+    ) = principal
+        .findUser()
+        ?.let {
+            val userCode = when {
+                it.isAdmin() -> form.userCode
+                else -> it.code
             }
+            form.copy(userCode = userCode)
+
+            return@let service
+                .update(code, form)
+                ?.toResponse()
+                ?: throw ResponseStatusException(
+                    BAD_REQUEST, "Cannot perform PUT on given item. PersonCode cannot be found. Use POST Method"
+                )
+        }
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @DeleteMapping("/{code}")
-    fun delete(@PathVariable code: String) = personService
-            .deleteByCode(code)
-            .toResponse()
-            .apply {
-                when (this.statusCodeValue) {
-                    404 -> throw ResponseStatusException(
-                            HttpStatus.NOT_FOUND,
-                            "No item found with this PersonCode. Has item already been deleted?"
-                    )
-                }
+    @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
+    fun delete(@PathVariable code: String, principal: Principal) =
+        principal
+            .findUser()
+            ?.let {
+                service
+                    .deleteByCode(code)
+                    .toResponse()
             }
+            ?: throw ResponseStatusException(UNAUTHORIZED)
+
+    // *-- utility functions --*
+    /**
+     * add findUser() function to Principal
+     * @return <code>User?</code> a user if found with given user code in the db
+     */
+    private fun Principal.findUser(): User? = userService.findByCode(this.name)
+
+    /**
+     * Evaluate if user has admin authorities on Sickday
+     * @return <code>true</code> if user is admin or has admin authorities
+     */
+    private fun User.isAdmin(): Boolean = this.authorities.contains(PersonAuthority.ADMIN.toName())
 }

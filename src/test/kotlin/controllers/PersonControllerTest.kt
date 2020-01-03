@@ -57,7 +57,11 @@ class PersonControllerTest {
         user = UserAccountPasswordForm(
             email = email,
             name = "Administrator",
-            authorities = setOf(),
+            authorities = setOf(
+                "PersonAuthority.ADMIN",
+                "PersonAuthority.READ",
+                "PersonAuthority.WRITE"
+            ),
             password = "admin")
             .run { userAccountService.createUserAccountPassword(this) }
             .run { UserSecurityService.UserSecurityPassword(this) }
@@ -72,7 +76,6 @@ class PersonControllerTest {
 
     @Test
     fun `should create a valid person via POST-method`() {
-        // TODO: create arrayListOf<PersonForm>() of all possible valid persons
         val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
 
         mvc.perform(post(baseUrl)
@@ -224,6 +227,23 @@ class PersonControllerTest {
     fun `should return a 404 http status while trying to delete a non-existing person via DELETE-method`() {
     }
 
+    @Test
+    fun `expect to retrieve a NOT_AUTHORIZED 403 return for gettings another person without admin permissions`() {
+    }
+
+    @Test
+    fun `expect to retrieve a NOT_AUTHORIZED 403 return for creating another person without admin permissions`() {
+    }
+
+    @Test
+    fun `expect to retrieve a NOT_AUTHORIZED 403 return for updating another person without admin permissions`() {
+    }
+
+    @Test
+    fun `expect to retrieve a NOT_AUTHORIZED 403 return for deleting another person without admin permissions`() {
+    }
+
+    // *-- utility functions --*
     private fun findUser(email: String) = user(userAccountService
         .findUserAccountPasswordByUserEmail(email)
         ?.let { UserSecurityService.UserSecurityPassword(it) })
