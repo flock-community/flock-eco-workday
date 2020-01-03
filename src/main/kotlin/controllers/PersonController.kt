@@ -95,15 +95,14 @@ class PersonController(
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @DeleteMapping("/{code}")
-    fun delete(@PathVariable code: String) = personService
-            .deleteByCode(code)
-            .toResponse()
-            .apply {
-                when (this.statusCodeValue) {
-                    404 -> throw ResponseStatusException(
-                            HttpStatus.NOT_FOUND,
-                            "No item found with this PersonCode. Has item already been deleted?"
-                    )
-                }
+    @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
+    fun delete(@PathVariable code: String, principal: Principal) =
+        principal
+            .findUser()
+            ?.let {
+                service
+                    .deleteByCode(code)
+                    .toResponse()
             }
+            ?: throw ResponseStatusException(UNAUTHORIZED)
 }
