@@ -5,7 +5,5 @@ target/**/*
 *.properties
 
 src/main/react/features/client/**/*
-src/main/react/features/holiday/**/*
 src/main/react/features/home/**/*
 src/main/react/features/sickday/**/*
-
