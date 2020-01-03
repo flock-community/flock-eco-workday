@@ -5,7 +5,6 @@ import {
   Card,
   CardHeader,
   Avatar,
-  CardContent,
   CardActions,
   Typography,
   IconButton,
@@ -42,7 +41,7 @@ const useStyles = makeStyles(() => ({
   mb1: {marginBottom: "1rem"},
 }))
 
-export const PersonWidget = props => {
+export function PersonWidget(props) {
   const {person} = props
   const classes = useStyles()
 
