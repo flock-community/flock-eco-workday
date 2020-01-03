@@ -3,12 +3,13 @@ package community.flock.eco.workday.controllers
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserService
+import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HolidayForm
 import community.flock.eco.workday.model.Holiday
 import community.flock.eco.workday.services.HolidayService
 import community.flock.eco.workday.services.PersonService
 import java.security.Principal
-import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/holidays")
@@ -87,23 +89,13 @@ class HolidayController(
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @DeleteMapping("/{code}")
-    @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
-    fun delete(@PathVariable code: String, principal: Principal): ResponseEntity<Any> {
-        return principal
-                .findUser()
-                ?.let {
-                    if (it.isAuthorizedForHoliday(code)) {
-                        service.delete(code)
-                    } else {
-                        ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    }
-                }
-                .toResponse()
-    }
-
-    private fun Principal.findUser(): User? = userRepository
-            .findByCode(this.name)
-            .toNullable()
+    @PreAuthorize("hasAuthority('HolidayAuthority.ADMIN')")
+    fun delete(@PathVariable code: String, principal: Principal) = principal
+        .findUser()
+        ?.let {
+            service.delete(code).toResponse()
+        }
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     // *-- utility functions --*
     /**
