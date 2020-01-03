@@ -228,6 +228,23 @@ class PersonControllerTest {
     fun `should return a 404 http status while trying to delete a non-existing person via DELETE-method`() {
     }
 
+    @Test
+    fun `expect to retrieve a NOT_AUTHORIZED 403 return for gettings another person without admin permissions`() {
+    }
+
+    @Test
+    fun `expect to retrieve a NOT_AUTHORIZED 403 return for creating another person without admin permissions`() {
+    }
+
+    @Test
+    fun `expect to retrieve a NOT_AUTHORIZED 403 return for updating another person without admin permissions`() {
+    }
+
+    @Test
+    fun `expect to retrieve a NOT_AUTHORIZED 403 return for deleting another person without admin permissions`() {
+    }
+
+    // *-- utility functions --*
     private fun findUser(email: String) = user(userAccountService
         .findUserAccountPasswordByUserEmail(email)
         ?.let { UserSecurityService.UserSecurityPassword(it) })
