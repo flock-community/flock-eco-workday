@@ -28,14 +28,14 @@ import org.springframework.web.bind.annotation.RestController
 class HolidayController(
     private val userRepository: UserRepository,
     private val periodRepository: PeriodRepository,
-    private val holidayService: HolidayService
+    private val service: HolidayService
 ) {
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
     fun findByCode(@PathVariable code: String, principal: Principal): ResponseEntity<Holiday> = principal.findUser()
             ?.let { user ->
-                holidayService.findByCode(code)
+                service.findByCode(code)
             }.toResponse()
 
     @GetMapping
@@ -44,9 +44,9 @@ class HolidayController(
             principal.findUser()
                     ?.let { user ->
                         if (user.isAdmin() && userCode != null) {
-                            holidayService.findAllByUserCode(userCode)
+                            service.findAllByUserCode(userCode)
                         } else {
-                            holidayService.findAllByUserCode(user.code)
+                            service.findAllByUserCode(user.code)
                         }
                     }.toResponse()
 
@@ -62,7 +62,7 @@ class HolidayController(
                 }
             }
             ?.let {
-                holidayService.create(it)
+                service.create(it)
             }
             .toResponse()
 
@@ -73,7 +73,7 @@ class HolidayController(
                     .findUser()
                     ?.let {
                         if (it.isAuthorizedForHoliday(code)) {
-                            holidayService.update(code, form)
+                            service.update(code, form)
                         } else {
                             ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         }
@@ -87,7 +87,7 @@ class HolidayController(
                 .findUser()
                 ?.let {
                     if (it.isAuthorizedForHoliday(code)) {
-                        holidayService.delete(code)
+                        service.delete(code)
                     } else {
                         ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     }
@@ -101,5 +101,5 @@ class HolidayController(
 
     fun User.isAuthorizedForUserCode(userCode: String?): Boolean = this.isAdmin() || this.code.equals(userCode)
 
-    fun User.isAuthorizedForHoliday(code: String): Boolean = this.isAdmin() || this.equals(holidayService.findByCode(code)?.user)
+    fun User.isAuthorizedForHoliday(code: String): Boolean = this.isAdmin() || this.equals(service.findByCode(code)?.user)
 }
