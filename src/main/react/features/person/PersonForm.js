@@ -92,6 +92,22 @@ export const PersonForm = props => {
 }
 
 PersonForm.propTypes = {
-  item: PropTypes.object,
+  item: PropTypes.shape({
+    firstname: PropTypes.string,
+    lastname: PropTypes.string,
+    email: PropTypes.string,
+    position: PropTypes.string,
+    user: PropTypes.any,
+  }),
   onSubmit: PropTypes.func.isRequired,
+}
+
+PersonForm.defaultProps = {
+  item: {
+    firstname: null,
+    lastname: null,
+    email: null,
+    position: null,
+    user: null,
+  },
 }
