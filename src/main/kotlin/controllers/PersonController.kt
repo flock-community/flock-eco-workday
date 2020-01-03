@@ -43,10 +43,17 @@ class PersonController(
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @GetMapping("/{code}")
-    fun findByCode(@PathVariable code: String): ResponseEntity<Person> = personService
-            .findByCode(code)
-            ?.toResponse()
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Item found with this PersonCode")
+    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
+    fun findByCode(@PathVariable code: String, principal: Principal): ResponseEntity<Person> = principal
+        .findUser()
+        ?.let {
+            return@let when {
+                it.isAdmin() -> service.findByCode(code)?.toResponse()
+                else -> service.findByUserCode(it.code)?.toResponse()
+            }
+            ?: throw ResponseStatusException(NOT_FOUND, "No Item found with this PersonCode")
+        }
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @PostMapping
     fun post(@RequestBody form: PersonForm) = personService.create(form)
