@@ -17,7 +17,7 @@ export function UserSelector(props) {
 
   useEffect(() => {
     UserClient.findAllUsers("", 0, 100).then(res => setUsers(res.list))
-    setSelected(selectedItem.code)
+    setSelected(selectedItem)
   }, [])
 
   function handleChange(event) {
@@ -55,16 +55,10 @@ export function UserSelector(props) {
 UserSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string,
-  selectedItem: PropTypes.shape({
-    code: PropTypes.string,
-    name: PropTypes.string,
-  }),
+  selectedItem: PropTypes.string,
 }
 
 UserSelector.defaultProps = {
-  selectedItem: {
-    code: "",
-    name: null,
-  },
+  selectedItem: "",
   label: "Select User",
 }

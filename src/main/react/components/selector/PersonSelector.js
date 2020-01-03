@@ -17,7 +17,7 @@ export function PersonSelector(props) {
 
   useEffect(() => {
     PersonService.getAll().then(res => setItems(res))
-    setSelected(selectedItem.code)
+    setSelected(selectedItem)
   }, [])
 
   function handleChange(event) {
@@ -55,18 +55,10 @@ export function PersonSelector(props) {
 PersonSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
-  selectedItem: PropTypes.shape({
-    code: PropTypes.string,
-    firstname: PropTypes.string,
-    lastname: PropTypes.string,
-  }),
+  selectedItem: PropTypes.string,
 }
 
 PersonSelector.defaultProps = {
-  selectedItem: {
-    code: "",
-    firstname: null,
-    lastname: null,
-  },
+  selectedItem: "",
   label: "Select Person",
 }
