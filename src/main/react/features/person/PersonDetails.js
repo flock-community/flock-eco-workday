@@ -55,7 +55,7 @@ export const PersonDetails = props => {
   }
 
   const handleDelete = () => {
-    PersonService.delete(person.id)
+    PersonService.delete(person.code)
       .then(() => {
         handleDelDialog()
         // remove link to person from linkList after deleting the person
