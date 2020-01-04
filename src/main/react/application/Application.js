@@ -4,6 +4,7 @@ import {HashRouter as Router, Route} from "react-router-dom"
 import {UserFeature} from "@flock-eco/feature-user/src/main/react/user/UserFeature"
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
 import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
+import {CircularProgress, makeStyles} from "@material-ui/core"
 import {HolidayFeature} from "../features/holiday/HolidayFeature"
 import {ApplicationLayout} from "./ApplicationLayout"
 import {ApplicationDrawer} from "./ApplicationDrawer"
@@ -16,11 +17,23 @@ import {PersonFeature} from "../features/person/PersonFeature"
 import {UserStatusClient} from "../clients/UserStatusClient"
 import {SickdayFeature} from "../features/sickday/SickFeature"
 
+const useStyles = makeStyles(() => ({
+  spinner: {
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+}))
+
 export const Application = () => {
+  const classes = useStyles()
+
   const [state, setState] = useState({
     openDrawer: false,
     loggedIn: null,
     authorities: null,
+    loading: true,
   })
 
   useEffect(() => {
@@ -28,32 +41,44 @@ export const Application = () => {
       if (status.loggedIn) {
         UserClient.findUsersMe()
           .then(user => {
-            setState({
+            setState(it => ({
+              ...it,
               loggedIn: status.loggedIn,
               authorities: status.authorities,
+              loading: false,
               user,
-            })
+            }))
             UserAuthorityUtil.setAuthorities(status.authorities)
           })
           .catch(() => {
             console.log("Cannot connect to service")
           })
       } else {
-        setState({
+        setState(it => ({
+          ...it,
           loggedIn: status.loggedIn,
-        })
+          loading: false,
+        }))
       }
     })
   }, [])
 
   function handleDrawerClose() {
     // change openDrawer from state, but keep loggedIn and authorities
-    setState({...state, openDrawer: false})
+    setState(it => ({...it, openDrawer: false}))
   }
 
   function handleDrawerOpen() {
     // change openDrawer from state, but keep loggedIn and authorities
-    setState({...state, openDrawer: true})
+    setState(it => ({...it, openDrawer: true}))
+  }
+
+  if (state.loading) {
+    return (
+      <div className={classes.spinner}>
+        <CircularProgress />
+      </div>
+    )
   }
 
   if (state.loggedIn != null && !state.loggedIn) {

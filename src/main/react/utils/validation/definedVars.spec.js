@@ -55,6 +55,6 @@ describe("isEmptyObject() util function", () => {
   })
 
   it("should throw an TypeError if no object is passed as parameter", () => {
-    expect(() => isEmptyObject(13)).toThrowError(TypeError)
+    expect(() => isEmptyObject(13)).toThrow(TypeError)
   })
 })
