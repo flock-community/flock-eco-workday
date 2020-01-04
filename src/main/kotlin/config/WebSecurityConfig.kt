@@ -9,11 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
-import org.springframework.security.config.annotation.web.HttpSecurityBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
@@ -57,11 +55,11 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         http
             .addFilterBefore(GoogleTokenFilter(userAccountService), UsernamePasswordAuthenticationFilter::class.java)
 
-        when(loginType.toUpperCase()){
-            "GOOGLE" ->  userSecurityService.googleLogin(http)
+            when (loginType.toUpperCase()) {
+                "GOOGLE" -> userSecurityService.googleLogin(http)
                 .and()
                 .defaultSuccessUrl("/", true)
-            "DATABASE" -> userSecurityService.databaseLogin(http)
+                "DATABASE" -> userSecurityService.databaseLogin(http)
             else -> userSecurityService.testLogin(http)
         }
     }
