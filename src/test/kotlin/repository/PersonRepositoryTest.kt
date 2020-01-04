@@ -2,6 +2,7 @@ package community.flock.eco.workday.repository
 
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.model.Person
+import community.flock.eco.workday.utils.randomNumber
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,6 +32,7 @@ class PersonRepositoryTest {
                     lastname = "Moss",
                     email = "",
                     position = "",
+                    number = randomNumber(),
                     user = null
                 )
         )
@@ -49,6 +51,7 @@ class PersonRepositoryTest {
                     lastname = "Trennerman",
                     email = "roy@reynholm-industries.co.uk",
                     position = "",
+                    number = randomNumber(),
                     user = null
                 )
         )

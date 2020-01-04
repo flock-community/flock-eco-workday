@@ -8,6 +8,7 @@ import community.flock.eco.workday.model.Period
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.utils.convertDayOff
 import community.flock.eco.workday.utils.dayFromLocalDate
+import community.flock.eco.workday.utils.randomNumber
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -59,6 +60,7 @@ class HolidayRepositoryTest {
                 lastname = "",
                 email = "admin@reynholm-industries.co.uk",
                 position = "",
+                number = randomNumber(),
                 user = null
             ),
             Person(
@@ -66,6 +68,7 @@ class HolidayRepositoryTest {
                 lastname = "",
                 email = "admin@reynholm-industries.co.uk",
                 position = "",
+                number = randomNumber(),
                 user = null
             )
         ).apply { personRepository.saveAll(this) }

@@ -8,6 +8,7 @@ import community.flock.eco.feature.user.services.UserSecurityService
 import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.forms.PersonForm
+import community.flock.eco.workday.utils.randomNumber
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -76,7 +77,14 @@ class PersonControllerTest {
 
     @Test
     fun `should create a valid person via POST-method`() {
-        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
+        val personForm = PersonForm(
+            firstname = "Morris",
+            lastname = "Moss",
+            email = "",
+            position = "",
+            number = randomNumber(),
+            userCode = null
+        )
 
         mvc.perform(post(baseUrl)
             .with(user)
@@ -96,7 +104,14 @@ class PersonControllerTest {
     @Test
     fun `should get a person by code via GET-method`() {
         /* DRY-Block */
-        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
+        val personForm = PersonForm(
+            firstname = "Morris",
+            lastname = "Moss",
+            email = "",
+            position = "",
+            number = randomNumber(),
+            userCode = null
+        )
 
         // need this user to compare generated fields
         // create a person so one can query that person via the PersonCode
@@ -128,7 +143,14 @@ class PersonControllerTest {
     @Test
     fun `should update a valid person correctly via PUT-method`() {
         /* DRY-Block */
-        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
+        val personForm = PersonForm(
+            firstname = "Morris",
+            lastname = "Moss",
+            email = "",
+            position = "",
+            number = randomNumber(),
+            userCode = null
+        )
 
         // need this user to compare generated fields
         var person: JsonNode? = null
@@ -149,6 +171,7 @@ class PersonControllerTest {
             lastname = "Moss",
             email = "morris@reynholm-industires.co.uk",
             position = "",
+            number = randomNumber(),
             userCode = null
         )
 
@@ -172,7 +195,14 @@ class PersonControllerTest {
     @Test
     fun `should send a valid delete request to remove a person via DELETE-method`() {
         /* DRY-Block */
-        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
+        val personForm = PersonForm(
+            firstname = "Morris",
+            lastname = "Moss",
+            email = "",
+            position = "",
+            number = randomNumber(),
+            userCode = null
+        )
 
         // need this user to compare generated fields
         // create a person so one can query that person via the PersonCode
