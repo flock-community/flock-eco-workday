@@ -28,6 +28,7 @@ class PersonService(
             lastname = it.lastname,
             email = it.email,
             position = it.position,
+            number = it.number,
             user = user
         )
     }
@@ -56,6 +57,7 @@ class PersonService(
             lastname = form.lastname,
             email = form.email,
             position = form.position,
+            number = form.number,
             user = user
         ).save()
     }
