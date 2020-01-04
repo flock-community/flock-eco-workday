@@ -1,8 +1,6 @@
 package community.flock.eco.workday
 
 import community.flock.eco.cloud.stub.StubCloudConfiguration
-import community.flock.eco.feature.user.repositories.UserRepository
-import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.workday.config.WebMvcConfig
 import community.flock.eco.workday.config.WebSecurityConfig
 import org.springframework.boot.SpringApplication
@@ -20,10 +18,7 @@ import org.springframework.context.annotation.Import
         WebMvcConfig::class,
         WebSecurityConfig::class,
         StubCloudConfiguration::class)
-class Application(
-    val userRepository: UserRepository,
-    val userAuthorityService: UserAuthorityService
-) : SpringBootServletInitializer()
+class Application : SpringBootServletInitializer()
 
 fun main(args: Array<String>) {
     SpringApplication.run(Application::class.java, *args)

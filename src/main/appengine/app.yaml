@@ -1,0 +1,24 @@
+runtime: java11
+instance_class: B2
+env_variables:
+  JAVA_TOOL_OPTIONS: "-XX:MaxRAM=512m -XX:ActiveProcessorCount=2 -Xmx128m"
+  SPRING_PROFILES_ACTIVE: "cloud"
+basic_scaling:
+  max_instances: 1
+  idle_timeout: 30m
+handlers:
+  - url: /favicon.ico
+    static_files: static/favicon.ico
+    upload: static/favicon.ico
+    secure: always
+  - url: /(.*\.js)$
+    static_files: static/\1
+    upload: static/.*\.js$
+    secure: always
+  - url: /(_ah|login|logout|oauth2|api).*
+    script: auto
+    secure: always
+  - url: .*
+    static_files: static/index.html
+    upload: static/index.html
+    secure: always

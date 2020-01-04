@@ -4,13 +4,16 @@ const HtmlWebPackPlugin = require("html-webpack-plugin") // eslint-disable-line 
 const htmlPlugin = new HtmlWebPackPlugin({
   template: path.join(__dirname, "src/main/react/index.html"),
   filename: "./index.html",
+  favicon: "src/main/react/favicon.ico",
 })
 
 module.exports = {
   entry: path.join(__dirname, "src/main/react"),
 
   output: {
-    path: path.resolve(__dirname, "src/main/webapp"),
+    publicPath: "/",
+    filename: "[name].[contenthash].js",
+    path: path.resolve(__dirname, "target/classes/static"),
   },
 
   devtool: "eval-source-map",
