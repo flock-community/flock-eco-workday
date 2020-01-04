@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react"
-
+import PropTypes from "prop-types"
 import Card from "@material-ui/core/Card"
 import {CardContent, makeStyles} from "@material-ui/core"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 import {ClientClient} from "../../clients/ClientClient"
+import {isDefined} from "../../utils/validation"
 
 const useStyles = makeStyles({
   root: {
@@ -17,7 +18,8 @@ const useStyles = makeStyles({
   },
 })
 
-export function ClientList({reload, onItemClick}) {
+export function ClientList(props) {
+  const {reload, onItemClick} = props
   const classes = useStyles()
 
   const [list, setList] = useState([])
@@ -26,8 +28,8 @@ export function ClientList({reload, onItemClick}) {
     ClientClient.findAllByPage(0).then(res => setList(res))
   }, [reload])
 
-  const handleItem = it => ev => {
-    onItemClick && onItemClick(it)
+  const handleItem = it => () => {
+    if (isDefined(onItemClick)) onItemClick(it)
   }
 
   return (
@@ -43,4 +45,9 @@ export function ClientList({reload, onItemClick}) {
       ))}
     </Grid>
   )
+}
+
+ClientList.propTypes = {
+  reload: PropTypes.bool,
+  onItemClick: PropTypes.func,
 }

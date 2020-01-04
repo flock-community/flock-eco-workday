@@ -14,7 +14,7 @@ export const PersonTableHead = () => {
   return (
     <TableHead>
       <TableRow>
-        {headCells.map((cell, _) => (
+        {headCells.map(cell => (
           <TableCell
             key={cell.id}
             align={cell.algin ? "right" : "left"}

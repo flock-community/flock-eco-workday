@@ -1,12 +1,12 @@
 import React, {useState} from "react"
 import PropTypes from "prop-types"
 import {Dialog, DialogContent, Divider} from "@material-ui/core"
+import {makeStyles} from "@material-ui/styles"
+import HealingIcon from "@material-ui/icons/Healing"
 import {PeriodForm} from "../../components/PeriodForm"
 import {SickdayClient} from "./SickdayClient"
 import {TransitionSlider} from "../../components/transitions/Slide"
-import {makeStyles} from "@material-ui/styles"
 import {DialogHeader, DialogFooter} from "../../components/dialog"
-import HealingIcon from "@material-ui/icons/Healing"
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
@@ -18,8 +18,8 @@ const useStyles = makeStyles(() => ({
 export const SICKDAY_FORM_ID = "sickday-form"
 
 export function SickdayDialog(props) {
-  const [state, setState] = useState(value)
   const {value, personCode, open, onClose} = props
+  const [state, setState] = useState(value)
 
   const classes = useStyles()
 

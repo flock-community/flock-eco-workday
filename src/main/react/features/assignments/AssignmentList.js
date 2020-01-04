@@ -5,6 +5,7 @@ import {CardContent, makeStyles} from "@material-ui/core"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 import {AssignmentClient} from "../../clients/AssignmentClient"
+import {isDefined} from "../../utils/validation"
 
 const useStyles = makeStyles({
   root: {
@@ -18,7 +19,8 @@ const useStyles = makeStyles({
 })
 
 export function AssignmentList({reload, userCode, onItemClick}) {
-  const classes = useStyles()
+  // TODO: fix the use of classes and remove eslint-disable comment
+  const classes = useStyles() // eslint-disable-line no-unused-vars
 
   const [list, setList] = useState([])
 
@@ -27,7 +29,7 @@ export function AssignmentList({reload, userCode, onItemClick}) {
   }, [userCode, reload])
 
   const handleClickItem = it => () => {
-    onItemClick && onItemClick(it)
+    if (isDefined(onItemClick)) onItemClick(it)
   }
 
   return (
