@@ -64,8 +64,10 @@ export const PersonTable = () => {
     setDialog({open: true})
   }
 
-  const handleDialogClose = status => {
-    if (status) setReload(!reload)
+  const handleDialogClose = dialogSubmit => {
+    // handleDialogClose gets boolean param from personDialog if form was
+    // submitted successfully
+    if (dialogSubmit) setReload(!reload)
     setDialog({open: false})
   }
 
