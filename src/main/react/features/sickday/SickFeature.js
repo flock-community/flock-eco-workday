@@ -5,9 +5,7 @@ import Grid from "@material-ui/core/Grid"
 import {SickdayDialog} from "./SickdayDialog"
 import {SickdayList} from "./SickdayList"
 import {PersonSelector} from "../../components/selector"
-import {SickdayClient} from "./SickdayClient"
 import {ApplicationContext} from "../../application/ApplicationContext"
-import {isDefined} from "../../utils/validation"
 import {AddActionFab} from "../../components/FabButtons"
 import {PersonService} from "../person/PersonService"
 
@@ -32,7 +30,7 @@ export function SickdayFeature() {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(null)
   const [personCode, setPersonCode] = useState("")
-  const [persons, setPersons] = useState([])
+  const [persons, setPersons] = useState([]) // eslint-disable-line no-unused-vars
   const {authorities, user} = useContext(ApplicationContext)
 
   function isSuperUser() {

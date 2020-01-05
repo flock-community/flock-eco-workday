@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react"
-
+import PropTypes from "prop-types"
 import {Dialog, DialogTitle, makeStyles} from "@material-ui/core"
 import DialogContent from "@material-ui/core/DialogContent"
 import Button from "@material-ui/core/Button"
@@ -9,17 +9,22 @@ import Typography from "@material-ui/core/Typography"
 import Snackbar from "@material-ui/core/Snackbar"
 import {ClientClient} from "../../clients/ClientClient"
 import {CLIENT_FORM_ID, ClientForm} from "./ClientForm"
+import {isDefined} from "../../utils/validation"
 
 const useStyles = makeStyles({})
 
-export function ClientDialog({open, code, onClose}) {
-  const classes = useStyles()
+export function ClientDialog(props) {
+  const {open, code, onClose} = props
+  // TODO: remove styles if not used and remove eslint-disable
+  const classes = useStyles() // eslint-disable-line
 
   const [state, setState] = useState(null)
   const [message, setMessage] = useState(null)
   const [deleteOpen, setDeleteOpen] = useState(false)
 
   useEffect(() => {
+    // TODO: fix this and remove eslint-dsiable
+    // eslint-disable-next-line no-unused-expressions
     code && ClientClient.get(code).then(res => setState(res))
   }, [code])
 
@@ -35,16 +40,17 @@ export function ClientDialog({open, code, onClose}) {
     }
   }
 
-  const handleDelete = value => {
+  const handelDeleteOpen = () => setDeleteOpen(true)
+  const handelDeleteClose = () => setDeleteOpen(false)
+
+  const handleDelete = () => {
     ClientClient.delete(code)
       .then(() => {
         handelDeleteClose()
-        onClose && onClose()
+        if (isDefined(onClose)) onClose()
       })
       .catch(err => setMessage(err.message))
   }
-  const handelDeleteOpen = () => setDeleteOpen(true)
-  const handelDeleteClose = () => setDeleteOpen(false)
 
   const handelMessageClose = () => setMessage(null)
 
@@ -73,7 +79,8 @@ export function ClientDialog({open, code, onClose}) {
         onClose={handelDeleteClose}
       >
         <Typography>
-          Are you sure you would like to delete client: '{state && state.name}'
+          Are you sure you would like to delete client: &apos;{state && state.name}
+          &apos;
         </Typography>
       </ConfirmDialog>
       <Snackbar
@@ -84,4 +91,10 @@ export function ClientDialog({open, code, onClose}) {
       />
     </>
   )
+}
+
+ClientDialog.propTypes = {
+  open: PropTypes.bool,
+  code: PropTypes.string,
+  onClose: PropTypes.func,
 }

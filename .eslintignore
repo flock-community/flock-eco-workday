@@ -3,7 +3,4 @@ src/main/webapp/**/*
 src/main/resources/**/*
 target/**/*
 *.properties
-
-src/main/react/features/client/**/*
-src/main/react/features/home/**/*
-src/main/react/features/sickday/**/*
+*.min.js

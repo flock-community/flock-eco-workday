@@ -11,7 +11,8 @@ const useStyles = makeStyles({
 })
 
 export function ClientFeature() {
-  const classes = useStyles()
+  // TODO: fix eslint error by removing unused styles
+  const classes = useStyles() // eslint-disable-line
 
   const [reload, setReload] = useState(false)
 
