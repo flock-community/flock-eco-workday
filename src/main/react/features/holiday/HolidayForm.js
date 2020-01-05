@@ -31,6 +31,7 @@ export function HolidayForm(props) {
     } else {
       const now = moment()
       setState({
+        description: "",
         period: {
           dates: [now, now],
           days: [8],
