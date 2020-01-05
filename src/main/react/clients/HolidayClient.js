@@ -16,14 +16,10 @@ const internalize = it => ({
     })),
   },
 })
-function findAllByUserCode(userCode) {
-  return fetch(`/api/holidays?userCode=${userCode}`)
-    .then(res => {
-      if (res.status === 200) {
-        return res.json()
-      }
-      throw res.json()
-    })
+
+const findAllByPersonCode = personCode => {
+  return fetch(`${path}?personCode=${personCode}`)
+    .then(responseValidation)
     .then(data => data.map(internalize))
 }
 const findAll = () => {
@@ -62,7 +58,7 @@ export default {
   ...client,
   findAll,
   findByCode,
-  findAllByUserCode,
+  findAllByPersonCode,
   postHoliday,
   putHoliday,
 }
