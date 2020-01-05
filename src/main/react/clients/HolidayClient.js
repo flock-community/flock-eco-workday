@@ -26,15 +26,9 @@ function findAllByUserCode(userCode) {
     })
     .then(data => data.map(internalize))
 }
-
-function findAll() {
+const findAll = () => {
   return fetch(`/api/holidays`)
-    .then(res => {
-      if (res.status === 200) {
-        return res.json()
-      }
-      throw res.json()
-    })
+    .then(responseValidation)
     .then(data => data.map(internalize))
 }
 
