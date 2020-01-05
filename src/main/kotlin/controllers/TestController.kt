@@ -2,15 +2,15 @@ package community.flock.eco.workday.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/_ah")
-class AhController {
+@RequestMapping("/api/test")
+class TestController {
 
-    @GetMapping("/start")
-    fun start() = ResponseEntity
-        .noContent()
-        .build<Unit>()
+    @GetMapping("/host")
+    fun host(@RequestHeader host: String) = ResponseEntity
+        .ok(host)
 }

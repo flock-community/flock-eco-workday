@@ -28,12 +28,6 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>com.google.appengine</groupId>
-            <artifactId>appengine-api-1.0-sdk</artifactId>
-            <version>${google.appengine.version}</version>
-        </dependency>
-
         <!-- Flock Eco -->
         <dependency>
             <groupId>com.github.flock-community.flock-eco</groupId>
@@ -41,16 +35,17 @@
         </dependency>
         <dependency>
             <groupId>com.github.flock-community.flock-eco</groupId>
-            <artifactId>flock-eco-cloud-gcp</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.flock-community.flock-eco</groupId>
             <artifactId>flock-eco-cloud-stub</artifactId>
         </dependency>
 
+        <!-- Spring boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>
         </dependency>
 
     </dependencies>
@@ -112,6 +107,13 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework.boot.experimental</groupId>
+                        <artifactId>spring-boot-thin-layout</artifactId>
+                        <version>1.0.23.RELEASE</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <goals>
@@ -122,29 +124,6 @@
                 <configuration>
                     <mainClass>community.flock.eco.workday.ApplicationKt</mainClass>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/appengine-staging/static</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.outputDirectory}/static</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
@@ -181,66 +160,6 @@
                             <sources>
                                 <source>src/it/kotlin</source>
                             </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.1</version>
-                <executions>
-                    <execution>
-                        <id>unpack-dependencies</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeGroupIds>com.github.flock-community.flock-eco</includeGroupIds>
-                            <includes>**/*.js</includes>
-                            <outputDirectory>${project.build.directory}/react</outputDirectory>
-                            <useSubDirectoryPerArtifact>true</useSubDirectoryPerArtifact>
-                            <stripVersion>true</stripVersion>
-                            <stripClassifier>true</stripClassifier>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <configuration>
-                            <nodeVersion>${node.version}</nodeVersion>
-                            <npmVersion>${npm.version}</npmVersion>
-                            <installDirectory>${project.build.directory}</installDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>install</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>npm build</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run build</arguments>
                         </configuration>
                     </execution>
                 </executions>
@@ -295,45 +214,106 @@
                     <!-- additional 3rd party ruleset(s) can be specified here -->
                 </dependencies>
             </plugin>
-
         </plugins>
-
     </build>
 
     <profiles>
         <profile>
-            <id>mocks</id>
+            <id>cloud</id>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>${build.helper.maven.plugin.version}</version>
+                        <groupId>org.springframework.boot.experimental</groupId>
+                        <artifactId>spring-boot-thin-maven-plugin</artifactId>
+                        <version>1.0.23.RELEASE</version>
                         <executions>
                             <execution>
-                                <id>add-source</id>
-                                <phase>generate-sources</phase>
+                                <id>resolve</id>
                                 <goals>
-                                    <goal>add-source</goal>
+                                    <goal>resolve</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources-static</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <sources>
-                                        <source>${project.basedir}/src/mocks/kotlin</source>
-                                    </sources>
+                                    <outputDirectory>${project.build.directory}/appengine-staging/static</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.outputDirectory}/static</directory>
+                                        </resource>
+                                    </resources>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>add-resource</id>
-                                <phase>generate-resources</phase>
+                                <id>copy-resources-repository</id>
+                                <phase>package</phase>
                                 <goals>
-                                    <goal>add-resource</goal>
+                                    <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
+                                    <outputDirectory>${project.build.directory}/appengine-staging/repository</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>${project.basedir}/src/mocks/resources</directory>
+                                            <directory>${project.build.directory}/thin/root/repository</directory>
                                         </resource>
                                     </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>frontend</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <configuration>
+                                    <nodeVersion>${node.version}</nodeVersion>
+                                    <npmVersion>${npm.version}</npmVersion>
+                                    <installDirectory>${project.build.directory}</installDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm install</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>install</arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm build</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>run build</arguments>
                                 </configuration>
                             </execution>
                         </executions>
