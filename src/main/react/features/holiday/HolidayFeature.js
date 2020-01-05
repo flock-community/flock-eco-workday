@@ -7,7 +7,6 @@ import {HolidayList} from "./HolidayList"
 import {UserSelector} from "../../components/selector"
 import {ApplicationContext} from "../../application/ApplicationContext"
 import {AddActionFab} from "../../components/FabButtons"
-import {isDefined} from "../../utils/validation"
 
 const useStyles = makeStyles({
   root: {
@@ -23,39 +22,30 @@ export function HolidayFeature() {
 
   const [refresh, setRefresh] = useState(false)
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState(null)
-  const [userCode, setUserCode] = useState(null)
+  const [holidayCode, setHolidayCode] = useState("")
+  const [personCode, setPersonCode] = useState("")
   const {authorities, user} = useContext(ApplicationContext)
 
-  useEffect(() => {
-    if (isDefined(user)) setUserCode(user.code)
-  }, [authorities, user])
+  useEffect(() => {}, [authorities, user])
 
   function handleCompleteDialog() {
     setRefresh(!refresh)
     setOpen(false)
-    setValue(null)
+    setHolidayCode("")
   }
 
   function handleClickAdd() {
-    setValue(null)
+    setHolidayCode("")
     setOpen(true)
   }
 
-  function handleClickRow(item) {
-    setValue({
-      ...item,
-      period: {
-        ...item.period,
-        days: item.period.days.map(it => it.hours),
-      },
-    })
-
+  function handleSelectedItem(code) {
+    setHolidayCode(code)
     setOpen(true)
   }
 
   function handleUserChangeByCode(code) {
-    setUserCode(code)
+    setPersonCode(code)
   }
 
   return (
@@ -68,16 +58,16 @@ export function HolidayFeature() {
         </UserAuthorityUtil>
         <Grid item xs={12}>
           <HolidayList
-            userCode={userCode}
+            personCode={personCode}
             refresh={refresh}
-            onClickRow={handleClickRow}
+            onSelectItem={handleSelectedItem}
           />
         </Grid>
       </Grid>
       <HolidayDialog
         open={open}
-        userCode={userCode}
-        value={value}
+        personCode={personCode}
+        hoidayCode={holidayCode}
         onComplete={handleCompleteDialog}
       />
 
