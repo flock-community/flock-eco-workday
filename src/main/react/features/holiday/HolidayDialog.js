@@ -10,7 +10,7 @@ import {isDefined} from "../../utils/validation"
 import {TransitionSlider} from "../../components/transitions/Slide"
 
 export function HolidayDialog(props) {
-  const {value, userCode, open, onComplete} = props
+  const {holidayCode, personCode, open, onComplete} = props
 
   const handleSubmit = it => {
     if (it.id) {
@@ -30,7 +30,7 @@ export function HolidayDialog(props) {
         from: it.period.dates[0].format(moment.HTML5_FMT.DATE),
         to: it.period.dates[1].format(moment.HTML5_FMT.DATE),
         days: it.period.days,
-        userCode,
+        personCode,
       }).then(res => {
         if (isDefined(onComplete)) onComplete(res)
       })
@@ -56,7 +56,7 @@ export function HolidayDialog(props) {
         onClose={handleClose}
       />
       <DialogContent>
-        <HolidayForm code={value && value.code} onSubmit={handleSubmit} />
+        <HolidayForm code={holidayCode} onSubmit={handleSubmit} />
       </DialogContent>
       <DialogFooter formId={HOLIDAY_FORM_ID} onClose={handleClose} />
     </Dialog>
@@ -64,8 +64,8 @@ export function HolidayDialog(props) {
 }
 
 HolidayDialog.propTypes = {
-  value: PropTypes.string,
-  userCode: PropTypes.string,
+  holidayCode: PropTypes.string,
+  personCode: PropTypes.string,
   open: PropTypes.bool,
   onComplete: PropTypes.func,
 }
