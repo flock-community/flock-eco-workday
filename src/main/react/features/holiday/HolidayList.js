@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
 import Grid from "@material-ui/core/Grid"
-import HolidayClient from "../../clients/HolidayClient"
+import {HolidayClient} from "../../clients/HolidayClient"
 import {HolidayListItem} from "./HolidayListItem"
 
 export function HolidayList(props) {

@@ -54,7 +54,7 @@ function putHoliday(id, holiday) {
   return fetch(`/api/holidays/${id}`, opts).then(res => res.json())
 }
 
-export default {
+export const HolidayClient = {
   ...client,
   findAll,
   findByCode,
