@@ -5,6 +5,7 @@ import CardContent from "@material-ui/core/CardContent"
 import Grid from "@material-ui/core/Grid"
 import HolidayClient from "../../clients/HolidayClient"
 import {isDefined} from "../../utils/validation"
+import {HolidayListItem} from "./HolidayListItem"
 
 const useStyles = makeStyles(theme => ({
   content: {
@@ -38,32 +39,15 @@ export function HolidayList(props) {
 
   function renderItem(item, key) {
     return (
-        <Card onClick={handleClickRow(item)}>
-          <CardContent className={classes.content}>
-            <Typography variant="h6">
-              {item.description ? item.description : "empty"}
-            </Typography>
-            <Typography>
-              Period: {item.period.from.format("DD-MM-YYYY")} -{" "}
-              {item.period.to.format("DD-MM-YYYY")}
-            </Typography>
-            <Typography>
-              Aantal dagen: {item.period.days.filter(day => day.hours > 0).length}
-            </Typography>
-            <Typography>
-              Aantal uren: {item.period.days.reduce((acc, cur) => cur.hours + acc, 0)}
-            </Typography>
-            <Typography className={classes.status}>{item.status}</Typography>
-          </CardContent>
-        </Card>
       <Grid item xs={12} key={`holiday-list-item-${key}`}>
+        <HolidayListItem item={item} onEdit={onSelectItem} onDelete={handleDelete} />
       </Grid>
     )
   }
 
   return (
     <Grid container spacing={1}>
-      {list && list.map(renderItem)}
+      {list.map(renderItem)}
     </Grid>
   )
 }
