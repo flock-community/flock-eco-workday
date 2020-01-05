@@ -13,5 +13,4 @@ class AhController {
     fun start() = ResponseEntity
         .noContent()
         .build<Unit>()
-
 }
