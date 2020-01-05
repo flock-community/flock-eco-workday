@@ -77,17 +77,6 @@ function deleteHoliday(id) {
   }
   return fetch(`/api/holidays/${id}`, opts).then(res => res.json())
 }
-function getSummary(filter) {
-  const typeFilter = filter.length > 0 ? `?type=${filter}` : filter
-
-  return fetch(`/api/holidays/summary${typeFilter}`).then(res => {
-    if (res.status === 200) {
-      return res.json()
-    }
-    throw res.json()
-  })
-}
-
 export default {
   ...client,
   findAll,
@@ -96,5 +85,4 @@ export default {
   postHoliday,
   putHoliday,
   deleteHoliday,
-  getSummary,
 }
