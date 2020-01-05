@@ -32,6 +32,8 @@ export function HolidayList(props) {
     }
   }, [personCode, refresh])
 
+  function handleDelete() {
+    return undefined
   }
 
   function renderItem(item, key) {
