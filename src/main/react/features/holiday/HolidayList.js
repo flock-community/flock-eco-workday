@@ -40,9 +40,8 @@ export function HolidayList(props) {
     }
   }
 
-  function renderItem(item) {
+  function renderItem(item, key) {
     return (
-      <Grid item xs={12} key={`holiday-list-item-${item.id}`}>
         <Card onClick={handleClickRow(item)}>
           <CardContent className={classes.content}>
             <Typography variant="h6">
@@ -61,6 +60,7 @@ export function HolidayList(props) {
             <Typography className={classes.status}>{item.status}</Typography>
           </CardContent>
         </Card>
+      <Grid item xs={12} key={`holiday-list-item-${key}`}>
       </Grid>
     )
   }
