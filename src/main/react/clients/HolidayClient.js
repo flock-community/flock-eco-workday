@@ -1,4 +1,8 @@
 import moment from "moment"
+import {ResourceClient} from "../utils/ResourceClient"
+
+const path = "/api/holidays"
+const client = ResourceClient(path)
 
 const internalize = it => ({
   ...it,
@@ -85,6 +89,7 @@ function getSummary(filter) {
 }
 
 export default {
+  ...client,
   findAll,
   findByCode,
   findAllByUserCode,
