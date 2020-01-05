@@ -9,12 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/_ah")
-class AhController{
+@RequestMapping("/api/test")
+class TestController{
 
-    @GetMapping("/start")
-    fun start() = ResponseEntity
-        .noContent()
-        .build<Unit>()
-
+    @GetMapping("/host")
+    fun host(@RequestHeader host:String ) = ResponseEntity
+        .ok(host)
 }
