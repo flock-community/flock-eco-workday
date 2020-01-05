@@ -19,3 +19,4 @@ deploy:
   config: target/appengine-staging/app.yaml
   version: $TRAVIS_BUILD_NUMBER
   project: flock-community
+  skip_cleanup: true
