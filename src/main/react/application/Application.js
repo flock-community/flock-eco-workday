@@ -16,6 +16,7 @@ import {PersonFeature} from "../features/person/PersonFeature"
 // TODO: replace by UserStatusClient from @flock-eco/feature-user
 import {UserStatusClient} from "../clients/UserStatusClient"
 import {SickdayFeature} from "../features/sickday/SickFeature"
+import {useUser} from "../hooks/UserHook"
 
 const useStyles = makeStyles(() => ({
   spinner: {
@@ -28,6 +29,9 @@ const useStyles = makeStyles(() => ({
 
 export const Application = () => {
   const classes = useStyles()
+
+  // eslint-disable-next-line no-unused-vars
+  const [_, setUser] = useUser()
 
   const [state, setState] = useState({
     openDrawer: false,
@@ -48,6 +52,7 @@ export const Application = () => {
               loading: false,
               user,
             }))
+            setUser(user)
             UserAuthorityUtil.setAuthorities(status.authorities)
           })
           .catch(() => {
