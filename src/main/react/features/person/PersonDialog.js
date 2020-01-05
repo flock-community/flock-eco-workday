@@ -28,7 +28,9 @@ export const PersonDialog = props => {
 
   const successfulSubmit = () => {
     setPerson(person) // update Person
-    onClose()
+    // set dialogSubmit param to true @PersonTable onClose handler
+    // so the PersonTable reloads
+    onClose(true)
   }
 
   const handleSubmit = values => {
