@@ -12,14 +12,13 @@
     <groupId>flock.community.eco.workday</groupId>
     <artifactId>flock-eco-workday</artifactId>
     <version>develop-SNAPSHOT</version>
-    <packaging>war</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <google.datastore.version>1.28.0</google.datastore.version>
-        <google.appengine.version>1.9.64</google.appengine.version>
+        <google.appengine.version>1.9.77</google.appengine.version>
         <google.store.version>1.28.0</google.store.version>
         <!-- installed node/npm version: lts/carbon -->
         <node.version>v8.16.2</node.version>
@@ -113,16 +112,49 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.1.5.RELEASE</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <mainClass>community.flock.eco.workday.ApplicationKt</mainClass>
                 </configuration>
             </plugin>
 
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/appengine-staging/static</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.outputDirectory}/static</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>appengine-maven-plugin</artifactId>
-                <version>1.3.1</version>
+                <version>2.2.0</version>
+                <configuration>
+                    <version>1</version>
+                    <projectId>flock-community</projectId>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -222,16 +254,16 @@
                         <id>ktlint</id>
                         <phase>verify</phase>
                         <configuration>
-                        <target name="ktlint">
-                            <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
-                                classname="com.pinterest.ktlint.Main" classpathref="maven.plugin.classpath">
-                                <arg value="--reporter=plain?group_by_file"/>
-                                <arg value="--reporter=checkstyle,output=${project.basedir}/ktlint.xml"/>
-                                <arg value="--color"/>
-                                <arg value="src/**/*.kt"/>
-                                <!-- see https://github.com/pinterest/ktlint#usage for more -->
-                            </java>
-                        </target>
+                            <target name="ktlint">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                      classname="com.pinterest.ktlint.Main" classpathref="maven.plugin.classpath">
+                                    <arg value="--reporter=plain?group_by_file"/>
+                                    <arg value="--reporter=checkstyle,output=${project.basedir}/ktlint.xml"/>
+                                    <arg value="--color"/>
+                                    <arg value="src/**/*.kt"/>
+                                    <!-- see https://github.com/pinterest/ktlint#usage for more -->
+                                </java>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -240,14 +272,14 @@
                     <execution>
                         <id>ktlint-format</id>
                         <configuration>
-                        <target name="ktlint">
-                            <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
-                                classname="com.pinterest.ktlint.Main" classpathref="maven.plugin.classpath">
-                                <arg value="-F"/>
-                                <arg value="--color"/>
-                                <arg value="src/**/*.kt"/>
-                            </java>
-                        </target>
+                            <target name="ktlint">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                      classname="com.pinterest.ktlint.Main" classpathref="maven.plugin.classpath">
+                                    <arg value="-F"/>
+                                    <arg value="--color"/>
+                                    <arg value="src/**/*.kt"/>
+                                </java>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -269,25 +301,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>cloud</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.slf4j</groupId>
-                            <artifactId>jul-to-slf4j</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-starter-tomcat</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-            </dependencies>
-        </profile>
         <profile>
             <id>mocks</id>
             <build>

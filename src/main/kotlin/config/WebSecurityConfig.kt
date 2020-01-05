@@ -6,6 +6,7 @@ import community.flock.eco.feature.user.services.UserSecurityService
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.filters.GoogleTokenFilter
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -27,6 +28,9 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     @Autowired
     lateinit var userAccountService: UserAccountService
 
+    @Value("\${community.flock.eco.workday.login:TEST}")
+    lateinit var loginType: String
+
     override fun configure(http: HttpSecurity) {
 
         userAuthorityService.addAuthority(HolidayAuthority::class.java)
@@ -36,19 +40,25 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .frameOptions()
             .sameOrigin()
         http
-                .csrf().disable()
+            .csrf().disable()
         http
-                .authorizeRequests()
-                .antMatchers("/_ah/**").permitAll()
-                .antMatchers("/login/**").permitAll()
-                .antMatchers("/h2/**").permitAll()
-                .anyRequest().authenticated()
+            .authorizeRequests()
+            .antMatchers("/favicon.ico").permitAll()
+            .antMatchers("/").permitAll()
+            .antMatchers("/*.js").permitAll()
+            .antMatchers("/_ah/**").permitAll()
+            .antMatchers("/login/**").permitAll()
+            .antMatchers("/h2/**").permitAll()
+            .anyRequest().authenticated()
         http
-                .cors()
+            .cors()
         http
-                .addFilterBefore(GoogleTokenFilter(userAccountService), UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(GoogleTokenFilter(userAccountService), UsernamePasswordAuthenticationFilter::class.java)
 
-        // userSecurityService.googleLogin(http)
-        userSecurityService.databaseLogin(http)
+        when (loginType.toUpperCase()) {
+            "GOOGLE" -> userSecurityService.googleLogin(http)
+            "DATABASE" -> userSecurityService.databaseLogin(http)
+            else -> userSecurityService.testLogin(http)
+        }
     }
 }
