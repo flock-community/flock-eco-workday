@@ -12,7 +12,7 @@ before_install:
 script:
   - mvn surefire:test
   - mvn spring-boot:start -Pdevelop -Dspring.profiles.active=local
-  - mvn appengine:stage -Pcloud
+  - mvn package appengine:stage -Pcloud -Pfrontend -DskipTests
 deploy:
   provider: gae
   config: target/appengine-staging/app.yaml
