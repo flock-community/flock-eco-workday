@@ -19,16 +19,16 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export function HolidayList(props) {
-  const {userCode, refresh, onClickRow} = props
   const classes = useStyles()
 
+  const {personCode, refresh, onSelectItem} = props
   const [list, setList] = useState([])
 
   useEffect(() => {
-    if (userCode) {
       HolidayClient.findAllByUserCode(userCode).then(res => {
         setList(res)
       })
+    if (personCode) {
     } else {
       HolidayClient.findAll().then(res => setList(res))
     }
@@ -73,7 +73,7 @@ export function HolidayList(props) {
 }
 
 HolidayList.propTypes = {
-  userCode: PropTypes.string,
+  personCode: PropTypes.string,
   refresh: PropTypes.bool,
-  onClickRow: PropTypes.func,
+  onSelectItem: PropTypes.func,
 }
