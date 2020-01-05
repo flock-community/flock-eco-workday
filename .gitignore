@@ -1,5 +1,5 @@
 # *-- Custom Ignores --*
-# kotlin linter report file
+service-account.json
 ktlint.xml
 .m2/
 
