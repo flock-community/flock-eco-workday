@@ -9,10 +9,11 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_1f233ce34b32_key -iv $encrypted_1f233ce34b32_iv
     -in service-account.json.enc -out service-account.json -d
   - npm config set cache "$HOME/.npm-cache"
+install: mvn compile
 script:
   - mvn surefire:test
   - mvn spring-boot:start -Pdevelop -Dspring.profiles.active=local
-  - mvn package appengine:stage -Pcloud -Pfrontend -DskipTests
+  - mvn package appengine:stage -Pcloud -DskipTests
 deploy:
   provider: gae
   config: target/appengine-staging/app.yaml
