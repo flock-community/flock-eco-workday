@@ -20,7 +20,7 @@ data class Holiday(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
 
-    val description: String?,
+    val description: String,
 
     @Enumerated(EnumType.STRING)
     val status: HolidayStatus,

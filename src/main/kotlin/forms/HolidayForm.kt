@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 data class HolidayForm(
 
-    val description: String?,
+    val description: String,
     val status: HolidayStatus? = null,
 
     @JsonDeserialize(using = LocalDateDeserializer::class)
