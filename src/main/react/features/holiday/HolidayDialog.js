@@ -1,16 +1,13 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@material-ui/core"
+import {Dialog, DialogContent} from "@material-ui/core"
 import moment, {HTML5_FMT} from "moment"
+import HolidayIcon from "@material-ui/icons/WbSunny"
+import {DialogHeader, DialogFooter} from "../../components/dialog"
 import HolidayClient from "../../clients/HolidayClient"
 import {HOLIDAY_FORM_ID, HolidayForm} from "./HolidayForm"
 import {isDefined} from "../../utils/validation"
+import {TransitionSlider} from "../../components/transitions/Slide"
 
 export function HolidayDialog(props) {
   const {value, userCode, open, onComplete} = props
@@ -44,32 +41,24 @@ export function HolidayDialog(props) {
     if (isDefined(onComplete)) onComplete()
   }
 
-  function handleDelete() {
-    HolidayClient.deleteHoliday(value.code).then(() => {
-      if (isDefined(onComplete)) onComplete()
-    })
-  }
-
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Holiday form</DialogTitle>
+    <Dialog
+      fullScreen
+      open={open}
+      onClose={handleClose}
+      TransitionComponent={TransitionSlider}
+      TransitionProps={{direction: "right"}}
+    >
+      <DialogHeader
+        icon={<HolidayIcon />}
+        headline="Holidays"
+        subheadline="Have the best time of your life, beside working for flock"
+        onClose={handleClose}
+      />
       <DialogContent>
         <HolidayForm code={value && value.code} onSubmit={handleSubmit} />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Close</Button>
-        <Button onClick={handleDelete}>Delete</Button>
-        <DialogActions>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            form={HOLIDAY_FORM_ID}
-          >
-            Save
-          </Button>
-        </DialogActions>{" "}
-      </DialogActions>
+      <DialogFooter formId={HOLIDAY_FORM_ID} onClose={handleClose} />
     </Dialog>
   )
 }
