@@ -71,12 +71,6 @@ function putHoliday(id, holiday) {
   return fetch(`/api/holidays/${id}`, opts).then(res => res.json())
 }
 
-function deleteHoliday(id) {
-  const opts = {
-    method: "DELETE",
-  }
-  return fetch(`/api/holidays/${id}`, opts).then(res => res.json())
-}
 export default {
   ...client,
   findAll,
@@ -84,5 +78,4 @@ export default {
   findAllByUserCode,
   postHoliday,
   putHoliday,
-  deleteHoliday,
 }
