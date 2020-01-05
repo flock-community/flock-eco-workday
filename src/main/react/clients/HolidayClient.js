@@ -1,5 +1,5 @@
 import moment from "moment"
-import {ResourceClient} from "../utils/ResourceClient"
+import {responseValidation, ResourceClient} from "../utils/ResourceClient"
 
 const path = "/api/holidays"
 const client = ResourceClient(path)
@@ -27,17 +27,6 @@ function findAllByUserCode(userCode) {
     .then(data => data.map(internalize))
 }
 
-function findByCode(code) {
-  return fetch(`/api/holidays/${code}`)
-    .then(res => {
-      if (res.status === 200) {
-        return res.json()
-      }
-      throw res.json()
-    })
-    .then(internalize)
-}
-
 function findAll() {
   return fetch(`/api/holidays`)
     .then(res => {
@@ -47,6 +36,10 @@ function findAll() {
       throw res.json()
     })
     .then(data => data.map(internalize))
+}
+
+const findByCode = holidayCode => {
+  fetch(`${path}/${holidayCode}`).then(responseValidation)
 }
 
 function postHoliday(holiday) {
