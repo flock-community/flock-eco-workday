@@ -25,14 +25,12 @@ export function HolidayList(props) {
   const [list, setList] = useState([])
 
   useEffect(() => {
-      HolidayClient.findAllByUserCode(userCode).then(res => {
-        setList(res)
-      })
     if (personCode) {
+      HolidayClient.findAllByPersonCode(personCode).then(res => setList(res))
     } else {
       HolidayClient.findAll().then(res => setList(res))
     }
-  }, [userCode, refresh])
+  }, [personCode, refresh])
 
   function handleClickRow(item) {
     return () => {
