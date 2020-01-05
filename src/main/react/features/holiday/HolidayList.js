@@ -32,10 +32,6 @@ export function HolidayList(props) {
     }
   }, [personCode, refresh])
 
-  function handleClickRow(item) {
-    return () => {
-      if (isDefined(onClickRow)) onClickRow(item)
-    }
   }
 
   function renderItem(item, key) {
