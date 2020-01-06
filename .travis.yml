@@ -7,10 +7,10 @@ cache:
   - "$HOME/.npm-cache"
 before_install:
 - openssl aes-256-cbc -K $encrypted_1f233ce34b32_key -iv $encrypted_1f233ce34b32_iv
-  -in application-cloud.properties.enc -out src/main/resources/application-cloud.properties
+  -in src/main/resources/application-cloud.properties.enc -out src/main/resources/application-cloud.properties
   -d
 - openssl aes-256-cbc -K $encrypted_1f233ce34b32_key -iv $encrypted_1f233ce34b32_iv
-  -in src/main/resources/service-account.json.enc -out src/main/resources/service-account.json -d
+  -in service-account.json.enc -out service-account.json -d
 - npm config set cache "$HOME/.npm-cache"
 install: mvn compile
 script:
