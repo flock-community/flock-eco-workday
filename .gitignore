@@ -1,5 +1,8 @@
-# *-- Custom Ignores --*
+# secrets
 service-account.json
+secrets.tar
+
+# *-- Custom Ignores --*
 ktlint.xml
 .m2/
 
