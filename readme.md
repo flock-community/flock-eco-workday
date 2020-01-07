@@ -31,3 +31,12 @@ $ mvn antrun:run@ktlint-format
 # fix code styles for js files with eslint
 $ npm run lint
 ```
+
+## Generate secrets
+
+Generate secrets to deploy via travis-ci
+
+```
+tar cvf secrets.tar ./service-account.json src/main/resources/application-cloud.properties
+travis encrypt-file secrets.tar --add
+```
