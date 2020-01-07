@@ -1,19 +1,20 @@
 language: java
 jdk:
-  - openjdk8
+- openjdk8
 cache:
   directories:
-    - "$HOME/.m2/repository"
-    - "$HOME/.npm-cache"
+  - "$HOME/.m2/repository"
+  - "$HOME/.npm-cache"
 before_install:
-  - openssl aes-256-cbc -K $encrypted_1f233ce34b32_key -iv $encrypted_1f233ce34b32_iv -in secrets.tar.enc -out secrets.tar -d
-  - tar xvf secrets.tar
-  - npm config set cache "$HOME/.npm-cache"
+- openssl aes-256-cbc -K $encrypted_1f233ce34b32_key -iv $encrypted_1f233ce34b32_iv
+  -in secrets.tar.enc -out secrets.tar -d
+- tar xvf secrets.tar
+- npm config set cache "$HOME/.npm-cache"
 install: mvn compile
 script:
-  - mvn surefire:test
-  - mvn spring-boot:start -Pdevelop -Dspring.profiles.active=local
-  - mvn package appengine:stage -Pcloud -DskipTests
+- mvn surefire:test
+- mvn spring-boot:start -Pdevelop -Dspring.profiles.active=local
+- mvn package appengine:stage -Pcloud -DskipTests
 deploy:
   provider: gae
   config: target/appengine-staging/app.yaml
