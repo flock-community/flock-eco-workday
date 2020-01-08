@@ -30,7 +30,7 @@ export function UserSelector(props) {
   function renderMenuItem(user, key) {
     return (
       <MenuItem key={`user-selector-menu-item-${key}`} value={user.code}>
-        {user.name}
+        {user.name} &lt;{user.email}&gt;
       </MenuItem>
     )
   }

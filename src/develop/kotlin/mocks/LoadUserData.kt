@@ -15,9 +15,15 @@ class LoadUserData(
 ) {
     val data: MutableSet<User> = mutableSetOf()
 
+    val workerRoles = setOf(
+        "HolidayAuthority.READ",
+        "HolidayAuthority.WRITE",
+        "SickdayAuthority.READ",
+        "SickdayAuthority.WRITE")
+
     private val authorities = userAuthorityService.allAuthorities()
-            .map { it.toName() }
-            .toSet()
+        .map { it.toName() }
+        .toSet()
 
     init {
         create("Tommy")
@@ -28,12 +34,17 @@ class LoadUserData(
     }
 
     private final fun create(name: String) = UserAccountPasswordForm(
-            name = name,
-            email = "${name.toLowerCase()}@sesam.straat",
-            password = name.toLowerCase(),
-            authorities = authorities).save()
+        name = name,
+        email = "${name.toLowerCase()}@sesam.straat",
+        password = name.toLowerCase(),
+        authorities = if (name == "Ernie") {
+            authorities
+                .filter { role -> workerRoles.contains(role)}.toSet()
+        } else {
+            authorities
+        }).save()
 
     private fun UserAccountPasswordForm.save(): User = userAccountService.createUserAccountPassword(this)
-            .let { it.user }
-            .also { data.add(it) }
+        .let { it.user }
+        .also { data.add(it) }
 }

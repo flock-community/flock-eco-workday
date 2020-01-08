@@ -3,7 +3,9 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint --fix .",
-    "start": "webpack-dev-server --mode development --host 0.0.0.0",
+    "start": "npm run start:local",
+    "start:local": "webpack-dev-server --mode development --env.proxy local",
+    "start:remote": "webpack-dev-server --mode development --env.proxy remote",
     "build": "webpack --mode production ./src/main/react",
     "storybook": "start-storybook",
     "test": "jest",
@@ -37,6 +39,7 @@
     "@flock/graphql-to-rest": "^0.1.0",
     "@testing-library/react": "^9.3.2",
     "@types/jest": "^24.0.23",
+    "@storybook/react": "^5.2.8",
     "babel-jest": "^24.9.0",
     "eslint": "6.6.0",
     "eslint-config-airbnb-base": "14.0.0",
