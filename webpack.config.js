@@ -7,7 +7,16 @@ const htmlPlugin = new HtmlWebPackPlugin({
   favicon: "src/main/react/favicon.ico",
 })
 
-module.exports = {
+const proxyTarget = env => ({
+  target:
+    env && env.proxy === "remote"
+      ? "https://workday.flock.community"
+      : "http://localhost:8080",
+  changeOrigin: true,
+  autoRewrite: true,
+})
+
+module.exports = env => ({
   entry: path.join(__dirname, "src/main/react"),
 
   output: {
@@ -41,11 +50,11 @@ module.exports = {
   devServer: {
     port: 3000,
     proxy: {
-      "/api/**": "http://localhost:8080",
-      "/oauth2/**": "http://localhost:8080",
-      "/login/**": "http://localhost:8080",
-      "/login": "http://localhost:8080",
-      "/logout": "http://localhost:8080",
+      "/api/**": proxyTarget(env),
+      "/oauth2/**": proxyTarget(env),
+      "/login/**": proxyTarget(env),
+      "/login": proxyTarget(env),
+      "/logout": proxyTarget(env),
     },
   },
-}
+})
