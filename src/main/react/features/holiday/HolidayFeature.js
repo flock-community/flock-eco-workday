@@ -70,7 +70,7 @@ export function HolidayFeature() {
       <HolidayDialog
         open={open}
         personCode={personCode}
-        hoidayCode={holidayCode}
+        holidayCode={holidayCode}
         onComplete={handleCompleteDialog}
       />
 
