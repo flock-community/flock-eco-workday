@@ -1,35 +1,24 @@
-import moment from "moment"
 import {responseValidation, ResourceClient} from "../utils/ResourceClient"
+import {toHolidayForm} from "../features/holiday/schema"
 
 const path = "/api/holidays"
 const client = ResourceClient(path)
 
-const internalize = it => ({
-  ...it,
-  period: {
-    ...it.period,
-    from: moment(it.period.from, "YYYY-MM-DD"),
-    to: moment(it.period.to, "YYYY-MM-DD"),
-    days: it.period.days.map(day => ({
-      ...day,
-      date: moment(day.date, "YYYY-MM-DD"),
-    })),
-  },
-})
-
 const findAllByPersonCode = personCode => {
   return fetch(`${path}?personCode=${personCode}`)
     .then(responseValidation)
-    .then(data => data.map(internalize))
+    .then(data => data.map(toHolidayForm))
 }
 const findAll = () => {
   return fetch(`/api/holidays`)
     .then(responseValidation)
-    .then(data => data.map(internalize))
+    .then(data => data.map(toHolidayForm))
 }
 
 const findByCode = holidayCode => {
-  fetch(`${path}/${holidayCode}`).then(responseValidation)
+  return fetch(`${path}/${holidayCode}`)
+    .then(responseValidation)
+    .then(toHolidayForm)
 }
 
 function postHoliday(holiday) {
