@@ -62,6 +62,15 @@ export const PersonForm = props => {
               component={FormikTextField}
             />
           </FormControl>
+          <FormControl className={classes.h70} fullWidth>
+            <Field
+              id="number"
+              type="number"
+              label="number"
+              name="number"
+              component={FormikTextField}
+            />
+          </FormControl>
           <FormControl className={classes.h79} fullWidth>
             <UserSelectorFormInput />
           </FormControl>

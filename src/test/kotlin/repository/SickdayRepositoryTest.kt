@@ -6,6 +6,7 @@ import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.Sickday
 import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.utils.convertDayOff
+import community.flock.eco.workday.utils.randomNumber
 import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -41,6 +42,7 @@ class SickdayRepositoryTest {
             lastname = "Reynholm",
             email = "denholm@reynholm-industries.co.uk",
             position = "Chief Executive Officer",
+            number = randomNumber(),
             user = null
         ))
         entity.flush()

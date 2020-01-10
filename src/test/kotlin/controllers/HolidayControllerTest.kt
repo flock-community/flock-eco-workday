@@ -11,6 +11,7 @@ import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.model.HolidayStatus
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.utils.dayFromLocalDate
+import community.flock.eco.workday.utils.randomNumber
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -88,6 +89,7 @@ class HolidayControllerTest {
             lastname = "Barber",
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
+            number = randomNumber(),
             userCode = null
         ).run { personService.create(this)!! }
 
@@ -120,6 +122,7 @@ class HolidayControllerTest {
             lastname = "Barber",
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
+            number = randomNumber(),
             userCode = null
         ).run { personService.create(this)!! }
         /* DRY-Block */
@@ -145,6 +148,7 @@ class HolidayControllerTest {
             lastname = "Barber",
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
+            number = randomNumber(),
             userCode = null
         ).run { personService.create(this)!! }
 
@@ -178,6 +182,7 @@ class HolidayControllerTest {
             lastname = "Barber",
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
+            number = randomNumber(),
             userCode = null
         ).run { personService.create(this)!! }
 
