@@ -29,7 +29,9 @@ $ mvn antrun:run@ktlint
 $ mvn antrun:run@ktlint-format
 
 # fix code styles for js files with eslint
-$ npm run lint
+$> npm run lint         # evaluate codebase against eslint
+$> npm run lint:fix     # run eslint to fix linting errors inside the codebase
+
 ```
 
 ## Generate secrets
