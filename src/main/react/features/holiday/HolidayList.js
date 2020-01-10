@@ -7,6 +7,7 @@ import {HolidayListItem} from "./HolidayListItem"
 export function HolidayList(props) {
   const {personCode, refresh, onSelectItem} = props
   const [list, setList] = useState([])
+  const [update, setUpdate] = useState(refresh)
 
   useEffect(() => {
     if (personCode) {
@@ -14,10 +15,13 @@ export function HolidayList(props) {
     } else {
       HolidayClient.findAll().then(res => setList(res))
     }
-  }, [personCode, refresh])
+  }, [personCode, refresh, update])
 
-  function handleDelete() {
-    return undefined
+  function handleDelete(holidayCode) {
+    HolidayClient.delete(holidayCode)
+      .then(() => {})
+      .catch(err => console.log(err))
+    setUpdate(!update)
   }
 
   function renderItem(item, key) {
