@@ -12,6 +12,9 @@ before_install:
 - npm config set cache "$HOME/.npm-cache"
 install: mvn compile
 script:
+- mvn antrun:run@ktlint-format
+- npm run lint
+- npm test
 - mvn surefire:test
 - mvn spring-boot:start -Pdevelop -Dspring.profiles.active=local
 - mvn package appengine:stage -Pcloud -DskipTests
