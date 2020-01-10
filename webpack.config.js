@@ -7,6 +7,7 @@ const htmlPlugin = new HtmlWebPackPlugin({
   favicon: "src/main/react/favicon.ico",
 })
 
+// TODO: remove redundant babel-loader options and replace with .babelrc (merge webpack with @flock-eco webpack)
 const proxyTarget = env => ({
   target:
     env && env.proxy === "remote"
