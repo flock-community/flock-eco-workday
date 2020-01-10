@@ -1,11 +1,10 @@
-import React, {useContext, useEffect, useState} from "react"
+import React, {useState} from "react"
 import {makeStyles} from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
 import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {HolidayDialog} from "./HolidayDialog"
 import {HolidayList} from "./HolidayList"
 import {PersonSelector} from "../../components/selector"
-import {ApplicationContext} from "../../application/ApplicationContext"
 import {AddActionFab} from "../../components/FabButtons"
 
 const useStyles = makeStyles({
@@ -24,9 +23,6 @@ export function HolidayFeature() {
   const [open, setOpen] = useState(false)
   const [holidayCode, setHolidayCode] = useState("")
   const [personCode, setPersonCode] = useState("")
-  const {authorities, user} = useContext(ApplicationContext)
-
-  useEffect(() => {}, [authorities, user])
 
   function handleCompleteDialog() {
     setRefresh(!refresh)
