@@ -6,9 +6,9 @@ cache:
   - "$HOME/.m2/repository"
   - "$HOME/.npm-cache"
 before_install:
-- openssl aes-256-cbc -K $encrypted_1f233ce34b32_key -iv $encrypted_1f233ce34b32_iv
-  -in secrets.tar.enc -out secrets.tar -d
-- tar xvf secrets.tar
+# - openssl aes-256-cbc -K $encrypted_1f233ce34b32_key -iv $encrypted_1f233ce34b32_iv
+#  -in secrets.tar.enc -out secrets.tar -d
+# - tar xvf secrets.tar
 - npm config set cache "$HOME/.npm-cache"
 install: mvn compile
 script:
