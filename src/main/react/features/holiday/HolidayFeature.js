@@ -1,13 +1,11 @@
-import React, {useContext, useEffect, useState} from "react"
+import React, {useState} from "react"
 import {makeStyles} from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
 import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {HolidayDialog} from "./HolidayDialog"
 import {HolidayList} from "./HolidayList"
-import {UserSelector} from "../../components/selector"
-import {ApplicationContext} from "../../application/ApplicationContext"
+import {PersonSelector} from "../../components/selector"
 import {AddActionFab} from "../../components/FabButtons"
-import {isDefined} from "../../utils/validation"
 
 const useStyles = makeStyles({
   root: {
@@ -23,39 +21,27 @@ export function HolidayFeature() {
 
   const [refresh, setRefresh] = useState(false)
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState(null)
-  const [userCode, setUserCode] = useState(null)
-  const {authorities, user} = useContext(ApplicationContext)
-
-  useEffect(() => {
-    if (isDefined(user)) setUserCode(user.code)
-  }, [authorities, user])
+  const [holidayCode, setHolidayCode] = useState("")
+  const [personCode, setPersonCode] = useState("")
 
   function handleCompleteDialog() {
     setRefresh(!refresh)
     setOpen(false)
-    setValue(null)
+    setHolidayCode("")
   }
 
   function handleClickAdd() {
-    setValue(null)
+    setHolidayCode("")
     setOpen(true)
   }
 
-  function handleClickRow(item) {
-    setValue({
-      ...item,
-      period: {
-        ...item.period,
-        days: item.period.days.map(it => it.hours),
-      },
-    })
-
+  function handleSelectedItem(code) {
+    setHolidayCode(code)
     setOpen(true)
   }
 
   function handleUserChangeByCode(code) {
-    setUserCode(code)
+    setPersonCode(code)
   }
 
   return (
@@ -63,21 +49,24 @@ export function HolidayFeature() {
       <Grid container spacing={1}>
         <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
           <Grid item xs={12}>
-            <UserSelector selectedItem={user} onChange={handleUserChangeByCode} />
+            <PersonSelector
+              selectedItem={personCode}
+              onChange={handleUserChangeByCode}
+            />
           </Grid>
         </UserAuthorityUtil>
         <Grid item xs={12}>
           <HolidayList
-            userCode={userCode}
+            personCode={personCode}
             refresh={refresh}
-            onClickRow={handleClickRow}
+            onSelectItem={handleSelectedItem}
           />
         </Grid>
       </Grid>
       <HolidayDialog
         open={open}
-        userCode={userCode}
-        value={value}
+        personCode={personCode}
+        holidayCode={holidayCode}
         onComplete={handleCompleteDialog}
       />
 

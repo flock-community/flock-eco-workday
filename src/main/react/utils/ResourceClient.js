@@ -1,4 +1,4 @@
-const internalize = res => {
+export const responseValidation = res => {
   if (res.ok) {
     if (res.status === 204) {
       return null
@@ -15,7 +15,7 @@ export function ResourceClient(path) {
     const opts = {
       method: "GET",
     }
-    return fetch(`${path}/${id}`, opts).then(internalize)
+    return fetch(`${path}/${id}`, opts).then(responseValidation)
   }
 
   const post = item => {
@@ -26,7 +26,7 @@ export function ResourceClient(path) {
       },
       body: JSON.stringify(item),
     }
-    return fetch(path, opts).then(internalize)
+    return fetch(path, opts).then(responseValidation)
   }
 
   const put = (id, item) => {
@@ -37,14 +37,14 @@ export function ResourceClient(path) {
       },
       body: JSON.stringify(item),
     }
-    return fetch(`${path}/${id}`, opts).then(internalize)
+    return fetch(`${path}/${id}`, opts).then(responseValidation)
   }
 
   const del = id => {
     const opts = {
       method: "DELETE",
     }
-    return fetch(`${path}/${id}`, opts).then(internalize)
+    return fetch(`${path}/${id}`, opts).then(responseValidation)
   }
 
   return {get, post, put, delete: del}

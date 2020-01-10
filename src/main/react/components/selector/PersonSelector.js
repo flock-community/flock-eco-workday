@@ -54,7 +54,7 @@ export function PersonSelector(props) {
 
 PersonSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
   selectedItem: PropTypes.string,
 }
 

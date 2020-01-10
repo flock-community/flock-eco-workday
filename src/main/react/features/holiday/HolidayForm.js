@@ -8,7 +8,7 @@ import Grid from "@material-ui/core/Grid"
 import MenuItem from "@material-ui/core/MenuItem"
 import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {PeriodForm} from "../../components/PeriodForm"
-import HolidayClient from "../../clients/HolidayClient"
+import {HolidayClient} from "../../clients/HolidayClient"
 import {isDefined} from "../../utils/validation"
 
 export const HOLIDAY_FORM_ID = "holiday-form-id"
