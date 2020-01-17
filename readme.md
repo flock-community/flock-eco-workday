@@ -40,3 +40,7 @@ Generate secrets to deploy via travis-ci
 tar cvf secrets.tar ./service-account.json src/main/resources/application-cloud.properties
 travis encrypt-file secrets.tar --add
 ```
+
+## Links and useful resources
+
+- [markdownlint-config-schema](https://github.com/DavidAnson/markdownlint/blob/master/schema/markdownlint-config-schema.json)
