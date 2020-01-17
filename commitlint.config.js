@@ -21,7 +21,10 @@ const Configuration = {
   /*
    * Functions that return true if commitlint should ignore the given message.
    */
-  ignores: [commit => commit.startsWith("[TEST]", 0)],
+  ignores: [
+    commit => commit.startsWith("[TEST]", 0),
+    commit => commit.startsWith("fire!", 0),
+  ],
   /*
    * Whether commitlint uses the default ignore rules.
    */
