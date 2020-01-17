@@ -26,17 +26,17 @@ $ mvn antrun:run@ktlint
   src/main/kotlin/Main.kt:10:10: Unused import
 
 # fix code style deviations (runs built-in formatter)
-$ mvn antrun:run@ktlint-format
+mvn antrun:run@ktlint-format
 
 # fix code styles for js files with eslint
-$ npm run lint
+npm run lint
 ```
 
 ## Generate secrets
 
 Generate secrets to deploy via travis-ci
 
-```
+```bash
 tar cvf secrets.tar ./service-account.json src/main/resources/application-cloud.properties
 travis encrypt-file secrets.tar --add
 ```
