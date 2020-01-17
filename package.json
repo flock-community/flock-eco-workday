@@ -74,7 +74,12 @@
       "eslint --fix",
       "git add"
     ],
-    "*.{md,html}": [
+    "*.html": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.md": [
+      "markdownlint --fix --config ./markdownlint.yaml --ignore ./node_modules",
       "prettier --write",
       "git add"
     ]
