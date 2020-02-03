@@ -8,47 +8,51 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core"
-import {PersonService} from "../../features/person/PersonService"
+import FormHelperText from "@material-ui/core/FormHelperText"
+import {ClientClient} from "../../clients/ClientClient"
 
-export function PersonSelector(props) {
-  const {onChange, label, selectedItem, embedded} = props
+export function ClientSelector({value, onChange, embedded, label, error, ...props}) {
   const [items, setItems] = useState([])
-  const [selected, setSelected] = useState("")
+  const [state, setState] = useState(value)
 
   useEffect(() => {
-    PersonService.getAll().then(res => setItems(res))
-    setSelected(selectedItem)
+    ClientClient.all().then(res => setItems(res))
   }, [])
+
+  useEffect(() => {
+    setState(value)
+  }, [value])
 
   function handleChange(event) {
     // eslint-disable-next-line no-shadow
     const selected = event.target.value
-    setSelected(selected)
-    onChange(selected)
+    setState(selected)
+    onChange(selected === "" ? null : selected)
   }
 
   function renderMenuItem(item, key) {
     return (
       <MenuItem key={`person-selector-menu-item-${key}`} value={item.code}>
-        {item.firstname} {item.lastname}
+        {item.name}
       </MenuItem>
     )
   }
 
   const selectInput = (
-    <FormControl fullWidth>
+    <FormControl {...props} error={!!error}>
       <InputLabel shrink>{label}</InputLabel>
-      <Select value={selected} displayEmpty onChange={handleChange}>
+      <Select value={state || ""} displayEmpty onChange={handleChange}>
         <MenuItem value="">
           <em>None</em>
         </MenuItem>
         {items.map(renderMenuItem)}
       </Select>
+      <FormHelperText>{error}</FormHelperText>
     </FormControl>
   )
 
   return embedded ? (
-    <div>{selectInput}</div>
+    selectInput
   ) : (
     <Card>
       <CardContent>{selectInput}</CardContent>
@@ -56,14 +60,15 @@ export function PersonSelector(props) {
   )
 }
 
-PersonSelector.propTypes = {
-  embedded: PropTypes.bool,
+ClientSelector.propTypes = {
+  error: PropTypes.string,
+  value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  label: PropTypes.string,
-  selectedItem: PropTypes.string,
+  label: PropTypes.string.isRequired,
+  embedded: PropTypes.bool,
 }
 
-PersonSelector.defaultProps = {
-  selectedItem: "",
-  label: "Select Person",
+ClientSelector.defaultProps = {
+  value: "",
+  label: "Select Client",
 }

@@ -4,9 +4,14 @@ import java.time.LocalDate
 
 data class AssignmentForm(
 
-    val userCode: String,
+    val personCode: String,
     val clientCode: String,
 
+    val hourlyRate: Double,
+    val hoursPerWeek: Int,
+
+    val role: String?,
+
     val startDate: LocalDate,
-    val endDate: LocalDate
+    val endDate: LocalDate?
 )

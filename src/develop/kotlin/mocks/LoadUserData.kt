@@ -39,7 +39,7 @@ class LoadUserData(
         password = name.toLowerCase(),
         authorities = if (name == "Ernie") {
             authorities
-                .filter { role -> workerRoles.contains(role)}.toSet()
+                .filter { role -> workerRoles.contains(role) }.toSet()
         } else {
             authorities
         }).save()

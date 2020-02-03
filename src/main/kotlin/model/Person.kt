@@ -13,6 +13,7 @@ import javax.persistence.OneToOne
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
 data class Person(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
