@@ -6,18 +6,16 @@ import {ClientSelector} from "../selector/ClientSelector"
 function ClientSelectorField({name, ...props}) {
   return (
     <Field id={name} name={name} as="select">
-      {({field: {value}, form: {touched, errors, setFieldValue, setFieldTouched}}) => {
-        return (
-          <ClientSelector
-            embedded
-            value={value}
-            onBlur={() => setFieldTouched(name, true)}
-            onChange={userCode => setFieldValue(name, userCode)}
-            error={touched[name] && errors[name]}
-            {...props}
-          />
-        )
-      }}
+      {({field: {value}, form: {touched, errors, setFieldValue, setFieldTouched}}) => (
+        <ClientSelector
+          embedded
+          value={value}
+          onBlur={() => setFieldTouched(name, true)}
+          onChange={userCode => setFieldValue(name, userCode)}
+          error={touched[name] && errors[name]}
+          {...props}
+        />
+      )}
     </Field>
   )
 }

@@ -35,6 +35,15 @@ export const AssignmentForm = props => {
           </Grid>
           <Grid item xs={12}>
             <Field
+              name="hoursPerWeek"
+              type="number"
+              label="Hours per week"
+              fullWidth
+              component={TextField}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Field
               name="role"
               type="text"
               label="Role"
@@ -58,6 +67,7 @@ export const AssignmentForm = props => {
 
   const init = value && {
     hourlyRate: value.hourlyRate,
+    hoursPerWeek: value.hoursPerWeek,
     role: value.role,
     startDate: value.startDate,
     endDate: value.endDate,
@@ -67,7 +77,7 @@ export const AssignmentForm = props => {
   return (
     <Formik
       initialValues={{...ASSIGNMENT_FORM_SCHEMA.cast(), ...init}}
-      onSubmit={onSubmit} // use onSubmit func @PersonDialog
+      onSubmit={onSubmit}
       validationSchema={ASSIGNMENT_FORM_SCHEMA}
       enableReinitialize
       render={form}

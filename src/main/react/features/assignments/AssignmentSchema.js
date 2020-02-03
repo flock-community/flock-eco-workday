@@ -7,6 +7,9 @@ const schema = {
   hourlyRate: number()
     .required()
     .default(80),
+  hoursPerWeek: number()
+    .required()
+    .default(36),
   role: string().default(""),
   startDate: mixed()
     .required()

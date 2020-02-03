@@ -42,6 +42,7 @@ export function AssignmentList({reload, personCode, onItemClick}) {
                 {assignment.endDate && assignment.endDate.format("DD-MM-YYYY")}
               </Typography>
               <Typography>Hourly rate: {assignment.hourlyRate} </Typography>
+              <Typography>Hours per week: {assignment.hoursPerWeek} </Typography>
             </CardContent>
           </Card>
         </Grid>

@@ -32,6 +32,7 @@ class LoadAssignmentData(
         person = findPersonByUserEmail(email),
         client = findClientByCode(client),
         hourlyRate = 80.5,
+        hoursPerWeek = 36,
         role = role)
         .save()
 

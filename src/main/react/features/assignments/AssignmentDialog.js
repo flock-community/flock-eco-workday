@@ -62,7 +62,7 @@ export function AssignmentDialog(props) {
   return (
     <>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-        <DialogTitle>Client form</DialogTitle>
+        <DialogTitle>Assignment form</DialogTitle>
         <DialogContent>
           <AssignmentForm value={state} onSubmit={handleSubmit} />
         </DialogContent>

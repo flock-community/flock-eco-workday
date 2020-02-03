@@ -50,6 +50,7 @@ class AssignmentService(
         startDate = this.startDate,
         endDate = this.endDate,
         hourlyRate = this.hourlyRate,
+        hoursPerWeek = this.hoursPerWeek,
         role = this.role,
         client = this.clientCode
             .let { clientRepository.findByCode(it).toNullable() }

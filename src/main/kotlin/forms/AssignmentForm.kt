@@ -8,6 +8,8 @@ data class AssignmentForm(
     val clientCode: String,
 
     val hourlyRate: Double,
+    val hoursPerWeek: Int,
+
     val role: String?,
 
     val startDate: LocalDate,

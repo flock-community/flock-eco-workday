@@ -19,6 +19,10 @@ export function ClientSelector({value, onChange, embedded, label, error, ...prop
     ClientClient.all().then(res => setItems(res))
   }, [])
 
+  useEffect(() => {
+    setState(value)
+  }, [value])
+
   function handleChange(event) {
     // eslint-disable-next-line no-shadow
     const selected = event.target.value

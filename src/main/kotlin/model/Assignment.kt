@@ -21,6 +21,7 @@ data class Assignment(
     val endDate: LocalDate?,
 
     val hourlyRate: Double,
+    val hoursPerWeek: Int,
 
     @ManyToOne
     val client: Client,
