@@ -11,6 +11,13 @@ const internalize = res => {
 }
 
 export function ResourceClient(path) {
+  const all = () => {
+    const opts = {
+      method: "GET",
+    }
+    return fetch(`${path}`, opts).then(internalize)
+  }
+
   const get = id => {
     const opts = {
       method: "GET",
@@ -47,5 +54,5 @@ export function ResourceClient(path) {
     return fetch(`${path}/${id}`, opts).then(internalize)
   }
 
-  return {get, post, put, delete: del}
+  return {all, get, post, put, delete: del}
 }

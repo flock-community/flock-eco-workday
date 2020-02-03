@@ -27,7 +27,6 @@ export function HolidayDialog(props) {
         if (isDefined(onComplete)) onComplete(res)
       })
     } else {
-      console.log(it)
       HolidayClient.postHoliday({
         description: it.description,
         from: it.period.dates[0].format(moment.HTML5_FMT.DATE),

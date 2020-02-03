@@ -50,7 +50,6 @@ export function HolidayForm(props) {
   }
 
   const handleChangePeriod = value => {
-    console.log(value)
     setState({
       ...state,
       period: value,

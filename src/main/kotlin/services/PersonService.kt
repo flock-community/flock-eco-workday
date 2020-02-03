@@ -39,9 +39,11 @@ class PersonService(
 
     fun findByCode(code: String): Person? = repository
         .findByCode(code)
+        .toNullable()
 
     fun findByUserCode(userCode: String) = repository
         .findByUserCode(userCode)
+        .toNullable()
 
     fun create(form: PersonForm): Person? {
         val user = when (form.userCode) {

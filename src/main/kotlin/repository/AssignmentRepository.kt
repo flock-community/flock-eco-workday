@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface AssignmentRepository : PagingAndSortingRepository<Assignment, Long> {
     fun findByCode(code: String): Optional<Assignment>
-    fun findAllByUserCode(userCode: String): Iterable<Assignment>
+    fun findAllByPersonCode(personCode: String): Iterable<Assignment>
+    fun findAllByPersonUserCode(userCode: String): Iterable<Assignment>
     fun deleteByCode(code: String)
 }

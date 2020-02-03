@@ -31,6 +31,12 @@ class PersonController(
     private val userService: UserService
 ) {
 
+    @GetMapping("/me")
+    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
+    fun findByMe(principal: Principal): ResponseEntity<Person> = service
+        .findByUserCode(principal.name)
+        .toResponse()
+
     @GetMapping
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
     fun findAll(pageable: Pageable, principal: Principal) = principal

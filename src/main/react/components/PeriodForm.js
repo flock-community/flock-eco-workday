@@ -77,11 +77,9 @@ export function PeriodForm(props) {
   }
 
   useEffect(() => {
-    console.log(value)
     if (value) {
       const from = moment(value.dates[0])
       const to = moment(value.dates[1])
-      console.log(from, to)
       if (value.days) {
         setState({
           dates: [from, to],
