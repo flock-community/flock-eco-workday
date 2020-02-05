@@ -14,5 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner
 @ActiveProfiles(profiles = ["test"])
 class ClientControllerTest {
     @Test
-    fun `empty dummy test`() {}
+    fun `empty dummy test`() {
+    }
 }

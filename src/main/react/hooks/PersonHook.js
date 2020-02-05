@@ -8,10 +8,15 @@ export function usePerson() {
 
   useEffect(() => {
     if (!store.person) {
-      PersonClient.me().then(it => {
-        store = {person: it}
-        setPerson(it)
-      })
+      PersonClient.me()
+        .then(it => {
+          store = {person: it}
+          setPerson(it)
+        })
+        .catch(() => {
+          store = {}
+          setPerson(null)
+        })
     } else {
       setPerson(store.person)
     }

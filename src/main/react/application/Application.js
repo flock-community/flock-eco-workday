@@ -17,6 +17,7 @@ import {PersonFeature} from "../features/person/PersonFeature"
 import {UserStatusClient} from "../clients/UserStatusClient"
 import {SickdayFeature} from "../features/sickday/SickFeature"
 import {useUser} from "../hooks/UserHook"
+import {DashboardFeature} from "../features/dashboard/DashboardFeature"
 
 const useStyles = makeStyles(() => ({
   spinner: {
@@ -43,21 +44,17 @@ export const Application = () => {
   useEffect(() => {
     UserStatusClient.get().then(status => {
       if (status.loggedIn) {
-        UserClient.findUsersMe()
-          .then(user => {
-            setState(it => ({
-              ...it,
-              loggedIn: status.loggedIn,
-              authorities: status.authorities,
-              loading: false,
-              user,
-            }))
-            setUser(user)
-            UserAuthorityUtil.setAuthorities(status.authorities)
-          })
-          .catch(() => {
-            console.log("Cannot connect to service")
-          })
+        UserClient.findUsersMe().then(user => {
+          setState(it => ({
+            ...it,
+            loggedIn: status.loggedIn,
+            authorities: status.authorities,
+            loading: false,
+            user,
+          }))
+          setUser(user)
+          UserAuthorityUtil.setAuthorities(status.authorities)
+        })
       } else {
         setState(it => ({
           ...it,
@@ -99,6 +96,7 @@ export const Application = () => {
         <ApplicationDrawer open={state.openDrawer} onClose={handleDrawerClose} />
         <ApplicationLayout onDrawer={handleDrawerOpen} />
         <Route path="/" exact component={HomeFeature} />
+        <Route path="/dashboard" exact component={DashboardFeature} />
         <Route path="/clients" exact component={ClientFeature} />
         <Route path="/assignments" exact component={AssignmentFeature} />
         <Route path="/holidays" exact component={HolidayFeature} />

@@ -5,7 +5,7 @@ export const responseValidation = res => {
     }
     return res.json()
   }
-  return res.text(text => {
+  return res.text().then(text => {
     throw new Error(text)
   })
 }

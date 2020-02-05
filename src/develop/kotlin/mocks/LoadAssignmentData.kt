@@ -22,8 +22,8 @@ class LoadAssignmentData(
 
     init {
         create("bert@sesam.straat", "ing", "DevOps engineer", LocalDate.of(2018, 6, 1))
-        create("ieniemienie@sesam.straat", "ing", "Test engineer", LocalDate.of(2018, 6, 1))
-        create("pino@sesam.straat", "bolcom", "Agile clown", LocalDate.of(2019, 2, 1), LocalDate.of(2020, 1, 1))
+        create("ieniemienie@sesam.straat", "ing", "Test engineer", LocalDate.of(2018, 6, 1), LocalDate.of(2018, 12, 1))
+        create("pino@sesam.straat", "bolcom", "Agile clown", LocalDate.of(2019, 2, 1), LocalDate.of(2020, 2, 1))
     }
 
     private final fun create(email: String, client: String, role: String, startDate: LocalDate, endDate: LocalDate? = null) = Assignment(

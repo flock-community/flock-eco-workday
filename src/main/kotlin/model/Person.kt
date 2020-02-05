@@ -13,7 +13,6 @@ import javax.persistence.OneToOne
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
 data class Person(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
@@ -32,4 +31,4 @@ data class Person(
 ) : AbstractCodeEntity(id, code) {
     override fun equals(obj: Any?): Boolean = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
-    }
+}

@@ -10,6 +10,7 @@ import HealingIcon from "@material-ui/icons/Healing"
 import EventIcon from "@material-ui/icons/CalendarToday"
 import UserIcon from "@material-ui/icons/Person"
 import ClientIcon from "@material-ui/icons/Business"
+import DashboardIcon from "@material-ui/icons/Dashboard"
 
 import Drawer from "@material-ui/core/Drawer"
 import makeStyles from "@material-ui/core/styles/makeStyles"
@@ -47,6 +48,12 @@ export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
   }
 
   const items = [
+    {
+      name: "Dashboard",
+      icon: DashboardIcon,
+      url: "/dashboard",
+      authority: "DashboardAuthority.READ",
+    },
     {
       name: "Clients",
       icon: ClientIcon,
