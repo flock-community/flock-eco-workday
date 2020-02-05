@@ -2,11 +2,14 @@ package community.flock.eco.workday.helpers
 
 import community.flock.eco.workday.forms.AssignmentForm
 import community.flock.eco.workday.forms.ClientForm
+import community.flock.eco.workday.forms.ContractExternalForm
+import community.flock.eco.workday.forms.ContractInternalForm
 import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.model.Client
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.AssignmentService
 import community.flock.eco.workday.services.ClientService
+import community.flock.eco.workday.services.ContractService
 import community.flock.eco.workday.services.PersonService
 import java.time.LocalDate
 import org.springframework.stereotype.Component
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Component
 @Component
 class CreateHelper(
     val assignmentService: AssignmentService,
+    val contractService: ContractService,
     val clientService: ClientService,
     val personService: PersonService
 ) {
@@ -44,5 +48,25 @@ class CreateHelper(
         endDate = endDate
     ).run {
         assignmentService.create(this)
+    } ?: error("Cannot create assignment")
+
+    fun createContractInternal(client: Client, person: Person, startDate: LocalDate, endDate: LocalDate?) = ContractExternalForm(
+        personCode = person.code,
+        hourlyRate = 80.0,
+        hoursPerWeek = 36,
+        startDate = startDate,
+        endDate = endDate
+    ).run {
+        contractService.create(this)
+    } ?: error("Cannot create assignment")
+
+    fun createContractExternal(client: Client, person: Person, startDate: LocalDate, endDate: LocalDate?) = ContractInternalForm(
+        personCode = person.code,
+        monthlySalary = 10000.0,
+        hoursPerWeek = 36,
+        startDate = startDate,
+        endDate = endDate
+    ).run {
+        contractService.create(this)
     } ?: error("Cannot create assignment")
 }

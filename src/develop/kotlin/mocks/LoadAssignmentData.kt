@@ -29,28 +29,12 @@ class LoadAssignmentData(
     private final fun create(email: String, client: String, role: String, startDate: LocalDate, endDate: LocalDate? = null) = Assignment(
         startDate = startDate,
         endDate = endDate,
-        person = findPersonByUserEmail(email),
-        client = findClientByCode(client),
+        person = loadPersonData.findPersonByUserEmail(email),
+        client = loadClientData.findClientByCode(client),
         hourlyRate = 80.5,
         hoursPerWeek = 36,
         role = role)
         .save()
-
-    private fun findUserByEmail(email: String): User = loadUserData.data
-        .find { it.email == email }
-        ?: error("Cannot find User")
-
-    private fun findClientByCode(code: String): Client = loadClientData.data
-        .find { it.code == code }
-        ?: error("Cannot find Client")
-
-    private fun findPersonByUserCode(code: String): Person = loadPersonData.data
-        .find { it.user?.code == code }
-        ?: error("Cannot find Client")
-
-    private fun findPersonByUserEmail(email: String): Person = loadPersonData.data
-        .find { it.user?.email == email }
-        ?: error("Cannot find Client")
 
     private fun Assignment.save(): Assignment = assignmentRepository
         .save(this)

@@ -17,9 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner
 @ContextConfiguration(classes = [ApplicationConfiguration::class])
 @DataJpaTest
 @AutoConfigureTestDatabase
-@ComponentScan(basePackages = [
-    "community.flock.eco.workday.helpers"
-])
+@ComponentScan(basePackages = ["community.flock.eco.workday.helpers"])
 class GraphServiceTest {
 
     @Autowired
@@ -34,7 +32,7 @@ class GraphServiceTest {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
 
-        val data = dataHelper.createDataSet1()
+        val data = dataHelper.createAssignmentData()
         val res = graphService.revenuePerMonth(from, to)
 
         assertEquals(12, res.size)

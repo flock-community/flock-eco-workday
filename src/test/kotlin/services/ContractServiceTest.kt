@@ -20,10 +20,10 @@ import org.springframework.test.context.junit4.SpringRunner
 @DataJpaTest
 @AutoConfigureTestDatabase
 @ComponentScan(basePackages = ["community.flock.eco.workday.helpers"])
-class AssignmentServiceTest {
+class ContractServiceTest {
 
     @Autowired
-    lateinit var assignmentService: AssignmentService
+    lateinit var contractService: ContractService
 
     @Autowired
     lateinit var dataHelper: DataHelper
@@ -34,9 +34,8 @@ class AssignmentServiceTest {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2021, 12, 31)
 
-        val data = dataHelper.createAssignmentData()
-
-        val res = assignmentService.findAllActive(from, to)
+        val data = dataHelper.createContractData()
+        val res = contractService.findAllActive(from, to)
 
         assertEquals(6, res.size)
         assertTrue(res.contains(data["in1"]))
