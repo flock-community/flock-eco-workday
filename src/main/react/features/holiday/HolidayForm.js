@@ -34,7 +34,6 @@ export function HolidayForm(props) {
         description: "",
         period: {
           dates: [now, now],
-          days: [8],
         },
       })
     }
