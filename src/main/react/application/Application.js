@@ -18,6 +18,7 @@ import {UserStatusClient} from "../clients/UserStatusClient"
 import {SickdayFeature} from "../features/sickday/SickFeature"
 import {useUser} from "../hooks/UserHook"
 import {DashboardFeature} from "../features/dashboard/DashboardFeature"
+import {ContractFeature} from "../features/contract/ContractFeature"
 
 const useStyles = makeStyles(() => ({
   spinner: {
@@ -98,6 +99,7 @@ export const Application = () => {
         <Route path="/" exact component={HomeFeature} />
         <Route path="/dashboard" exact component={DashboardFeature} />
         <Route path="/clients" exact component={ClientFeature} />
+        <Route path="/contracts" exact component={ContractFeature} />
         <Route path="/assignments" exact component={AssignmentFeature} />
         <Route path="/holidays" exact component={HolidayFeature} />
         <Route path="/sickdays" component={SickdayFeature} />

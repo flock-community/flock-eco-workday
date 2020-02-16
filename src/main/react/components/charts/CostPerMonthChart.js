@@ -10,12 +10,12 @@ import ResponsiveContainer from "recharts/es6/component/ResponsiveContainer"
 import PropTypes from "prop-types"
 import {AggregationClient} from "../../clients/AggregationClient"
 
-export function RevenuePerMonthChart({year}) {
+export function CostPerMonthChart({year}) {
   const [state, setState] = useState({})
 
   useEffect(() => {
     const date = new Date()
-    AggregationClient.revenuePerMonthByYear(year || date.getFullYear()).then(res =>
+    AggregationClient.costPerMonthByYear(year || date.getFullYear()).then(res =>
       setState(res)
     )
   }, [])
@@ -39,6 +39,6 @@ export function RevenuePerMonthChart({year}) {
   )
 }
 
-RevenuePerMonthChart.propTypes = {
+CostPerMonthChart.propTypes = {
   year: PropTypes.number,
 }

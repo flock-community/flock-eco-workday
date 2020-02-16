@@ -20,9 +20,7 @@ data class ContractInternal(
     val monthlySalary: Double,
     val hoursPerWeek: Int
 
-) : Contract(id, code, startDate, endDate, person, ContractType.INTERNAL ) {
+) : Contract(id, code, startDate, endDate, person, ContractType.INTERNAL) {
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 }
-
-

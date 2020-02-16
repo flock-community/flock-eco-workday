@@ -8,7 +8,7 @@ import javax.persistence.EntityListeners
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-data class ContractExternal(
+data class ContractManagement(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
 
@@ -17,9 +17,9 @@ data class ContractExternal(
     override val startDate: LocalDate,
     override val endDate: LocalDate? = null,
 
-    val hourlyRate: Double,
-    val hoursPerWeek: Int
-) : Contract(id, code, startDate, endDate, person, ContractType.EXTERNAL) {
+    val monthlyFee: Double
+
+) : Contract(id, code, startDate, endDate, person, ContractType.MANAGEMENT) {
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 }

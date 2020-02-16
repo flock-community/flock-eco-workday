@@ -9,7 +9,6 @@ import javax.persistence.Enumerated
 import javax.persistence.Inheritance
 import javax.persistence.InheritanceType
 import javax.persistence.ManyToOne
-import javax.persistence.MappedSuperclass
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -22,7 +21,7 @@ abstract class Contract(
     open val endDate: LocalDate?,
 
     @ManyToOne
-    open val person: Person,
+    open val person: Person?,
 
     @Enumerated(EnumType.STRING)
     val type: ContractType

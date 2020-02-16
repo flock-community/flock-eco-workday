@@ -1,6 +1,5 @@
 package community.flock.eco.workday.repository
 
-import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.ContractType
 import java.util.Optional
@@ -13,5 +12,5 @@ interface ContractRepository : PagingAndSortingRepository<Contract, Long> {
     fun findAllByPersonCode(personCode: String): Iterable<Contract>
     fun findAllByPersonUserCode(userCode: String): Iterable<Contract>
     fun deleteByCode(code: String)
-    fun findAllByType(internal: ContractType):  Iterable<Contract>
+    fun findAllByType(internal: ContractType): Iterable<Contract>
 }

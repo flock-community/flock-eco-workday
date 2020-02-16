@@ -5,6 +5,7 @@ import ListItemText from "@material-ui/core/ListItemText"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 
 import AssignmentIcon from "@material-ui/icons/Assignment"
+import ContractIcon from "@material-ui/icons/Description"
 import HolidayIcon from "@material-ui/icons/WbSunny"
 import HealingIcon from "@material-ui/icons/Healing"
 import EventIcon from "@material-ui/icons/CalendarToday"
@@ -64,6 +65,12 @@ export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
       name: "Assignments",
       icon: AssignmentIcon,
       url: "/assignments",
+      authority: "AssignmentAuthority.READ",
+    },
+    {
+      name: "Contracts",
+      icon: ContractIcon,
+      url: "/contracts",
       authority: "AssignmentAuthority.READ",
     },
     {

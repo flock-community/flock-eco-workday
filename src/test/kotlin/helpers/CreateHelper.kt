@@ -50,23 +50,23 @@ class CreateHelper(
         assignmentService.create(this)
     } ?: error("Cannot create assignment")
 
-    fun createContractInternal(client: Client, person: Person, startDate: LocalDate, endDate: LocalDate?) = ContractExternalForm(
+    fun createContractInternal(person: Person, startDate: LocalDate, endDate: LocalDate?) = ContractInternalForm(
         personCode = person.code,
-        hourlyRate = 80.0,
-        hoursPerWeek = 36,
+        monthlySalary = 4000.0,
+        hoursPerWeek = 40,
         startDate = startDate,
         endDate = endDate
     ).run {
         contractService.create(this)
-    } ?: error("Cannot create assignment")
+    } ?: error("Cannot create internal contract")
 
-    fun createContractExternal(client: Client, person: Person, startDate: LocalDate, endDate: LocalDate?) = ContractInternalForm(
+    fun createContractExternal(person: Person, startDate: LocalDate, endDate: LocalDate?) = ContractExternalForm(
         personCode = person.code,
-        monthlySalary = 10000.0,
-        hoursPerWeek = 36,
+        hourlyRate = 75.0,
+        hoursPerWeek = 40,
         startDate = startDate,
         endDate = endDate
     ).run {
         contractService.create(this)
-    } ?: error("Cannot create assignment")
+    } ?: error("Cannot create external contract")
 }

@@ -48,5 +48,4 @@ class ContractServiceTest {
         assertFalse(res.contains(data["out2"]))
         assertFalse(res.contains(data["out3"]))
     }
-
 }
