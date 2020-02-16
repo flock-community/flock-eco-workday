@@ -23,6 +23,7 @@ const stringifyDate = date => {
 }
 
 const calcDays = (from, to, days) => {
+  console.log(days)
   const diff = to.diff(from, "days")
   return diff < 0
     ? {}
@@ -30,8 +31,11 @@ const calcDays = (from, to, days) => {
         .map(it => moment(from).add(it, "days"))
         .reduce((acc, cur, index) => {
           const key = stringifyDate(cur)
-          const val = inWeekday(cur) ? "8" : "0"
-          acc[key] = days && days[index] != null ? days[index] : val
+          if (days && days[index] != null) {
+            acc[key] = days[index]
+          } else {
+            acc[key] = inWeekday(cur) ? "8" : "0"
+          }
           return acc
         }, {})
 }
@@ -93,7 +97,7 @@ export function PeriodForm({value, onChange}) {
     })
     onChange({
       dates: [from, to],
-      days: Object.keys(val).map(key => days[key]),
+      days: Object.keys(val).map(key => val[key]),
     })
   }
 
