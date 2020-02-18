@@ -6,6 +6,7 @@ import {HolidayDialog} from "./HolidayDialog"
 import {HolidayList} from "./HolidayList"
 import {PersonSelector} from "../../components/selector"
 import {AddActionFab} from "../../components/FabButtons"
+import {usePerson} from "../../hooks/PersonHook"
 
 const useStyles = makeStyles({
   root: {
@@ -21,8 +22,8 @@ export function HolidayFeature() {
 
   const [refresh, setRefresh] = useState(false)
   const [open, setOpen] = useState(false)
-  const [holidayCode, setHolidayCode] = useState("")
-  const [personCode, setPersonCode] = useState("")
+  const [holidayCode, setHolidayCode] = useState(null)
+  const [person, setPerson] = usePerson()
 
   function handleCompleteDialog() {
     setRefresh(!refresh)
@@ -40,24 +41,24 @@ export function HolidayFeature() {
     setOpen(true)
   }
 
-  function handleUserChangeByCode(code) {
-    setPersonCode(code)
+  function handlePersonChange(it) {
+    setPerson(it)
   }
 
+  if (!person) {
+    return null
+  }
   return (
     <div className={classes.root}>
       <Grid container spacing={1}>
         <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
           <Grid item xs={12}>
-            <PersonSelector
-              selectedItem={personCode}
-              onChange={handleUserChangeByCode}
-            />
+            <PersonSelector selectedItem={person.code} onChange={handlePersonChange} />
           </Grid>
         </UserAuthorityUtil>
         <Grid item xs={12}>
           <HolidayList
-            personCode={personCode}
+            personCode={person.code}
             refresh={refresh}
             onSelectItem={handleSelectedItem}
           />
@@ -65,7 +66,7 @@ export function HolidayFeature() {
       </Grid>
       <HolidayDialog
         open={open}
-        personCode={personCode}
+        personCode={person.code}
         holidayCode={holidayCode}
         onComplete={handleCompleteDialog}
       />

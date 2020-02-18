@@ -32,7 +32,6 @@ class PersonController(
 ) {
 
     @GetMapping("/me")
-    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
     fun findByMe(principal: Principal): ResponseEntity<Person> = service
         .findByUserCode(principal.name)
         .toResponse()
