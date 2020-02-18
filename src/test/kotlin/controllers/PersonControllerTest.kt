@@ -245,7 +245,7 @@ class PersonControllerTest {
     fun `should return an error while trying to get a non-existing person via GET-request`() {
         /* DRY-Bock */
         mvc.perform(get("$baseUrl/3b7ab8e2-aeeb-4228-98d8-bd22fa141caa").with(user).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound)
+            .andExpect(status().isNotFound)
         /* DRY-Bock */
     }
 

@@ -52,7 +52,7 @@ class HolidayRepositoryTest {
                 days = convertDayOff(listOf(8, 8), dayFromLocalDate())
             )
         ).apply { periodRepository.saveAll(this) }
-        .run { this.toList() }
+            .run { this.toList() }
 
         persons = mutableListOf(
             Person(
@@ -72,7 +72,7 @@ class HolidayRepositoryTest {
                 user = null
             )
         ).apply { personRepository.saveAll(this) }
-        .run { this.toList() }
+            .run { this.toList() }
     }
 
     @After
@@ -84,15 +84,17 @@ class HolidayRepositoryTest {
     @Test
     fun `should find a Holiday via holidayCode by querying findByCode`() {
         val holidays: MutableSet<Holiday> = mutableSetOf()
-        persons.forEachIndexed { idx, person -> holidays.add(
-            createAndPersist(Holiday(
-                description = "",
-                status = HolidayStatus.REQUESTED,
-                hours = 42,
-                period = periods[idx],
-                person = person
-            ))
-        ) }
+        persons.forEachIndexed { idx, person ->
+            holidays.add(
+                createAndPersist(Holiday(
+                    description = "",
+                    status = HolidayStatus.REQUESTED,
+                    hours = 42,
+                    period = periods[idx],
+                    person = person
+                ))
+            )
+        }
 
         val holidayCode = repository.findAll().first().code
         val res = repository.findByCode(holidayCode).toNullable()

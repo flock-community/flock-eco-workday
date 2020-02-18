@@ -1,0 +1,29 @@
+{
+  "payment": {
+    "paymentType": "SEPA",
+    "issuer": null,
+    "amount": "10",
+    "bankAccount": {
+      "name": "W.F. Veelenturf",
+      "iban": "123",
+      "bic": "123",
+      "country": "NL"
+    },
+    "frequency": "QUARTERLY"
+  },
+  "newsletter": true,
+  "agreedOnTerms": true,
+  "group": "DEBT_COLLECTION",
+  "destination": null,
+  "member": {
+    "firstName": "W.F.",
+    "surName": "Veelenturf",
+    "street": "2",
+    "houseNumber": "Laan van Engelswier",
+    "postalCode": "3551 XV",
+    "city": "Utrecht",
+    "phoneNumber": "0614227453",
+    "email": "willem.veelenturf@gmail.com",
+    "gender": "MALE"
+  }
+}

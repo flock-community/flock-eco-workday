@@ -14,5 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner
 @AutoConfigureTestDatabase
 class ClientRepositoryTest {
     @Test
-    fun `empty dummy test`() {}
+    fun `empty dummy test`() {
+    }
 }

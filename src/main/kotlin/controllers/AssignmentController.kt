@@ -1,13 +1,12 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
+import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.authorities.AssignmentAuthority
 import community.flock.eco.workday.forms.AssignmentForm
 import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.AssignmentService
-import community.flock.eco.workday.services.PersonService
 import java.security.Principal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,7 +26,6 @@ import org.springframework.web.server.ResponseStatusException
 @RequestMapping("/api/assignments")
 class AssignmentController(
     private val userService: UserService,
-    private val personService: PersonService,
     private val assignmentService: AssignmentService
 ) {
 
@@ -45,7 +43,8 @@ class AssignmentController(
                         .sortedBy { it.startDate }
                         .reversed()
                 }
-            }.toResponse()
+            }
+            .toResponse()
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
@@ -54,7 +53,7 @@ class AssignmentController(
         .toResponse()
 
     @PostMapping
-    @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
+    @PreAuthorize("hasAuthority('AssignmentAuthority.WRITE')")
     fun post(@RequestBody form: AssignmentForm, principal: Principal) = principal
         .findUser()
         ?.let { person ->
@@ -69,7 +68,7 @@ class AssignmentController(
         ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
 
     @PutMapping("/{code}")
-    @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
+    @PreAuthorize("hasAuthority('AssignmentAuthority.WRITE')")
     fun put(
         @PathVariable code: String,
         @RequestBody form: AssignmentForm,
@@ -83,7 +82,7 @@ class AssignmentController(
         .toResponse()
 
     @DeleteMapping("/{code}")
-    @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
+    @PreAuthorize("hasAuthority('AssignmentAuthority.ADMIN')")
     fun delete(@PathVariable code: String, principal: Principal) =
         principal
             .findUser()
@@ -94,11 +93,10 @@ class AssignmentController(
             }
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
 
-    private fun Principal.findUser(): Person? = personService
-        .findByUserCode(this.name)
+    private fun Principal.findUser(): User? = userService
+        .findByCode(this.name)
 
-    private fun Person.isAdmin(): Boolean = this.user
-        ?.authorities
-        ?.contains(AssignmentAuthority.ADMIN.toName())
-        ?: false
+    private fun User.isAdmin(): Boolean = this
+        .authorities
+        .contains(AssignmentAuthority.ADMIN.toName())
 }

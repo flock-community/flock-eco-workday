@@ -41,20 +41,20 @@ export function AssignmentFeature() {
     setDialog({open: true, code: it.code})
   }
 
-  if (!person) {
-    return null
-  }
   return (
     <div className={classes.root}>
       <Grid container spacing={1}>
         <UserAuthorityUtil has={"AssignmentAuthority.ADMIN"}>
           <Grid item xs={12}>
-            <PersonSelector selectedItem={person.code} onChange={handleChangePerson} />
+            <PersonSelector
+              selectedItem={person && person.code}
+              onChange={handleChangePerson}
+            />
           </Grid>
         </UserAuthorityUtil>
         <Grid item xs={12}>
           <AssignmentList
-            personCode={person.code}
+            personCode={person && person.code}
             onItemClick={handleItemClick}
             reload={reload}
           />

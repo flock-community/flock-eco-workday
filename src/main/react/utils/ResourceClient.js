@@ -5,7 +5,7 @@ export const responseValidation = res => {
     }
     return res.json()
   }
-  return res.text(text => {
+  return res.text().then(text => {
     throw new Error(text)
   })
 }
@@ -15,7 +15,7 @@ export function ResourceClient(path) {
     const opts = {
       method: "GET",
     }
-    return fetch(`${path}`, opts).then(internalize)
+    return fetch(`${path}`, opts).then(responseValidation)
   }
 
   const get = id => {

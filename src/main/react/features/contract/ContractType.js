@@ -1,0 +1,6 @@
+export const ContractType = {
+  INTERNAL: "INTERNAL",
+  EXTERNAL: "EXTERNAL",
+  MANAGEMENT: "MANAGEMENT",
+  SERVICE: "SERVICE",
+}

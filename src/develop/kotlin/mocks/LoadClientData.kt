@@ -27,4 +27,8 @@ class LoadClientData(
     fun Client.save(): Client = clientRepository
             .save(this)
             .also { data.add(it) }
+
+    fun findClientByCode(code: String): Client = data
+        .find { it.code == code }
+        ?: error("Cannot find Client")
 }
