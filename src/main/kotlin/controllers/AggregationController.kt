@@ -1,6 +1,7 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.workday.services.AggregationService
+import org.springframework.security.access.prepost.PreAuthorize
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
@@ -16,6 +17,7 @@ class AggregationController(
 ) {
 
     @GetMapping("/revenue-per-month", params = ["year"])
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
     fun revenuePerMonthByYear(@RequestParam year: Int): Map<YearMonth, Double> {
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
@@ -23,6 +25,7 @@ class AggregationController(
     }
 
     @GetMapping("/cost-per-month", params = ["year"])
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
     fun costPerMonthByYear(@RequestParam year: Int): Map<YearMonth, BigDecimal> {
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
@@ -30,6 +33,7 @@ class AggregationController(
     }
 
     @GetMapping("/person-per-month", params = ["year"])
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
     fun personPerMonthByYear(@RequestParam year: Int): Map<YearMonth, BigDecimal> {
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
