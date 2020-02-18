@@ -25,7 +25,7 @@ export function ClientList(props) {
   const [list, setList] = useState([])
 
   useEffect(() => {
-    ClientClient.findAllByPage(0).then(res => setList(res))
+    ClientClient.findAllByPage({page: 0}).then(res => setList(res.list))
   }, [reload])
 
   const handleItem = it => () => {
