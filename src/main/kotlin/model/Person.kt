@@ -6,9 +6,13 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
 import community.flock.eco.feature.user.model.User
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.util.UUID
+import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
+import javax.persistence.ForeignKey
 import javax.persistence.OneToOne
 
 @Entity
@@ -21,7 +25,7 @@ data class Person(
     val lastname: String,
     val email: String,
     val position: String,
-    val number: Int,
+    val number: Int?,
 
     @OneToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
