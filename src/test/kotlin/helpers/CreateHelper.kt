@@ -11,6 +11,7 @@ import community.flock.eco.workday.services.AssignmentService
 import community.flock.eco.workday.services.ClientService
 import community.flock.eco.workday.services.ContractService
 import community.flock.eco.workday.services.PersonService
+import community.flock.eco.workday.utils.randomNumber
 import java.time.LocalDate
 import org.springframework.stereotype.Component
 
@@ -33,7 +34,8 @@ class CreateHelper(
         firstname = firstname,
         lastname = lastname,
         position = "Software engineer",
-        userCode = null
+        userCode = null,
+        number = randomNumber()
     ).run {
         personService.create(this)
     } ?: error("Cannot create person")
