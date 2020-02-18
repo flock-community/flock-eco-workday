@@ -15,7 +15,7 @@ export function ResourceClient(path) {
     const opts = {
       method: "GET",
     }
-    return fetch(`${path}`, opts).then(internalize)
+    return fetch(`${path}`, opts).then(responseValidation)
   }
 
   const get = id => {

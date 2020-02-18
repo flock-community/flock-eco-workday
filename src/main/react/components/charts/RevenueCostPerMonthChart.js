@@ -26,7 +26,7 @@ export function RevenueCostPerMonthChart({year}) {
     ]).then(([revenue, cost]) => {
       const data = Array(12)
         .fill(1)
-        .map((_, i) => pad(i + 1, 2))
+        .map((_, i) => pad(String(i + 1), 2))
         .map(day => {
           const dayMonth = `${y}-${day}`
           return {
