@@ -1,8 +1,10 @@
 import {toPersonForm} from "./schema"
 import {ResourceClient} from "../../utils/ResourceClient"
+import {PageableClient} from "../../utils/PageableClient"
 
 const path = "/api/persons"
-const client = ResourceClient(path)
+const resourceClient = ResourceClient(path)
+const pageableClient = PageableClient(path)
 
 const getAll = () => {
   const opts = {
@@ -15,22 +17,18 @@ const getAll = () => {
   return fetch(`${path}`, opts).then(res => res.json())
 }
 
-const get = code => {
-  return client.get(code).then(toPersonForm)
-}
-
 const post = async personForm => {
-  return client.post(await toPersonForm(personForm))
+  return resourceClient.post(await toPersonForm(personForm))
 }
 
 const put = async (code, personForm) => {
-  return client.put(code, await toPersonForm(personForm))
+  return resourceClient.put(code, await toPersonForm(personForm))
 }
 
 export const PersonService = {
-  ...client,
+  ...resourceClient,
+  ...pageableClient,
   getAll,
-  get,
   post,
   put,
 }

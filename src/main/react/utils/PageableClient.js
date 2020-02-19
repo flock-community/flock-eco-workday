@@ -8,7 +8,12 @@ export function PageableClient(path) {
       .filter(key => params[key])
       .map(key => `${key}=${params[key]}`)
       .join("&")
-    return fetch(`${path}?${query}`, opts).then(res => res.json())
+    return fetch(`${path}?${query}`, opts).then(res =>
+      res.json().then(json => ({
+        total: res.headers.get("x-total"),
+        list: json,
+      }))
+    )
   }
 
   return {findAllByPage}

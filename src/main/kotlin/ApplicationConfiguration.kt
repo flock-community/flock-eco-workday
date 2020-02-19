@@ -29,7 +29,7 @@ class ApplicationConfiguration(
     fun handleCreateUserEvent(ev: UserCreateEvent) {
         // Make first user super admin
         val total = userRepository.count()
-        if (total >= 1L) {
+        if (total <= 1L) {
             val authorities = userAuthorityService.allAuthorities()
                     .map { it.toName() }
                     .toSet()
