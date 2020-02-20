@@ -12,9 +12,7 @@ const _defaultObject = {
   email: string()
     .email()
     .default(""),
-  number: string()
-    .email()
-    .default(""),
+  number: string().default(""),
   position: string().default(""),
 }
 
