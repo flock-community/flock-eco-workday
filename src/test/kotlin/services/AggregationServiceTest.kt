@@ -3,23 +3,23 @@ package community.flock.eco.workday.services
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
-import java.math.BigDecimal
-import java.time.LocalDate
-import kotlin.test.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
+import java.math.BigDecimal
+import java.time.LocalDate
+import kotlin.test.assertEquals
 
 @RunWith(SpringRunner::class)
 @ContextConfiguration(classes = [ApplicationConfiguration::class])
 @DataJpaTest
 @AutoConfigureTestDatabase
-@ComponentScan(basePackages = ["community.flock.eco.workday.helpers"])
+@Import(DataHelper::class)
 class AggregationServiceTest {
 
     @Autowired

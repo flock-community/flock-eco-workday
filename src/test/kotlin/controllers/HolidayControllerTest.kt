@@ -89,7 +89,7 @@ class HolidayControllerTest {
             lastname = "Barber",
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
-            number = randomNumber(),
+            number = null,
             userCode = null
         ).run { personService.create(this)!! }
 
@@ -122,7 +122,7 @@ class HolidayControllerTest {
             lastname = "Barber",
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
-            number = randomNumber(),
+            number = null,
             userCode = null
         ).run { personService.create(this)!! }
         /* DRY-Block */
@@ -148,7 +148,7 @@ class HolidayControllerTest {
             lastname = "Barber",
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
-            number = randomNumber(),
+            number = null,
             userCode = null
         ).run { personService.create(this)!! }
 
@@ -182,7 +182,7 @@ class HolidayControllerTest {
             lastname = "Barber",
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
-            number = randomNumber(),
+            number = null,
             userCode = null
         ).run { personService.create(this)!! }
 

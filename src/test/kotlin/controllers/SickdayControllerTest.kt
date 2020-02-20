@@ -378,7 +378,7 @@ class SickdayControllerTest {
             lastname = "Moss",
             email = "maurice@reynholm-industries.co.uk",
             position = "Software application developer",
-            number = randomNumber(),
+            number = null,
             userCode = null)
             .run { personService.create(this)!! },
         PersonForm(
@@ -386,7 +386,7 @@ class SickdayControllerTest {
             lastname = "Trenneman",
             email = "roy@reynholm-industries.co.uk",
             position = "Support technican",
-            number = randomNumber(),
+            number = null,
             userCode = null)
             .run { personService.create(this)!! },
         PersonForm(
@@ -394,7 +394,7 @@ class SickdayControllerTest {
             lastname = "Barber",
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
-            number = randomNumber(),
+            number = null,
             userCode = null)
             .run { personService.create(this)!! },
         PersonForm(
@@ -402,7 +402,7 @@ class SickdayControllerTest {
             lastname = "Avenal",
             email = "",
             position = "",
-            number = randomNumber(),
+            number = null,
             userCode = null)
             .run { personService.create(this)!! }
     )

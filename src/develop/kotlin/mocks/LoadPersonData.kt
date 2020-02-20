@@ -55,7 +55,7 @@ class LoadPersonData(
             lastname = lastname,
             email = email,
             position = position,
-            number = (1..10).shuffled().first(),
+            number = null,
             user = user
         ).save()
 

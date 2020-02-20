@@ -35,7 +35,7 @@ class CreateHelper(
         lastname = lastname,
         position = "Software engineer",
         userCode = null,
-        number = randomNumber()
+        number = null
     ).run {
         personService.create(this)
     } ?: error("Cannot create person")

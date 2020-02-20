@@ -60,7 +60,7 @@ class HolidayRepositoryTest {
                 lastname = "",
                 email = "admin@reynholm-industries.co.uk",
                 position = "",
-                number = randomNumber(),
+                number = null,
                 user = null
             ),
             Person(
@@ -68,7 +68,7 @@ class HolidayRepositoryTest {
                 lastname = "",
                 email = "admin@reynholm-industries.co.uk",
                 position = "",
-                number = randomNumber(),
+                number = null,
                 user = null
             )
         ).apply { personRepository.saveAll(this) }

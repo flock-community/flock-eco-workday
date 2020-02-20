@@ -82,7 +82,7 @@ class PersonControllerTest {
             lastname = "Moss",
             email = "",
             position = "",
-            number = randomNumber(),
+            number = null,
             userCode = null
         )
 
@@ -109,7 +109,7 @@ class PersonControllerTest {
             lastname = "Moss",
             email = "",
             position = "",
-            number = randomNumber(),
+            number = null,
             userCode = null
         )
 
@@ -148,7 +148,7 @@ class PersonControllerTest {
             lastname = "Moss",
             email = "",
             position = "",
-            number = randomNumber(),
+            number = null,
             userCode = null
         )
 
@@ -171,7 +171,7 @@ class PersonControllerTest {
             lastname = "Moss",
             email = "morris@reynholm-industires.co.uk",
             position = "",
-            number = randomNumber(),
+            number = null,
             userCode = null
         )
 
@@ -200,7 +200,7 @@ class PersonControllerTest {
             lastname = "Moss",
             email = "",
             position = "",
-            number = randomNumber(),
+            number = null,
             userCode = null
         )
 

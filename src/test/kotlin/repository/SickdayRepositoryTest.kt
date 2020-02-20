@@ -42,7 +42,7 @@ class SickdayRepositoryTest {
             lastname = "Reynholm",
             email = "denholm@reynholm-industries.co.uk",
             position = "Chief Executive Officer",
-            number = randomNumber(),
+            number = null,
             user = null
         ))
         entity.flush()
