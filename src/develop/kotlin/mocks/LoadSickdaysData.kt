@@ -31,7 +31,6 @@ class LoadSickdaysData(
     init {
         loadPersonData.data.forEach {
             SickdayForm(
-                description = "Sick - ${it.firstname} ${it.lastname}",
                 status = SickdayStatus.SICK,
                 from = LocalDate.of(2019, 4, 4),
                 to = LocalDate.of(2019, 4, 9),
@@ -41,7 +40,6 @@ class LoadSickdaysData(
             ).create()
 
             SickdayForm(
-                description = "Healthy - ${it.firstname} ${it.lastname}",
                 status = SickdayStatus.HEALTHY,
                 from = LocalDate.of(2019, 4, 4),
                 to = LocalDate.of(2019, 4, 9),

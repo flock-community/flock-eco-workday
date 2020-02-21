@@ -1,5 +1,6 @@
 package community.flock.eco.workday.services
 
+import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.SickdayForm
 import community.flock.eco.workday.model.Period
 import community.flock.eco.workday.model.Sickday
@@ -29,7 +30,12 @@ class SickdayService(
         return repository.findAll()
     }
 
-    fun findByCode(code: String) = repository.findByCode(code)
+    fun findByCode(code: String): Sickday? = repository
+        .findByCode(code)
+        .toNullable()
+
+    fun findAllByPersonUserCode(userCode: String) = repository
+        .findAllByPersonUserCode(userCode)
 
     fun create(form: SickdayForm): Sickday {
         val person = personService
@@ -43,7 +49,6 @@ class SickdayService(
         ).save()
 
         return Sickday(
-            description = form.description,
             person = person,
             period = period,
             hours = form.hours,
@@ -52,8 +57,7 @@ class SickdayService(
     }
 
     fun update(code: String, form: SickdayForm): Sickday? {
-        val sickday = repository.findByCode(code)
-
+        val sickday = findByCode(code)
         return when (sickday) {
             is Sickday -> sickday.render(form).save()
             else -> null
@@ -61,7 +65,7 @@ class SickdayService(
     }
 
     @Transactional
-    fun delete(code: String) = repository.deleteByCode(code)
+    fun deleteByCode(code: String) = repository.deleteByCode(code)
 
     //
     // *-- Utility functions --*
@@ -80,7 +84,6 @@ class SickdayService(
             id = this.id,
             code = this.code,
             person = this.person,
-            description = it.description,
             status = it.status,
             hours = it.hours,
             period = period

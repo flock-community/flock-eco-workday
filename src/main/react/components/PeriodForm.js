@@ -23,7 +23,6 @@ const stringifyDate = date => {
 }
 
 const calcDays = (from, to, days) => {
-  console.log(days)
   const diff = to.diff(from, "days")
   return diff < 0
     ? {}

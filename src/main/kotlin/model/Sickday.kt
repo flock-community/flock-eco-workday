@@ -20,7 +20,6 @@ data class Sickday(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
 
-    val description: String?,
     val hours: Int,
 
     @Enumerated(EnumType.STRING)

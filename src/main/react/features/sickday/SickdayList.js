@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import {Card, Typography} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import Grid from "@material-ui/core/Grid"
-import {SickdayClient} from "./SickdayClient"
+import {SickdayClient} from "../../clients/SickdayClient"
 import {isDefined} from "../../utils/validation"
 
 export function SickdayList(props) {
@@ -11,11 +11,7 @@ export function SickdayList(props) {
   const [list, setList] = useState([])
 
   useEffect(() => {
-    if (personCode) {
-      SickdayClient.fetchAllWithFilters(personCode).then(res => setList(res))
-    } else {
-      SickdayClient.fetchAll().then(res => setList(res))
-    }
+    SickdayClient.findAllByPersonCode(personCode).then(res => setList(res))
   }, [personCode, refresh])
 
   function handleClickRow(item) {

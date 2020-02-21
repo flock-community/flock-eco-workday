@@ -8,7 +8,6 @@ import community.flock.eco.workday.model.SickdayStatus
 import java.time.LocalDate
 
 data class SickdayForm(
-    var description: String,
     var status: SickdayStatus,
 
     @JsonDeserialize(using = LocalDateDeserializer::class)

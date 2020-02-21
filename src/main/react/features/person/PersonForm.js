@@ -71,7 +71,7 @@ export const PersonForm = props => {
               component={FormikTextField}
             />
           </FormControl>
-          <FormControl className={classes.h79} fullWidth>
+          <FormControl className={classes.h70} fullWidth>
             <UserSelectorFormInput />
           </FormControl>
         </Grid>

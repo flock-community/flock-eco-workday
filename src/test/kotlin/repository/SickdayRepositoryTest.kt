@@ -6,7 +6,6 @@ import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.Sickday
 import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.utils.convertDayOff
-import community.flock.eco.workday.utils.randomNumber
 import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -59,7 +58,6 @@ class SickdayRepositoryTest {
         ).save()
 
         val sickday = Sickday(
-            description = "Jumped out of an open Window",
             status = SickdayStatus.SICK,
             hours = 8,
             person = person,
@@ -100,7 +98,6 @@ class SickdayRepositoryTest {
         val sickday = Sickday(
             id = res.first().id,
             code = res.first().code,
-            description = "Jumped out of an open Window",
             status = SickdayStatus.HEALTHY,
             hours = 48,
             person = person,
@@ -128,7 +125,6 @@ class SickdayRepositoryTest {
 
             sickdayList.add(
                 Sickday(
-                    description = "$i sickday",
                     status = SickdayStatus.SICK,
                     hours = i * 8,
                     person = person,

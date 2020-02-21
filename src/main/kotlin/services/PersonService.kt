@@ -76,3 +76,5 @@ class PersonService(
     @Transactional
     fun deleteByCode(code: String) = repository.deleteByCode(code)
 }
+
+fun Person.isUser(userCode: String) = this.user?.code == userCode

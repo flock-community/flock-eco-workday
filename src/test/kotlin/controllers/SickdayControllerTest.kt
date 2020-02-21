@@ -14,7 +14,6 @@ import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.repository.SickdayRepository
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.utils.dayFromLocalDate
-import community.flock.eco.workday.utils.randomNumber
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -206,7 +205,6 @@ class SickdayControllerTest {
         /* DRY-Block */
         val person = persons.elementAt(0)
         val sickdayForm = SickdayForm(
-            description = "Fire! Fire!",
             status = SickdayStatus.SICK,
             from = dayFromLocalDate(),
             to = dayFromLocalDate(4),
@@ -223,7 +221,6 @@ class SickdayControllerTest {
         /* DRY-Block */
         val person = persons.elementAt(0)
         val sickdayForm = SickdayForm(
-            description = "Fire! Fire!",
             status = SickdayStatus.SICK,
             from = dayFromLocalDate(),
             to = dayFromLocalDate(4),
@@ -240,7 +237,6 @@ class SickdayControllerTest {
         /* DRY-Block */
         val person = persons.elementAt(0)
         val sickdayForm = SickdayForm(
-            description = "Fire! Fire!",
             status = SickdayStatus.SICK,
             from = dayFromLocalDate(),
             to = dayFromLocalDate(4),
@@ -262,7 +258,6 @@ class SickdayControllerTest {
         /* DRY-Block */
         val person = persons.elementAt(0)
         val sickdayForm = SickdayForm(
-            description = "Fire! Fire!",
             status = SickdayStatus.SICK,
             from = dayFromLocalDate(),
             to = dayFromLocalDate(4),
@@ -313,7 +308,6 @@ class SickdayControllerTest {
         .andExpect(status().isOk)
         .andExpect(content().contentType(APPLICATION_JSON_UTF8))
         .andExpect(jsonPath("\$.hours").value(sickdayForm.hours))
-        .andExpect(jsonPath("\$.description").value(sickdayForm.description))
         .andExpect(jsonPath("\$.status").value(sickdayForm.status.toString()))
         .andExpect(jsonPath("\$.person").exists())
         .andExpect(jsonPath("\$.person").isNotEmpty)
@@ -332,7 +326,6 @@ class SickdayControllerTest {
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("\$.description").value(sickdayForm.description))
             .andExpect(jsonPath("\$.status").value(sickdayForm.status.toString()))
             .andExpect(jsonPath("\$.hours").isNumber)
             .andExpect(jsonPath("\$.hours").value(sickdayForm.hours))
@@ -353,7 +346,6 @@ class SickdayControllerTest {
         .andExpect(status().isOk)
         .andExpect(content().contentType(APPLICATION_JSON_UTF8))
         .andExpect(jsonPath("\$.hours").value(sickdayForm.hours))
-        .andExpect(jsonPath("\$.description").value(sickdayForm.description))
         .andExpect(jsonPath("\$.status").value(sickdayForm.status.toString()))
         .andExpect(jsonPath("\$.person").exists())
         .andExpect(jsonPath("\$.person").isNotEmpty)
@@ -414,7 +406,6 @@ class SickdayControllerTest {
         persons.forEach {
             val sickdayForms = mutableListOf(
                 SickdayForm(
-                    description = "Sick - ${it.firstname}",
                     status = SickdayStatus.SICK,
                     from = dayFromLocalDate(),
                     to = dayFromLocalDate(4),
@@ -423,7 +414,6 @@ class SickdayControllerTest {
                     personCode = it.code
                 ),
                 SickdayForm(
-                    description = "Healthy - ${it.firstname}",
                     status = SickdayStatus.SICK,
                     from = dayFromLocalDate(),
                     to = dayFromLocalDate(4),

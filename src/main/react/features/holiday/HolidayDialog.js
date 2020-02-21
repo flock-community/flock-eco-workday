@@ -9,11 +9,9 @@ import {HOLIDAY_FORM_ID, HolidayForm} from "./HolidayForm"
 import {isDefined} from "../../utils/validation"
 import {TransitionSlider} from "../../components/transitions/Slide"
 
-export function HolidayDialog(props) {
-  const {holidayCode, personCode, open, onComplete} = props
-
+export function HolidayDialog({holidayCode, personCode, open, onComplete}) {
   const handleSubmit = it => {
-    if (it.id) {
+    if (it.code) {
       HolidayClient.putHoliday(it.code, {
         description: it.description,
         status: it.status,
