@@ -9,6 +9,8 @@ import {RevenueCostPerMonthChart} from "../../components/charts/RevenueCostPerMo
 import {HolidaysPerPersonChart} from "../../components/charts/HolidaysPerPersonChart"
 import {SickdayPerPersonChart} from "../../components/charts/SickdayPerPersonChart"
 import {PersonService} from "../person/PersonService"
+import {RevenuePerClientChart} from "../../components/charts/RevenuePerClientChart"
+import {ClientClient} from "../../clients/ClientClient"
 
 const useStyles = makeStyles({
   root: {
@@ -27,12 +29,22 @@ export function DashboardFeature() {
   const classes = useStyles()
 
   const [persons, setPersons] = useState()
+  const [clients, setClients] = useState()
 
   useEffect(() => {
     PersonService.findAllByPage({page: 0, size: 100, sort: "lastname"}).then(res =>
       setPersons(
         res.list.reduce((acc, cur) => {
           acc[cur.code] = `${cur.firstname} ${cur.lastname}`
+          return acc
+        }, {})
+      )
+    )
+
+    ClientClient.findAllByPage({page: 0, size: 100, sort: "name"}).then(res =>
+      setClients(
+        res.list.reduce((acc, cur) => {
+          acc[cur.code] = cur.name
           return acc
         }, {})
       )
@@ -62,12 +74,22 @@ export function DashboardFeature() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={8}>
           <Card>
             <CardHeader title="Revenue Cost" />
             <CardContent>
               <div style={{height: CHART_HEIGHT}}>
                 <RevenueCostPerMonthChart />
+              </div>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={4}>
+          <Card>
+            <CardHeader title="Revenue per client" />
+            <CardContent>
+              <div style={{height: CHART_HEIGHT}}>
+                <RevenuePerClientChart clients={clients} />
               </div>
             </CardContent>
           </Card>

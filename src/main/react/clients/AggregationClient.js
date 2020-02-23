@@ -48,9 +48,22 @@ export const sickdayPerPersonByYear = year => {
   })
 }
 
+export const revenuePerClientByYear = year => {
+  const opts = {
+    method: "GET",
+  }
+  return fetch(`${path}/revenue-per-client?year=${year}`, opts).then(res => {
+    if (res.status === 200) {
+      return res.json()
+    }
+    throw res.json()
+  })
+}
+
 export const AggregationClient = {
   revenuePerMonthByYear,
   costPerMonthByYear,
   holidayPerPersonByYear,
   sickdayPerPersonByYear,
+  revenuePerClientByYear,
 }

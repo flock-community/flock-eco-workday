@@ -5,13 +5,13 @@ import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
-import community.flock.eco.workday.model.ContractService as ContractServiceModel
+import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
-import org.springframework.stereotype.Service
+import community.flock.eco.workday.model.ContractService as ContractServiceModel
 
 @Service
 class AggregationService(
@@ -22,46 +22,53 @@ class AggregationService(
 ) {
 
     fun revenuePerMonth(from: LocalDate, to: LocalDate): Map<YearMonth, Double> {
-        val activeAssignments = assignmentService.findAllActive(from, to)
-        val diff = ChronoUnit.DAYS.between(from, to)
+        val active = assignmentService.findAllActive(from, to)
         return dateRange(from, to)
             .filter { it.isWorkingDay() }
-            .map { date -> date to activeAssignments.filter { it.inRange(date) } }
+            .map { date -> date to active.filter { it.inRange(date) } }
             .groupingBy { YearMonth.of(it.first.year, it.first.month) }
             .fold(0.0) { acc, cur -> acc + cur.second.sumByDouble { it.revenuePerDay() } }
     }
 
     fun costPerMonth(from: LocalDate, to: LocalDate): Map<YearMonth, BigDecimal> {
-        val activeContracts = contractService.findAllActive(from, to)
-        val diff = ChronoUnit.DAYS.between(from, to)
+        val active = contractService.findAllActive(from, to)
         return dateRange(from, to)
             .filter { it.isWorkingDay() }
-            .map { date -> date to activeContracts.filter { it.inRange(date) } }
+            .map { date -> date to active.filter { it.inRange(date) } }
             .groupingBy { YearMonth.of(it.first.year, it.first.month) }
             .fold(BigDecimal(0), { acc, cur -> acc + cur.second.sumCosts(cur.first) })
     }
 
     fun revenuePerPerson(from: LocalDate, to: LocalDate): Map<YearMonth, Double> {
-        val activeAssignments = assignmentService.findAllActive(from, to)
+        val active = assignmentService.findAllActive(from, to)
         return dateRange(from, to)
             .filter { it.isWorkingDay() }
-            .map { date -> date to activeAssignments.filter { it.inRange(date) } }
+            .map { date -> date to active.filter { it.inRange(date) } }
             .groupingBy { YearMonth.of(it.first.year, it.first.month) }
             .fold(0.0) { acc, cur -> acc + cur.second.sumByDouble { it.revenuePerDay() } }
     }
 
     fun holidayPerPerson(from: LocalDate, to: LocalDate): Map<String, Double> {
-        val activeAssignments = holidayService.findAllActive(from, to)
-        return activeAssignments
+        val active = holidayService.findAllActive(from, to)
+        return active
             .groupingBy { it.person.code }
             .fold(0.0) { acc, cur -> acc + cur.hours.toDouble() }
     }
 
     fun sickdayPerPerson(from: LocalDate, to: LocalDate): Map<String, Double> {
-        val activeAssignments = sickdayService.findAllActive(from, to)
-        return activeAssignments
+        val active = sickdayService.findAllActive(from, to)
+        return active
             .groupingBy { it.person.code }
             .fold(0.0) { acc, cur -> acc + cur.hours.toDouble() }
+    }
+
+    fun revenuePerClient(from: LocalDate, to: LocalDate): Map<String, Double> {
+        val active = assignmentService.findAllActive(from, to)
+        return dateRange(from, to)
+            .filter { it.isWorkingDay() }
+            .flatMap { date -> active.filter { it.inRange(date) }.asSequence() }
+            .groupingBy { it.client.code }
+            .fold(0.0) { acc, cur -> acc + cur.revenuePerDay() }
     }
 }
 

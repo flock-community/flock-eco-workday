@@ -55,4 +55,12 @@ class AggregationController(
         val to = LocalDate.of(year, 12, 31)
         return aggregationService.sickdayPerPerson(from, to)
     }
+
+    @GetMapping("/revenue-per-client", params = ["year"])
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    fun revenuePerClientByYear(@RequestParam year: Int): Map<String, Double> {
+        val from = LocalDate.of(year, 1, 1)
+        val to = LocalDate.of(year, 12, 31)
+        return aggregationService.revenuePerClient(from, to)
+    }
 }
