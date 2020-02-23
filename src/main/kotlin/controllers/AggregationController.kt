@@ -39,4 +39,20 @@ class AggregationController(
         val to = LocalDate.of(year, 12, 31)
         return aggregationService.costPerMonth(from, to)
     }
+
+    @GetMapping("/holiday-per-person", params = ["year"])
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    fun holidayPerPersonByYear(@RequestParam year: Int): Map<String, Double> {
+        val from = LocalDate.of(year, 1, 1)
+        val to = LocalDate.of(year, 12, 31)
+        return aggregationService.holidayPerPerson(from, to)
+    }
+
+    @GetMapping("/sickday-per-person", params = ["year"])
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    fun sickdayPerPersonByYear(@RequestParam year: Int): Map<String, Double> {
+        val from = LocalDate.of(year, 1, 1)
+        val to = LocalDate.of(year, 12, 31)
+        return aggregationService.sickdayPerPerson(from, to)
+    }
 }

@@ -2,7 +2,6 @@ package community.flock.eco.workday.mocks
 
 import community.flock.eco.workday.forms.SickdayForm
 import community.flock.eco.workday.model.Sickday
-import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.services.SickdayService
 import java.time.LocalDate
 import org.springframework.context.annotation.Profile
@@ -31,7 +30,6 @@ class LoadSickdaysData(
     init {
         loadPersonData.data.forEach {
             SickdayForm(
-                status = SickdayStatus.SICK,
                 from = LocalDate.of(2019, 4, 4),
                 to = LocalDate.of(2019, 4, 9),
                 days = listOf(8, 8, 8, 8, 8, 8),
@@ -40,7 +38,6 @@ class LoadSickdaysData(
             ).create()
 
             SickdayForm(
-                status = SickdayStatus.HEALTHY,
                 from = LocalDate.of(2019, 4, 4),
                 to = LocalDate.of(2019, 4, 9),
                 days = listOf(8, 8, 8, 8, 8, 8),

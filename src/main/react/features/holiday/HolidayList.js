@@ -1,34 +1,37 @@
 import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
 import Grid from "@material-ui/core/Grid"
-import {HolidayClient} from "../../clients/HolidayClient"
+import Card from "@material-ui/core/Card"
+import {CardContent} from "@material-ui/core"
+import Typography from "@material-ui/core/Typography"
 import {HolidayListItem} from "./HolidayListItem"
+import {HolidayClient} from "../../clients/HolidayClient"
 
-export function HolidayList(props) {
-  const {personCode, refresh, onSelectItem} = props
+export function HolidayList({personCode, refresh, onRowClick}) {
   const [list, setList] = useState([])
-  const [update, setUpdate] = useState(refresh)
+  const [update] = useState(refresh)
 
   useEffect(() => {
     if (personCode) {
       HolidayClient.findAllByPersonCode(personCode).then(res => setList(res))
-    } else {
-      HolidayClient.findAll().then(res => setList(res))
     }
   }, [personCode, refresh, update])
-
-  function handleDelete(holidayCode) {
-    HolidayClient.delete(holidayCode)
-      .then(() => {})
-      .catch(err => console.log(err))
-    setUpdate(!update)
-  }
 
   function renderItem(item, key) {
     return (
       <Grid item xs={12} key={`holiday-list-item-${key}`}>
-        <HolidayListItem item={item} onEdit={onSelectItem} onDelete={handleDelete} />
+        <HolidayListItem value={item} onClick={onRowClick(item)} />
       </Grid>
+    )
+  }
+
+  if (list.length === 0) {
+    return (
+      <Card>
+        <CardContent>
+          <Typography>No holidays.</Typography>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -42,5 +45,5 @@ export function HolidayList(props) {
 HolidayList.propTypes = {
   personCode: PropTypes.string,
   refresh: PropTypes.bool,
-  onSelectItem: PropTypes.func,
+  onRowClick: PropTypes.func,
 }

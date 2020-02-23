@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository
 interface HolidayRepository : CrudRepository<Holiday, Long> {
     fun findByCode(code: String): Optional<Holiday>
     fun findAllByPersonCode(personCode: String): Iterable<Holiday>
+    fun findAllByPersonUserCode(personCode: String): Iterable<Holiday>
     fun deleteByCode(code: String): Unit
 }

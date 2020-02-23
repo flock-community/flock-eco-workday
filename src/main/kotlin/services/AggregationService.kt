@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service
 @Service
 class AggregationService(
     private val assignmentService: AssignmentService,
-    private val contractService: ContractService
+    private val contractService: ContractService,
+    private val holidayService: HolidayService,
+    private val sickdayService: SickdayService
 ) {
 
     fun revenuePerMonth(from: LocalDate, to: LocalDate): Map<YearMonth, Double> {
@@ -46,6 +48,20 @@ class AggregationService(
             .map { date -> date to activeAssignments.filter { it.inRange(date) } }
             .groupingBy { YearMonth.of(it.first.year, it.first.month) }
             .fold(0.0) { acc, cur -> acc + cur.second.sumByDouble { it.revenuePerDay() } }
+    }
+
+    fun holidayPerPerson(from: LocalDate, to: LocalDate): Map<String, Double> {
+        val activeAssignments = holidayService.findAllActive(from, to)
+        return activeAssignments
+            .groupingBy { it.person.code }
+            .fold(0.0) { acc, cur -> acc + cur.hours.toDouble() }
+    }
+
+    fun sickdayPerPerson(from: LocalDate, to: LocalDate): Map<String, Double> {
+        val activeAssignments = sickdayService.findAllActive(from, to)
+        return activeAssignments
+            .groupingBy { it.person.code }
+            .fold(0.0) { acc, cur -> acc + cur.hours.toDouble() }
     }
 }
 

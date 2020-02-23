@@ -57,9 +57,6 @@ export function SickdayFeature() {
     setPerson(it)
   }
 
-  if (!person) {
-    return null
-  }
   return (
     <div className={classes.root}>
       <Grid container spacing={1}>
@@ -68,7 +65,7 @@ export function SickdayFeature() {
         </Grid>
         <Grid item xs={12}>
           <SickdayList
-            personCode={person.code}
+            personCode={person && person.code}
             onClickRow={handleClickRow}
             refresh={reload}
           />
@@ -76,7 +73,8 @@ export function SickdayFeature() {
       </Grid>
       <SickdayDialog
         open={open}
-        personCode={person.code}
+        sickdayCode={value && value.code}
+        personCode={person && person.code}
         value={value}
         onComplete={handleCompleteDialog}
       />

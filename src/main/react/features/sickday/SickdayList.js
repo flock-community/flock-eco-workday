@@ -25,9 +25,6 @@ export function SickdayList(props) {
       <Grid key={`sickday-list-item-${key}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
           <CardContent>
-            <Typography variant="h6">
-              {item.description ? item.description : "empty"}
-            </Typography>
             <Typography>
               Period: {item.period.from.format("DD-MM-YYYY")} -{" "}
               {item.period.to.format("DD-MM-YYYY")}
@@ -45,6 +42,16 @@ export function SickdayList(props) {
     )
   }
 
+  if (list.length === 0) {
+    return (
+      <Card>
+        <CardContent>
+          <Typography>No sickdays</Typography>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Grid container spacing={1}>
       {list.map(renderItem)}
@@ -53,7 +60,7 @@ export function SickdayList(props) {
 }
 
 SickdayList.propTypes = {
-  refresh: PropTypes.boolean,
-  personCode: PropTypes.string.isRequired,
+  refresh: PropTypes.bool,
+  personCode: PropTypes.string,
   onClickRow: PropTypes.func,
 }

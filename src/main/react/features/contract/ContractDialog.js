@@ -47,7 +47,6 @@ export function ContractDialog(props) {
   }, [code, open])
 
   const handleSubmit = value => {
-    console.log(value)
     if (code) {
       ContractClient.put(code, type, {...value, personCode: person.code})
         .then(() => onClose && onClose())

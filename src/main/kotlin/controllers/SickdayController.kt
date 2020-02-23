@@ -4,7 +4,6 @@ import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.forms.SickdayForm
 import community.flock.eco.workday.model.Sickday
-import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.SickdayService
 import community.flock.eco.workday.services.isUser
@@ -29,14 +28,13 @@ class SickdayController(
     private val service: SickdayService,
     private val personService: PersonService
 ) {
-    @GetMapping
+    @GetMapping(params = ["personCode"])
     @PreAuthorize("hasAuthority('SickdayAuthority.READ')")
     fun getAll(
-        @RequestParam(required = false) status: SickdayStatus?,
-        @RequestParam(required = false) code: String?,
+        @RequestParam personCode: String,
         authentication: Authentication
     ): ResponseEntity<Iterable<Sickday>> = when {
-        authentication.isAdmin() -> service.findAll(status, code)
+        authentication.isAdmin() -> service.findAllByPersonCode(personCode)
         else -> service.findAllByPersonUserCode(authentication.name)
     }.toResponse()
 
@@ -70,7 +68,7 @@ class SickdayController(
         .toResponse()
 
     @DeleteMapping("/{code}")
-    @PreAuthorize("hasAuthority('SickdayAuthority.ADMIN')")
+    @PreAuthorize("hasAuthority('SickdayAuthority.WRITE')")
     fun delete(
         @PathVariable code: String,
         authentication: Authentication
@@ -79,10 +77,6 @@ class SickdayController(
         ?.run { service.deleteByCode(this.code) }
         .toResponse()
 
-    /**
-     * add findPersonCode() function to Authentication
-     * @return <code>Person?</code> a person if found with given user code in the db
-     */
     private fun SickdayForm.setPersonCode(authentication: Authentication): SickdayForm {
         if (authentication.isAdmin()) {
             return this
@@ -91,23 +85,16 @@ class SickdayController(
             ?.let {
                 this.copy(personCode = it.code)
             }
-            ?: throw ResponseStatusException(UNAUTHORIZED)
+            ?: throw ResponseStatusException(UNAUTHORIZED, "User is not linked to person")
     }
 
-    /**
-     * Evaluate if user has admin authorities on Sickday
-     * @return <code>true</code> if user is admin or has admin authorities
-     */
     private fun Authentication.isAdmin(): Boolean = this.authorities
         .map { it.authority }
         .contains(SickdayAuthority.ADMIN.toName())
 
-    /**
-     * Apply authentication on Sickday object
-     */
     private fun Sickday.applyAuthentication(authentication: Authentication) = apply {
         if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
-            throw ResponseStatusException(UNAUTHORIZED)
+            throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
         }
     }
 }

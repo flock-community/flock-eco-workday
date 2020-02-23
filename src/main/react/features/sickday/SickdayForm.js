@@ -5,7 +5,7 @@ import {Form, Formik} from "formik"
 import moment from "moment"
 import Grid from "@material-ui/core/Grid"
 import {PeriodForm} from "../../components/PeriodForm"
-import {HolidayClient} from "../../clients/HolidayClient"
+import {SickdayClient} from "../../clients/SickdayClient"
 import {isDefined} from "../../utils/validation"
 
 export const SICKDAY_FORM_ID = "sickday-form"
@@ -15,9 +15,10 @@ export function SickdayForm({code, onSubmit}) {
 
   useEffect(() => {
     if (code) {
-      HolidayClient.findByCode(code).then(res => {
+      SickdayClient.get(code).then(res => {
         setState({
-          ...res,
+          code: res.code,
+          personCode: res.person,
           period: {
             dates: [res.period.from, res.period.to],
             days: res.period.days.map(it => it.hours),
@@ -27,7 +28,6 @@ export function SickdayForm({code, onSubmit}) {
     } else {
       const now = moment()
       setState({
-        description: "",
         period: {
           dates: [now, now],
         },
@@ -36,7 +36,6 @@ export function SickdayForm({code, onSubmit}) {
   }, [code])
 
   const handleSubmit = value => {
-    console.log(state, value)
     if (isDefined(onSubmit))
       onSubmit({
         ...state,

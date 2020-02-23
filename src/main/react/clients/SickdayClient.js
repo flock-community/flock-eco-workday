@@ -12,6 +12,6 @@ const findAllByPersonCode = personCode => {
 }
 
 export const SickdayClient = {
-  resourceClient,
+  ...resourceClient,
   findAllByPersonCode,
 }

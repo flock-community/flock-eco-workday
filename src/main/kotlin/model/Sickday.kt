@@ -8,8 +8,6 @@ import community.flock.eco.core.model.AbstractCodeEntity
 import java.util.UUID
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
 import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
 
@@ -21,9 +19,6 @@ data class Sickday(
     override val code: String = UUID.randomUUID().toString(),
 
     val hours: Int,
-
-    @Enumerated(EnumType.STRING)
-    val status: SickdayStatus,
 
     @OneToOne
     val period: Period,

@@ -10,13 +10,14 @@ import {
 } from "@material-ui/core"
 import {PersonService} from "../../features/person/PersonService"
 
-export function PersonSelector(props) {
-  const {onChange, label, selectedItem, embedded} = props
+export function PersonSelector({onChange, label, selectedItem, embedded}) {
   const [items, setItems] = useState([])
   const [selected, setSelected] = useState("")
 
   useEffect(() => {
-    PersonService.getAll().then(res => setItems(res))
+    PersonService.findAllByPage({page: 0, size: 100, sort: "lastname"}).then(res =>
+      setItems(res.list)
+    )
     setSelected(selectedItem)
   }, [])
 

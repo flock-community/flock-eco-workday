@@ -34,7 +34,6 @@ export const PersonDialog = props => {
   }
 
   const handleSubmit = values => {
-    console.log("123123", values)
     if (isEmptyObject(person)) {
       PersonService.post(values)
         .then(() => successfulSubmit())

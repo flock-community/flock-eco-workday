@@ -39,7 +39,6 @@ export function HolidayForm({code, onSubmit}) {
   }, [code])
 
   const handleSubmit = value => {
-    console.log(state, value)
     if (isDefined(onSubmit))
       onSubmit({
         ...state,

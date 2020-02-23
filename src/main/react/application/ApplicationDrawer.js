@@ -53,7 +53,7 @@ export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
       name: "Dashboard",
       icon: DashboardIcon,
       url: "/dashboard",
-      authority: "DashboardAuthority.READ",
+      authority: "AggregationAuthority.READ",
     },
     {
       name: "Clients",
