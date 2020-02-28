@@ -41,7 +41,7 @@ class LoadSickdaysData(
                 from = LocalDate.of(2019, 4, 4),
                 to = LocalDate.of(2019, 4, 9),
                 days = listOf(8, 8, 8, 8, 8, 8),
-                hours = 24,
+                hours = 48,
                 personCode = it.code
             ).run {
                 val sickday = service.create(this)

@@ -79,7 +79,7 @@ export function PeriodForm({value, onChange}) {
     const start = moment(dates[0]).startOf("week")
     const end = moment(dates[1]).startOf("week")
     const diff = Math.ceil(end.diff(start, "days") / 7) + 1
-    const weeks = [...Array(diff).keys()]
+    const weeks = [...Array(diff > 0 ? diff : 1).keys()]
 
     setGrid(
       weeks.map(week => {
