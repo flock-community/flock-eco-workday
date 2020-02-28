@@ -53,8 +53,6 @@ export const ContractFormInternal = props => {
     </Form>
   )
 
-  console.log(value)
-
   const init = value && {
     monthlySalary: value.monthlySalary,
     hoursPerWeek: value.hoursPerWeek,

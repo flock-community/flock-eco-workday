@@ -5,6 +5,8 @@ import {UserFeature} from "@flock-eco/feature-user/src/main/react/user/UserFeatu
 import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
 import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {CircularProgress, makeStyles} from "@material-ui/core"
+import createMuiTheme from "@material-ui/core/styles/createMuiTheme"
+import ThemeProvider from "@material-ui/styles/ThemeProvider"
 import {HolidayFeature} from "../features/holiday/HolidayFeature"
 import {ApplicationLayout} from "./ApplicationLayout"
 import {ApplicationDrawer} from "./ApplicationDrawer"
@@ -15,7 +17,7 @@ import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
 import {PersonFeature} from "../features/person/PersonFeature"
 // TODO: replace by UserStatusClient from @flock-eco/feature-user
 import {UserStatusClient} from "../clients/UserStatusClient"
-import {SickdayFeature} from "../features/sickday/SickFeature"
+import {SickdayFeature} from "../features/sickday/SickdayFeature"
 import {useUser} from "../hooks/UserHook"
 import {DashboardFeature} from "../features/dashboard/DashboardFeature"
 import {ContractFeature} from "../features/contract/ContractFeature"
@@ -28,6 +30,14 @@ const useStyles = makeStyles(() => ({
     justifyContent: "center",
   },
 }))
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: "#fcde00",
+    },
+  },
+})
 
 export const Application = () => {
   const classes = useStyles()
@@ -90,22 +100,24 @@ export const Application = () => {
   }
 
   return (
-    <ApplicationContext.Provider
-      value={{authorities: state.authorities, user: state.user}}
-    >
-      <Router>
-        <ApplicationDrawer open={state.openDrawer} onClose={handleDrawerClose} />
-        <ApplicationLayout onDrawer={handleDrawerOpen} />
-        <Route path="/" exact component={HomeFeature} />
-        <Route path="/dashboard" exact component={DashboardFeature} />
-        <Route path="/clients" exact component={ClientFeature} />
-        <Route path="/contracts" exact component={ContractFeature} />
-        <Route path="/assignments" exact component={AssignmentFeature} />
-        <Route path="/holidays" exact component={HolidayFeature} />
-        <Route path="/sickdays" component={SickdayFeature} />
-        <Route path="/users" exact component={UserFeature} />
-        <Route path="/person" component={PersonFeature} />
-      </Router>
-    </ApplicationContext.Provider>
+    <ThemeProvider theme={theme}>
+      <ApplicationContext.Provider
+        value={{authorities: state.authorities, user: state.user}}
+      >
+        <Router>
+          <ApplicationDrawer open={state.openDrawer} onClose={handleDrawerClose} />
+          <ApplicationLayout onDrawer={handleDrawerOpen} />
+          <Route path="/" exact component={HomeFeature} />
+          <Route path="/dashboard" exact component={DashboardFeature} />
+          <Route path="/clients" exact component={ClientFeature} />
+          <Route path="/contracts" exact component={ContractFeature} />
+          <Route path="/assignments" exact component={AssignmentFeature} />
+          <Route path="/holidays" exact component={HolidayFeature} />
+          <Route path="/sickdays" component={SickdayFeature} />
+          <Route path="/users" exact component={UserFeature} />
+          <Route path="/person" component={PersonFeature} />
+        </Router>
+      </ApplicationContext.Provider>
+    </ThemeProvider>
   )
 }

@@ -2,7 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import {FormControl, Grid} from "@material-ui/core"
 import {makeStyles} from "@material-ui/styles"
-import {Form, Formik, Field} from "formik"
+import {Field, Form, Formik} from "formik"
 import {TextField as FormikTextField} from "formik-material-ui"
 import {UserSelectorFormInput} from "../../components/selector"
 import {PERSON_FORM_SCHEMA} from "./schema"
@@ -20,8 +20,7 @@ export const PERSON_FORM_ID = "person-form"
  *
  * @param {*} props
  */
-export const PersonForm = props => {
-  const {item, onSubmit} = props
+export function PersonForm({item, onSubmit}) {
   const classes = useStyles()
 
   const form = () => (
@@ -71,7 +70,7 @@ export const PersonForm = props => {
               component={FormikTextField}
             />
           </FormControl>
-          <FormControl className={classes.h79} fullWidth>
+          <FormControl className={classes.h70} fullWidth>
             <UserSelectorFormInput />
           </FormControl>
         </Grid>
@@ -81,7 +80,7 @@ export const PersonForm = props => {
 
   return (
     <Formik
-      initialValues={{...PERSON_FORM_SCHEMA.cast(), ...item}}
+      initialValues={{...PERSON_FORM_SCHEMA.cast(), ...item, userCode: item.user}}
       onSubmit={onSubmit} // use onSubmit func @PersonDialog
       validationSchema={PERSON_FORM_SCHEMA}
       enableReinitialize

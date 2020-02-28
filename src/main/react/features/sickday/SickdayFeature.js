@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react"
+import React, {useContext, useState} from "react"
 
 import {makeStyles} from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
@@ -7,7 +7,7 @@ import {SickdayList} from "./SickdayList"
 import {PersonSelector} from "../../components/selector"
 import {ApplicationContext} from "../../application/ApplicationContext"
 import {AddActionFab} from "../../components/FabButtons"
-import {PersonService} from "../person/PersonService"
+import {usePerson} from "../../hooks/PersonHook"
 
 const useStyles = makeStyles({
   root: {
@@ -26,25 +26,19 @@ const useStyles = makeStyles({
 export function SickdayFeature() {
   const classes = useStyles()
 
+  const [person, setPerson] = usePerson()
+
   const [reload, setReload] = useState(false)
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(null)
-  const [personCode, setPersonCode] = useState("")
-  const [persons, setPersons] = useState([]) // eslint-disable-line no-unused-vars
-  const {authorities, user} = useContext(ApplicationContext)
+  const {authorities} = useContext(ApplicationContext)
 
   function isSuperUser() {
     return authorities && authorities.includes("SickdayAuthority.ADMIN")
   }
 
-  useEffect(() => {
-    if (isSuperUser()) {
-      PersonService.getAll().then(it => setPersons(it))
-    }
-  }, [authorities, user])
-
   function handleCompleteDialog() {
-    setReload(reload)
+    setReload(!reload)
     setOpen(false)
     setValue(null)
   }
@@ -56,23 +50,22 @@ export function SickdayFeature() {
 
   function handleClickRow(item) {
     setValue(item)
-
     setOpen(true)
   }
 
-  function handlePersonChangeByCode(code) {
-    setPersonCode(code)
+  function handlePersonChange(it) {
+    setPerson(it)
   }
 
   return (
     <div className={classes.root}>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          {isSuperUser() && <PersonSelector onChange={handlePersonChangeByCode} />}
+          {isSuperUser() && <PersonSelector onChange={handlePersonChange} />}
         </Grid>
         <Grid item xs={12}>
           <SickdayList
-            personCode={personCode}
+            personCode={person && person.code}
             onClickRow={handleClickRow}
             refresh={reload}
           />
@@ -80,9 +73,10 @@ export function SickdayFeature() {
       </Grid>
       <SickdayDialog
         open={open}
-        personCode={personCode}
+        sickdayCode={value && value.code}
+        personCode={person && person.code}
         value={value}
-        onClose={handleCompleteDialog}
+        onComplete={handleCompleteDialog}
       />
 
       <AddActionFab color="primary" onClick={handleClickAdd} />

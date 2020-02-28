@@ -10,6 +10,8 @@ import community.flock.eco.workday.model.Period
 import community.flock.eco.workday.repository.HolidayRepository
 import community.flock.eco.workday.repository.PeriodRepository
 import community.flock.eco.workday.utils.convertDayOff
+import java.time.LocalDate
+import javax.persistence.EntityManager
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,11 +19,22 @@ import org.springframework.transaction.annotation.Transactional
 class HolidayService(
     private val holidayRepository: HolidayRepository,
     private val periodRepository: PeriodRepository,
-    private val personService: PersonService
+    private val personService: PersonService,
+    private val entityManager: EntityManager
 ) {
 
     fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
     fun findAllByPersonCode(personCode: String) = holidayRepository.findAllByPersonCode(personCode)
+    fun findAllByPersonUserCode(personCode: String) = holidayRepository.findAllByPersonUserCode(personCode)
+
+    fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Holiday> {
+        val query = "SELECT h FROM Holiday h WHERE h.period.from <= :to AND (h.period.to is null OR h.period.to > :from)"
+        return entityManager
+            .createQuery(query, Holiday::class.java)
+            .setParameter("from", from)
+            .setParameter("to", to)
+            .resultList
+    }
 
     fun create(form: HolidayForm): Holiday {
         form.validate()
@@ -45,7 +58,7 @@ class HolidayService(
         ).save()
     }
 
-    fun update(code: String, form: HolidayForm, isAdmin: Boolean): Holiday? {
+    fun update(code: String, form: HolidayForm): Holiday? {
         form.validate()
         return findByCode(code)
             ?.let { holiday ->
@@ -55,13 +68,13 @@ class HolidayService(
                     days = convertDayOff(form.days, form.from)
                 ).save()
 
-                return@let holiday.copy(
+                holiday.copy(
                     description = form.description,
                     status = form.status
-                        ?.takeIf { isAdmin }
                         ?.run { form.status }
                         ?: holiday.status,
-                    period = period
+                    period = period,
+                    hours = form.hours
                 )
             }
             ?.save()
@@ -69,7 +82,8 @@ class HolidayService(
     }
 
     @Transactional
-    fun delete(code: String) = holidayRepository.deleteByCode(code)
+    fun deleteByCode(code: String) = holidayRepository
+        .deleteByCode(code)
 
     // *-- utility functions --*
     private fun Holiday.save() = holidayRepository.save(this)
@@ -78,7 +92,11 @@ class HolidayService(
     private fun HolidayForm.validate() {
         val daysBetween = java.time.Period.between(this.from, this.to).days + 1
         if (this.days.size != daysBetween) {
-            throw RuntimeException("amount of DayOff not equal to period")
+            throw error("amount of DayOff not equal to period")
+        }
+
+        if (this.days.sum() != this.hours) {
+            throw error("Total hour does not match")
         }
     }
 }

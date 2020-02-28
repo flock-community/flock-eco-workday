@@ -11,7 +11,6 @@ import community.flock.eco.workday.services.AssignmentService
 import community.flock.eco.workday.services.ClientService
 import community.flock.eco.workday.services.ContractService
 import community.flock.eco.workday.services.PersonService
-import community.flock.eco.workday.utils.randomNumber
 import java.time.LocalDate
 import org.springframework.stereotype.Component
 

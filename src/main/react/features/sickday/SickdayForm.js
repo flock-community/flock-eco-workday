@@ -1,26 +1,24 @@
 import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
 import * as Yup from "yup"
-import {Field, Form, Formik} from "formik"
-import {TextField} from "formik-material-ui"
+import {Form, Formik} from "formik"
 import moment from "moment"
 import Grid from "@material-ui/core/Grid"
-import MenuItem from "@material-ui/core/MenuItem"
-import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {PeriodForm} from "../../components/PeriodForm"
-import {HolidayClient} from "../../clients/HolidayClient"
+import {SickdayClient} from "../../clients/SickdayClient"
 import {isDefined} from "../../utils/validation"
 
-export const HOLIDAY_FORM_ID = "holiday-form-id"
+export const SICKDAY_FORM_ID = "sickday-form"
 
-export function HolidayForm({code, onSubmit}) {
+export function SickdayForm({code, onSubmit}) {
   const [state, setState] = useState(null)
 
   useEffect(() => {
     if (code) {
-      HolidayClient.findByCode(code).then(res => {
+      SickdayClient.get(code).then(res => {
         setState({
-          ...res,
+          code: res.code,
+          personCode: res.person,
           period: {
             dates: [res.period.from, res.period.to],
             days: res.period.days.map(it => it.hours),
@@ -30,7 +28,6 @@ export function HolidayForm({code, onSubmit}) {
     } else {
       const now = moment()
       setState({
-        description: "",
         period: {
           dates: [now, now],
         },
@@ -53,43 +50,11 @@ export function HolidayForm({code, onSubmit}) {
     })
   }
 
-  const schema = Yup.object().shape({
-    description: Yup.string()
-      .required("Field required")
-      .default(""),
-  })
+  const schema = Yup.object().shape({})
 
-  const renderForm = () => (
-    <Form id={HOLIDAY_FORM_ID}>
-      <Field
-        name="description"
-        type="text"
-        label="Description"
-        fullWidth
-        component={TextField}
-      />
-      {code && (
-        <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
-          <Field
-            fullWidth
-            type="text"
-            name="status"
-            label="Status"
-            select
-            variant="standard"
-            margin="normal"
-            component={TextField}
-          >
-            <MenuItem value="REQUESTED">REQUESTED</MenuItem>
-            <MenuItem value="APPROVED">APPROVED</MenuItem>
-            <MenuItem value="REJECTED">REJECTED</MenuItem>
-          </Field>
-        </UserAuthorityUtil>
-      )}
-    </Form>
-  )
+  const renderForm = () => <Form id={SICKDAY_FORM_ID}></Form>
 
-  if (!state) return null
+  if (!state) return <></>
 
   return (
     <Grid container spacing={1}>
@@ -112,7 +77,7 @@ export function HolidayForm({code, onSubmit}) {
   )
 }
 
-HolidayForm.propTypes = {
+SickdayForm.propTypes = {
   code: PropTypes.string,
   onSubmit: PropTypes.func,
 }

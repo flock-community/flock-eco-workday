@@ -36,41 +36,42 @@ export function HolidayFeature() {
     setOpen(true)
   }
 
-  function handleSelectedItem(code) {
-    setHolidayCode(code)
-    setOpen(true)
+  function handleRowClick(it) {
+    return () => {
+      setHolidayCode(it.code)
+      setOpen(true)
+    }
   }
 
   function handlePersonChange(it) {
     setPerson(it)
   }
 
-  if (!person) {
-    return null
-  }
   return (
     <div className={classes.root}>
       <Grid container spacing={1}>
         <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
           <Grid item xs={12}>
-            <PersonSelector selectedItem={person.code} onChange={handlePersonChange} />
+            <PersonSelector
+              selectedItem={person && person.code}
+              onChange={handlePersonChange}
+            />
           </Grid>
         </UserAuthorityUtil>
         <Grid item xs={12}>
           <HolidayList
-            personCode={person.code}
+            personCode={person && person.code}
             refresh={refresh}
-            onSelectItem={handleSelectedItem}
+            onRowClick={handleRowClick}
           />
         </Grid>
       </Grid>
       <HolidayDialog
         open={open}
-        personCode={person.code}
+        personCode={person && person.code}
         holidayCode={holidayCode}
         onComplete={handleCompleteDialog}
       />
-
       <AddActionFab color="primary" onClick={handleClickAdd} />
     </div>
   )

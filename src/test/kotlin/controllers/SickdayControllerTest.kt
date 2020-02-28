@@ -14,7 +14,6 @@ import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.repository.SickdayRepository
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.utils.dayFromLocalDate
-import community.flock.eco.workday.utils.randomNumber
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -206,8 +205,6 @@ class SickdayControllerTest {
         /* DRY-Block */
         val person = persons.elementAt(0)
         val sickdayForm = SickdayForm(
-            description = "Fire! Fire!",
-            status = SickdayStatus.SICK,
             from = dayFromLocalDate(),
             to = dayFromLocalDate(4),
             days = listOf(8, 8, 8, 8),
@@ -223,8 +220,6 @@ class SickdayControllerTest {
         /* DRY-Block */
         val person = persons.elementAt(0)
         val sickdayForm = SickdayForm(
-            description = "Fire! Fire!",
-            status = SickdayStatus.SICK,
             from = dayFromLocalDate(),
             to = dayFromLocalDate(4),
             days = listOf(8, 8, 8, 8),
@@ -240,8 +235,6 @@ class SickdayControllerTest {
         /* DRY-Block */
         val person = persons.elementAt(0)
         val sickdayForm = SickdayForm(
-            description = "Fire! Fire!",
-            status = SickdayStatus.SICK,
             from = dayFromLocalDate(),
             to = dayFromLocalDate(4),
             days = listOf(8, 8, 8, 8),
@@ -251,9 +244,6 @@ class SickdayControllerTest {
         /* DRY-Block */
         val sickdayCode = getSickdayCodeFrom(sickdayForm, person.code)
 
-        // update the sickdayForm
-        sickdayForm.status = SickdayStatus.HEALTHY
-
         put(sickdayForm, sickdayCode, person.code)
     }
 
@@ -262,8 +252,6 @@ class SickdayControllerTest {
         /* DRY-Block */
         val person = persons.elementAt(0)
         val sickdayForm = SickdayForm(
-            description = "Fire! Fire!",
-            status = SickdayStatus.SICK,
             from = dayFromLocalDate(),
             to = dayFromLocalDate(4),
             days = listOf(8, 8, 8, 8),
@@ -313,8 +301,6 @@ class SickdayControllerTest {
         .andExpect(status().isOk)
         .andExpect(content().contentType(APPLICATION_JSON_UTF8))
         .andExpect(jsonPath("\$.hours").value(sickdayForm.hours))
-        .andExpect(jsonPath("\$.description").value(sickdayForm.description))
-        .andExpect(jsonPath("\$.status").value(sickdayForm.status.toString()))
         .andExpect(jsonPath("\$.person").exists())
         .andExpect(jsonPath("\$.person").isNotEmpty)
         .andExpect(jsonPath("\$.person").value(personCode))
@@ -332,8 +318,6 @@ class SickdayControllerTest {
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("\$.description").value(sickdayForm.description))
-            .andExpect(jsonPath("\$.status").value(sickdayForm.status.toString()))
             .andExpect(jsonPath("\$.hours").isNumber)
             .andExpect(jsonPath("\$.hours").value(sickdayForm.hours))
             .andExpect(jsonPath("\$.person").exists())
@@ -353,8 +337,6 @@ class SickdayControllerTest {
         .andExpect(status().isOk)
         .andExpect(content().contentType(APPLICATION_JSON_UTF8))
         .andExpect(jsonPath("\$.hours").value(sickdayForm.hours))
-        .andExpect(jsonPath("\$.description").value(sickdayForm.description))
-        .andExpect(jsonPath("\$.status").value(sickdayForm.status.toString()))
         .andExpect(jsonPath("\$.person").exists())
         .andExpect(jsonPath("\$.person").isNotEmpty)
         .andExpect(jsonPath("\$.person").value(personCode))
@@ -414,8 +396,6 @@ class SickdayControllerTest {
         persons.forEach {
             val sickdayForms = mutableListOf(
                 SickdayForm(
-                    description = "Sick - ${it.firstname}",
-                    status = SickdayStatus.SICK,
                     from = dayFromLocalDate(),
                     to = dayFromLocalDate(4),
                     days = listOf(8, 8, 8, 8),
@@ -423,8 +403,6 @@ class SickdayControllerTest {
                     personCode = it.code
                 ),
                 SickdayForm(
-                    description = "Healthy - ${it.firstname}",
-                    status = SickdayStatus.SICK,
                     from = dayFromLocalDate(),
                     to = dayFromLocalDate(4),
                     days = listOf(8, 8, 8, 8),
@@ -438,10 +416,6 @@ class SickdayControllerTest {
                 val sickdayForm = iter.next()
                 val respCode = getSickdayCodeFrom(sickdayForm, it.code)
 
-                // a post always create a sickday with status SICK, regardless of what is passed
-                // set sickdayForm status to HEALTHY for every healthy sickday and then update the sickday via PUT
-                if (iter.nextIndex() % 2 == 0)
-                    sickdayForm.status = SickdayStatus.HEALTHY
                 sickdays.add(
                     put(sickdayForm, respCode, it.code)
                         .andReturn()

@@ -23,7 +23,6 @@ const stringifyDate = date => {
 }
 
 const calcDays = (from, to, days) => {
-  console.log(days)
   const diff = to.diff(from, "days")
   return diff < 0
     ? {}
@@ -40,32 +39,47 @@ const calcDays = (from, to, days) => {
         }, {})
 }
 
-export function PeriodForm({value, onChange}) {
+const defaultToState = () => {
   const now = moment().startOf("day")
-
-  const [grid, setGrid] = useState([])
-  const [{dates, days}, setState] = useState({
+  return {
     dates: [now, now],
     days: calcDays(now, now),
-  })
+  }
+}
+
+const valueToState = value => {
+  const from = moment(value.dates[0]).startOf("day")
+  const to = moment(value.dates[1]).startOf("day")
+  return {
+    dates: [from, to],
+    days: calcDays(from, to, value.days),
+  }
+}
+
+export function PeriodForm({value, onChange}) {
+  const [grid, setGrid] = useState([])
+  const [{dates, days}, setState] = useState(
+    value ? valueToState(value) : defaultToState()
+  )
 
   useEffect(() => {
-    if (!value) {
-      return
-    }
-    const from = moment(value.dates[0]).startOf("day")
-    const to = moment(value.dates[1]).startOf("day")
-    setState({
-      dates: [from, to],
-      days: calcDays(from, to, value.days),
+    onChange({
+      dates,
+      days: Object.keys(days).map(key => days[key]),
     })
+  }, [])
+
+  useEffect(() => {
+    if (value) {
+      setState(valueToState(value))
+    }
   }, [value])
 
   useEffect(() => {
     const start = moment(dates[0]).startOf("week")
     const end = moment(dates[1]).startOf("week")
     const diff = Math.ceil(end.diff(start, "days") / 7) + 1
-    const weeks = [...Array(diff).keys()]
+    const weeks = [...Array(diff > 0 ? diff : 1).keys()]
 
     setGrid(
       weeks.map(week => {
