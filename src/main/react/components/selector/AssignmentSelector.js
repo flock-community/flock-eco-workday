@@ -31,7 +31,6 @@ export function AssignmentSelector({
   }
 
   function renderMenuItem(item, key) {
-    console.log(item.role)
     return (
       <MenuItem
         key={`${AssignmentSelector.name}-selector-menu-item-${key}`}
@@ -61,5 +60,5 @@ AssignmentSelector.propTypes = {
   error: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
 }

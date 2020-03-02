@@ -27,20 +27,20 @@ export function WorkDayDialog({open, code, onComplete}) {
   const handleSubmit = it => {
     if (it.code) {
       WorkDayClient.put(it.code, {
-        from: it.period.dates[0].format(HTML5_FMT.DATE),
-        to: it.period.dates[1].format(HTML5_FMT.DATE),
-        days: it.period.days,
-        hours: it.period.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
+        from: it.from.format(HTML5_FMT.DATE),
+        to: it.to.format(HTML5_FMT.DATE),
+        days: it.days,
+        hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
         assignmentCode: it.assignmentCode,
       }).then(res => {
         if (isDefined(onComplete)) onComplete(res)
       })
     } else {
       WorkDayClient.post({
-        from: it.period.dates[0].format(moment.HTML5_FMT.DATE),
-        to: it.period.dates[1].format(moment.HTML5_FMT.DATE),
-        days: it.period.days,
-        hours: it.period.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
+        from: it.from.format(moment.HTML5_FMT.DATE),
+        to: it.to.format(moment.HTML5_FMT.DATE),
+        days: it.days,
+        hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
         assignmentCode: it.assignmentCode,
       }).then(res => {
         if (isDefined(onComplete)) onComplete(res)

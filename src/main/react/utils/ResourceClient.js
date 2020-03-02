@@ -10,19 +10,23 @@ export const responseValidation = res => {
   })
 }
 
-export function ResourceClient(path) {
+export function ResourceClient(path, internalize) {
   const all = () => {
     const opts = {
       method: "GET",
     }
-    return fetch(`${path}`, opts).then(responseValidation)
+    return fetch(`${path}`, opts)
+      .then(responseValidation)
+      .then(it => (internalize ? it.map(internalize) : it))
   }
 
   const get = id => {
     const opts = {
       method: "GET",
     }
-    return fetch(`${path}/${id}`, opts).then(responseValidation)
+    return fetch(`${path}/${id}`, opts)
+      .then(responseValidation)
+      .then(it => (internalize ? internalize(it) : it))
   }
 
   const post = item => {
@@ -33,7 +37,9 @@ export function ResourceClient(path) {
       },
       body: JSON.stringify(item),
     }
-    return fetch(path, opts).then(responseValidation)
+    return fetch(path, opts)
+      .then(responseValidation)
+      .then(it => (internalize ? internalize(it) : it))
   }
 
   const put = (id, item) => {
@@ -44,7 +50,9 @@ export function ResourceClient(path) {
       },
       body: JSON.stringify(item),
     }
-    return fetch(`${path}/${id}`, opts).then(responseValidation)
+    return fetch(`${path}/${id}`, opts)
+      .then(responseValidation)
+      .then(it => (internalize ? internalize(it) : it))
   }
 
   const del = id => {

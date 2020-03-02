@@ -2,6 +2,7 @@ package community.flock.eco.workday.model
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonIdentityReference
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
@@ -36,6 +37,7 @@ data class WorkDay(
     @ManyToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty("assignmentCode")
     val assignment: Assignment
 
 ) : AbstractCodeEntity(id, code) {

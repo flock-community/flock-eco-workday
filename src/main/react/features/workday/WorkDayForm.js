@@ -4,11 +4,14 @@ import * as Yup from "yup"
 import {Form, Formik} from "formik"
 import moment from "moment"
 import Grid from "@material-ui/core/Grid"
-import {PeriodForm} from "../../components/PeriodForm"
+import MomentUtils from "@date-io/moment"
+import {MuiPickersUtilsProvider} from "@material-ui/pickers"
+import {PeriodInputField} from "../../components/fields/PeriodInputField"
 import {isDefined} from "../../utils/validation"
 import {usePerson} from "../../hooks/PersonHook"
 import {AssignmentSelectorField} from "../../components/fields/AssignmentSelectorField"
 import {WorkDayClient} from "../../clients/WorkDayClient"
+import {DatePickerField} from "../../components/fields/DatePickerField"
 
 export const WORKDAY_FORM_ID = "work-day-form"
 
@@ -22,19 +25,11 @@ export function WorkDayForm({code, onSubmit}) {
       WorkDayClient.get(code).then(res => {
         setState({
           code: res.code,
-          personCode: res.person,
-          period: {
-            dates: [res.from, res.to],
-            days: res.days.map(it => it.hours),
-          },
+          assignmentCode: res.assignmentCode,
+          from: res.from,
+          to: res.to,
+          days: res.days,
         })
-      })
-    } else {
-      const now = moment()
-      setState({
-        period: {
-          dates: [now, now],
-        },
       })
     }
   }, [code])
@@ -47,47 +42,70 @@ export function WorkDayForm({code, onSubmit}) {
       })
   }
 
-  const handleChangePeriod = value => {
-    setState({
-      ...state,
-      period: value,
-    })
+  const handleChange = it => {
+    setState(it)
   }
+
+  const now = moment()
 
   const schema = Yup.object().shape({
     assignmentCode: Yup.string()
+      .required("Assignment is required")
+      .default(""),
+    from: Yup.date()
+      .required("From date is required")
+      .default(now),
+    to: Yup.date()
+      .required("To date is required")
+      .default(now),
+    days: Yup.array()
       .required("Required")
       .default(""),
   })
 
   const renderForm = () => (
     <Form id={WORKDAY_FORM_ID}>
-      <AssignmentSelectorField
-        fullWidth
-        name="assignmentCode"
-        personCode={person.code}
-      />
+      <MuiPickersUtilsProvider utils={MomentUtils}>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <AssignmentSelectorField
+              fullWidth
+              name="assignmentCode"
+              personCode={person.code}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <DatePickerField name="from" fullWidth />
+          </Grid>
+          <Grid item xs={6}>
+            <DatePickerField name="to" fullWidth />
+          </Grid>
+          <Grid item xs={12}>
+            <PeriodInputField
+              name="days"
+              from={state && state.from}
+              to={state && state.to}
+            />
+          </Grid>
+        </Grid>
+      </MuiPickersUtilsProvider>
     </Form>
   )
-
-  if (!state) return <></>
 
   return (
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <Formik
+          enableReinitialize
           initialValues={{
             ...schema.cast(),
-            description: state.description,
-            status: state.status,
+            ...state,
           }}
           onSubmit={handleSubmit}
           validationSchema={schema}
+          validate={handleChange}
           render={renderForm}
         />
-      </Grid>
-      <Grid item xs={12}>
-        <PeriodForm value={state && state.period} onChange={handleChangePeriod} />
       </Grid>
     </Grid>
   )

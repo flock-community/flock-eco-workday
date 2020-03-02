@@ -8,6 +8,7 @@ import community.flock.eco.workday.repository.WorkDayRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 import javax.persistence.EntityManager
 
@@ -58,7 +59,7 @@ class WorkDayService(
 
 
     private fun WorkDayForm.validate() = apply {
-        val daysBetween = java.time.Period.between(this.from, this.to).days + 1
+        val daysBetween = ChronoUnit.DAYS.between(this.from, this.to) + 1
         if(this.hours < 0 ){
             throw error("Hours cannot have negative value")
         }
@@ -66,7 +67,7 @@ class WorkDayService(
             throw error("Days cannot have negative value")
         }
         if (this.days != null) {
-            if (this.days.size != daysBetween) {
+            if (this.days.size.toLong() != daysBetween) {
                 throw error("amount of days (${daysBetween}) not equal to period (${this.days.size})")
             }
             if (this.days.sum() != this.hours) {
