@@ -22,7 +22,8 @@ export function RevenuePerMonthChart({year}) {
 
   const data = Object.keys(state).map(key => ({
     name: key,
-    value: state[key],
+    gross: state[key],
+    net: state[key] * 0.8,
   }))
 
   return (
@@ -33,7 +34,8 @@ export function RevenuePerMonthChart({year}) {
         <YAxis />
         <Tooltip formatter={value => new Intl.NumberFormat("en").format(value)} />
         <Legend />
-        <Bar dataKey="value" fill="#3f51b5" />
+        <Bar dataKey="gross" fill="#3f51b5" />
+        <Bar dataKey="net" fill="#3f51b5" />
       </BarChart>
     </ResponsiveContainer>
   )

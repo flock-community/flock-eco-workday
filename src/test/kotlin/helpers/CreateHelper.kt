@@ -1,5 +1,8 @@
 package community.flock.eco.workday.helpers
 
+import community.flock.eco.core.authorities.Authority
+import community.flock.eco.feature.user.forms.UserForm
+import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.forms.AssignmentForm
 import community.flock.eco.workday.forms.ClientForm
 import community.flock.eco.workday.forms.ContractExternalForm
@@ -13,21 +16,34 @@ import community.flock.eco.workday.services.ContractService
 import community.flock.eco.workday.services.PersonService
 import java.time.LocalDate
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 @Component
 class CreateHelper(
     val assignmentService: AssignmentService,
     val contractService: ContractService,
     val clientService: ClientService,
-    val personService: PersonService
+    val personService: PersonService,
+    val userService: UserService
 ) {
 
+    fun createUser(authorities:Set<Authority>) = createUser(UUID.randomUUID().toString(), authorities)
+    fun createUser(name: String, authorities:Set<Authority>) = UserForm(
+        name = name,
+        email = "${name}@workday.io",
+        authorities = authorities.map { it.toName() }.toSet()
+    ).run {
+        userService.create(this)
+    } ?: error("Cannot create client")
+
+    fun createClient() = createClient(UUID.randomUUID().toString())
     fun createClient(name: String) = ClientForm(
         name = name
     ).run {
         clientService.create(this)
     } ?: error("Cannot create client")
 
+    fun createPerson() = createPerson(UUID.randomUUID().toString(), UUID.randomUUID().toString())
     fun createPerson(firstname: String, lastname: String) = PersonForm(
         email = "$firstname@$lastname",
         firstname = firstname,

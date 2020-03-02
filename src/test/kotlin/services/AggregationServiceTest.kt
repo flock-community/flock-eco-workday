@@ -1,6 +1,7 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.ApplicationConfiguration
+import community.flock.eco.workday.ApplicationConstants
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
 import java.math.BigDecimal
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.Profile
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
 
@@ -19,7 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner
 @ContextConfiguration(classes = [ApplicationConfiguration::class])
 @DataJpaTest
 @AutoConfigureTestDatabase
-@Import(DataHelper::class)
+@Import(DataHelper::class, ApplicationConstants::class)
 class AggregationServiceTest {
 
     @Autowired
@@ -83,6 +85,17 @@ class AggregationServiceTest {
 
         assertEquals(12, res.size)
         assertEquals(41400, res.entries.first().value.toInt())
+    }
+
+
+    @Test
+    fun `find netto revenu factor`() {
+
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 12, 31)
+
+        val res = aggregationService.netRevenueFactor(from, to)
+
     }
 
     @Test

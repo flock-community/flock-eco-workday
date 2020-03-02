@@ -12,6 +12,7 @@ import EventIcon from "@material-ui/icons/CalendarToday"
 import UserIcon from "@material-ui/icons/Person"
 import ClientIcon from "@material-ui/icons/Business"
 import DashboardIcon from "@material-ui/icons/Dashboard"
+import WorkdayIcon from "@material-ui/icons/Work"
 
 import Drawer from "@material-ui/core/Drawer"
 import makeStyles from "@material-ui/core/styles/makeStyles"
@@ -72,6 +73,12 @@ export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
       icon: ContractIcon,
       url: "/contracts",
       authority: "AssignmentAuthority.READ",
+    },
+    {
+      name: "Workdays",
+      icon: WorkdayIcon,
+      url: "/workdays",
+      authority: "WorkDayAuthority.READ",
     },
     {
       name: "Holidays",

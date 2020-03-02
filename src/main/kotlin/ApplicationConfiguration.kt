@@ -22,7 +22,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     "community.flock.eco.workday.services",
     "community.flock.eco.workday.controllers"
 ])
-@Import(UserConfiguration::class)
+@Import(UserConfiguration::class, ApplicationConstants::class)
 class ApplicationConfiguration(
     private val userRepository: UserRepository,
     private val userAuthorityService: UserAuthorityService

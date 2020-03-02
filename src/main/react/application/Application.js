@@ -21,6 +21,7 @@ import {SickdayFeature} from "../features/sickday/SickdayFeature"
 import {useUser} from "../hooks/UserHook"
 import {DashboardFeature} from "../features/dashboard/DashboardFeature"
 import {ContractFeature} from "../features/contract/ContractFeature"
+import {WorkDayFeature} from "../features/workday/WorkDayFeature"
 
 const useStyles = makeStyles(() => ({
   spinner: {
@@ -112,6 +113,7 @@ export const Application = () => {
           <Route path="/clients" exact component={ClientFeature} />
           <Route path="/contracts" exact component={ContractFeature} />
           <Route path="/assignments" exact component={AssignmentFeature} />
+          <Route path="/workdays" exact component={WorkDayFeature} />
           <Route path="/holidays" exact component={HolidayFeature} />
           <Route path="/sickdays" component={SickdayFeature} />
           <Route path="/users" exact component={UserFeature} />
