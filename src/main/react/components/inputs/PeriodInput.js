@@ -36,67 +36,80 @@ const calcDays = (from, to, days) => {
         }, {})
 }
 
-const valueToState = value => {
+const calcGrid = (from, to, days) => {
+  const diff =
+    Math.ceil(
+      moment(to)
+        .startOf("week")
+        .diff(moment(from).startOf("week"), "days") / 7
+    ) + 1
+  const weeks = [...Array(diff > 0 ? diff : 1).keys()]
+  return weeks.map(week => {
+    const day = moment(from)
+      .startOf("week")
+      .add(week, "weeks")
+    const weekNumber = day.week()
+    const res = [...Array(7).keys()].map(dayDiff => {
+      const date = moment(day).add(dayDiff, "days")
+      const enabled = inRange([from, to], date)
+      const key = stringifyDate(date)
+      return {
+        key,
+        date,
+        disabled: !enabled,
+        value: enabled ? String(days[key]) : "",
+      }
+    })
+    const total = res
+      .filter(it => !it.disabled)
+      .reduce((acc, cur) => acc + parseInt(days[cur.key], 10) || acc, 0)
+    return {weekNumber, days: res, total}
+  })
+}
+
+const initDates = value => {
   const now = moment().startOf("day")
   const from = value.from ? moment(value.from).startOf("day") : now
   const to = value.to ? moment(value.to).startOf("day") : now
-  return {
-    dates: [from, to],
-    days: calcDays(from, to, value.days),
-  }
+  return [from, to]
+}
+
+const initDays = (days, from) => {
+  return (
+    days &&
+    days.reduce((acc, cur, index) => {
+      const date = moment(from).add(index, "days")
+      const key = stringifyDate(date)
+      acc[key] = String(cur)
+      return acc
+    }, {})
+  )
 }
 
 export function PeriodInput({value, onChange}) {
-  const [grid, setGrid] = useState([])
-  const [{dates, days}, setState] = useState(valueToState(value))
+  const [from, to] = initDates(value)
+  const [state, setState] = useState(value.days ? initDays(value.days, from) : {})
+  const [grid, setGrid] = useState(calcGrid(from, to, state))
 
   useEffect(() => {
     if (value) {
-      const val = valueToState(value)
-      setState(val)
-      onChange(Object.keys(val.days).map(key => val.days[key]))
+      const days = calcDays(from, to, state)
+      setState(days)
+      onChange(Object.keys(days).map(key => days[key]))
     }
   }, [value.from, value.to])
 
   useEffect(() => {
-    const start = moment(dates[0]).startOf("week")
-    const end = moment(dates[1]).startOf("week")
-    const diff = Math.ceil(end.diff(start, "days") / 7) + 1
-    const weeks = [...Array(diff > 0 ? diff : 1).keys()]
-
-    setGrid(
-      weeks.map(week => {
-        const day = moment(start).add(week, "weeks")
-        const weekNumber = day.week()
-        const res = [...Array(7).keys()].map(dayDiff => {
-          const date = moment(day).add(dayDiff, "days")
-          const enabled = inRange(dates, date)
-          const key = stringifyDate(date)
-          return {
-            key,
-            date,
-            disabled: !enabled,
-            value: enabled ? String(days[key]) : "",
-          }
-        })
-        const total = res
-          .filter(it => !it.disabled)
-          .reduce((acc, cur) => acc + parseInt(days[cur.key], 10) || acc, 0)
-        return {weekNumber, days: res, total}
-      })
-    )
-  }, [dates, days])
+    setGrid(calcGrid(from, to, state))
+  }, [state])
 
   const handleDayChange = it => ev => {
-    const val = {
-      ...days,
+    const days = {
+      ...state,
       [it]: String(ev.target.value),
     }
-    setState({
-      dates,
-      days: val,
-    })
-    onChange(Object.keys(val).map(key => val[key]))
+    setState(days)
+    onChange(Object.keys(days).map(key => days[key]))
   }
 
   return (

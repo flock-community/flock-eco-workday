@@ -15,6 +15,21 @@ import {DatePickerField} from "../../components/fields/DatePickerField"
 
 export const WORKDAY_FORM_ID = "work-day-form"
 
+const now = moment()
+
+const schema = Yup.object().shape({
+  assignmentCode: Yup.string()
+    .required("Assignment is required")
+    .default(""),
+  from: Yup.date()
+    .required("From date is required")
+    .default(now),
+  to: Yup.date()
+    .required("To date is required")
+    .default(now),
+  days: Yup.array().required("Required"),
+})
+
 export function WorkDayForm({code, onSubmit}) {
   const [person] = usePerson()
 
@@ -31,6 +46,8 @@ export function WorkDayForm({code, onSubmit}) {
           days: res.days,
         })
       })
+    } else {
+      setState(schema.cast())
     }
   }, [code])
 
@@ -45,23 +62,6 @@ export function WorkDayForm({code, onSubmit}) {
   const handleChange = it => {
     setState(it)
   }
-
-  const now = moment()
-
-  const schema = Yup.object().shape({
-    assignmentCode: Yup.string()
-      .required("Assignment is required")
-      .default(""),
-    from: Yup.date()
-      .required("From date is required")
-      .default(now),
-    to: Yup.date()
-      .required("To date is required")
-      .default(now),
-    days: Yup.array()
-      .required("Required")
-      .default(""),
-  })
 
   const renderForm = () => (
     <Form id={WORKDAY_FORM_ID}>
@@ -92,15 +92,16 @@ export function WorkDayForm({code, onSubmit}) {
     </Form>
   )
 
+  if (!state) {
+    return <></>
+  }
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <Formik
           enableReinitialize
-          initialValues={{
-            ...schema.cast(),
-            ...state,
-          }}
+          initialValues={state}
           onSubmit={handleSubmit}
           validationSchema={schema}
           validate={handleChange}
