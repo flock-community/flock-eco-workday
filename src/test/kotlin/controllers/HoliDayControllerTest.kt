@@ -6,7 +6,7 @@ import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserSecurityService
 import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
-import community.flock.eco.workday.forms.HolidayForm
+import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.model.HolidayStatus
 import community.flock.eco.workday.services.PersonService
@@ -37,7 +37,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @SpringBootTest(classes = [Application::class])
 @AutoConfigureMockMvc
 @ActiveProfiles(profiles = ["test"])
-class HolidayControllerTest {
+class HoliDayControllerTest {
     private val baseUrl: String = "/api/holidays"
     private val email: String = "admin@reynholm-industries.co.uk"
 
@@ -92,7 +92,7 @@ class HolidayControllerTest {
             userCode = null
         ).run { personService.create(this)!! }
 
-        val holidayForm = HolidayForm(
+        val holidayForm = HoliDayForm(
             description = "Wimbledon",
             status = HolidayStatus.REQUESTED,
             from = dayFromLocalDate(),
@@ -126,7 +126,7 @@ class HolidayControllerTest {
         ).run { personService.create(this)!! }
         /* DRY-Block */
 
-        val holidayForm = HolidayForm(
+        val holidayForm = HoliDayForm(
             description = "Wimbledon",
             status = HolidayStatus.REQUESTED,
             from = dayFromLocalDate(),
@@ -151,7 +151,7 @@ class HolidayControllerTest {
             userCode = null
         ).run { personService.create(this)!! }
 
-        val holidayForm = HolidayForm(
+        val holidayForm = HoliDayForm(
             description = "Wimbledon",
             status = HolidayStatus.REQUESTED,
             from = dayFromLocalDate(),
@@ -185,7 +185,7 @@ class HolidayControllerTest {
             userCode = null
         ).run { personService.create(this)!! }
 
-        val holidayForm = HolidayForm(
+        val holidayForm = HoliDayForm(
             description = "Wimbledon",
             status = HolidayStatus.REQUESTED,
             from = dayFromLocalDate(),
@@ -221,7 +221,7 @@ class HolidayControllerTest {
     /**
      *
      */
-    private fun get(holidayForm: HolidayForm, holidayCode: String? = null) = mvc.perform(
+    private fun get(holiDayForm: HoliDayForm, holidayCode: String? = null) = mvc.perform(
         get("$baseUrl/$holidayCode")
             .with(user)
             .contentType(APPLICATION_JSON)
@@ -231,18 +231,18 @@ class HolidayControllerTest {
         .andExpect(jsonPath("\$.id").exists())
         .andExpect(jsonPath("\$.code").exists())
         .andExpect(jsonPath("\$.code").isString)
-        .andExpect(jsonPath("\$.description").value(holidayForm.description.toString()))
-        .andExpect(jsonPath("\$.status").value(holidayForm.status.toString()))
-        .andExpect(jsonPath("\$.hours").value(holidayForm.hours))
-        .andExpect(jsonPath("\$.person").value(holidayForm.personCode.toString()))
+        .andExpect(jsonPath("\$.description").value(holiDayForm.description.toString()))
+        .andExpect(jsonPath("\$.status").value(holiDayForm.status.toString()))
+        .andExpect(jsonPath("\$.hours").value(holiDayForm.hours))
+        .andExpect(jsonPath("\$.person").value(holiDayForm.personCode.toString()))
 
     /**
      *
      */
-    private fun post(holidayForm: HolidayForm) = mvc.perform(
+    private fun post(holiDayForm: HoliDayForm) = mvc.perform(
         post(baseUrl)
             .with(user)
-            .content(mapper.writeValueAsString(holidayForm))
+            .content(mapper.writeValueAsString(holiDayForm))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
         .andExpect(status().isOk)
@@ -250,18 +250,18 @@ class HolidayControllerTest {
         .andExpect(jsonPath("\$.id").exists())
         .andExpect(jsonPath("\$.code").exists())
         .andExpect(jsonPath("\$.code").isString)
-        .andExpect(jsonPath("\$.description").value(holidayForm.description.toString()))
-        .andExpect(jsonPath("\$.status").value(holidayForm.status.toString()))
-        .andExpect(jsonPath("\$.hours").value(holidayForm.hours))
-        .andExpect(jsonPath("\$.person").value(holidayForm.personCode.toString()))
+        .andExpect(jsonPath("\$.description").value(holiDayForm.description.toString()))
+        .andExpect(jsonPath("\$.status").value(holiDayForm.status.toString()))
+        .andExpect(jsonPath("\$.hours").value(holiDayForm.hours))
+        .andExpect(jsonPath("\$.person").value(holiDayForm.personCode.toString()))
 
     /**
      *
      */
-    private fun put(holidayForm: HolidayForm, holidayCode: String) = mvc.perform(
+    private fun put(holiDayForm: HoliDayForm, holidayCode: String) = mvc.perform(
         put("$baseUrl/$holidayCode")
             .with(user)
-            .content(mapper.writeValueAsString(holidayForm))
+            .content(mapper.writeValueAsString(holiDayForm))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
         .andExpect(status().isOk)
@@ -269,8 +269,8 @@ class HolidayControllerTest {
         .andExpect(jsonPath("\$.id").exists())
         .andExpect(jsonPath("\$.code").exists())
         .andExpect(jsonPath("\$.code").isString)
-        .andExpect(jsonPath("\$.description").value(holidayForm.description.toString()))
-        .andExpect(jsonPath("\$.status").value(holidayForm.status.toString()))
-        .andExpect(jsonPath("\$.hours").value(holidayForm.hours))
-        .andExpect(jsonPath("\$.person").value(holidayForm.personCode.toString()))
+        .andExpect(jsonPath("\$.description").value(holiDayForm.description.toString()))
+        .andExpect(jsonPath("\$.status").value(holiDayForm.status.toString()))
+        .andExpect(jsonPath("\$.hours").value(holiDayForm.hours))
+        .andExpect(jsonPath("\$.person").value(holiDayForm.personCode.toString()))
 }

@@ -8,7 +8,6 @@ import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
-import java.math.MathContext
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -21,7 +20,7 @@ class AggregationService(
     private val assignmentService: AssignmentService,
     private val contractService: ContractService,
     private val holidayService: HolidayService,
-    private val sickdayService: SickdayService,
+    private val sickDayService: SickDayService,
     private val applicationConstants: ApplicationConstants
 ) {
 
@@ -60,7 +59,7 @@ class AggregationService(
     }
 
     fun sickdayPerPerson(from: LocalDate, to: LocalDate): Map<String, Double> {
-        val active = sickdayService.findAllActive(from, to)
+        val active = sickDayService.findAllActive(from, to)
         return active
             .groupingBy { it.person.code }
             .fold(0.0) { acc, cur -> acc + cur.hours.toDouble() }

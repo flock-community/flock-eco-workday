@@ -1,21 +1,31 @@
 package community.flock.eco.workday.model
 
 import community.flock.eco.core.events.EventEntityListeners
-import community.flock.eco.core.model.AbstractIdEntity
+import community.flock.eco.core.model.AbstractCodeEntity
 import java.time.LocalDate
+import java.util.UUID
+import javax.persistence.ElementCollection
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
+import javax.persistence.Inheritance
+import javax.persistence.InheritanceType
 
 @Entity
+@Inheritance(
+    strategy = InheritanceType.JOINED
+)
 @EntityListeners(EventEntityListeners::class)
-data class Day(
+abstract class Day(
 
     override val id: Long = 0,
+    override val code: String = UUID.randomUUID().toString(),
 
-    val date: LocalDate = LocalDate.now(),
-    val hours: Int
+    open val from: LocalDate = LocalDate.now(),
+    open val to: LocalDate = LocalDate.now(),
 
-) : AbstractIdEntity(id) {
-        override fun equals(other: Any?) = super.equals(other)
-        override fun hashCode(): Int = super.hashCode()
-}
+    open val hours: Int,
+
+    @ElementCollection
+    open val days: List<Int>? = null
+
+) : AbstractCodeEntity(id, code)

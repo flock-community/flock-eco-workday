@@ -76,19 +76,17 @@ export function SickDayForm({code, onSubmit}) {
     </Form>
   )
 
-  if (!state) {
-    return <></>
-  }
-
   return (
-    <Formik
-      enableReinitialize
-      initialValues={state}
-      onSubmit={handleSubmit}
-      validationSchema={schema}
-      validate={handleChange}
-      render={renderForm}
-    />
+    state && (
+      <Formik
+        enableReinitialize
+        initialValues={state}
+        onSubmit={handleSubmit}
+        validationSchema={schema}
+        validate={handleChange}
+        render={renderForm}
+      />
+    )
   )
 }
 

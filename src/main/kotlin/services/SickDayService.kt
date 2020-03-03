@@ -2,27 +2,19 @@ package community.flock.eco.workday.services
 
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.SickDayForm
-import community.flock.eco.workday.forms.WorkDayForm
-import community.flock.eco.workday.model.Period
 import community.flock.eco.workday.model.SickDay
-import community.flock.eco.workday.model.WorkDay
-import community.flock.eco.workday.repository.PeriodRepository
 import community.flock.eco.workday.repository.SickdayRepository
-import community.flock.eco.workday.utils.convertDayOff
-import java.time.LocalDate
-import javax.persistence.EntityManager
-import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.server.ResponseStatusException
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
+import javax.persistence.EntityManager
 
 @Service
-class SickdayService(
+class SickDayService(
     private val repository: SickdayRepository,
     private val personService: PersonService,
-    private val periodRepository: PeriodRepository,
     private val entityManager: EntityManager
 ) {
 
@@ -84,8 +76,6 @@ class SickdayService(
     }
 
     private fun SickDay.save() = repository.save(this)
-
-    private fun Period.save() = periodRepository.save(this)
 
     private fun SickDayForm.validate() = apply {
         val daysBetween = ChronoUnit.DAYS.between(this.from, this.to) + 1

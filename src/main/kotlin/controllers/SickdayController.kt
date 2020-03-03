@@ -5,7 +5,7 @@ import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.services.PersonService
-import community.flock.eco.workday.services.SickdayService
+import community.flock.eco.workday.services.SickDayService
 import community.flock.eco.workday.services.isUser
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
@@ -25,8 +25,8 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @RequestMapping("/api/sickdays")
 class SickdayController(
-    private val service: SickdayService,
-    private val personService: PersonService
+        private val service: SickDayService,
+        private val personService: PersonService
 ) {
 
     @GetMapping()

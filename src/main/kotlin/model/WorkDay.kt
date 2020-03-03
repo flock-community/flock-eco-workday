@@ -21,18 +21,18 @@ import javax.persistence.OrderBy
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-data class WorkDay(
+class WorkDay(
 
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
 
-    val from: LocalDate = LocalDate.now(),
-    val to: LocalDate = LocalDate.now(),
+    override val from: LocalDate = LocalDate.now(),
+    override val to: LocalDate = LocalDate.now(),
 
-    val hours: Int,
+    override val hours: Int,
 
     @ElementCollection
-    val days: List<Int>? = null,
+    override val days: List<Int>? = null,
 
     @ManyToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
@@ -40,7 +40,4 @@ data class WorkDay(
     @JsonProperty("assignmentCode")
     val assignment: Assignment
 
-) : AbstractCodeEntity(id, code) {
-    override fun equals(other: Any?) = super.equals(other)
-    override fun hashCode(): Int = super.hashCode()
-}
+) : Day(id, code, from, to, hours, days)

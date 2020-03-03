@@ -1,10 +1,8 @@
 package community.flock.eco.workday.repository
 
 import community.flock.eco.workday.ApplicationConfiguration
-import community.flock.eco.workday.model.Period
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickDay
-import community.flock.eco.workday.utils.convertDayOff
 import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -26,8 +24,6 @@ class SickDayRepositoryTest {
     private lateinit var entity: TestEntityManager
     @Autowired
     private lateinit var personRepository: PersonRepository
-    @Autowired
-    private lateinit var periodRepository: PeriodRepository
     @Autowired
     private lateinit var repository: SickdayRepository
 
@@ -116,6 +112,4 @@ class SickDayRepositoryTest {
         res = repository.findAll()
         assertThat(res.toSet().size).isEqualTo(4)
     }
-
-    private fun Period.save() = periodRepository.save(this)
 }

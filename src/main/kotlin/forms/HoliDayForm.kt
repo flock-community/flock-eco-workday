@@ -7,10 +7,10 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
 import community.flock.eco.workday.model.HolidayStatus
 import java.time.LocalDate
 
-data class HolidayForm(
+data class HoliDayForm(
 
     val description: String,
-    val status: HolidayStatus? = null,
+    val status: HolidayStatus = HolidayStatus.REQUESTED,
 
     @JsonDeserialize(using = LocalDateDeserializer::class)
     @JsonSerialize(using = LocalDateSerializer::class)
@@ -24,5 +24,5 @@ data class HolidayForm(
 
     val days: List<Int>,
 
-    val personCode: String?
+    val personCode: String
 )

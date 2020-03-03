@@ -2,8 +2,8 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.HolidayAuthority
-import community.flock.eco.workday.forms.HolidayForm
-import community.flock.eco.workday.model.Holiday
+import community.flock.eco.workday.forms.HoliDayForm
+import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.services.HolidayService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.isUser
@@ -33,7 +33,7 @@ class HolidayController(
     fun getAll(
         @RequestParam personCode: String,
         authentication: Authentication
-    ): ResponseEntity<Iterable<Holiday>> = when {
+    ): ResponseEntity<Iterable<HoliDay>> = when {
         authentication.isAdmin() -> service.findAllByPersonCode(personCode)
         else -> service.findAllByPersonUserCode(authentication.name)
     }.toResponse()
@@ -51,7 +51,7 @@ class HolidayController(
     @PostMapping
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
     fun post(
-        @RequestBody form: HolidayForm,
+        @RequestBody form: HoliDayForm,
         authentication: Authentication
     ) = service
         .create(form.setPersonCode(authentication))
@@ -61,7 +61,7 @@ class HolidayController(
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
     fun put(
         @PathVariable code: String,
-        @RequestBody form: HolidayForm,
+        @RequestBody form: HoliDayForm,
         authentication: Authentication
     ) = service
         .update(code, form.setPersonCode(authentication))
@@ -77,7 +77,7 @@ class HolidayController(
         ?.run { service.deleteByCode(this.code) }
         .toResponse()
 
-    private fun HolidayForm.setPersonCode(authentication: Authentication): HolidayForm {
+    private fun HoliDayForm.setPersonCode(authentication: Authentication): HoliDayForm {
         if (authentication.isAdmin()) {
             return this
         }
@@ -92,7 +92,7 @@ class HolidayController(
         .map { it.authority }
         .contains(HolidayAuthority.ADMIN.toName())
 
-    private fun Holiday.applyAuthentication(authentication: Authentication) = apply {
+    private fun HoliDay.applyAuthentication(authentication: Authentication) = apply {
         if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
         }

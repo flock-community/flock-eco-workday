@@ -16,18 +16,18 @@ import javax.persistence.OneToOne
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-data class SickDay(
+class SickDay(
 
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
 
-    val from: LocalDate = LocalDate.now(),
-    val to: LocalDate = LocalDate.now(),
+    override val from: LocalDate = LocalDate.now(),
+    override val to: LocalDate = LocalDate.now(),
 
-    val hours: Int,
+    override val hours: Int,
 
     @ElementCollection
-    val days: List<Int>? = null,
+    override val days: List<Int>? = null,
 
     @ManyToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
@@ -35,7 +35,4 @@ data class SickDay(
     @JsonProperty("personCode")
     val person: Person
 
-) : AbstractCodeEntity(id, code) {
-    override fun equals(obj: Any?) = super.equals(obj)
-    override fun hashCode(): Int = super.hashCode()
-}
+) : Day(id, code, from, to, hours, days)

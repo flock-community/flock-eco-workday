@@ -1,6 +1,6 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.workday.forms.HolidayForm
+import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.services.HolidayService
 import java.time.LocalDate
 import org.springframework.context.annotation.Profile
@@ -14,7 +14,7 @@ class LoadHolidayData(
 ) {
     init {
         loadPersonData.data.forEach {
-            HolidayForm(
+            HoliDayForm(
                     description = "Test holiday ${it.firstname}",
                     from = LocalDate.of(2019, 4, 4),
                     to = LocalDate.of(2019, 4, 9),
@@ -25,7 +25,7 @@ class LoadHolidayData(
         }
     }
 
-    fun HolidayForm.create() {
+    fun HoliDayForm.create() {
         holidayService.create(this)
     }
 }

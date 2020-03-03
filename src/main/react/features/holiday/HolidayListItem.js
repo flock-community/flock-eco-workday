@@ -23,15 +23,12 @@ export function HolidayListItem({value, onClick}) {
           {value.description ? value.description : "empty"}
         </Typography>
         <Typography>
-          Period: {value.period.from.format("DD-MM-YYYY")} -{" "}
-          {value.period.to.format("DD-MM-YYYY")}
+          Period: {value.from.format("DD-MM-YYYY")} - {value.to.format("DD-MM-YYYY")}
         </Typography>
         <Typography>
-          Aantal dagen: {value.period.days.filter(day => day.hours > 0).length}
+          Aantal dagen: {value.days.filter(day => day > 0).length}
         </Typography>
-        <Typography>
-          Aantal uren: {value.period.days.reduce((acc, cur) => cur.hours + acc, 0)}
-        </Typography>
+        <Typography>Aantal uren: {value.hours}</Typography>
         <Typography className={classes.status}>{value.status}</Typography>
       </CardContent>
     </Card>

@@ -2,7 +2,7 @@ package community.flock.eco.workday.mocks
 
 import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.model.SickDay
-import community.flock.eco.workday.services.SickdayService
+import community.flock.eco.workday.services.SickDayService
 import java.time.LocalDate
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 @Profile("local")
 class LoadSickdaysData(
     loadPersonData: LoadPersonData,
-    private val service: SickdayService
+    private val service: SickDayService
 ) {
     val data: MutableSet<SickDay> = mutableSetOf()
 
