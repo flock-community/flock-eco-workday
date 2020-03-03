@@ -3,7 +3,7 @@ package community.flock.eco.workday.repository
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.model.Period
 import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.model.Sickday
+import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.utils.convertDayOff
 import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner
 @ContextConfiguration(classes = [ApplicationConfiguration::class])
 @DataJpaTest
 @AutoConfigureTestDatabase
-class SickdayRepositoryTest {
+class SickDayRepositoryTest {
     @Autowired
     private lateinit var entity: TestEntityManager
     @Autowired
@@ -47,91 +47,65 @@ class SickdayRepositoryTest {
         person = personRepository.findAll().first()
     }
 
-    private final fun createSickdayAndPersist(): Sickday {
+    private final fun createSickdayAndPersist(): SickDay {
         val startDate = LocalDate.of(1970, 1, 1)
 
-        val period = Period(
-            from = startDate,
-            to = LocalDate.of(1970, 1, 6),
-            days = convertDayOff(listOf(8, 8, 8, 8, 8), startDate)
-        ).save()
-
-        val sickday = Sickday(
+        val sickDay = SickDay(
             hours = 8,
             person = person,
-            period = period
+            from = startDate,
+            to = LocalDate.of(1970, 1, 6),
+            days = listOf(8, 8, 8, 8, 8)
         )
 
-        entity.persist(sickday)
+        entity.persist(sickDay)
         entity.flush()
 
-        return sickday
+        return sickDay
     }
 
     @Test
-    fun `expect sickdays to be created for a person`() {
-        var res: MutableIterable<Sickday> = repository.findAll()
+    fun `expect sickDays to be created for a person`() {
+        var res: MutableIterable<SickDay> = repository.findAll()
         assertThat(res.toSet().isEmpty()).isTrue()
 
-        val sickday = createSickdayAndPersist()
+        val sickDay = createSickdayAndPersist()
         res = repository.findAll()
 
         assertThat(res.toSet().size).isEqualTo(1)
-        assertThat(res.first()).isEqualTo(sickday)
+        assertThat(res.first()).isEqualTo(sickDay)
 
-        val sickdayTwo = createSickdayAndPersist()
+        val sickDayTwo = createSickdayAndPersist()
         res = repository.findAll()
 
         assertThat(res.toSet().size).isEqualTo(2)
-        assertThat(res.first()).isNotEqualTo(sickdayTwo)
-        assertThat(res.last()).isNotEqualTo(sickday)
-        assertThat(res.last()).isEqualTo(sickdayTwo)
+        assertThat(res.first()).isNotEqualTo(sickDayTwo)
+        assertThat(res.last()).isNotEqualTo(sickDay)
+        assertThat(res.last()).isEqualTo(sickDayTwo)
     }
 
     @Test
-    fun `expect to update an existing sickdays status`() {
-        createSickdayAndPersist()
-        var res: MutableIterable<Sickday> = repository.findAll()
-
-        val sickday = Sickday(
-            id = res.first().id,
-            code = res.first().code,
-            hours = 48,
-            person = person,
-            period = res.first().period
-        )
-        repository.save(sickday)
-        res = repository.findAll()
-
-        assertThat(res.toSet().size).isEqualTo(1)
-        assertThat(res.first()).isEqualTo(sickday)
-    }
-
-    @Test
-    fun `should delete sickday from repository`() {
-        var res: MutableIterable<Sickday>
-        val sickdayList: MutableList<Sickday> = mutableListOf()
+    fun `should delete sickDay from repository`() {
+        var res: MutableIterable<SickDay>
+        val sickDayList: MutableList<SickDay> = mutableListOf()
         val startDate = LocalDate.of(1970, 1, 1)
 
         for (i in 1..5) {
-            var period = Period(
-                from = startDate,
-                to = LocalDate.of(1970, 1, i),
-                days = convertDayOff(listOf(8, 8, 8, 8, 8), startDate)
-            ).save()
 
-            sickdayList.add(
-                Sickday(
+            sickDayList.add(
+                SickDay(
                     hours = i * 8,
                     person = person,
-                    period = period
+                    from = startDate,
+                    to = LocalDate.of(1970, 1, i),
+                    days = listOf(8, 8, 8, 8, 8)
                 )
             )
         }
 
-        val iterator: Iterator<Sickday> = sickdayList.iterator()
-        for (sickday in iterator) {
-            entity.persist(sickday)
+        val iterator: Iterator<SickDay> = sickDayList.iterator()
+        for (sickDay in iterator) {
+            entity.persist(sickDay)
         }
         entity.flush()
         res = repository.findAll()

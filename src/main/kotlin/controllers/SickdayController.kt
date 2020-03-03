@@ -2,8 +2,8 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.SickdayAuthority
-import community.flock.eco.workday.forms.SickdayForm
-import community.flock.eco.workday.model.Sickday
+import community.flock.eco.workday.forms.SickDayForm
+import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.SickdayService
 import community.flock.eco.workday.services.isUser
@@ -28,12 +28,19 @@ class SickdayController(
     private val service: SickdayService,
     private val personService: PersonService
 ) {
+
+    @GetMapping()
+    @PreAuthorize("hasAuthority('SickdayAuthority.ADMIN')")
+    fun getAll(): ResponseEntity<Iterable<SickDay>> =service
+        .findAll()
+        .toResponse()
+
     @GetMapping(params = ["personCode"])
     @PreAuthorize("hasAuthority('SickdayAuthority.READ')")
-    fun getAll(
+    fun getAllByPersonCode(
         @RequestParam personCode: String,
         authentication: Authentication
-    ): ResponseEntity<Iterable<Sickday>> = when {
+    ): ResponseEntity<Iterable<SickDay>> = when {
         authentication.isAdmin() -> service.findAllByPersonCode(personCode)
         else -> service.findAllByPersonUserCode(authentication.name)
     }.toResponse()
@@ -51,7 +58,7 @@ class SickdayController(
     @PostMapping
     @PreAuthorize("hasAuthority('SickdayAuthority.WRITE')")
     fun post(
-        @RequestBody form: SickdayForm,
+        @RequestBody form: SickDayForm,
         authentication: Authentication
     ) = service
         .create(form.setPersonCode(authentication))
@@ -61,7 +68,7 @@ class SickdayController(
     @PreAuthorize("hasAuthority('SickdayAuthority.WRITE')")
     fun put(
         @PathVariable code: String,
-        @RequestBody form: SickdayForm,
+        @RequestBody form: SickDayForm,
         authentication: Authentication
     ) = service
         .update(code, form.setPersonCode(authentication))
@@ -77,7 +84,7 @@ class SickdayController(
         ?.run { service.deleteByCode(this.code) }
         .toResponse()
 
-    private fun SickdayForm.setPersonCode(authentication: Authentication): SickdayForm {
+    private fun SickDayForm.setPersonCode(authentication: Authentication): SickDayForm {
         if (authentication.isAdmin()) {
             return this
         }
@@ -92,7 +99,7 @@ class SickdayController(
         .map { it.authority }
         .contains(SickdayAuthority.ADMIN.toName())
 
-    private fun Sickday.applyAuthentication(authentication: Authentication) = apply {
+    private fun SickDay.applyAuthentication(authentication: Authentication) = apply {
         if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
         }

@@ -73,7 +73,7 @@ export function SickdayFeature() {
       </Grid>
       <SickdayDialog
         open={open}
-        sickdayCode={value && value.code}
+        code={value && value.code}
         personCode={person && person.code}
         value={value}
         onComplete={handleCompleteDialog}

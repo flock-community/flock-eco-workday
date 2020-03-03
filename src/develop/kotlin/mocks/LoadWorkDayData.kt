@@ -1,10 +1,7 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.workday.forms.SickdayForm
 import community.flock.eco.workday.forms.WorkDayForm
-import community.flock.eco.workday.model.Sickday
 import community.flock.eco.workday.model.WorkDay
-import community.flock.eco.workday.services.SickdayService
 import community.flock.eco.workday.services.WorkDayService
 import java.time.LocalDate
 import org.springframework.context.annotation.Profile

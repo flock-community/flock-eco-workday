@@ -4,23 +4,18 @@ import * as Yup from "yup"
 import {Form, Formik} from "formik"
 import moment from "moment"
 import Grid from "@material-ui/core/Grid"
-import MomentUtils from "@date-io/moment"
 import {MuiPickersUtilsProvider} from "@material-ui/pickers"
-import {PeriodInputField} from "../../components/fields/PeriodInputField"
+import MomentUtils from "@date-io/moment"
+import {SickDayClient} from "../../clients/SickDayClient"
 import {isDefined} from "../../utils/validation"
-import {usePerson} from "../../hooks/PersonHook"
-import {AssignmentSelectorField} from "../../components/fields/AssignmentSelectorField"
-import {WorkDayClient} from "../../clients/WorkDayClient"
 import {DatePickerField} from "../../components/fields/DatePickerField"
+import {PeriodInputField} from "../../components/fields/PeriodInputField"
 
-export const WORKDAY_FORM_ID = "work-day-form"
+export const SICKDAY_FORM_ID = "sick-day-form"
 
 const now = moment()
 
 const schema = Yup.object().shape({
-  assignmentCode: Yup.string()
-    .required("Assignment is required")
-    .default(""),
   from: Yup.date()
     .required("From date is required")
     .default(now),
@@ -30,17 +25,13 @@ const schema = Yup.object().shape({
   days: Yup.array().required("Required"),
 })
 
-export function WorkDayForm({code, onSubmit}) {
-  const [person] = usePerson()
-
+export function SickDayForm({code, onSubmit}) {
   const [state, setState] = useState(null)
 
   useEffect(() => {
     if (code) {
-      WorkDayClient.get(code).then(res => {
+      SickDayClient.get(code).then(res => {
         setState({
-          code: res.code,
-          assignmentCode: res.assignmentCode,
           from: res.from,
           to: res.to,
           days: res.days,
@@ -64,16 +55,9 @@ export function WorkDayForm({code, onSubmit}) {
   }
 
   const renderForm = () => (
-    <Form id={WORKDAY_FORM_ID}>
+    <Form id={SICKDAY_FORM_ID}>
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <AssignmentSelectorField
-              fullWidth
-              name="assignmentCode"
-              personCode={person.code}
-            />
-          </Grid>
           <Grid item xs={6}>
             <DatePickerField name="from" fullWidth />
           </Grid>
@@ -108,7 +92,7 @@ export function WorkDayForm({code, onSubmit}) {
   )
 }
 
-WorkDayForm.propTypes = {
+SickDayForm.propTypes = {
   code: PropTypes.string,
   onSubmit: PropTypes.func,
 }

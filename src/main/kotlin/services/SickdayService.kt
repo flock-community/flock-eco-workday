@@ -1,9 +1,11 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.core.utils.toNullable
-import community.flock.eco.workday.forms.SickdayForm
+import community.flock.eco.workday.forms.SickDayForm
+import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.model.Period
-import community.flock.eco.workday.model.Sickday
+import community.flock.eco.workday.model.SickDay
+import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.repository.PeriodRepository
 import community.flock.eco.workday.repository.SickdayRepository
 import community.flock.eco.workday.utils.convertDayOff
@@ -13,6 +15,8 @@ import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
+import java.time.temporal.ChronoUnit
+import java.util.UUID
 
 @Service
 class SickdayService(
@@ -22,7 +26,10 @@ class SickdayService(
     private val entityManager: EntityManager
 ) {
 
-    fun findByCode(code: String): Sickday? = repository
+    fun findAll(): Iterable<SickDay> = repository
+        .findAll()
+
+    fun findByCode(code: String): SickDay? = repository
         .findByCode(code)
         .toNullable()
 
@@ -32,77 +39,69 @@ class SickdayService(
     fun findAllByPersonUserCode(userCode: String) = repository
         .findAllByPersonUserCode(userCode)
 
-    fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Sickday> {
-        val query = "SELECT s FROM Sickday s WHERE s.period.from <= :to AND (s.period.to is null OR s.period.to > :from)"
+    fun findAllActive(from: LocalDate, to: LocalDate): MutableList<SickDay> {
+        val query = "SELECT s FROM SickDay s WHERE s.from <= :to AND (s.to is null OR s.to >= :from)"
         return entityManager
-            .createQuery(query, Sickday::class.java)
+            .createQuery(query, SickDay::class.java)
             .setParameter("from", from)
             .setParameter("to", to)
             .resultList
     }
 
-    fun create(form: SickdayForm): Sickday {
-        form.validate()
-        val person = personService
-            .findByCode(form.personCode)
-            ?: throw ResponseStatusException(NOT_FOUND, "No Person found.")
+    fun create(form: SickDayForm): SickDay = form
+        .validate()
+        .consume()
+        .save()
 
-        val period = Period(
-            from = form.from,
-            to = form.to,
-            days = convertDayOff(form.days, form.from)
-        ).save()
-
-        return Sickday(
-            person = person,
-            period = period,
-            hours = form.hours
-        ).save()
-    }
-
-    fun update(code: String, form: SickdayForm): Sickday? {
-        form.validate()
-        val sickday = findByCode(code)
-        return when (sickday) {
-            is Sickday -> sickday.internalize(form).save()
-            else -> null
+    fun update(code: String, form: SickDayForm): SickDay? = repository
+        .findByCode(code)
+        .toNullable()
+        .run {
+            form
+                .validate()
+                .consume(this)
+                .save()
         }
-    }
+
 
     @Transactional
     fun deleteByCode(code: String) = repository.deleteByCode(code)
 
-    //
-    // *-- Utility functions --*
-    //
-    private fun Sickday.save() = repository.save(this)
+    private fun SickDayForm.consume(it: SickDay? = null): SickDay {
+        val person = personService
+            .findByCode(this.personCode)
+            ?: throw error("Cannot find person: ${this.personCode}")
 
-    private fun Period.save() = periodRepository.save(this)
-
-    private fun Sickday.internalize(it: SickdayForm): Sickday {
-        val period = Period(
-            from = it.from,
-            to = it.to,
-            days = convertDayOff(it.days, it.from)
-        ).save()
-
-        return Sickday(
-            id = this.id,
-            code = this.code,
-            person = this.person,
-            hours = it.hours,
-            period = period
+        return SickDay(
+            id = it?.id ?: 0L,
+            code = it?.code ?: UUID.randomUUID().toString(),
+            from = this.from,
+            to = this.to,
+            person = person,
+            hours = this.hours,
+            days = this.days
         )
     }
 
-    private fun SickdayForm.validate() {
-        val daysBetween = java.time.Period.between(this.from, this.to).days + 1
-        if (this.days.size != daysBetween) {
-            throw error("amount of DayOff not equal to period")
-        }
+    private fun SickDay.save() = repository.save(this)
 
-        if (this.days.sum() != this.hours) {
-            throw error("Total hour does not match")
+    private fun Period.save() = periodRepository.save(this)
+
+    private fun SickDayForm.validate() = apply {
+        val daysBetween = ChronoUnit.DAYS.between(this.from, this.to) + 1
+        if(this.hours < 0 ){
+            throw error("Hours cannot have negative value")
+        }
+        if(this.days?.any{it < 0} == true) {
+            throw error("Days cannot have negative value")
+        }
+        if (this.days != null) {
+            if (this.days.size.toLong() != daysBetween) {
+                throw error("amount of days (${daysBetween}) not equal to period (${this.days.size})")
+            }
+            if (this.days.sum() != this.hours) {
+                throw error("Total hour does not match")
+            }
         }
     }
 }

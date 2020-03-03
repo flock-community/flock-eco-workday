@@ -1,17 +1,22 @@
+import moment from "moment"
 import {ResourceClient, responseValidation} from "../utils/ResourceClient"
 
-import {toHolidayForm} from "../features/holiday/schema"
+const internalize = it => ({
+  ...it,
+  from: moment(it.from),
+  to: moment(it.to),
+})
 
 const path = "/api/sickdays"
-const resourceClient = ResourceClient(path)
+const resourceClient = ResourceClient(path, internalize)
 
 const findAllByPersonCode = personCode => {
   return fetch(`${path}?personCode=${personCode}`)
     .then(responseValidation)
-    .then(data => data.map(toHolidayForm))
+    .then(data => data.map(internalize))
 }
 
-export const SickdayClient = {
+export const SickDayClient = {
   ...resourceClient,
   findAllByPersonCode,
 }

@@ -1,6 +1,5 @@
 package community.flock.eco.workday.repository
 
-import community.flock.eco.workday.model.Sickday
 import community.flock.eco.workday.model.WorkDay
 import java.util.Optional
 import org.springframework.data.repository.CrudRepository

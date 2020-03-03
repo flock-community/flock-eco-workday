@@ -6,10 +6,10 @@ import HealingIcon from "@material-ui/icons/Healing"
 import moment, {HTML5_FMT} from "moment"
 import {ConfirmDialog} from "@flock-eco/core/src/main/react/components/ConfirmDialog"
 import Typography from "@material-ui/core/Typography"
-import {SickdayClient} from "../../clients/SickdayClient"
+import {SickDayClient} from "../../clients/SickDayClient"
 import {TransitionSlider} from "../../components/transitions/Slide"
 import {DialogFooter, DialogHeader} from "../../components/dialog"
-import {SICKDAY_FORM_ID, SickdayForm} from "./SickdayForm"
+import {SICKDAY_FORM_ID, SickDayForm} from "./SickDayForm"
 import {isDefined} from "../../utils/validation"
 
 const useStyles = makeStyles(() => ({
@@ -19,28 +19,28 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export function SickdayDialog({open, sickdayCode, personCode, onComplete}) {
+export function SickdayDialog({open, code, personCode, onComplete}) {
   const classes = useStyles()
 
   const [openDelete, setOpenDelete] = useState(false)
 
   const handleSubmit = it => {
-    if (it.code) {
-      SickdayClient.put(it.code, {
-        from: it.period.dates[0].format(HTML5_FMT.DATE),
-        to: it.period.dates[1].format(HTML5_FMT.DATE),
-        days: it.period.days,
-        hours: it.period.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
-        personCode: it.personCode,
+    if (code) {
+      SickDayClient.put(code, {
+        from: it.from.format(HTML5_FMT.DATE),
+        to: it.to.format(HTML5_FMT.DATE),
+        days: it.days,
+        hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
+        personCode,
       }).then(res => {
         if (isDefined(onComplete)) onComplete(res)
       })
     } else {
-      SickdayClient.post({
-        from: it.period.dates[0].format(moment.HTML5_FMT.DATE),
-        to: it.period.dates[1].format(moment.HTML5_FMT.DATE),
-        days: it.period.days,
-        hours: it.period.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
+      SickDayClient.post({
+        from: it.from.format(moment.HTML5_FMT.DATE),
+        to: it.to.format(moment.HTML5_FMT.DATE),
+        days: it.days,
+        hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
         personCode,
       }).then(res => {
         if (isDefined(onComplete)) onComplete(res)
@@ -49,7 +49,7 @@ export function SickdayDialog({open, sickdayCode, personCode, onComplete}) {
   }
 
   const handleDelete = () => {
-    SickdayClient.delete(sickdayCode).then(() => {
+    SickDayClient.delete(code).then(() => {
       if (isDefined(onComplete)) onComplete()
       setOpenDelete(false)
     })
@@ -75,11 +75,11 @@ export function SickdayDialog({open, sickdayCode, personCode, onComplete}) {
         <DialogHeader
           icon={<HealingIcon />}
           headline="Create Sickday"
-          subheadline="Add your sickdays. Hope you feel better soon."
+          subheadline="Add your sick days. Hope you feel better soon."
           onClose={handleClose}
         />
         <DialogContent className={classes.dialogContent}>
-          <SickdayForm code={sickdayCode} onSubmit={handleSubmit} />
+          <SickDayForm code={code} onSubmit={handleSubmit} />
         </DialogContent>
         <Divider />
         <DialogFooter
@@ -101,7 +101,7 @@ export function SickdayDialog({open, sickdayCode, personCode, onComplete}) {
 
 SickdayDialog.propTypes = {
   open: PropTypes.bool,
-  sickdayCode: PropTypes.string,
+  code: PropTypes.string,
   personCode: PropTypes.string,
   onComplete: PropTypes.func,
 }

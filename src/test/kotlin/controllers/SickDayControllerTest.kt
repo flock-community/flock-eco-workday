@@ -8,7 +8,7 @@ import community.flock.eco.feature.user.services.UserSecurityService
 import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.forms.PersonForm
-import community.flock.eco.workday.forms.SickdayForm
+import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.repository.SickdayRepository
@@ -40,29 +40,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @SpringBootTest(classes = [Application::class])
 @AutoConfigureMockMvc
 @ActiveProfiles(profiles = ["test"])
-class SickdayControllerTest {
-//    companion object {
-//        // init {}
-//
-//        private const val baseUrl: String = "/api/sickdays"
-//
-//        private lateinit var user: RequestPostProcessor
-//        @Autowired private lateinit var userAccountService: UserAccountService
-//
-//        @BeforeClass
-//        @JvmStatic
-//        fun setup() {
-//            user = UserAccountPasswordForm(
-//                    email = "admin@reynholm-industries.co.uk",
-//                    name = "Administrator",
-//                    authorities = setOf(),
-//                    password = "admin"
-//            )
-//                    .run { userAccountService.createUserAccountPassword(this) }
-//                    .run { UserSecurityService.UserSecurityPassword(this) }
-//                    .run { user(this) }
-//        }
-//    }
+class SickDayControllerTest {
 
     private val baseUrl: String = "/api/sickdays"
     private val adminUserEmail: String = "admin@reynhom-industries.co.uk"
@@ -133,82 +111,24 @@ class SickdayControllerTest {
     fun `should get all sickdays from a single user`() {
         val person = persons.elementAt(0)
         val sickdays = createSickdaysForPersons()
-        val personSickdays = sickdays.filter { it.get("person").textValue() == person.code }
+        val personSickdays = sickdays.filter { it.get("personCode").textValue() == person.code }
 
         mvc.perform(get("$baseUrl?code=${person.code}")
             .with(user)
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(content().json(mapper.writeValueAsString(personSickdays)))
-    }
-
-    @Test
-    fun `should get active sickday from all users`() {
-        val sickdays = createSickdaysForPersons()
-        val activeSickdays = sickdays.filter { it.get("status").textValue() == SickdayStatus.SICK.toString() }
-
-        mvc.perform(get("$baseUrl?status=${SickdayStatus.SICK}")
-            .with(user).accept(APPLICATION_JSON))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(content().json(mapper.writeValueAsString(activeSickdays)))
-    }
-
-    @Test
-    fun `should get active sickday from a single user`() {
-        val person = persons.elementAt(0)
-        val sickdays = createSickdaysForPersons()
-        val personActiveSickdays = sickdays.filter {
-            it.get("status").textValue() == SickdayStatus.SICK.toString() && it.get("person").textValue() == person.code
-        }
-
-        mvc.perform(get("$baseUrl?status=${SickdayStatus.SICK}&code=${person.code}")
-            .with(user)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(content().json(mapper.writeValueAsString(personActiveSickdays)))
-    }
-
-    @Test
-    fun `should get archived sickday from all users`() {
-        val sickdays = createSickdaysForPersons()
-        val archivedSickdays = sickdays.filter { it.get("status").textValue() == SickdayStatus.HEALTHY.toString() }
-
-        mvc.perform(get("$baseUrl?status=${SickdayStatus.HEALTHY}")
-            .with(user)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(content().json(mapper.writeValueAsString(archivedSickdays)))
-    }
-
-    @Test
-    fun `should get archived sickday from a single users`() {
-        val person = persons.elementAt(0)
-        val sickdays = createSickdaysForPersons()
-        val personArchivedSickdays = sickdays.filter {
-            it.get("status").textValue() == SickdayStatus.HEALTHY.toString() && it.get("person").textValue() == person.code
-        }
-
-        mvc.perform(get("$baseUrl?status=${SickdayStatus.HEALTHY}&code=${person.code}")
-            .with(user)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(content().json(mapper.writeValueAsString(personArchivedSickdays)))
     }
 
     @Test
     fun `should get a sickday via GET-Method`() {
         /* DRY-Block */
         val person = persons.elementAt(0)
-        val sickdayForm = SickdayForm(
+        val sickdayForm = SickDayForm(
             from = dayFromLocalDate(),
             to = dayFromLocalDate(4),
             days = listOf(8, 8, 8, 8),
-            hours = 42,
+            hours = 32,
             personCode = person.code
         )
         /* DRY-Block */
@@ -219,11 +139,11 @@ class SickdayControllerTest {
     fun `should add a sickday via POST-Method`() {
         /* DRY-Block */
         val person = persons.elementAt(0)
-        val sickdayForm = SickdayForm(
+        val sickdayForm = SickDayForm(
             from = dayFromLocalDate(),
             to = dayFromLocalDate(4),
             days = listOf(8, 8, 8, 8),
-            hours = 42,
+            hours = 32,
             personCode = person.code
         )
         /* DRY-Block */
@@ -234,11 +154,11 @@ class SickdayControllerTest {
     fun `should change a sickday via PUT-Method`() {
         /* DRY-Block */
         val person = persons.elementAt(0)
-        val sickdayForm = SickdayForm(
+        val sickdayForm = SickDayForm(
             from = dayFromLocalDate(),
             to = dayFromLocalDate(4),
             days = listOf(8, 8, 8, 8),
-            hours = 42,
+            hours = 32,
             personCode = person.code
         )
         /* DRY-Block */
@@ -251,11 +171,11 @@ class SickdayControllerTest {
     fun `should delete a sickday via DELETE-Method`() {
         /* DRY-Block */
         val person = persons.elementAt(0)
-        val sickdayForm = SickdayForm(
+        val sickdayForm = SickDayForm(
             from = dayFromLocalDate(),
             to = dayFromLocalDate(4),
             days = listOf(8, 8, 8, 8),
-            hours = 42,
+            hours = 32,
             personCode = person.code
         )
         /* DRY-Block */
@@ -292,23 +212,23 @@ class SickdayControllerTest {
     /**
      *
      */
-    private fun post(sickdayForm: SickdayForm, personCode: String) = mvc.perform(
+    private fun post(sickDayForm: SickDayForm, personCode: String) = mvc.perform(
         post(baseUrl)
             .with(user)
-            .content(mapper.writeValueAsString(sickdayForm))
+            .content(mapper.writeValueAsString(sickDayForm))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
         .andExpect(status().isOk)
         .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-        .andExpect(jsonPath("\$.hours").value(sickdayForm.hours))
-        .andExpect(jsonPath("\$.person").exists())
-        .andExpect(jsonPath("\$.person").isNotEmpty)
-        .andExpect(jsonPath("\$.person").value(personCode))
+        .andExpect(jsonPath("\$.hours").value(sickDayForm.hours))
+        .andExpect(jsonPath("\$.personCode").exists())
+        .andExpect(jsonPath("\$.personCode").isNotEmpty)
+        .andExpect(jsonPath("\$.personCode").value(personCode))
 
     /**
      *
      */
-    private fun get(sickdayForm: SickdayForm, code: String? = null) {
+    private fun get(sickDayForm: SickDayForm, code: String? = null) {
         var get = get(baseUrl)
         if (code is String)
             get = get("$baseUrl/$code")
@@ -319,32 +239,32 @@ class SickdayControllerTest {
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("\$.hours").isNumber)
-            .andExpect(jsonPath("\$.hours").value(sickdayForm.hours))
-            .andExpect(jsonPath("\$.person").exists())
-            .andExpect(jsonPath("\$.person").isNotEmpty)
-            .andExpect(jsonPath("\$.person").value(sickdayForm.personCode))
+            .andExpect(jsonPath("\$.hours").value(sickDayForm.hours))
+            .andExpect(jsonPath("\$.personCode").exists())
+            .andExpect(jsonPath("\$.personCode").isNotEmpty)
+            .andExpect(jsonPath("\$.personCode").value(sickDayForm.personCode))
     }
 
     /**
      *
      */
-    private fun put(sickdayForm: SickdayForm, code: String, personCode: String) = mvc.perform(
+    private fun put(sickDayForm: SickDayForm, code: String, personCode: String) = mvc.perform(
         put("$baseUrl/$code")
             .with(user)
-            .content(mapper.writeValueAsString(sickdayForm))
+            .content(mapper.writeValueAsString(sickDayForm))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
         .andExpect(status().isOk)
         .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-        .andExpect(jsonPath("\$.hours").value(sickdayForm.hours))
-        .andExpect(jsonPath("\$.person").exists())
-        .andExpect(jsonPath("\$.person").isNotEmpty)
-        .andExpect(jsonPath("\$.person").value(personCode))
+        .andExpect(jsonPath("\$.hours").value(sickDayForm.hours))
+        .andExpect(jsonPath("\$.personCode").exists())
+        .andExpect(jsonPath("\$.personCode").isNotEmpty)
+        .andExpect(jsonPath("\$.personCode").value(personCode))
 
     /**
      *
      */
-    private fun getSickdayCodeFrom(sickdayForm: SickdayForm, personCode: String) = post(sickdayForm, personCode)
+    private fun getSickdayCodeFrom(sickDayForm: SickDayForm, personCode: String) = post(sickDayForm, personCode)
         .andReturn()
         .response
         .contentAsString
@@ -395,18 +315,18 @@ class SickdayControllerTest {
     private fun createSickdaysForPersons(sickdays: MutableSet<JsonNode> = mutableSetOf()): MutableSet<JsonNode> {
         persons.forEach {
             val sickdayForms = mutableListOf(
-                SickdayForm(
+                SickDayForm(
                     from = dayFromLocalDate(),
                     to = dayFromLocalDate(4),
                     days = listOf(8, 8, 8, 8),
-                    hours = 42,
+                    hours = 32,
                     personCode = it.code
                 ),
-                SickdayForm(
+                SickDayForm(
                     from = dayFromLocalDate(),
                     to = dayFromLocalDate(4),
                     days = listOf(8, 8, 8, 8),
-                    hours = 42,
+                    hours = 32,
                     personCode = it.code
                 )
             )

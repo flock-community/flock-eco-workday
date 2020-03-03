@@ -2,7 +2,7 @@ package community.flock.eco.workday.services
 
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.WorkDayForm
-import community.flock.eco.workday.model.Sickday
+import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.repository.WorkDayRepository
 import org.springframework.stereotype.Service
@@ -29,10 +29,10 @@ class WorkDayService(
     fun findAllByPersonUserCode(userCode: String) = workDayRepository
         .findAllByAssignmentPersonUserCode(userCode)
 
-    fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Sickday> {
+    fun findAllActive(from: LocalDate, to: LocalDate): MutableList<SickDay> {
         val query = "SELECT it FROM WorkDay it WHERE it.from <= :to AND (it.to is null OR it.to >= :from)"
         return entityManager
-            .createQuery(query, Sickday::class.java)
+            .createQuery(query, SickDay::class.java)
             .setParameter("from", from)
             .setParameter("to", to)
             .resultList

@@ -1,7 +1,7 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.workday.forms.SickdayForm
-import community.flock.eco.workday.model.Sickday
+import community.flock.eco.workday.forms.SickDayForm
+import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.services.SickdayService
 import java.time.LocalDate
 import org.springframework.context.annotation.Profile
@@ -13,13 +13,13 @@ class LoadSickdaysData(
     loadPersonData: LoadPersonData,
     private val service: SickdayService
 ) {
-    val data: MutableSet<Sickday> = mutableSetOf()
+    val data: MutableSet<SickDay> = mutableSetOf()
 
     /**
      * add a create() function to the SickdayForm which calls the create function of SickdayService
      * to create and persist the Sickday.
      */
-    private final fun SickdayForm.create() {
+    private final fun SickDayForm.create() {
         service.create(this)
     }
 
@@ -29,7 +29,7 @@ class LoadSickdaysData(
      */
     init {
         loadPersonData.data.forEach {
-            SickdayForm(
+            SickDayForm(
                 from = LocalDate.of(2019, 4, 4),
                 to = LocalDate.of(2019, 4, 9),
                 days = listOf(8, 8, 8, 8, 8, 8),
@@ -37,7 +37,7 @@ class LoadSickdaysData(
                 personCode = it.code
             ).create()
 
-            SickdayForm(
+            SickDayForm(
                 from = LocalDate.of(2019, 4, 4),
                 to = LocalDate.of(2019, 4, 9),
                 days = listOf(8, 8, 8, 8, 8, 8),
