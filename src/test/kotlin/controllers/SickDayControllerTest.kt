@@ -109,9 +109,7 @@ class SickDayControllerTest {
     @Test
     fun `should get all sickdays from a single user`() {
         val person = persons.elementAt(0)
-        val sickdays = createSickdaysForPersons()
-        val personSickdays = sickdays.filter { it.get("personCode").textValue() == person.code }
-
+        createSickdaysForPersons()
         mvc.perform(get("$baseUrl?code=${person.code}")
             .with(user)
             .accept(APPLICATION_JSON))

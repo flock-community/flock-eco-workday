@@ -34,7 +34,7 @@ class CreateHelper(
         authorities = authorities.map { it.toName() }.toSet()
     ).run {
         userService.create(this)
-    } ?: error("Cannot create client")
+    }
 
     fun createClient() = createClient(UUID.randomUUID().toString())
     fun createClient(name: String) = ClientForm(

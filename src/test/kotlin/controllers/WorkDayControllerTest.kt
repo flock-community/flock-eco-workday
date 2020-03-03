@@ -63,7 +63,7 @@ class WorkDayControllerTest {
             hours = 50
         )
 
-        val workDay = workDayService.create(createForm)
+        workDayService.create(createForm)
 
         mvc.perform(get("$baseUrl?personCode=${person.code}")
             .with(user(UserSecurity(user)))

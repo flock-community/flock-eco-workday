@@ -38,7 +38,7 @@ class AggregationServiceTest {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
 
-        val data = dataHelper.createAssignmentData()
+        dataHelper.createAssignmentData()
         val res = aggregationService.revenuePerMonth(from, to)
 
         assertEquals(12, res.size)
@@ -79,7 +79,7 @@ class AggregationServiceTest {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
 
-        val data = dataHelper.createContractData()
+        dataHelper.createContractData()
         val res = aggregationService.costPerMonth(from, to)
 
         assertEquals(12, res.size)
@@ -92,18 +92,7 @@ class AggregationServiceTest {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
 
-        val res = aggregationService.netRevenueFactor(from, to)
-    }
-
-    @Test
-    fun `person days`() {
-        val from = LocalDate.of(2020, 1, 1)
-        val to = LocalDate.of(2020, 12, 31)
-
-        dataHelper.createAssignmentData()
-        dataHelper.createContractData()
-
-        // val res = aggregationService.personPerMonth(from, to)
+        aggregationService.netRevenueFactor(from, to)
     }
 
     @Test
