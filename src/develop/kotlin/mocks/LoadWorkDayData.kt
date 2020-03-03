@@ -34,7 +34,7 @@ class LoadWorkDayData(
                 from = LocalDate.of(2019, 4, 4),
                 to = LocalDate.of(2019, 4, 9),
                 hours = 40,
-                days = listOf(0,8,8,8,8,8),
+                days = listOf(0, 8, 8, 8, 8, 8),
                 assignmentCode = it.code
 
             ).create()

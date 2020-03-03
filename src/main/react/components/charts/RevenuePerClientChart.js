@@ -18,8 +18,6 @@ export function RevenuePerClientChart({year, clients}) {
     value: state[key],
   }))
 
-  console.log(data)
-
   return (
     <ResponsiveContainer>
       <PieChart width={400} height={400}>

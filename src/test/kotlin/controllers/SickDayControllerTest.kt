@@ -10,7 +10,6 @@ import community.flock.eco.workday.Application
 import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.model.SickdayStatus
 import community.flock.eco.workday.repository.SickdayRepository
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.utils.dayFromLocalDate

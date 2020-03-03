@@ -6,13 +6,13 @@ import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
-import org.springframework.stereotype.Service
+import community.flock.eco.workday.model.ContractService as ContractServiceModel
 import java.math.BigDecimal
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
-import community.flock.eco.workday.model.ContractService as ContractServiceModel
+import org.springframework.stereotype.Service
 
 @Service
 
@@ -93,8 +93,6 @@ class AggregationService(
     }
 }
 
-
-
 fun dateRange(from: LocalDate, to: LocalDate) = (0..ChronoUnit.DAYS.between(from, to))
     .asSequence()
     .map { from.plusDays(it) }
@@ -129,4 +127,3 @@ fun Contract.costPerDay(date: LocalDate) = when (this) {
 
 fun List<Contract>.sumCosts(date: LocalDate) = this
     .fold(BigDecimal(0), { acc, cur -> acc + cur.costPerDay(date) })
-

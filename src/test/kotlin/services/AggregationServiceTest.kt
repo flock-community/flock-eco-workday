@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.Profile
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
 
@@ -87,7 +86,6 @@ class AggregationServiceTest {
         assertEquals(41400, res.entries.first().value.toInt())
     }
 
-
     @Test
     fun `find netto revenu factor`() {
 
@@ -95,7 +93,6 @@ class AggregationServiceTest {
         val to = LocalDate.of(2020, 12, 31)
 
         val res = aggregationService.netRevenueFactor(from, to)
-
     }
 
     @Test

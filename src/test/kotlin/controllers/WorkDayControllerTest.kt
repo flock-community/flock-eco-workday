@@ -6,6 +6,7 @@ import community.flock.eco.workday.authorities.WorkDayAuthority
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.services.WorkDayService
+import java.time.LocalDate
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +24,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.time.LocalDate
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
@@ -81,5 +81,4 @@ class WorkDayControllerTest {
         override fun isAccountNonExpired() = true
         override fun isAccountNonLocked() = true
     }
-
 }

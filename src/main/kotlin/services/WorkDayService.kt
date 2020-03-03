@@ -5,12 +5,12 @@ import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.repository.WorkDayRepository
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 import javax.persistence.EntityManager
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class WorkDayService(
@@ -43,7 +43,6 @@ class WorkDayService(
         .consume()
         .save()
 
-
     fun update(workDayCode: String, form: WorkDayForm): WorkDay = workDayRepository
         .findByCode(workDayCode)
         .toNullable()
@@ -57,18 +56,17 @@ class WorkDayService(
     @Transactional
     fun deleteByCode(code: String) = workDayRepository.deleteByCode(code)
 
-
     private fun WorkDayForm.validate() = apply {
         val daysBetween = ChronoUnit.DAYS.between(this.from, this.to) + 1
-        if(this.hours < 0 ){
+        if (this.hours < 0) {
             throw error("Hours cannot have negative value")
         }
-        if(this.days?.any{it < 0} == true) {
+        if (this.days?.any { it < 0 } == true) {
             throw error("Days cannot have negative value")
         }
         if (this.days != null) {
             if (this.days.size.toLong() != daysBetween) {
-                throw error("amount of days (${daysBetween}) not equal to period (${this.days.size})")
+                throw error("amount of days ($daysBetween) not equal to period (${this.days.size})")
             }
             if (this.days.sum() != this.hours) {
                 throw error("Total hour does not match")
@@ -93,5 +91,4 @@ class WorkDayService(
     }
 
     private fun WorkDay.save() = workDayRepository.save(this)
-
 }

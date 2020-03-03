@@ -15,8 +15,8 @@ import community.flock.eco.workday.services.ClientService
 import community.flock.eco.workday.services.ContractService
 import community.flock.eco.workday.services.PersonService
 import java.time.LocalDate
-import org.springframework.stereotype.Component
 import java.util.UUID
+import org.springframework.stereotype.Component
 
 @Component
 class CreateHelper(
@@ -27,10 +27,10 @@ class CreateHelper(
     val userService: UserService
 ) {
 
-    fun createUser(authorities:Set<Authority>) = createUser(UUID.randomUUID().toString(), authorities)
-    fun createUser(name: String, authorities:Set<Authority>) = UserForm(
+    fun createUser(authorities: Set<Authority>) = createUser(UUID.randomUUID().toString(), authorities)
+    fun createUser(name: String, authorities: Set<Authority>) = UserForm(
         name = name,
-        email = "${name}@workday.io",
+        email = "$name@workday.io",
         authorities = authorities.map { it.toName() }.toSet()
     ).run {
         userService.create(this)

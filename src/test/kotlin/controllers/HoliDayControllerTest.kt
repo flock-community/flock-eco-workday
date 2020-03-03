@@ -98,7 +98,7 @@ class HoliDayControllerTest {
             from = dayFromLocalDate(),
             to = dayFromLocalDate(2),
             days = listOf(8, 8),
-            hours = 8,
+            hours = 16,
             personCode = person.code
         )
 
@@ -234,7 +234,7 @@ class HoliDayControllerTest {
         .andExpect(jsonPath("\$.description").value(holiDayForm.description.toString()))
         .andExpect(jsonPath("\$.status").value(holiDayForm.status.toString()))
         .andExpect(jsonPath("\$.hours").value(holiDayForm.hours))
-        .andExpect(jsonPath("\$.person").value(holiDayForm.personCode.toString()))
+        .andExpect(jsonPath("\$.personCode").value(holiDayForm.personCode.toString()))
 
     /**
      *
@@ -253,7 +253,7 @@ class HoliDayControllerTest {
         .andExpect(jsonPath("\$.description").value(holiDayForm.description.toString()))
         .andExpect(jsonPath("\$.status").value(holiDayForm.status.toString()))
         .andExpect(jsonPath("\$.hours").value(holiDayForm.hours))
-        .andExpect(jsonPath("\$.person").value(holiDayForm.personCode.toString()))
+        .andExpect(jsonPath("\$.personCode").value(holiDayForm.personCode.toString()))
 
     /**
      *
@@ -272,5 +272,5 @@ class HoliDayControllerTest {
         .andExpect(jsonPath("\$.description").value(holiDayForm.description.toString()))
         .andExpect(jsonPath("\$.status").value(holiDayForm.status.toString()))
         .andExpect(jsonPath("\$.hours").value(holiDayForm.hours))
-        .andExpect(jsonPath("\$.person").value(holiDayForm.personCode.toString()))
+        .andExpect(jsonPath("\$.personCode").value(holiDayForm.personCode.toString()))
 }

@@ -6,12 +6,12 @@ import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.repository.HolidayRepository
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 import javax.persistence.EntityManager
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class HolidayService(
@@ -82,7 +82,7 @@ class HolidayService(
         }
         if (this.days != null) {
             if (this.days.size.toLong() != daysBetween) {
-                throw error("amount of days (${daysBetween}) not equal to period (${this.days.size})")
+                throw error("amount of days ($daysBetween) not equal to period (${this.days.size})")
             }
             if (this.days.sum() != this.hours) {
                 throw error("Total hour does not match")

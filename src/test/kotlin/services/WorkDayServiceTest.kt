@@ -3,11 +3,10 @@ package community.flock.eco.workday.services
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.helpers.DataHelper
 import java.time.LocalDate
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,8 +15,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 @RunWith(SpringRunner::class)
 @ContextConfiguration(classes = [ApplicationConfiguration::class])
@@ -43,7 +40,7 @@ class WorkDayServiceTest {
 
         val createForm = WorkDayForm(
             from = from,
-            to =  to,
+            to = to,
             assignmentCode = assignment.code,
             hours = 50
         )
@@ -54,7 +51,7 @@ class WorkDayServiceTest {
 
         val updateForm = WorkDayForm(
             from = from,
-            to =  to,
+            to = to,
             assignmentCode = assignment.code,
             hours = 25
         )
@@ -68,6 +65,5 @@ class WorkDayServiceTest {
         workDayService.deleteByCode(created.code)
 
         assertNull(workDayService.findByCode(created.code))
-
     }
 }

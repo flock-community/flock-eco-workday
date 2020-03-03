@@ -25,13 +25,13 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @RequestMapping("/api/sickdays")
 class SickdayController(
-        private val service: SickDayService,
-        private val personService: PersonService
+    private val service: SickDayService,
+    private val personService: PersonService
 ) {
 
     @GetMapping()
     @PreAuthorize("hasAuthority('SickdayAuthority.ADMIN')")
-    fun getAll(): ResponseEntity<Iterable<SickDay>> =service
+    fun getAll(): ResponseEntity<Iterable<SickDay>> = service
         .findAll()
         .toResponse()
 
