@@ -6,12 +6,12 @@ import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.repository.AssignmentRepository
 import community.flock.eco.workday.repository.ClientRepository
 import community.flock.eco.workday.repository.PersonRepository
-import java.time.LocalDate
-import javax.persistence.EntityManager
-import javax.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import javax.persistence.EntityManager
+import javax.transaction.Transactional
 
 @Service
 class AssignmentService(
@@ -35,7 +35,7 @@ class AssignmentService(
         .findAllByPersonUserCode(userCode)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Assignment> {
-        val query = "SELECT a FROM Assignment a WHERE a.startDate <= :to AND (a.endDate is null OR a.endDate > :from)"
+        val query = "SELECT a FROM Assignment a WHERE a.startDate <= :to AND (a.endDate is null OR a.endDate >= :from)"
         return entityManager
             .createQuery(query, Assignment::class.java)
             .setParameter("from", from)
@@ -73,4 +73,7 @@ class AssignmentService(
     )
 
     private fun Assignment.save() = assignmentRepository.save(this)
+
 }
+
+fun Assignment.isActive(from: LocalDate, to: LocalDate) = this.startDate <= to && this.endDate?.let { it >= from } ?: true

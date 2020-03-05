@@ -18,7 +18,7 @@ class AggregationController(
 
     @GetMapping("/revenue-per-month", params = ["year"])
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun revenuePerMonthByYear(@RequestParam year: Int): Map<YearMonth, Double> {
+    fun revenuePerMonthByYear(@RequestParam year: Int): Map<YearMonth, BigDecimal> {
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
         return aggregationService.revenuePerMonth(from, to)
@@ -42,7 +42,7 @@ class AggregationController(
 
     @GetMapping("/holiday-per-person", params = ["year"])
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun holidayPerPersonByYear(@RequestParam year: Int): Map<String, Double> {
+    fun holiDayPerPersonByYear(@RequestParam year: Int): Map<String, Double> {
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
         return aggregationService.holidayPerPerson(from, to)
@@ -50,15 +50,24 @@ class AggregationController(
 
     @GetMapping("/sickday-per-person", params = ["year"])
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun sickdayPerPersonByYear(@RequestParam year: Int): Map<String, Double> {
+    fun sickDayPerPersonByYear(@RequestParam year: Int): Map<String, Double> {
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
         return aggregationService.sickdayPerPerson(from, to)
     }
 
+    @GetMapping("/work-day-per-person", params = ["year"])
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    fun workDayPerPersonByYear(@RequestParam year: Int): Map<String, Double> {
+        val from = LocalDate.of(year, 1, 1)
+        val to = LocalDate.of(year, 12, 31)
+        return aggregationService.workdayPerPerson(from, to)
+    }
+
+
     @GetMapping("/revenue-per-client", params = ["year"])
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun revenuePerClientByYear(@RequestParam year: Int): Map<String, Double> {
+    fun revenuePerClientByYear(@RequestParam year: Int): Map<String, BigDecimal> {
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
         return aggregationService.revenuePerClient(from, to)
