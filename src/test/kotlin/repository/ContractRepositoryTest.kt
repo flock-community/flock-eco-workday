@@ -34,13 +34,13 @@ class ContractRepositoryTest {
         val person = createHelper.createPerson("Hello", "Bye")
         val new = ContractInternal(
             person = person,
-            startDate = LocalDate.of(2020, 1, 1),
+            from = LocalDate.of(2020, 1, 1),
             hoursPerWeek = 40,
             monthlySalary = 500.0
         )
         val saved = contractRepository.save(new)
         val update = saved.copy(
-            endDate = LocalDate.of(2020, 6, 1),
+            to = LocalDate.of(2020, 6, 1),
             hoursPerWeek = 80,
             monthlySalary = 1000.0
         )
@@ -60,13 +60,13 @@ class ContractRepositoryTest {
         val person = createHelper.createPerson("Hello", "Bye")
         val new = ContractExternal(
             person = person,
-            startDate = LocalDate.of(2020, 1, 1),
+            from = LocalDate.of(2020, 1, 1),
             hoursPerWeek = 40,
             hourlyRate = 500.0
         )
         val saved = contractRepository.save(new)
         val update = saved.copy(
-            endDate = LocalDate.of(2020, 6, 1),
+            to = LocalDate.of(2020, 6, 1),
             hoursPerWeek = 80,
             hourlyRate = 1000.0
         )

@@ -4,7 +4,7 @@ import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.model.HoliDay
-import community.flock.eco.workday.services.HolidayService
+import community.flock.eco.workday.services.HoliDayService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.isUser
 import org.springframework.http.HttpStatus.UNAUTHORIZED
@@ -25,8 +25,8 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @RequestMapping("/api/holidays")
 class HolidayController(
-    private val service: HolidayService,
-    private val personService: PersonService
+        private val service: HoliDayService,
+        private val personService: PersonService
 ) {
     @GetMapping(params = ["personCode"])
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")

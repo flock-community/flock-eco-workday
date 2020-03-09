@@ -1,5 +1,6 @@
 package community.flock.eco.workday.forms
 
+import community.flock.eco.workday.interfaces.Period
 import java.time.LocalDate
 
 data class AssignmentForm(
@@ -12,6 +13,6 @@ data class AssignmentForm(
 
     val role: String?,
 
-    val startDate: LocalDate,
-    val endDate: LocalDate?
-)
+    override val from: LocalDate,
+    override val to: LocalDate?
+) : Period

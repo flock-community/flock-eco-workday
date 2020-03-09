@@ -7,13 +7,20 @@ import community.flock.eco.workday.forms.AssignmentForm
 import community.flock.eco.workday.forms.ClientForm
 import community.flock.eco.workday.forms.ContractExternalForm
 import community.flock.eco.workday.forms.ContractInternalForm
+import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.forms.PersonForm
+import community.flock.eco.workday.forms.SickDayForm
+import community.flock.eco.workday.forms.WorkDayForm
+import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Client
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.AssignmentService
 import community.flock.eco.workday.services.ClientService
 import community.flock.eco.workday.services.ContractService
+import community.flock.eco.workday.services.HoliDayService
 import community.flock.eco.workday.services.PersonService
+import community.flock.eco.workday.services.SickDayService
+import community.flock.eco.workday.services.WorkDayService
 import java.time.LocalDate
 import java.util.UUID
 import org.springframework.stereotype.Component
@@ -24,7 +31,10 @@ class CreateHelper(
     val contractService: ContractService,
     val clientService: ClientService,
     val personService: PersonService,
-    val userService: UserService
+    val userService: UserService,
+    val sickDayService: SickDayService,
+    val holiDayService: HoliDayService,
+    val workDayService: WorkDayService
 ) {
 
     fun createUser(authorities: Set<Authority>) = createUser(UUID.randomUUID().toString(), authorities)
@@ -55,35 +65,66 @@ class CreateHelper(
         personService.create(this)
     } ?: error("Cannot create person")
 
-    fun createAssignment(client: Client, person: Person, startDate: LocalDate, endDate: LocalDate?) = AssignmentForm(
+    fun createAssignment(client: Client, person: Person, from: LocalDate, to: LocalDate?) = AssignmentForm(
         clientCode = client.code,
         personCode = person.code,
         hourlyRate = 80.0,
         hoursPerWeek = 36,
         role = "Senior software engineer",
-        startDate = startDate,
-        endDate = endDate
+        from = from,
+        to = to
     ).run {
         assignmentService.create(this)
     } ?: error("Cannot create assignment")
 
-    fun createContractInternal(person: Person, startDate: LocalDate, endDate: LocalDate?) = ContractInternalForm(
+    fun createContractInternal(person: Person, from: LocalDate, to: LocalDate?) = ContractInternalForm(
         personCode = person.code,
         monthlySalary = 4000.0,
         hoursPerWeek = 40,
-        startDate = startDate,
-        endDate = endDate
+        from = from,
+        to = to
     ).run {
         contractService.create(this)
     } ?: error("Cannot create internal contract")
 
-    fun createContractExternal(person: Person, startDate: LocalDate, endDate: LocalDate?) = ContractExternalForm(
+    fun createContractExternal(person: Person, from: LocalDate, to: LocalDate?) = ContractExternalForm(
         personCode = person.code,
         hourlyRate = 75.0,
         hoursPerWeek = 40,
-        startDate = startDate,
-        endDate = endDate
+        from = from,
+        to = to
     ).run {
         contractService.create(this)
     } ?: error("Cannot create external contract")
+
+    fun createSickDay(person: Person, from: LocalDate, to: LocalDate) = SickDayForm(
+        from = from,
+        to = to,
+        personCode = person.code,
+        hours = 40,
+        days = listOf(8,8,8,8,8)
+    ).run {
+        sickDayService.create(this)
+    } ?: error("Cannot create sick day contract")
+
+    fun createWorkDay(assignment: Assignment, from: LocalDate, to: LocalDate) = WorkDayForm(
+        from = from,
+        to = to,
+        assignmentCode = assignment.code,
+        hours = 40,
+        days = listOf(8,8,8,8,8)
+    ).run {
+        workDayService.create(this)
+    } ?: error("Cannot create sick day contract")
+
+    fun createHoliDay(person: Person, from: LocalDate, to: LocalDate) = HoliDayForm(
+        description = "description",
+        from = from,
+        to = to,
+        personCode = person.code,
+        hours = 40,
+        days = listOf(8,8,8,8,8)
+    ).run {
+        holiDayService.create(this)
+    } ?: error("Cannot create sick day contract")
 }

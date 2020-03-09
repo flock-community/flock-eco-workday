@@ -6,8 +6,8 @@ const path = "/api/contracts"
 
 const internalize = it => ({
   ...it,
-  startDate: it.startDate && moment(it.startDate, "YYYY-MM-DD"),
-  endDate: it.endDate && moment(it.endDate, "YYYY-MM-DD"),
+  from: it.from && moment(it.from, "YYYY-MM-DD"),
+  to: it.to && moment(it.to, "YYYY-MM-DD"),
 })
 
 const resourceClient = ResourceClient(path)

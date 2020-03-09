@@ -1,6 +1,7 @@
 package community.flock.eco.workday.model
 
 import community.flock.eco.core.model.AbstractCodeEntity
+import community.flock.eco.workday.interfaces.Period
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Entity
@@ -17,8 +18,8 @@ abstract class Contract(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
 
-    open val startDate: LocalDate,
-    open val endDate: LocalDate?,
+    override val from: LocalDate,
+    override val to: LocalDate?,
 
     @ManyToOne
     open val person: Person?,
@@ -26,4 +27,4 @@ abstract class Contract(
     @Enumerated(EnumType.STRING)
     val type: ContractType
 
-) : AbstractCodeEntity(id, code)
+) :  Period, AbstractCodeEntity(id, code)

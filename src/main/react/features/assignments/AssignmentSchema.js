@@ -11,10 +11,10 @@ const schema = {
     .required()
     .default(36),
   role: string().default(""),
-  startDate: mixed()
+  from: mixed()
     .required()
     .default(moment()),
-  endDate: mixed().default(null),
+  to: mixed().default(null),
   clientCode: mixed().required(),
 }
 

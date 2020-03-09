@@ -29,10 +29,10 @@ class WorkDayService(
     fun findAllByPersonUserCode(userCode: String) = workDayRepository
         .findAllByAssignmentPersonUserCode(userCode)
 
-    fun findAllActive(from: LocalDate, to: LocalDate): MutableList<SickDay> {
+    fun findAllActive(from: LocalDate, to: LocalDate): MutableList<WorkDay> {
         val query = "SELECT it FROM WorkDay it WHERE it.from <= :to AND (it.to is null OR it.to >= :from)"
         return entityManager
-            .createQuery(query, SickDay::class.java)
+            .createQuery(query, WorkDay::class.java)
             .setParameter("from", from)
             .setParameter("to", to)
             .resultList

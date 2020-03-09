@@ -38,12 +38,8 @@ export function AssignmentList({reload, personCode, onItemClick}) {
                 {assignment.client.name} - {assignment.role}
               </Typography>
               <Typography>
-                Period: {assignment.startDate.format("DD-MM-YYYY")} -{" "}
-                {assignment.endDate ? (
-                  assignment.endDate.format("DD-MM-YYYY")
-                ) : (
-                  <i>now</i>
-                )}
+                Period: {assignment.from.format("DD-MM-YYYY")} -{" "}
+                {assignment.to ? assignment.to.format("DD-MM-YYYY") : <i>now</i>}
               </Typography>
               <Typography>Hourly rate: {assignment.hourlyRate} </Typography>
               <Typography>Hours per week: {assignment.hoursPerWeek} </Typography>

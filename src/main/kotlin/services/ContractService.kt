@@ -41,7 +41,7 @@ class ContractService(
         .findAllByPersonUserCode(userCode)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Contract> {
-        val query = "SELECT c FROM Contract c WHERE c.startDate <= :to AND (c.endDate is null OR c.endDate > :from)"
+        val query = "SELECT c FROM Contract c WHERE c.from <= :to AND (c.to is null OR c.to > :from)"
         return entityManager
             .createQuery(query, Contract::class.java)
             .setParameter("from", from)
@@ -103,8 +103,8 @@ class ContractService(
 
     private fun ContractExternalForm.internalize(it: ContractExternal? = null) = ContractExternal(
         id = it?.id ?: 0,
-        startDate = this.startDate,
-        endDate = this.endDate,
+        from = this.from,
+        to = this.to,
         hourlyRate = this.hourlyRate,
         hoursPerWeek = this.hoursPerWeek,
         person = it?.person
@@ -114,8 +114,8 @@ class ContractService(
 
     private fun ContractInternalForm.internalize(it: ContractInternal? = null) = ContractInternal(
         id = it?.id ?: 0,
-        startDate = this.startDate,
-        endDate = this.endDate,
+        from = this.from,
+        to = this.to,
         monthlySalary = this.monthlySalary,
         hoursPerWeek = this.hoursPerWeek,
         person = it?.person
@@ -125,8 +125,8 @@ class ContractService(
 
     private fun ContractManagementForm.internalize(it: ContractManagement? = null) = ContractManagement(
         id = it?.id ?: 0,
-        startDate = this.startDate,
-        endDate = this.endDate,
+        from = this.from,
+        to = this.to,
         monthlyFee = this.monthlyFee,
         person = it?.person
             ?: this.personCode.let { personRepository.findByCode(it).toNullable() }
@@ -135,8 +135,8 @@ class ContractService(
 
     private fun ContractServiceForm.internalize(it: ContractServiceModel? = null) = ContractServiceModel(
         id = it?.id ?: 0,
-        startDate = this.startDate,
-        endDate = this.endDate,
+        from = this.from,
+        to = this.to,
         monthlyCosts = this.monthlyCosts,
         description = this.description
     )

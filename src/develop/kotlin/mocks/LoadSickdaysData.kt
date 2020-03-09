@@ -3,9 +3,9 @@ package community.flock.eco.workday.mocks
 import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.services.SickDayService
-import java.time.LocalDate
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 @Profile("local")
@@ -44,9 +44,8 @@ class LoadSickdaysData(
                 hours = 48,
                 personCode = it.code
             ).run {
-                val sickday = service.create(this)
-                service.update(sickday.code, this)
-            }
+                service.create(this)
+            } ?: error("Cannot create sick day")
         }
     }
 }

@@ -35,7 +35,7 @@ class AssignmentService(
         .findAllByPersonUserCode(userCode)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Assignment> {
-        val query = "SELECT a FROM Assignment a WHERE a.startDate <= :to AND (a.endDate is null OR a.endDate >= :from)"
+        val query = "SELECT a FROM Assignment a WHERE a.from <= :to AND (a.to is null OR a.to >= :from)"
         return entityManager
             .createQuery(query, Assignment::class.java)
             .setParameter("from", from)
@@ -59,8 +59,8 @@ class AssignmentService(
 
     private fun AssignmentForm.internalize(it: Assignment? = null) = Assignment(
         id = it?.id ?: 0,
-        startDate = this.startDate,
-        endDate = this.endDate,
+        from = this.from,
+        to = this.to,
         hourlyRate = this.hourlyRate,
         hoursPerWeek = this.hoursPerWeek,
         role = this.role,
@@ -76,4 +76,4 @@ class AssignmentService(
 
 }
 
-fun Assignment.isActive(from: LocalDate, to: LocalDate) = this.startDate <= to && this.endDate?.let { it >= from } ?: true
+fun Assignment.isActive(from: LocalDate, to: LocalDate) = this.from <= to && this.to?.let { it >= from } ?: true

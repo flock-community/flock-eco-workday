@@ -37,8 +37,7 @@ export function ContractList({reload, personCode, onItemClick}) {
             <CardContent>
               <Typography>{it.type}</Typography>
               <Typography>
-                Period: <FormatDate date={it.startDate} /> -{" "}
-                <FormatDate date={it.endDate} />
+                Period: <FormatDate date={it.from} /> - <FormatDate date={it.to} />
               </Typography>
               {it.type === ContractType.EXTERNAL && (
                 <Typography>Hourly rate: {it.hourlyRate} </Typography>

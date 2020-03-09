@@ -52,10 +52,10 @@ export const AssignmentForm = props => {
             />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="startDate" label="Start date" fullWidth />
+            <DatePickerField name="from" label="Start date" fullWidth />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="endDate" label="End date" fullWidth clearable />
+            <DatePickerField name="to" label="End date" fullWidth clearable />
           </Grid>
           <Grid item xs={12}>
             <ClientSelectorField name="clientCode" fullWidth />
@@ -69,8 +69,8 @@ export const AssignmentForm = props => {
     hourlyRate: value.hourlyRate,
     hoursPerWeek: value.hoursPerWeek,
     role: value.role,
-    startDate: value.startDate,
-    endDate: value.endDate,
+    from: value.from,
+    to: value.to,
     clientCode: value.client.code,
     personCode: value.person.code,
   }

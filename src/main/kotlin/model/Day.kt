@@ -2,6 +2,7 @@ package community.flock.eco.workday.model
 
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
+import community.flock.eco.workday.interfaces.Period
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.ElementCollection
@@ -20,12 +21,12 @@ abstract class Day(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
 
-    open val from: LocalDate = LocalDate.now(),
-    open val to: LocalDate = LocalDate.now(),
+    override val from: LocalDate = LocalDate.now(),
+    override val to: LocalDate = LocalDate.now(),
 
     open val hours: Int,
 
     @ElementCollection
     open val days: List<Int>? = null
 
-) : AbstractCodeEntity(id, code)
+) : Period, AbstractCodeEntity(id, code)

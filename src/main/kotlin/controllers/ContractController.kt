@@ -43,11 +43,11 @@ class ContractController(
             ?.let { user ->
                 if (user.isAdmin() && personCode != null) {
                     contractService.findAllByPersonCode(personCode)
-                        .sortedBy { it.startDate }
+                        .sortedBy { it.from }
                         .reversed()
                 } else {
                     contractService.findAllByPersonUserCode(user.code)
-                        .sortedBy { it.startDate }
+                        .sortedBy { it.from }
                         .reversed()
                 }
             }

@@ -12,12 +12,12 @@ data class ContractService(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
 
-    override val startDate: LocalDate,
-    override val endDate: LocalDate? = null,
+    override val from: LocalDate,
+    override val to: LocalDate? = null,
 
     val monthlyCosts: Double,
     val description: String
-) : Contract(id, code, startDate, endDate, null, ContractType.SERVICE) {
+) : Contract(id, code, from, to, null, ContractType.SERVICE) {
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 }

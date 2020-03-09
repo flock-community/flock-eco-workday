@@ -44,12 +44,12 @@ class SickDayRepositoryTest {
     }
 
     private final fun createSickdayAndPersist(): SickDay {
-        val startDate = LocalDate.of(1970, 1, 1)
+        val from = LocalDate.of(1970, 1, 1)
 
         val sickDay = SickDay(
             hours = 8,
             person = person,
-            from = startDate,
+            from = from,
             to = LocalDate.of(1970, 1, 6),
             days = listOf(8, 8, 8, 8, 8)
         )
@@ -84,7 +84,7 @@ class SickDayRepositoryTest {
     fun `should delete sickDay from repository`() {
         var res: MutableIterable<SickDay>
         val sickDayList: MutableList<SickDay> = mutableListOf()
-        val startDate = LocalDate.of(1970, 1, 1)
+        val from = LocalDate.of(1970, 1, 1)
 
         for (i in 1..5) {
 
@@ -92,7 +92,7 @@ class SickDayRepositoryTest {
                 SickDay(
                     hours = i * 8,
                     person = person,
-                    from = startDate,
+                    from = from,
                     to = LocalDate.of(1970, 1, i),
                     days = listOf(8, 8, 8, 8, 8)
                 )

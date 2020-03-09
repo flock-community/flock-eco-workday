@@ -111,6 +111,22 @@ class AggregationServiceTest {
     }
 
     @Test
+    fun `days per person`() {
+
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 12, 31)
+
+        dataHelper.createContractData()
+        dataHelper.createAssignmentData()
+        dataHelper.createSickDayData()
+        dataHelper.createHoliDayData()
+        dataHelper.createHoliDayData()
+
+        val res = aggregationService.daysPerPerson(from, to)
+
+    }
+
+    @Test
     fun `find netto revenu factor`() {
 
         val from = LocalDate.of(2020, 1, 1)

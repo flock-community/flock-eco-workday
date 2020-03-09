@@ -28,33 +28,33 @@ class LoadContractData(
         create("ernie@sesam.straat", ContractType.SERVICE, LocalDate.of(2019, 2, 1), LocalDate.of(2020, 2, 1))
     }
 
-    private final fun create(email: String, type: ContractType, startDate: LocalDate, endDate: LocalDate? = null) = when (type) {
+    private final fun create(email: String, type: ContractType, from: LocalDate, to: LocalDate? = null) = when (type) {
         ContractType.INTERNAL -> ContractInternal(
             person = loadPersonData.findPersonByUserEmail(email),
             hoursPerWeek = 36,
             monthlySalary = 4000.0,
-            startDate = startDate,
-            endDate = endDate
+            from = from,
+            to = to
         )
         ContractType.EXTERNAL -> ContractExternal(
             person = loadPersonData.findPersonByUserEmail(email),
             hoursPerWeek = 40,
             hourlyRate = 90.0,
-            startDate = startDate,
-            endDate = endDate
+            from = from,
+            to = to
         )
         ContractType.MANAGEMENT -> ContractManagement(
             person = loadPersonData.findPersonByUserEmail(email),
             monthlyFee = 5000.0,
-            startDate = startDate,
-            endDate = endDate
+            from = from,
+            to = to
         )
 
         ContractType.SERVICE -> ContractService(
             description = "Description",
             monthlyCosts = 150.0,
-            startDate = startDate,
-            endDate = endDate
+            from = from,
+            to = to
         )
     }.save()
 

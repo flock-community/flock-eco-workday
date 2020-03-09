@@ -45,7 +45,7 @@ class SickDayService(
         .consume()
         .save()
 
-    fun update(code: String, form: SickDayForm): SickDay? = repository
+    fun update(code: String, form: SickDayForm): SickDay = repository
         .findByCode(code)
         .toNullable()
         .run {

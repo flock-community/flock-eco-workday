@@ -6,6 +6,12 @@ import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
+import community.flock.eco.workday.model.Day
+import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.Person
+import community.flock.eco.workday.model.SickDay
+import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.interfaces.inRange
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -20,7 +26,7 @@ import community.flock.eco.workday.model.ContractService as ContractServiceModel
 class AggregationService(
     private val assignmentService: AssignmentService,
     private val contractService: ContractService,
-    private val holidayService: HolidayService,
+    private val holiDayService: HoliDayService,
     private val sickDayService: SickDayService,
     private val workDayService: WorkDayService,
     private val applicationConstants: ApplicationConstants
@@ -46,7 +52,7 @@ class AggregationService(
 
 
     fun holidayPerPerson(from: LocalDate, to: LocalDate): Map<String, Double> {
-        val active = holidayService.findAllActive(from, to)
+        val active = holiDayService.findAllActive(from, to)
         return active
             .groupingBy { it.person.code }
             .fold(0.0) { acc, cur -> acc + cur.hours.toDouble() }
@@ -62,7 +68,7 @@ class AggregationService(
     fun workdayPerPerson(from: LocalDate, to: LocalDate): Map<String, Double> {
         val active = workDayService.findAllActive(from, to)
         return active
-            .groupingBy { it.person.code }
+            .groupingBy { it.assignment.person.code }
             .fold(0.0) { acc, cur -> acc + cur.hours.toDouble() }
     }
 
@@ -93,6 +99,59 @@ class AggregationService(
             .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.revenuePerDay() }
     }
 
+    fun daysPerPerson(from: LocalDate, to: LocalDate): List<Map<String, String>> {
+        val all = fetchAll(from, to)
+        val persons = all.allPersons()
+        return persons
+            .map { person ->
+                mapOf(
+                    "name" to "${person.firstname} ${person.lastname}",
+                    "sickDays" to all.sickDay.filter{it.person == person}.totalHours(),
+                    "holiDays" to all.holiDay.filter{it.person == person}.totalHours(),
+                    "workDays" to all.workDay.filter{it.assignment.person == person}.totalHours()
+
+                )
+            }
+    }
+
+    data class All(
+        val sickDay: List<SickDay>,
+        val holiDay: List<HoliDay>,
+        val workDay: List<WorkDay>,
+        val assignment: List<Assignment>,
+        val contract: List<Contract>
+    )
+
+    private fun List<Day>.totalHours() = this
+        .fold(0.0) { acc, cur -> acc + cur.hours }
+        .toString()
+
+    private fun All.allPersons(): Set<Person> {
+        return (this.assignment.map { it.person } +
+            this.contract.map { it.person } +
+            this.sickDay.map { it.person } +
+            this.holiDay.map { it.person } +
+            this.workDay.map { it.assignment.person })
+            .requireNoNulls()
+            .toSet()
+
+    }
+
+    private fun fetchAll(from: LocalDate, to: LocalDate): All {
+        val activeWorkDay = workDayService.findAllActive(from, to)
+        val activeHoliDay = holiDayService.findAllActive(from, to)
+        val activeSickDay = sickDayService.findAllActive(from, to)
+        val activeAssignment = assignmentService.findAllActive(from, to)
+        val activeContract = contractService.findAllActive(from, to)
+        return All(
+            activeSickDay,
+            activeHoliDay,
+            activeWorkDay,
+            activeAssignment,
+            activeContract
+        )
+    }
+
     fun netRevenueFactor(from: LocalDate, to: LocalDate): BigDecimal {
         val totalDays = dateRange(from, to)
             .filter { it.isWorkingDay() }
@@ -116,15 +175,10 @@ fun dateRange(from: LocalDate, to: LocalDate) = (0..ChronoUnit.DAYS.between(from
     .asSequence()
     .map { from.plusDays(it) }
 
-fun Assignment.inRange(date: LocalDate) = this
-    .let { it.startDate <= date && it.endDate?.let { endDate -> endDate >= date } ?: true }
 
 fun Assignment.revenuePerDay(): BigDecimal {
     return (this.hourlyRate * this.hoursPerWeek).toBigDecimal().divide(BigDecimal.valueOf(5), 10, RoundingMode.HALF_UP)
 }
-
-fun Contract.inRange(date: LocalDate) = this
-    .let { it.startDate <= date && it.endDate?.let { endDate -> endDate >= date } ?: true }
 
 fun LocalDate.isWorkingDay() = listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY).contains(this.dayOfWeek)
 fun LocalDate.countWorkDaysInMonth(): Int {
@@ -133,7 +187,7 @@ fun LocalDate.countWorkDaysInMonth(): Int {
     return countWorkDaysInPeriod(from, to)
 }
 
-fun countWorkDaysInPeriod(from:LocalDate, to: LocalDate): Int {
+fun countWorkDaysInPeriod(from: LocalDate, to: LocalDate): Int {
     val diff = ChronoUnit.DAYS.between(from, to)
     return (0..diff)
         .asSequence()
@@ -141,6 +195,7 @@ fun countWorkDaysInPeriod(from:LocalDate, to: LocalDate): Int {
         .filter { it.isWorkingDay() }
         .count()
 }
+
 fun Contract.costPerDay(date: LocalDate) = when (this) {
     is ContractInternal -> this.monthlySalary.toBigDecimal().divide(date.countWorkDaysInMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
     is ContractExternal -> (this.hourlyRate * this.hoursPerWeek).toBigDecimal().divide(BigDecimal.valueOf(5), 10, RoundingMode.HALF_UP)

@@ -14,12 +14,12 @@ data class ContractExternal(
 
     override val person: Person,
 
-    override val startDate: LocalDate,
-    override val endDate: LocalDate? = null,
+    override val from: LocalDate,
+    override val to: LocalDate? = null,
 
     val hourlyRate: Double,
     val hoursPerWeek: Int
-) : Contract(id, code, startDate, endDate, person, ContractType.EXTERNAL) {
+) : Contract(id, code, from, to, person, ContractType.EXTERNAL) {
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 }

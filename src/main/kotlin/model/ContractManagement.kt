@@ -14,12 +14,12 @@ data class ContractManagement(
 
     override val person: Person,
 
-    override val startDate: LocalDate,
-    override val endDate: LocalDate? = null,
+    override val from: LocalDate,
+    override val to: LocalDate? = null,
 
     val monthlyFee: Double
 
-) : Contract(id, code, startDate, endDate, person, ContractType.MANAGEMENT) {
+) : Contract(id, code, from, to, person, ContractType.MANAGEMENT) {
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 }

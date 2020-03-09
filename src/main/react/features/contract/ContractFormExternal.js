@@ -43,10 +43,10 @@ export const ContractFormExternal = props => {
             />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="startDate" label="Start date" fullWidth />
+            <DatePickerField name="from" label="Start date" fullWidth />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="endDate" label="End date" fullWidth clearable />
+            <DatePickerField name="to" label="End date" fullWidth clearable />
           </Grid>
         </Grid>
       </MuiPickersUtilsProvider>
@@ -56,8 +56,8 @@ export const ContractFormExternal = props => {
   const init = value && {
     hourlyRate: value.hourlyRate,
     hoursPerWeek: value.hoursPerWeek,
-    startDate: value.startDate,
-    endDate: value.endDate,
+    from: value.from,
+    to: value.to,
   }
 
   const schema = object({
@@ -67,10 +67,10 @@ export const ContractFormExternal = props => {
     hoursPerWeek: number()
       .required()
       .default(40),
-    startDate: mixed()
+    from: mixed()
       .required()
       .default(moment()),
-    endDate: mixed().default(null),
+    to: mixed().default(null),
   })
 
   return (
