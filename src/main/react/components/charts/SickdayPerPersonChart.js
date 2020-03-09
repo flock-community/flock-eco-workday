@@ -24,9 +24,9 @@ export function SickdayPerPersonChart({year, persons}) {
     name: persons ? persons[key] : key,
     value: state[key],
   }))
-
+  const height = 50 + (data.length * 50)
   return (
-    <ResponsiveContainer>
+    <ResponsiveContainer height={height}>
       <BarChart data={data} layout="vertical">
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis type="number" dataKey="value" />

@@ -54,63 +54,59 @@ export function DashboardFeature() {
   return (
     <div className={classes.root}>
       <Grid container spacing={1}>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <Card>
-            <CardHeader title="Revenue" />
+            <CardHeader title="Revenue"/>
             <CardContent>
               <div style={{height: CHART_HEIGHT}}>
-                <RevenuePerMonthChart />
+                <RevenuePerMonthChart/>
               </div>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <Card>
-            <CardHeader title="Cost" />
+            <CardHeader title="Cost"/>
             <CardContent>
               <div style={{height: CHART_HEIGHT}}>
-                <CostPerMonthChart />
+                <CostPerMonthChart/>
               </div>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={8}>
+        <Grid item xs={12} md={8}>
           <Card>
-            <CardHeader title="Revenue Cost" />
+            <CardHeader title="Revenue Cost"/>
             <CardContent>
               <div style={{height: CHART_HEIGHT}}>
-                <RevenueCostPerMonthChart />
+                <RevenueCostPerMonthChart/>
               </div>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12} md={4}>
           <Card>
-            <CardHeader title="Revenue per client" />
+            <CardHeader title="Revenue per client"/>
             <CardContent>
               <div style={{height: CHART_HEIGHT}}>
-                <RevenuePerClientChart clients={clients} />
-              </div>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12}>
-          <Card>
-            <CardHeader title="Holiday" />
-            <CardContent>
-              <div style={{height: CHART_HEIGHT}}>
-                <HolidaysPerPersonChart persons={persons} />
+                <RevenuePerClientChart clients={clients}/>
               </div>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12}>
           <Card>
-            <CardHeader title="Sickday" />
+            <CardHeader title="Holiday"/>
             <CardContent>
-              <div style={{height: CHART_HEIGHT}}>
-                <SickdayPerPersonChart persons={persons} />
-              </div>
+              <HolidaysPerPersonChart persons={persons}/>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CardHeader title="Sickday"/>
+            <CardContent>
+              <SickdayPerPersonChart persons={persons}/>
             </CardContent>
           </Card>
         </Grid>
