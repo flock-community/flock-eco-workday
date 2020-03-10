@@ -30,9 +30,6 @@ class WorkDay(
     override val days: List<Int>? = null,
 
     @ManyToOne
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
-    @JsonIdentityReference(alwaysAsId = true)
-    @JsonProperty("assignmentCode")
     val assignment: Assignment
 
 ) : Day(id, code, from, to, hours, days)

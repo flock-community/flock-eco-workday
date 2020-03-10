@@ -13,9 +13,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import kotlin.test.assertEquals
 
 
@@ -122,7 +120,8 @@ class AggregationServiceTest {
         dataHelper.createHoliDayData()
         dataHelper.createHoliDayData()
 
-        val res = aggregationService.daysPerPerson(from, to)
+        val res = aggregationService
+            .totalPerPerson(from, to)
 
     }
 

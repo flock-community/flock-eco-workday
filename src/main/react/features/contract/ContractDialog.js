@@ -12,7 +12,6 @@ import Select from "@material-ui/core/Select"
 import MenuItem from "@material-ui/core/MenuItem"
 import Grid from "@material-ui/core/Grid"
 import {ContractClient} from "../../clients/ContractClient"
-import {AssignmentClient} from "../../clients/AssignmentClient"
 import {isDefined} from "../../utils/validation"
 import {ContractFormInternal} from "./ContractFormInternal"
 import {ContractFormExternal} from "./ContractFormExternal"
@@ -66,7 +65,7 @@ export function ContractDialog(props) {
   const handelDeleteClose = () => setDeleteOpen(false)
 
   const handleDelete = () => {
-    AssignmentClient.delete(code)
+    ContractClient.delete(code)
       .then(() => {
         handelDeleteClose()
         if (isDefined(onClose)) onClose()

@@ -25,6 +25,9 @@ export function WorkDayList(props) {
       <Grid key={`workday-list-item-${key}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
           <CardContent>
+            <Typography variant="h6">
+              {item.assignment.client.name} - {item.assignment.role}
+            </Typography>
             <Typography>
               Period: {item.from.format("DD-MM-YYYY")} -{" "}
               {item.to ? item.to.format("DD-MM-YYYY") : <em>now</em>}

@@ -43,7 +43,7 @@ export function WorkDayForm({code, onSubmit}) {
       WorkDayClient.get(code).then(res => {
         setState({
           code: res.code,
-          assignmentCode: res.assignmentCode,
+          assignmentCode: res.assignment.code,
           from: res.from,
           to: res.to,
           days: res.days,

@@ -59,6 +59,19 @@ export const revenuePerClientByYear = year => {
     throw res.json()
   })
 }
+export const totalPerPersonByYearMonth = (year, month) => {
+  const opts = {
+    method: "GET",
+  }
+  return fetch(`${path}/total-per-person?year=${year}&month=${month}`, opts).then(
+    res => {
+      if (res.status === 200) {
+        return res.json()
+      }
+      throw res.json()
+    }
+  )
+}
 
 export const AggregationClient = {
   revenuePerMonthByYear,
@@ -66,4 +79,5 @@ export const AggregationClient = {
   holidayPerPersonByYear,
   sickdayPerPersonByYear,
   revenuePerClientByYear,
+  totalPerPersonByYearMonth,
 }

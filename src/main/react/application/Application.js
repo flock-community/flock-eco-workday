@@ -22,6 +22,7 @@ import {useUser} from "../hooks/UserHook"
 import {DashboardFeature} from "../features/dashboard/DashboardFeature"
 import {ContractFeature} from "../features/contract/ContractFeature"
 import {WorkDayFeature} from "../features/workday/WorkDayFeature"
+import {MonthFeature} from "../features/month/MonthFeature"
 
 const useStyles = makeStyles(() => ({
   spinner: {
@@ -110,6 +111,7 @@ export const Application = () => {
           <ApplicationLayout onDrawer={handleDrawerOpen} />
           <Route path="/" exact component={HomeFeature} />
           <Route path="/dashboard" exact component={DashboardFeature} />
+          <Route path="/month" exact component={MonthFeature} />
           <Route path="/clients" exact component={ClientFeature} />
           <Route path="/contracts" exact component={ContractFeature} />
           <Route path="/assignments" exact component={AssignmentFeature} />
