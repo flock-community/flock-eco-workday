@@ -10,7 +10,7 @@ function PersonSelectorFormInput() {
       {({field: {value}, form: {setFieldValue}}) => (
         <PersonSelector
           embedded
-          selectedItem={value}
+          value={value}
           onChange={userCode => setFieldValue(fieldName, userCode)}
         />
       )}

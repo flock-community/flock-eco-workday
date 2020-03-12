@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import java.math.BigDecimal
 import java.time.LocalDate
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 
 @RunWith(SpringRunner::class)
@@ -122,6 +123,8 @@ class AggregationServiceTest {
 
         val res = aggregationService
             .totalPerPerson(from, to)
+
+        assertNotNull(res[0]["name"])
 
     }
 

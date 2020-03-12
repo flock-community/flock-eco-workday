@@ -75,7 +75,7 @@ class AggregationController(
 
     @GetMapping("/total-per-person", params = ["year", "month"])
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun totalsPerPersonByYear(@RequestParam year: Int, @RequestParam month: Int): List<Map<String, String>> {
+    fun totalsPerPersonByYear(@RequestParam year: Int, @RequestParam month: Int): List<Map<String, Any>> {
         val yearMonth = YearMonth.of(year, month)
         val from = yearMonth.atDay(1)
         val to = yearMonth.atEndOfMonth()

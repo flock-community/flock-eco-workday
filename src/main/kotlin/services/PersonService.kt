@@ -46,6 +46,9 @@ class PersonService(
         .findByUserCode(userCode)
         .toNullable()
 
+    fun findByPersonCodeIdIn(personCodes:List<String>) = repository
+        .findByCodeIn(personCodes)
+
     fun create(form: PersonForm): Person? {
         val user = when (form.userCode) {
             is String -> userRepository

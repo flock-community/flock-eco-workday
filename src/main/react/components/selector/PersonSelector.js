@@ -10,28 +10,27 @@ import {
 } from "@material-ui/core"
 import {PersonService} from "../../features/person/PersonService"
 
-export function PersonSelector({onChange, label, selectedItem, embedded}) {
+export function PersonSelector({value, onChange, label, embedded, multiple}) {
   const [items, setItems] = useState([])
-  const [selected, setSelected] = useState("")
+  const [state, setState] = useState(value)
 
   useEffect(() => {
     PersonService.findAllByPage({page: 0, size: 100, sort: "lastname"}).then(res =>
       setItems(res.list)
     )
-    setSelected(selectedItem)
   }, [])
 
   function handleChange(event) {
     // eslint-disable-next-line no-shadow
     const selected = event.target.value
-    setSelected(selected)
+    setState(selected)
     onChange(selected)
   }
 
   function renderMenuItem(item, key) {
     return (
       <MenuItem key={`person-selector-menu-item-${key}`} value={item.code}>
-        {item.firstname} {item.lastname}
+        {`${item.firstname} ${item.lastname}`}
       </MenuItem>
     )
   }
@@ -39,10 +38,12 @@ export function PersonSelector({onChange, label, selectedItem, embedded}) {
   const selectInput = (
     <FormControl fullWidth>
       <InputLabel shrink>{label}</InputLabel>
-      <Select value={selected} displayEmpty onChange={handleChange}>
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
+      <Select value={state} displayEmpty onChange={handleChange} multiple={multiple}>
+        {!multiple && (
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
+        )}
         {items.map(renderMenuItem)}
       </Select>
     </FormControl>
@@ -58,13 +59,14 @@ export function PersonSelector({onChange, label, selectedItem, embedded}) {
 }
 
 PersonSelector.propTypes = {
-  embedded: PropTypes.bool,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string,
-  selectedItem: PropTypes.string,
+  embedded: PropTypes.bool,
+  multiple: PropTypes.bool,
 }
 
 PersonSelector.defaultProps = {
-  selectedItem: "",
+  value: "",
   label: "Select Person",
 }

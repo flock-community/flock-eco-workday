@@ -4,6 +4,7 @@ import community.flock.eco.core.utils.toNullable
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
+import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.repository.HolidayRepository
 import java.time.LocalDate
@@ -25,7 +26,7 @@ class HoliDayService(
     fun findAllByPersonUserCode(personCode: String) = holidayRepository.findAllByPersonUserCode(personCode)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<HoliDay> {
-        val query = "SELECT h FROM HoliDay h WHERE h.from <= :to AND (h.to is null OR h.to > :from)"
+        val query = "SELECT h FROM HoliDay h WHERE h.from <= :to AND (h.to is null OR h.to >= :from)"
         return entityManager
             .createQuery(query, HoliDay::class.java)
             .setParameter("from", from)
@@ -72,23 +73,6 @@ class HoliDayService(
         )
     }
 
-    private fun HoliDayForm.validate() = apply {
-        val daysBetween = ChronoUnit.DAYS.between(this.from, this.to) + 1
-        if (this.hours < 0) {
-            throw error("Hours cannot have negative value")
-        }
-        if (this.days?.any { it < 0 } == true) {
-            throw error("Days cannot have negative value")
-        }
-        if (this.days != null) {
-            if (this.days.size.toLong() != daysBetween) {
-                throw error("amount of days ($daysBetween) not equal to period (${this.days.size})")
-            }
-            if (this.days.sum() != this.hours) {
-                throw error("Total hour does not match")
-            }
-        }
-    }
 }
 
 fun User.isAdmin(): Boolean = this.authorities

@@ -23,6 +23,7 @@ import {DashboardFeature} from "../features/dashboard/DashboardFeature"
 import {ContractFeature} from "../features/contract/ContractFeature"
 import {WorkDayFeature} from "../features/workday/WorkDayFeature"
 import {MonthFeature} from "../features/month/MonthFeature"
+import {EventFeature} from "../features/event/EventFeature"
 
 const useStyles = makeStyles(() => ({
   spinner: {
@@ -120,6 +121,7 @@ export const Application = () => {
           <Route path="/sickdays" component={SickdayFeature} />
           <Route path="/users" exact component={UserFeature} />
           <Route path="/person" component={PersonFeature} />
+          <Route path="/event" component={EventFeature} />
         </Router>
       </ApplicationContext.Provider>
     </ThemeProvider>

@@ -53,7 +53,7 @@ export function HolidayFeature() {
         <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
           <Grid item xs={12}>
             <PersonSelector
-              selectedItem={person && person.code}
+              value={person && person.code}
               onChange={handlePersonChange}
             />
           </Grid>

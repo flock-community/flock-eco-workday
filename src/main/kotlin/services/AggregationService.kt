@@ -9,6 +9,7 @@ import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
 import community.flock.eco.workday.model.Day
+import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickDay
@@ -31,6 +32,7 @@ class AggregationService(
     private val holiDayService: HoliDayService,
     private val sickDayService: SickDayService,
     private val workDayService: WorkDayService,
+    private val eventService: EventService,
     private val applicationConstants: ApplicationConstants
 ) {
 
@@ -95,14 +97,15 @@ class AggregationService(
             .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.revenuePerDay() }
     }
 
-    fun totalPerPerson(from: LocalDate, to: LocalDate): List<Map<String, String>> {
+    fun totalPerPerson(from: LocalDate, to: LocalDate): List<Map<String, Any>> {
         val all = fetchAll(from, to)
         val persons = all.allPersons()
         return persons
+            .sortedBy { it.lastname }
             .map { person ->
                 mapOf(
                     "name" to "${person.firstname} ${person.lastname}",
-                    "type" to  all.contract.filter { it.person == person }.map{it::class.simpleName}.joinToString(","),
+                    "type" to all.contract.filter { it.person == person }.map { it::class.simpleName }.joinToString(","),
                     "sickDays" to all.sickDay.filter { it.person == person }.totalHours(),
                     "holiDays" to all.holiDay.filter { it.person == person }.totalHours(),
                     "workDays" to all.workDay.filter { it.assignment.person == person }.totalHours(),
@@ -110,10 +113,16 @@ class AggregationService(
                         .filter { it.person == person }
                         .toMapWorkingDay(from, to).values
                         .flatten()
-                        .fold(0){acc, cur -> acc + cur.hoursPerWeek}
-                        .div(5)
-                        .toString()
-                )
+                        .fold(0) { acc, cur -> acc + cur.hoursPerWeek }
+                        .div(5),
+                    "event" to all.event
+                        .filter { it.persons.isEmpty()  ||  it.persons.contains(person) }
+                        .fold(0) { acc, cur -> acc + cur.hours },
+                    "total" to countWorkDaysInPeriod(from,to) * 8,
+                    "revenue" to all.workDay
+                        .filter { it.assignment.person == person }
+                        .fold(BigDecimal.ZERO) { acc, cur -> acc + (cur.hours * cur.assignment.hourlyRate).toBigDecimal() }
+                    )
             }
     }
 
@@ -122,17 +131,16 @@ class AggregationService(
         val holiDay: List<HoliDay>,
         val workDay: List<WorkDay>,
         val assignment: List<Assignment>,
-        val contract: List<Contract>
+        val contract: List<Contract>,
+        val event: List<Event>
     )
 
     private fun List<Day>.totalHours() = this
         .fold(0.0) { acc, cur -> acc + cur.hours }
-        .toString()
 
     private fun List<Assignment>.totalHours(from: LocalDate, to: LocalDate) = this
         .fold(0.0) { acc, cur -> acc + cur.hoursPerWeek / 5 }
         .pow(countWorkDaysInPeriod(from, to))
-        .toString()
 
 
     private fun All.allPersons(): Set<Person> {
@@ -152,12 +160,14 @@ class AggregationService(
         val activeSickDay = sickDayService.findAllActive(from, to)
         val activeAssignment = assignmentService.findAllActive(from, to)
         val activeContract = contractService.findAllActive(from, to)
+        val activeEvent = eventService.findAllActive(from, to)
         return All(
             activeSickDay,
             activeHoliDay,
             activeWorkDay,
             activeAssignment,
-            activeContract
+            activeContract,
+            activeEvent
         )
     }
 
@@ -201,6 +211,7 @@ fun LocalDate.countWorkDaysInMonth(): Int {
     val to = YearMonth.of(this.year, this.month).atEndOfMonth()
     return countWorkDaysInPeriod(from, to)
 }
+
 fun countWorkDaysInPeriod(from: LocalDate, to: LocalDate): Int {
     val diff = ChronoUnit.DAYS.between(from, to)
     return (0..diff)

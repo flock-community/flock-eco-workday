@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class ContractService(
-    private val clientRepository: ClientRepository,
     private val personRepository: PersonRepository,
     private val contractRepository: ContractRepository,
     private val entityManager: EntityManager
@@ -41,7 +40,7 @@ class ContractService(
         .findAllByPersonUserCode(userCode)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Contract> {
-        val query = "SELECT c FROM Contract c WHERE c.from <= :to AND (c.to is null OR c.to > :from)"
+        val query = "SELECT c FROM Contract c WHERE c.from <= :to AND (c.to is null OR c.to >= :from)"
         return entityManager
             .createQuery(query, Contract::class.java)
             .setParameter("from", from)

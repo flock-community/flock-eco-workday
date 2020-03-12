@@ -45,7 +45,7 @@ class LoadSickdaysData(
                 personCode = it.code
             ).run {
                 service.create(this)
-            } ?: error("Cannot create sick day")
+            }
         }
     }
 }

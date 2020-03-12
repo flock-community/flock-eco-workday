@@ -11,4 +11,5 @@ interface PersonRepository : PagingAndSortingRepository<Person, Long> {
     fun findByUserCode(useCode: String): Optional<Person>
     fun existsByCode(code: String): Boolean
     fun deleteByCode(code: String): Unit
+    fun findByCodeIn(userCode: List<String>): Iterable<Person>
 }

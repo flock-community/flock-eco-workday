@@ -11,4 +11,5 @@ data class ContractServiceForm(
 
     override val from: LocalDate,
     override val to: LocalDate?
+
 ): Period

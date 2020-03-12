@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
+import community.flock.eco.workday.interfaces.DayForm
+import community.flock.eco.workday.interfaces.Hours
 import community.flock.eco.workday.interfaces.Period
 import java.time.LocalDate
 
@@ -17,7 +19,8 @@ data class WorkDayForm(
     @JsonSerialize(using = LocalDateSerializer::class)
     override val to: LocalDate,
 
-    val hours: Int,
-    val days: List<Int>? = null,
+    override val hours: Int,
+    override val days: List<Int>? = null,
     val assignmentCode: String
-): Period
+
+): DayForm

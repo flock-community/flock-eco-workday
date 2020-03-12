@@ -102,7 +102,7 @@ export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
     {
       name: "Events",
       icon: EventIcon,
-      url: "/events",
+      url: "/event",
       authority: "EventAuthority.READ",
     },
     {
