@@ -7,6 +7,7 @@ import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.workday.authorities.AssignmentAuthority
 import community.flock.eco.workday.authorities.ContractAuthority
+import community.flock.eco.workday.authorities.EventAuthority
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import org.springframework.context.annotation.Profile
@@ -24,8 +25,10 @@ class LoadUserData(
         HolidayAuthority.READ,
         HolidayAuthority.WRITE,
         SickdayAuthority.READ,
+        SickdayAuthority.WRITE,
         ContractAuthority.READ,
-        AssignmentAuthority.READ)
+        AssignmentAuthority.READ,
+        EventAuthority.READ)
 
     private val allAuthorities = userAuthorityService.allAuthorities()
     private val workerAuthorities = userAuthorityService.allAuthorities().filter { workerRoles.contains(it) }

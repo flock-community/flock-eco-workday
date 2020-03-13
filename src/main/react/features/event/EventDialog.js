@@ -95,7 +95,7 @@ export function EventDialog({open, code, onComplete}) {
         onClose={handleDeleteClose}
         onConfirm={handleDelete}
       >
-        <Typography>Are you sure you want to remove this workday.</Typography>
+        <Typography>Are you sure you want to remove this event.</Typography>
       </ConfirmDialog>
     </>
   )

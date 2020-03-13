@@ -9,15 +9,14 @@ import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
-import community.flock.eco.workday.model.ContractService as ContractServiceModel
-import community.flock.eco.workday.repository.ClientRepository
 import community.flock.eco.workday.repository.ContractRepository
 import community.flock.eco.workday.repository.PersonRepository
+import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
 import java.time.LocalDate
 import javax.persistence.EntityManager
 import javax.transaction.Transactional
-import org.springframework.data.domain.Pageable
-import org.springframework.stereotype.Service
+import community.flock.eco.workday.model.ContractService as ContractServiceModel
 
 @Service
 class ContractService(

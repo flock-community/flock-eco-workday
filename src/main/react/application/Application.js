@@ -15,7 +15,6 @@ import {HomeFeature} from "../features/home/HomeFeature"
 import {ClientFeature} from "../features/client/ClientFeature"
 import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
 import {PersonFeature} from "../features/person/PersonFeature"
-// TODO: replace by UserStatusClient from @flock-eco/feature-user
 import {UserStatusClient} from "../clients/UserStatusClient"
 import {SickdayFeature} from "../features/sickday/SickdayFeature"
 import {useUser} from "../hooks/UserHook"
@@ -24,6 +23,7 @@ import {ContractFeature} from "../features/contract/ContractFeature"
 import {WorkDayFeature} from "../features/workday/WorkDayFeature"
 import {MonthFeature} from "../features/month/MonthFeature"
 import {EventFeature} from "../features/event/EventFeature"
+import {EventRatingFeature} from "../features/event_rating/EventRatingFeature"
 
 const useStyles = makeStyles(() => ({
   spinner: {
@@ -122,6 +122,7 @@ export const Application = () => {
           <Route path="/users" exact component={UserFeature} />
           <Route path="/person" component={PersonFeature} />
           <Route path="/event" component={EventFeature} />
+          <Route path="/event_rating/:eventCode" component={EventRatingFeature} />
         </Router>
       </ApplicationContext.Provider>
     </ThemeProvider>

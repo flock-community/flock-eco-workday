@@ -4,14 +4,12 @@ import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
 import community.flock.eco.workday.interfaces.Hours
 import community.flock.eco.workday.interfaces.Period
-import community.flock.eco.workday.model.Person
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
 import javax.persistence.ManyToMany
-import javax.persistence.OneToMany
 
 @Entity
 @EntityListeners(EventEntityListeners::class)

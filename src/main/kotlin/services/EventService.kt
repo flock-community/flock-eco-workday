@@ -2,25 +2,21 @@ package community.flock.eco.workday.services
 
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.EventForm
-import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.Event
-import community.flock.eco.workday.model.HoliDay
-import community.flock.eco.workday.model.SickDay
-import community.flock.eco.workday.repository.ContractRepository
+import community.flock.eco.workday.repository.EventRatingRepository
 import community.flock.eco.workday.repository.EventRepository
-import community.flock.eco.workday.repository.PersonRepository
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import java.util.UUID
 import javax.persistence.EntityManager
 
 @Service
 class EventService(
     private val eventRepository: EventRepository,
+    private val eventRatingRepository: EventRatingRepository,
     private val personService: PersonService,
     private val entityManager: EntityManager
 ) {
@@ -54,8 +50,10 @@ class EventService(
         }
 
     @Transactional
-    fun deleteByCode(code: String) = eventRepository
-        .deleteByCode(code)
+    fun deleteByCode(code: String) {
+        eventRatingRepository.deleteByEventCode(code)
+        eventRepository.deleteByCode(code)
+    }
 
     private fun Event.save() = eventRepository.save(this)
 
