@@ -18,28 +18,29 @@ class LoadContractData(
     private val loadPersonData: LoadPersonData
 ) {
 
+    final val now: LocalDate = LocalDate.now().withDayOfMonth(1)
     val data: MutableSet<Contract> = mutableSetOf()
 
     init {
-        create("bert@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2018, 6, 1))
-        create("ieniemienie@sesam.straat", ContractType.INTERNAL, LocalDate.of(2018, 6, 1), LocalDate.of(2018, 12, 1))
-        create("pino@sesam.straat", ContractType.INTERNAL, LocalDate.of(2019, 2, 1), LocalDate.of(2020, 2, 1))
-        create("bert@sesam.straat", ContractType.MANAGEMENT, LocalDate.of(2019, 2, 1), LocalDate.of(2020, 2, 1))
-        create("ernie@sesam.straat", ContractType.SERVICE, LocalDate.of(2019, 2, 1), LocalDate.of(2020, 2, 1))
+        create("tommy@sesam.straat", ContractType.EXTERNAL, now.minusMonths(2))
+        create("ieniemienie@sesam.straat", ContractType.INTERNAL, now.minusMonths(8), now.plusMonths(8))
+        create("pino@sesam.straat", ContractType.INTERNAL, now.minusMonths(12), now.plusMonths(4))
+        create("bert@sesam.straat", ContractType.EXTERNAL, now.minusMonths(6), now.plusMonths(12))
+        create("ernie@sesam.straat", ContractType.INTERNAL, now.minusMonths(4))
     }
 
     private final fun create(email: String, type: ContractType, from: LocalDate, to: LocalDate? = null) = when (type) {
         ContractType.INTERNAL -> ContractInternal(
             person = loadPersonData.findPersonByUserEmail(email),
             hoursPerWeek = 36,
-            monthlySalary = 4000.0,
+            monthlySalary = 6000.0,
             from = from,
             to = to
         )
         ContractType.EXTERNAL -> ContractExternal(
             person = loadPersonData.findPersonByUserEmail(email),
             hoursPerWeek = 40,
-            hourlyRate = 90.0,
+            hourlyRate = 80.0,
             from = from,
             to = to
         )

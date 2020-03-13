@@ -13,33 +13,26 @@ class LoadSickdaysData(
     loadPersonData: LoadPersonData,
     private val service: SickDayService
 ) {
+
+    final val now: LocalDate = LocalDate.now().withDayOfYear(1).withDayOfMonth(1)
+
     val data: MutableSet<SickDay> = mutableSetOf()
 
-    /**
-     * add a create() function to the SickdayForm which calls the create function of SickdayService
-     * to create and persist the Sickday.
-     */
-    private final fun SickDayForm.create() {
-        service.create(this)
-    }
-
-    /**
-     * Initialize a Sickday with status SickdayStatus.SICK (which is the default)
-     * and one Sickday with status SickdayStatus.HEALTHY (to indicate a past Sickday)
-     */
     init {
+
         loadPersonData.data.forEach {
+            val random = (0..100).shuffled().first().toLong()
             SickDayForm(
-                from = LocalDate.of(2019, 4, 4),
-                to = LocalDate.of(2019, 4, 9),
+                from = now.plusDays(random),
+                to = now.plusDays(random + 5),
                 days = listOf(8, 8, 8, 8, 8, 8),
                 hours = 48,
                 personCode = it.code
             ).create()
 
             SickDayForm(
-                from = LocalDate.of(2019, 4, 4),
-                to = LocalDate.of(2019, 4, 9),
+                from = now.plusDays(random + 100),
+                to = now.plusDays(random + 105),
                 days = listOf(8, 8, 8, 8, 8, 8),
                 hours = 48,
                 personCode = it.code
@@ -48,4 +41,6 @@ class LoadSickdaysData(
             }
         }
     }
+
+    private final fun SickDayForm.create() = service.create(this)
 }

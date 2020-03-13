@@ -69,7 +69,7 @@ class WorkDayService(
                 throw error("amount of days ($daysBetween) not equal to period (${this.days.size})")
             }
             if (this.days.sum() != this.hours) {
-                throw error("Total hour does not match")
+                throw error("Total hour does not match sum: ${this.days.sum()} hours: ${this.hours}")
             }
         }
     }

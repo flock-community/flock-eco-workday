@@ -13,6 +13,9 @@ class LoadEventData(
     loadPersonData: LoadPersonData,
     private val service: EventService
 ) {
+
+    final val now: LocalDate = LocalDate.now().withDayOfMonth(1)
+
     val data: MutableSet<SickDay> = mutableSetOf()
 
     private final fun EventForm.create() = service.create(this)
@@ -21,8 +24,8 @@ class LoadEventData(
 
         EventForm(
             description = "New years eve",
-            from = LocalDate.of(2019, 1, 1),
-            to = LocalDate.of(2019, 1, 1),
+            from = LocalDate.of(now.year, 1, 1),
+            to = LocalDate.of(now.year, 1, 1),
             days = listOf(8),
             hours = 8,
             personCodes = loadPersonData.data.map { it.code }
@@ -30,17 +33,17 @@ class LoadEventData(
 
         EventForm(
             description = "Flock. dag",
-            from = LocalDate.of(2019, 1, 3),
-            to = LocalDate.of(2019, 1, 3),
+            from = LocalDate.of(now.year, 1, 3),
+            to = LocalDate.of(now.year, 1, 3),
             days = listOf(8),
             hours = 8,
             personCodes = loadPersonData.data.map { it.code }
         ).create()
 
         EventForm(
-            description = "Conferentie",
-            from = LocalDate.of(2019, 5, 27),
-            to = LocalDate.of(2019, 5, 29),
+            description = "Conference",
+            from = LocalDate.of(now.year, 5, 27),
+            to = LocalDate.of(now.year, 5, 29),
             days = listOf(8,8,8),
             hours = 24,
             personCodes = loadPersonData.data.take(2).map { it.code }

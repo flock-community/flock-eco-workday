@@ -3,9 +3,9 @@ package community.flock.eco.workday.mocks
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.WorkDayService
-import java.time.LocalDate
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 @Profile("local")
@@ -14,6 +14,7 @@ class LoadWorkDayData(
     loadAssignmentData: LoadAssignmentData,
     private val workDayService: WorkDayService
 ) {
+    val now = LocalDate.now()
     val data: MutableSet<WorkDay> = mutableSetOf()
 
     /**
@@ -29,15 +30,23 @@ class LoadWorkDayData(
      * and one Sickday with status SickdayStatus.HEALTHY (to indicate a past Sickday)
      */
     init {
-        loadAssignmentData.data.forEach {
-            WorkDayForm(
-                from = LocalDate.of(2019, 4, 4),
-                to = LocalDate.of(2019, 4, 9),
-                hours = 40,
-                days = listOf(0, 8, 8, 8, 8, 8),
-                assignmentCode = it.code
+        val now = LocalDate.now()
+        loadAssignmentData.data
+            .map { assignment ->
+                (1..12)
+                    .map {
+                        WorkDayForm(
+                            from = now.withMonth(it).withDayOfMonth(1),
+                            to = now.withMonth(it).withDayOfMonth(1).plusDays(9),
+                            hours = 80,
+                            days = listOf(8, 8, 8, 8, 8, 8, 8, 8, 8, 8),
+                            assignmentCode = assignment.code
 
-            ).create()
-        }
+                        )
+                    }
+
+            }
+            .flatten()
+            .forEach { it.create() }
     }
 }

@@ -13,14 +13,14 @@ class LoadClientData(
     val data: MutableSet<Client> = mutableSetOf()
 
     init {
-        create("ing", "ING")
-        create("bolcom", "bol.com")
-        create("ns", "NS International")
-        create("rabobank", "Rabobank")
+        create("Client A")
+        create("Client B")
+        create("Client C")
+        create("Client D")
     }
 
-    private final fun create(code: String, name: String) = Client(
-            code = code,
+    private final fun create(name: String) = Client(
+            code = name.toLowerCase().replace(" ", "_"),
             name = name)
             .save()
 

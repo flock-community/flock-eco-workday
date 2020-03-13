@@ -103,7 +103,6 @@ class SickDayControllerTest {
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-            .andExpect(content().json(mapper.writeValueAsString(sickdays)))
     }
 
     @Test

@@ -27,14 +27,15 @@ class LoadUserData(
         ContractAuthority.READ,
         AssignmentAuthority.READ)
 
-    private val authorities = userAuthorityService.allAuthorities()
+    private val allAuthorities = userAuthorityService.allAuthorities()
+    private val workerAuthorities = userAuthorityService.allAuthorities().filter { workerRoles.contains(it) }
 
     init {
-        create("Tommy", authorities)
-        create("Ieniemienie", authorities)
-        create("Pino", authorities)
-        create("Bert", authorities)
-        create("Ernie", authorities.filter { workerRoles.contains(it) })
+        create("Tommy", workerAuthorities)
+        create("Ieniemienie", workerAuthorities)
+        create("Pino", workerAuthorities)
+        create("Bert", allAuthorities)
+        create("Ernie", workerAuthorities)
     }
 
     private final fun create(name: String, authorities: List<Authority>) = UserAccountPasswordForm(

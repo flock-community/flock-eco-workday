@@ -40,20 +40,18 @@ class LoadPersonData(
      *
      * @param firstname firstname of the person
      * @param lastname lastname of the person
-     * @param email (optional) the email of the person.
      * @param position (optional) job description or position of the user
      * @param user (optional) User model the person is attached to
      */
     private fun createPerson(
         firstname: String,
         lastname: String,
-        email: String = "",
         position: String = "",
-        user: User? = null
+        user: User
     ) = Person(
             firstname = firstname,
             lastname = lastname,
-            email = email,
+            email = user.email,
             position = position,
             number = null,
             user = user
