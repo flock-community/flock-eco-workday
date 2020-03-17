@@ -59,10 +59,10 @@ export function SickDayForm({code, onSubmit}) {
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <Grid container spacing={1}>
           <Grid item xs={6}>
-            <DatePickerField name="from" fullWidth />
+            <DatePickerField name="from" label="From" fullWidth />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="to" fullWidth />
+            <DatePickerField name="to" label="To" fullWidth />
           </Grid>
           <Grid item xs={12}>
             <PeriodInputField

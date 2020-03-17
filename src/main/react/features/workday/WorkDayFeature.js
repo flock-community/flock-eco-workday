@@ -2,6 +2,7 @@ import React, {useContext, useState} from "react"
 
 import {makeStyles} from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
+import {Container} from "@material-ui/core"
 import {WorkDayDialog} from "./WorkDayDialog"
 import {WorkDayList} from "./WorkDayList"
 import {PersonSelector} from "../../components/selector"
@@ -11,7 +12,7 @@ import {usePerson} from "../../hooks/PersonHook"
 
 const useStyles = makeStyles({
   root: {
-    padding: 20,
+    marginTop: 20,
   },
   fab: {
     position: "absolute",
@@ -58,7 +59,7 @@ export function WorkDayFeature() {
   }
 
   return (
-    <div className={classes.root}>
+    <Container className={classes.root}>
       <Grid container spacing={1}>
         <Grid item xs={12}>
           {isSuperUser() && <PersonSelector onChange={handlePersonChange} />}
@@ -79,7 +80,7 @@ export function WorkDayFeature() {
       />
 
       <AddActionFab color="primary" onClick={handleClickAdd} />
-    </div>
+    </Container>
   )
 }
 

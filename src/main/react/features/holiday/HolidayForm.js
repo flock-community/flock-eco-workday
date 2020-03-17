@@ -96,10 +96,10 @@ export function HolidayForm({code, onSubmit}) {
             </Grid>
           )}
           <Grid item xs={6}>
-            <DatePickerField name="from" fullWidth />
+            <DatePickerField name="from" label="From" fullWidth />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="to" fullWidth />
+            <DatePickerField label="To" name="to" fullWidth />
           </Grid>
           <Grid item xs={12}>
             <PeriodInputField

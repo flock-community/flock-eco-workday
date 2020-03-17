@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import {Dialog, DialogContent, Divider} from "@material-ui/core"
 import {makeStyles} from "@material-ui/styles"
 import WorkIcon from "@material-ui/icons/Work"
-import moment, {HTML5_FMT} from "moment"
+import {HTML5_FMT} from "moment"
 import {ConfirmDialog} from "@flock-eco/core/src/main/react/components/ConfirmDialog"
 import Typography from "@material-ui/core/Typography"
 import {WorkDayClient} from "../../clients/WorkDayClient"
@@ -21,28 +21,24 @@ const useStyles = makeStyles(() => ({
 
 export function WorkDayDialog({open, code, onComplete}) {
   const classes = useStyles()
-
   const [openDelete, setOpenDelete] = useState(false)
 
   const handleSubmit = it => {
-    if (it.code) {
-      WorkDayClient.put(it.code, {
-        from: it.from.format(HTML5_FMT.DATE),
-        to: it.to.format(HTML5_FMT.DATE),
-        days: it.days,
-        hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
-        assignmentCode: it.assignmentCode,
-      }).then(res => {
+    const body = {
+      from: it.from.format(HTML5_FMT.DATE),
+      to: it.to.format(HTML5_FMT.DATE),
+      days: it.days ? it.days : null,
+      hours: it.days
+        ? it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0)
+        : it.hours,
+      assignmentCode: it.assignmentCode,
+    }
+    if (code) {
+      WorkDayClient.put(code, body).then(res => {
         if (isDefined(onComplete)) onComplete(res)
       })
     } else {
-      WorkDayClient.post({
-        from: it.from.format(moment.HTML5_FMT.DATE),
-        to: it.to.format(moment.HTML5_FMT.DATE),
-        days: it.days,
-        hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
-        assignmentCode: it.assignmentCode,
-      }).then(res => {
+      WorkDayClient.post(body).then(res => {
         if (isDefined(onComplete)) onComplete(res)
       })
     }
