@@ -6,7 +6,7 @@
     <parent>
         <artifactId>flock-eco-application-parent</artifactId>
         <groupId>com.github.flock-community.flock-eco</groupId>
-        <version>1.5.7</version>
+        <version>1.6.6</version>
     </parent>
 
     <groupId>flock.community.eco.workday</groupId>
@@ -299,12 +299,12 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>npm install</id>
+                                <id>npm ci</id>
                                 <goals>
                                     <goal>npm</goal>
                                 </goals>
                                 <configuration>
-                                    <arguments>install</arguments>
+                                    <arguments>ci</arguments>
                                 </configuration>
                             </execution>
                             <execution>

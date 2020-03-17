@@ -76,7 +76,14 @@ class PersonControllerTest {
 
     @Test
     fun `should create a valid person via POST-method`() {
-        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
+        val personForm = PersonForm(
+            firstname = "Morris",
+            lastname = "Moss",
+            email = "",
+            position = "",
+            number = null,
+            userCode = null
+        )
 
         mvc.perform(post(baseUrl)
             .with(user)
@@ -96,7 +103,14 @@ class PersonControllerTest {
     @Test
     fun `should get a person by code via GET-method`() {
         /* DRY-Block */
-        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
+        val personForm = PersonForm(
+            firstname = "Morris",
+            lastname = "Moss",
+            email = "",
+            position = "",
+            number = null,
+            userCode = null
+        )
 
         // need this user to compare generated fields
         // create a person so one can query that person via the PersonCode
@@ -128,7 +142,14 @@ class PersonControllerTest {
     @Test
     fun `should update a valid person correctly via PUT-method`() {
         /* DRY-Block */
-        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
+        val personForm = PersonForm(
+            firstname = "Morris",
+            lastname = "Moss",
+            email = "",
+            position = "",
+            number = null,
+            userCode = null
+        )
 
         // need this user to compare generated fields
         var person: JsonNode? = null
@@ -149,6 +170,7 @@ class PersonControllerTest {
             lastname = "Moss",
             email = "morris@reynholm-industires.co.uk",
             position = "",
+            number = null,
             userCode = null
         )
 
@@ -172,7 +194,14 @@ class PersonControllerTest {
     @Test
     fun `should send a valid delete request to remove a person via DELETE-method`() {
         /* DRY-Block */
-        val personForm = PersonForm(firstname = "Morris", lastname = "Moss", email = "", position = "", userCode = null)
+        val personForm = PersonForm(
+            firstname = "Morris",
+            lastname = "Moss",
+            email = "",
+            position = "",
+            number = null,
+            userCode = null
+        )
 
         // need this user to compare generated fields
         // create a person so one can query that person via the PersonCode
@@ -215,7 +244,7 @@ class PersonControllerTest {
     fun `should return an error while trying to get a non-existing person via GET-request`() {
         /* DRY-Bock */
         mvc.perform(get("$baseUrl/3b7ab8e2-aeeb-4228-98d8-bd22fa141caa").with(user).accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound)
+            .andExpect(status().isNotFound)
         /* DRY-Bock */
     }
 

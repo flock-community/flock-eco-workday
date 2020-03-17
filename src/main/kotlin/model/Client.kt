@@ -1,7 +1,5 @@
 package community.flock.eco.workday.model
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo
-import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
 import java.util.UUID
@@ -10,7 +8,6 @@ import javax.persistence.EntityListeners
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
 data class Client(
 
     override val id: Long = 0,

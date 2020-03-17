@@ -1,9 +1,8 @@
 package community.flock.eco.workday.model
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
-import community.flock.eco.feature.user.model.User
+import community.flock.eco.workday.interfaces.Period
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Entity
@@ -17,18 +16,21 @@ data class Assignment(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
 
-    val startDate: LocalDate,
-    val endDate: LocalDate?,
+    val role: String? = null,
+
+    override val from: LocalDate,
+    override val to: LocalDate?,
+
+    val hourlyRate: Double,
+    val hoursPerWeek: Int,
 
     @ManyToOne
-    @JsonIdentityReference(alwaysAsId = true)
     val client: Client,
 
     @ManyToOne
-    @JsonIdentityReference(alwaysAsId = true)
-    val user: User
+    val person: Person
 
-) : AbstractCodeEntity(id, code) {
-    override fun equals(other: Any?) = super.equals(other)
+) : Period, AbstractCodeEntity(id, code) {
+    override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 }

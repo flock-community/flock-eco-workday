@@ -1,9 +1,15 @@
 package community.flock.eco.workday.mocks
 
+import community.flock.eco.core.authorities.Authority
 import community.flock.eco.feature.user.forms.UserAccountPasswordForm
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
+import community.flock.eco.workday.authorities.AssignmentAuthority
+import community.flock.eco.workday.authorities.ContractAuthority
+import community.flock.eco.workday.authorities.EventAuthority
+import community.flock.eco.workday.authorities.HolidayAuthority
+import community.flock.eco.workday.authorities.SickdayAuthority
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
@@ -16,33 +22,31 @@ class LoadUserData(
     val data: MutableSet<User> = mutableSetOf()
 
     val workerRoles = setOf(
-        "HolidayAuthority.READ",
-        "HolidayAuthority.WRITE",
-        "SickdayAuthority.READ",
-        "SickdayAuthority.WRITE")
+        HolidayAuthority.READ,
+        HolidayAuthority.WRITE,
+        SickdayAuthority.READ,
+        SickdayAuthority.WRITE,
+        ContractAuthority.READ,
+        AssignmentAuthority.READ,
+        EventAuthority.READ)
 
-    private val authorities = userAuthorityService.allAuthorities()
-        .map { it.toName() }
-        .toSet()
+    private val allAuthorities = userAuthorityService.allAuthorities()
+    private val workerAuthorities = userAuthorityService.allAuthorities().filter { workerRoles.contains(it) }
 
     init {
-        create("Tommy")
-        create("Ieniemienie")
-        create("Pino")
-        create("Bert")
-        create("Ernie")
+        create("Tommy", workerAuthorities)
+        create("Ieniemienie", workerAuthorities)
+        create("Pino", workerAuthorities)
+        create("Bert", allAuthorities)
+        create("Ernie", workerAuthorities)
     }
 
-    private final fun create(name: String) = UserAccountPasswordForm(
+    private final fun create(name: String, authorities: List<Authority>) = UserAccountPasswordForm(
         name = name,
         email = "${name.toLowerCase()}@sesam.straat",
         password = name.toLowerCase(),
-        authorities = if (name == "Ernie") {
-            authorities
-                .filter { role -> workerRoles.contains(role)}.toSet()
-        } else {
-            authorities
-        }).save()
+        authorities = authorities.map { it.toName() }.toSet())
+        .save()
 
     private fun UserAccountPasswordForm.save(): User = userAccountService.createUserAccountPassword(this)
         .let { it.user }

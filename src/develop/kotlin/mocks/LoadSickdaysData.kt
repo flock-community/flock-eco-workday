@@ -1,57 +1,46 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.workday.forms.SickdayForm
-import community.flock.eco.workday.model.Sickday
-import community.flock.eco.workday.model.SickdayStatus
-import community.flock.eco.workday.services.SickdayService
-import java.time.LocalDate
+import community.flock.eco.workday.forms.SickDayForm
+import community.flock.eco.workday.model.SickDay
+import community.flock.eco.workday.services.SickDayService
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 @Profile("local")
 class LoadSickdaysData(
     loadPersonData: LoadPersonData,
-    private val service: SickdayService
+    private val service: SickDayService
 ) {
-    val data: MutableSet<Sickday> = mutableSetOf()
 
-    /**
-     * add a create() function to the SickdayForm which calls the create function of SickdayService
-     * to create and persist the Sickday.
-     */
-    private final fun SickdayForm.create() {
-        service.create(this)
-    }
+    final val now: LocalDate = LocalDate.now().withDayOfYear(1).withDayOfMonth(1)
 
-    /**
-     * Initialize a Sickday with status SickdayStatus.SICK (which is the default)
-     * and one Sickday with status SickdayStatus.HEALTHY (to indicate a past Sickday)
-     */
+    val data: MutableSet<SickDay> = mutableSetOf()
+
     init {
+
         loadPersonData.data.forEach {
-            SickdayForm(
-                description = "Sick - ${it.firstname} ${it.lastname}",
-                status = SickdayStatus.SICK,
-                from = LocalDate.of(2019, 4, 4),
-                to = LocalDate.of(2019, 4, 9),
+            val random = (0..100).shuffled().first().toLong()
+            SickDayForm(
+                from = now.plusDays(random),
+                to = now.plusDays(random + 5),
                 days = listOf(8, 8, 8, 8, 8, 8),
                 hours = 48,
                 personCode = it.code
             ).create()
 
-            SickdayForm(
-                description = "Healthy - ${it.firstname} ${it.lastname}",
-                status = SickdayStatus.HEALTHY,
-                from = LocalDate.of(2019, 4, 4),
-                to = LocalDate.of(2019, 4, 9),
+            SickDayForm(
+                from = now.plusDays(random + 100),
+                to = now.plusDays(random + 105),
                 days = listOf(8, 8, 8, 8, 8, 8),
-                hours = 24,
+                hours = 48,
                 personCode = it.code
             ).run {
-                val sickday = service.create(this)
-                service.update(sickday.code, this)
+                service.create(this)
             }
         }
     }
+
+    private final fun SickDayForm.create() = service.create(this)
 }

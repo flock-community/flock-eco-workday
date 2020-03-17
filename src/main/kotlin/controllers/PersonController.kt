@@ -7,7 +7,6 @@ import community.flock.eco.workday.authorities.PersonAuthority
 import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.PersonService
-import java.security.Principal
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.security.Principal
 
 @RestController
 @RequestMapping("/api/persons")
@@ -31,27 +31,27 @@ class PersonController(
     private val userService: UserService
 ) {
 
+    @GetMapping("/me")
+    fun findByMe(principal: Principal): ResponseEntity<Person> = service
+        .findByUserCode(principal.name)
+        .toResponse()
+
     @GetMapping
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
-    fun findAll(pageable: Pageable, principal: Principal) = principal
-        .findUser()
-        ?.let {
-            service
-                .findAll(pageable)
-                .toResponse()
-        }
-        ?: throw ResponseStatusException(UNAUTHORIZED)
+    fun findAll(pageable: Pageable, principal: Principal) = service
+        .findAll(pageable)
+        .toResponse()
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('PersonAuthority.READ')")
     fun findByCode(@PathVariable code: String, principal: Principal): ResponseEntity<Person> = principal
         .findUser()
         ?.let {
-            return@let when {
+            when {
                 it.isAdmin() -> service.findByCode(code)?.toResponse()
                 else -> service.findByUserCode(it.code)?.toResponse()
             }
-            ?: throw ResponseStatusException(NOT_FOUND, "No Item found with this PersonCode")
+                ?: throw ResponseStatusException(NOT_FOUND, "No Item found with this PersonCode")
         }
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
@@ -59,14 +59,13 @@ class PersonController(
     @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
     fun post(@RequestBody form: PersonForm, principal: Principal) = principal
         .findUser()
-        ?.let {
+        ?.let { user ->
             val userCode = when {
-                it.isAdmin() -> form.userCode
-                else -> it.code
+                user.isAdmin() -> null
+                else -> user.code
             }
             form.copy(userCode = userCode)
-
-            return@let service.create(form)
+                .let { service.create(it) }
         }
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
@@ -84,9 +83,9 @@ class PersonController(
                 else -> it.code
             }
             form.copy(userCode = userCode)
-
-            return@let service
-                .update(code, form)
+                .let {
+                    service.update(code, form)
+                }
                 ?.toResponse()
                 ?: throw ResponseStatusException(
                     BAD_REQUEST, "Cannot perform PUT on given item. PersonCode cannot be found. Use POST Method"

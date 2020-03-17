@@ -6,8 +6,8 @@ const path = "/api/assignments"
 
 const internalize = it => ({
   ...it,
-  startDate: moment(it.startDate, "YYYY-MM-DD"),
-  endDate: moment(it.endDate, "YYYY-MM-DD"),
+  from: it.from && moment(it.from, "YYYY-MM-DD"),
+  to: it.to && moment(it.to, "YYYY-MM-DD"),
 })
 
 const resourceClient = ResourceClient(path)
@@ -20,8 +20,8 @@ export const findByCode = code => {
   return fetch(`${path}/${code}`, opts).then(res => res.json())
 }
 
-function findAllByUserCode(userCode) {
-  return fetch(`${path}?userCode=${userCode}`)
+function findAllByPersonCode(personCode) {
+  return fetch(`${path}?personCode=${personCode}`)
     .then(res => {
       if (res.status === 200) {
         return res.json()
@@ -35,5 +35,5 @@ export const AssignmentClient = {
   ...resourceClient,
   ...pageableClient,
   findByCode,
-  findAllByUserCode,
+  findAllByPersonCode,
 }

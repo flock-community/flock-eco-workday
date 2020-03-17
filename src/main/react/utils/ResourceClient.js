@@ -1,21 +1,32 @@
-const internalize = res => {
+export const responseValidation = res => {
   if (res.ok) {
     if (res.status === 204) {
       return null
     }
     return res.json()
   }
-  return res.text(text => {
+  return res.text().then(text => {
     throw new Error(text)
   })
 }
 
-export function ResourceClient(path) {
+export function ResourceClient(path, internalize) {
+  const all = () => {
+    const opts = {
+      method: "GET",
+    }
+    return fetch(`${path}`, opts)
+      .then(responseValidation)
+      .then(it => (internalize ? it.map(internalize) : it))
+  }
+
   const get = id => {
     const opts = {
       method: "GET",
     }
-    return fetch(`${path}/${id}`, opts).then(internalize)
+    return fetch(`${path}/${id}`, opts)
+      .then(responseValidation)
+      .then(it => (internalize ? internalize(it) : it))
   }
 
   const post = item => {
@@ -26,7 +37,9 @@ export function ResourceClient(path) {
       },
       body: JSON.stringify(item),
     }
-    return fetch(path, opts).then(internalize)
+    return fetch(path, opts)
+      .then(responseValidation)
+      .then(it => (internalize ? internalize(it) : it))
   }
 
   const put = (id, item) => {
@@ -37,15 +50,17 @@ export function ResourceClient(path) {
       },
       body: JSON.stringify(item),
     }
-    return fetch(`${path}/${id}`, opts).then(internalize)
+    return fetch(`${path}/${id}`, opts)
+      .then(responseValidation)
+      .then(it => (internalize ? internalize(it) : it))
   }
 
   const del = id => {
     const opts = {
       method: "DELETE",
     }
-    return fetch(`${path}/${id}`, opts).then(internalize)
+    return fetch(`${path}/${id}`, opts).then(responseValidation)
   }
 
-  return {get, post, put, delete: del}
+  return {all, get, post, put, delete: del}
 }

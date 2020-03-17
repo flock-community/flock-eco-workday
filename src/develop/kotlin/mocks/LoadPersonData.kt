@@ -26,27 +26,34 @@ class LoadPersonData(
             data.add(it)
         }
 
+    fun findPersonByUserEmail(email: String): Person = data
+        .find { it.user?.email == email }
+        ?: error("Cannot find Client")
+
+    fun findPersonByUserCode(code: String): Person = data
+        .find { it.user?.code == code }
+        ?: error("Cannot find Person")
+
     /**
      * createPerson() func
      * generate a Person model from given input values
      *
      * @param firstname firstname of the person
      * @param lastname lastname of the person
-     * @param email (optional) the email of the person.
      * @param position (optional) job description or position of the user
      * @param user (optional) User model the person is attached to
      */
     private fun createPerson(
         firstname: String,
         lastname: String,
-        email: String = "",
         position: String = "",
-        user: User? = null
+        user: User
     ) = Person(
             firstname = firstname,
             lastname = lastname,
-            email = email,
+            email = user.email,
             position = position,
+            number = null,
             user = user
         ).save()
 
@@ -56,8 +63,8 @@ class LoadPersonData(
      */
     init {
         val lastnames = arrayOf("Dog", "Mouse", "Woodpecker", "Muppets", "Muppets")
-        userData.data.forEachIndexed {
-            idx, user -> createPerson(firstname = user.name!!, lastname = lastnames[idx], user = user)
+        userData.data.forEachIndexed { idx, user ->
+            createPerson(firstname = user.name!!, lastname = lastnames[idx], user = user)
         }
     }
 }

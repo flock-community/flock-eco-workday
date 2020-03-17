@@ -1,17 +1,16 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
-import community.flock.eco.feature.user.model.User
-import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.authorities.HolidayAuthority
-import community.flock.eco.workday.forms.HolidayForm
-import community.flock.eco.workday.model.Holiday
-import community.flock.eco.workday.services.HolidayService
+import community.flock.eco.workday.forms.HoliDayForm
+import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.services.HoliDayService
 import community.flock.eco.workday.services.PersonService
-import java.security.Principal
+import community.flock.eco.workday.services.isUser
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -26,87 +25,76 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @RequestMapping("/api/holidays")
 class HolidayController(
-    private val service: HolidayService,
-    private val personService: PersonService,
-    private val userService: UserService
+        private val service: HoliDayService,
+        private val personService: PersonService
 ) {
-    @GetMapping
+    @GetMapping(params = ["personCode"])
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
-    fun findAll(
-        @RequestParam(required = false) personCode: String?,
-        principal: Principal
-    ): ResponseEntity<Iterable<Holiday>> = principal
-        .findUser()
-        ?.let {
-            return@let when {
-                it.isAdmin() && personCode != null -> service.findAllByPersonCode(personCode)
-                else -> personService
-                    .findByUserCode(it.code)
-                    .run { service.findAllByPersonCode(this!!.code) }
-            }
-        }
-        ?.toResponse()
-        ?: throw ResponseStatusException(UNAUTHORIZED)
+    fun getAll(
+        @RequestParam personCode: String,
+        authentication: Authentication
+    ): ResponseEntity<Iterable<HoliDay>> = when {
+        authentication.isAdmin() -> service.findAllByPersonCode(personCode)
+        else -> service.findAllByPersonUserCode(authentication.name)
+    }.toResponse()
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
-    fun findByCode(@PathVariable code: String, principal: Principal): ResponseEntity<Holiday> = principal
-        .findUser()
-        ?.let {
-            service.findByCode(code)
-        }.toResponse()
+    fun findByCode(
+        @PathVariable code: String,
+        authentication: Authentication
+    ) = service
+        .findByCode(code)
+        ?.applyAuthentication(authentication)
+        .toResponse()
 
     @PostMapping
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
-    fun post(@RequestBody form: HolidayForm, principal: Principal): ResponseEntity<Holiday> = principal
-        .findUser()
-        ?.let {
-            val personCode = when {
-                it.isAdmin() -> form.personCode
-                else -> personService.findByUserCode(it.code)?.code ?: throw ResponseStatusException(UNAUTHORIZED)
-            }
-            form.copy(personCode = personCode)
-            return@let service.create(form).toResponse()
-        }
-        ?: throw ResponseStatusException(UNAUTHORIZED)
+    fun post(
+        @RequestBody form: HoliDayForm,
+        authentication: Authentication
+    ) = service
+        .create(form.setPersonCode(authentication))
+        .toResponse()
 
     @PutMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
     fun put(
         @PathVariable code: String,
-        @RequestBody form: HolidayForm,
-        principal: Principal
-    ): ResponseEntity<Holiday> = principal
-        .findUser()
-        ?.let {
-            val personCode = when {
-                it.isAdmin() -> form.personCode
-                else -> personService.findByUserCode(it.code)?.code ?: throw ResponseStatusException(UNAUTHORIZED)
-            }
-            form.copy(personCode = personCode)
-            return@let service.update(code, form, it.isAdmin()).toResponse()
-        }
-        ?: throw ResponseStatusException(UNAUTHORIZED)
+        @RequestBody form: HoliDayForm,
+        authentication: Authentication
+    ) = service
+        .update(code, form.setPersonCode(authentication))
+        .toResponse()
 
     @DeleteMapping("/{code}")
-    @PreAuthorize("hasAuthority('HolidayAuthority.ADMIN')")
-    fun delete(@PathVariable code: String, principal: Principal) = principal
-        .findUser()
-        ?.let {
-            service.delete(code).toResponse()
+    @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
+    fun delete(
+        @PathVariable code: String,
+        authentication: Authentication
+    ) = service.findByCode(code)
+        ?.applyAuthentication(authentication)
+        ?.run { service.deleteByCode(this.code) }
+        .toResponse()
+
+    private fun HoliDayForm.setPersonCode(authentication: Authentication): HoliDayForm {
+        if (authentication.isAdmin()) {
+            return this
         }
-        ?: throw ResponseStatusException(UNAUTHORIZED)
+        return personService.findByUserCode(authentication.name)
+            ?.let {
+                this.copy(personCode = it.code)
+            }
+            ?: throw ResponseStatusException(UNAUTHORIZED, "User is not linked to person")
+    }
 
-    // *-- utility functions --*
-    /**
-     * add findUser() function to Principal
-     * @return <code>User?</code> a user if found with given user code in the db
-     */
-    private fun Principal.findUser(): User? = userService.findByCode(this.name)
+    private fun Authentication.isAdmin(): Boolean = this.authorities
+        .map { it.authority }
+        .contains(HolidayAuthority.ADMIN.toName())
 
-    /**
-     * Evaluate if user has admin authorities on Holiday
-     * @return <code>true</code> if user is admin or has admin authorities
-     */
-    private fun User.isAdmin(): Boolean = this.authorities.contains(HolidayAuthority.ADMIN.toName())
+    private fun HoliDay.applyAuthentication(authentication: Authentication) = apply {
+        if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
+            throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
+        }
+    }
 }

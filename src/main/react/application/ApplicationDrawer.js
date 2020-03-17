@@ -5,11 +5,15 @@ import ListItemText from "@material-ui/core/ListItemText"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 
 import AssignmentIcon from "@material-ui/icons/Assignment"
+import ContractIcon from "@material-ui/icons/Description"
 import HolidayIcon from "@material-ui/icons/WbSunny"
 import HealingIcon from "@material-ui/icons/Healing"
 import EventIcon from "@material-ui/icons/CalendarToday"
 import UserIcon from "@material-ui/icons/Person"
 import ClientIcon from "@material-ui/icons/Business"
+import DashboardIcon from "@material-ui/icons/Dashboard"
+import MonthIcon from "@material-ui/icons/Schedule"
+import WorkdayIcon from "@material-ui/icons/Work"
 
 import Drawer from "@material-ui/core/Drawer"
 import makeStyles from "@material-ui/core/styles/makeStyles"
@@ -48,6 +52,18 @@ export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
 
   const items = [
     {
+      name: "Dashboard",
+      icon: DashboardIcon,
+      url: "/dashboard",
+      authority: "AggregationAuthority.READ",
+    },
+    {
+      name: "Month",
+      icon: MonthIcon,
+      url: "/month",
+      authority: "AggregationAuthority.READ",
+    },
+    {
       name: "Clients",
       icon: ClientIcon,
       url: "/clients",
@@ -58,6 +74,18 @@ export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
       icon: AssignmentIcon,
       url: "/assignments",
       authority: "AssignmentAuthority.READ",
+    },
+    {
+      name: "Contracts",
+      icon: ContractIcon,
+      url: "/contracts",
+      authority: "AssignmentAuthority.READ",
+    },
+    {
+      name: "Workdays",
+      icon: WorkdayIcon,
+      url: "/workdays",
+      authority: "WorkDayAuthority.READ",
     },
     {
       name: "Holidays",
@@ -74,7 +102,7 @@ export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
     {
       name: "Events",
       icon: EventIcon,
-      url: "/events",
+      url: "/event",
       authority: "EventAuthority.READ",
     },
     {

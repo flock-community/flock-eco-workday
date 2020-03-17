@@ -11,6 +11,7 @@
           <option name="goals">
             <list>
               <option value="antrun:run@ktlint-format" />
+              <option value="-U" />
             </list>
           </option>
           <option name="pomFileName" />

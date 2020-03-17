@@ -28,6 +28,7 @@ class PersonService(
             lastname = it.lastname,
             email = it.email,
             position = it.position,
+            number = it.number,
             user = user
         )
     }
@@ -39,9 +40,14 @@ class PersonService(
 
     fun findByCode(code: String): Person? = repository
         .findByCode(code)
+        .toNullable()
 
     fun findByUserCode(userCode: String) = repository
         .findByUserCode(userCode)
+        .toNullable()
+
+    fun findByPersonCodeIdIn(personCodes:List<String>) = repository
+        .findByCodeIn(personCodes)
 
     fun create(form: PersonForm): Person? {
         val user = when (form.userCode) {
@@ -56,6 +62,7 @@ class PersonService(
             lastname = form.lastname,
             email = form.email,
             position = form.position,
+            number = form.number,
             user = user
         ).save()
     }
@@ -72,3 +79,5 @@ class PersonService(
     @Transactional
     fun deleteByCode(code: String) = repository.deleteByCode(code)
 }
+
+fun Person.isUser(userCode: String) = this.user?.code == userCode

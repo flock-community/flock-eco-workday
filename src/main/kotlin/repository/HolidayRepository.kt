@@ -1,13 +1,14 @@
 package community.flock.eco.workday.repository
 
-import community.flock.eco.workday.model.Holiday
-import java.util.Optional
+import community.flock.eco.workday.model.HoliDay
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
+import java.util.Optional
 
 @Repository
-interface HolidayRepository : CrudRepository<Holiday, Long> {
-    fun findByCode(code: String): Optional<Holiday>
-    fun findAllByPersonCode(personCode: String): Iterable<Holiday>
+interface HolidayRepository : CrudRepository<HoliDay, Long> {
+    fun findByCode(code: String): Optional<HoliDay>
+    fun findAllByPersonCode(personCode: String): Iterable<HoliDay>
+    fun findAllByPersonUserCode(personCode: String): Iterable<HoliDay>
     fun deleteByCode(code: String): Unit
 }

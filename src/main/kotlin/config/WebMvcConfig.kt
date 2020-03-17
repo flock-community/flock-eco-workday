@@ -1,11 +1,11 @@
 package community.flock.eco.workday.config
 
-import java.io.IOException
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.resource.PathResourceResolver
+import java.io.IOException
 
 class WebMvcConfig : WebMvcConfigurer {
 

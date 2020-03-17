@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import {Card, Typography} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import Grid from "@material-ui/core/Grid"
-import {SickdayClient} from "./SickdayClient"
+import {SickDayClient} from "../../clients/SickDayClient"
 import {isDefined} from "../../utils/validation"
 
 export function SickdayList(props) {
@@ -11,11 +11,7 @@ export function SickdayList(props) {
   const [list, setList] = useState([])
 
   useEffect(() => {
-    if (personCode) {
-      SickdayClient.fetchAllWithFilters(personCode).then(res => setList(res))
-    } else {
-      SickdayClient.fetchAll().then(res => setList(res))
-    }
+    SickDayClient.findAllByPersonCode(personCode).then(res => setList(res))
   }, [personCode, refresh])
 
   function handleClickRow(item) {
@@ -26,26 +22,30 @@ export function SickdayList(props) {
 
   function renderItem(item, key) {
     return (
-      <Grid key={`sickday-list-item-${key}`} item xs={12}>
+      <Grid key={`sick-day-list-item-${key}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
           <CardContent>
-            <Typography variant="h6">
-              {item.description ? item.description : "empty"}
+            <Typography>
+              Period: {item.from.format("DD-MM-YYYY")} - {item.to.format("DD-MM-YYYY")}
             </Typography>
             <Typography>
-              Period: {item.period.from.format("DD-MM-YYYY")} -{" "}
-              {item.period.to.format("DD-MM-YYYY")}
+              Aantal dagen: {item.days.filter(day => day > 0).length}
             </Typography>
-            <Typography>
-              Aantal dagen: {item.period.days.filter(day => day.hours > 0).length}
-            </Typography>
-            <Typography>
-              Aantal uren: {item.period.days.reduce((acc, cur) => cur.hours + acc, 0)}
-            </Typography>
+            <Typography>Aantal uren: {item.hours}</Typography>
             <Typography>{item.status}</Typography>
           </CardContent>
         </Card>
       </Grid>
+    )
+  }
+
+  if (list.length === 0) {
+    return (
+      <Card>
+        <CardContent>
+          <Typography>No sick days</Typography>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -57,7 +57,7 @@ export function SickdayList(props) {
 }
 
 SickdayList.propTypes = {
-  refresh: PropTypes.boolean,
-  personCode: PropTypes.string.isRequired,
+  refresh: PropTypes.bool,
+  personCode: PropTypes.string,
   onClickRow: PropTypes.func,
 }

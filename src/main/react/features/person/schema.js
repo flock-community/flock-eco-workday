@@ -1,4 +1,3 @@
-// import * as Yup from "yup"
 import {object, string} from "yup"
 
 // eslint-disable-next-line no-underscore-dangle
@@ -13,6 +12,7 @@ const _defaultObject = {
   email: string()
     .email()
     .default(""),
+  number: string().default(""),
   position: string().default(""),
 }
 

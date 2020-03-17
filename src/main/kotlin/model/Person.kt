@@ -21,6 +21,7 @@ data class Person(
     val lastname: String,
     val email: String,
     val position: String,
+    val number: String?,
 
     @OneToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
@@ -30,4 +31,4 @@ data class Person(
 ) : AbstractCodeEntity(id, code) {
     override fun equals(obj: Any?): Boolean = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
-    }
+}

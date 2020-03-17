@@ -47,7 +47,8 @@ const useStyles = makeStyles({
 export const PersonTable = () => {
   const {url} = useRouteMatch()
   const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [size, setSize] = useState(10)
+  const [count, setCount] = useState(10)
   const [personList, setPersonList] = useState([])
   const [dialog, setDialog] = useState({open: false})
   const [reload, setReload] = useState(false)
@@ -56,9 +57,12 @@ export const PersonTable = () => {
 
   useEffect(() => {
     // eslint-disable-next-line no-shadow
-    PersonService.getAll().then(personList => setPersonList(personList))
+    PersonService.findAllByPage({page, size, sort: "lastname"}).then(res => {
+      setPersonList(res.list)
+      setCount(res.total)
+    })
     setLinkList([{url, name: "Person"}])
-  }, [reload])
+  }, [reload, page, size])
 
   const handleDialogOpen = () => {
     setDialog({open: true})
@@ -80,7 +84,7 @@ export const PersonTable = () => {
     // TODO: query user GET endpoint with limit param and page=0
     // eslint-disable-next-line no-shadow
     const rowsPerPage = event.target.value
-    setRowsPerPage(+rowsPerPage)
+    setSize(+rowsPerPage)
     setPage(0)
   }
 
@@ -117,12 +121,12 @@ export const PersonTable = () => {
           </Table>
         </div>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[]}
           component="div"
-          count={personList.length}
+          count={count}
           // remove labelDisplayRows by replacing it with an empty return
           labelDisplayedRows={() => {}}
-          rowsPerPage={rowsPerPage}
+          rowsPerPage={size}
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
