@@ -34,6 +34,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDate
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
@@ -277,7 +278,8 @@ class SickDayControllerTest {
             email = "maurice@reynholm-industries.co.uk",
             position = "Software application developer",
             number = null,
-            userCode = null)
+            userCode = null,
+            dateOfBirth = LocalDate.now())
             .run { personService.create(this)!! },
         PersonForm(
             firstname = "Roy",
@@ -285,7 +287,8 @@ class SickDayControllerTest {
             email = "roy@reynholm-industries.co.uk",
             position = "Support technican",
             number = null,
-            userCode = null)
+            userCode = null,
+            dateOfBirth = LocalDate.now())
             .run { personService.create(this)!! },
         PersonForm(
             firstname = "Jen",
@@ -293,7 +296,8 @@ class SickDayControllerTest {
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
             number = null,
-            userCode = null)
+            userCode = null,
+            dateOfBirth = LocalDate.now())
             .run { personService.create(this)!! },
         PersonForm(
             firstname = "Richmond",
@@ -301,7 +305,8 @@ class SickDayControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null)
+            userCode = null,
+            dateOfBirth = LocalDate.now())
             .run { personService.create(this)!! }
     )
 

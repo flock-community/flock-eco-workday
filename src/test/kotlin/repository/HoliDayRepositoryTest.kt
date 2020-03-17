@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
+import java.time.LocalDate
 
 @RunWith(SpringRunner::class)
 @ContextConfiguration(classes = [ApplicationConfiguration::class])
@@ -42,7 +43,8 @@ class HoliDayRepositoryTest {
                 email = "admin@reynholm-industries.co.uk",
                 position = "",
                 number = null,
-                user = null
+                user = null,
+                dateOfBirth = LocalDate.now()
             ),
             Person(
                 firstname = "IT",
@@ -50,7 +52,8 @@ class HoliDayRepositoryTest {
                 email = "admin@reynholm-industries.co.uk",
                 position = "",
                 number = null,
-                user = null
+                user = null,
+                dateOfBirth = LocalDate.now()
             )
         ).apply { personRepository.saveAll(this) }
             .run { this.toList() }

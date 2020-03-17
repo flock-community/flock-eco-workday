@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDate
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
@@ -82,7 +83,8 @@ class PersonControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         )
 
         mvc.perform(post(baseUrl)
@@ -109,7 +111,8 @@ class PersonControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         )
 
         // need this user to compare generated fields
@@ -148,7 +151,8 @@ class PersonControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         )
 
         // need this user to compare generated fields
@@ -171,7 +175,8 @@ class PersonControllerTest {
             email = "morris@reynholm-industires.co.uk",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         )
 
         mvc.perform(put("$baseUrl/${person("code")}")
@@ -200,7 +205,8 @@ class PersonControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         )
 
         // need this user to compare generated fields

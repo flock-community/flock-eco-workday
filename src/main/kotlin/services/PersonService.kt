@@ -29,7 +29,8 @@ class PersonService(
             email = it.email,
             position = it.position,
             number = it.number,
-            user = user
+            user = user,
+            dateOfBirth = it.dateOfBirth
         )
     }
 
@@ -46,7 +47,7 @@ class PersonService(
         .findByUserCode(userCode)
         .toNullable()
 
-    fun findByPersonCodeIdIn(personCodes:List<String>) = repository
+    fun findByPersonCodeIdIn(personCodes: List<String>) = repository
         .findByCodeIn(personCodes)
 
     fun create(form: PersonForm): Person? {
@@ -63,7 +64,8 @@ class PersonService(
             email = form.email,
             position = form.position,
             number = form.number,
-            user = user
+            user = user,
+            dateOfBirth = form.dateOfBirth
         ).save()
     }
 
