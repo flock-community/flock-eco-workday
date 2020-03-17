@@ -72,11 +72,11 @@ class EventController(
         ))
         .toResponse()
 
-    @PostMapping()
+    @PostMapping
     @PreAuthorize("hasAuthority('EventAuthority.WRITE')")
     fun post(
-        @RequestBody form: EventRatingForm
-    ) = eventRatingService
+        @RequestBody form: EventForm
+    ) = eventService
         .create(form)
         .toResponse()
 
