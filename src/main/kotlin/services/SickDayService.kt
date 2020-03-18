@@ -70,7 +70,8 @@ class SickDayService(
             to = this.to,
             person = person,
             hours = this.hours,
-            days = this.days
+            days = this.days,
+            description = this.description
         )
     }
 

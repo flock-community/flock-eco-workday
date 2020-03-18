@@ -25,6 +25,9 @@ export function SickdayList(props) {
       <Grid key={`sick-day-list-item-${key}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
           <CardContent>
+            {item.description && (
+              <Typography variant="h6">{item.description}</Typography>
+            )}
             <Typography>
               Period: {item.from.format("DD-MM-YYYY")} - {item.to.format("DD-MM-YYYY")}
             </Typography>
