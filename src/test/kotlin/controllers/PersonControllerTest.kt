@@ -100,6 +100,7 @@ class PersonControllerTest {
             .andExpect(jsonPath("\$.firstname").value(personForm.firstname))
             .andExpect(jsonPath("\$.lastname").value(personForm.lastname))
             .andExpect(jsonPath("\$.email").isEmpty)
+            .andExpect(jsonPath("\$.dateOfBirth").value(personForm.dateOfBirth.toString()))
     }
 
     @Test
@@ -140,6 +141,7 @@ class PersonControllerTest {
             .andExpect(jsonPath("\$.code").value(person("code")))
             .andExpect(jsonPath("\$.firstname").value(person("firstname")))
             .andExpect(jsonPath("\$.lastname").value(person("lastname")))
+            .andExpect(jsonPath("\$.dateOfBirth").value(person("dateOfBirth")))
     }
 
     @Test
@@ -176,7 +178,7 @@ class PersonControllerTest {
             position = "",
             number = null,
             userCode = null,
-            dateOfBirth = LocalDate.now()
+            dateOfBirth = LocalDate.now().plusDays(1)
         )
 
         mvc.perform(put("$baseUrl/${person("code")}")
@@ -194,6 +196,7 @@ class PersonControllerTest {
             .andExpect(jsonPath("\$.email").isNotEmpty)
             .andExpect(jsonPath("\$.email").isString)
             .andExpect(jsonPath("\$.email").value(personUpdate.email))
+            .andExpect(jsonPath("\$.dateOfBirth").value(personUpdate.dateOfBirth.toString()))
     }
 
     @Test
@@ -233,6 +236,7 @@ class PersonControllerTest {
             .andExpect(jsonPath("\$.code").value(person("code")))
             .andExpect(jsonPath("\$.firstname").value(person("firstname")))
             .andExpect(jsonPath("\$.lastname").value(person("lastname")))
+            .andExpect(jsonPath("\$.dateOfBirth").value(person("dateOfBirth")))
         /* DRY-Block */
 
         mvc.perform(delete("$baseUrl/${person("code")}")
