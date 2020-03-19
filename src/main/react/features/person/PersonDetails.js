@@ -80,9 +80,10 @@ export const PersonDetails = props => {
               onDelete={handleDelDialog}
             >
               <ul>
-                <li>firstname: {person.firstname}</li>
-                <li>lastname: {person.lastname}</li>
-                <li>email: {person.email}</li>
+                <li>First name: {person.firstname}</li>
+                <li>Last name: {person.lastname}</li>
+                <li>E-mail: {person.email}</li>
+                <li>Date of birth: {person.dateOfBirth}</li>
               </ul>
             </Feed>
           </div>

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
 import community.flock.eco.feature.user.model.User
+import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
@@ -26,7 +27,9 @@ data class Person(
     @OneToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)
-    val user: User?
+    val user: User?,
+
+    val dateOfBirth: LocalDate?
 
 ) : AbstractCodeEntity(id, code) {
     override fun equals(obj: Any?): Boolean = super.equals(obj)

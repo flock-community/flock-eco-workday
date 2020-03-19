@@ -4,6 +4,12 @@ import {TableHead, TableRow, TableCell} from "@material-ui/core"
 const headCells = [
   {id: "name", align: false, disablePadding: false, label: "name".toUpperCase()},
   {id: "email", algin: false, disablePadding: false, label: "email".toUpperCase()},
+  {
+    id: "dateOfBirth",
+    algin: false,
+    disablePadding: false,
+    label: "date of birth".toUpperCase(),
+  },
   {id: "active", algin: false, disablePadding: false, label: "active".toUpperCase()},
   {id: "holidays", label: "holidays".toUpperCase()},
   {id: "clients", algin: false, disablePadding: false, label: "clients".toUpperCase()},

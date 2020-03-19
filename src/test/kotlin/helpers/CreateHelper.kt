@@ -60,7 +60,8 @@ class CreateHelper(
         lastname = lastname,
         position = "Software engineer",
         userCode = null,
-        number = null
+        number = null,
+        dateOfBirth = LocalDate.now()
     ).run {
         personService.create(this)
     } ?: error("Cannot create person")

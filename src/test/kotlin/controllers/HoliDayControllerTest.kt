@@ -32,6 +32,9 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDate
+import java.util.Calendar
+import java.util.Date
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
@@ -89,7 +92,8 @@ class HoliDayControllerTest {
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         ).run { personService.create(this)!! }
 
         val holidayForm = HoliDayForm(
@@ -122,7 +126,8 @@ class HoliDayControllerTest {
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         ).run { personService.create(this)!! }
         /* DRY-Block */
 
@@ -148,7 +153,8 @@ class HoliDayControllerTest {
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         ).run { personService.create(this)!! }
 
         val holidayForm = HoliDayForm(
@@ -182,7 +188,8 @@ class HoliDayControllerTest {
             email = "jen@reynholm-industries.co.uk",
             position = "Head of IT",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         ).run { personService.create(this)!! }
 
         val holidayForm = HoliDayForm(

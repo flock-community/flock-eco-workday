@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDate
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
@@ -82,7 +83,8 @@ class PersonControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         )
 
         mvc.perform(post(baseUrl)
@@ -98,6 +100,7 @@ class PersonControllerTest {
             .andExpect(jsonPath("\$.firstname").value(personForm.firstname))
             .andExpect(jsonPath("\$.lastname").value(personForm.lastname))
             .andExpect(jsonPath("\$.email").isEmpty)
+            .andExpect(jsonPath("\$.dateOfBirth").value(personForm.dateOfBirth.toString()))
     }
 
     @Test
@@ -109,7 +112,8 @@ class PersonControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         )
 
         // need this user to compare generated fields
@@ -137,6 +141,7 @@ class PersonControllerTest {
             .andExpect(jsonPath("\$.code").value(person("code")))
             .andExpect(jsonPath("\$.firstname").value(person("firstname")))
             .andExpect(jsonPath("\$.lastname").value(person("lastname")))
+            .andExpect(jsonPath("\$.dateOfBirth").value(person("dateOfBirth")))
     }
 
     @Test
@@ -148,7 +153,8 @@ class PersonControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         )
 
         // need this user to compare generated fields
@@ -171,7 +177,8 @@ class PersonControllerTest {
             email = "morris@reynholm-industires.co.uk",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now().plusDays(1)
         )
 
         mvc.perform(put("$baseUrl/${person("code")}")
@@ -189,6 +196,7 @@ class PersonControllerTest {
             .andExpect(jsonPath("\$.email").isNotEmpty)
             .andExpect(jsonPath("\$.email").isString)
             .andExpect(jsonPath("\$.email").value(personUpdate.email))
+            .andExpect(jsonPath("\$.dateOfBirth").value(personUpdate.dateOfBirth.toString()))
     }
 
     @Test
@@ -200,7 +208,8 @@ class PersonControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            dateOfBirth = LocalDate.now()
         )
 
         // need this user to compare generated fields
@@ -227,6 +236,7 @@ class PersonControllerTest {
             .andExpect(jsonPath("\$.code").value(person("code")))
             .andExpect(jsonPath("\$.firstname").value(person("firstname")))
             .andExpect(jsonPath("\$.lastname").value(person("lastname")))
+            .andExpect(jsonPath("\$.dateOfBirth").value(person("dateOfBirth")))
         /* DRY-Block */
 
         mvc.perform(delete("$baseUrl/${person("code")}")
