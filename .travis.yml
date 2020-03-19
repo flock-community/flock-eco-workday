@@ -13,7 +13,7 @@ before_install:
 install: mvn compile
 script:
 - mvn surefire:test
-- mvn spring-boot:start -Pdevelop -Dspring.profiles.active=local
+- mvn spring-boot:start -Pdevelop -Dspring-boot.run.profiles=local
 - mvn package appengine:stage -Pcloud -DskipTests
 deploy:
   provider: gae
