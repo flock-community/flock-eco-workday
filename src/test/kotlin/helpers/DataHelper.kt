@@ -107,7 +107,6 @@ class DataHelper(
         val to = LocalDate.of(2020, 1, 5)
 
         val person1 = createHelper.createPerson()
-        val person2 = createHelper.createPerson()
 
         val client = createHelper.createClient()
         val assignment1 = createHelper.createAssignment(client, person1, from, to)
@@ -115,8 +114,8 @@ class DataHelper(
 
         val res = mutableMapOf<String, WorkDay>()
         // In range
-        res["in1"] = createHelper.createWorkDay(assignment1, from, from.plusMonths(1))
-        res["in2"] = createHelper.createWorkDay(assignment2, from.plusMonths(1), from.plusMonths(2))
+        res["in1"] = createHelper.createWorkDay(assignment1, from, to)
+        res["in2"] = createHelper.createWorkDay(assignment2, from, to)
         return res
     }
 }

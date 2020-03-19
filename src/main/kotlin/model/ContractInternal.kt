@@ -1,6 +1,7 @@
 package community.flock.eco.workday.model
 
 import community.flock.eco.core.events.EventEntityListeners
+import community.flock.eco.workday.interfaces.Monthly
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Entity
@@ -17,10 +18,10 @@ data class ContractInternal(
     override val from: LocalDate,
     override val to: LocalDate? = null,
 
-    val monthlySalary: Double,
-    val hoursPerWeek: Int
+    override val monthlySalary: Double,
+    override val hoursPerWeek: Int
 
-) : Contract(id, code, from, to, person, ContractType.INTERNAL) {
+) : Monthly, Contract(id, code, from, to, person, ContractType.INTERNAL) {
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 }

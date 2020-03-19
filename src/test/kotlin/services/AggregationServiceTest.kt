@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.YearMonth
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -127,6 +128,27 @@ class AggregationServiceTest {
         assertNotNull(res[0]["name"])
 
     }
+
+    @Test
+    fun `total per month`() {
+
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 12, 31)
+
+        dataHelper.createContractData()
+        dataHelper.createAssignmentData()
+        dataHelper.createSickDayData()
+        dataHelper.createHoliDayData()
+        dataHelper.createHoliDayData()
+        dataHelper.createWorkDayData()
+
+        val res = aggregationService
+            .totalPerMonth(from, to)
+
+        assertNotNull(res[0]["actualRevenue"])
+
+    }
+
 
     @Test
     fun `find netto revenu factor`() {
