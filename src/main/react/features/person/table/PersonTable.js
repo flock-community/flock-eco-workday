@@ -32,6 +32,9 @@ const useStyles = makeStyles({
   tblName: {
     minWidth: 170,
   },
+  tblDateOfBirth: {
+    minWidth: 100,
+  },
 })
 
 /** PersonTable
@@ -93,7 +96,7 @@ export const PersonTable = () => {
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <Table>
-            <PersonTableHead></PersonTableHead>
+            <PersonTableHead />
             <TableBody>
               {personList.map((person, idx) => {
                 return (
@@ -109,6 +112,9 @@ export const PersonTable = () => {
                     </TableCell>
                     <TableCell className={classes.tblEmail} align="left">
                       {person.email}
+                    </TableCell>
+                    <TableCell className={classes.tblDateOfBirth} align="left">
+                      {person.dateOfBirth}
                     </TableCell>
                     <TableCell align="left">{person.active}</TableCell>
                     <TableCell align="left">{person.holidays}</TableCell>
