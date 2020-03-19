@@ -16,5 +16,5 @@ data class PersonForm(
 
     @JsonDeserialize(using = LocalDateDeserializer::class)
     @JsonSerialize(using = LocalDateSerializer::class)
-    val dateOfBirth: LocalDate
+    val dateOfBirth: LocalDate?
 )

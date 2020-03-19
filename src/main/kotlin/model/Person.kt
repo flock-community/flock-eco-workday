@@ -29,7 +29,7 @@ data class Person(
     @JsonIdentityReference(alwaysAsId = true)
     val user: User?,
 
-    val dateOfBirth: LocalDate
+    val dateOfBirth: LocalDate?
 
 ) : AbstractCodeEntity(id, code) {
     override fun equals(obj: Any?): Boolean = super.equals(obj)
