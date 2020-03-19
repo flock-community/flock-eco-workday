@@ -63,6 +63,15 @@ export function PersonForm({item, onSubmit}) {
           </FormControl>
           <FormControl className={classes.h70} fullWidth>
             <Field
+              id="DateOfBirth"
+              type="date"
+              label="Date of birth"
+              name="dateOfBirth"
+              component={FormikTextField}
+            />
+          </FormControl>
+          <FormControl className={classes.h70} fullWidth>
+            <Field
               id="number"
               type="number"
               label="number"
