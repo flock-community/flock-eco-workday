@@ -17,9 +17,7 @@ export const ASSIGNMENT_FORM_ID = "assignment-form"
  *
  * @param {*} props
  */
-export const AssignmentForm = props => {
-  const {value, onSubmit} = props
-
+export const AssignmentForm = ({value, onSubmit}) => {
   const form = () => (
     <Form id={ASSIGNMENT_FORM_ID}>
       <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -88,11 +86,4 @@ export const AssignmentForm = props => {
 AssignmentForm.propTypes = {
   value: PropTypes.object,
   onSubmit: PropTypes.func.isRequired,
-}
-
-AssignmentForm.defaultProps = {
-  item: {
-    client: null,
-    user: null,
-  },
 }

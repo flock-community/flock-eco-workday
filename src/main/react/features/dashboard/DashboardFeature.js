@@ -55,11 +55,11 @@ export function DashboardFeature() {
   return (
     <div className={classes.root}>
       <Grid container spacing={1}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={12}>
           <Card>
-            <CardHeader title="Total" />
+            <CardHeader title="Actual" />
             <CardContent>
-              <div style={{height: CHART_HEIGHT}}>
+              <div style={{height: CHART_HEIGHT * 2}}>
                 <TotalPerMonthChart />
               </div>
             </CardContent>

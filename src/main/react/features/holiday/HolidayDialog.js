@@ -1,7 +1,7 @@
 import React, {useState} from "react"
 import PropTypes from "prop-types"
 import {Dialog, DialogContent} from "@material-ui/core"
-import moment, {HTML5_FMT} from "moment"
+import {HTML5_FMT} from "moment"
 import HolidayIcon from "@material-ui/icons/WbSunny"
 import Typography from "@material-ui/core/Typography"
 import {ConfirmDialog} from "@flock-eco/core/src/main/react/components/ConfirmDialog"
@@ -15,27 +15,21 @@ export function HolidayDialog({open, code, personCode, onComplete}) {
   const [openDelete, setOpenDelete] = useState(false)
 
   const handleSubmit = it => {
+    const body = {
+      description: it.description,
+      status: it.status,
+      from: it.from.format(HTML5_FMT.DATE),
+      to: it.to.format(HTML5_FMT.DATE),
+      days: it.days,
+      hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
+      personCode,
+    }
     if (code) {
-      HolidayClient.put(code, {
-        description: it.description,
-        status: it.status,
-        from: it.from.format(HTML5_FMT.DATE),
-        to: it.to.format(HTML5_FMT.DATE),
-        days: it.days,
-        hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
-        personCode,
-      }).then(res => {
+      HolidayClient.put(code, body).then(res => {
         if (isDefined(onComplete)) onComplete(res)
       })
     } else {
-      HolidayClient.post({
-        description: it.description,
-        from: it.from.format(moment.HTML5_FMT.DATE),
-        to: it.to.format(moment.HTML5_FMT.DATE),
-        days: it.days,
-        hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
-        personCode,
-      }).then(res => {
+      HolidayClient.post(body).then(res => {
         if (isDefined(onComplete)) onComplete(res)
       })
     }

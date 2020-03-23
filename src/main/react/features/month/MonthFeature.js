@@ -51,7 +51,7 @@ export function MonthFeature() {
   if (!state) return null
 
   const data = state
-    .filter(it => it.assignment > 0)
+    .filter(it => it.assignment + it.revenue > 0)
     .map(it => ({
       ...it,
       missing: Math.max(

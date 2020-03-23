@@ -11,6 +11,7 @@ import FormControl from "@material-ui/core/FormControl"
 import Select from "@material-ui/core/Select"
 import MenuItem from "@material-ui/core/MenuItem"
 import Grid from "@material-ui/core/Grid"
+import {HTML5_FMT} from "moment"
 import {ContractClient} from "../../clients/ContractClient"
 import {isDefined} from "../../utils/validation"
 import {ContractFormInternal} from "./ContractFormInternal"
@@ -45,13 +46,19 @@ export function ContractDialog(props) {
     }
   }, [code, open])
 
-  const handleSubmit = value => {
+  const handleSubmit = it => {
+    const body = {
+      ...it,
+      from: it.from.format(HTML5_FMT.DATE),
+      to: it.to && it.to.format(HTML5_FMT.DATE),
+      personCode: person.code,
+    }
     if (code) {
-      ContractClient.put(code, type, {...value, personCode: person.code})
+      ContractClient.put(code, type, body)
         .then(() => onClose && onClose())
         .catch(err => setMessage(err.message))
     } else {
-      ContractClient.post(type, {...value, personCode: person.code})
+      ContractClient.post(type, body)
         .then(() => onClose && onClose())
         .catch(err => setMessage(err.message))
     }

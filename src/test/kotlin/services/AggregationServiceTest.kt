@@ -4,6 +4,9 @@ import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.ApplicationConstants
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
+import community.flock.eco.workday.interfaces.Period
+import community.flock.eco.workday.model.Assignment
+import community.flock.eco.workday.model.WorkDay
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -149,13 +152,53 @@ class AggregationServiceTest {
 
     }
 
+    @Test
+    fun `workday revenue per day full period`() {
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 1, 31)
+        val client = createHelper.createClient()
+        val person = createHelper.createPerson()
+        val assignment = createHelper.createAssignment(client, person, from, to)
+        val workDay = createHelper.createWorkDay(assignment,from, to, 152, listOf(0, 0, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8))
+
+        val period: Period = object: Period{
+            override val from: LocalDate get() = from
+            override val to: LocalDate? get() = to
+        }
+
+        val hours = workDay.totalHoursInPeriod(period)
+        val revenue = workDay.totalRevenueInPeriod(period)
+
+        assertEquals(152.toBigDecimal(), hours)
+        assertEquals(12160.0.toBigDecimal(), revenue)
+    }
+
+    @Test
+    fun `workday revenue per day half period`() {
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 1, 31)
+        val client = createHelper.createClient()
+        val person = createHelper.createPerson()
+        val assignment = createHelper.createAssignment(client, person, from, to)
+        val workDay = createHelper.createWorkDay(assignment,from, to, 152, listOf(0, 0, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8))
+
+        val period: Period = object: Period{
+            override val from: LocalDate get() = from
+            override val to: LocalDate? get() = LocalDate.of(2020, 1, 15)
+        }
+
+        val hours = workDay.totalHoursInPeriod(period)
+        val revenue = workDay.totalRevenueInPeriod(period)
+
+        assertEquals(64.toBigDecimal(), hours)
+        assertEquals(5120.0.toBigDecimal(), revenue)
+    }
+
 
     @Test
     fun `find netto revenu factor`() {
-
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
-
         aggregationService.netRevenueFactor(from, to)
     }
 
