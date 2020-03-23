@@ -31,9 +31,7 @@ export function SickdayList(props) {
             <Typography>
               Period: {item.from.format("DD-MM-YYYY")} - {item.to.format("DD-MM-YYYY")}
             </Typography>
-            <Typography>
-              Aantal dagen: {item.days.filter(day => day > 0).length}
-            </Typography>
+            <Typography>Aantal dagen: {item.to.diff(item.from, "days") + 1}</Typography>
             <Typography>Aantal uren: {item.hours}</Typography>
             <Typography>{item.status}</Typography>
           </CardContent>

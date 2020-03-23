@@ -78,7 +78,6 @@ export function WorkDayFeature() {
         value={state}
         onComplete={handleCompleteDialog}
       />
-
       <AddActionFab color="primary" onClick={handleClickAdd} />
     </Container>
   )
