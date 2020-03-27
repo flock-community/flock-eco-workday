@@ -3,18 +3,18 @@
 ## Run
 
 ```bash
-mvn clean spring-boot:run -Pdevelop -Dspring.profiles.active=local
+mvn clean spring-boot:run -Pdevelop,frontend -Dspring.profiles.active=local
 ```
 
 ## User
 
-| User                     | Password    |
-| ------------------------ | ----------- |
-| tommy@sesam.straat       | tommy       |
-| pino@sesam.straat        | pino        |
-| ieniemienie@sesam.straat | ieniemienie |
-| bert@sesam.straat        | bert        |
-| ernie@sesam.straat       | ernie       |
+| User                     | Password    | type  |
+| ------------------------ | ----------- | ----- |
+| tommy@sesam.straat       | tommy       | admin |
+| pino@sesam.straat        | pino        | admin |
+| ieniemienie@sesam.straat | ieniemienie | admin |
+| bert@sesam.straat        | bert        | admin |
+| ernie@sesam.straat       | ernie       | user  |
 
 ## Linting
 
