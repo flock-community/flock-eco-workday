@@ -80,4 +80,4 @@ class PersonService(
     fun deleteByCode(code: String) = repository.deleteByCode(code)
 }
 
-fun Person.isUser(userCode: String) = this.user?.code == userCode
+fun Person.isUser(userCode: String?) = this.user?.code == userCode

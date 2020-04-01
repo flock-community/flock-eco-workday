@@ -1,10 +1,10 @@
 import {useEffect, useState} from "react"
-import {PersonClient} from "../clients/PersonClient"
+import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
 import {useLoginStatus} from "./StatusHook"
 
 let store
 
-export function usePerson() {
+export function useUserMe() {
   const status = useLoginStatus()
 
   const [state, setState] = useState(store)
@@ -12,7 +12,7 @@ export function usePerson() {
   useEffect(() => {
     if (store === undefined && status && status.loggedIn) {
       store = null
-      PersonClient.me().then(it => {
+      UserClient.findUsersMe().then(it => {
         store = it
         setState(store)
       })
@@ -21,12 +21,5 @@ export function usePerson() {
     }
   }, [status])
 
-  const handlePerson = personCode => {
-    PersonClient.get(personCode).then(it => {
-      store = it
-      setState(store)
-    })
-  }
-
-  return [state, handlePerson]
+  return state
 }

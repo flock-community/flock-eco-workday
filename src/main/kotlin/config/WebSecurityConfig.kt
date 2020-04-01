@@ -49,6 +49,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .antMatchers("/_ah/**").permitAll()
             .antMatchers("/login/**").permitAll()
             .antMatchers("/h2/**").permitAll()
+            .antMatchers("/api/events/**").permitAll()
             .anyRequest().authenticated()
         http
             .cors()

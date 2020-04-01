@@ -38,20 +38,20 @@ class EventController(
         .toResponse()
 
     @GetMapping("/{code}")
-    @PreAuthorize("hasAuthority('EventAuthority.READ')")
+    //@PreAuthorize("hasAuthority('EventAuthority.READ')")
     fun findByCode(
         @PathVariable code: String,
-        authentication: Authentication
+        authentication: Authentication?
     ) = eventService
         .findByCode(code)
         ?.applyAuthentication(authentication)
         .toResponse()
 
     @GetMapping("/{code}/ratings")
-    @PreAuthorize("hasAuthority('EventAuthority.READ')")
+    //@PreAuthorize("hasAuthority('EventAuthority.READ')")
     fun findEventRatings(
         @PathVariable code: String,
-        authentication: Authentication
+        authentication: Authentication?
     ) = eventRatingService
         .findByEventCode(code)
         .filter { it.isAuthenticated(authentication) }
@@ -59,11 +59,11 @@ class EventController(
         .toResponse()
 
     @PostMapping("/{code}/ratings")
-    @PreAuthorize("hasAuthority('EventAuthority.WRITE')")
+    //@PreAuthorize("hasAuthority('EventAuthority.WRITE')")
     fun postRating(
         @PathVariable code: String,
         @RequestBody form: EventRatingForm,
-        authentication: Authentication
+        authentication: Authentication?
     ) = eventRatingService
         .create(EventRatingForm(
             eventCode = code,
@@ -101,7 +101,7 @@ class EventController(
         .toResponse()
 
     @DeleteMapping("/{eventCode}/ratings/{personCode}")
-    @PreAuthorize("hasAuthority('EventAuthority.WRITE')")
+    //@PreAuthorize("hasAuthority('EventAuthority.WRITE')")
     fun deleteRatings(
         @PathVariable eventCode: String,
         @PathVariable personCode: String,
@@ -112,15 +112,15 @@ class EventController(
     private fun Authentication.isAdmin(): Boolean = this.authorities
         .map { it.authority }.contains(EventAuthority.ADMIN.toName())
 
-    private fun Event.isAuthenticated(authentication: Authentication) = authentication.isAdmin() || this.persons.any { it.isUser(authentication.name) }
-    private fun Event.applyAuthentication(authentication: Authentication) = apply {
+    private fun Event.isAuthenticated(authentication: Authentication?) = authentication?.isAdmin() == true || this.persons.any { it.isUser(authentication?.name) }
+    private fun Event.applyAuthentication(authentication: Authentication?) = apply {
         if (!this.isAuthenticated(authentication)) {
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to event")
         }
     }
 
-    private fun EventRating.isAuthenticated(authentication: Authentication) = authentication.isAdmin() || this.person.isUser(authentication.name)
-    private fun EventRating.applyAuthentication(authentication: Authentication) = apply {
+    private fun EventRating.isAuthenticated(authentication: Authentication?) = authentication?.isAdmin() == true || this.person.isUser(authentication?.name)
+    private fun EventRating.applyAuthentication(authentication: Authentication?) = apply {
         if (!this.isAuthenticated(authentication)) {
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to event rating")
         }
