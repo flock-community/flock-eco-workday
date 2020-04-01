@@ -29,6 +29,8 @@ class SickDay(
     @ElementCollection
     override val days: List<Int>? = null,
 
+    val description: String? = null,
+
     @ManyToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)

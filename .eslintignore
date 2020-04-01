@@ -5,3 +5,4 @@ src/test/**/*
 target/**/*
 *.properties
 *.min.js
+webpack.config.js

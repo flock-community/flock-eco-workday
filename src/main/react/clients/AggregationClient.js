@@ -73,6 +73,18 @@ export const totalPerPersonByYearMonth = (year, month) => {
   )
 }
 
+export const totalPerMonthByYear = year => {
+  const opts = {
+    method: "GET",
+  }
+  return fetch(`${path}/total-per-month?year=${year}`, opts).then(res => {
+    if (res.status === 200) {
+      return res.json()
+    }
+    throw res.json()
+  })
+}
+
 export const AggregationClient = {
   revenuePerMonthByYear,
   costPerMonthByYear,
@@ -80,4 +92,5 @@ export const AggregationClient = {
   sickdayPerPersonByYear,
   revenuePerClientByYear,
   totalPerPersonByYearMonth,
+  totalPerMonthByYear,
 }

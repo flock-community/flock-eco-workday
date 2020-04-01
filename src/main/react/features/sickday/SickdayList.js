@@ -25,12 +25,13 @@ export function SickdayList(props) {
       <Grid key={`sick-day-list-item-${key}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
           <CardContent>
+            {item.description && (
+              <Typography variant="h6">{item.description}</Typography>
+            )}
             <Typography>
               Period: {item.from.format("DD-MM-YYYY")} - {item.to.format("DD-MM-YYYY")}
             </Typography>
-            <Typography>
-              Aantal dagen: {item.days.filter(day => day > 0).length}
-            </Typography>
+            <Typography>Aantal dagen: {item.to.diff(item.from, "days") + 1}</Typography>
             <Typography>Aantal uren: {item.hours}</Typography>
             <Typography>{item.status}</Typography>
           </CardContent>

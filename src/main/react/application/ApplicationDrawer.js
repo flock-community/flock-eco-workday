@@ -4,6 +4,7 @@ import React from "react"
 import ListItemText from "@material-ui/core/ListItemText"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 
+import {useHistory} from "react-router-dom"
 import AssignmentIcon from "@material-ui/icons/Assignment"
 import ContractIcon from "@material-ui/icons/Description"
 import HolidayIcon from "@material-ui/icons/WbSunny"
@@ -17,8 +18,8 @@ import WorkdayIcon from "@material-ui/icons/Work"
 
 import Drawer from "@material-ui/core/Drawer"
 import makeStyles from "@material-ui/core/styles/makeStyles"
-import {withRouter} from "react-router-dom"
-import {useUser} from "../hooks/UserHook"
+import PropTypes from "prop-types"
+import {useUserMe} from "../hooks/UserMeHook"
 
 const useStyles = makeStyles({
   head: {
@@ -32,10 +33,10 @@ const useStyles = makeStyles({
   },
 })
 
-export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
+export function ApplicationDrawer({open, onClose}) {
   const classes = useStyles()
-
-  const [user] = useUser()
+  const history = useHistory()
+  const user = useUserMe()
 
   const handleClose = event => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
@@ -153,4 +154,8 @@ export const ApplicationDrawer = withRouter(({open, onClose, history}) => {
       {sideList()}
     </Drawer>
   )
-})
+}
+ApplicationDrawer.propTypes = {
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
+}

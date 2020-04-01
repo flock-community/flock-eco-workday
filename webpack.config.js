@@ -31,7 +31,7 @@ module.exports = env => ({
     rules: [
       {
         test: /\.js|jsx$/,
-        exclude: /node_modules\/(?!(@flock-eco)\/).*/,
+        exclude: /node_modules[\\\/](?!(@flock-eco)[\\\/]).*/,
         use: {
           loader: "babel-loader",
           options: {

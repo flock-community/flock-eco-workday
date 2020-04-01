@@ -114,40 +114,48 @@ export function PeriodInput({value, onChange}) {
 
   return (
     <>
-      <Grid container spacing={1}>
+      <Grid container spacing={1} alignItems="center">
         <Grid item xs={2}>
           <Typography>Week</Typography>
         </Grid>
         {daysOfWeek.map(d => (
-          <Grid item xs={1} key={`day-name-${d}`}>
+          <Grid item xs key={`day-name-${d}`}>
             <Typography>{d}</Typography>
           </Grid>
         ))}
-        <Grid item xs={1} />
         <Grid item xs={2}>
-          <Typography>Total</Typography>
+          <Typography align="right">Total</Typography>
         </Grid>
       </Grid>
 
       {grid.map(week => {
         return (
-          <Grid container spacing={1} key={`week-${week.weekNumber}`}>
+          <Grid
+            container
+            spacing={1}
+            key={`week-${week.weekNumber}`}
+            alignItems="center"
+          >
             <Grid item xs={2}>
               <Typography>{week.weekNumber}</Typography>
             </Grid>
             {week.days &&
               week.days.map(day => (
-                <Grid item xs={1} key={`day-${day.key}`}>
+                <Grid item xs key={`day-${day.key}`}>
                   <TextField
+                    label={day.disabled ? "-" : day.date.format("DD MMM")}
                     value={day.value}
                     disabled={day.disabled}
                     onChange={handleDayChange(day.key)}
+                    type="number"
+                    InputLabelProps={{
+                      shrink: !day.disabled,
+                    }}
                   />
                 </Grid>
               ))}
-            <Grid item xs={1} />
             <Grid item xs={2}>
-              <Typography>{week.total}</Typography>
+              <Typography align="right">{week.total}</Typography>
             </Grid>
           </Grid>
         )

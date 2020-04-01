@@ -7,6 +7,7 @@ import DialogActions from "@material-ui/core/DialogActions"
 import {ConfirmDialog} from "@flock-eco/core/src/main/react/components/ConfirmDialog"
 import Typography from "@material-ui/core/Typography"
 import Snackbar from "@material-ui/core/Snackbar"
+import {HTML5_FMT} from "moment"
 import {AssignmentClient} from "../../clients/AssignmentClient"
 import {isDefined} from "../../utils/validation"
 import {ASSIGNMENT_FORM_ID, AssignmentForm} from "./AssignmentForm"
@@ -33,13 +34,19 @@ export function AssignmentDialog(props) {
     }
   }, [code, open])
 
-  const handleSubmit = value => {
+  const handleSubmit = it => {
+    const body = {
+      ...it,
+      from: it.from.format(HTML5_FMT.DATE),
+      to: it.to && it.to.format(HTML5_FMT.DATE),
+      personCode: person.code,
+    }
     if (code) {
-      AssignmentClient.put(code, {...value, personCode: person.code})
+      AssignmentClient.put(code, body)
         .then(() => onClose && onClose())
         .catch(err => setMessage(err.message))
     } else {
-      AssignmentClient.post({...value, personCode: person.code})
+      AssignmentClient.post(body)
         .then(() => onClose && onClose())
         .catch(err => setMessage(err.message))
     }

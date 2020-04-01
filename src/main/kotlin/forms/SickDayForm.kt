@@ -19,6 +19,8 @@ data class SickDayForm(
 
     override val hours: Int,
     override val days: List<Int>,
+
+    val description: String? = null,
     val personCode: String
 
-): DayForm
+) : DayForm
