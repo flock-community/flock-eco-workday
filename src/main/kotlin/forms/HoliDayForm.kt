@@ -27,4 +27,4 @@ data class HoliDayForm(
 
     val personCode: String
 
-): DayForm
+) : DayForm

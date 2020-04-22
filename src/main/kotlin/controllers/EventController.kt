@@ -38,7 +38,7 @@ class EventController(
         .toResponse()
 
     @GetMapping("/{code}")
-    //@PreAuthorize("hasAuthority('EventAuthority.READ')")
+    // @PreAuthorize("hasAuthority('EventAuthority.READ')")
     fun findByCode(
         @PathVariable code: String,
         authentication: Authentication?
@@ -48,7 +48,7 @@ class EventController(
         .toResponse()
 
     @GetMapping("/{code}/ratings")
-    //@PreAuthorize("hasAuthority('EventAuthority.READ')")
+    // @PreAuthorize("hasAuthority('EventAuthority.READ')")
     fun findEventRatings(
         @PathVariable code: String,
         authentication: Authentication?
@@ -59,7 +59,7 @@ class EventController(
         .toResponse()
 
     @PostMapping("/{code}/ratings")
-    //@PreAuthorize("hasAuthority('EventAuthority.WRITE')")
+    // @PreAuthorize("hasAuthority('EventAuthority.WRITE')")
     fun postRating(
         @PathVariable code: String,
         @RequestBody form: EventRatingForm,
@@ -101,7 +101,7 @@ class EventController(
         .toResponse()
 
     @DeleteMapping("/{eventCode}/ratings/{personCode}")
-    //@PreAuthorize("hasAuthority('EventAuthority.WRITE')")
+    // @PreAuthorize("hasAuthority('EventAuthority.WRITE')")
     fun deleteRatings(
         @PathVariable eventCode: String,
         @PathVariable personCode: String,

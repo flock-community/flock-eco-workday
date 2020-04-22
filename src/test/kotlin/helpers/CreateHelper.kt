@@ -21,9 +21,9 @@ import community.flock.eco.workday.services.HoliDayService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.SickDayService
 import community.flock.eco.workday.services.WorkDayService
-import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.util.UUID
+import org.springframework.stereotype.Component
 
 @Component
 class CreateHelper(
@@ -107,11 +107,13 @@ class CreateHelper(
         sickDayService.create(this)
     } ?: error("Cannot create sick day contract")
 
-    fun createWorkDay(assignment: Assignment,
-                      from: LocalDate,
-                      to: LocalDate,
-                      hours: Int = 40,
-                      days: List<Int>? = null) = WorkDayForm(
+    fun createWorkDay(
+        assignment: Assignment,
+        from: LocalDate,
+        to: LocalDate,
+        hours: Int = 40,
+        days: List<Int>? = null
+    ) = WorkDayForm(
         from = from,
         to = to,
         assignmentCode = assignment.code,

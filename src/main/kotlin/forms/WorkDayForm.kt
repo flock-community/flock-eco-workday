@@ -21,4 +21,4 @@ data class WorkDayForm(
     override val days: List<Int>? = null,
     val assignmentCode: String
 
-): DayForm
+) : DayForm

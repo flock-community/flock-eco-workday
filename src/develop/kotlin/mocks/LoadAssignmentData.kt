@@ -26,7 +26,7 @@ class LoadAssignmentData(
         create("ernie@sesam.straat", "client_d", "Junior software engineer", 85.0, now.minusMonths(1))
     }
 
-    private final fun create(email: String, client: String, role: String, hourlyRate:Double, from: LocalDate, to: LocalDate? = null) = Assignment(
+    private final fun create(email: String, client: String, role: String, hourlyRate: Double, from: LocalDate, to: LocalDate? = null) = Assignment(
         from = from,
         to = to,
         person = loadPersonData.findPersonByUserEmail(email),

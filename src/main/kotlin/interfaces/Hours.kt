@@ -4,4 +4,3 @@ interface Hours {
     val hours: Int
     val days: List<Int>?
 }
-

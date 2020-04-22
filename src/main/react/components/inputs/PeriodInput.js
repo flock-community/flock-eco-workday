@@ -95,7 +95,7 @@ export function PeriodInput({value, onChange}) {
     if (value) {
       const days = calcDays(from, to, state)
       setState(days)
-      onChange(Object.keys(days).map(key => days[key]))
+      if (onChange) onChange(Object.keys(days).map(key => days[key]))
     }
   }, [value.from, value.to])
 

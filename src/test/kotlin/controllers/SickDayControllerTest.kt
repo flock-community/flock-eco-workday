@@ -9,6 +9,7 @@ import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.forms.SickDayForm
+import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.repository.SickdayRepository
 import community.flock.eco.workday.services.PersonService
@@ -18,12 +19,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.http.MediaType.APPLICATION_JSON_UTF8
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
@@ -38,7 +39,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
 @AutoConfigureMockMvc
-@ActiveProfiles(profiles = ["test"])
+@AutoConfigureTestDatabase
+@Import(CreateHelper::class)
 class SickDayControllerTest {
 
     private val baseUrl: String = "/api/sickdays"
@@ -102,7 +104,7 @@ class SickDayControllerTest {
             .with(user)
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(APPLICATION_JSON))
     }
 
     @Test
@@ -113,7 +115,7 @@ class SickDayControllerTest {
             .with(user)
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(APPLICATION_JSON))
     }
 
     @Test
@@ -215,7 +217,7 @@ class SickDayControllerTest {
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
         .andExpect(status().isOk)
-        .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+        .andExpect(content().contentType(APPLICATION_JSON))
         .andExpect(jsonPath("\$.hours").value(sickDayForm.hours))
         .andExpect(jsonPath("\$.personCode").exists())
         .andExpect(jsonPath("\$.personCode").isNotEmpty)
@@ -233,7 +235,7 @@ class SickDayControllerTest {
             .with(user)
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.hours").isNumber)
             .andExpect(jsonPath("\$.hours").value(sickDayForm.hours))
             .andExpect(jsonPath("\$.personCode").exists())
@@ -251,7 +253,7 @@ class SickDayControllerTest {
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
         .andExpect(status().isOk)
-        .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+        .andExpect(content().contentType(APPLICATION_JSON))
         .andExpect(jsonPath("\$.hours").value(sickDayForm.hours))
         .andExpect(jsonPath("\$.personCode").exists())
         .andExpect(jsonPath("\$.personCode").isNotEmpty)

@@ -25,4 +25,4 @@ data class EventForm(
 
     val personCodes: List<String>
 
-): DayForm
+) : DayForm

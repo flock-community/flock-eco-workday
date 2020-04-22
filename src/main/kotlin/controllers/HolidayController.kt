@@ -25,8 +25,8 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @RequestMapping("/api/holidays")
 class HolidayController(
-        private val service: HoliDayService,
-        private val personService: PersonService
+    private val service: HoliDayService,
+    private val personService: PersonService
 ) {
     @GetMapping(params = ["personCode"])
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")

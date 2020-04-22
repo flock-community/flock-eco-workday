@@ -10,15 +10,14 @@ import java.time.LocalDate
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.http.MediaType.APPLICATION_JSON_UTF8
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -28,7 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
 @AutoConfigureMockMvc
-@ActiveProfiles(profiles = ["test"])
+@AutoConfigureTestDatabase
 @Import(CreateHelper::class)
 class WorkDayControllerTest {
 
@@ -69,7 +68,7 @@ class WorkDayControllerTest {
             .with(user(UserSecurity(user)))
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(APPLICATION_JSON))
     }
 
     class UserSecurity(val user: User) : UserDetails {
