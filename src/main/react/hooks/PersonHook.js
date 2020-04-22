@@ -2,7 +2,13 @@ import {useEffect, useState} from "react"
 import {PersonClient} from "../clients/PersonClient"
 import {useLoginStatus} from "./StatusHook"
 
-let store
+let store = null
+const listeners = []
+
+function update(it) {
+  store = it
+  listeners.forEach(func => func(it))
+}
 
 export function usePerson() {
   const status = useLoginStatus()
@@ -10,22 +16,20 @@ export function usePerson() {
   const [state, setState] = useState(store)
 
   useEffect(() => {
-    if (store === undefined && status && status.loggedIn) {
-      store = null
-      PersonClient.me().then(it => {
-        store = it
-        setState(store)
-      })
-    } else {
-      setState(store)
+    const listener = it => setState(it)
+    if (store === null && listeners.length === 0) {
+      if (status && status.loggedIn) {
+        PersonClient.me().then(update)
+      }
+    }
+    listeners.push(listener)
+    return () => {
+      listeners.filter(it => it !== listener)
     }
   }, [status])
 
   const handlePerson = personCode => {
-    PersonClient.get(personCode).then(it => {
-      store = it
-      setState(store)
-    })
+    PersonClient.get(personCode).then(update)
   }
 
   return [state, handlePerson]
