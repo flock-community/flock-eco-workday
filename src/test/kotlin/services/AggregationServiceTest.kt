@@ -101,7 +101,7 @@ class AggregationServiceTest {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
 
-        dataHelper.createContractData()
+        dataHelper.createContractExternalData()
         val res = aggregationService.costPerMonth(from, to)
 
         assertEquals(12, res.size)
@@ -114,7 +114,7 @@ class AggregationServiceTest {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
 
-        dataHelper.createContractData()
+        dataHelper.createContractExternalData()
         dataHelper.createAssignmentData()
         dataHelper.createSickDayData()
         dataHelper.createHoliDayData()
@@ -132,7 +132,8 @@ class AggregationServiceTest {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
 
-        dataHelper.createContractData()
+        dataHelper.createContractExternalData()
+        dataHelper.createContractInternalData()
         dataHelper.createAssignmentData()
         dataHelper.createSickDayData()
         dataHelper.createHoliDayData()
@@ -143,6 +144,8 @@ class AggregationServiceTest {
             .totalPerMonth(from, to)
 
         assertNotNull(res[0]["actualRevenue"])
+        assertEquals("8000.0000000000", res[1]["actualCostContractInternal"].toString())
+        assertEquals("0", res[1]["actualCostContractExternal"].toString())
     }
 
     @Test

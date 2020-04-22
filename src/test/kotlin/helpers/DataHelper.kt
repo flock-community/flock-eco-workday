@@ -40,7 +40,7 @@ class DataHelper(
         return res
     }
 
-    fun createContractData(): MutableMap<String, Contract> {
+    fun createContractExternalData(): MutableMap<String, Contract> {
 
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2021, 12, 31)
@@ -61,6 +61,22 @@ class DataHelper(
         res["ex1"] = createHelper.createContractExternal(person1, to.plusMonths(1), to.minusMonths(3))
         res["ex2"] = createHelper.createContractExternal(person2, from.minusMonths(3), from.minusMonths(1))
         res["ex3"] = createHelper.createContractExternal(person1, to.plusMonths(1), null)
+
+        return res
+    }
+
+    fun createContractInternalData(): MutableMap<String, Contract> {
+
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2021, 12, 31)
+
+        val person1 = createHelper.createPerson()
+        val person2 = createHelper.createPerson()
+
+        val res = mutableMapOf<String, Contract>()
+        // In range
+        res["in1"] = createHelper.createContractInternal(person1, from, to)
+        res["in2"] = createHelper.createContractInternal(person2, from, null)
 
         return res
     }
