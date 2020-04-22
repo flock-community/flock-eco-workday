@@ -6,7 +6,7 @@
     <parent>
         <artifactId>flock-eco-application-parent</artifactId>
         <groupId>com.github.flock-community.flock-eco</groupId>
-        <version>1.7.11</version>
+        <version>1.7.16</version>
     </parent>
 
     <groupId>flock.community.eco.workday</groupId>
@@ -17,13 +17,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <google.datastore.version>1.28.0</google.datastore.version>
-        <google.appengine.version>1.9.77</google.appengine.version>
-        <google.store.version>1.28.0</google.store.version>
-        <!-- installed node/npm version: lts/carbon -->
-        <node.version>v8.16.2</node.version>
-        <npm.version>6.4.1</npm.version>
-        <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -39,6 +32,10 @@
         </dependency>
 
         <!-- Spring boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -94,15 +91,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <archiveClasses>true</archiveClasses>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -144,11 +132,9 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>${build.helper.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>add-test-source</id>
@@ -165,56 +151,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>ktlint</id>
-                        <phase>verify</phase>
-                        <configuration>
-                            <target name="ktlint">
-                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
-                                      classname="com.pinterest.ktlint.Main" classpathref="maven.plugin.classpath">
-                                    <arg value="--reporter=plain?group_by_file"/>
-                                    <arg value="--reporter=checkstyle,output=${project.basedir}/ktlint.xml"/>
-                                    <arg value="--color"/>
-                                    <arg value="src/**/*.kt"/>
-                                    <!-- see https://github.com/pinterest/ktlint#usage for more -->
-                                </java>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>ktlint-format</id>
-                        <configuration>
-                            <target name="ktlint">
-                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
-                                      classname="com.pinterest.ktlint.Main" classpathref="maven.plugin.classpath">
-                                    <arg value="-F"/>
-                                    <arg value="--color"/>
-                                    <arg value="src/**/*.kt"/>
-                                </java>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.pinterest</groupId>
-                        <artifactId>ktlint</artifactId>
-                        <version>0.35.0</version>
-                    </dependency>
-                    <!-- additional 3rd party ruleset(s) can be specified here -->
-                </dependencies>
-            </plugin>
-            <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>2.1.0</version>
@@ -226,6 +162,37 @@
                         <mainClass>community.flock.eco.workday.ApplicationKt</mainClass>
                     </container>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>npm ci</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>ci</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -260,7 +227,8 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.directory}/appengine-staging/static</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/appengine-staging/static
+                                    </outputDirectory>
                                     <resources>
                                         <resource>
                                             <directory>${project.build.outputDirectory}/static</directory>
@@ -275,7 +243,8 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.directory}/appengine-staging/repository</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/appengine-staging/repository
+                                    </outputDirectory>
                                     <resources>
                                         <resource>
                                             <directory>${project.build.directory}/thin/root/repository</directory>
@@ -288,114 +257,6 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>frontend</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.github.eirslett</groupId>
-                        <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>install node and npm</id>
-                                <goals>
-                                    <goal>install-node-and-npm</goal>
-                                </goals>
-                                <configuration>
-                                    <nodeVersion>${node.version}</nodeVersion>
-                                    <npmVersion>${npm.version}</npmVersion>
-                                    <installDirectory>${project.build.directory}</installDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>npm ci</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <arguments>ci</arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>npm build</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <arguments>run build</arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>npm test</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <phase>test</phase>
-                                <configuration>
-                                    <arguments>test</arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>npm lint</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <phase>verify</phase>
-                                <configuration>
-                                    <arguments>run lint</arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>develop</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>3.0.0</version>
-                        <executions>
-                            <execution>
-                                <id>add-source</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>add-source</goal>
-                                </goals>
-                                <configuration>
-                                    <sources>
-                                        <source>${basedir}/src/develop/kotlin</source>
-                                    </sources>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>add-resource</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>add-resource</goal>
-                                </goals>
-                                <configuration>
-                                    <resources>
-                                        <resource>
-                                            <directory>${basedir}/src/develop/resources</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
     </profiles>
 
     <repositories>
@@ -403,14 +264,6 @@
             <id>bintray-flock-community</id>
             <name>bintray</name>
             <url>https://dl.bintray.com/flock-community/flock-maven/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>http://repo.spring.io/milestone</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>

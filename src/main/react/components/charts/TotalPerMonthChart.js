@@ -56,7 +56,12 @@ export function TotalPerMonthChart({year}) {
       }))
       .map(it => ({
         ...it,
-        margin: Math.abs(it.actualRevenue - it.actualCost),
+        margin: it.actualRevenue - it.actualCost,
+      }))
+      .map(it => ({
+        ...it,
+        profit: it.margin > 0 ? it.margin : 0,
+        loss: it.margin < 0 ? Math.abs(it.margin) : 0,
       }))
 
   return (
@@ -67,7 +72,10 @@ export function TotalPerMonthChart({year}) {
         <YAxis />
         <Tooltip formatter={value => new Intl.NumberFormat("en").format(value)} />
         <Legend />
+
         <Bar stackId="revenue" dataKey="actualRevenue" fill="#1de8b5" />
+        <Bar stackId="revenue" dataKey="loss" fill="red" />
+
         <Bar stackId="cost" dataKey="actualCostContractExternal" fill="#3f51b5" />
         <Bar stackId="cost" dataKey="actualCostContractInternal" fill="#3f51b5" />
         <Bar stackId="cost" dataKey="actualCostContractInternalTax" fill="#3f51b5" />
@@ -94,7 +102,7 @@ export function TotalPerMonthChart({year}) {
         />
         <Bar stackId="cost" dataKey="actualCostContractManagement" fill="#3f51b5" />
         <Bar stackId="cost" dataKey="actualCostContractService" fill="#3f51b5" />
-        <Bar stackId="cost" dataKey="margin" fill="gray" />
+        <Bar stackId="cost" dataKey="profit" fill="lightgreen" />
       </BarChart>
     </ResponsiveContainer>
   )
