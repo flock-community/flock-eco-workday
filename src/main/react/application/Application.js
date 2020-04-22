@@ -1,10 +1,11 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 
 import {HashRouter as Router, Route} from "react-router-dom"
 import {UserFeature} from "@flock-eco/feature-user/src/main/react/user/UserFeature"
 import {CircularProgress, makeStyles} from "@material-ui/core"
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme"
 import ThemeProvider from "@material-ui/styles/ThemeProvider"
+import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {HolidayFeature} from "../features/holiday/HolidayFeature"
 import {ApplicationLayout} from "./ApplicationLayout"
 import {ApplicationDrawer} from "./ApplicationDrawer"
@@ -48,6 +49,12 @@ export const Application = () => {
   const status = useLoginStatus()
   const user = useUserMe()
   const [openDrawer, setOpenDrawer] = useState(false)
+
+  useEffect(() => {
+    if (status) {
+      UserAuthorityUtil.setAuthorities(status.authorities)
+    }
+  }, [status])
 
   function handleDrawerClose() {
     setOpenDrawer(false)

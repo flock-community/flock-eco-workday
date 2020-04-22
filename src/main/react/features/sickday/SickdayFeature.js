@@ -61,7 +61,12 @@ export function SickdayFeature() {
     <div className={classes.root}>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          {isSuperUser() && <PersonSelector onChange={handlePersonChange} />}
+          {isSuperUser() && (
+            <PersonSelector
+              value={person && person.code}
+              onChange={handlePersonChange}
+            />
+          )}
         </Grid>
         <Grid item xs={12}>
           <SickdayList
