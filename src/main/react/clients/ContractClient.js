@@ -10,8 +10,8 @@ const internalize = it => ({
   to: it.to && moment(it.to, "YYYY-MM-DD"),
 })
 
-const resourceClient = ResourceClient(path)
-const pageableClient = PageableClient(path)
+const resourceClient = ResourceClient(path, internalize)
+const pageableClient = PageableClient(path, internalize)
 
 const post = (type, item) => {
   const opts = {

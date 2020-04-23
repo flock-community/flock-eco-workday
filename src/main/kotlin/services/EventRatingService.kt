@@ -35,5 +35,4 @@ class EventRatingService(
 
     @Transactional
     fun deleteByEventCodeAndPersonCode(eventCode: String, personCode: String) = eventRatingRepository.deleteByEventCodeAndPersonCode(eventCode, personCode)
-
 }

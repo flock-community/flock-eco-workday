@@ -5,9 +5,9 @@ import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.model.EventRating
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.EventRatingService
+import java.time.LocalDate
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
-import java.time.LocalDate
 
 @Component
 @Profile("local")
@@ -40,7 +40,5 @@ class LoadEventRatingData(
             .let {
                 data.addAll(it)
             }
-
     }
-
 }

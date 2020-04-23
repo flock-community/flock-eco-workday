@@ -2,9 +2,9 @@ package community.flock.eco.workday.mocks
 
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.services.HoliDayService
+import java.time.LocalDate
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
-import java.time.LocalDate
 
 @Component
 @Profile("local")

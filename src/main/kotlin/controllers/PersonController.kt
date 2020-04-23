@@ -7,6 +7,7 @@ import community.flock.eco.workday.authorities.PersonAuthority
 import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.PersonService
+import java.security.Principal
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import java.security.Principal
 
 @RestController
 @RequestMapping("/api/persons")

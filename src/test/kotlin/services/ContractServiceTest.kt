@@ -34,7 +34,7 @@ class ContractServiceTest {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2021, 12, 31)
 
-        val data = dataHelper.createContractData()
+        val data = dataHelper.createContractExternalData()
         val res = contractService.findAllActive(from, to)
 
         assertEquals(6, res.size)

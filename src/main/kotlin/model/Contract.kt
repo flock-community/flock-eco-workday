@@ -27,4 +27,4 @@ abstract class Contract(
     @Enumerated(EnumType.STRING)
     val type: ContractType
 
-) :  Period, AbstractCodeEntity(id, code)
+) : Period, AbstractCodeEntity(id, code)

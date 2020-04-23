@@ -1,4 +1,4 @@
-export function PageableClient(path) {
+export function PageableClient(path, internalize) {
   const findAllByPage = ({page, size, sort}) => {
     const opts = {
       method: "GET",
@@ -9,10 +9,13 @@ export function PageableClient(path) {
       .map(key => `${key}=${params[key]}`)
       .join("&")
     return fetch(`${path}?${query}`, opts).then(res =>
-      res.json().then(json => ({
-        total: res.headers.get("x-total"),
-        list: json,
-      }))
+      res
+        .json()
+        .then(json => ({
+          total: res.headers.get("x-total"),
+          list: json,
+        }))
+        .then(it => (internalize ? it.map(internalize) : it))
     )
   }
 

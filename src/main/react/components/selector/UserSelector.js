@@ -38,7 +38,7 @@ export function UserSelector(props) {
   const selectInput = (
     <FormControl fullWidth>
       <InputLabel shrink>{label}</InputLabel>
-      <Select value={selected} displayEmpty onChange={handleChange}>
+      <Select value={selected || ""} displayEmpty onChange={handleChange}>
         <MenuItem value="">
           <em>None</em>
         </MenuItem>

@@ -36,7 +36,9 @@ class WorkdayController(
     ): ResponseEntity<Iterable<WorkDay>> = when {
         authentication.isAdmin() -> service.findAllByPersonPersonCode(personCode)
         else -> service.findAllByPersonUserCode(authentication.name)
-    }.toResponse()
+    }
+        .sortedByDescending{ it.from }
+        .toResponse()
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")

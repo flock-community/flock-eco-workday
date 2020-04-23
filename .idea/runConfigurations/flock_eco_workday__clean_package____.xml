@@ -18,6 +18,7 @@
           <option name="pomFileName" />
           <option name="profilesMap">
             <map>
+              <entry key="frontend" value="true" />
               <entry key="develop" value="true" />
               <entry key="mocks" value="true" />
             </map>

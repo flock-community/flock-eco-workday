@@ -4,7 +4,7 @@ import java.time.temporal.ChronoUnit
 
 interface DayForm : Hours, Period
 
-fun <T: DayForm> T.validate(): T = apply {
+fun <T : DayForm> T.validate(): T = apply {
 
     if (this.hours < 0) {
         throw error("Hours cannot have negative value")

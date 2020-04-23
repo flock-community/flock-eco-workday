@@ -6,12 +6,15 @@ import org.springframework.stereotype.Component
 @Component
 class ApplicationConstants {
 
-    @Value("\${workday.average_sickday}")
-    lateinit var averageSickday: String
+    @Value("\${workday.average_sick_days}")
+    lateinit var averageSickDays: String
 
-    @Value("\${workday.holidays}")
-    lateinit var holidays: String
+    @Value("\${workday.average_training_days}")
+    lateinit var averageTrainingDays: String
 
-    @Value("\${workday.extradays}")
-    lateinit var extradays: String
+    @Value("\${workday.average_holi_days}")
+    lateinit var averageHoliDays: String
+
+    @Value("\${workday.average_public_days}")
+    lateinit var averagePublicDays: String
 }

@@ -1,9 +1,9 @@
 package community.flock.eco.workday.repository
 
 import community.flock.eco.workday.model.SickDay
+import java.util.Optional
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
-import java.util.Optional
 
 @Repository
 interface SickdayRepository : CrudRepository<SickDay, Long> {

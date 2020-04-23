@@ -63,10 +63,11 @@ export function PeriodForm({value, onChange}) {
   )
 
   useEffect(() => {
-    onChange({
-      dates,
-      days: Object.keys(days).map(key => days[key]),
-    })
+    if (onChange)
+      onChange({
+        dates,
+        days: Object.keys(days).map(key => days[key]),
+      })
   }, [])
 
   useEffect(() => {

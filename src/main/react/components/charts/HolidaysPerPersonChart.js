@@ -25,7 +25,7 @@ export function HolidaysPerPersonChart({year, persons}) {
     value: state[key],
   }))
 
-  const height = 50 + (data.length * 50)
+  const height = 50 + data.length * 50
   return (
     <ResponsiveContainer height={height}>
       <BarChart data={data} layout="vertical">

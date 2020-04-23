@@ -3,7 +3,7 @@
 ## Run
 
 ```bash
-mvn clean spring-boot:run -Pdevelop -Dspring.profiles.active=local
+mvn clean spring-boot:run -Pdevelop -Dspring-boot.run.profiles=local
 ```
 
 ## User
