@@ -8,13 +8,13 @@ mvn clean spring-boot:run -Pdevelop -Dspring-boot.run.profiles=local
 
 ## User
 
-| User                     | Password    |
-| ------------------------ | ----------- |
-| tommy@sesam.straat       | tommy       |
-| pino@sesam.straat        | pino        |
-| ieniemienie@sesam.straat | ieniemienie |
-| bert@sesam.straat        | bert        |
-| ernie@sesam.straat       | ernie       |
+| User                     | Password    | Role  |
+| ------------------------ | ----------- | ----- |
+| tommy@sesam.straat       | tommy       | user  |
+| pino@sesam.straat        | pino        | user  |
+| ieniemienie@sesam.straat | ieniemienie | user  |
+| bert@sesam.straat        | bert        | admin |
+| ernie@sesam.straat       | ernie       | user  |
 
 ## Linting
 

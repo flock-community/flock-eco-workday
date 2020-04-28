@@ -7,6 +7,8 @@ import java.util.UUID
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.ManyToOne
 
 @Entity
@@ -26,6 +28,9 @@ class WorkDay(
     override val days: List<Int>? = null,
 
     @ManyToOne
-    val assignment: Assignment
+    val assignment: Assignment,
+
+    @Enumerated(EnumType.STRING)
+    val status: Status
 
 ) : Day(id, code, from, to, hours, days)

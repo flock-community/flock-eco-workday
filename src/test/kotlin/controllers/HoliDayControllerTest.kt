@@ -8,7 +8,7 @@ import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.forms.PersonForm
-import community.flock.eco.workday.model.HolidayStatus
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.utils.dayFromLocalDate
 import org.junit.After
@@ -93,7 +93,7 @@ class HoliDayControllerTest {
 
         val holidayForm = HoliDayForm(
             description = "Wimbledon",
-            status = HolidayStatus.REQUESTED,
+            status = Status.REQUESTED,
             from = dayFromLocalDate(),
             to = dayFromLocalDate(2),
             days = listOf(8, 8),
@@ -127,7 +127,7 @@ class HoliDayControllerTest {
 
         val holidayForm = HoliDayForm(
             description = "Wimbledon",
-            status = HolidayStatus.REQUESTED,
+            status = Status.REQUESTED,
             from = dayFromLocalDate(),
             to = dayFromLocalDate(2),
             days = listOf(8, 8),
@@ -152,7 +152,7 @@ class HoliDayControllerTest {
 
         val holidayForm = HoliDayForm(
             description = "Wimbledon",
-            status = HolidayStatus.REQUESTED,
+            status = Status.REQUESTED,
             from = dayFromLocalDate(),
             to = dayFromLocalDate(2),
             days = listOf(8, 8),
@@ -167,7 +167,7 @@ class HoliDayControllerTest {
             .run { mapper.readTree(this) }
             .run { this.get("code").textValue() }
         /* DRY-Block */
-        holidayForm.copy(status = HolidayStatus.APPROVED)
+        holidayForm.copy(status = Status.APPROVED)
 
         put(holidayForm, holidayCode)
     }
@@ -186,7 +186,7 @@ class HoliDayControllerTest {
 
         val holidayForm = HoliDayForm(
             description = "Wimbledon",
-            status = HolidayStatus.REQUESTED,
+            status = Status.REQUESTED,
             from = dayFromLocalDate(),
             to = dayFromLocalDate(2),
             days = listOf(8, 8),

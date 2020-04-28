@@ -1,6 +1,6 @@
 package community.flock.eco.workday.model
 
-enum class HolidayStatus {
+enum class Status {
     REQUESTED,
     APPROVED,
     REJECTED

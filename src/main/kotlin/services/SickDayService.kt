@@ -5,11 +5,11 @@ import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.repository.SickdayRepository
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.EntityManager
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class SickDayService(
@@ -71,7 +71,8 @@ class SickDayService(
             person = person,
             hours = this.hours,
             days = this.days,
-            description = this.description
+            description = this.description,
+            status = this.status
         )
     }
 

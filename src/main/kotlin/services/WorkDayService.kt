@@ -85,7 +85,8 @@ class WorkDayService(
             to = this.to,
             assignment = assignment,
             hours = this.hours,
-            days = this.days
+            days = this.days,
+            status = this.status
         )
     }
 

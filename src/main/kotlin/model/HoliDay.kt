@@ -32,7 +32,7 @@ class HoliDay(
     val description: String,
 
     @Enumerated(EnumType.STRING)
-    val status: HolidayStatus,
+    val status: Status,
 
     @ManyToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
