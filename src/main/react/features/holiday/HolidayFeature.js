@@ -36,7 +36,7 @@ export function HolidayFeature() {
     setOpen(true)
   }
 
-  function handleRowClick(it) {
+  function handleClickRow(it) {
     return () => {
       setCode(it.code)
       setOpen(true)
@@ -62,7 +62,7 @@ export function HolidayFeature() {
           <HolidayList
             personCode={person && person.code}
             refresh={refresh}
-            onRowClick={handleRowClick}
+            onClickRow={handleClickRow}
           />
         </Grid>
       </Grid>

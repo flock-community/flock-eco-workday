@@ -1,6 +1,6 @@
 package community.flock.eco.workday.model
 
-enum class SickdayStatus {
+enum class SickDayStatus {
     SICK,
     HEALTHY
 }

@@ -19,7 +19,7 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export function SickdayDialog({open, code, personCode, onComplete}) {
+export function SickDayDialog({open, code, personCode, onComplete}) {
   const classes = useStyles()
 
   const [openDelete, setOpenDelete] = useState(false)
@@ -95,7 +95,7 @@ export function SickdayDialog({open, code, personCode, onComplete}) {
   )
 }
 
-SickdayDialog.propTypes = {
+SickDayDialog.propTypes = {
   open: PropTypes.bool,
   code: PropTypes.string,
   personCode: PropTypes.string,
