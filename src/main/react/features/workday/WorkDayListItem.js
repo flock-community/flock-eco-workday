@@ -20,7 +20,7 @@ export function WorkDayListItem({value, onClick}) {
     <Card onClick={onClick}>
       <CardContent className={classes.root}>
         <Typography variant="h6">
-          {value.description ? value.description : "empty"}
+          {value.assignment.client.name} - {value.assignment.role}
         </Typography>
         <Typography>
           Period: {value.from.format("DD-MM-YYYY")} - {value.to.format("DD-MM-YYYY")}

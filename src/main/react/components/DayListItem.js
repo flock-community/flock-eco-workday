@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export function SickDayListItem({value, onClick}) {
+export function DayListItem({value, onClick}) {
   const classes = useStyles()
 
   return (
@@ -33,7 +33,7 @@ export function SickDayListItem({value, onClick}) {
   )
 }
 
-SickDayListItem.propTypes = {
+DayListItem.propTypes = {
   value: PropTypes.object,
   onClick: PropTypes.func,
 }

@@ -13,9 +13,10 @@ export function WorkDayList(props) {
   useEffect(() => {
     WorkDayClient.findAllByPersonCode(personCode).then(res => setState(res))
   }, [personCode, refresh])
+
   function renderItem(item, key) {
     return (
-      <Grid item xs={12} key={`workday-list-item-${key}`}>
+      <Grid key={`workday-list-item-${key}`} item xs={12}>
         <WorkDayListItem value={item} onClick={() => onClickRow && onClickRow(item)} />
       </Grid>
     )
