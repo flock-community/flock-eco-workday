@@ -30,6 +30,7 @@ export function SickDayDialog({open, code, personCode, onComplete}) {
       to: it.to.format(HTML5_FMT.DATE),
       days: it.days,
       description: it.description,
+      status: it.status,
       hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
       personCode,
     }

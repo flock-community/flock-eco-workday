@@ -2,6 +2,7 @@ import React, {useContext, useState} from "react"
 
 import {makeStyles} from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
+import {Container} from "@material-ui/core"
 import {SickDayDialog} from "./SickDayDialog"
 import {SickDayList} from "./SickDayList"
 import {PersonSelector} from "../../components/selector"
@@ -12,11 +13,6 @@ import {usePerson} from "../../hooks/PersonHook"
 const useStyles = makeStyles({
   root: {
     padding: 20,
-  },
-  fab: {
-    position: "absolute",
-    bottom: "25px",
-    right: "25px",
   },
 })
 
@@ -58,7 +54,7 @@ export function SickDayFeature() {
   }
 
   return (
-    <div className={classes.root}>
+    <Container className={classes.root}>
       <Grid container spacing={1}>
         <Grid item xs={12}>
           {isSuperUser() && (
@@ -85,7 +81,7 @@ export function SickDayFeature() {
       />
 
       <AddActionFab color="primary" onClick={handleClickAdd} />
-    </div>
+    </Container>
   )
 }
 
