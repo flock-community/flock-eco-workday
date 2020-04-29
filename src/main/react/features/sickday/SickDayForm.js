@@ -7,6 +7,8 @@ import Grid from "@material-ui/core/Grid"
 import {MuiPickersUtilsProvider} from "@material-ui/pickers"
 import MomentUtils from "@date-io/moment"
 import {TextField} from "formik-material-ui"
+import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
+import MenuItem from "@material-ui/core/MenuItem"
 import {SickDayClient} from "../../clients/SickDayClient"
 import {isDefined} from "../../utils/validation"
 import {DatePickerField} from "../../components/fields/DatePickerField"
@@ -17,6 +19,9 @@ export const SICKDAY_FORM_ID = "sick-day-form"
 const now = moment()
 
 const schema = Yup.object().shape({
+  status: Yup.string()
+    .required("Field required")
+    .default("REQUESTED"),
   from: Yup.date()
     .required("From date is required")
     .default(now),
@@ -37,6 +42,7 @@ export function SickDayForm({code, onSubmit}) {
           to: res.to,
           days: res.days,
           description: res.description,
+          status: res.status,
         })
       })
     } else {
@@ -69,6 +75,28 @@ export function SickDayForm({code, onSubmit}) {
               component={TextField}
             />
           </Grid>
+
+          {code && (
+            <Grid item xs={12}>
+              <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+                <Field
+                  fullWidth
+                  type="text"
+                  name="status"
+                  label="Status"
+                  select
+                  variant="standard"
+                  margin="normal"
+                  component={TextField}
+                >
+                  <MenuItem value="REQUESTED">REQUESTED</MenuItem>
+                  <MenuItem value="APPROVED">APPROVED</MenuItem>
+                  <MenuItem value="REJECTED">REJECTED</MenuItem>
+                </Field>
+              </UserAuthorityUtil>
+            </Grid>
+          )}
+
           <Grid item xs={6}>
             <DatePickerField name="from" label="From" fullWidth />
           </Grid>

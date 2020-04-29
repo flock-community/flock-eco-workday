@@ -3,6 +3,7 @@ package community.flock.eco.workday.repository
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickDay
+import community.flock.eco.workday.model.Status
 import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -51,7 +52,8 @@ class SickDayRepositoryTest {
             person = person,
             from = from,
             to = LocalDate.of(1970, 1, 6),
-            days = listOf(8, 8, 8, 8, 8)
+            days = listOf(8, 8, 8, 8, 8),
+            status = Status.REQUESTED
         )
 
         entity.persist(sickDay)
@@ -94,7 +96,8 @@ class SickDayRepositoryTest {
                     person = person,
                     from = from,
                     to = LocalDate.of(1970, 1, i),
-                    days = listOf(8, 8, 8, 8, 8)
+                    days = listOf(8, 8, 8, 8, 8),
+                    status = Status.REQUESTED
                 )
             )
         }

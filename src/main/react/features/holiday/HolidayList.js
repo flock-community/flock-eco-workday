@@ -4,10 +4,10 @@ import Grid from "@material-ui/core/Grid"
 import Card from "@material-ui/core/Card"
 import {CardContent} from "@material-ui/core"
 import Typography from "@material-ui/core/Typography"
-import {HolidayListItem} from "./HolidayListItem"
 import {HolidayClient} from "../../clients/HolidayClient"
+import {DayListItem} from "../../components/DayListItem"
 
-export function HolidayList({personCode, refresh, onRowClick}) {
+export function HolidayList({personCode, refresh, onClickRow}) {
   const [list, setList] = useState([])
   const [update] = useState(refresh)
 
@@ -20,7 +20,7 @@ export function HolidayList({personCode, refresh, onRowClick}) {
   function renderItem(item, key) {
     return (
       <Grid item xs={12} key={`holiday-list-item-${key}`}>
-        <HolidayListItem value={item} onClick={onRowClick(item)} />
+        <DayListItem value={item} onClick={onClickRow(item)} />
       </Grid>
     )
   }
@@ -45,5 +45,5 @@ export function HolidayList({personCode, refresh, onRowClick}) {
 HolidayList.propTypes = {
   personCode: PropTypes.string,
   refresh: PropTypes.bool,
-  onRowClick: PropTypes.func,
+  onClickRow: PropTypes.func,
 }

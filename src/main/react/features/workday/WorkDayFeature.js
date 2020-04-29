@@ -14,11 +14,6 @@ const useStyles = makeStyles({
   root: {
     marginTop: 20,
   },
-  fab: {
-    position: "absolute",
-    bottom: "25px",
-    right: "25px",
-  },
 })
 
 /**

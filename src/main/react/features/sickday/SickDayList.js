@@ -4,9 +4,9 @@ import {Card, Typography} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import Grid from "@material-ui/core/Grid"
 import {SickDayClient} from "../../clients/SickDayClient"
-import {isDefined} from "../../utils/validation"
+import {DayListItem} from "../../components/DayListItem"
 
-export function SickdayList(props) {
+export function SickDayList(props) {
   const {personCode, refresh, onClickRow} = props
   const [list, setList] = useState([])
 
@@ -14,28 +14,10 @@ export function SickdayList(props) {
     SickDayClient.findAllByPersonCode(personCode).then(res => setList(res))
   }, [personCode, refresh])
 
-  function handleClickRow(item) {
-    return () => {
-      if (isDefined(onClickRow)) onClickRow(item)
-    }
-  }
-
   function renderItem(item, key) {
     return (
-      <Grid key={`sick-day-list-item-${key}`} item xs={12}>
-        <Card onClick={handleClickRow(item)}>
-          <CardContent>
-            {item.description && (
-              <Typography variant="h6">{item.description}</Typography>
-            )}
-            <Typography>
-              Period: {item.from.format("DD-MM-YYYY")} - {item.to.format("DD-MM-YYYY")}
-            </Typography>
-            <Typography>Aantal dagen: {item.to.diff(item.from, "days") + 1}</Typography>
-            <Typography>Aantal uren: {item.hours}</Typography>
-            <Typography>{item.status}</Typography>
-          </CardContent>
-        </Card>
+      <Grid item xs={12} key={`sickday-list-item-${key}`}>
+        <DayListItem value={item} onClick={() => onClickRow && onClickRow(item)} />
       </Grid>
     )
   }
@@ -57,7 +39,7 @@ export function SickdayList(props) {
   )
 }
 
-SickdayList.propTypes = {
+SickDayList.propTypes = {
   refresh: PropTypes.bool,
   personCode: PropTypes.string,
   onClickRow: PropTypes.func,

@@ -32,6 +32,7 @@ export function WorkDayDialog({open, code, onComplete}) {
         ? it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0)
         : it.hours,
       assignmentCode: it.assignmentCode,
+      status: it.status,
     }
     if (code) {
       WorkDayClient.put(code, body).then(res => {

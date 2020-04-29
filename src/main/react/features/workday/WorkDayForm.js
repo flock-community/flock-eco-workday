@@ -9,6 +9,8 @@ import Switch from "@material-ui/core/Switch"
 import {Typography} from "@material-ui/core"
 import {TextField} from "formik-material-ui"
 import * as PropTypes from "prop-types"
+import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
+import MenuItem from "@material-ui/core/MenuItem"
 import {PeriodInputField} from "../../components/fields/PeriodInputField"
 import {isDefined} from "../../utils/validation"
 import {usePerson} from "../../hooks/PersonHook"
@@ -21,6 +23,9 @@ export const WORKDAY_FORM_ID = "work-day-form"
 const now = moment()
 
 const schema = Yup.object().shape({
+  status: Yup.string()
+    .required("Field required")
+    .default("REQUESTED"),
   assignmentCode: Yup.string()
     .required("Assignment is required")
     .default(""),
@@ -52,6 +57,7 @@ export function WorkDayForm({code, onSubmit}) {
           to: res.to,
           days: res.days,
           hours: res.hours,
+          status: res.status,
         })
         setDaysSwitch(res.days.length === 0)
       })
@@ -68,6 +74,7 @@ export function WorkDayForm({code, onSubmit}) {
         to: value.to,
         days: daysSwitch ? undefined : value.days,
         hours: value.hours,
+        status: value.status,
       })
   }
 
@@ -102,6 +109,26 @@ export function WorkDayForm({code, onSubmit}) {
               personCode={person.code}
             />
           </Grid>
+          {code && (
+            <Grid item xs={12}>
+              <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+                <Field
+                  fullWidth
+                  type="text"
+                  name="status"
+                  label="Status"
+                  select
+                  variant="standard"
+                  margin="normal"
+                  component={TextField}
+                >
+                  <MenuItem value="REQUESTED">REQUESTED</MenuItem>
+                  <MenuItem value="APPROVED">APPROVED</MenuItem>
+                  <MenuItem value="REJECTED">REJECTED</MenuItem>
+                </Field>
+              </UserAuthorityUtil>
+            </Grid>
+          )}
           <Grid item xs={6}>
             <DatePickerField name="from" label="From" fullWidth />
           </Grid>

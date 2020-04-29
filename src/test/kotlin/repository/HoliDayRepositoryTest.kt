@@ -3,7 +3,7 @@ package community.flock.eco.workday.repository
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.model.HoliDay
-import community.flock.eco.workday.model.HolidayStatus
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.utils.dayFromLocalDate
 import org.assertj.core.api.Assertions.assertThat
@@ -68,7 +68,7 @@ class HoliDayRepositoryTest {
             holiDays.add(
                 createAndPersist(HoliDay(
                     description = "",
-                    status = HolidayStatus.REQUESTED,
+                    status = Status.REQUESTED,
                     hours = 42,
                     from = dayFromLocalDate(),
                     to = dayFromLocalDate(1),

@@ -11,6 +11,8 @@ import java.util.UUID
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.ManyToOne
 
 @Entity
@@ -30,6 +32,9 @@ class SickDay(
     override val days: List<Int>? = null,
 
     val description: String? = null,
+
+    @Enumerated(EnumType.STRING)
+    val status: Status,
 
     @ManyToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")

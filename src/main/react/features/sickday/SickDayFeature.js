@@ -2,8 +2,9 @@ import React, {useContext, useState} from "react"
 
 import {makeStyles} from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
-import {SickdayDialog} from "./SickdayDialog"
-import {SickdayList} from "./SickdayList"
+import {Container} from "@material-ui/core"
+import {SickDayDialog} from "./SickDayDialog"
+import {SickDayList} from "./SickDayList"
 import {PersonSelector} from "../../components/selector"
 import {ApplicationContext} from "../../application/ApplicationContext"
 import {AddActionFab} from "../../components/FabButtons"
@@ -13,17 +14,12 @@ const useStyles = makeStyles({
   root: {
     padding: 20,
   },
-  fab: {
-    position: "absolute",
-    bottom: "25px",
-    right: "25px",
-  },
 })
 
 /**
  * @return {null}
  */
-export function SickdayFeature() {
+export function SickDayFeature() {
   const classes = useStyles()
 
   const [person, setPerson] = usePerson()
@@ -58,7 +54,7 @@ export function SickdayFeature() {
   }
 
   return (
-    <div className={classes.root}>
+    <Container className={classes.root}>
       <Grid container spacing={1}>
         <Grid item xs={12}>
           {isSuperUser() && (
@@ -69,14 +65,14 @@ export function SickdayFeature() {
           )}
         </Grid>
         <Grid item xs={12}>
-          <SickdayList
+          <SickDayList
             personCode={person && person.code}
             onClickRow={handleClickRow}
             refresh={reload}
           />
         </Grid>
       </Grid>
-      <SickdayDialog
+      <SickDayDialog
         open={open}
         code={value && value.code}
         personCode={person && person.code}
@@ -85,8 +81,8 @@ export function SickdayFeature() {
       />
 
       <AddActionFab color="primary" onClick={handleClickAdd} />
-    </div>
+    </Container>
   )
 }
 
-SickdayFeature.propTypes = {}
+SickDayFeature.propTypes = {}

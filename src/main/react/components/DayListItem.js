@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export function HolidayListItem({value, onClick}) {
+export function DayListItem({value, onClick}) {
   const classes = useStyles()
 
   return (
@@ -33,7 +33,7 @@ export function HolidayListItem({value, onClick}) {
   )
 }
 
-HolidayListItem.propTypes = {
-  value: PropTypes.string,
+DayListItem.propTypes = {
+  value: PropTypes.object,
   onClick: PropTypes.func,
 }

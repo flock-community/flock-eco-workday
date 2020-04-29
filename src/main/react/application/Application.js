@@ -14,7 +14,7 @@ import {HomeFeature} from "../features/home/HomeFeature"
 import {ClientFeature} from "../features/client/ClientFeature"
 import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
 import {PersonFeature} from "../features/person/PersonFeature"
-import {SickdayFeature} from "../features/sickday/SickdayFeature"
+import {SickDayFeature} from "../features/sickday/SickDayFeature"
 import {useUserMe} from "../hooks/UserMeHook"
 import {DashboardFeature} from "../features/dashboard/DashboardFeature"
 import {ContractFeature} from "../features/contract/ContractFeature"
@@ -93,7 +93,7 @@ export const Application = () => {
           <Route path="/assignments" exact component={AssignmentFeature} />
           <Route path="/workdays" exact component={WorkDayFeature} />
           <Route path="/holidays" exact component={HolidayFeature} />
-          <Route path="/sickdays" component={SickdayFeature} />
+          <Route path="/sickdays" component={SickDayFeature} />
           <Route path="/users" exact component={UserFeature} />
           <Route path="/person" component={PersonFeature} />
           <Route path="/event" component={EventFeature} />
