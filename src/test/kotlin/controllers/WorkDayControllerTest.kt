@@ -1,12 +1,12 @@
 package community.flock.eco.workday.controllers
 
-import community.flock.eco.feature.user.model.User
+import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.authorities.WorkDayAuthority
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.helpers.CreateHelper
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.WorkDayService
-import java.time.LocalDate
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,14 +15,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDate
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
@@ -37,13 +38,16 @@ class WorkDayControllerTest {
     private lateinit var mvc: MockMvc
 
     @Autowired
+    private lateinit var mapper: ObjectMapper
+
+    @Autowired
     private lateinit var createHelper: CreateHelper
 
     @Autowired
     private lateinit var workDayService: WorkDayService
 
     val adminAuthorities = setOf(WorkDayAuthority.READ, WorkDayAuthority.WRITE, WorkDayAuthority.ADMIN)
-    val workerAuthorities = setOf(WorkDayAuthority.READ, WorkDayAuthority.WRITE)
+    val userAuthorities = setOf(WorkDayAuthority.READ, WorkDayAuthority.WRITE)
 
     @Test
     fun `admin should get all workdays from a single user`() {
@@ -65,19 +69,106 @@ class WorkDayControllerTest {
         workDayService.create(createForm)
 
         mvc.perform(get("$baseUrl?personCode=${person.code}")
-            .with(user(UserSecurity(user)))
+            .with(user(CreateHelper.UserSecurity(user)))
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
     }
 
-    class UserSecurity(val user: User) : UserDetails {
-        override fun getAuthorities() = user.authorities.map { SimpleGrantedAuthority(it) }
-        override fun isEnabled() = user.enabled
-        override fun getUsername() = user.code
-        override fun getPassword() = null
-        override fun isCredentialsNonExpired() = true
-        override fun isAccountNonExpired() = true
-        override fun isAccountNonLocked() = true
+
+    @Test
+    fun `user can only access its own workdays`() {
+
+        val user = createHelper.createUser(userAuthorities)
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 3, 31)
+        val client = createHelper.createClient()
+        val personNotlinkedToUser = createHelper.createPerson()
+        val assignment = createHelper.createAssignment(client, personNotlinkedToUser, from, to)
+
+        val createForm = WorkDayForm(
+            from = from,
+            to = to,
+            assignmentCode = assignment.code,
+            hours = 50
+        )
+
+        workDayService.create(createForm)
+
+        mvc.perform(get("$baseUrl?personCode=${personNotlinkedToUser.code}")
+            .with(user(CreateHelper.UserSecurity(user)))
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(content().string("[]"))
+    }
+
+    @Test
+    fun `should create a valid Workday via POST-method with status REQUESTED`() {
+
+        val user = createHelper.createUser(userAuthorities)
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 3, 31)
+        val client = createHelper.createClient()
+        val person = createHelper.createPerson("john", "doe", user.code)
+        val assignment = createHelper.createAssignment(client, person, from, to)
+
+
+        val createForm = WorkDayForm(
+            status = Status.REJECTED,
+            from = from,
+            to = to,
+            assignmentCode = assignment.code,
+            hours = 50
+        )
+
+        val created = workDayService.create(createForm)
+
+        mvc.perform(get("$baseUrl/${created.code}")
+            .with(user(CreateHelper.UserSecurity(user)))
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.id").exists())
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.code").exists())
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.code").isString)
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.status").value(Status.REQUESTED.toString()))
+
+    }
+
+    @Test
+    fun `should not be allowed to update status field existing holiday via PUT-Method`() {
+
+        val user = createHelper.createUser(userAuthorities)
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 3, 31)
+        val client = createHelper.createClient()
+        val person = createHelper.createPerson("john", "doe", user.code)
+        val assignment = createHelper.createAssignment(client, person, from, to)
+
+
+        val createForm = WorkDayForm(
+            status = Status.APPROVED,
+            from = from,
+            to = to,
+            assignmentCode = assignment.code,
+            hours = 50
+        )
+
+        val created = workDayService.create(createForm)
+
+        val updatedForm = createForm.copy(status = Status.APPROVED)
+
+        mvc.perform(MockMvcRequestBuilders.put("$baseUrl/${created.code}")
+            .with(user(CreateHelper.UserSecurity(user)))
+            .content(mapper.writeValueAsString(updatedForm))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.id").exists())
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.code").exists())
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.code").isString)
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.status").value(Status.REQUESTED.toString()))
     }
 }

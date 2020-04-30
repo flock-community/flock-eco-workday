@@ -1,18 +1,12 @@
 package community.flock.eco.workday.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import community.flock.eco.feature.user.forms.UserAccountPasswordForm
-import community.flock.eco.feature.user.services.UserAccountService
-import community.flock.eco.feature.user.services.UserSecurityService
-import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
+import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
-import community.flock.eco.workday.forms.PersonForm
+import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.services.PersonService
-import community.flock.eco.workday.utils.dayFromLocalDate
-import org.junit.After
-import org.junit.Before
+import community.flock.eco.workday.services.HoliDayService
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,10 +21,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delet
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDate
+import kotlin.test.assertNull
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
@@ -38,7 +33,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @AutoConfigureTestDatabase
 class HoliDayControllerTest {
     private val baseUrl: String = "/api/holidays"
-    private val email: String = "admin@reynholm-industries.co.uk"
 
     @Autowired
     private lateinit var mvc: MockMvc
@@ -47,229 +41,245 @@ class HoliDayControllerTest {
     private lateinit var mapper: ObjectMapper
 
     @Autowired
-    private lateinit var userAccountService: UserAccountService
+    private lateinit var createHelper: CreateHelper
 
     @Autowired
-    private lateinit var personService: PersonService
+    private lateinit var holiDayService: HoliDayService
 
-    @Autowired
-    private lateinit var userService: UserService
-
-    private lateinit var user: RequestPostProcessor
-
-    @Before
-    fun setup() {
-        user = UserAccountPasswordForm(
-            email = email,
-            name = "Administrator",
-            authorities = setOf(
-                "HolidayAuthority.ADMIN",
-                "HolidayAuthority.READ",
-                "HolidayAuthority.WRITE"
-            ),
-            password = "admin")
-            .run { userAccountService.createUserAccountPassword(this) }
-            .run { UserSecurityService.UserSecurityPassword(this) }
-            .run { user(this) }
-    }
-
-    @After
-    fun teardown() {
-        userAccountService.findUserAccountPasswordByUserEmail(email)
-            ?.apply { userService.delete(this.user.code) }
-    }
+    val adminAuthorities = setOf(HolidayAuthority.READ, HolidayAuthority.WRITE, HolidayAuthority.ADMIN)
+    val userAuthorities = setOf(HolidayAuthority.READ, HolidayAuthority.WRITE)
 
     @Test
     fun `should get a holiday via GET-method`() {
-        /* DRY-Block */
-        val person = PersonForm(
-            firstname = "Jen",
-            lastname = "Barber",
-            email = "jen@reynholm-industries.co.uk",
-            position = "Head of IT",
-            number = null,
-            userCode = null
-        ).run { personService.create(this)!! }
 
-        val holidayForm = HoliDayForm(
-            description = "Wimbledon",
-            status = Status.REQUESTED,
-            from = dayFromLocalDate(),
-            to = dayFromLocalDate(2),
-            days = listOf(8, 8),
-            hours = 16,
-            personCode = person.code
+        val user = createHelper.createUser(userAuthorities)
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 1, 3)
+        val days = listOf(6, 6, 6)
+        val hours = 18
+        val description = "Lucy in the sky with diamonds"
+        val status = Status.REQUESTED
+        val person = createHelper.createPerson("john", "doe", user.code)
+
+        val createForm = HoliDayForm(
+            from = from,
+            to = to,
+            days = days,
+            hours = hours,
+            personCode = person.code,
+            description = description,
+            status = status
         )
 
-        val holidayCode = post(holidayForm)
-            .andReturn()
-            .response
-            .contentAsString
-            .run { mapper.readTree(this) }
-            .run { this.get("code").textValue() }
-        /* DRY-Block */
+        val created = holiDayService.create(createForm)
 
-        get(holidayForm, holidayCode)
+        mvc.perform(get("$baseUrl/${created.code}")
+            .with(user(CreateHelper.UserSecurity(user)))
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(jsonPath("\$.id").exists())
+            .andExpect(jsonPath("\$.code").exists())
+            .andExpect(jsonPath("\$.code").isString)
+            .andExpect(jsonPath("\$.description").value(description))
+            .andExpect(jsonPath("\$.status").value(status.toString()))
+            .andExpect(jsonPath("\$.hours").value(hours))
+            .andExpect(jsonPath("\$.personCode").value(person.code))
     }
 
     @Test
-    fun `should create a valid holiday via POST-method`() {
-        /* DRY-Block */
-        val person = PersonForm(
-            firstname = "Jen",
-            lastname = "Barber",
-            email = "jen@reynholm-industries.co.uk",
-            position = "Head of IT",
-            number = null,
-            userCode = null
-        ).run { personService.create(this)!! }
-        /* DRY-Block */
+    fun `should create a valid holiday via POST-method with status REQUESTED`() {
 
-        val holidayForm = HoliDayForm(
-            description = "Wimbledon",
-            status = Status.REQUESTED,
-            from = dayFromLocalDate(),
-            to = dayFromLocalDate(2),
-            days = listOf(8, 8),
-            hours = 16,
-            personCode = person.code
+        val user = createHelper.createUser(userAuthorities)
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 1, 3)
+        val days = listOf(6, 6, 6)
+        val hours = 18
+        val description = "Lucy in the sky with diamonds"
+        val status = Status.REQUESTED
+        val person = createHelper.createPerson("john", "doe", user.code)
+
+        val createForm = HoliDayForm(
+            from = from,
+            to = to,
+            days = days,
+            hours = hours,
+            personCode = person.code,
+            description = description,
+            status = status
         )
 
-        post(holidayForm)
+        mvc.perform(post("$baseUrl")
+            .with(user(CreateHelper.UserSecurity(user)))
+            .content(mapper.writeValueAsString(createForm))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(jsonPath("\$.id").exists())
+            .andExpect(jsonPath("\$.code").exists())
+            .andExpect(jsonPath("\$.code").isString)
+            .andExpect(jsonPath("\$.description").value(description))
+            .andExpect(jsonPath("\$.status").value(status.toString()))
+            .andExpect(jsonPath("\$.hours").value(hours))
+            .andExpect(jsonPath("\$.personCode").value(person.code))
+
     }
 
     @Test
     fun `should update a existing holiday via PUT-Method`() {
-        /* DRY-Block */
-        val person = PersonForm(
-            firstname = "Jen",
-            lastname = "Barber",
-            email = "jen@reynholm-industries.co.uk",
-            position = "Head of IT",
-            number = null,
-            userCode = null
-        ).run { personService.create(this)!! }
 
-        val holidayForm = HoliDayForm(
-            description = "Wimbledon",
-            status = Status.REQUESTED,
-            from = dayFromLocalDate(),
-            to = dayFromLocalDate(2),
-            days = listOf(8, 8),
-            hours = 16,
-            personCode = person.code
+        val user = createHelper.createUser(userAuthorities)
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 1, 3)
+        val days = listOf(6, 6, 6)
+        val hours = 18
+        val description = "Lucy in the sky with diamonds"
+        val updatedDescription = "All the leaves are brown"
+        val status = Status.REQUESTED
+        val person = createHelper.createPerson("john", "doe", user.code)
+
+        val createForm = HoliDayForm(
+            from = from,
+            to = to,
+            days = days,
+            hours = hours,
+            personCode = person.code,
+            description = description,
+            status = status
         )
 
-        val holidayCode = post(holidayForm)
-            .andReturn()
-            .response
-            .contentAsString
-            .run { mapper.readTree(this) }
-            .run { this.get("code").textValue() }
-        /* DRY-Block */
-        holidayForm.copy(status = Status.APPROVED)
+        val created = holiDayService.create(createForm)
 
-        put(holidayForm, holidayCode)
+        val updatedCreateForm = createForm.copy(description = updatedDescription)
+
+        mvc.perform(put("$baseUrl/${created.code}")
+            .with(user(CreateHelper.UserSecurity(user)))
+            .content(mapper.writeValueAsString(updatedCreateForm))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(jsonPath("\$.id").exists())
+            .andExpect(jsonPath("\$.code").exists())
+            .andExpect(jsonPath("\$.code").isString)
+            .andExpect(jsonPath("\$.description").value(updatedDescription))
+            .andExpect(jsonPath("\$.status").value(status.toString()))
+            .andExpect(jsonPath("\$.hours").value(hours))
+            .andExpect(jsonPath("\$.personCode").value(person.code))
+
     }
 
     @Test
-    fun `should delete a holiday via DELETE-Method`() {
-        /* DRY-Block */
-        val person = PersonForm(
-            firstname = "Jen",
-            lastname = "Barber",
-            email = "jen@reynholm-industries.co.uk",
-            position = "Head of IT",
-            number = null,
-            userCode = null
-        ).run { personService.create(this)!! }
+    fun `should not be allowed to update status field existing holiday via PUT-Method`() {
 
-        val holidayForm = HoliDayForm(
-            description = "Wimbledon",
-            status = Status.REQUESTED,
-            from = dayFromLocalDate(),
-            to = dayFromLocalDate(2),
-            days = listOf(8, 8),
-            hours = 16,
-            personCode = person.code
+        val user = createHelper.createUser(userAuthorities)
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 1, 3)
+        val days = listOf(6, 6, 6)
+        val hours = 18
+        val description = "Lucy in the sky with diamonds"
+        val status = Status.REQUESTED
+        val updatedStatus = Status.APPROVED
+        val person = createHelper.createPerson("john", "doe", user.code)
+
+        val createForm = HoliDayForm(
+            from = from,
+            to = to,
+            days = days,
+            hours = hours,
+            personCode = person.code,
+            description = description,
+            status = status
         )
 
-        val holidayCode = post(holidayForm)
-            .andReturn()
-            .response
-            .contentAsString
-            .run { mapper.readTree(this) }
-            .run { this.get("code").textValue() }
-        /* DRY-Block */
+        val created = holiDayService.create(createForm)
 
-        mvc.perform(delete("$baseUrl/$holidayCode")
-            .with(user)
+        val updatedCreateForm = createForm.copy(status = updatedStatus)
+
+        mvc.perform(put("$baseUrl/${created.code}")
+            .with(user(CreateHelper.UserSecurity(user)))
+            .content(mapper.writeValueAsString(updatedCreateForm))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(jsonPath("\$.id").exists())
+            .andExpect(jsonPath("\$.code").exists())
+            .andExpect(jsonPath("\$.status").value(status.toString()))
+    }
+
+
+    @Test
+    fun `admin can update status field existing holiday via PUT-Method`() {
+
+        val admin = createHelper.createUser(adminAuthorities)
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 1, 3)
+        val days = listOf(6, 6, 6)
+        val hours = 18
+        val description = "Lucy in the sky with diamonds"
+        val status = Status.REQUESTED
+        val updatedStatus = Status.APPROVED
+        val person = createHelper.createPerson("john", "doe", admin.code)
+
+        val createForm = HoliDayForm(
+            from = from,
+            to = to,
+            days = days,
+            hours = hours,
+            personCode = person.code,
+            description = description,
+            status = status
+        )
+
+        val created = holiDayService.create(createForm)
+
+        val updatedCreateForm = createForm.copy(status = updatedStatus)
+
+        mvc.perform(put("$baseUrl/${created.code}")
+            .with(user(CreateHelper.UserSecurity(admin)))
+            .content(mapper.writeValueAsString(updatedCreateForm))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(jsonPath("\$.id").exists())
+            .andExpect(jsonPath("\$.code").exists())
+            .andExpect(jsonPath("\$.status").value(updatedStatus.toString()))
+    }
+
+
+    @Test
+    fun `should delete a holiday via DELETE-Method`() {
+        val admin = createHelper.createUser(adminAuthorities)
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 1, 3)
+        val days = listOf(6, 6, 6)
+        val hours = 18
+        val description = "Lucy in the sky with diamonds"
+        val status = Status.REQUESTED
+        val updatedStatus = Status.APPROVED
+        val person = createHelper.createPerson("john", "doe", admin.code)
+
+        val createForm = HoliDayForm(
+            from = from,
+            to = to,
+            days = days,
+            hours = hours,
+            personCode = person.code,
+            description = description,
+            status = status
+        )
+
+        val created = holiDayService.create(createForm)
+
+        mvc.perform(delete("$baseUrl/${created.code}")
+            .with(user(CreateHelper.UserSecurity(admin)))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
             .andExpect(status().isNoContent)
 
-        mvc.perform(get("$baseUrl/$holidayCode")
-            .with(user)
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isNotFound)
+        assertNull(holiDayService.findByCode(created.code))
     }
-
-    // *-- utility functions --*
-//    private fun getAll() = get()
-    /**
-     *
-     */
-    private fun get(holiDayForm: HoliDayForm, holidayCode: String? = null) = mvc.perform(
-        get("$baseUrl/$holidayCode")
-            .with(user)
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
-        .andExpect(status().isOk)
-        .andExpect(content().contentType(APPLICATION_JSON))
-        .andExpect(jsonPath("\$.id").exists())
-        .andExpect(jsonPath("\$.code").exists())
-        .andExpect(jsonPath("\$.code").isString)
-        .andExpect(jsonPath("\$.description").value(holiDayForm.description.toString()))
-        .andExpect(jsonPath("\$.status").value(holiDayForm.status.toString()))
-        .andExpect(jsonPath("\$.hours").value(holiDayForm.hours))
-        .andExpect(jsonPath("\$.personCode").value(holiDayForm.personCode.toString()))
-
-    /**
-     *
-     */
-    private fun post(holiDayForm: HoliDayForm) = mvc.perform(
-        post(baseUrl)
-            .with(user)
-            .content(mapper.writeValueAsString(holiDayForm))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
-        .andExpect(status().isOk)
-        .andExpect(content().contentType(APPLICATION_JSON))
-        .andExpect(jsonPath("\$.id").exists())
-        .andExpect(jsonPath("\$.code").exists())
-        .andExpect(jsonPath("\$.code").isString)
-        .andExpect(jsonPath("\$.description").value(holiDayForm.description.toString()))
-        .andExpect(jsonPath("\$.status").value(holiDayForm.status.toString()))
-        .andExpect(jsonPath("\$.hours").value(holiDayForm.hours))
-        .andExpect(jsonPath("\$.personCode").value(holiDayForm.personCode.toString()))
-
-    /**
-     *
-     */
-    private fun put(holiDayForm: HoliDayForm, holidayCode: String) = mvc.perform(
-        put("$baseUrl/$holidayCode")
-            .with(user)
-            .content(mapper.writeValueAsString(holiDayForm))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
-        .andExpect(status().isOk)
-        .andExpect(content().contentType(APPLICATION_JSON))
-        .andExpect(jsonPath("\$.id").exists())
-        .andExpect(jsonPath("\$.code").exists())
-        .andExpect(jsonPath("\$.code").isString)
-        .andExpect(jsonPath("\$.description").value(holiDayForm.description.toString()))
-        .andExpect(jsonPath("\$.status").value(holiDayForm.status.toString()))
-        .andExpect(jsonPath("\$.hours").value(holiDayForm.hours))
-        .andExpect(jsonPath("\$.personCode").value(holiDayForm.personCode.toString()))
 }
