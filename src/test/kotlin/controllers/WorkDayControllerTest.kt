@@ -3,6 +3,7 @@ package community.flock.eco.workday.controllers
 import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.authorities.WorkDayAuthority
+import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Status
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
+import kotlin.test.assertEquals
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
@@ -109,13 +111,14 @@ class WorkDayControllerTest {
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
+        val status = Status.APPROVED
         val client = createHelper.createClient()
         val person = createHelper.createPerson("john", "doe", user.code)
         val assignment = createHelper.createAssignment(client, person, from, to)
 
 
         val createForm = WorkDayForm(
-            status = Status.REJECTED,
+            status = status,
             from = from,
             to = to,
             assignmentCode = assignment.code,
@@ -142,13 +145,14 @@ class WorkDayControllerTest {
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
+        val status = Status.REQUESTED
         val client = createHelper.createClient()
         val person = createHelper.createPerson("john", "doe", user.code)
         val assignment = createHelper.createAssignment(client, person, from, to)
 
 
         val createForm = WorkDayForm(
-            status = Status.APPROVED,
+            status = status,
             from = from,
             to = to,
             assignmentCode = assignment.code,
@@ -164,11 +168,47 @@ class WorkDayControllerTest {
             .content(mapper.writeValueAsString(updatedForm))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
+            .andExpect(status().isUnauthorized)
+
+        assertEquals(workDayService.findByCode(created.code)?.status,status)
+    }
+
+
+    @Test
+    fun `admin can update status field existing wrokday via PUT-Method`() {
+
+        val admin = createHelper.createUser(adminAuthorities)
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 3, 31)
+        val status = Status.REQUESTED
+        val updatedStatus = Status.REJECTED
+        val client = createHelper.createClient()
+        val person = createHelper.createPerson("john", "doe", admin.code)
+        val assignment = createHelper.createAssignment(client, person, from, to)
+
+
+        val createForm = WorkDayForm(
+            status = status,
+            from = from,
+            to = to,
+            assignmentCode = assignment.code,
+            hours = 50
+        )
+
+        val created = workDayService.create(createForm)
+
+        val updatedCreateForm = createForm.copy(status = updatedStatus)
+
+        mvc.perform(MockMvcRequestBuilders.put("$baseUrl/${created.code}")
+            .with(user(CreateHelper.UserSecurity(admin)))
+            .content(mapper.writeValueAsString(updatedCreateForm))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.id").exists())
             .andExpect(MockMvcResultMatchers.jsonPath("\$.code").exists())
-            .andExpect(MockMvcResultMatchers.jsonPath("\$.code").isString)
-            .andExpect(MockMvcResultMatchers.jsonPath("\$.status").value(Status.REQUESTED.toString()))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.status").value(updatedStatus.toString()))
     }
+
 }

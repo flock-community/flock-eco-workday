@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
+import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @RunWith(SpringRunner::class)
@@ -202,11 +203,9 @@ class HoliDayControllerTest {
             .content(mapper.writeValueAsString(updatedCreateForm))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON))
-            .andExpect(jsonPath("\$.id").exists())
-            .andExpect(jsonPath("\$.code").exists())
-            .andExpect(jsonPath("\$.status").value(status.toString()))
+            .andExpect(status().isUnauthorized)
+
+        assertEquals(holiDayService.findByCode(created.code)?.status, status)
     }
 
 
