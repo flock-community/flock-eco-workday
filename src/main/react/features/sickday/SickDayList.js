@@ -1,30 +1,26 @@
 import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
+import {Card, Typography} from "@material-ui/core"
+import CardContent from "@material-ui/core/CardContent"
 import Grid from "@material-ui/core/Grid"
-import Card from "@material-ui/core/Card"
-import {CardContent} from "@material-ui/core"
-import Typography from "@material-ui/core/Typography"
-import {HolidayClient} from "../../clients/HolidayClient"
+import {SickDayClient} from "../../clients/SickDayClient"
 import {DayListItem} from "../../components/DayListItem"
 
-export function HolidayList({personCode, refresh, onClickRow, onClickStatus}) {
+export function SickDayList({personCode, refresh, onClickRow, onClickStatus}) {
   const [list, setList] = useState([])
-  const [update] = useState(refresh)
 
   useEffect(() => {
-    if (personCode) {
-      HolidayClient.findAllByPersonCode(personCode).then(res => setList(res))
-    }
-  }, [personCode, refresh, update])
+    SickDayClient.findAllByPersonCode(personCode).then(res => setList(res))
+  }, [personCode, refresh])
 
   function renderItem(item, key) {
     return (
-      <Grid item xs={12} key={`holiday-list-item-${key}`}>
+      <Grid item xs={12} key={`sickday-list-item-${key}`}>
         <DayListItem
           value={item}
           onClick={onClickRow(item)}
           onClickStatus={status => onClickStatus(status, item)}
-          hasAuthority={"HolidayAuthority.ADMIN"}
+          hasAuthority={"SickdayAuthority.ADMIN"}
         />
       </Grid>
     )
@@ -34,7 +30,7 @@ export function HolidayList({personCode, refresh, onClickRow, onClickStatus}) {
     return (
       <Card>
         <CardContent>
-          <Typography>No holidays.</Typography>
+          <Typography>No sick days</Typography>
         </CardContent>
       </Card>
     )
@@ -47,9 +43,9 @@ export function HolidayList({personCode, refresh, onClickRow, onClickStatus}) {
   )
 }
 
-HolidayList.propTypes = {
-  personCode: PropTypes.string,
+SickDayList.propTypes = {
   refresh: PropTypes.bool,
+  personCode: PropTypes.string,
   onClickRow: PropTypes.func,
   onClickStatus: PropTypes.func,
 }

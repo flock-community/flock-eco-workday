@@ -20,6 +20,10 @@ export function PersonSelector({value, onChange, label, embedded, multiple}) {
     )
   }, [])
 
+  useEffect(() => {
+    setState(value)
+  }, [value])
+
   function handleChange(event) {
     // eslint-disable-next-line no-shadow
     const selected = event.target.value
@@ -38,7 +42,12 @@ export function PersonSelector({value, onChange, label, embedded, multiple}) {
   const selectInput = (
     <FormControl fullWidth>
       <InputLabel shrink>{label}</InputLabel>
-      <Select value={state} displayEmpty onChange={handleChange} multiple={multiple}>
+      <Select
+        value={state || ""}
+        displayEmpty
+        onChange={handleChange}
+        multiple={multiple}
+      >
         {!multiple && (
           <MenuItem value="">
             <em>None</em>

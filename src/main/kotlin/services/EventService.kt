@@ -6,12 +6,12 @@ import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.repository.EventRatingRepository
 import community.flock.eco.workday.repository.EventRepository
-import org.springframework.data.domain.Sort
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.EntityManager
+import org.springframework.data.domain.Sort
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class EventService(
@@ -21,7 +21,7 @@ class EventService(
     private val entityManager: EntityManager
 ) {
     fun findAll(): Iterable<Event> = eventRepository.findAll()
-    fun findAll(sort:Sort): Iterable<Event> = eventRepository.findAll(sort)
+    fun findAll(sort: Sort): Iterable<Event> = eventRepository.findAll(sort)
 
     fun findByCode(code: String) = eventRepository.findByCode(code).toNullable()
 

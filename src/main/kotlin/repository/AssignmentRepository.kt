@@ -1,9 +1,9 @@
 package community.flock.eco.workday.repository
 
 import community.flock.eco.workday.model.Assignment
+import java.util.Optional
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
-import java.util.Optional
 
 @Repository
 interface AssignmentRepository : PagingAndSortingRepository<Assignment, Long> {

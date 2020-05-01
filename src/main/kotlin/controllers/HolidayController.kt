@@ -25,8 +25,8 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @RequestMapping("/api/holidays")
 class HolidayController(
-        private val service: HoliDayService,
-        private val personService: PersonService
+    private val service: HoliDayService,
+    private val personService: PersonService
 ) {
     @GetMapping(params = ["personCode"])
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
@@ -64,8 +64,14 @@ class HolidayController(
         @RequestBody form: HoliDayForm,
         authentication: Authentication
     ) = service
-        .update(code, form.setPersonCode(authentication))
-        .toResponse()
+        .run {
+            if (form.status !== findByCode(code)?.status && !authentication.isAdmin()) {
+                throw ResponseStatusException(UNAUTHORIZED, "User is not allowed to change status field")
+            } else {
+                this.update(code, form.setPersonCode(authentication))
+                    .toResponse()
+            }
+        }
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")

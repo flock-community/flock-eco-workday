@@ -3,40 +3,25 @@ import PropTypes from "prop-types"
 import {Card, Typography} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import Grid from "@material-ui/core/Grid"
-import {isDefined} from "../../utils/validation"
 import {WorkDayClient} from "../../clients/WorkDayClient"
+import {WorkDayListItem} from "./WorkDayListItem"
 
-export function WorkDayList(props) {
-  const {personCode, refresh, onClickRow} = props
+export function WorkDayList({personCode, refresh, onClickRow, onClickStatus}) {
   const [state, setState] = useState([])
 
   useEffect(() => {
     WorkDayClient.findAllByPersonCode(personCode).then(res => setState(res))
   }, [personCode, refresh])
 
-  function handleClickRow(item) {
-    return () => {
-      if (isDefined(onClickRow)) onClickRow(item)
-    }
-  }
-
   function renderItem(item, key) {
     return (
       <Grid key={`workday-list-item-${key}`} item xs={12}>
-        <Card onClick={handleClickRow(item)}>
-          <CardContent>
-            <Typography variant="h6">
-              {item.assignment.client.name} - {item.assignment.role}
-            </Typography>
-            <Typography>
-              Period: {item.from.format("DD-MM-YYYY")} -{" "}
-              {item.to ? item.to.format("DD-MM-YYYY") : <em>now</em>}
-            </Typography>
-            <Typography>Aantal dagen: {item.to.diff(item.from, "days") + 1}</Typography>
-            <Typography>Aantal uren: {item.hours}</Typography>
-            <Typography>{item.status}</Typography>
-          </CardContent>
-        </Card>
+        <WorkDayListItem
+          value={item}
+          onClick={() => onClickRow && onClickRow(item)}
+          onClickStatus={status => onClickStatus(status, item)}
+          hasAuthority={"WorkDayAuthority.ADMIN"}
+        />
       </Grid>
     )
   }
@@ -62,4 +47,5 @@ WorkDayList.propTypes = {
   refresh: PropTypes.bool,
   personCode: PropTypes.string,
   onClickRow: PropTypes.func,
+  onClickStatus: PropTypes.func,
 }

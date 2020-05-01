@@ -6,12 +6,13 @@ import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.HolidayRepository
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.EntityManager
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class HoliDayService(
@@ -33,7 +34,7 @@ class HoliDayService(
             .resultList
     }
 
-    fun create(form: HoliDayForm): HoliDay = form
+    fun create(form: HoliDayForm): HoliDay = form.copy(status = Status.REQUESTED)
         .validate()
         .consume()
         .save()
@@ -71,7 +72,6 @@ class HoliDayService(
             days = this.days
         )
     }
-
 }
 
 fun User.isAdmin(): Boolean = this.authorities

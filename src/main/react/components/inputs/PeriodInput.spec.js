@@ -21,6 +21,6 @@ describe("PeriodForm", () => {
     })
 
     expect(component.toJSON()).toMatchSnapshot()
-    expect(component.root.findAllByType(TextField)).toHaveLength(16)
+    expect(component.root.findAllByType(TextField)).toHaveLength(7)
   })
 })

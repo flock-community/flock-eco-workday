@@ -4,6 +4,7 @@ import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.SickDay
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.SickdayRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -40,7 +41,7 @@ class SickDayService(
             .resultList
     }
 
-    fun create(form: SickDayForm): SickDay = form
+    fun create(form: SickDayForm): SickDay = form.copy(status = Status.REQUESTED)
         .validate()
         .consume()
         .save()
@@ -71,10 +72,10 @@ class SickDayService(
             person = person,
             hours = this.hours,
             days = this.days,
-            description = this.description
+            description = this.description,
+            status = this.status
         )
     }
 
     private fun SickDay.save() = repository.save(this)
-
 }

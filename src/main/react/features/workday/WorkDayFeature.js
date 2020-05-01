@@ -9,15 +9,11 @@ import {PersonSelector} from "../../components/selector"
 import {ApplicationContext} from "../../application/ApplicationContext"
 import {AddActionFab} from "../../components/FabButtons"
 import {usePerson} from "../../hooks/PersonHook"
+import {WorkDayClient} from "../../clients/WorkDayClient"
 
 const useStyles = makeStyles({
   root: {
     marginTop: 20,
-  },
-  fab: {
-    position: "absolute",
-    bottom: "25px",
-    right: "25px",
   },
 })
 
@@ -29,7 +25,7 @@ export function WorkDayFeature() {
 
   const [person, setPerson] = usePerson()
 
-  const [reload, setReload] = useState(false)
+  const [refresh, setRefresh] = useState(false)
   const [open, setOpen] = useState(false)
   const [state, setState] = useState(null)
   const {authorities} = useContext(ApplicationContext)
@@ -39,7 +35,7 @@ export function WorkDayFeature() {
   }
 
   function handleCompleteDialog() {
-    setReload(!reload)
+    setRefresh(!refresh)
     setOpen(false)
     setState(null)
   }
@@ -50,25 +46,42 @@ export function WorkDayFeature() {
   }
 
   function handleClickRow(item) {
-    setState(item)
-    setOpen(true)
+    return () => {
+      setState(item)
+      setOpen(true)
+    }
   }
 
   function handlePersonChange(it) {
     setPerson(it)
   }
 
+  function handleStatusChange(status, it) {
+    WorkDayClient.put(it.code, {
+      ...it,
+      status,
+      assignmentCode: it.assignment.code,
+    }).then(setRefresh(!refresh))
+    // TODO: error handling!
+  }
+
   return (
     <Container className={classes.root}>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          {isSuperUser() && <PersonSelector onChange={handlePersonChange} />}
+          {isSuperUser() && (
+            <PersonSelector
+              value={person && person.code}
+              onChange={handlePersonChange}
+            />
+          )}
         </Grid>
         <Grid item xs={12}>
           <WorkDayList
             personCode={person && person.code}
             onClickRow={handleClickRow}
-            refresh={reload}
+            refresh={refresh}
+            onClickStatus={handleStatusChange}
           />
         </Grid>
       </Grid>

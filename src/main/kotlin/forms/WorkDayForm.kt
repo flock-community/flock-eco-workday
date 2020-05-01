@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
 import community.flock.eco.workday.interfaces.DayForm
+import community.flock.eco.workday.model.Status
 import java.time.LocalDate
 
 data class WorkDayForm(
@@ -19,6 +20,7 @@ data class WorkDayForm(
 
     override val hours: Int,
     override val days: List<Int>? = null,
-    val assignmentCode: String
+    val assignmentCode: String,
+    val status: Status = Status.REQUESTED
 
-): DayForm
+) : DayForm

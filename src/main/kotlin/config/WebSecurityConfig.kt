@@ -56,11 +56,11 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         http
             .addFilterBefore(GoogleTokenFilter(userAccountService), UsernamePasswordAuthenticationFilter::class.java)
 
-            when (loginType.toUpperCase()) {
-                "GOOGLE" -> userSecurityService.googleLogin(http)
+        when (loginType.toUpperCase()) {
+            "GOOGLE" -> userSecurityService.googleLogin(http)
                 .and()
                 .defaultSuccessUrl("/", true)
-                "DATABASE" -> userSecurityService.databaseLogin(http)
+            "DATABASE" -> userSecurityService.databaseLogin(http)
             else -> userSecurityService.testLogin(http)
         }
     }

@@ -12,4 +12,4 @@ data class ContractInternalForm(
 
     override val from: LocalDate,
     override val to: LocalDate?
-): Period
+) : Period

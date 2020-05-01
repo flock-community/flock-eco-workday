@@ -9,13 +9,13 @@ import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
+import community.flock.eco.workday.model.ContractService as ContractServiceModel
 import community.flock.eco.workday.model.Day
 import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.WorkDay
-import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.DayOfWeek
@@ -23,7 +23,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 import kotlin.math.pow
-import community.flock.eco.workday.model.ContractService as ContractServiceModel
+import org.springframework.stereotype.Service
 
 @Service
 
@@ -160,10 +160,11 @@ class AggregationService(
                         .map { it.totalCostInPeriod(yearMonth) }
                         .sum(),
                     "actualCostContractExternal" to yearMonth.toDateRange()
-                        .flatMap { date -> cartesianProducts(all.contract.filterIsInstance(ContractExternal::class.java), all.workDay)
-                            .filter { (contract, workDay)  -> contract.person == workDay.assignment.person}
-                            .filter {(contract, workDay) -> contract.inRange(date) && workDay.inRange(date) }
-                            .map {(contract, workDay) -> contract.hourlyRate.toBigDecimal() * workDay.hoursPerDay().getValue(date)}
+                        .flatMap { date ->
+                            cartesianProducts(all.contract.filterIsInstance(ContractExternal::class.java), all.workDay)
+                                .filter { (contract, workDay) -> contract.person == workDay.assignment.person }
+                                .filter { (contract, workDay) -> contract.inRange(date) && workDay.inRange(date) }
+                                .map { (contract, workDay) -> contract.hourlyRate.toBigDecimal() * workDay.hoursPerDay().getValue(date) }
                         }
                         .sum(),
                     "actualCostContractManagement" to all.contract
@@ -193,7 +194,6 @@ class AggregationService(
     private fun List<Assignment>.totalHours(from: LocalDate, to: LocalDate) = this
         .fold(0.0) { acc, cur -> acc + cur.hoursPerWeek / 5 }
         .pow(countWorkDaysInPeriod(from, to))
-
 
     private fun All.allPersons(): Set<Person> {
         return (this.assignment.map { it.person } +
@@ -304,7 +304,6 @@ private fun Period.amountPerWorkingDay(month: YearMonth) = when (this) {
     else -> error("Cannot get amount per working day")
 }
 
-
 private fun <T : Period> List<T>.perMonth(yearMonth: YearMonth) = yearMonth
     .toDateRange()
     .filterWorkingDay()
@@ -367,4 +366,4 @@ fun ContractServiceModel.totalCostInPeriod(yearMonth: YearMonth): BigDecimal = t
     .sum()
     .divide(yearMonth.lengthOfMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
 
-private fun <A, B> cartesianProducts(a_s:List<A>, b_s:List<B>) = a_s.flatMap { a -> b_s.map { b -> a to b } }
+private fun <A, B> cartesianProducts(a_s: List<A>, b_s: List<B>) = a_s.flatMap { a -> b_s.map { b -> a to b } }

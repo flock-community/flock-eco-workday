@@ -2,14 +2,15 @@ package community.flock.eco.workday.services
 
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.WorkDayForm
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.repository.WorkDayRepository
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 import javax.persistence.EntityManager
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class WorkDayService(
@@ -37,7 +38,7 @@ class WorkDayService(
             .resultList
     }
 
-    fun create(form: WorkDayForm): WorkDay = form
+    fun create(form: WorkDayForm): WorkDay = form.copy(status = Status.REQUESTED)
         .validate()
         .consume()
         .save()
@@ -85,7 +86,8 @@ class WorkDayService(
             to = this.to,
             assignment = assignment,
             hours = this.hours,
-            days = this.days
+            days = this.days,
+            status = this.status
         )
     }
 

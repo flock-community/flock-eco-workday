@@ -3,9 +3,9 @@ package community.flock.eco.workday.mocks
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.WorkDayService
+import java.time.LocalDate
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
-import java.time.LocalDate
 
 @Component
 @Profile("local")
@@ -44,7 +44,6 @@ class LoadWorkDayData(
 
                         )
                     }
-
             }
             .flatten()
             .forEach { it.create() }

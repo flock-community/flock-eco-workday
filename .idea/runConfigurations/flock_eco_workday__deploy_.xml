@@ -10,16 +10,15 @@
           </option>
           <option name="goals">
             <list>
-              <option value="clean" />
               <option value="package" />
               <option value="appengine:deploy" />
               <option value="-DskipTests" />
+              <option value="-U" />
             </list>
           </option>
           <option name="pomFileName" />
           <option name="profilesMap">
             <map>
-              <entry key="frontend" value="true" />
               <entry key="cloud" value="true" />
             </map>
           </option>

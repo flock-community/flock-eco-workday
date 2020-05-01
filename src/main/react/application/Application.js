@@ -1,10 +1,10 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 
 import {HashRouter as Router, Route} from "react-router-dom"
 import {UserFeature} from "@flock-eco/feature-user/src/main/react/user/UserFeature"
 import {CircularProgress, makeStyles} from "@material-ui/core"
-import createMuiTheme from "@material-ui/core/styles/createMuiTheme"
 import ThemeProvider from "@material-ui/styles/ThemeProvider"
+import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {HolidayFeature} from "../features/holiday/HolidayFeature"
 import {ApplicationLayout} from "./ApplicationLayout"
 import {ApplicationDrawer} from "./ApplicationDrawer"
@@ -13,7 +13,7 @@ import {HomeFeature} from "../features/home/HomeFeature"
 import {ClientFeature} from "../features/client/ClientFeature"
 import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
 import {PersonFeature} from "../features/person/PersonFeature"
-import {SickdayFeature} from "../features/sickday/SickdayFeature"
+import {SickDayFeature} from "../features/sickday/SickDayFeature"
 import {useUserMe} from "../hooks/UserMeHook"
 import {DashboardFeature} from "../features/dashboard/DashboardFeature"
 import {ContractFeature} from "../features/contract/ContractFeature"
@@ -22,6 +22,7 @@ import {MonthFeature} from "../features/month/MonthFeature"
 import {EventFeature} from "../features/event/EventFeature"
 import {EventRatingFeature} from "../features/event_rating/EventRatingFeature"
 import {useLoginStatus} from "../hooks/StatusHook"
+import {getTheme} from "../theme/theme"
 
 const useStyles = makeStyles(() => ({
   spinner: {
@@ -32,13 +33,7 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: "#fcde00",
-    },
-  },
-})
+const theme = getTheme("light")
 
 const unauthorizedRoutes = [/^#\/event_rating\/.*/]
 
@@ -48,6 +43,12 @@ export const Application = () => {
   const status = useLoginStatus()
   const user = useUserMe()
   const [openDrawer, setOpenDrawer] = useState(false)
+
+  useEffect(() => {
+    if (status) {
+      UserAuthorityUtil.setAuthorities(status.authorities)
+    }
+  }, [status])
 
   function handleDrawerClose() {
     setOpenDrawer(false)
@@ -86,7 +87,7 @@ export const Application = () => {
           <Route path="/assignments" exact component={AssignmentFeature} />
           <Route path="/workdays" exact component={WorkDayFeature} />
           <Route path="/holidays" exact component={HolidayFeature} />
-          <Route path="/sickdays" component={SickdayFeature} />
+          <Route path="/sickdays" component={SickDayFeature} />
           <Route path="/users" exact component={UserFeature} />
           <Route path="/person" component={PersonFeature} />
           <Route path="/event" component={EventFeature} />

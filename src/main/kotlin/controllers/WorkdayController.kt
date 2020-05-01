@@ -36,7 +36,9 @@ class WorkdayController(
     ): ResponseEntity<Iterable<WorkDay>> = when {
         authentication.isAdmin() -> service.findAllByPersonPersonCode(personCode)
         else -> service.findAllByPersonUserCode(authentication.name)
-    }.toResponse()
+    }
+        .sortedByDescending { it.from }
+        .toResponse()
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")
@@ -65,8 +67,14 @@ class WorkdayController(
         authentication: Authentication
     ) = service.findByCode(code)
         ?.applyAuthentication(authentication)
-        ?.run { service.update(code, form) }
-        .toResponse()
+        ?.run {
+            if (form.status !== this.status && !authentication.isAdmin()) {
+                throw ResponseStatusException(UNAUTHORIZED, "User is not allowed to change status field")
+            } else {
+                service.update(code, form)
+                    .toResponse()
+            }
+        }
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('WorkDayAuthority.WRITE')")

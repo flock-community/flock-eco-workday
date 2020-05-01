@@ -5,8 +5,10 @@ import community.flock.eco.workday.ApplicationConstants
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
 import community.flock.eco.workday.interfaces.Period
-import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.WorkDay
+import java.math.BigDecimal
+import java.time.LocalDate
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,12 +17,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.YearMonth
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-
 
 @RunWith(SpringRunner::class)
 @ContextConfiguration(classes = [ApplicationConfiguration::class])
@@ -48,12 +44,11 @@ class AggregationServiceTest {
         val person = createHelper.createPerson("firstname", "lastname")
         val assignment = createHelper.createAssignment(client, person, from, to)
 
-
         val res = aggregationService.revenuePerMonth(from, to)
 
-        val total = res.entries.fold(BigDecimal.ZERO){ acc, cur -> acc + cur.value}
+        val total = res.entries.fold(BigDecimal.ZERO) { acc, cur -> acc + cur.value }
         val days = countWorkDaysInPeriod(from, to)
-        val expect = (assignment.hourlyRate/5) * assignment.hoursPerWeek * days
+        val expect = (assignment.hourlyRate / 5) * assignment.hoursPerWeek * days
         assertEquals(1, res.size)
         assertEquals(expect, total.toDouble())
     }
@@ -67,7 +62,7 @@ class AggregationServiceTest {
         dataHelper.createAssignmentData()
         val res = aggregationService.revenuePerMonth(from, to)
 
-        val total = res.entries.fold(BigDecimal.ZERO){ acc, cur -> acc + cur.value}
+        val total = res.entries.fold(BigDecimal.ZERO) { acc, cur -> acc + cur.value }
         assertEquals(12, res.size)
         assertEquals(BigDecimal.valueOf(865728), total.stripTrailingZeros())
     }
@@ -106,7 +101,7 @@ class AggregationServiceTest {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
 
-        dataHelper.createContractData()
+        dataHelper.createContractExternalData()
         val res = aggregationService.costPerMonth(from, to)
 
         assertEquals(12, res.size)
@@ -119,7 +114,7 @@ class AggregationServiceTest {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
 
-        dataHelper.createContractData()
+        dataHelper.createContractExternalData()
         dataHelper.createAssignmentData()
         dataHelper.createSickDayData()
         dataHelper.createHoliDayData()
@@ -129,7 +124,6 @@ class AggregationServiceTest {
             .totalPerPerson(from, to)
 
         assertNotNull(res[0]["name"])
-
     }
 
     @Test
@@ -138,7 +132,8 @@ class AggregationServiceTest {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
 
-        dataHelper.createContractData()
+        dataHelper.createContractExternalData()
+        dataHelper.createContractInternalData()
         dataHelper.createAssignmentData()
         dataHelper.createSickDayData()
         dataHelper.createHoliDayData()
@@ -149,7 +144,8 @@ class AggregationServiceTest {
             .totalPerMonth(from, to)
 
         assertNotNull(res[0]["actualRevenue"])
-
+        assertEquals("8000.0000000000", res[1]["actualCostContractInternal"].toString())
+        assertEquals("0", res[1]["actualCostContractExternal"].toString())
     }
 
     @Test
@@ -159,9 +155,9 @@ class AggregationServiceTest {
         val client = createHelper.createClient()
         val person = createHelper.createPerson()
         val assignment = createHelper.createAssignment(client, person, from, to)
-        val workDay = createHelper.createWorkDay(assignment,from, to, 152, listOf(0, 0, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8))
+        val workDay = createHelper.createWorkDay(assignment, from, to, 152, listOf(0, 0, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8))
 
-        val period: Period = object: Period{
+        val period: Period = object : Period {
             override val from: LocalDate get() = from
             override val to: LocalDate? get() = to
         }
@@ -180,9 +176,9 @@ class AggregationServiceTest {
         val client = createHelper.createClient()
         val person = createHelper.createPerson()
         val assignment = createHelper.createAssignment(client, person, from, to)
-        val workDay = createHelper.createWorkDay(assignment,from, to, 152, listOf(0, 0, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8))
+        val workDay = createHelper.createWorkDay(assignment, from, to, 152, listOf(0, 0, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8))
 
-        val period: Period = object: Period{
+        val period: Period = object : Period {
             override val from: LocalDate get() = from
             override val to: LocalDate? get() = LocalDate.of(2020, 1, 15)
         }
@@ -193,7 +189,6 @@ class AggregationServiceTest {
         assertEquals(64.toBigDecimal(), hours)
         assertEquals(5120.0.toBigDecimal(), revenue)
     }
-
 
     @Test
     fun `find netto revenu factor`() {

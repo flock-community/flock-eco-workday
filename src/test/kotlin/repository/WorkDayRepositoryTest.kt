@@ -3,6 +3,7 @@ package community.flock.eco.workday.repository
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Person
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
 import java.time.LocalDate
 import kotlin.test.assertNotNull
@@ -46,7 +47,8 @@ class WorkDayRepositoryTest {
             assignment = assignment,
             from = from,
             to = LocalDate.of(2020, 1, 31),
-            hours = 10
+            hours = 10,
+            status = Status.REQUESTED
         )
         val res = repository.save(workDay)
 

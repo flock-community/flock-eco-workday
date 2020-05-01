@@ -3,9 +3,9 @@ package community.flock.eco.workday.mocks
 import community.flock.eco.workday.forms.EventForm
 import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.services.EventService
+import java.time.LocalDate
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
-import java.time.LocalDate
 
 @Component
 @Profile("local")

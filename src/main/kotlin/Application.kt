@@ -12,12 +12,12 @@ import org.springframework.context.annotation.Import
 
 @Configuration
 @SpringBootApplication(exclude = arrayOf(
-        RepositoryRestMvcAutoConfiguration::class
+    RepositoryRestMvcAutoConfiguration::class
 ))
 @Import(ApplicationConfiguration::class,
-        WebMvcConfig::class,
-        WebSecurityConfig::class,
-        StubCloudConfiguration::class)
+    WebMvcConfig::class,
+    WebSecurityConfig::class,
+    StubCloudConfiguration::class)
 class Application : SpringBootServletInitializer()
 
 fun main(args: Array<String>) {

@@ -2,11 +2,13 @@ import React, {useState} from "react"
 import {makeStyles} from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
 import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
+import {Container} from "@material-ui/core"
 import {HolidayDialog} from "./HolidayDialog"
 import {HolidayList} from "./HolidayList"
 import {PersonSelector} from "../../components/selector"
 import {AddActionFab} from "../../components/FabButtons"
 import {usePerson} from "../../hooks/PersonHook"
+import {HolidayClient} from "../../clients/HolidayClient"
 
 const useStyles = makeStyles({
   root: {
@@ -36,7 +38,7 @@ export function HolidayFeature() {
     setOpen(true)
   }
 
-  function handleRowClick(it) {
+  function handleClickRow(it) {
     return () => {
       setCode(it.code)
       setOpen(true)
@@ -47,8 +49,13 @@ export function HolidayFeature() {
     setPerson(it)
   }
 
+  function handleStatusChange(status, it) {
+    HolidayClient.put(it.code, {...it, status}).then(setRefresh(!refresh))
+    // TODO: error handling!
+  }
+
   return (
-    <div className={classes.root}>
+    <Container className={classes.root}>
       <Grid container spacing={1}>
         <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
           <Grid item xs={12}>
@@ -62,7 +69,8 @@ export function HolidayFeature() {
           <HolidayList
             personCode={person && person.code}
             refresh={refresh}
-            onRowClick={handleRowClick}
+            onClickRow={handleClickRow}
+            onClickStatus={handleStatusChange}
           />
         </Grid>
       </Grid>
@@ -73,6 +81,6 @@ export function HolidayFeature() {
         onComplete={handleCompleteDialog}
       />
       <AddActionFab color="primary" onClick={handleClickAdd} />
-    </div>
+    </Container>
   )
 }

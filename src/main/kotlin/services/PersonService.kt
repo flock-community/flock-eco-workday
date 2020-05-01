@@ -46,7 +46,7 @@ class PersonService(
         .findByUserCode(userCode)
         .toNullable()
 
-    fun findByPersonCodeIdIn(personCodes:List<String>) = repository
+    fun findByPersonCodeIdIn(personCodes: List<String>) = repository
         .findByCodeIn(personCodes)
 
     fun create(form: PersonForm): Person? {
