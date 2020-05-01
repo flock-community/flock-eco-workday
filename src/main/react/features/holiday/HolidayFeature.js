@@ -8,6 +8,7 @@ import {HolidayList} from "./HolidayList"
 import {PersonSelector} from "../../components/selector"
 import {AddActionFab} from "../../components/FabButtons"
 import {usePerson} from "../../hooks/PersonHook"
+import {HolidayClient} from "../../clients/HolidayClient"
 
 const useStyles = makeStyles({
   root: {
@@ -48,6 +49,11 @@ export function HolidayFeature() {
     setPerson(it)
   }
 
+  function handleStatusChange(status, it) {
+    HolidayClient.put(it.code, {...it, status}).then(setRefresh(!refresh))
+    // TODO: refresh, error handling!
+  }
+
   return (
     <Container className={classes.root}>
       <Grid container spacing={1}>
@@ -64,6 +70,7 @@ export function HolidayFeature() {
             personCode={person && person.code}
             refresh={refresh}
             onClickRow={handleClickRow}
+            onClickStatus={handleStatusChange}
           />
         </Grid>
       </Grid>

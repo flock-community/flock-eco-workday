@@ -7,7 +7,7 @@ import Typography from "@material-ui/core/Typography"
 import {HolidayClient} from "../../clients/HolidayClient"
 import {DayListItem} from "../../components/DayListItem"
 
-export function HolidayList({personCode, refresh, onClickRow}) {
+export function HolidayList({personCode, refresh, onClickRow, onClickStatus}) {
   const [list, setList] = useState([])
   const [update] = useState(refresh)
 
@@ -20,7 +20,11 @@ export function HolidayList({personCode, refresh, onClickRow}) {
   function renderItem(item, key) {
     return (
       <Grid item xs={12} key={`holiday-list-item-${key}`}>
-        <DayListItem value={item} onClick={onClickRow(item)} />
+        <DayListItem
+          value={item}
+          onClick={onClickRow(item)}
+          onClickStatus={status => onClickStatus(status, item)}
+        />
       </Grid>
     )
   }
@@ -46,4 +50,5 @@ HolidayList.propTypes = {
   personCode: PropTypes.string,
   refresh: PropTypes.bool,
   onClickRow: PropTypes.func,
+  onClickStatus: PropTypes.func,
 }
