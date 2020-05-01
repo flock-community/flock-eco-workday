@@ -6,8 +6,7 @@ import Grid from "@material-ui/core/Grid"
 import {WorkDayClient} from "../../clients/WorkDayClient"
 import {WorkDayListItem} from "./WorkDayListItem"
 
-export function WorkDayList(props) {
-  const {personCode, refresh, onClickRow} = props
+export function WorkDayList({personCode, refresh, onClickRow, onClickStatus}) {
   const [state, setState] = useState([])
 
   useEffect(() => {
@@ -17,7 +16,12 @@ export function WorkDayList(props) {
   function renderItem(item, key) {
     return (
       <Grid key={`workday-list-item-${key}`} item xs={12}>
-        <WorkDayListItem value={item} onClick={() => onClickRow && onClickRow(item)} />
+        <WorkDayListItem
+          value={item}
+          onClick={() => onClickRow && onClickRow(item)}
+          onClickStatus={status => onClickStatus(status, item)}
+          hasAuthority={"WorkDayAuthority.ADMIN"}
+        />
       </Grid>
     )
   }
@@ -43,4 +47,5 @@ WorkDayList.propTypes = {
   refresh: PropTypes.bool,
   personCode: PropTypes.string,
   onClickRow: PropTypes.func,
+  onClickStatus: PropTypes.func,
 }
