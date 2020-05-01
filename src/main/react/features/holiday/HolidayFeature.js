@@ -51,7 +51,7 @@ export function HolidayFeature() {
 
   function handleStatusChange(status, it) {
     HolidayClient.put(it.code, {...it, status}).then(setRefresh(!refresh))
-    // TODO: refresh, error handling!
+    // TODO: error handling!
   }
 
   return (

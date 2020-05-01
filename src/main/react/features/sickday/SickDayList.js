@@ -6,8 +6,7 @@ import Grid from "@material-ui/core/Grid"
 import {SickDayClient} from "../../clients/SickDayClient"
 import {DayListItem} from "../../components/DayListItem"
 
-export function SickDayList(props) {
-  const {personCode, refresh, onClickRow} = props
+export function SickDayList({personCode, refresh, onClickRow, onClickStatus}) {
   const [list, setList] = useState([])
 
   useEffect(() => {
@@ -17,7 +16,12 @@ export function SickDayList(props) {
   function renderItem(item, key) {
     return (
       <Grid item xs={12} key={`sickday-list-item-${key}`}>
-        <DayListItem value={item} onClick={() => onClickRow && onClickRow(item)} />
+        <DayListItem
+          value={item}
+          onClick={onClickRow(item)}
+          onClickStatus={status => onClickStatus(status, item)}
+          hasAuthority={"SickdayAuthority.ADMIN"}
+        />
       </Grid>
     )
   }
@@ -43,4 +47,5 @@ SickDayList.propTypes = {
   refresh: PropTypes.bool,
   personCode: PropTypes.string,
   onClickRow: PropTypes.func,
+  onClickStatus: PropTypes.func,
 }

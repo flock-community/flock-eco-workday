@@ -9,6 +9,7 @@ import {PersonSelector} from "../../components/selector"
 import {ApplicationContext} from "../../application/ApplicationContext"
 import {AddActionFab} from "../../components/FabButtons"
 import {usePerson} from "../../hooks/PersonHook"
+import {SickDayClient} from "../../clients/SickDayClient"
 
 const useStyles = makeStyles({
   root: {
@@ -24,7 +25,7 @@ export function SickDayFeature() {
 
   const [person, setPerson] = usePerson()
 
-  const [reload, setReload] = useState(false)
+  const [refresh, setRefresh] = useState(false)
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(null)
   const {authorities} = useContext(ApplicationContext)
@@ -34,7 +35,7 @@ export function SickDayFeature() {
   }
 
   function handleCompleteDialog() {
-    setReload(!reload)
+    setRefresh(!refresh)
     setOpen(false)
     setValue(null)
   }
@@ -45,12 +46,19 @@ export function SickDayFeature() {
   }
 
   function handleClickRow(item) {
-    setValue(item)
-    setOpen(true)
+    return () => {
+      setValue(item)
+      setOpen(true)
+    }
   }
 
   function handlePersonChange(it) {
     setPerson(it)
+  }
+
+  function handleStatusChange(status, it) {
+    SickDayClient.put(it.code, {...it, status}).then(setRefresh(!refresh))
+    // TODO: error handling!
   }
 
   return (
@@ -68,7 +76,8 @@ export function SickDayFeature() {
           <SickDayList
             personCode={person && person.code}
             onClickRow={handleClickRow}
-            refresh={reload}
+            refresh={refresh}
+            onClickStatus={handleStatusChange}
           />
         </Grid>
       </Grid>
