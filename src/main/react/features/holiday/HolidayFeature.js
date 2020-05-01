@@ -50,7 +50,10 @@ export function HolidayFeature() {
   }
 
   function handleStatusChange(status, it) {
-    HolidayClient.put(it.code, {...it, status}).then(setRefresh(!refresh))
+    // eslint-disable-next-line no-underscore-dangle
+    HolidayClient.put(it.code, {...it, status, from: it.from._i, to: it.to._i}).then(
+      setRefresh(!refresh)
+    )
     // TODO: error handling!
   }
 
