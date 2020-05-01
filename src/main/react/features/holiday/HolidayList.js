@@ -24,6 +24,7 @@ export function HolidayList({personCode, refresh, onClickRow, onClickStatus}) {
           value={item}
           onClick={onClickRow(item)}
           onClickStatus={status => onClickStatus(status, item)}
+          hasAuthority={"HolidayAuthority.ADMIN"}
         />
       </Grid>
     )

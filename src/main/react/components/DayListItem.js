@@ -4,6 +4,7 @@ import {Card, CardContent, makeStyles, Typography} from "@material-ui/core"
 import Button from "@material-ui/core/Button"
 import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
+import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -16,7 +17,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export function DayListItem({value, onClick, onClickStatus}) {
+export function DayListItem({value, onClick, onClickStatus, hasAuthority}) {
   const classes = useStyles()
 
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -55,23 +56,25 @@ export function DayListItem({value, onClick, onClickStatus}) {
           >
             {value.status}
           </Button>
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={handleMenuItemClick} data-value={"REQUESTED"}>
-              REQUESTED
-            </MenuItem>
-            <MenuItem onClick={handleMenuItemClick} data-value={"APPROVED"}>
-              APPROVE
-            </MenuItem>
-            <MenuItem onClick={handleMenuItemClick} data-value={"REJECTED"}>
-              REJECT
-            </MenuItem>
-          </Menu>
+          <UserAuthorityUtil has={hasAuthority}>
+            <Menu
+              id="simple-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleMenuItemClick} data-value={"REQUESTED"}>
+                REQUESTED
+              </MenuItem>
+              <MenuItem onClick={handleMenuItemClick} data-value={"APPROVED"}>
+                APPROVE
+              </MenuItem>
+              <MenuItem onClick={handleMenuItemClick} data-value={"REJECTED"}>
+                REJECT
+              </MenuItem>
+            </Menu>
+          </UserAuthorityUtil>
         </div>
       </CardContent>
     </Card>
@@ -82,4 +85,5 @@ DayListItem.propTypes = {
   value: PropTypes.object,
   onClick: PropTypes.func,
   onClickStatus: PropTypes.func,
+  hasAuthority: PropTypes.string,
 }
