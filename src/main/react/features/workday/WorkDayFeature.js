@@ -57,19 +57,14 @@ export function WorkDayFeature() {
   }
 
   function handleStatusChange(status, it) {
-    /*eslint-disable */
-
-    //suppress all warnings between comments
     WorkDayClient.put(it.code, {
       ...it,
-      from: it.from._i,
-      to: it.to._i,
+      from: it.from.format("YYYY-MM-DD"),
+      to: it.to.format("YYYY-MM-DD"),
       status,
       assignmentCode: it.assignment.code,
     }).then(setRefresh(!refresh))
     // TODO: error handling!
-
-    /* eslint-enable */
   }
 
   return (

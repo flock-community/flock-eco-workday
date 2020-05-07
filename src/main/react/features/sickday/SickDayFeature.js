@@ -57,10 +57,12 @@ export function SickDayFeature() {
   }
 
   function handleStatusChange(status, it) {
-    // eslint-disable-next-line no-underscore-dangle
-    SickDayClient.put(it.code, {...it, status, from: it.from._i, to: it.to._i}).then(
-      setRefresh(!refresh)
-    )
+    SickDayClient.put(it.code, {
+      ...it,
+      status,
+      from: it.from.format("YYYY-MM-DD"),
+      to: it.to.format("YYYY-MM-DD"),
+    }).then(setRefresh(!refresh))
     // TODO: error handling!
   }
 
