@@ -63,8 +63,9 @@ export function WorkDayFeature() {
       to: it.to.format("YYYY-MM-DD"),
       status,
       assignmentCode: it.assignment.code,
-    }).then(setRefresh(!refresh))
-    // TODO: error handling!
+    })
+      .then(setRefresh(!refresh))
+      .catch(err => console.log(err))
   }
 
   return (

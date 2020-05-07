@@ -62,8 +62,9 @@ export function SickDayFeature() {
       status,
       from: it.from.format("YYYY-MM-DD"),
       to: it.to.format("YYYY-MM-DD"),
-    }).then(setRefresh(!refresh))
-    // TODO: error handling!
+    })
+      .then(setRefresh(!refresh))
+      .catch(err => console.log(err))
   }
 
   return (
