@@ -2,9 +2,11 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.WorkDayAuthority
+import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.PersonService
+import community.flock.eco.workday.services.SickDayService
 import community.flock.eco.workday.services.WorkDayService
 import community.flock.eco.workday.services.isUser
 import org.springframework.http.HttpStatus.UNAUTHORIZED
@@ -65,16 +67,10 @@ class WorkdayController(
         @PathVariable code: String,
         @RequestBody form: WorkDayForm,
         authentication: Authentication
-    ) = service.findByCode(code)
-        ?.applyAuthentication(authentication)
-        ?.run {
-            if (form.status !== this.status && !authentication.isAdmin()) {
-                throw ResponseStatusException(UNAUTHORIZED, "User is not allowed to change status field")
-            } else {
-                service.update(code, form)
-                    .toResponse()
-            }
-        }
+    ) = service
+        .isAllowedToUpdateStatus(code, form, authentication)
+        .update(code, form)
+        .toResponse()
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('WorkDayAuthority.WRITE')")
@@ -93,6 +89,12 @@ class WorkdayController(
     private fun WorkDay.applyAuthentication(authentication: Authentication) = apply {
         if (!(authentication.isAdmin() || this.assignment.person.isUser(authentication.name))) {
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to workday: ${this.code}")
+        }
+    }
+
+    private fun WorkDayService.isAllowedToUpdateStatus(code: String, form: WorkDayForm, authentication: Authentication) = apply {
+        if (form.status !== this.findByCode(code)?.status && !authentication.isAdmin()) {
+            throw ResponseStatusException(UNAUTHORIZED, "User is not allowed to change status field")
         }
     }
 }

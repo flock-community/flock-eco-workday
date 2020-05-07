@@ -2,8 +2,10 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.SickdayAuthority
+import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.model.SickDay
+import community.flock.eco.workday.services.HoliDayService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.SickDayService
 import community.flock.eco.workday.services.isUser
@@ -71,14 +73,9 @@ class SickdayController(
         @RequestBody form: SickDayForm,
         authentication: Authentication
     ) = service
-        .run {
-            if (form.status !== findByCode(code)?.status && !authentication.isAdmin()) {
-                throw ResponseStatusException(UNAUTHORIZED, "User is not allowed to change status field")
-            } else {
-                this.update(code, form.setPersonCode(authentication))
-                .toResponse()
-            }
-        }
+        .isAllowedToUpdateStatus(code, form, authentication)
+        .update(code, form.setPersonCode(authentication))
+        .toResponse()
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('SickdayAuthority.WRITE')")
@@ -108,6 +105,12 @@ class SickdayController(
     private fun SickDay.applyAuthentication(authentication: Authentication) = apply {
         if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
+        }
+    }
+
+    private fun SickDayService.isAllowedToUpdateStatus(code: String, form: SickDayForm, authentication: Authentication) = apply {
+        if (form.status !== this.findByCode(code)?.status && !authentication.isAdmin()) {
+            throw ResponseStatusException(UNAUTHORIZED, "User is not allowed to change status field")
         }
     }
 }

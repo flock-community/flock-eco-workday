@@ -63,15 +63,12 @@ class HolidayController(
         @PathVariable code: String,
         @RequestBody form: HoliDayForm,
         authentication: Authentication
-    ) = service
-        .run {
-            if (form.status !== findByCode(code)?.status && !authentication.isAdmin()) {
-                throw ResponseStatusException(UNAUTHORIZED, "User is not allowed to change status field")
-            } else {
-                this.update(code, form.setPersonCode(authentication))
-                    .toResponse()
-            }
-        }
+    ) =
+        service
+            .isAllowedToUpdateStatus(code, form, authentication)
+            .update(code, form.setPersonCode(authentication))
+            .toResponse()
+
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
@@ -101,6 +98,12 @@ class HolidayController(
     private fun HoliDay.applyAuthentication(authentication: Authentication) = apply {
         if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
+        }
+    }
+
+    private fun HoliDayService.isAllowedToUpdateStatus(code: String, form: HoliDayForm, authentication: Authentication) = apply {
+        if (form.status !== this.findByCode(code)?.status && !authentication.isAdmin()) {
+            throw ResponseStatusException(UNAUTHORIZED, "User is not allowed to change status field")
         }
     }
 }
