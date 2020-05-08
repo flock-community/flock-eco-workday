@@ -3,29 +3,44 @@ import PropTypes from "prop-types"
 import {Card, Typography} from "@material-ui/core"
 import CardContent from "@material-ui/core/CardContent"
 import Grid from "@material-ui/core/Grid"
-import {EventClient} from "../../clients/EventClient"
+import IconButton from "@material-ui/core/IconButton"
+import ScoreIcon from "@material-ui/icons/Score"
+import CardHeader from "@material-ui/core/CardHeader"
+import {useHistory} from "react-router-dom"
 import {isDefined} from "../../utils/validation"
+import {EventClient} from "../../clients/EventClient"
 
 export function EventList(props) {
   const {personCode, refresh, onClickRow} = props
   const [state, setState] = useState([])
 
+  const history = useHistory()
+
   useEffect(() => {
     EventClient.all().then(res => setState(res))
   }, [personCode, refresh])
 
-  function handleClickRow(item) {
-    return () => {
-      if (isDefined(onClickRow)) onClickRow(item)
-    }
+  const handleClickRow = item => () => {
+    if (isDefined(onClickRow)) onClickRow(item)
+  }
+
+  const handleClickRating = item => () => {
+    history.push(`/event_rating/${item.code}`)
   }
 
   function renderItem(item, key) {
     return (
       <Grid key={`workday-list-item-${key}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
+          <CardHeader
+            action={
+              <IconButton aria-label="settings" onClick={handleClickRating(item)}>
+                <ScoreIcon />
+              </IconButton>
+            }
+            title={item.description}
+          />
           <CardContent>
-            <Typography variant="h6">{item.description}</Typography>
             <Typography>
               Period: {item.from.format("DD-MM-YYYY")} -{" "}
               {item.to ? item.to.format("DD-MM-YYYY") : <em>now</em>}
