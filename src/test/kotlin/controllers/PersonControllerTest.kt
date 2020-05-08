@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.util.UUID
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
@@ -35,7 +36,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @AutoConfigureTestDatabase
 class PersonControllerTest {
     private val baseUrl: String = "/api/persons"
-    private val email: String = "admin@reynholm-instudries.co.uk"
 
     @Autowired
     private lateinit var mvc: MockMvc
@@ -49,12 +49,8 @@ class PersonControllerTest {
     @Autowired
     private lateinit var userService: UserService
 
-    private lateinit var user: RequestPostProcessor
-
-    @Before
-    fun setup() {
-        user = UserAccountPasswordForm(
-            email = email,
+    fun createUser() = UserAccountPasswordForm(
+            email = UUID.randomUUID().toString(),
             name = "Administrator",
             authorities = setOf(
                 "PersonAuthority.ADMIN",
@@ -65,13 +61,6 @@ class PersonControllerTest {
             .run { userAccountService.createUserAccountPassword(this) }
             .run { UserSecurityService.UserSecurityPassword(this) }
             .run { user(this) }
-    }
-
-    @After
-    fun teardown() {
-        userAccountService.findUserAccountPasswordByUserEmail(email)
-            ?.apply { userService.delete(this.user.code) }
-    }
 
     @Test
     fun `should create a valid person via POST-method`() {
@@ -83,6 +72,8 @@ class PersonControllerTest {
             number = null,
             userCode = null
         )
+
+        val user = createUser()
 
         mvc.perform(post(baseUrl)
             .with(user)
@@ -110,6 +101,8 @@ class PersonControllerTest {
             number = null,
             userCode = null
         )
+
+        val user = createUser()
 
         // need this user to compare generated fields
         // create a person so one can query that person via the PersonCode
@@ -152,6 +145,7 @@ class PersonControllerTest {
 
         // need this user to compare generated fields
         var person: JsonNode? = null
+        val user = createUser()
         mvc.perform(post(baseUrl).with(user)
             .content(mapper.writeValueAsString(personForm))
             .contentType(APPLICATION_JSON)
@@ -205,6 +199,7 @@ class PersonControllerTest {
         // need this user to compare generated fields
         // create a person so one can query that person via the PersonCode
         var person: JsonNode? = null
+        val user = createUser()
         mvc.perform(post(baseUrl).with(user)
             .content(mapper.writeValueAsString(personForm))
             .contentType(APPLICATION_JSON)
@@ -241,8 +236,11 @@ class PersonControllerTest {
 
     @Test
     fun `should return an error while trying to get a non-existing person via GET-request`() {
+        val user = createUser()
         /* DRY-Bock */
-        mvc.perform(get("$baseUrl/3b7ab8e2-aeeb-4228-98d8-bd22fa141caa").with(user).accept(APPLICATION_JSON))
+        mvc.perform(get("$baseUrl/3b7ab8e2-aeeb-4228-98d8-bd22fa141caa")
+            .with(user)
+            .accept(APPLICATION_JSON))
             .andExpect(status().isNotFound)
         /* DRY-Bock */
     }
