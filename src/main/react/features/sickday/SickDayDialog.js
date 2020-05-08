@@ -6,6 +6,7 @@ import HealingIcon from "@material-ui/icons/Healing"
 import {HTML5_FMT} from "moment"
 import {ConfirmDialog} from "@flock-eco/core/src/main/react/components/ConfirmDialog"
 import Typography from "@material-ui/core/Typography"
+import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {SickDayClient} from "../../clients/SickDayClient"
 import {TransitionSlider} from "../../components/transitions/Slide"
 import {DialogFooter, DialogHeader} from "../../components/dialog"
@@ -83,6 +84,10 @@ export function SickDayDialog({open, code, personCode, onComplete}) {
           formId={SICKDAY_FORM_ID}
           onClose={handleClose}
           onDelete={handleDeleteOpen}
+          disableDelete={!UserAuthorityUtil.hasAuthority("AssignmentAuthority.ADMIN")}
+          disableEdit={!UserAuthorityUtil.hasAuthority("AssignmentAuthority.ADMIN")}
+          // disableDelete={!UserAuthorityUtil.hasAuthority("AssignmentAuthority.ADMIN") && state && state.status !== "REQUESTED"}
+          // disableEdit={!UserAuthorityUtil.hasAuthority("AssignmentAuthority.ADMIN") && state && state.status !== "REQUESTED"}
         />
       </Dialog>
       <ConfirmDialog

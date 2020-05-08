@@ -57,6 +57,7 @@ export function StatusMenu({onClickStatus, hasAuthority, value}) {
       <Button
         aria-controls="simple-menu"
         aria-haspopup="true"
+        disabled={!UserAuthorityUtil.hasAuthority(hasAuthority)}
         onClick={handleMenuClick}
         className={clsx({
           [classes.buttonDefault]: color === "default",
