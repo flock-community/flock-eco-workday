@@ -2,13 +2,13 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.WorkDayAuthority
-import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.forms.WorkDayForm
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.PersonService
-import community.flock.eco.workday.services.SickDayService
 import community.flock.eco.workday.services.WorkDayService
 import community.flock.eco.workday.services.isUser
+import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -67,9 +67,10 @@ class WorkdayController(
         @PathVariable code: String,
         @RequestBody form: WorkDayForm,
         authentication: Authentication
-    ) = service
-        .isAllowedToUpdateStatus(code, form, authentication)
-        .update(code, form)
+    ) = service.findByCode(code)
+        ?.applyAuthentication(authentication)
+        ?.applyAllowedToUpdate(form, authentication)
+        ?.run { service.update(code, form) }
         .toResponse()
 
     @DeleteMapping("/{code}")
@@ -92,9 +93,12 @@ class WorkdayController(
         }
     }
 
-    private fun WorkDayService.isAllowedToUpdateStatus(code: String, form: WorkDayForm, authentication: Authentication) = apply {
-        if (form.status !== this.findByCode(code)?.status && !authentication.isAdmin()) {
-            throw ResponseStatusException(UNAUTHORIZED, "User is not allowed to change status field")
+    private fun WorkDay.applyAllowedToUpdate(form: WorkDayForm, authentication: Authentication): WorkDay = apply {
+        if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
+            throw ResponseStatusException(FORBIDDEN, "User is not allowed to change workday")
+        }
+        if (form.status !== this.status && !authentication.isAdmin()) {
+            throw ResponseStatusException(FORBIDDEN, "User is not allowed to change status field")
         }
     }
 }
