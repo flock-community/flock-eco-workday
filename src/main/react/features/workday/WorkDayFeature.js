@@ -27,7 +27,7 @@ export function WorkDayFeature() {
 
   const [refresh, setRefresh] = useState(false)
   const [open, setOpen] = useState(false)
-  const [state, setState] = useState(null)
+  const [value, setValue] = useState(null)
   const {authorities} = useContext(ApplicationContext)
 
   function isSuperUser() {
@@ -37,19 +37,17 @@ export function WorkDayFeature() {
   function handleCompleteDialog() {
     setRefresh(!refresh)
     setOpen(false)
-    setState(null)
+    setValue(null)
   }
 
   function handleClickAdd() {
-    setState(null)
+    setValue(null)
     setOpen(true)
   }
 
-  function handleClickRow(item) {
-    return () => {
-      setState(item)
-      setOpen(true)
-    }
+  function handleClickRow(e, item) {
+    setValue(item)
+    setOpen(true)
   }
 
   function handlePersonChange(it) {
@@ -90,8 +88,8 @@ export function WorkDayFeature() {
       </Grid>
       <WorkDayDialog
         open={open}
-        code={state && state.code}
-        value={state}
+        code={value && value.code}
+        value={value}
         onComplete={handleCompleteDialog}
       />
       <AddActionFab color="primary" onClick={handleClickAdd} />

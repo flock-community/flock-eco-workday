@@ -22,7 +22,7 @@ export function HolidayList({personCode, refresh, onClickRow, onClickStatus}) {
       <Grid item xs={12} key={`holiday-list-item-${key}`}>
         <DayListItem
           value={item}
-          onClick={onClickRow(item)}
+          onClick={e => onClickRow(e, item)}
           onClickStatus={status => onClickStatus(status, item)}
           hasAuthority={"HolidayAuthority.ADMIN"}
         />

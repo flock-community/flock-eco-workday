@@ -45,11 +45,9 @@ export function SickDayFeature() {
     setOpen(true)
   }
 
-  function handleClickRow(item) {
-    return () => {
-      setValue(item)
-      setOpen(true)
-    }
+  function handleClickRow(e, item) {
+    setValue(item)
+    setOpen(true)
   }
 
   function handlePersonChange(it) {

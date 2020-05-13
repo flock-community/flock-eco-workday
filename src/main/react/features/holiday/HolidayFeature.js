@@ -24,25 +24,23 @@ export function HolidayFeature() {
 
   const [refresh, setRefresh] = useState(false)
   const [open, setOpen] = useState(false)
-  const [code, setCode] = useState(null)
+  const [value, setValue] = useState(null)
   const [person, setPerson] = usePerson()
 
   function handleCompleteDialog() {
     setRefresh(!refresh)
     setOpen(false)
-    setCode(null)
+    setValue(null)
   }
 
   function handleClickAdd() {
-    setCode("")
+    setValue(null)
     setOpen(true)
   }
 
-  function handleClickRow(it) {
-    return () => {
-      setCode(it.code)
-      setOpen(true)
-    }
+  function handleClickRow(e, it) {
+    setValue(it)
+    setOpen(true)
   }
 
   function handlePersonChange(it) {
@@ -82,7 +80,7 @@ export function HolidayFeature() {
       </Grid>
       <HolidayDialog
         open={open}
-        code={code}
+        code={value && value.code}
         personCode={person && person.code}
         onComplete={handleCompleteDialog}
       />

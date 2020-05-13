@@ -18,7 +18,7 @@ export function WorkDayList({personCode, refresh, onClickRow, onClickStatus}) {
       <Grid key={`workday-list-item-${key}`} item xs={12}>
         <WorkDayListItem
           value={item}
-          onClick={onClickRow(item)}
+          onClick={e => onClickRow(e, item)}
           onClickStatus={status => onClickStatus(status, item)}
           hasAuthority={"WorkDayAuthority.ADMIN"}
         />

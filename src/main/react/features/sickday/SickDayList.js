@@ -18,7 +18,7 @@ export function SickDayList({personCode, refresh, onClickRow, onClickStatus}) {
       <Grid item xs={12} key={`sickday-list-item-${key}`}>
         <DayListItem
           value={item}
-          onClick={onClickRow(item)}
+          onClick={e => onClickRow(e, item)}
           onClickStatus={status => onClickStatus(status, item)}
           hasAuthority={"SickdayAuthority.ADMIN"}
         />
