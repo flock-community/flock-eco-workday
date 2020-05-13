@@ -31,7 +31,7 @@ export function WorkDayFeature() {
   const {authorities} = useContext(ApplicationContext)
 
   function isSuperUser() {
-    return authorities && authorities.includes("SickdayAuthority.ADMIN")
+    return authorities && authorities.includes("WorkDayAuthority.ADMIN")
   }
 
   function handleCompleteDialog() {

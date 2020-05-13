@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React from "react"
 import * as Yup from "yup"
 import {Field, Form, Formik} from "formik"
 import moment from "moment"
@@ -15,14 +15,13 @@ import {PeriodInputField} from "../../components/fields/PeriodInputField"
 import {isDefined} from "../../utils/validation"
 import {usePerson} from "../../hooks/PersonHook"
 import {AssignmentSelectorField} from "../../components/fields/AssignmentSelectorField"
-import {WorkDayClient} from "../../clients/WorkDayClient"
 import {DatePickerField} from "../../components/fields/DatePickerField"
 
 export const WORKDAY_FORM_ID = "work-day-form"
 
 const now = moment()
 
-const schema = Yup.object().shape({
+export const schemaWorkDayForm = Yup.object().shape({
   status: Yup.string()
     .required("Field required")
     .default("REQUESTED"),
@@ -42,48 +41,27 @@ const schema = Yup.object().shape({
 /**
  * @return {null}
  */
-export function WorkDayForm({code, onSubmit}) {
+export function WorkDayForm({value, onSubmit, onChange, onSwitchChange, daysSwitch}) {
   const [person] = usePerson()
 
-  const [state, setState] = useState(null)
-  const [daysSwitch, setDaysSwitch] = useState(false)
-
-  useEffect(() => {
-    if (code) {
-      WorkDayClient.get(code).then(res => {
-        setState({
-          assignmentCode: res.assignment.code,
-          from: res.from,
-          to: res.to,
-          days: res.days,
-          hours: res.hours,
-          status: res.status,
-        })
-        setDaysSwitch(res.days.length === 0)
-      })
-    } else {
-      setState(schema.cast())
-    }
-  }, [code])
-
-  const handleSubmit = value => {
+  const handleSubmit = data => {
     if (isDefined(onSubmit))
       onSubmit({
-        assignmentCode: value.assignmentCode,
-        from: value.from,
-        to: value.to,
-        days: daysSwitch ? undefined : value.days,
-        hours: value.hours,
-        status: value.status,
+        assignmentCode: data.assignmentCode,
+        from: data.from,
+        to: data.to,
+        days: daysSwitch ? undefined : data.days,
+        hours: data.hours,
+        status: data.status,
       })
   }
 
   const handleChange = it => {
-    setState(it)
+    onChange(it)
   }
 
-  const handleSwitchChange = () => {
-    setDaysSwitch(!daysSwitch)
+  const handleSwitchChange = it => {
+    onSwitchChange(it)
   }
 
   const renderSwitch = (
@@ -109,9 +87,9 @@ export function WorkDayForm({code, onSubmit}) {
               personCode={person.code}
             />
           </Grid>
-          {code && (
+          {value && (
             <Grid item xs={12}>
-              <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+              <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
                 <Field
                   fullWidth
                   type="text"
@@ -150,8 +128,8 @@ export function WorkDayForm({code, onSubmit}) {
             ) : (
               <PeriodInputField
                 name="days"
-                from={state && state.from}
-                to={state && state.to}
+                from={value && value.from}
+                to={value && value.to}
               />
             )}
           </Grid>
@@ -161,12 +139,12 @@ export function WorkDayForm({code, onSubmit}) {
   )
 
   return (
-    state && (
+    value && (
       <Formik
         enableReinitialize
-        initialValues={state}
+        initialValues={value}
         onSubmit={handleSubmit}
-        validationSchema={schema}
+        validationSchema={schemaWorkDayForm}
         validate={handleChange}
         render={renderForm}
       />
@@ -175,6 +153,6 @@ export function WorkDayForm({code, onSubmit}) {
 }
 
 WorkDayForm.propTypes = {
-  code: PropTypes.string,
+  value: PropTypes.object,
   onSubmit: PropTypes.func,
 }

@@ -1,18 +1,21 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
 import {Dialog, DialogContent} from "@material-ui/core"
 import {HTML5_FMT} from "moment"
 import HolidayIcon from "@material-ui/icons/WbSunny"
 import Typography from "@material-ui/core/Typography"
 import {ConfirmDialog} from "@flock-eco/core/src/main/react/components/ConfirmDialog"
+import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {DialogFooter, DialogHeader} from "../../components/dialog"
 import {HolidayClient} from "../../clients/HolidayClient"
-import {HOLIDAY_FORM_ID, HolidayForm} from "./HolidayForm"
+import {HOLIDAY_FORM_ID, HolidayForm, schemaHolidayForm} from "./HolidayForm"
 import {isDefined} from "../../utils/validation"
 import {TransitionSlider} from "../../components/transitions/Slide"
 
 export function HolidayDialog({open, code, personCode, onComplete}) {
   const [openDelete, setOpenDelete] = useState(false)
+
+  const [state, setState] = useState(null)
 
   const handleSubmit = it => {
     const body = {
@@ -35,6 +38,22 @@ export function HolidayDialog({open, code, personCode, onComplete}) {
     }
   }
 
+  useEffect(() => {
+    if (code) {
+      HolidayClient.get(code).then(res => {
+        setState({
+          description: res.description,
+          status: res.status,
+          from: res.from,
+          to: res.to,
+          days: res.days,
+        })
+      })
+    } else {
+      setState(schemaHolidayForm.cast())
+    }
+  }, [code])
+
   const handleDelete = () => {
     HolidayClient.delete(code).then(() => {
       if (isDefined(onComplete)) onComplete()
@@ -53,6 +72,10 @@ export function HolidayDialog({open, code, personCode, onComplete}) {
     setOpenDelete(false)
   }
 
+  const handleChange = it => {
+    setState(it)
+  }
+
   return (
     <>
       <Dialog
@@ -69,12 +92,22 @@ export function HolidayDialog({open, code, personCode, onComplete}) {
           onClose={handleClose}
         />
         <DialogContent>
-          <HolidayForm code={code} onSubmit={handleSubmit} />
+          <HolidayForm value={state} onSubmit={handleSubmit} onChange={handleChange} />
         </DialogContent>
         <DialogFooter
           formId={HOLIDAY_FORM_ID}
           onClose={handleClose}
           onDelete={handleDeleteOpen}
+          disableDelete={
+            !UserAuthorityUtil.hasAuthority("HolidayAuthority.ADMIN") &&
+            state &&
+            state.status !== "REQUESTED"
+          }
+          disableEdit={
+            !UserAuthorityUtil.hasAuthority("HolidayAuthority.ADMIN") &&
+            state &&
+            state.status !== "REQUESTED"
+          }
         />
       </Dialog>
       <ConfirmDialog

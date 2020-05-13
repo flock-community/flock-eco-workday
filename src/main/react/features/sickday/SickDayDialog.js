@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
 import {Dialog, DialogContent, Divider} from "@material-ui/core"
 import {makeStyles} from "@material-ui/styles"
@@ -10,7 +10,7 @@ import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils
 import {SickDayClient} from "../../clients/SickDayClient"
 import {TransitionSlider} from "../../components/transitions/Slide"
 import {DialogFooter, DialogHeader} from "../../components/dialog"
-import {SICKDAY_FORM_ID, SickDayForm} from "./SickDayForm"
+import {SICKDAY_FORM_ID, SickDayForm, schemaSickDayForm} from "./SickDayForm"
 import {isDefined} from "../../utils/validation"
 
 const useStyles = makeStyles(() => ({
@@ -24,6 +24,24 @@ export function SickDayDialog({open, code, personCode, onComplete}) {
   const classes = useStyles()
 
   const [openDelete, setOpenDelete] = useState(false)
+
+  const [state, setState] = useState(null)
+
+  useEffect(() => {
+    if (code) {
+      SickDayClient.get(code).then(res => {
+        setState({
+          from: res.from,
+          to: res.to,
+          days: res.days,
+          description: res.description,
+          status: res.status,
+        })
+      })
+    } else {
+      setState(schemaSickDayForm.cast())
+    }
+  }, [code])
 
   const handleSubmit = it => {
     const body = {
@@ -61,6 +79,10 @@ export function SickDayDialog({open, code, personCode, onComplete}) {
   const handleClose = () => {
     if (isDefined(onComplete)) onComplete()
   }
+
+  const handleChange = it => {
+    setState(it)
+  }
   return (
     <>
       <Dialog
@@ -77,17 +99,23 @@ export function SickDayDialog({open, code, personCode, onComplete}) {
           onClose={handleClose}
         />
         <DialogContent className={classes.dialogContent}>
-          <SickDayForm code={code} onSubmit={handleSubmit} />
+          <SickDayForm value={state} onSubmit={handleSubmit} onChange={handleChange} />
         </DialogContent>
         <Divider />
         <DialogFooter
           formId={SICKDAY_FORM_ID}
           onClose={handleClose}
           onDelete={handleDeleteOpen}
-          disableDelete={!UserAuthorityUtil.hasAuthority("AssignmentAuthority.ADMIN")}
-          disableEdit={!UserAuthorityUtil.hasAuthority("AssignmentAuthority.ADMIN")}
-          // disableDelete={!UserAuthorityUtil.hasAuthority("AssignmentAuthority.ADMIN") && state && state.status !== "REQUESTED"}
-          // disableEdit={!UserAuthorityUtil.hasAuthority("AssignmentAuthority.ADMIN") && state && state.status !== "REQUESTED"}
+          disableDelete={
+            !UserAuthorityUtil.hasAuthority("SickdayAuthority.ADMIN") &&
+            state &&
+            state.status !== "REQUESTED"
+          }
+          disableEdit={
+            !UserAuthorityUtil.hasAuthority("SickdayAuthority.ADMIN") &&
+            state &&
+            state.status !== "REQUESTED"
+          }
         />
       </Dialog>
       <ConfirmDialog
