@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React from "react"
 import PropTypes from "prop-types"
 import * as Yup from "yup"
 import {Field, Form, Formik} from "formik"
@@ -9,7 +9,6 @@ import MomentUtils from "@date-io/moment"
 import {TextField} from "formik-material-ui"
 import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import MenuItem from "@material-ui/core/MenuItem"
-import {SickDayClient} from "../../clients/SickDayClient"
 import {isDefined} from "../../utils/validation"
 import {DatePickerField} from "../../components/fields/DatePickerField"
 import {PeriodInputField} from "../../components/fields/PeriodInputField"
@@ -18,7 +17,7 @@ export const SICKDAY_FORM_ID = "sick-day-form"
 
 const now = moment()
 
-const schema = Yup.object().shape({
+export const schemaSickDayForm = Yup.object().shape({
   status: Yup.string()
     .required("Field required")
     .default("REQUESTED"),
@@ -31,35 +30,17 @@ const schema = Yup.object().shape({
   days: Yup.array().required("Required"),
 })
 
-export function SickDayForm({code, onSubmit}) {
-  const [state, setState] = useState(null)
-
-  useEffect(() => {
-    if (code) {
-      SickDayClient.get(code).then(res => {
-        setState({
-          from: res.from,
-          to: res.to,
-          days: res.days,
-          description: res.description,
-          status: res.status,
-        })
-      })
-    } else {
-      setState(schema.cast())
-    }
-  }, [code])
-
-  const handleSubmit = value => {
+export function SickDayForm({value, onSubmit, onChange}) {
+  const handleSubmit = data => {
     if (isDefined(onSubmit))
       onSubmit({
-        ...state,
         ...value,
+        ...data,
       })
   }
 
   const handleChange = it => {
-    setState(it)
+    onChange(it)
   }
 
   const renderForm = () => (
@@ -76,9 +57,9 @@ export function SickDayForm({code, onSubmit}) {
             />
           </Grid>
 
-          {code && (
+          {value && (
             <Grid item xs={12}>
-              <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+              <UserAuthorityUtil has={"SickdayAuthority.ADMIN"}>
                 <Field
                   fullWidth
                   type="text"
@@ -106,8 +87,8 @@ export function SickDayForm({code, onSubmit}) {
           <Grid item xs={12}>
             <PeriodInputField
               name="days"
-              from={state && state.from}
-              to={state && state.to}
+              from={value && value.from}
+              to={value && value.to}
             />
           </Grid>
         </Grid>
@@ -116,12 +97,12 @@ export function SickDayForm({code, onSubmit}) {
   )
 
   return (
-    state && (
+    value && (
       <Formik
         enableReinitialize
-        initialValues={state}
+        initialValues={value}
         onSubmit={handleSubmit}
-        validationSchema={schema}
+        validationSchema={schemaSickDayForm}
         validate={handleChange}
         render={renderForm}
       />
@@ -130,6 +111,6 @@ export function SickDayForm({code, onSubmit}) {
 }
 
 SickDayForm.propTypes = {
-  code: PropTypes.string,
+  value: PropTypes.object,
   onSubmit: PropTypes.func,
 }

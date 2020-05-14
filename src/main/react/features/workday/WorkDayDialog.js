@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
 import {Dialog, DialogContent, Divider} from "@material-ui/core"
 import {makeStyles} from "@material-ui/styles"
@@ -6,10 +6,11 @@ import WorkIcon from "@material-ui/icons/Work"
 import {HTML5_FMT} from "moment"
 import {ConfirmDialog} from "@flock-eco/core/src/main/react/components/ConfirmDialog"
 import Typography from "@material-ui/core/Typography"
+import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {WorkDayClient} from "../../clients/WorkDayClient"
 import {TransitionSlider} from "../../components/transitions/Slide"
 import {DialogFooter, DialogHeader} from "../../components/dialog"
-import {WORKDAY_FORM_ID, WorkDayForm} from "./WorkDayForm"
+import {WORKDAY_FORM_ID, WorkDayForm, schemaWorkDayForm} from "./WorkDayForm"
 import {isDefined} from "../../utils/validation"
 
 const useStyles = makeStyles(() => ({
@@ -22,6 +23,32 @@ const useStyles = makeStyles(() => ({
 export function WorkDayDialog({open, code, onComplete}) {
   const classes = useStyles()
   const [openDelete, setOpenDelete] = useState(false)
+
+  const [state, setState] = useState(null)
+
+  const [daysSwitch, setDaysSwitch] = useState(false)
+
+  useEffect(() => {
+    if (code) {
+      WorkDayClient.get(code).then(res => {
+        setState({
+          assignmentCode: res.assignment.code,
+          from: res.from,
+          to: res.to,
+          days: res.days,
+          hours: res.hours,
+          status: res.status,
+        })
+        setDaysSwitch(res.days.length === 0)
+      })
+    } else {
+      setState(schemaWorkDayForm.cast())
+    }
+  }, [code])
+
+  const handleSwitchChange = () => {
+    setDaysSwitch(!daysSwitch)
+  }
 
   const handleSubmit = it => {
     const body = {
@@ -60,6 +87,11 @@ export function WorkDayDialog({open, code, onComplete}) {
   const handleClose = () => {
     if (isDefined(onComplete)) onComplete()
   }
+
+  const handleChange = it => {
+    setState(it)
+  }
+
   return (
     <>
       <Dialog
@@ -76,13 +108,29 @@ export function WorkDayDialog({open, code, onComplete}) {
           onClose={handleClose}
         />
         <DialogContent className={classes.dialogContent}>
-          <WorkDayForm code={code} onSubmit={handleSubmit} />
+          <WorkDayForm
+            value={state}
+            onSubmit={handleSubmit}
+            onChange={handleChange}
+            onSwitchChange={handleSwitchChange}
+            daysSwitch={daysSwitch}
+          />
         </DialogContent>
         <Divider />
         <DialogFooter
           formId={WORKDAY_FORM_ID}
           onClose={handleClose}
           onDelete={handleDeleteOpen}
+          disableDelete={
+            !UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN") &&
+            state &&
+            state.status !== "REQUESTED"
+          }
+          disableEdit={
+            !UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN") &&
+            state &&
+            state.status !== "REQUESTED"
+          }
         />
       </Dialog>
       <ConfirmDialog

@@ -203,7 +203,7 @@ class HoliDayControllerTest {
             .content(mapper.writeValueAsString(updatedCreateForm))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
-            .andExpect(status().isUnauthorized)
+            .andExpect(status().isForbidden)
 
         assertEquals(holiDayService.findByCode(created.code)?.status, status)
     }

@@ -27,29 +27,27 @@ export function WorkDayFeature() {
 
   const [refresh, setRefresh] = useState(false)
   const [open, setOpen] = useState(false)
-  const [state, setState] = useState(null)
+  const [value, setValue] = useState(null)
   const {authorities} = useContext(ApplicationContext)
 
   function isSuperUser() {
-    return authorities && authorities.includes("SickdayAuthority.ADMIN")
+    return authorities && authorities.includes("WorkDayAuthority.ADMIN")
   }
 
   function handleCompleteDialog() {
     setRefresh(!refresh)
     setOpen(false)
-    setState(null)
+    setValue(null)
   }
 
   function handleClickAdd() {
-    setState(null)
+    setValue(null)
     setOpen(true)
   }
 
-  function handleClickRow(item) {
-    return () => {
-      setState(item)
-      setOpen(true)
-    }
+  function handleClickRow(e, item) {
+    setValue(item)
+    setOpen(true)
   }
 
   function handlePersonChange(it) {
@@ -59,10 +57,13 @@ export function WorkDayFeature() {
   function handleStatusChange(status, it) {
     WorkDayClient.put(it.code, {
       ...it,
+      from: it.from.format("YYYY-MM-DD"),
+      to: it.to.format("YYYY-MM-DD"),
       status,
       assignmentCode: it.assignment.code,
-    }).then(setRefresh(!refresh))
-    // TODO: error handling!
+    })
+      .then(() => setRefresh(!refresh))
+      .catch(err => console.log(err))
   }
 
   return (
@@ -87,8 +88,8 @@ export function WorkDayFeature() {
       </Grid>
       <WorkDayDialog
         open={open}
-        code={state && state.code}
-        value={state}
+        code={value && value.code}
+        value={value}
         onComplete={handleCompleteDialog}
       />
       <AddActionFab color="primary" onClick={handleClickAdd} />

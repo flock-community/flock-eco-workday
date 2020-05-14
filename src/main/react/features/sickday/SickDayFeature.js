@@ -45,11 +45,9 @@ export function SickDayFeature() {
     setOpen(true)
   }
 
-  function handleClickRow(item) {
-    return () => {
-      setValue(item)
-      setOpen(true)
-    }
+  function handleClickRow(e, item) {
+    setValue(item)
+    setOpen(true)
   }
 
   function handlePersonChange(it) {
@@ -57,8 +55,14 @@ export function SickDayFeature() {
   }
 
   function handleStatusChange(status, it) {
-    SickDayClient.put(it.code, {...it, status}).then(setRefresh(!refresh))
-    // TODO: error handling!
+    SickDayClient.put(it.code, {
+      ...it,
+      status,
+      from: it.from.format("YYYY-MM-DD"),
+      to: it.to.format("YYYY-MM-DD"),
+    })
+      .then(() => setRefresh(!refresh))
+      .catch(err => console.log(err))
   }
 
   return (

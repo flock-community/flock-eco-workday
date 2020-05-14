@@ -3,10 +3,14 @@ package community.flock.eco.workday.controllers
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
+import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.SickDay
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.HoliDayService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.isUser
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -63,15 +67,12 @@ class HolidayController(
         @PathVariable code: String,
         @RequestBody form: HoliDayForm,
         authentication: Authentication
-    ) = service
-        .run {
-            if (form.status !== findByCode(code)?.status && !authentication.isAdmin()) {
-                throw ResponseStatusException(UNAUTHORIZED, "User is not allowed to change status field")
-            } else {
-                this.update(code, form.setPersonCode(authentication))
-                    .toResponse()
-            }
-        }
+    ) =
+        service.findByCode(code)
+            ?.applyAuthentication(authentication)
+            ?.applyAllowedToUpdate(form, authentication)
+            ?.run { service.update(code, form) }
+
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
@@ -101,6 +102,16 @@ class HolidayController(
     private fun HoliDay.applyAuthentication(authentication: Authentication) = apply {
         if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
+        }
+    }
+
+
+    private fun HoliDay.applyAllowedToUpdate(form: HoliDayForm, authentication: Authentication): HoliDay = apply {
+        if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change workday")
+        }
+        if (form.status !== this.status && !authentication.isAdmin()) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
         }
     }
 }

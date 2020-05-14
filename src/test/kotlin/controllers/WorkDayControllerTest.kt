@@ -168,7 +168,7 @@ class WorkDayControllerTest {
             .content(mapper.writeValueAsString(updatedForm))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
-            .andExpect(status().isUnauthorized)
+            .andExpect(status().isForbidden)
 
         assertEquals(workDayService.findByCode(created.code)?.status,status)
     }

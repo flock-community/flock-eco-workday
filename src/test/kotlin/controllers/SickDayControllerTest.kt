@@ -233,8 +233,8 @@ class SickDayControllerTest {
             .content(mapper.writeValueAsString(updatedCreateForm))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
-            .andExpect(status().isUnauthorized)
-        
+            .andExpect(status().isForbidden)
+
         assertEquals(sickDayService.findByCode(created.code)?.status,status)
     }
 

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React from "react"
 import PropTypes from "prop-types"
 import * as Yup from "yup"
 import {Field, Form, Formik} from "formik"
@@ -9,7 +9,6 @@ import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils
 import {MuiPickersUtilsProvider} from "@material-ui/pickers"
 import MomentUtils from "@date-io/moment"
 import moment from "moment"
-import {HolidayClient} from "../../clients/HolidayClient"
 import {isDefined} from "../../utils/validation"
 import {DatePickerField} from "../../components/fields/DatePickerField"
 import {PeriodInputField} from "../../components/fields/PeriodInputField"
@@ -18,7 +17,7 @@ export const HOLIDAY_FORM_ID = "holiday-form-id"
 
 const now = moment()
 
-const schema = Yup.object().shape({
+export const schemaHolidayForm = Yup.object().shape({
   description: Yup.string()
     .required("Field required")
     .default(""),
@@ -34,31 +33,13 @@ const schema = Yup.object().shape({
   days: Yup.array().required("Required"),
 })
 
-export function HolidayForm({code, onSubmit}) {
-  const [state, setState] = useState(null)
-
-  useEffect(() => {
-    if (code) {
-      HolidayClient.get(code).then(res => {
-        setState({
-          description: res.description,
-          status: res.status,
-          from: res.from,
-          to: res.to,
-          days: res.days,
-        })
-      })
-    } else {
-      setState(schema.cast())
-    }
-  }, [code])
-
-  const handleSubmit = value => {
-    if (isDefined(onSubmit)) onSubmit(value)
+export function HolidayForm({value, onSubmit, onChange}) {
+  const handleSubmit = data => {
+    if (isDefined(onSubmit)) onSubmit(data)
   }
 
   const handleChange = it => {
-    setState(it)
+    onChange(it)
   }
 
   const renderForm = () => (
@@ -75,7 +56,7 @@ export function HolidayForm({code, onSubmit}) {
             />
           </Grid>
 
-          {code && (
+          {value && (
             <Grid item xs={12}>
               <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
                 <Field
@@ -104,8 +85,8 @@ export function HolidayForm({code, onSubmit}) {
           <Grid item xs={12}>
             <PeriodInputField
               name="days"
-              from={state && state.from}
-              to={state && state.to}
+              from={value && value.from}
+              to={value && value.to}
             />
           </Grid>
         </Grid>
@@ -114,12 +95,12 @@ export function HolidayForm({code, onSubmit}) {
   )
 
   return (
-    state && (
+    value && (
       <Formik
         enableReinitialize
-        initialValues={state}
+        initialValues={value}
         onSubmit={handleSubmit}
-        validationSchema={schema}
+        validationSchema={schemaHolidayForm}
         validate={handleChange}
         render={renderForm}
       />
@@ -128,6 +109,6 @@ export function HolidayForm({code, onSubmit}) {
 }
 
 HolidayForm.propTypes = {
-  code: PropTypes.string,
+  value: PropTypes.object,
   onSubmit: PropTypes.func,
 }

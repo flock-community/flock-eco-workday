@@ -1,5 +1,5 @@
 import {createMuiTheme} from "@material-ui/core/styles"
-import {blueGrey} from "@material-ui/core/colors"
+import {blueGrey, green, red} from "@material-ui/core/colors"
 
 export const themeLight = createMuiTheme({
   palette: {
@@ -7,6 +7,8 @@ export const themeLight = createMuiTheme({
       main: "#fcde00",
     },
     secondary: blueGrey,
+    success: green,
+    error: red,
   },
   overrides: {
     MuiDialogTitle: {

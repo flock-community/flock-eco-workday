@@ -2,11 +2,17 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.SickdayAuthority
+import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.forms.SickDayForm
+import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.model.SickDay
+import community.flock.eco.workday.model.Status
+import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.services.HoliDayService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.SickDayService
 import community.flock.eco.workday.services.isUser
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -70,15 +76,11 @@ class SickdayController(
         @PathVariable code: String,
         @RequestBody form: SickDayForm,
         authentication: Authentication
-    ) = service
-        .run {
-            if (form.status !== findByCode(code)?.status && !authentication.isAdmin()) {
-                throw ResponseStatusException(UNAUTHORIZED, "User is not allowed to change status field")
-            } else {
-                this.update(code, form.setPersonCode(authentication))
-                .toResponse()
-            }
-        }
+    ) = service.findByCode(code)
+        ?.applyAuthentication(authentication)
+        ?.applyAllowedToUpdate(form, authentication)
+        ?.run { service.update(code, form) }
+        .toResponse()
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('SickdayAuthority.WRITE')")
@@ -108,6 +110,15 @@ class SickdayController(
     private fun SickDay.applyAuthentication(authentication: Authentication) = apply {
         if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
+        }
+    }
+
+    private fun SickDay.applyAllowedToUpdate(form: SickDayForm, authentication: Authentication): SickDay = apply {
+        if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change workday")
+        }
+        if (form.status !== this.status && !authentication.isAdmin()) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
         }
     }
 }

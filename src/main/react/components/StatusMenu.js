@@ -3,8 +3,9 @@ import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils
 import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
 import {makeStyles} from "@material-ui/core"
-import React from "react"
+import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
+import clsx from "clsx"
 
 const useStyles = makeStyles(theme => ({
   status: {
@@ -12,12 +13,29 @@ const useStyles = makeStyles(theme => ({
     top: theme.spacing(2),
     right: theme.spacing(2),
   },
+  buttonDefault: {
+    backgroundColor: "unset",
+  },
+  buttonRequested: {
+    backgroundColor: "unset",
+  },
+  buttonApproved: {
+    backgroundColor: theme.palette.success[500],
+  },
+  buttonRejected: {
+    backgroundColor: theme.palette.error[500],
+  },
 }))
 
 export function StatusMenu({onClickStatus, hasAuthority, value}) {
   const classes = useStyles()
 
-  const [anchorEl, setAnchorEl] = React.useState(null)
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [color, setColor] = React.useState("default")
+
+  useEffect(() => {
+    setColor(value.status)
+  }, [value])
 
   const handleMenuClick = event => {
     event.stopPropagation()
@@ -39,7 +57,14 @@ export function StatusMenu({onClickStatus, hasAuthority, value}) {
       <Button
         aria-controls="simple-menu"
         aria-haspopup="true"
+        disabled={!UserAuthorityUtil.hasAuthority(hasAuthority)}
         onClick={handleMenuClick}
+        className={clsx({
+          [classes.buttonDefault]: color === "default",
+          [classes.buttonRequested]: color === "REQUESTED",
+          [classes.buttonApproved]: color === "APPROVED",
+          [classes.buttonRejected]: color === "REJECTED",
+        })}
       >
         {value.status}
       </Button>
