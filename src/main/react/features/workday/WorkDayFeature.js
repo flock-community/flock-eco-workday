@@ -62,7 +62,7 @@ export function WorkDayFeature() {
       status,
       assignmentCode: it.assignment.code,
     })
-      .then(setRefresh(!refresh))
+      .then(() => setRefresh(!refresh))
       .catch(err => console.log(err))
   }
 

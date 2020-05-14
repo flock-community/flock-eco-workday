@@ -61,7 +61,7 @@ export function SickDayFeature() {
       from: it.from.format("YYYY-MM-DD"),
       to: it.to.format("YYYY-MM-DD"),
     })
-      .then(setRefresh(!refresh))
+      .then(() => setRefresh(!refresh))
       .catch(err => console.log(err))
   }
 
