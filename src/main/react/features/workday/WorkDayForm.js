@@ -16,6 +16,7 @@ import {isDefined} from "../../utils/validation"
 import {usePerson} from "../../hooks/PersonHook"
 import {AssignmentSelectorField} from "../../components/fields/AssignmentSelectorField"
 import {DatePickerField} from "../../components/fields/DatePickerField"
+import {DropzoneAreaField} from "../../components/fields/DropzoneAreaField"
 
 export const WORKDAY_FORM_ID = "work-day-form"
 
@@ -36,6 +37,7 @@ export const schema = Yup.object().shape({
     .default(now),
   days: Yup.array().default([8]),
   hours: Yup.number(),
+  sheets: Yup.array(),
 })
 
 /**
@@ -61,6 +63,7 @@ export function WorkDayForm({value, onSubmit}) {
         days: daysSwitch ? undefined : data.days,
         hours: data.hours,
         status: data.status,
+        sheets: data.sheets,
       })
   }
 
@@ -74,10 +77,40 @@ export function WorkDayForm({value, onSubmit}) {
         <Switch checked={daysSwitch} onChange={handleSwitchChange} />
       </Grid>
       <Grid item>
-        {" "}
         <Typography>Hours only</Typography>
       </Grid>
     </Grid>
+  )
+
+  const renderFormHours = () => (
+    <>
+      <Grid item xs={6}>
+        <DatePickerField name="from" label="From" fullWidth />
+      </Grid>
+      <Grid item xs={6}>
+        <DatePickerField name="to" label="To" fullWidth />
+      </Grid>
+      <Grid item xs={12}>
+        {renderSwitch}
+      </Grid>
+      <Grid item xs={12}>
+        {daysSwitch ? (
+          <Field
+            name="hours"
+            type="number"
+            label="Hours"
+            fullWidth
+            component={TextField}
+          />
+        ) : (
+          <PeriodInputField
+            name="days"
+            from={value && value.from}
+            to={value && value.to}
+          />
+        )}
+      </Grid>
+    </>
   )
 
   const renderForm = () => (
@@ -102,7 +135,6 @@ export function WorkDayForm({value, onSubmit}) {
                   label="Status"
                   select
                   variant="standard"
-                  margin="normal"
                   component={TextField}
                 >
                   <MenuItem value="REQUESTED">REQUESTED</MenuItem>
@@ -112,27 +144,15 @@ export function WorkDayForm({value, onSubmit}) {
               </UserAuthorityUtil>
             </Grid>
           )}
-          <Grid item xs={6}>
-            <DatePickerField name="from" label="From" fullWidth />
+          <Grid item xs={12}>
+            <hr />
           </Grid>
-          <Grid item xs={6}>
-            <DatePickerField name="to" label="To" fullWidth />
+          {renderFormHours()}
+          <Grid item xs={12}>
+            <hr />
           </Grid>
           <Grid item xs={12}>
-            {renderSwitch}
-          </Grid>
-          <Grid item xs={12}>
-            {daysSwitch ? (
-              <Field
-                name="hours"
-                type="number"
-                label="Hours"
-                fullWidth
-                component={TextField}
-              />
-            ) : (
-              <PeriodInputField name="days" />
-            )}
+            <DropzoneAreaField name="sheets" />
           </Grid>
         </Grid>
       </MuiPickersUtilsProvider>

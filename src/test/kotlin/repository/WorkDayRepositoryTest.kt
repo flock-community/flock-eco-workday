@@ -48,7 +48,8 @@ class WorkDayRepositoryTest {
             from = from,
             to = LocalDate.of(2020, 1, 31),
             hours = 10,
-            status = Status.REQUESTED
+            status = Status.REQUESTED,
+            sheets = listOf()
         )
         val res = repository.save(workDay)
 

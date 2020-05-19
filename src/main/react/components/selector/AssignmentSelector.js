@@ -50,7 +50,7 @@ export function AssignmentSelector({
         </MenuItem>
         {items.map(renderMenuItem)}
       </Select>
-      <FormHelperText>{error}</FormHelperText>
+      {error && <FormHelperText>{error}</FormHelperText>}
     </FormControl>
   )
 }

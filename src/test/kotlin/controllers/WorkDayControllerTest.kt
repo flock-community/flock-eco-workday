@@ -65,7 +65,8 @@ class WorkDayControllerTest {
             from = from,
             to = to,
             assignmentCode = assignment.code,
-            hours = 50
+            hours = 50,
+            sheets = listOf()
         )
 
         workDayService.create(createForm)
@@ -92,7 +93,8 @@ class WorkDayControllerTest {
             from = from,
             to = to,
             assignmentCode = assignment.code,
-            hours = 50
+            hours = 50,
+            sheets = listOf()
         )
 
         workDayService.create(createForm)
@@ -122,7 +124,8 @@ class WorkDayControllerTest {
             from = from,
             to = to,
             assignmentCode = assignment.code,
-            hours = 50
+            hours = 50,
+            sheets = listOf()
         )
 
         val created = workDayService.create(createForm)
@@ -156,7 +159,8 @@ class WorkDayControllerTest {
             from = from,
             to = to,
             assignmentCode = assignment.code,
-            hours = 50
+            hours = 50,
+            sheets = listOf()
         )
 
         val created = workDayService.create(createForm)
@@ -192,7 +196,8 @@ class WorkDayControllerTest {
             from = from,
             to = to,
             assignmentCode = assignment.code,
-            hours = 50
+            hours = 50,
+            sheets = listOf()
         )
 
         val created = workDayService.create(createForm)

@@ -1,11 +1,13 @@
 package community.flock.eco.workday.mocks
 
 import community.flock.eco.workday.forms.WorkDayForm
+import community.flock.eco.workday.forms.WorkDaySheetForm
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.WorkDayService
 import java.time.LocalDate
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 @Component
 @Profile("local")
@@ -40,8 +42,17 @@ class LoadWorkDayData(
                             to = now.withMonth(it).withDayOfMonth(1).plusDays(9),
                             hours = 80,
                             days = listOf(8, 8, 8, 8, 8, 8, 8, 8, 8, 8),
-                            assignmentCode = assignment.code
-
+                            assignmentCode = assignment.code,
+                            sheets = listOf(
+                                WorkDaySheetForm(
+                                    name = "File1.jpg",
+                                    file = UUID.randomUUID()
+                                ),
+                                WorkDaySheetForm(
+                                    name = "File2.pdf",
+                                    file = UUID.randomUUID()
+                                )
+                            )
                         )
                     }
             }

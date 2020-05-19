@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
@@ -81,6 +82,15 @@ class WorkdayController(
     ) = service.findByCode(code)
         ?.applyAuthentication(authentication)
         ?.run { service.deleteByCode(this.code) }
+        .toResponse()
+
+    @PostMapping("/sheets")
+    @PreAuthorize("hasAuthority('WorkDayAuthority.WRITE')")
+    fun uploadSheets(
+        @RequestParam("file")  file: MultipartFile,
+        authentication: Authentication
+    ) = service
+        .uploadSheet(file.bytes)
         .toResponse()
 
     private fun Authentication.isAdmin(): Boolean = this.authorities
