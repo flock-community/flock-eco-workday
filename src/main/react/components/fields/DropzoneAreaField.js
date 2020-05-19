@@ -16,7 +16,6 @@ import IconButton from "@material-ui/core/IconButton"
 import Grid from "@material-ui/core/Grid"
 
 export function DropzoneAreaField({name, onChange}) {
-
   const [upload, setUpload] = useState(false)
 
   const renderField = ({field: {value}, form: {errors, setFieldValue}}) => {

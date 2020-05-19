@@ -173,4 +173,8 @@ export function WorkDayForm({value, onSubmit}) {
 WorkDayForm.propTypes = {
   value: PropTypes.object,
   onSubmit: PropTypes.func,
+  onChange: PropTypes.func,
+  onSwitchChange: PropTypes.func,
+  daysSwitch: PropTypes.func,
+
 }
