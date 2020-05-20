@@ -61,6 +61,7 @@ export function WorkDayFeature() {
       to: it.to.format("YYYY-MM-DD"),
       status,
       assignmentCode: it.assignment.code,
+      days: it.days.length > 0 ? it.days : null,
     })
       .then(() => setRefresh(!refresh))
       .catch(err => console.log(err))
