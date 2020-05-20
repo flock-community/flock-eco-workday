@@ -40,10 +40,11 @@ export function WorkDayDialog({open, code, onComplete}) {
           })
         })
       } else {
+        console.log("d")
         setState(schema.cast())
       }
     }
-  }, [code])
+  }, [open, code])
 
   const handleSubmit = it => {
     const body = {

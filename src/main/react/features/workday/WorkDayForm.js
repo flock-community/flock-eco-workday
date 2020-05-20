@@ -34,7 +34,7 @@ export const schema = Yup.object().shape({
   to: Yup.date()
     .required("To date is required")
     .default(now),
-  days: Yup.array(),
+  days: Yup.array().default([8]),
   hours: Yup.number(),
 })
 
