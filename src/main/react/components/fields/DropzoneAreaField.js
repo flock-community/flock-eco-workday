@@ -14,11 +14,12 @@ import DeleteIcon from "@material-ui/icons/Delete"
 import Avatar from "@material-ui/core/Avatar"
 import IconButton from "@material-ui/core/IconButton"
 import Grid from "@material-ui/core/Grid"
+import CircularProgress from "@material-ui/core/CircularProgress"
 
-export function DropzoneAreaField({name, onChange}) {
+export function DropzoneAreaField({name}) {
   const [upload, setUpload] = useState(false)
 
-  const renderField = ({field: {value}, form: {errors, setFieldValue}}) => {
+  const renderField = ({field: {value}, form: {setFieldValue}}) => {
     const handleDropFile = files => {
       setUpload(true)
       return Promise.all(
@@ -31,17 +32,15 @@ export function DropzoneAreaField({name, onChange}) {
           }
           return fetch("/api/workdays/sheets", opts)
             .then(res => res.json())
-            .then(uuid =>
-              setFieldValue(name, [
-                ...value,
-                {
-                  name: file.name,
-                  file: uuid,
-                },
-              ])
-            )
+            .then(uuid => ({
+              name: file.name,
+              file: uuid,
+            }))
         })
-      ).then(() => setUpload(false))
+      ).then(res => {
+        setFieldValue(name, [...value, ...res])
+        setUpload(false)
+      })
     }
 
     const handleDeleteFile = file => () => {
@@ -68,16 +67,34 @@ export function DropzoneAreaField({name, onChange}) {
       </ListItem>
     )
 
+    const progressStyle = {
+      height: 250,
+      border: "dashed",
+      borderColor: "#C8C8C8",
+      borderWidth: 3,
+      backgroundColor: "#F0F0F0",
+    }
+    const renderProgress = () => (
+      <Grid container alignItems="center" style={progressStyle}>
+        <Grid item xs={12} align="center">
+          <CircularProgress />
+        </Grid>
+      </Grid>
+    )
+
     return value ? (
       <Grid container spacing={1}>
         <Grid item xs={6}>
-          <DropzoneArea
-            filesLimit={10}
-            showPreviewsInDropzone={false}
-            acceptedFiles={["image/jpeg", "image/png", "application/pdf"]}
-            onDrop={handleDropFile}
-          />
-          {errors[name] && errors[name]}
+          {upload ? (
+            renderProgress()
+          ) : (
+            <DropzoneArea
+              filesLimit={10}
+              showPreviewsInDropzone={false}
+              acceptedFiles={["image/jpeg", "image/png", "application/pdf"]}
+              onDrop={handleDropFile}
+            />
+          )}
         </Grid>
         <Grid item xs={6}>
           <List dense>{value.map(renderFilesItem)}</List>
@@ -99,5 +116,6 @@ export function DropzoneAreaField({name, onChange}) {
 
 DropzoneAreaField.propTypes = {
   name: PropTypes.string,
-  onChange: PropTypes.func,
+  field: PropTypes.object,
+  form: PropTypes.object,
 }
