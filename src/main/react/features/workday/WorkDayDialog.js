@@ -10,7 +10,7 @@ import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils
 import {WorkDayClient} from "../../clients/WorkDayClient"
 import {TransitionSlider} from "../../components/transitions/Slide"
 import {DialogFooter, DialogHeader} from "../../components/dialog"
-import {WORKDAY_FORM_ID, WorkDayForm, schemaWorkDayForm} from "./WorkDayForm"
+import {WORKDAY_FORM_ID, WorkDayForm, schema} from "./WorkDayForm"
 import {isDefined} from "../../utils/validation"
 
 const useStyles = makeStyles(() => ({
@@ -26,29 +26,24 @@ export function WorkDayDialog({open, code, onComplete}) {
 
   const [state, setState] = useState(null)
 
-  const [daysSwitch, setDaysSwitch] = useState(false)
-
   useEffect(() => {
-    if (code) {
-      WorkDayClient.get(code).then(res => {
-        setState({
-          assignmentCode: res.assignment.code,
-          from: res.from,
-          to: res.to,
-          days: res.days,
-          hours: res.hours,
-          status: res.status,
+    if (open) {
+      if (code) {
+        WorkDayClient.get(code).then(res => {
+          setState({
+            assignmentCode: res.assignment.code,
+            from: res.from,
+            to: res.to,
+            days: res.days,
+            hours: res.hours,
+            status: res.status,
+          })
         })
-        setDaysSwitch(res.days.length === 0)
-      })
-    } else {
-      setState(schemaWorkDayForm.cast())
+      } else {
+        setState(schema.cast())
+      }
     }
   }, [code])
-
-  const handleSwitchChange = () => {
-    setDaysSwitch(!daysSwitch)
-  }
 
   const handleSubmit = it => {
     const body = {
@@ -64,10 +59,12 @@ export function WorkDayDialog({open, code, onComplete}) {
     if (code) {
       WorkDayClient.put(code, body).then(res => {
         if (isDefined(onComplete)) onComplete(res)
+        setState(null)
       })
     } else {
       WorkDayClient.post(body).then(res => {
         if (isDefined(onComplete)) onComplete(res)
+        setState(null)
       })
     }
   }
@@ -88,10 +85,6 @@ export function WorkDayDialog({open, code, onComplete}) {
     if (isDefined(onComplete)) onComplete()
   }
 
-  const handleChange = it => {
-    setState(it)
-  }
-
   return (
     <>
       <Dialog
@@ -108,13 +101,7 @@ export function WorkDayDialog({open, code, onComplete}) {
           onClose={handleClose}
         />
         <DialogContent className={classes.dialogContent}>
-          <WorkDayForm
-            value={state}
-            onSubmit={handleSubmit}
-            onChange={handleChange}
-            onSwitchChange={handleSwitchChange}
-            daysSwitch={daysSwitch}
-          />
+          {state && <WorkDayForm value={state} onSubmit={handleSubmit} />}
         </DialogContent>
         <Divider />
         <DialogFooter

@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useEffect, useState} from "react"
 import * as Yup from "yup"
 import {Field, Form, Formik} from "formik"
 import moment from "moment"
@@ -21,7 +21,7 @@ export const WORKDAY_FORM_ID = "work-day-form"
 
 const now = moment()
 
-export const schemaWorkDayForm = Yup.object().shape({
+export const schema = Yup.object().shape({
   status: Yup.string()
     .required("Field required")
     .default("REQUESTED"),
@@ -41,8 +41,16 @@ export const schemaWorkDayForm = Yup.object().shape({
 /**
  * @return {null}
  */
-export function WorkDayForm({value, onSubmit, onChange, onSwitchChange, daysSwitch}) {
+export function WorkDayForm({value, onSubmit}) {
   const [person] = usePerson()
+
+  const [daysSwitch, setDaysSwitch] = useState(false)
+
+  useEffect(() => {
+    if (value && value.days) {
+      setDaysSwitch(value.days.length === 0)
+    }
+  }, [value])
 
   const handleSubmit = data => {
     if (isDefined(onSubmit))
@@ -56,23 +64,20 @@ export function WorkDayForm({value, onSubmit, onChange, onSwitchChange, daysSwit
       })
   }
 
-  const handleChange = it => {
-    onChange(it)
-  }
-
-  const handleSwitchChange = it => {
-    onSwitchChange(it)
+  const handleSwitchChange = ev => {
+    setDaysSwitch(ev.target.checked)
   }
 
   const renderSwitch = (
-    <Typography>
-      <Grid container alignItems="center" spacing={1}>
-        <Grid item>
-          <Switch checked={daysSwitch} onChange={handleSwitchChange} />
-        </Grid>
-        <Grid item>Hours only</Grid>
+    <Grid container alignItems="center" spacing={1}>
+      <Grid item>
+        <Switch checked={daysSwitch} onChange={handleSwitchChange} />
       </Grid>
-    </Typography>
+      <Grid item>
+        {" "}
+        <Typography>Hours only</Typography>
+      </Grid>
+    </Grid>
   )
 
   const renderForm = () => (
@@ -126,11 +131,7 @@ export function WorkDayForm({value, onSubmit, onChange, onSwitchChange, daysSwit
                 component={TextField}
               />
             ) : (
-              <PeriodInputField
-                name="days"
-                from={value && value.from}
-                to={value && value.to}
-              />
+              <PeriodInputField name="days" />
             )}
           </Grid>
         </Grid>
@@ -138,18 +139,15 @@ export function WorkDayForm({value, onSubmit, onChange, onSwitchChange, daysSwit
     </Form>
   )
 
-  return (
-    value && (
-      <Formik
-        enableReinitialize
-        initialValues={value}
-        onSubmit={handleSubmit}
-        validationSchema={schemaWorkDayForm}
-        validate={handleChange}
-        render={renderForm}
-      />
-    )
-  )
+  return value ? (
+    <Formik
+      enableReinitialize
+      initialValues={value || schema.cast()}
+      onSubmit={handleSubmit}
+      validationSchema={schema}
+      render={renderForm}
+    />
+  ) : null
 }
 
 WorkDayForm.propTypes = {
