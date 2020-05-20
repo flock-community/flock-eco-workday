@@ -89,7 +89,6 @@ const initDays = (days, from) => {
 export function PeriodInput({value, onChange}) {
   const [from, to] = initDates(value)
   const [state, setState] = useState(value.days ? initDays(value.days, from) : {})
-  const [grid, setGrid] = useState(calcGrid(from, to, state))
 
   useEffect(() => {
     if (value) {
@@ -99,10 +98,6 @@ export function PeriodInput({value, onChange}) {
     }
   }, [value.from, value.to])
 
-  useEffect(() => {
-    setGrid(calcGrid(from, to, state))
-  }, [state])
-
   const handleDayChange = it => ev => {
     const days = {
       ...state,
@@ -111,6 +106,8 @@ export function PeriodInput({value, onChange}) {
     setState(days)
     onChange(Object.keys(days).map(key => days[key]))
   }
+
+  const grid = calcGrid(from, to, state)
 
   return (
     <>

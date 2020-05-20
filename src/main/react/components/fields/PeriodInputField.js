@@ -3,21 +3,19 @@ import React from "react"
 import PropTypes from "prop-types"
 import {PeriodInput} from "../inputs/PeriodInput"
 
-export function PeriodInputField({name, from, to, ...props}) {
+export function PeriodInputField({name, ...props}) {
   return (
     <Field id={name} name={name}>
-      {({field: {value}, form: {setFieldValue}}) => {
+      {({field: {value}, form: {values, setFieldValue}}) => {
         const val = {
-          from,
-          to,
+          from: values.from,
+          to: values.to,
           days: value,
         }
         return (
           <PeriodInput
             value={val}
-            onChange={it => {
-              setFieldValue(name, it)
-            }}
+            onChange={it => setFieldValue(name, it)}
             {...props}
           />
         )
@@ -28,6 +26,4 @@ export function PeriodInputField({name, from, to, ...props}) {
 
 PeriodInputField.propTypes = {
   name: PropTypes.string,
-  from: PropTypes.object,
-  to: PropTypes.object,
 }

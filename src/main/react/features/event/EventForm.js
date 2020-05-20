@@ -40,7 +40,6 @@ export function EventForm({code, onSubmit}) {
   useEffect(() => {
     if (code) {
       EventClient.get(code).then(res => {
-        console.log(res)
         setState({
           description: res.description,
           from: res.from,
@@ -50,7 +49,6 @@ export function EventForm({code, onSubmit}) {
         })
       })
     } else {
-      console.log(schema.cast())
       setState(schema.cast())
     }
   }, [code])
