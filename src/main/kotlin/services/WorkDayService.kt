@@ -1,5 +1,6 @@
 package community.flock.eco.workday.services
 
+import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 import community.flock.eco.core.utils.toNullable
@@ -69,6 +70,13 @@ class WorkDayService(
                     }
             }
     }
+
+    fun readSheet(uuid: UUID): ByteArray {
+        val bucketName = "flock-workday-hour-sheets"
+        val blob = storage.get(bucketName, uuid.toString())
+        return blob.getContent()
+    }
+
 
     @Transactional
     fun deleteByCode(code: String) = workDayRepository.deleteByCode(code)

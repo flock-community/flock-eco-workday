@@ -10,6 +10,7 @@ import community.flock.eco.workday.services.WorkDayService
 import community.flock.eco.workday.services.isUser
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.UNAUTHORIZED
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/workdays")
@@ -84,10 +86,25 @@ class WorkdayController(
         ?.run { service.deleteByCode(this.code) }
         .toResponse()
 
+    @GetMapping("/sheets/{file}/{name}")
+    @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")
+    fun getSheets(
+        @PathVariable file: UUID,
+        @PathVariable name: String,
+        authentication: Authentication
+    ) = service.readSheet(file)
+        .run {
+            ResponseEntity
+                .ok()
+                .contentType(getMediaType(name))
+                .body(this)
+        }
+
+
     @PostMapping("/sheets")
     @PreAuthorize("hasAuthority('WorkDayAuthority.WRITE')")
-    fun uploadSheets(
-        @RequestParam("file")  file: MultipartFile,
+    fun postSheets(
+        @RequestParam("file") file: MultipartFile,
         authentication: Authentication
     ) = service
         .uploadSheet(file.bytes)
@@ -110,5 +127,11 @@ class WorkdayController(
         if (form.status !== this.status && !authentication.isAdmin()) {
             throw ResponseStatusException(FORBIDDEN, "User is not allowed to change status field")
         }
+    }
+
+    private fun getMediaType(name: String): MediaType {
+        val extension = java.io.File(name).extension
+        val mime = org.springframework.boot.web.server.MimeMappings.DEFAULT.get(extension)
+        return MediaType.parseMediaType(mime)
     }
 }

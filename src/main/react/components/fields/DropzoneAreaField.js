@@ -48,7 +48,13 @@ export function DropzoneAreaField({name}) {
     }
 
     const renderFilesItem = it => (
-      <ListItem key={it.file} disableGutters>
+      <ListItem
+        key={it.file}
+        disableGutters
+        component="a"
+        target="_blank"
+        href={`/api/workdays/sheets/${it.file}/${it.name}`}
+      >
         <ListItemAvatar>
           <Avatar>
             <FolderIcon />
@@ -89,6 +95,7 @@ export function DropzoneAreaField({name}) {
             renderProgress()
           ) : (
             <DropzoneArea
+              maxFileSize={5000000}
               filesLimit={10}
               showPreviewsInDropzone={false}
               acceptedFiles={["image/jpeg", "image/png", "application/pdf"]}

@@ -2,6 +2,7 @@ package community.flock.eco.workday.model
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import community.flock.eco.core.events.EventEntityListeners
+import org.springframework.http.MediaType
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.ElementCollection
@@ -18,3 +19,5 @@ class WorkDaySheet(
     val name: String,
     val file: UUID
 )
+
+

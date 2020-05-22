@@ -176,5 +176,4 @@ WorkDayForm.propTypes = {
   onChange: PropTypes.func,
   onSwitchChange: PropTypes.func,
   daysSwitch: PropTypes.func,
-
 }
