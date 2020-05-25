@@ -5,11 +5,9 @@ import community.flock.eco.feature.user.forms.UserAccountPasswordForm
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
-import community.flock.eco.workday.authorities.AssignmentAuthority
-import community.flock.eco.workday.authorities.ContractAuthority
-import community.flock.eco.workday.authorities.EventAuthority
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
+import community.flock.eco.workday.authorities.WorkDayAuthority
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
@@ -26,9 +24,8 @@ class LoadUserData(
         HolidayAuthority.WRITE,
         SickdayAuthority.READ,
         SickdayAuthority.WRITE,
-        ContractAuthority.READ,
-        AssignmentAuthority.READ,
-        EventAuthority.READ)
+        WorkDayAuthority.READ,
+        WorkDayAuthority.WRITE)
 
     private val allAuthorities = userAuthorityService.allAuthorities()
     private val workerAuthorities = userAuthorityService.allAuthorities().filter { workerRoles.contains(it) }
