@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/test")
-class TestController {
+@RequestMapping("/api/expenses")
+class ExpensesController() {
 
-    @GetMapping("/host")
+    @GetMapping("/")
     fun host(@RequestHeader host: String) = ResponseEntity
         .ok(host)
 }
