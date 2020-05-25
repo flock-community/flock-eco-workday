@@ -160,7 +160,7 @@
                 <version>2.1.0</version>
                 <configuration>
                     <to>
-                        <image>flock-community-docker-flock-docker.bintray.io/flock-eco-workday</image>
+                        <image>gcr.io/flock-community/flock-eco-workday</image>
                     </to>
                     <container>
                         <mainClass>community.flock.eco.workday.ApplicationKt</mainClass>
