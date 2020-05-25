@@ -87,8 +87,6 @@ const initDays = (days, from) => {
 }
 
 export function PeriodInput({value, onChange}) {
-  console.log(value)
-
   const [from, to] = initDates(value)
   const [state, setState] = useState(value.days ? initDays(value.days, from) : {})
 

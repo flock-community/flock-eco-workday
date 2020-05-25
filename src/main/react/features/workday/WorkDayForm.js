@@ -37,7 +37,7 @@ export const schema = Yup.object().shape({
     .default(now),
   days: Yup.array().default([8]),
   hours: Yup.number(),
-  sheets: Yup.array(),
+  sheets: Yup.array().default([]),
 })
 
 /**
@@ -126,8 +126,8 @@ export function WorkDayForm({value, onSubmit}) {
             />
           </Grid>
           {value && (
-            <Grid item xs={12}>
-              <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
+            <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
+              <Grid item xs={12}>
                 <Field
                   fullWidth
                   type="text"
@@ -141,8 +141,8 @@ export function WorkDayForm({value, onSubmit}) {
                   <MenuItem value="APPROVED">APPROVED</MenuItem>
                   <MenuItem value="REJECTED">REJECTED</MenuItem>
                 </Field>
-              </UserAuthorityUtil>
-            </Grid>
+              </Grid>
+            </UserAuthorityUtil>
           )}
           <Grid item xs={12}>
             <hr />

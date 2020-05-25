@@ -41,15 +41,10 @@ export function WorkDayDialog({open, code, onComplete}) {
           })
         })
       } else {
-        console.log("d")
         setState(schema.cast())
       }
     }
   }, [open, code])
-
-  const handleSwitchChange = () => {
-    setDaysSwitch(!daysSwitch)
-  }
 
   const handleSubmit = it => {
     const body = {
