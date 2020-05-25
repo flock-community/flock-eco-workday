@@ -5,6 +5,7 @@ import community.flock.eco.core.events.EventEntityListeners
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.ElementCollection
+import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
 import javax.persistence.EnumType
@@ -31,6 +32,9 @@ class WorkDay(
     val assignment: Assignment,
 
     @Enumerated(EnumType.STRING)
-    val status: Status
+    val status: Status,
+
+    @ElementCollection
+    val sheets: List<WorkDaySheet>
 
 ) : Day(id, code, from, to, hours, days)

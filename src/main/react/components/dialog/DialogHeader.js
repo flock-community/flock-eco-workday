@@ -4,7 +4,11 @@ import {makeStyles} from "@material-ui/styles"
 import {Typography, Button, DialogTitle} from "@material-ui/core"
 import {Close} from "@material-ui/icons"
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
+  root: {
+    margin: 0,
+    padding: theme.spacing(2),
+  },
   closeBtn: {
     alignSelf: "start",
     marginLeft: "auto",
@@ -33,7 +37,7 @@ export function DialogHeader(props) {
   const classes = useStyles()
 
   return (
-    <DialogTitle>
+    <DialogTitle className={classes.root}>
       <div className={classes.dialogTitle}>
         <div className={classes.iconWrapper}>{icon}</div>
         <div className={classes.titleText}>

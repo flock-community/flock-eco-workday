@@ -37,6 +37,7 @@ export function WorkDayDialog({open, code, onComplete}) {
             days: res.days,
             hours: res.hours,
             status: res.status,
+            sheets: res.sheets,
           })
         })
       } else {
@@ -45,6 +46,10 @@ export function WorkDayDialog({open, code, onComplete}) {
       }
     }
   }, [open, code])
+
+  const handleSwitchChange = () => {
+    setDaysSwitch(!daysSwitch)
+  }
 
   const handleSubmit = it => {
     const body = {
@@ -56,6 +61,7 @@ export function WorkDayDialog({open, code, onComplete}) {
         : it.hours,
       assignmentCode: it.assignmentCode,
       status: it.status,
+      sheets: it.sheets,
     }
     if (code) {
       WorkDayClient.put(code, body).then(res => {

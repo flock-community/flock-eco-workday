@@ -121,7 +121,8 @@ class CreateHelper(
         to = to,
         assignmentCode = assignment.code,
         hours = hours,
-        days = days ?: listOf(8, 8, 8, 8, 8)
+        days = days ?: listOf(8, 8, 8, 8, 8),
+        sheets = listOf()
     ).run {
         workDayService.create(this)
     } ?: error("Cannot create sick day contract")
