@@ -110,9 +110,9 @@ class AggregationService(
                         .map { it::class.simpleName }
                         .toSet()
                         .joinToString(","),
-                    "sickDays" to all.sickDay.filter { it.person == person }.totalHoursInPeriod(from,to),
-                    "holiDays" to all.holiDay.filter { it.person == person }.totalHoursInPeriod(from,to),
-                    "workDays" to all.workDay.filter { it.assignment.person == person }.totalHoursInPeriod(from,to),
+                    "sickDays" to all.sickDay.filter { it.person == person }.totalHoursInPeriod(from, to),
+                    "holiDays" to all.holiDay.filter { it.person == person }.totalHoursInPeriod(from, to),
+                    "workDays" to all.workDay.filter { it.assignment.person == person }.totalHoursInPeriod(from, to),
                     "assignment" to all.assignment
                         .filter { it.person == person }
                         .toMapWorkingDay(from, to).values
@@ -122,7 +122,12 @@ class AggregationService(
                     "event" to all.event
                         .filter { it.persons.isEmpty() || it.persons.contains(person) }
                         .fold(0) { acc, cur -> acc + cur.hours },
-                    "total" to countWorkDaysInPeriod(from, to) * 8,
+                    "total" to all.contract
+                        .filter { it.person == person }
+                        .map { it.totalHoursPerWeek() }
+                        .sum()
+                        .let { countWorkDaysInPeriod(from, to) * 8 * it / 40 },
+
                     "revenue" to all.workDay
                         .filter { it.assignment.person == person }
                         .sumAmount()
@@ -192,7 +197,7 @@ class AggregationService(
         .fold(0.0) { acc, cur -> acc + cur.hours }
 
     private fun List<Day>.totalHoursInPeriod(from: LocalDate, to: LocalDate) = this
-        .map {day ->
+        .map { day ->
             val hours = day.hoursPerDay()
             dateRange(from, to)
                 .mapNotNull { hours[it] }
@@ -311,6 +316,13 @@ private fun Period.amountPerWorkingDay(month: YearMonth) = when (this) {
     is Assignment -> (this.hourlyRate * this.hoursPerWeek).toBigDecimal().divide(BigDecimal.valueOf(5), 10, RoundingMode.HALF_UP)
     is WorkDay -> (this.assignment.hourlyRate * this.assignment.hoursPerWeek).toBigDecimal().divide(BigDecimal.valueOf(5), 10, RoundingMode.HALF_UP)
     else -> error("Cannot get amount per working day")
+}
+
+private fun Contract.totalHoursPerWeek() = when (this) {
+    is ContractInternal -> this.hoursPerWeek
+    is ContractExternal -> this.hoursPerWeek
+    is ContractManagement -> 40
+    else -> error("Unknown contract type")
 }
 
 private fun <T : Period> List<T>.perMonth(yearMonth: YearMonth) = yearMonth
