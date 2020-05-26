@@ -9,13 +9,13 @@ import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
-import community.flock.eco.workday.model.ContractService as ContractServiceModel
 import community.flock.eco.workday.model.Day
 import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.WorkDay
+import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.DayOfWeek
@@ -23,7 +23,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 import kotlin.math.pow
-import org.springframework.stereotype.Service
+import community.flock.eco.workday.model.ContractService as ContractServiceModel
 
 @Service
 
@@ -110,9 +110,9 @@ class AggregationService(
                         .map { it::class.simpleName }
                         .toSet()
                         .joinToString(","),
-                    "sickDays" to all.sickDay.filter { it.person == person }.totalHours(),
-                    "holiDays" to all.holiDay.filter { it.person == person }.totalHours(),
-                    "workDays" to all.workDay.filter { it.assignment.person == person }.totalHours(),
+                    "sickDays" to all.sickDay.filter { it.person == person }.totalHoursInPeriod(from, to),
+                    "holiDays" to all.holiDay.filter { it.person == person }.totalHoursInPeriod(from, to),
+                    "workDays" to all.workDay.filter { it.assignment.person == person }.totalHoursInPeriod(from, to),
                     "assignment" to all.assignment
                         .filter { it.person == person }
                         .toMapWorkingDay(from, to).values
@@ -122,7 +122,12 @@ class AggregationService(
                     "event" to all.event
                         .filter { it.persons.isEmpty() || it.persons.contains(person) }
                         .fold(0) { acc, cur -> acc + cur.hours },
-                    "total" to countWorkDaysInPeriod(from, to) * 8,
+                    "total" to all.contract
+                        .filter { it.person == person }
+                        .map { it.totalHoursPerWeek() }
+                        .sum()
+                        .let { countWorkDaysInPeriod(from, to) * 8 * it / 40 },
+
                     "revenue" to all.workDay
                         .filter { it.assignment.person == person }
                         .sumAmount()
@@ -190,6 +195,15 @@ class AggregationService(
 
     private fun List<Day>.totalHours() = this
         .fold(0.0) { acc, cur -> acc + cur.hours }
+
+    private fun List<Day>.totalHoursInPeriod(from: LocalDate, to: LocalDate) = this
+        .map { day ->
+            val hours = day.hoursPerDay()
+            dateRange(from, to)
+                .mapNotNull { hours[it] }
+                .sum()
+        }
+        .sum()
 
     private fun List<Assignment>.totalHours(from: LocalDate, to: LocalDate) = this
         .fold(0.0) { acc, cur -> acc + cur.hoursPerWeek / 5 }
@@ -273,7 +287,7 @@ private fun Assignment.revenuePerDay(): BigDecimal = (this.hourlyRate * this.hou
 private fun LocalDate.isWorkingDay() = listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY).contains(this.dayOfWeek)
 private fun Iterable<LocalDate>.filterWorkingDay() = this.filter { it.isWorkingDay() }
 
-private fun Period.countDays() = ChronoUnit.DAYS.between(this.from, this.to)
+private fun Period.countDays() = ChronoUnit.DAYS.between(this.from, this.to) + 1
 private fun YearMonth.countWorkDaysInMonth(): Int {
     val from = this.atDay(1)
     val to = this.atEndOfMonth()
@@ -304,6 +318,13 @@ private fun Period.amountPerWorkingDay(month: YearMonth) = when (this) {
     else -> error("Cannot get amount per working day")
 }
 
+private fun Contract.totalHoursPerWeek() = when (this) {
+    is ContractInternal -> this.hoursPerWeek
+    is ContractExternal -> this.hoursPerWeek
+    is ContractManagement -> 40
+    else -> error("Unknown contract type")
+}
+
 private fun <T : Period> List<T>.perMonth(yearMonth: YearMonth) = yearMonth
     .toDateRange()
     .filterWorkingDay()
@@ -325,7 +346,7 @@ fun Day.hoursPerDay(): Map<LocalDate, BigDecimal> = this
         } else {
             this.hours
                 .toBigDecimal()
-                .divide(this.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
+                .divide(this.countDays().toBigDecimal(), 100, RoundingMode.HALF_UP)
         }
     }
     .toMap()
