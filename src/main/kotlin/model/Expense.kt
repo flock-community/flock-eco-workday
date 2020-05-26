@@ -1,5 +1,9 @@
 package community.flock.eco.workday.model
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.JsonIdentityReference
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
 import java.time.LocalDate
@@ -8,8 +12,10 @@ import javax.persistence.Entity
 import javax.persistence.EntityListeners
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
+import javax.persistence.Id
 import javax.persistence.Inheritance
 import javax.persistence.InheritanceType
+import javax.persistence.ManyToOne
 
 @Entity
 @Inheritance(
@@ -18,12 +24,15 @@ import javax.persistence.InheritanceType
 @EntityListeners(EventEntityListeners::class)
 abstract class Expense(
 
-    override val id: Long = 0,
-    override val code: String = UUID.randomUUID().toString(),
+    @Id
+    open val id: UUID = UUID.randomUUID(),
 
     open val date: LocalDate = LocalDate.now(),
+
+    @ManyToOne
+    open val person: Person,
 
     @Enumerated(EnumType.STRING)
     open val status: Status = Status.REQUESTED
 
-) : AbstractCodeEntity(id, code)
+)

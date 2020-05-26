@@ -6,17 +6,22 @@ import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
-import javax.persistence.Inheritance
-import javax.persistence.InheritanceType
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
+import javax.persistence.ManyToOne
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 class TravelExpense(
 
-    override val id: Long = 0,
-    override val code: String = UUID.randomUUID().toString(),
+    override val id: UUID = UUID.randomUUID(),
+    override val date: LocalDate = LocalDate.now(),
 
-    val distance: Double
+    override val person: Person,
+    override val status: Status = Status.REQUESTED,
 
-) : Expense(id, code)
+    val distance: Double,
+    val allowance: Double
+
+) : Expense(id, date, person, status)

@@ -14,9 +14,14 @@ import javax.persistence.InheritanceType
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 class CostExpense(
 
-    override val id: Long = 0,
-    override val code: String = UUID.randomUUID().toString(),
+    override val id: UUID = UUID.randomUUID(),
+    override val date: LocalDate = LocalDate.now(),
 
-    val cost: Double
+    override val person: Person,
+    override val status: Status = Status.REQUESTED,
 
-) : Expense(id, code)
+    val amount: Double
+
+) : Expense(id, date, person, status){
+
+}
