@@ -1,22 +1,27 @@
 import {useEffect, useState} from "react"
 import {UserStatusClient} from "../clients/UserStatusClient"
 
-let store
+let store = null
+const listeners = []
+
+function update(it) {
+  store = it
+  listeners.forEach(func => func(it))
+}
 
 export function useLoginStatus() {
   const [state, setState] = useState(store)
 
   useEffect(() => {
-    if (store === undefined) {
-      store = null
-      UserStatusClient.get().then(it => {
-        store = it
-        setState(store)
-      })
-    } else {
-      setState(store)
+    const listener = it => setState(it)
+    if (store === null && listeners.length === 0) {
+      UserStatusClient.get().then(update)
     }
-  })
+    listeners.push(listener)
+    return () => {
+      listeners.filter(it => it !== listener)
+    }
+  }, [])
 
   return state
 }
