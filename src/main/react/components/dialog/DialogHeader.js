@@ -2,7 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import {makeStyles} from "@material-ui/styles"
 import {Typography, Button, DialogTitle} from "@material-ui/core"
-import {Close} from "@material-ui/icons"
+import Close from "@material-ui/icons/Close"
 
 const useStyles = makeStyles(theme => ({
   root: {

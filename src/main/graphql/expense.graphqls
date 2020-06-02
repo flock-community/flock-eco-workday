@@ -1,0 +1,76 @@
+extend type Query {
+    findExpenseById(id: ID): Expense
+    findExpenseAll(
+        page: Int,
+        size: Int,
+        sort:String,
+        order:String
+    ): [Expense!]!
+    countExpense:Int
+}
+
+interface Expense {
+    id:ID!
+    personCode: UUID!
+    description: String!
+    date: Date!
+    status: Status!
+}
+
+type CostExpense implements Expense{
+    id:ID!
+    personCode: UUID!
+    description: String!
+    date: Date!
+    status: Status!
+    amount: Float!
+    files: [CostExpenseFile!]!
+}
+
+type CostExpenseFile {
+    name:String!
+    file: UUID!
+}
+
+type TravelExpense implements Expense{
+    id:ID!
+    personCode: UUID!
+    description: String!
+    date: Date!
+    status: Status!
+    distance: Float!
+    allowance: Float!
+}
+
+input CostExpenseInput {
+    personCode: UUID!
+    description: String!
+    date: Date!
+    status: Status!
+    amount: Float!
+    files: [CostExpenseFileInput!]!
+}
+
+input CostExpenseFileInput {
+    name:String!
+    file: UUID!
+}
+
+input TravelExpenseInput {
+    personCode: UUID!
+    description: String!
+    date: Date!
+    status: Status!
+    distance: Float!
+    allowance: Float!
+}
+
+enum Status {
+    REQUESTED,
+    APPROVED,
+    REJECTED
+}
+
+scalar Date
+scalar UUID
+

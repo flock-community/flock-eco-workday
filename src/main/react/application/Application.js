@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react"
 
-import {HashRouter as Router, Route} from "react-router-dom"
+import {BrowserRouter as Router, Route} from "react-router-dom"
 import {UserFeature} from "@flock-eco/feature-user/src/main/react/user/UserFeature"
 import {CircularProgress, makeStyles} from "@material-ui/core"
 import ThemeProvider from "@material-ui/styles/ThemeProvider"
@@ -23,6 +23,8 @@ import {EventFeature} from "../features/event/EventFeature"
 import {EventRatingFeature} from "../features/event_rating/EventRatingFeature"
 import {useLoginStatus} from "../hooks/StatusHook"
 import {getTheme} from "../theme/theme"
+import {ExpenseFeature} from "../features/expense/ExpenseFeature"
+import {ExactonlineFeature} from "../features/exactonline/ExactonlineFeature"
 
 const useStyles = makeStyles(() => ({
   spinner: {
@@ -88,6 +90,8 @@ export const Application = () => {
           <Route path="/workdays" exact component={WorkDayFeature} />
           <Route path="/holidays" exact component={HolidayFeature} />
           <Route path="/sickdays" component={SickDayFeature} />
+          <Route path="/expenses" component={ExpenseFeature} />
+          <Route path="/exactonline" component={ExactonlineFeature} />
           <Route path="/users" exact component={UserFeature} />
           <Route path="/person" component={PersonFeature} />
           <Route path="/event" component={EventFeature} />

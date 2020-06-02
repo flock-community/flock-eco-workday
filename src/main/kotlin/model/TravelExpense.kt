@@ -1,5 +1,6 @@
 package community.flock.eco.workday.model
 
+import com.fasterxml.jackson.annotation.JsonClassDescription
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import community.flock.eco.core.events.EventEntityListeners
 import java.time.LocalDate
@@ -17,6 +18,7 @@ class TravelExpense(
 
     override val id: UUID = UUID.randomUUID(),
     override val date: LocalDate = LocalDate.now(),
+    override val description: String? = null,
 
     override val person: Person,
     override val status: Status = Status.REQUESTED,
@@ -24,4 +26,4 @@ class TravelExpense(
     val distance: Double,
     val allowance: Double
 
-) : Expense(id, date, person, status)
+) : Expense(id, date, description, person, status)

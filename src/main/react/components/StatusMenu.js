@@ -1,5 +1,4 @@
 import Button from "@material-ui/core/Button"
-import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
 import {makeStyles} from "@material-ui/core"
@@ -8,11 +7,6 @@ import PropTypes from "prop-types"
 import clsx from "clsx"
 
 const useStyles = makeStyles(theme => ({
-  status: {
-    position: "absolute",
-    top: theme.spacing(2),
-    right: theme.spacing(2),
-  },
   buttonDefault: {
     backgroundColor: "unset",
   },
@@ -27,14 +21,14 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export function StatusMenu({onClickStatus, hasAuthority, value}) {
+export function StatusMenu({onChange, disabled, value}) {
   const classes = useStyles()
 
   const [anchorEl, setAnchorEl] = useState(null)
   const [color, setColor] = React.useState("default")
 
   useEffect(() => {
-    setColor(value.status)
+    setColor(value)
   }, [value])
 
   const handleMenuClick = event => {
@@ -48,7 +42,7 @@ export function StatusMenu({onClickStatus, hasAuthority, value}) {
 
   const handleMenuItemClick = event => {
     event.stopPropagation()
-    onClickStatus(event.currentTarget.dataset.value)
+    onChange(event.currentTarget.dataset.value)
     handleClose()
   }
 
@@ -57,7 +51,7 @@ export function StatusMenu({onClickStatus, hasAuthority, value}) {
       <Button
         aria-controls="simple-menu"
         aria-haspopup="true"
-        disabled={!UserAuthorityUtil.hasAuthority(hasAuthority)}
+        disabled={disabled}
         onClick={handleMenuClick}
         className={clsx({
           [classes.buttonDefault]: color === "default",
@@ -66,9 +60,9 @@ export function StatusMenu({onClickStatus, hasAuthority, value}) {
           [classes.buttonRejected]: color === "REJECTED",
         })}
       >
-        {value.status}
+        {value}
       </Button>
-      <UserAuthorityUtil has={hasAuthority}>
+      {!disabled && (
         <Menu
           id="simple-menu"
           anchorEl={anchorEl}
@@ -86,13 +80,13 @@ export function StatusMenu({onClickStatus, hasAuthority, value}) {
             REJECT
           </MenuItem>
         </Menu>
-      </UserAuthorityUtil>
+      )}
     </div>
   )
 }
 
 StatusMenu.propTypes = {
-  onClickStatus: PropTypes.func,
-  hasAuthority: PropTypes.string,
-  value: PropTypes.object,
+  onChange: PropTypes.func,
+  disabled: PropTypes.bool,
+  value: PropTypes.string,
 }

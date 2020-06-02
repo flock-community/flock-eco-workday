@@ -7,5 +7,6 @@ import java.util.UUID
 interface ExpenseForm {
     val personCode: UUID
     val date: LocalDate
+    val description: String
     val status: Status
 }

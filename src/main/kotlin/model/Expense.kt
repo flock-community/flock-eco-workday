@@ -1,11 +1,6 @@
 package community.flock.eco.workday.model
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo
-import com.fasterxml.jackson.annotation.JsonIdentityReference
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.core.events.EventEntityListeners
-import community.flock.eco.core.model.AbstractCodeEntity
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Entity
@@ -28,6 +23,7 @@ abstract class Expense(
     open val id: UUID = UUID.randomUUID(),
 
     open val date: LocalDate = LocalDate.now(),
+    open val description: String? = null,
 
     @ManyToOne
     open val person: Person,

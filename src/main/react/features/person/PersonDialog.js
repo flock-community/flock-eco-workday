@@ -1,7 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
 import {Dialog, Divider, DialogContent} from "@material-ui/core"
-import {PersonAdd} from "@material-ui/icons"
+import PersonAdd from "@material-ui/icons/PersonAdd"
 import {makeStyles} from "@material-ui/styles"
 import {PersonForm, PERSON_FORM_ID} from "./PersonForm"
 import {PersonService} from "./PersonService"
@@ -27,21 +27,15 @@ export const PersonDialog = props => {
   const [person, setPerson] = usePerson()
 
   const successfulSubmit = () => {
-    setPerson(person) // update Person
-    // set dialogSubmit param to true @PersonTable onClose handler
-    // so the PersonTable reloads
+    setPerson(person)
     onClose(true)
   }
 
   const handleSubmit = values => {
     if (isEmptyObject(person)) {
-      PersonService.post(values)
-        .then(() => successfulSubmit())
-        .catch(err => console.log(err))
+      PersonService.post(values).then(() => successfulSubmit())
     } else {
-      PersonService.put(person.code, values)
-        .then(() => successfulSubmit())
-        .catch(err => console.log(err))
+      PersonService.put(person.code, values).then(() => successfulSubmit())
     }
   }
 

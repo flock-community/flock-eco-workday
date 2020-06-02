@@ -24,6 +24,7 @@ class LoadExpensesData(
         loadPersonData.data.forEach {
             TravelExpense(
                 date = now,
+                description = "Travel expense description",
                 person = it,
                 distance = 100.0,
                 allowance = 0.19)
@@ -32,6 +33,7 @@ class LoadExpensesData(
 
             CostExpense(
                 date = now,
+                description = "Cost expense description",
                 person = it,
                 amount = 50.0)
                 .save()

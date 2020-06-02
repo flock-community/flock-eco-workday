@@ -1,3 +1,5 @@
+const {BundleAnalyzerPlugin} = require("webpack-bundle-analyzer")
+
 const path = require("path")
 const HtmlWebPackPlugin = require("html-webpack-plugin") // eslint-disable-line import/no-extraneous-dependencies
 
@@ -46,10 +48,14 @@ module.exports = env => ({
     ],
   },
 
-  plugins: [htmlPlugin],
+  plugins: [
+    htmlPlugin,
+    new BundleAnalyzerPlugin(),
+  ],
 
   devServer: {
     port: 3000,
+    historyApiFallback: true,
     proxy: {
       "/api/**": proxyTarget(env),
       "/oauth2/**": proxyTarget(env),

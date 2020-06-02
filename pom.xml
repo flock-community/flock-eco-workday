@@ -6,7 +6,7 @@
     <parent>
         <artifactId>flock-eco-application-parent</artifactId>
         <groupId>com.github.flock-community.flock-eco</groupId>
-        <version>1.7.24</version>
+        <version>1.7.26</version>
     </parent>
 
     <groupId>flock.community.eco.workday</groupId>
@@ -35,6 +35,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -124,6 +128,18 @@
                 <configuration>
                     <version>1</version>
                     <projectId>flock-community</projectId>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>community.flock</groupId>
+                <artifactId>graphql-simple-bindings-maven-plugin</artifactId>
+                <configuration>
+                    <packageName>community.flock.eco.workday.graphql</packageName>
+                    <scalarsKotlin>
+                        <Date>java.time.LocalDate</Date>
+                        <UUID>java.util.UUID</UUID>
+                    </scalarsKotlin>
                 </configuration>
             </plugin>
 

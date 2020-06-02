@@ -15,6 +15,8 @@ import ClientIcon from "@material-ui/icons/Business"
 import DashboardIcon from "@material-ui/icons/Dashboard"
 import MonthIcon from "@material-ui/icons/Schedule"
 import WorkdayIcon from "@material-ui/icons/Work"
+import ExpensesIcon from "@material-ui/icons/Money"
+import ExactonlineIcon from "@material-ui/icons/AccountBalance"
 
 import Drawer from "@material-ui/core/Drawer"
 import makeStyles from "@material-ui/core/styles/makeStyles"
@@ -101,6 +103,18 @@ export function ApplicationDrawer({open, onClose}) {
       authority: "SickdayAuthority.READ",
     },
     {
+      name: "Expenses",
+      icon: ExpensesIcon,
+      url: "/expenses",
+      authority: "ExpenseAuthority.READ",
+    },
+    {
+      name: "Exact online",
+      icon: ExactonlineIcon,
+      url: "/exactonline",
+      authority: "ExactonlineAuthority.READ",
+    },
+    {
       name: "Events",
       icon: EventIcon,
       url: "/event",
@@ -155,6 +169,7 @@ export function ApplicationDrawer({open, onClose}) {
     </Drawer>
   )
 }
+
 ApplicationDrawer.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,

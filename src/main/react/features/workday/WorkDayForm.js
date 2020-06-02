@@ -152,7 +152,7 @@ export function WorkDayForm({value, onSubmit}) {
             <hr />
           </Grid>
           <Grid item xs={12}>
-            <DropzoneAreaField name="sheets" />
+            <DropzoneAreaField name="sheets" endpoint="/api/workdays/sheets" />
           </Grid>
         </Grid>
       </MuiPickersUtilsProvider>
