@@ -49,6 +49,12 @@
             <artifactId>spring-cloud-gcp-starter-storage</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>3.9.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -99,13 +105,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!--                <dependencies>-->
-                <!--                    <dependency>-->
-                <!--                        <groupId>org.springframework.boot.experimental</groupId>-->
-                <!--                        <artifactId>spring-boot-thin-layout</artifactId>-->
-                <!--                        <version>1.0.23.RELEASE</version>-->
-                <!--                    </dependency>-->
-                <!--                </dependencies>-->
                 <executions>
                     <execution>
                         <goals>
@@ -167,33 +166,80 @@
                     </container>
                 </configuration>
             </plugin>
+<!--            <plugin>-->
+<!--                <groupId>com.github.eirslett</groupId>-->
+<!--                <artifactId>frontend-maven-plugin</artifactId>-->
+<!--                <version>1.9.1</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>install node and npm</id>-->
+<!--                        <goals>-->
+<!--                            <goal>install-node-and-npm</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                    <execution>-->
+<!--                        <id>npm ci</id>-->
+<!--                        <goals>-->
+<!--                            <goal>npm</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <arguments>ci</arguments>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                    <execution>-->
+<!--                        <id>npm build</id>-->
+<!--                        <goals>-->
+<!--                            <goal>npm</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <arguments>run build</arguments>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.9.1</version>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>3.9.0</version>
+                <configuration>
+                    <changeLogFile>src/main/database/db/changelog/db.changelog-master.yaml</changeLogFile>
+                    <diffChangeLogFile>src/main/database/db/changelog/db.changelog-diff.yaml</diffChangeLogFile>
+                    <propertyFile>src/main/database/liquibase.properties</propertyFile>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.liquibase.ext</groupId>
+                        <artifactId>liquibase-hibernate5</artifactId>
+                        <version>3.9.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-data-jpa</artifactId>
+                        <version>${spring.boot.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.validation</groupId>
+                        <artifactId>validation-api</artifactId>
+                        <version>2.0.1.Final</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>install node and npm</id>
+                        <id>add-resource-database</id>
+                        <phase>generate-resources</phase>
                         <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>npm ci</id>
-                        <goals>
-                            <goal>npm</goal>
+                            <goal>add-resource</goal>
                         </goals>
                         <configuration>
-                            <arguments>ci</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>npm build</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run build</arguments>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/database</directory>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
@@ -206,20 +252,6 @@
             <id>cloud</id>
             <build>
                 <plugins>
-                    <!--                    <plugin>-->
-                    <!--                        <groupId>org.springframework.boot.experimental</groupId>-->
-                    <!--                        <artifactId>spring-boot-thin-maven-plugin</artifactId>-->
-                    <!--                        <version>1.0.23.RELEASE</version>-->
-                    <!--                        <executions>-->
-                    <!--                            <execution>-->
-                    <!--                                <id>resolve</id>-->
-                    <!--                                <goals>-->
-                    <!--                                    <goal>resolve</goal>-->
-                    <!--                                </goals>-->
-                    <!--                                <inherited>false</inherited>-->
-                    <!--                            </execution>-->
-                    <!--                        </executions>-->
-                    <!--                    </plugin>-->
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
                         <version>3.1.0</version>
