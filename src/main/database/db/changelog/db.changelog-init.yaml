@@ -1,4 +1,5 @@
 databaseChangeLog:
+  - objectQuotingStrategy: QUOTE_ALL_OBJECTS
   - changeSet:
       id: 1591270336646-1
       author: willemveelenturf (generated)

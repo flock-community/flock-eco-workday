@@ -1,0 +1,203 @@
+databaseChangeLog:
+  - objectQuotingStrategy: QUOTE_ALL_OBJECTS
+  - changeSet:
+      id: 1591290699699-2
+      author: willemveelenturf (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: amount
+                  type: DOUBLE
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: cost_expensePK
+                  name: id
+                  type: BINARY
+            tableName: cost_expense
+  - changeSet:
+      id: 1591290699699-3
+      author: willemveelenturf (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: cost_expense_id
+                  type: BINARY
+              - column:
+                  name: file
+                  type: BINARY
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+            tableName: cost_expense_files
+  - changeSet:
+      id: 1591290699699-4
+      author: willemveelenturf (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: expensePK
+                  name: id
+                  type: BINARY
+              - column:
+                  name: date
+                  type: date
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  name: status
+                  type: VARCHAR(255)
+              - column:
+                  name: type
+                  type: varchar(255)
+              - column:
+                  name: person_id
+                  type: BIGINT
+            tableName: expense
+  - changeSet:
+      id: 1591290699699-5
+      author: willemveelenturf (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: invoicePK
+                  name: id
+                  type: BINARY
+              - column:
+                  constraints:
+                    nullable: false
+                  name: amount
+                  type: DOUBLE
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  name: reference
+                  type: BINARY
+              - column:
+                  name: type
+                  type: INT
+            tableName: invoice
+  - changeSet:
+      id: 1591290699699-6
+      author: willemveelenturf (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: invoice_id
+                  type: BINARY
+              - column:
+                  name: file
+                  type: BINARY
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+            tableName: invoice_documents
+  - changeSet:
+      id: 1591290699699-7
+      author: willemveelenturf (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: allowance
+                  type: DOUBLE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: distance
+                  type: DOUBLE
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: travel_expensePK
+                  name: id
+                  type: BINARY
+            tableName: travel_expense
+  - changeSet:
+      id: 1591290699699-8
+      author: willemveelenturf (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: person_id
+            baseTableName: expense
+            constraintName: FK3kpjqicqkbgneis2bplv0gjwh
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: person
+            validate: true
+  - changeSet:
+      id: 1591290699699-9
+      author: willemveelenturf (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: id
+            baseTableName: travel_expense
+            constraintName: FK9b2dtnquphfagrqexbk3dety2
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: expense
+            validate: true
+  - changeSet:
+      id: 1591290699699-10
+      author: willemveelenturf (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: cost_expense_id
+            baseTableName: cost_expense_files
+            constraintName: FKj641rtwrag3rqo8mnqw6dy266
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: cost_expense
+            validate: true
+  - changeSet:
+      id: 1591290699699-11
+      author: willemveelenturf (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: id
+            baseTableName: cost_expense
+            constraintName: FKmd68wy6jo8a62g57b98lwugid
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: expense
+            validate: true
+  - changeSet:
+      id: 1591290699699-12
+      author: willemveelenturf (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: invoice_id
+            baseTableName: invoice_documents
+            constraintName: FKpfbe7a4y3gugmyiymj3356y8g
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: invoice
+            validate: true

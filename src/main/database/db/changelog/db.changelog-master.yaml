@@ -1,4 +1,8 @@
 databaseChangeLog:
+  - objectQuotingStrategy: QUOTE_ALL_OBJECTS
   - include:
-    - file: db.changelog-1.yaml
+    - file: db.changelog-init.yaml
+      relativeToChangelogFile: true
+  - include:
+    - file: db.changelog-expenses.yaml
       relativeToChangelogFile: true

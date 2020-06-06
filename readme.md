@@ -6,7 +6,7 @@
 mvn clean spring-boot:run -Pdevelop -Dspring-boot.run.profiles=local
 ```
 
-## User
+## Users
 
 | User                     | Password    | Role  |
 | ------------------------ | ----------- | ----- |
@@ -19,6 +19,23 @@ mvn clean spring-boot:run -Pdevelop -Dspring-boot.run.profiles=local
 ## Linting
 
 Use `ktlint` to lint kotlin files or `eslint` for javascript files
+
+## Database
+
+- Generate diff file with liquibase
+  ```
+  mvn clean compile liquibase:update liquibase:diff
+  ```
+- Rename `db.changelog-diff.yaml` to `db.changelog-#.yaml`
+- Add the new changelog file to the `db.changelog-master.yaml`
+  ```yaml
+  databaseChangeLog:
+    - include:
+        - file: db.changelog-1.yaml
+          relativeToChangelogFile: true
+        - file: db.changelog-#.yaml
+          relativeToChangelogFile: true
+  ```
 
 ```bash
 # check code style (it's also bound to "mvn verify")

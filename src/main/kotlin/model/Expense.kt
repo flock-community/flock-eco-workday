@@ -29,6 +29,9 @@ abstract class Expense(
     open val person: Person,
 
     @Enumerated(EnumType.STRING)
-    open val status: Status = Status.REQUESTED
+    open val status: Status = Status.REQUESTED,
+
+    @Enumerated(EnumType.STRING)
+    val type: ExpenseType
 
 )

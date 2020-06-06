@@ -10,7 +10,6 @@ import javax.persistence.EntityListeners
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 class CostExpense(
 
     override val id: UUID = UUID.randomUUID(),
@@ -26,4 +25,4 @@ class CostExpense(
     @ElementCollection
     val files: List<Document> = listOf()
 
-) : Expense(id, date, description, person, status)
+) : Expense(id, date, description, person, status, ExpenseType.COST)

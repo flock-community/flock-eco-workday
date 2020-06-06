@@ -13,7 +13,6 @@ import javax.persistence.ManyToOne
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 class TravelExpense(
 
     override val id: UUID = UUID.randomUUID(),
@@ -26,4 +25,4 @@ class TravelExpense(
     val distance: Double,
     val allowance: Double
 
-) : Expense(id, date, description, person, status)
+) : Expense(id, date, description, person, status, ExpenseType.TRAVEL)
