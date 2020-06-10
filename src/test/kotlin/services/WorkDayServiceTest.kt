@@ -1,26 +1,33 @@
 package community.flock.eco.workday.services
 
+import community.flock.eco.workday.Application
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.helpers.CreateHelper
-import java.time.LocalDate
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
+import community.flock.eco.workday.helpers.DataHelper
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
+import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
+import java.time.LocalDate
+import javax.transaction.Transactional
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 @RunWith(SpringRunner::class)
-@ContextConfiguration(classes = [ApplicationConfiguration::class])
-@DataJpaTest
+@SpringBootTest(classes = [Application::class, DataHelper::class])
 @AutoConfigureTestDatabase
-@Import(CreateHelper::class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles(profiles = ["test"])
+@Transactional
 class WorkDayServiceTest {
 
     @Autowired

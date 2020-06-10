@@ -5,9 +5,9 @@ import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.WorkDay
-import java.time.LocalDate
 import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 @Import(CreateHelper::class)

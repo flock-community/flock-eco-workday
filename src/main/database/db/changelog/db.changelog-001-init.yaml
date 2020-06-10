@@ -1,8 +1,13 @@
 databaseChangeLog:
-  - objectQuotingStrategy: QUOTE_ALL_OBJECTS
   - changeSet:
       id: 1591270336646-1
       author: willemveelenturf (generated)
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          sequenceExists:
+            schemaName: public
+            sequenceName: hibernate_sequence
       changes:
         - createSequence:
             incrementBy: 1
@@ -326,25 +331,6 @@ databaseChangeLog:
                   type: BIGINT
             tableName: event_rating
   - changeSet:
-      id: 1591270336646-15
-      author: willemveelenturf (generated)
-      changes:
-        - createTable:
-            columns:
-              - column:
-                  constraints:
-                    nullable: false
-                    primaryKey: true
-                  name: group_id
-                  type: BIGINT
-              - column:
-                  constraints:
-                    nullable: false
-                    primaryKey: true
-                  name: user_id
-                  type: BIGINT
-            tableName: group_users
-  - changeSet:
       id: 1591270336646-16
       author: willemveelenturf (generated)
       changes:
@@ -426,158 +412,6 @@ databaseChangeLog:
                   name: person_id
                   type: BIGINT
             tableName: sick_day
-  - changeSet:
-      id: 1591270336646-19
-      author: willemveelenturf (generated)
-      changes:
-        - createTable:
-            columns:
-              - column:
-                  autoIncrement: true
-                  constraints:
-                    nullable: false
-                    primaryKey: true
-                    primaryKeyName: userPK
-                  name: id
-                  type: BIGINT
-              - column:
-                  name: code
-                  type: VARCHAR(255)
-              - column:
-                  name: created
-                  type: TIMESTAMP
-              - column:
-                  name: email
-                  type: VARCHAR(255)
-              - column:
-                  constraints:
-                    nullable: false
-                  name: enabled
-                  type: BOOLEAN
-              - column:
-                  name: name
-                  type: VARCHAR(255)
-            tableName: user
-  - changeSet:
-      id: 1591270336646-20
-      author: willemveelenturf (generated)
-      changes:
-        - createTable:
-            columns:
-              - column:
-                  autoIncrement: true
-                  constraints:
-                    nullable: false
-                    primaryKey: true
-                    primaryKeyName: user_accountPK
-                  name: id
-                  type: BIGINT
-              - column:
-                  name: created
-                  type: TIMESTAMP
-              - column:
-                  name: user_id
-                  type: BIGINT
-            tableName: user_account
-  - changeSet:
-      id: 1591270336646-21
-      author: willemveelenturf (generated)
-      changes:
-        - createTable:
-            columns:
-              - column:
-                  name: key
-                  type: VARCHAR(255)
-              - column:
-                  name: label
-                  type: VARCHAR(255)
-              - column:
-                  constraints:
-                    nullable: false
-                    primaryKey: true
-                    primaryKeyName: user_account_keyPK
-                  name: id
-                  type: BIGINT
-            tableName: user_account_key
-  - changeSet:
-      id: 1591270336646-22
-      author: willemveelenturf (generated)
-      changes:
-        - createTable:
-            columns:
-              - column:
-                  name: provider
-                  type: INT
-              - column:
-                  name: reference
-                  type: VARCHAR(255)
-              - column:
-                  constraints:
-                    nullable: false
-                    primaryKey: true
-                    primaryKeyName: user_account_oauthPK
-                  name: id
-                  type: BIGINT
-            tableName: user_account_oauth
-  - changeSet:
-      id: 1591270336646-23
-      author: willemveelenturf (generated)
-      changes:
-        - createTable:
-            columns:
-              - column:
-                  name: reset_code
-                  type: VARCHAR(255)
-              - column:
-                  name: secret
-                  type: VARCHAR(255)
-              - column:
-                  constraints:
-                    nullable: false
-                    primaryKey: true
-                    primaryKeyName: user_account_passwordPK
-                  name: id
-                  type: BIGINT
-            tableName: user_account_password
-  - changeSet:
-      id: 1591270336646-24
-      author: willemveelenturf (generated)
-      changes:
-        - createTable:
-            columns:
-              - column:
-                  constraints:
-                    nullable: false
-                  name: user_id
-                  type: BIGINT
-              - column:
-                  name: authorities
-                  type: VARCHAR(255)
-            tableName: user_authorities
-  - changeSet:
-      id: 1591270336646-25
-      author: willemveelenturf (generated)
-      changes:
-        - createTable:
-            columns:
-              - column:
-                  autoIncrement: true
-                  constraints:
-                    nullable: false
-                    primaryKey: true
-                    primaryKeyName: user_groupPK
-                  name: id
-                  type: BIGINT
-              - column:
-                  name: code
-                  type: VARCHAR(255)
-              - column:
-                  name: created
-                  type: TIMESTAMP
-              - column:
-                  name: name
-                  type: VARCHAR(255)
-            tableName: user_group
   - changeSet:
       id: 1591270336646-26
       author: willemveelenturf (generated)
@@ -665,30 +499,6 @@ databaseChangeLog:
             constraintName: UC_PERSONCODE_COL
             tableName: person
   - changeSet:
-      id: 1591270336646-34
-      author: willemveelenturf (generated)
-      changes:
-        - addUniqueConstraint:
-            columnNames: code
-            constraintName: UC_USERCODE_COL
-            tableName: user
-  - changeSet:
-      id: 1591270336646-35
-      author: willemveelenturf (generated)
-      changes:
-        - addUniqueConstraint:
-            columnNames: email
-            constraintName: UC_USEREMAIL_COL
-            tableName: user
-  - changeSet:
-      id: 1591270336646-36
-      author: willemveelenturf (generated)
-      changes:
-        - addUniqueConstraint:
-            columnNames: code
-            constraintName: UC_USER_GROUPCODE_COL
-            tableName: user_group
-  - changeSet:
       id: 1591270336646-37
       author: willemveelenturf (generated)
       changes:
@@ -700,19 +510,6 @@ databaseChangeLog:
             initiallyDeferred: false
             referencedColumnNames: id
             referencedTableName: contract
-            validate: true
-  - changeSet:
-      id: 1591270336646-38
-      author: willemveelenturf (generated)
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: group_id
-            baseTableName: group_users
-            constraintName: FK1rwnd0gvlkn6u391l0twnm5hm
-            deferrable: false
-            initiallyDeferred: false
-            referencedColumnNames: id
-            referencedTableName: user_group
             validate: true
   - changeSet:
       id: 1591270336646-39
@@ -739,19 +536,6 @@ databaseChangeLog:
             initiallyDeferred: false
             referencedColumnNames: id
             referencedTableName: client
-            validate: true
-  - changeSet:
-      id: 1591270336646-41
-      author: willemveelenturf (generated)
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: user_id
-            baseTableName: user_account
-            constraintName: FK4qaqge5ewvmfuwsp5eddfr4r2
-            deferrable: false
-            initiallyDeferred: false
-            referencedColumnNames: id
-            referencedTableName: user
             validate: true
   - changeSet:
       id: 1591270336646-42
@@ -817,19 +601,6 @@ databaseChangeLog:
             initiallyDeferred: false
             referencedColumnNames: id
             referencedTableName: person
-            validate: true
-  - changeSet:
-      id: 1591270336646-47
-      author: willemveelenturf (generated)
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: id
-            baseTableName: user_account_password
-            constraintName: FK9udo0mvingid3agkghix26xlj
-            deferrable: false
-            initiallyDeferred: false
-            referencedColumnNames: id
-            referencedTableName: user_account
             validate: true
   - changeSet:
       id: 1591270336646-48
@@ -910,19 +681,6 @@ databaseChangeLog:
             referencedTableName: person
             validate: true
   - changeSet:
-      id: 1591270336646-54
-      author: willemveelenturf (generated)
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: id
-            baseTableName: user_account_key
-            constraintName: FKl7g38fpt4i23asmogb63jswrx
-            deferrable: false
-            initiallyDeferred: false
-            referencedColumnNames: id
-            referencedTableName: user_account
-            validate: true
-  - changeSet:
       id: 1591270336646-55
       author: willemveelenturf (generated)
       changes:
@@ -947,32 +705,6 @@ databaseChangeLog:
             initiallyDeferred: false
             referencedColumnNames: id
             referencedTableName: person
-            validate: true
-  - changeSet:
-      id: 1591270336646-57
-      author: willemveelenturf (generated)
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: user_id
-            baseTableName: user_authorities
-            constraintName: FKmj13d0mnuj4cd8b6htotbf9mm
-            deferrable: false
-            initiallyDeferred: false
-            referencedColumnNames: id
-            referencedTableName: user
-            validate: true
-  - changeSet:
-      id: 1591270336646-58
-      author: willemveelenturf (generated)
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: user_id
-            baseTableName: group_users
-            constraintName: FKnmmsdv4v8ylwiiy5jy1kvrs10
-            deferrable: false
-            initiallyDeferred: false
-            referencedColumnNames: id
-            referencedTableName: user
             validate: true
   - changeSet:
       id: 1591270336646-59
@@ -1038,18 +770,5 @@ databaseChangeLog:
             initiallyDeferred: false
             referencedColumnNames: id
             referencedTableName: event
-            validate: true
-  - changeSet:
-      id: 1591270336646-64
-      author: willemveelenturf (generated)
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: id
-            baseTableName: user_account_oauth
-            constraintName: FKyx12ke39c2ab0gcmihw5lfia
-            deferrable: false
-            initiallyDeferred: false
-            referencedColumnNames: id
-            referencedTableName: user_account
             validate: true
 

@@ -6,7 +6,7 @@
     <parent>
         <artifactId>flock-eco-application-parent</artifactId>
         <groupId>com.github.flock-community.flock-eco</groupId>
-        <version>1.7.26</version>
+        <version>1.8.0-b0e898c</version>
     </parent>
 
     <groupId>flock.community.eco.workday</groupId>
@@ -51,6 +51,11 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-gcp-starter-storage</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -217,28 +222,6 @@
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>3.9.0</version>
-                <configuration>
-                    <changeLogFile>src/main/database/db/changelog/db.changelog-master.yaml</changeLogFile>
-                    <diffChangeLogFile>src/main/database/db/changelog/db.changelog-diff.yaml</diffChangeLogFile>
-                    <propertyFile>src/main/database/liquibase.properties</propertyFile>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.liquibase.ext</groupId>
-                        <artifactId>liquibase-hibernate5</artifactId>
-                        <version>3.9.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-data-jpa</artifactId>
-                        <version>${spring.boot.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>javax.validation</groupId>
-                        <artifactId>validation-api</artifactId>
-                        <version>2.0.1.Final</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -313,12 +296,9 @@
 
     <repositories>
         <repository>
-            <id>bintray-flock-community</id>
-            <name>bintray</name>
-            <url>https://dl.bintray.com/flock-community/flock-maven/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+            <id>github</id>
+            <name>Flock. eco</name>
+            <url>https://maven.pkg.github.com/flock-community/flock-eco</url>
         </repository>
     </repositories>
 

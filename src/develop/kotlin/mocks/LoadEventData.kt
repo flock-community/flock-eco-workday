@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("local")
+@Profile("develop")
 class LoadEventData(
     loadPersonData: LoadPersonData,
     private val service: EventService

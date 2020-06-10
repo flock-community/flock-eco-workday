@@ -22,6 +22,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
+import javax.transaction.Transactional
 import kotlin.math.pow
 import community.flock.eco.workday.model.ContractService as ContractServiceModel
 
@@ -98,6 +99,7 @@ class AggregationService(
             .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.revenuePerDay() }
     }
 
+    @Transactional
     fun totalPerPerson(from: LocalDate, to: LocalDate): List<Map<String, Any>> {
         val all = fetchAll(from, to)
         return all.allPersons()
@@ -135,6 +137,7 @@ class AggregationService(
             }
     }
 
+    @Transactional
     fun totalPerMonth(from: LocalDate, to: LocalDate): List<Map<String, Any>> {
 
         val all = fetchAll(from, to)

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 import java.time.LocalDate
 
 @Component
-@Profile("local")
+@Profile("develop")
 class LoadExpensesData(
     private val loadPersonData: LoadPersonData,
     private val travelExpenseService: TravelExpenseService,

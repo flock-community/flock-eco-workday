@@ -5,7 +5,9 @@ import community.flock.eco.feature.exactonline.model.ExactonlineUser
 import community.flock.eco.workday.exactonline.model.ExactonlineDocument
 import community.flock.eco.workday.exactonline.model.ExactonlineDocumentAttachment
 import community.flock.eco.workday.exactonline.model.ExactonlineDocumentType
+import community.flock.eco.workday.exactonline.properties.ExactonlineProperties
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -15,12 +17,11 @@ import java.util.UUID
 
 @Component
 class ExactonlineDocumentClient(
-    @Value("\${flock.eco.feature.exactonline.requestUri}")
-    private val requestUri: String
+    private val exactonlineProperties: ExactonlineProperties
 ) {
 
     val client: WebClient = WebClient.builder()
-        .baseUrl(requestUri)
+        .baseUrl(exactonlineProperties.requestUri)
         .build()
 
     fun postDocument(accessToken:String, division:Int, document: ExactonlineDocument): Mono<ExactonlineDocument> = client

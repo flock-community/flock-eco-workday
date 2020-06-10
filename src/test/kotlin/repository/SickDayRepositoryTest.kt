@@ -1,30 +1,31 @@
 package community.flock.eco.workday.repository
 
-import community.flock.eco.workday.ApplicationConfiguration
+import community.flock.eco.workday.Application
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.Status
-import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
-import org.springframework.test.context.ContextConfiguration
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
+import java.time.LocalDate
+import javax.transaction.Transactional
 
 @RunWith(SpringRunner::class)
-@ContextConfiguration(classes = [ApplicationConfiguration::class])
-@DataJpaTest
+@SpringBootTest(classes = [Application::class])
 @AutoConfigureTestDatabase
+@ActiveProfiles(profiles = ["test"])
+@Transactional
 class SickDayRepositoryTest {
-    @Autowired
-    private lateinit var entity: TestEntityManager
+
     @Autowired
     private lateinit var personRepository: PersonRepository
+
     @Autowired
     private lateinit var repository: SickdayRepository
 
@@ -32,7 +33,7 @@ class SickDayRepositoryTest {
 
     @Before
     fun setup() {
-        entity.persist(Person(
+        personRepository.save(Person(
             firstname = "Denholm",
             lastname = "Reynholm",
             email = "denholm@reynholm-industries.co.uk",
@@ -40,7 +41,6 @@ class SickDayRepositoryTest {
             number = null,
             user = null
         ))
-        entity.flush()
         person = personRepository.findAll().first()
     }
 
@@ -56,8 +56,7 @@ class SickDayRepositoryTest {
             status = Status.REQUESTED
         )
 
-        entity.persist(sickDay)
-        entity.flush()
+        repository.save(sickDay)
 
         return sickDay
     }
@@ -104,9 +103,8 @@ class SickDayRepositoryTest {
 
         val iterator: Iterator<SickDay> = sickDayList.iterator()
         for (sickDay in iterator) {
-            entity.persist(sickDay)
+            repository.save(sickDay)
         }
-        entity.flush()
         res = repository.findAll()
 
         assertThat(res.toSet().size).isEqualTo(5)

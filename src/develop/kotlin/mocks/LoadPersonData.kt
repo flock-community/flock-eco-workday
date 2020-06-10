@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("local")
+@Profile("develop")
 class LoadPersonData(
     userData: LoadUserData,
     private val repository: PersonRepository,

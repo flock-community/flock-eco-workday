@@ -2,6 +2,7 @@ package community.flock.eco.feature.exactonline.controllers;
 
 import community.flock.eco.feature.exactonline.clients.ExactonlineUserClient
 import community.flock.eco.workday.exactonline.services.ExactonlineAuthenticationService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

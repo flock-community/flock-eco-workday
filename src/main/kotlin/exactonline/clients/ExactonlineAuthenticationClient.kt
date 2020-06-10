@@ -1,7 +1,9 @@
 package community.flock.eco.feature.exactonline.clients;
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import community.flock.eco.workday.exactonline.properties.ExactonlineProperties
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
@@ -12,18 +14,11 @@ import java.net.URI
 
 @Component
 class ExactonlineAuthenticationClient(
-    @Value("\${flock.eco.feature.exactonline.clientId}")
-    val clientId: String,
-    @Value("\${flock.eco.feature.exactonline.clientSecret}")
-    val clientSecret: String,
-    @Value("\${flock.eco.feature.exactonline.redirectUri}")
-    val redirectUri: String,
-    @Value("\${flock.eco.feature.exactonline.requestUri}")
-    val requestUri: String
+    private val exactonlineProperties: ExactonlineProperties
 ) {
 
     val client: WebClient = WebClient.builder()
-        .baseUrl(requestUri)
+        .baseUrl(exactonlineProperties.requestUri)
         .build()
 
     fun token(code: String) = client
@@ -31,10 +26,10 @@ class ExactonlineAuthenticationClient(
         .uri("/api/oauth2/token")
         .bodyValue(mapOf(
             "code" to code,
-            "redirect_uri" to redirectUri,
+            "redirect_uri" to exactonlineProperties.redirectUri,
             "grant_type" to "authorization_code",
-            "client_id" to clientId,
-            "client_secret" to clientSecret
+            "client_id" to exactonlineProperties.clientId,
+            "client_secret" to exactonlineProperties.clientSecret
         ).toMultiValueMap())
         .retrieve()
 
@@ -44,15 +39,17 @@ class ExactonlineAuthenticationClient(
         .bodyValue(mapOf(
             "refresh_token" to refreshToken,
             "grant_type" to "refresh_token",
-            "client_id" to clientId,
-            "client_secret" to clientSecret
+            "client_id" to exactonlineProperties.clientId,
+            "client_secret" to exactonlineProperties.clientSecret
         ).toMultiValueMap())
         .retrieve()
 
 
 }
 
-fun Map<String, Any>.toMultiValueMap() = this
+private fun <K, V> Map<K, V>.toMultiValueMap(): LinkedMultiValueMap<K, V> = this
     .map{ it.key to listOf(it.value) }
     .toMap()
     .let { LinkedMultiValueMap(it) }
+
+

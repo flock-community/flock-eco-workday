@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
@@ -32,8 +33,9 @@ import kotlin.test.assertNull
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
-@AutoConfigureMockMvc
 @AutoConfigureTestDatabase
+@AutoConfigureMockMvc
+@ActiveProfiles(profiles = ["test"])
 @Import(CreateHelper::class)
 class SickDayControllerTest {
 
@@ -235,7 +237,7 @@ class SickDayControllerTest {
             .accept(APPLICATION_JSON))
             .andExpect(status().isForbidden)
 
-        assertEquals(sickDayService.findByCode(created.code)?.status,status)
+        assertEquals(sickDayService.findByCode(created.code)?.status, status)
     }
 
 
