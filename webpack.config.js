@@ -19,7 +19,7 @@ const proxyTarget = env => ({
   autoRewrite: true,
 })
 
-module.exports = env => ({
+module.exports = (env, argv) => ({
   entry: path.join(__dirname, "src/main/react"),
 
   output: {
@@ -50,8 +50,8 @@ module.exports = env => ({
 
   plugins: [
     htmlPlugin,
-    new BundleAnalyzerPlugin(),
-  ],
+    argv.mode === 'development' ? new BundleAnalyzerPlugin() : null,
+  ].filter(it => it !== null),
 
   devServer: {
     port: 3000,
