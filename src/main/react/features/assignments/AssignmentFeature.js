@@ -1,5 +1,5 @@
 import React, {useState} from "react"
-import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import Grid from "@material-ui/core/Grid"
 import {makeStyles} from "@material-ui/core"
 import {PersonSelector} from "../../components/selector"

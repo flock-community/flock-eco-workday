@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
-import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
+import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient"
 import {
   Card,
   CardContent,

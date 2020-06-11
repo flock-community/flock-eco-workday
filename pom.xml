@@ -6,7 +6,7 @@
     <parent>
         <artifactId>flock-eco-application-parent</artifactId>
         <groupId>com.github.flock-community.flock-eco</groupId>
-        <version>1.8.0-b0e898c</version>
+        <version>1.8.0-ec9e1c2</version>
     </parent>
 
     <groupId>flock.community.eco.workday</groupId>
@@ -296,9 +296,12 @@
 
     <repositories>
         <repository>
-            <id>github</id>
-            <name>Flock. eco</name>
-            <url>https://maven.pkg.github.com/flock-community/flock-eco</url>
+            <id>bintray-flock-community</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/flock-community/flock-maven/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 

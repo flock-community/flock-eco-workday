@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react"
 
 import {BrowserRouter as Router, Route} from "react-router-dom"
-import {UserFeature} from "@flock-eco/feature-user/src/main/react/user/UserFeature"
+import {UserFeature} from "@flock-community/flock-eco-feature-user/src/main/react/user/UserFeature"
 import {CircularProgress, makeStyles} from "@material-ui/core"
 import ThemeProvider from "@material-ui/styles/ThemeProvider"
-import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {HolidayFeature} from "../features/holiday/HolidayFeature"
 import {ApplicationLayout} from "./ApplicationLayout"
 import {ApplicationDrawer} from "./ApplicationDrawer"

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react"
-import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
+import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient"
 import {useLoginStatus} from "./StatusHook"
 
 let loading = false
