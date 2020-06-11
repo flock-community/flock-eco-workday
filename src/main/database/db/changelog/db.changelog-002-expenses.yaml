@@ -16,7 +16,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: cost_expensePK
                   name: id
-                  type: BINARY
+                  type: UUID
             tableName: cost_expense
   - changeSet:
       id: 1591290699699-3
@@ -28,10 +28,10 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   name: cost_expense_id
-                  type: BINARY
+                  type: UUID
               - column:
                   name: file
-                  type: BINARY
+                  type: UUID
               - column:
                   name: name
                   type: VARCHAR(255)
@@ -48,7 +48,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: expensePK
                   name: id
-                  type: BINARY
+                  type: UUID
               - column:
                   name: date
                   type: date
@@ -77,7 +77,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: invoicePK
                   name: id
-                  type: BINARY
+                  type: UUID
               - column:
                   constraints:
                     nullable: false
@@ -88,7 +88,7 @@ databaseChangeLog:
                   type: VARCHAR(255)
               - column:
                   name: reference
-                  type: BINARY
+                  type: UUID
               - column:
                   name: type
                   type: INT
@@ -103,10 +103,10 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   name: invoice_id
-                  type: BINARY
+                  type: UUID
               - column:
                   name: file
-                  type: BINARY
+                  type: UUID
               - column:
                   name: name
                   type: VARCHAR(255)
@@ -133,7 +133,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: travel_expensePK
                   name: id
-                  type: BINARY
+                  type: UUID
             tableName: travel_expense
   - changeSet:
       id: 1591290699699-8

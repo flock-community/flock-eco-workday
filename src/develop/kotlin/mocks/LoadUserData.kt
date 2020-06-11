@@ -9,11 +9,12 @@ import community.flock.eco.workday.authorities.ExpenseAuthority
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.authorities.WorkDayAuthority
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("develop")
+@ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadUserData(
     private val userAccountService: UserAccountService,
     private val userAuthorityService: UserAuthorityService

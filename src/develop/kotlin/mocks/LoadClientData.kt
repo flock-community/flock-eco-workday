@@ -2,11 +2,12 @@ package community.flock.eco.workday.mocks
 
 import community.flock.eco.workday.model.Client
 import community.flock.eco.workday.repository.ClientRepository
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("develop")
+@ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadClientData(
     private val clientRepository: ClientRepository
 ) {

@@ -5,12 +5,13 @@ import community.flock.eco.workday.model.Expense
 import community.flock.eco.workday.model.TravelExpense
 import community.flock.eco.workday.services.CostExpenseService
 import community.flock.eco.workday.services.TravelExpenseService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 
 @Component
-@Profile("develop")
+@ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadExpensesData(
     private val loadPersonData: LoadPersonData,
     private val travelExpenseService: TravelExpenseService,

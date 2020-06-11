@@ -445,7 +445,7 @@ databaseChangeLog:
                   type: BIGINT
               - column:
                   name: file
-                  type: BINARY
+                  type: UUID
               - column:
                   name: name
                   type: VARCHAR(255)
