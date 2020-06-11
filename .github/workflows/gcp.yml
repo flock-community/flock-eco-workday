@@ -28,12 +28,25 @@ jobs:
       with:
         java-version: 1.8
 
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+
     - uses: actions/cache@v2
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
+
+    - uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: ${{ runner.os }}-node-
+
+    - run: npm ci
+    - run: npm run build
 
     - name: Build and Deploy
       run: mvn -B compile jib:build --file pom.xml
