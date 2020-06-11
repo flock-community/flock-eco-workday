@@ -1,5 +1,6 @@
 package community.flock.eco.feature.exactonline.controllers;
 
+import community.flock.eco.feature.exactonline.clients.ExactonlineDivisionClient
 import community.flock.eco.feature.exactonline.clients.ExactonlineUserClient
 import community.flock.eco.workday.exactonline.services.ExactonlineAuthenticationService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -18,7 +19,8 @@ import javax.servlet.http.HttpSession
 @RequestMapping("/api/exactonline")
 class ExactonlineAuthenticationController(
     private val exactonlineAuthenticationService: ExactonlineAuthenticationService,
-    private val userClient: ExactonlineUserClient
+    private val userClient: ExactonlineUserClient,
+    private val divisionClient: ExactonlineDivisionClient
 ) {
 
     @GetMapping("status")
@@ -26,15 +28,17 @@ class ExactonlineAuthenticationController(
         httpSession: HttpSession
     ): Mono<Map<String, Any?>> = exactonlineAuthenticationService
         .accessToken(httpSession)
-        .flatMap { accessToken ->
-            userClient.getCurrentMe(accessToken)
+        .flatMap { requestObject ->
+            val user = userClient.getCurrentMe(requestObject.accessToken)
+            val division = divisionClient.getDivisionByCode(requestObject, requestObject.division)
+            Mono.zip(user, division)
                 .map { res ->
                     mapOf(
                         "active" to true,
-                        "user" to res
+                        "user" to res.t1,
+                        "division" to res.t2
                     )
                 }
-
         }
         .defaultIfEmpty(mapOf<String, Any?>(
             "active" to false

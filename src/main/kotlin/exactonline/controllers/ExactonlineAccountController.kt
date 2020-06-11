@@ -24,11 +24,10 @@ public class ExactonlineAccountController(
         httpSession: HttpSession
     ): Mono<JsonNode> = exactonlineAuthenticationService
         .accessToken(httpSession)
-        .flatMap {accessToken ->
-            exactonlineUserClient.getCurrentMe(accessToken)
-                .flatMap {user ->
-                    exactonlineAccountClient.getAccounts(accessToken, user.currentDivision)
-                }
+        .flatMap {requestObject ->
+
+                    exactonlineAccountClient.getAccounts(requestObject)
+
         }
 
 

@@ -22,6 +22,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -96,6 +97,17 @@ class TravelExpenseController(
         .run { mapper.consume(this) }
         .run { service.create(this) }
         .toResponse()
+
+    @PutMapping("{id}")
+    @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
+    fun putTravelExpense(
+        @PathVariable id: UUID,
+        @RequestBody input: TravelExpenseInput,
+        authentication: Authentication
+    ) = input
+        .run { mapper.consume(this, id) }
+        .run { service.update(id,this) }
+        .toResponse()
 }
 
 @RestController
@@ -106,12 +118,23 @@ class CostExpenseController(
 )  {
     @PostMapping
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
-    fun postTravelExpense(
+    fun postCostExpense(
         @RequestBody input: CostExpenseInput,
         authentication: Authentication
     ) = input
         .run { mapper.consume(this) }
         .run { service.create(this) }
+        .toResponse()
+
+    @PutMapping("{id}")
+    @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
+    fun putCostExpense(
+        @PathVariable id: UUID,
+        @RequestBody input: CostExpenseInput,
+        authentication: Authentication
+    ) = input
+        .run { mapper.consume(this, id) }
+        .run { service.update(id,this) }
         .toResponse()
 }
 

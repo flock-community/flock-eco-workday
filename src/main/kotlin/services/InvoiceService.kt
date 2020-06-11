@@ -40,21 +40,18 @@ class InvoiceService(
         ?.run {
             exactonlineAuthenticationService
                 .accessToken(httpSession)
-                .flatMap { accessToken ->
-                    exactonlineUserClient.getCurrentMe(accessToken)
-                        .flatMap { user ->
-                            exactonlineDocumentClient.postDocument(accessToken, user.currentDivision, ExactonlineDocument(
-                                subject = description,
-                                type = ExactonlineDocumentType.PURCHASE
-                            ))
-                                .flatMap { document ->
-                                    exactonlineDocumentClient.postDocumentAttachment(accessToken, user.currentDivision, ExactonlineDocumentAttachment(
-                                        document = document.id!!,
-                                        fileName = documents.first().name,
-                                        attachment = documentService.readDocument(documents.first().file)
-                                    ))
-                                }
-                        }
+                .flatMap { requestObject ->
+                    exactonlineDocumentClient.postDocument(requestObject, ExactonlineDocument(
+                        subject = description,
+                        type = ExactonlineDocumentType.PURCHASE
+                    )).flatMap { document ->
+                        exactonlineDocumentClient.postDocumentAttachment(requestObject, ExactonlineDocumentAttachment(
+                            document = document.id!!,
+                            fileName = documents.first().name,
+                            attachment = documentService.readDocument(documents.first().file)
+                        ))
+                    }
+
 
                 }
         }

@@ -2,6 +2,7 @@ package community.flock.eco.workday.exactonline
 
 import community.flock.eco.feature.exactonline.clients.ExactonlineAccountClient
 import community.flock.eco.feature.exactonline.clients.ExactonlineAuthenticationClient
+import community.flock.eco.feature.exactonline.clients.ExactonlineDivisionClient
 import community.flock.eco.feature.exactonline.clients.ExactonlineDocumentClient
 import community.flock.eco.feature.exactonline.clients.ExactonlineInvoiceClient
 import community.flock.eco.feature.exactonline.clients.ExactonlineUserClient
@@ -26,6 +27,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     ExactonlineDocumentClient::class,
     ExactonlineInvoiceClient::class,
     ExactonlineUserClient::class,
+    ExactonlineDivisionClient::class,
     ExactonlineAccountController::class,
     ExactonlineAuthenticationController::class,
     ExactonlineAuthenticationService::class,

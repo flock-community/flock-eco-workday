@@ -10,7 +10,6 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction"
 import IconButton from "@material-ui/core/IconButton"
 import PublishIcon from "@material-ui/icons/Publish"
 import {InvoiceClient} from "../../clients/InvoiceClient"
-import {ExactonlineClient} from "../../clients/ExactonlineClient"
 
 export function ExactonlineListInvoices() {
   const [list, setList] = useState([])
@@ -21,8 +20,7 @@ export function ExactonlineListInvoices() {
     })
   }, [])
 
-  const handleClickInvoice = invoice => () =>
-    ExactonlineClient.uploadInvoice(invoice.id)
+  const handleClickInvoice = invoice => () => InvoiceClient.uploadInvoice(invoice.id)
 
   return (
     <List>

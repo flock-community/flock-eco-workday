@@ -65,12 +65,7 @@ input TravelExpenseInput {
     allowance: Float!
 }
 
-enum Status {
-    REQUESTED,
-    APPROVED,
-    REJECTED
-}
-
 scalar Date
 scalar UUID
+scalar Status
 

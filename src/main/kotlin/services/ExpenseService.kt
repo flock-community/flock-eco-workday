@@ -56,9 +56,11 @@ class CostExpenseService(
         .also{applicationEventPublisher.publishEvent(CreateExpenseEvent(it))}
 
     @Transactional
-    fun update(it: CostExpense): CostExpense = costExpenseRepository
-        .save(it)
-        .also{applicationEventPublisher.publishEvent(UpdateExpenseEvent(it))}
+    fun update(id:UUID, input: CostExpense): CostExpense? = costExpenseRepository
+        .findById(id)
+        .toNullable()
+        ?.let { costExpenseRepository.save(input) }
+        ?.also{applicationEventPublisher.publishEvent(UpdateExpenseEvent(it))}
 
 }
 
@@ -74,9 +76,11 @@ class TravelExpenseService(
         .also{applicationEventPublisher.publishEvent(CreateExpenseEvent(it))}
 
     @Transactional
-    fun update(it: TravelExpense): TravelExpense = travelExpenseRepository
-        .save(it)
-        .also{applicationEventPublisher.publishEvent(UpdateExpenseEvent(it))}
+    fun update(id:UUID, input: TravelExpense): TravelExpense? = travelExpenseRepository
+        .findById(id)
+        .toNullable()
+        ?.let { travelExpenseRepository.save(input) }
+        ?.also{applicationEventPublisher.publishEvent(UpdateExpenseEvent(it))}
 
 }
 

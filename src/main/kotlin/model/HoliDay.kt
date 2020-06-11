@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.core.events.EventEntityListeners
+import community.flock.eco.workday.interfaces.Approve
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Entity
@@ -32,7 +33,7 @@ class HoliDay(
     val description: String,
 
     @Enumerated(EnumType.STRING)
-    val status: Status,
+    override val status: Status,
 
     @ManyToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
@@ -40,4 +41,4 @@ class HoliDay(
     @JsonProperty("personCode")
     val person: Person
 
-) : Day(id, code, from, to, hours, days)
+) : Day(id, code, from, to, hours, days), Approve

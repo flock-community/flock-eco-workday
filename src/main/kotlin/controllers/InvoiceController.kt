@@ -44,12 +44,13 @@ class InvoiceController(
     ) = invoiceService.findAll(pageable)
         .toResponse()
 
-    @PostMapping
+    @PostMapping("upload_invoice")
     @PreAuthorize("hasAuthority('InvoiceAuthority.WRITE')")
     fun uploadToExactonline(
         httpsSession: HttpSession,
         @RequestBody body:UploadInvoice
-    ) = invoiceService.uploadExactonline(httpsSession, body.id)
+    ) = invoiceService
+        .uploadExactonline(httpsSession, body.id)
         .toResponse()
 
 }

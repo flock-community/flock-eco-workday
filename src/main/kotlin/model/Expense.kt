@@ -1,6 +1,7 @@
 package community.flock.eco.workday.model
 
 import community.flock.eco.core.events.EventEntityListeners
+import community.flock.eco.workday.interfaces.Approve
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Entity
@@ -29,9 +30,9 @@ abstract class Expense(
     open val person: Person,
 
     @Enumerated(EnumType.STRING)
-    open val status: Status = Status.REQUESTED,
+    override val status: Status = Status.REQUESTED,
 
     @Enumerated(EnumType.STRING)
     val type: ExpenseType
 
-)
+): Approve

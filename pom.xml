@@ -57,13 +57,11 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
             <version>3.9.0</version>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -144,6 +142,7 @@
                     <scalarsKotlin>
                         <Date>java.time.LocalDate</Date>
                         <UUID>java.util.UUID</UUID>
+                        <Status>community.flock.eco.workday.model.Status</Status>
                     </scalarsKotlin>
                 </configuration>
             </plugin>
@@ -187,37 +186,6 @@
                     </container>
                 </configuration>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>com.github.eirslett</groupId>-->
-<!--                <artifactId>frontend-maven-plugin</artifactId>-->
-<!--                <version>1.9.1</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>install node and npm</id>-->
-<!--                        <goals>-->
-<!--                            <goal>install-node-and-npm</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                    <execution>-->
-<!--                        <id>npm ci</id>-->
-<!--                        <goals>-->
-<!--                            <goal>npm</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <arguments>ci</arguments>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                    <execution>-->
-<!--                        <id>npm build</id>-->
-<!--                        <goals>-->
-<!--                            <goal>npm</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <arguments>run build</arguments>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
             <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>

@@ -51,12 +51,14 @@ export function ExactonlineFeature() {
           <Card>
             <CardHeader title="User" />
             <CardContent>
-              <Typography>{status.user.fullName}</Typography>
-              <Typography>{status.user.email}</Typography>
+              <Typography>Username: {status.user.fullName}</Typography>
+              <Typography>Email: {status.user.email}</Typography>
+              <Typography>
+                Administration: {status.division.description} ({status.division.code}){" "}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
-
         <Grid item xs={12}>
           <Card>
             <CardHeader title="Invoices" />

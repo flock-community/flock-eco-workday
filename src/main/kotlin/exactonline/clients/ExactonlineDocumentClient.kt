@@ -1,6 +1,7 @@
 package community.flock.eco.feature.exactonline.clients;
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import community.flock.eco.feature.exactonline.model.ExactonlineRequestObject
 import community.flock.eco.feature.exactonline.model.ExactonlineUser
 import community.flock.eco.workday.exactonline.model.ExactonlineDocument
 import community.flock.eco.workday.exactonline.model.ExactonlineDocumentAttachment
@@ -24,10 +25,10 @@ class ExactonlineDocumentClient(
         .baseUrl(exactonlineProperties.requestUri)
         .build()
 
-    fun postDocument(accessToken:String, division:Int, document: ExactonlineDocument): Mono<ExactonlineDocument> = client
+    fun postDocument(requestObject: ExactonlineRequestObject, document: ExactonlineDocument): Mono<ExactonlineDocument> = client
         .post()
-        .uri("/api/v1/$division/documents/Documents")
-        .header("authorization", "Bearer $accessToken")
+        .uri("/api/v1/${requestObject.division}/documents/Documents")
+        .header("authorization", "Bearer ${requestObject.accessToken}")
         .contentType(MediaType.APPLICATION_JSON)
         .body(Mono.just(mapOf(
             "Subject" to document.subject,
@@ -46,10 +47,10 @@ class ExactonlineDocumentClient(
                 ?:error("Cannot find ExactonlineDocumentType")
         ) }
 
-    fun postDocumentAttachment(accessToken:String, division:Int, attachment: ExactonlineDocumentAttachment) = client
+    fun postDocumentAttachment(requestObject: ExactonlineRequestObject, attachment: ExactonlineDocumentAttachment) = client
         .post()
-        .uri("/api/v1/$division/documents/DocumentAttachments")
-        .header("authorization", "Bearer $accessToken")
+        .uri("/api/v1/${requestObject.division}/documents/Documents")
+        .header("authorization", "Bearer ${requestObject.accessToken}")
         .contentType(MediaType.APPLICATION_JSON)
         .body(Mono.just(mapOf(
             "Attachment" to Base64.getEncoder().encodeToString(attachment.attachment),

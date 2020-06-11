@@ -11,9 +11,13 @@ import {StatusMenu} from "../../components/StatusMenu"
 export function ExpenseList({personCode, refresh, onClickRow}) {
   const [state, setState] = useState([])
 
+  const loadState = () => {
+    ExpenseClient.findAllByPersonCode(personCode).then(res => setState(res))
+  }
+
   useEffect(() => {
     if (personCode) {
-      ExpenseClient.findAllByPersonCode(personCode).then(res => setState(res))
+      loadState()
     }
   }, [personCode, refresh])
 
@@ -25,8 +29,13 @@ export function ExpenseList({personCode, refresh, onClickRow}) {
     }
   }
 
-  const handleStatusChange = status =>
-    ExpenseClient.put(state.id, state.type.toLowerCase(), {...state, status})
+  const handleStatusChange = item => status => {
+    ExpenseClient.put(item.id, item.type.toLowerCase(), {
+      ...item,
+      personCode,
+      status,
+    }).then(() => loadState())
+  }
 
   function renderItem(item, key) {
     return (
@@ -35,7 +44,7 @@ export function ExpenseList({personCode, refresh, onClickRow}) {
           <CardHeader
             action={
               <StatusMenu
-                onChange={handleStatusChange}
+                onChange={handleStatusChange(item)}
                 disabled={isAdmin()}
                 value={item.status}
               />

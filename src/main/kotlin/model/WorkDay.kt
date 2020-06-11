@@ -2,6 +2,7 @@ package community.flock.eco.workday.model
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import community.flock.eco.core.events.EventEntityListeners
+import community.flock.eco.workday.interfaces.Approve
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.ElementCollection
@@ -32,9 +33,9 @@ class WorkDay(
     val assignment: Assignment,
 
     @Enumerated(EnumType.STRING)
-    val status: Status,
+    override val status: Status,
 
     @ElementCollection
     val sheets: List<WorkDaySheet>
 
-) : Day(id, code, from, to, hours, days)
+) : Day(id, code, from, to, hours, days), Approve
