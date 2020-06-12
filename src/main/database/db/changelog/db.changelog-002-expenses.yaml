@@ -91,7 +91,10 @@ databaseChangeLog:
                   type: UUID
               - column:
                   name: type
-                  type: INT
+                  type: VARCHAR(255)
+              - column:
+                  name: status
+                  type: VARCHAR(255)
             tableName: invoice
   - changeSet:
       id: 1591290699699-6

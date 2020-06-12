@@ -5,19 +5,25 @@ import java.util.UUID
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.Id
 
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-class Invoice (
+data class Invoice(
 
     @Id
     val id: UUID = UUID.randomUUID(),
-    val description:String,
-    val type:InvoiceType,
+    val description: String,
     val reference: UUID,
-    val amount:Double,
+    val amount: Double,
+
+    @Enumerated(EnumType.STRING)
+    val type: InvoiceType,
+    @Enumerated(EnumType.STRING)
+    val status: InvoiceStatus,
 
     @ElementCollection
     val documents: List<Document> = listOf()

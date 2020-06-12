@@ -49,7 +49,7 @@ class ExactonlineDocumentClient(
 
     fun postDocumentAttachment(requestObject: ExactonlineRequestObject, attachment: ExactonlineDocumentAttachment) = client
         .post()
-        .uri("/api/v1/${requestObject.division}/documents/Documents")
+        .uri("/api/v1/${requestObject.division}/documents/DocumentAttachments")
         .header("authorization", "Bearer ${requestObject.accessToken}")
         .contentType(MediaType.APPLICATION_JSON)
         .body(Mono.just(mapOf(

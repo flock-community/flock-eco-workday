@@ -51,7 +51,7 @@ export function ExactonlineFeature() {
           <Card>
             <CardHeader title="User" />
             <CardContent>
-              <Typography>Username: {status.user.fullName}</Typography>
+              <Typography>Name: {status.user.fullName}</Typography>
               <Typography>Email: {status.user.email}</Typography>
               <Typography>
                 Administration: {status.division.description} ({status.division.code}){" "}
