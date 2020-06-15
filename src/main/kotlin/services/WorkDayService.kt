@@ -9,6 +9,7 @@ import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.model.WorkDaySheet
 import community.flock.eco.workday.repository.WorkDayRepository
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -21,7 +22,8 @@ import javax.persistence.EntityManager
 class WorkDayService(
     private val workDayRepository: WorkDayRepository,
     private val assignmentService: AssignmentService,
-    private val entityManager: EntityManager
+    private val entityManager: EntityManager,
+    @Value("\${flock.eco.workday.bucket.documents}") val bucketName:String
 ) {
 
     fun findByCode(code: String): WorkDay? = workDayRepository
@@ -59,7 +61,6 @@ class WorkDayService(
         }
 
     fun uploadSheet(byteArray: ByteArray): UUID {
-        val bucketName = "flock-workday-hour-sheets"
         return UUID.randomUUID()
             .apply {
                 BlobInfo
@@ -72,7 +73,6 @@ class WorkDayService(
     }
 
     fun readSheet(uuid: UUID): ByteArray {
-        val bucketName = "flock-workday-hour-sheets"
         val blob = storage.get(bucketName, uuid.toString())
         return blob.getContent()
     }
