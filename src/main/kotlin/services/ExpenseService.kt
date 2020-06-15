@@ -40,6 +40,7 @@ class ExpenseService(
         .toNullable()
         ?.also { expenseRepository.delete(it) }
         ?.also{applicationEventPublisher.publishEvent(DeleteExpenseEvent(it))}
+        .run { Unit }
 
 }
 

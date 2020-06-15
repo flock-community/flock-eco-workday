@@ -19,6 +19,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import java.util.UUID
+import javax.transaction.Transactional
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -56,6 +58,14 @@ class ExpenseController(
         authentication: Authentication
     ) = expenseService
         .findById(id)
+        .toResponse()
+
+    @DeleteMapping("{id}")
+    fun deleteExpenseById(
+        @PathVariable id: UUID,
+        authentication: Authentication
+    ) = expenseService
+        .deleteById(id)
         .toResponse()
 
     @GetMapping("/files/{file}/{name}")

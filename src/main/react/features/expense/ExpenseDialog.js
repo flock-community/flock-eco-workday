@@ -9,7 +9,6 @@ import Grid from "@material-ui/core/Grid"
 import FormControl from "@material-ui/core/FormControl"
 import Select from "@material-ui/core/Select"
 import MenuItem from "@material-ui/core/MenuItem"
-import {EventClient} from "../../clients/EventClient"
 import {TransitionSlider} from "../../components/transitions/Slide"
 import {DialogFooter, DialogHeader} from "../../components/dialog"
 import {ExpenseClient} from "../../clients/ExpenseClient"
@@ -60,7 +59,7 @@ export function ExpenseDialog({open, id, personCode, onComplete}) {
   }
 
   const handleDelete = () => {
-    EventClient.delete(id).then(() => {
+    ExpenseClient.delete(id).then(() => {
       if (onComplete) onComplete()
       setOpenDelete(false)
     })
@@ -127,7 +126,7 @@ export function ExpenseDialog({open, id, personCode, onComplete}) {
         onClose={handleDeleteClose}
         onConfirm={handleDelete}
       >
-        <Typography>Are you sure you want to remove this event.</Typography>
+        <Typography>Are you sure you want to remove this expense.</Typography>
       </ConfirmDialog>
     </>
   )

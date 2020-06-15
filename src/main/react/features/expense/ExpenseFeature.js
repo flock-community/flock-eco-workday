@@ -29,25 +29,30 @@ export function ExpenseFeature() {
 
   const [reload, setReload] = useState(false)
 
-  const [id, setId] = useState(null)
-  const [open, setOpen] = useState(false)
+  const [{id, open}, setDialog] = useState({id: null, open: false})
 
   const [person, setPerson] = usePerson()
 
   const handleCompleteDialog = () => {
     setReload(!reload)
-    setOpen(false)
-    setId(null)
+    setDialog({
+      id: null,
+      open: false,
+    })
   }
 
   const handleClickAdd = () => {
-    setId(null)
-    setOpen(true)
+    setDialog({
+      id: null,
+      open: true,
+    })
   }
 
   const handleClickRow = item => {
-    setId(item.id)
-    setOpen(true)
+    setDialog({
+      id: item.id,
+      open: true,
+    })
   }
 
   function handlePersonChange(it) {
