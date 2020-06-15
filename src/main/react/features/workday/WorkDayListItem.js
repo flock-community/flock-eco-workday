@@ -1,11 +1,17 @@
 import React from "react"
 import PropTypes from "prop-types"
 import {Card, CardContent, makeStyles, Typography} from "@material-ui/core"
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {StatusMenu} from "../../components/StatusMenu"
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   root: {
     position: "relative",
+  },
+  status: {
+    position: "absolute",
+    top: theme.spacing(2),
+    right: theme.spacing(2),
   },
 }))
 
@@ -23,11 +29,13 @@ export function WorkDayListItem({value, onClick, onClickStatus, hasAuthority}) {
         </Typography>
         <Typography>Aantal dagen: {value.to.diff(value.from, "days") + 1}</Typography>
         <Typography>Aantal uren: {value.hours}</Typography>
-        <StatusMenu
-          onClickStatus={onClickStatus}
-          hasAuthority={hasAuthority}
-          value={value}
-        />
+        <div className={classes.status}>
+          <StatusMenu
+            onChange={onClickStatus}
+            disabled={!UserAuthorityUtil.hasAuthority(hasAuthority)}
+            value={value.status}
+          />
+        </div>
       </CardContent>
     </Card>
   )

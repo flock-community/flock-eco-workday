@@ -24,9 +24,9 @@ import community.flock.eco.workday.services.SickDayService
 import community.flock.eco.workday.services.WorkDayService
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.util.UUID
-import org.springframework.stereotype.Component
 
 @Component
 class CreateHelper(

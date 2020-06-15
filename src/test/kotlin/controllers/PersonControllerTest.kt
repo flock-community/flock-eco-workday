@@ -8,8 +8,6 @@ import community.flock.eco.feature.user.services.UserSecurityService
 import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.forms.PersonForm
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,13 +16,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -32,8 +30,9 @@ import java.util.UUID
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
-@AutoConfigureMockMvc
 @AutoConfigureTestDatabase
+@AutoConfigureMockMvc
+@ActiveProfiles(profiles = ["test"])
 class PersonControllerTest {
     private val baseUrl: String = "/api/persons"
 
@@ -50,17 +49,17 @@ class PersonControllerTest {
     private lateinit var userService: UserService
 
     fun createUser() = UserAccountPasswordForm(
-            email = UUID.randomUUID().toString(),
-            name = "Administrator",
-            authorities = setOf(
-                "PersonAuthority.ADMIN",
-                "PersonAuthority.READ",
-                "PersonAuthority.WRITE"
-            ),
-            password = "admin")
-            .run { userAccountService.createUserAccountPassword(this) }
-            .run { UserSecurityService.UserSecurityPassword(this) }
-            .run { user(this) }
+        email = UUID.randomUUID().toString(),
+        name = "Administrator",
+        authorities = setOf(
+            "PersonAuthority.ADMIN",
+            "PersonAuthority.READ",
+            "PersonAuthority.WRITE"
+        ),
+        password = "admin")
+        .run { userAccountService.createUserAccountPassword(this) }
+        .run { UserSecurityService.UserSecurityPassword(this) }
+        .run { user(this) }
 
     @Test
     fun `should create a valid person via POST-method`() {

@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from "react"
+import React from "react"
 import Typography from "@material-ui/core/Typography"
 import {makeStyles} from "@material-ui/core/styles"
-import UserClient from "@flock-eco/feature-user/src/main/react/user/UserClient"
+import {useUserMe} from "../../hooks/UserMeHook"
 
 const useStyles = makeStyles({
   root: {
@@ -16,11 +16,7 @@ const useStyles = makeStyles({
 
 export function HomeFeature() {
   const classes = useStyles()
-  const [user, setUser] = useState()
-
-  useEffect(() => {
-    UserClient.findUsersMe().then(setUser)
-  }, [])
+  const user = useUserMe()
 
   return (
     <div className={classes.root}>

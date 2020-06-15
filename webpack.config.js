@@ -1,3 +1,5 @@
+const {BundleAnalyzerPlugin} = require("webpack-bundle-analyzer")
+
 const path = require("path")
 const HtmlWebPackPlugin = require("html-webpack-plugin") // eslint-disable-line import/no-extraneous-dependencies
 
@@ -17,7 +19,7 @@ const proxyTarget = env => ({
   autoRewrite: true,
 })
 
-module.exports = env => ({
+module.exports = (env, argv) => ({
   entry: path.join(__dirname, "src/main/react"),
 
   output: {
@@ -31,7 +33,7 @@ module.exports = env => ({
     rules: [
       {
         test: /\.js|jsx$/,
-        exclude: /node_modules[\\\/](?!(@flock-eco)[\\\/]).*/,
+        exclude: /node_modules[\\\/](?!(@flock-community)[\\\/]).*/,
         use: {
           loader: "babel-loader",
           options: {
@@ -46,10 +48,14 @@ module.exports = env => ({
     ],
   },
 
-  plugins: [htmlPlugin],
+  plugins: [
+    htmlPlugin,
+    argv.mode === 'development' ? new BundleAnalyzerPlugin() : null,
+  ].filter(it => it !== null),
 
   devServer: {
     port: 3000,
+    historyApiFallback: true,
     proxy: {
       "/api/**": proxyTarget(env),
       "/oauth2/**": proxyTarget(env),

@@ -1,7 +1,7 @@
 import React, {useState} from "react"
 import {makeStyles} from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"
-import UserAuthorityUtil from "@flock-eco/feature-user/src/main/react/user_utils/UserAuthorityUtil"
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import {Container} from "@material-ui/core"
 import {HolidayDialog} from "./HolidayDialog"
 import {HolidayList} from "./HolidayList"

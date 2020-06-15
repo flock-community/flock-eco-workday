@@ -5,12 +5,13 @@ import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.model.EventRating
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.EventRatingService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import java.time.LocalDate
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("local")
+@ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadEventRatingData(
     loadPersonData: LoadPersonData,
     loadEventData: LoadEventData,

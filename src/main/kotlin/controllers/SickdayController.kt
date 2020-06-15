@@ -5,6 +5,7 @@ import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.forms.WorkDayForm
+import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
@@ -78,7 +79,7 @@ class SickdayController(
         authentication: Authentication
     ) = service.findByCode(code)
         ?.applyAuthentication(authentication)
-        ?.applyAllowedToUpdate(form, authentication)
+        ?.applyAllowedToUpdate(form.status, authentication.isAdmin())
         ?.run { service.update(code, form) }
         .toResponse()
 
@@ -113,12 +114,5 @@ class SickdayController(
         }
     }
 
-    private fun SickDay.applyAllowedToUpdate(form: SickDayForm, authentication: Authentication): SickDay = apply {
-        if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change workday")
-        }
-        if (form.status !== this.status && !authentication.isAdmin()) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
-        }
-    }
+
 }

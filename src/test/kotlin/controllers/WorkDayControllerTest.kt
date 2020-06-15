@@ -3,7 +3,6 @@ package community.flock.eco.workday.controllers
 import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.authorities.WorkDayAuthority
-import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Status
@@ -17,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -29,8 +29,9 @@ import kotlin.test.assertEquals
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
-@AutoConfigureMockMvc
 @AutoConfigureTestDatabase
+@AutoConfigureMockMvc
+@ActiveProfiles(profiles = ["test"])
 @Import(CreateHelper::class)
 class WorkDayControllerTest {
 
@@ -174,7 +175,7 @@ class WorkDayControllerTest {
             .accept(APPLICATION_JSON))
             .andExpect(status().isForbidden)
 
-        assertEquals(workDayService.findByCode(created.code)?.status,status)
+        assertEquals(workDayService.findByCode(created.code)?.status, status)
     }
 
 

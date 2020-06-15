@@ -2,12 +2,13 @@ package community.flock.eco.workday.mocks
 
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.repository.AssignmentRepository
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import java.time.LocalDate
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("local")
+@ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadAssignmentData(
     private val loadClientData: LoadClientData,
     private val assignmentRepository: AssignmentRepository,

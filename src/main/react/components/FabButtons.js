@@ -11,10 +11,6 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-/** AddActionFab
- * creates a floating action button with the AddIcon from @material-ui/icons
- * @param {*} props
- */
 const AddActionFab = props => {
   const classes = useStyles()
 

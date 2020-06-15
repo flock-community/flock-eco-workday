@@ -28,7 +28,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     @Autowired
     lateinit var userAccountService: UserAccountService
 
-    @Value("\${community.flock.eco.workday.login:TEST}")
+    @Value("\${flock.eco.workday.login:TEST}")
     lateinit var loginType: String
 
     override fun configure(http: HttpSecurity) {

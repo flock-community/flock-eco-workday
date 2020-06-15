@@ -5,14 +5,16 @@ import community.flock.eco.feature.user.forms.UserAccountPasswordForm
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
+import community.flock.eco.workday.authorities.ExpenseAuthority
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.authorities.WorkDayAuthority
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("local")
+@ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadUserData(
     private val userAccountService: UserAccountService,
     private val userAuthorityService: UserAuthorityService
@@ -25,7 +27,9 @@ class LoadUserData(
         SickdayAuthority.READ,
         SickdayAuthority.WRITE,
         WorkDayAuthority.READ,
-        WorkDayAuthority.WRITE)
+        WorkDayAuthority.WRITE,
+        ExpenseAuthority.READ,
+        ExpenseAuthority.WRITE)
 
     private val allAuthorities = userAuthorityService.allAuthorities()
     private val workerAuthorities = userAuthorityService.allAuthorities().filter { workerRoles.contains(it) }

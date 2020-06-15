@@ -15,8 +15,9 @@ import Avatar from "@material-ui/core/Avatar"
 import IconButton from "@material-ui/core/IconButton"
 import Grid from "@material-ui/core/Grid"
 import CircularProgress from "@material-ui/core/CircularProgress"
+import {Typography} from "@material-ui/core"
 
-export function DropzoneAreaField({name}) {
+export function DropzoneAreaField({name, endpoint}) {
   const [upload, setUpload] = useState(false)
 
   const renderField = ({field: {value}, form: {setFieldValue}}) => {
@@ -30,7 +31,7 @@ export function DropzoneAreaField({name}) {
             method: "POST",
             body: formData,
           }
-          return fetch("/api/workdays/sheets", opts)
+          return fetch(endpoint, opts)
             .then(res => res.json())
             .then(uuid => ({
               name: file.name,
@@ -53,7 +54,7 @@ export function DropzoneAreaField({name}) {
         disableGutters
         component="a"
         target="_blank"
-        href={`/api/workdays/sheets/${it.file}/${it.name}`}
+        href={`${endpoint}/${it.file}/${it.name}`}
       >
         <ListItemAvatar>
           <Avatar>
@@ -88,6 +89,8 @@ export function DropzoneAreaField({name}) {
       </Grid>
     )
 
+    const renderEmpty = <Typography>No files found</Typography>
+
     return value ? (
       <Grid container spacing={1}>
         <Grid item xs={6}>
@@ -104,7 +107,11 @@ export function DropzoneAreaField({name}) {
           )}
         </Grid>
         <Grid item xs={6}>
-          <List dense>{value.map(renderFilesItem)}</List>
+          {value.length > 0 ? (
+            <List dense>{value.map(renderFilesItem)}</List>
+          ) : (
+            renderEmpty
+          )}
         </Grid>
       </Grid>
     ) : null
@@ -123,6 +130,7 @@ export function DropzoneAreaField({name}) {
 
 DropzoneAreaField.propTypes = {
   name: PropTypes.string,
+  endpoint: PropTypes.string,
   field: PropTypes.object,
   form: PropTypes.object,
 }

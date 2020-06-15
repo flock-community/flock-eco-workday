@@ -1,4 +1,9 @@
 databaseChangeLog:
   - include:
-    - file: db.changelog-1.yaml
+    - file: flock-eco-feature-user-master.yaml
+  - include:
+    - file: db.changelog-001-init.yaml
+      relativeToChangelogFile: true
+  - include:
+    - file: db.changelog-002-expenses.yaml
       relativeToChangelogFile: true
