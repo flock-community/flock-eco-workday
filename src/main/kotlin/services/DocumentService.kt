@@ -16,6 +16,7 @@ import community.flock.eco.workday.repository.CostExpenseRepository
 import community.flock.eco.workday.repository.ExpenseRepository
 import community.flock.eco.workday.repository.TravelExpenseRepository
 import community.flock.eco.workday.repository.WorkDayRepository
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -27,10 +28,9 @@ import javax.persistence.EntityManager
 
 
 @Service
-class DocumentService {
-
-    val bucketName = "flock-workday-documents"
-
+class DocumentService(
+    @Value("\${flock.eco.workday.bucket.documents}") val bucketName:String
+) {
     fun storeDocument(byteArray: ByteArray): UUID {
         return UUID.randomUUID()
             .apply {
