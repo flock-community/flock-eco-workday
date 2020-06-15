@@ -190,13 +190,6 @@
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>3.9.0</version>
-                <configuration>
-                    <changeLogFile>db/changelog/db.changelog-master.yaml</changeLogFile>
-                    <driver>org.postgresql.Driver</driver>
-                    <url>jdbc:postgresql://localhost:5432/data</url>
-                    <username>postgres</username>
-                    <password>B21v1l06clrbaCnf</password>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
