@@ -6,6 +6,7 @@ import UpdateExpenseEvent
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.model.CostExpense
 import community.flock.eco.workday.model.Expense
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.TravelExpense
 import community.flock.eco.workday.repository.CostExpenseRepository
 import community.flock.eco.workday.repository.ExpenseRepository
@@ -33,6 +34,8 @@ class ExpenseService(
 
     fun findAllByPersonCode(personCode: String, pageable: Pageable): Page<Expense> = expenseRepository
         .findAllByPersonCode(personCode, pageable)
+
+    fun findAllByStatus(status: Status) = expenseRepository.findAllByStatus(status)
 
     @Transactional
     fun deleteById(id: UUID) = expenseRepository
