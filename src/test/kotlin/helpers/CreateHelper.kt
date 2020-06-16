@@ -80,10 +80,15 @@ class CreateHelper(
         assignmentService.create(this)
     } ?: error("Cannot create assignment")
 
-    fun createContractInternal(person: Person, from: LocalDate, to: LocalDate?) = ContractInternalForm(
+    fun createContractInternal(
+        person: Person,
+        from: LocalDate,
+        to: LocalDate?,
+        monthlySalary: Double = 4000.0,
+        hoursPerWeek: Int = 40) = ContractInternalForm(
         personCode = person.code,
-        monthlySalary = 4000.0,
-        hoursPerWeek = 40,
+        monthlySalary = monthlySalary,
+        hoursPerWeek = hoursPerWeek,
         from = from,
         to = to
     ).run {
