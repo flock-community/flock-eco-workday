@@ -45,6 +45,8 @@ class WorkDayService(
             .resultList
     }
 
+    fun findAllByStatus(status: Status) = workDayRepository.findAllByStatus(status)
+
     fun create(form: WorkDayForm): WorkDay = form.copy(status = Status.REQUESTED)
         .validate()
         .consume()

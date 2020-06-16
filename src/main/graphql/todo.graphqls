@@ -1,0 +1,14 @@
+type Todo {
+    id:UUID!
+    type: TodoType!
+    person: String!
+    description: String!
+}
+
+enum TodoType {
+    WORKDAY,
+    SICKDAY,
+    HOLIDAY,
+    EXPENSE,
+}
+

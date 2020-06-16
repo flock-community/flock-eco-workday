@@ -17,6 +17,7 @@ import MonthIcon from "@material-ui/icons/Schedule"
 import WorkdayIcon from "@material-ui/icons/Work"
 import ExpensesIcon from "@material-ui/icons/Money"
 import ExactonlineIcon from "@material-ui/icons/AccountBalance"
+import TodoIcon from "@material-ui/icons/AssignmentTurnedIn"
 
 import Drawer from "@material-ui/core/Drawer"
 import makeStyles from "@material-ui/core/styles/makeStyles"
@@ -65,6 +66,12 @@ export function ApplicationDrawer({open, onClose}) {
       icon: MonthIcon,
       url: "/month",
       authority: "AggregationAuthority.READ",
+    },
+    {
+      name: "Todo",
+      icon: TodoIcon,
+      url: "/todo",
+      authority: "TodoAuthority.READ",
     },
     {
       name: "Clients",

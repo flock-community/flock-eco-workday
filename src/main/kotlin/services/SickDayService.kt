@@ -32,6 +32,8 @@ class SickDayService(
     fun findAllByPersonUserCode(userCode: String) = repository
         .findAllByPersonUserCode(userCode)
 
+    fun findAllByStatus(status: Status) = repository.findAllByStatus(status)
+
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<SickDay> {
         val query = "SELECT s FROM SickDay s WHERE s.from <= :to AND (s.to is null OR s.to >= :from)"
         return entityManager
@@ -78,4 +80,5 @@ class SickDayService(
     }
 
     private fun SickDay.save() = repository.save(this)
+
 }

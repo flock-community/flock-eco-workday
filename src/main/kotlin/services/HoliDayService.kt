@@ -24,6 +24,7 @@ class HoliDayService(
     fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
     fun findAllByPersonCode(personCode: String) = holidayRepository.findAllByPersonCode(personCode)
     fun findAllByPersonUserCode(personCode: String) = holidayRepository.findAllByPersonUserCode(personCode)
+    fun findAllByStatus(status: Status) = holidayRepository.findAllByStatus(status)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<HoliDay> {
         val query = "SELECT h FROM HoliDay h WHERE h.from <= :to AND (h.to is null OR h.to >= :from)"

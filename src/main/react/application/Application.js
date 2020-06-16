@@ -25,6 +25,7 @@ import {useLoginStatus} from "../hooks/StatusHook"
 import {getTheme} from "../theme/theme"
 import {ExpenseFeature} from "../features/expense/ExpenseFeature"
 import {ExactonlineFeature} from "../features/exactonline/ExactonlineFeature"
+import {TodoFeature} from "../features/todo/TodoFeature"
 
 const useStyles = makeStyles(() => ({
   spinner: {
@@ -84,6 +85,7 @@ export const Application = () => {
           <Route path="/" exact component={HomeFeature} />
           <Route path="/dashboard" exact component={DashboardFeature} />
           <Route path="/month" exact component={MonthFeature} />
+          <Route path="/todo" exact component={TodoFeature} />
           <Route path="/clients" exact component={ClientFeature} />
           <Route path="/contracts" exact component={ContractFeature} />
           <Route path="/assignments" exact component={AssignmentFeature} />
