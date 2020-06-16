@@ -36,7 +36,7 @@ class TodoController(
     @PreAuthorize("hasAuthority('TodoAuthority.READ')")
     fun getTodoAll(
         authentication: Authentication
-    ) = mapOf(
+    ) = mapOf<Authority,List<Todo>>(
         HolidayAuthority.READ to findHolidayTodo(),
         SickdayAuthority.READ to findSickDayTodo(),
         WorkDayAuthority.READ to findWorkDayTodo(),
