@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service
 class ClientService(
     private val clientRepository: ClientRepository
 ) {
+    fun findAll(): Iterable<Client> = clientRepository
+        .findAll()
+
     fun findAll(page: Pageable): Page<Client> = clientRepository
         .findAll(page)
 

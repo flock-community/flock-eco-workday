@@ -10,30 +10,29 @@ import ResponsiveContainer from "recharts/es6/component/ResponsiveContainer"
 import PropTypes from "prop-types"
 import {AggregationClient} from "../../clients/AggregationClient"
 
-export function SickdayPerPersonChart({year, persons}) {
-  const [state, setState] = useState({})
+export function SickdayPerPersonChart({year}) {
+  const [state, setState] = useState(null)
 
   useEffect(() => {
     const date = new Date()
-    AggregationClient.sickdayPerPersonByYear(year || date.getFullYear()).then(res =>
-      setState(res)
+    AggregationClient.totalPerPersonByYear(year || date.getFullYear()).then(res =>
+      setState(res.filter(it => it.sickDays > 0))
     )
   }, [])
 
-  const data = Object.keys(state).map(key => ({
-    name: persons ? persons[key] : key,
-    value: state[key],
-  }))
-  const height = 50 + data.length * 50
+  if (!state) return null
+
+  const height = 50 + state.length * 50
+
   return (
     <ResponsiveContainer height={height}>
-      <BarChart data={data} layout="vertical">
+      <BarChart data={state} layout="vertical">
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis type="number" dataKey="value" />
+        <XAxis type="number" dataKey="sickDays" />
         <YAxis type="category" dataKey="name" width={150} />
         <Tooltip formatter={value => new Intl.NumberFormat("en").format(value)} />
         <Legend />
-        <Bar dataKey="value" fill="#3f51b5" />
+        <Bar dataKey="sickDays" fill="#3f51b5" />
       </BarChart>
     </ResponsiveContainer>
   )

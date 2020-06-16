@@ -198,6 +198,48 @@ class AggregationServiceTest {
     }
 
     @Test
+    fun `holiday balance one person full time`() {
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 12, 31)
+        val person = createHelper.createPerson()
+        createHelper.createContractInternal(person, from, to)
+        val res = aggregationService
+            .totalPerPerson(from, to)
+
+        val holiDayBalance:BigDecimal = res.first()["holiDayBalance"] as BigDecimal
+        assertEquals(holiDayBalance.toString(), "192.0000000000")
+    }
+
+
+    @Test
+    fun `holiday balance one person full time split contract`() {
+        val from = LocalDate.of(2020, 1, 1)
+        val splita = LocalDate.of(2020, 6, 25)
+        val splitb = LocalDate.of(2020, 6, 26)
+        val to = LocalDate.of(2020, 12, 31)
+        val person = createHelper.createPerson()
+        createHelper.createContractInternal(person, from, splita)
+        createHelper.createContractInternal(person, splitb, to)
+        val res = aggregationService
+            .totalPerPerson(from, to)
+
+        val holiDayBalance:BigDecimal = res.first()["holiDayBalance"] as BigDecimal
+        assertEquals(holiDayBalance.toString(), "192.0000000000")
+    }
+
+    @Test
+    fun `holiday balance one person part time contract`() {
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 12, 31)
+        val person = createHelper.createPerson()
+        createHelper.createContractInternal(person, from, to, hoursPerWeek = 32)
+        val res = aggregationService
+            .totalPerPerson(from, to)
+        val holiDayBalance:BigDecimal = res.first()["holiDayBalance"] as BigDecimal
+        assertEquals(holiDayBalance.toString(), "153.6000000000")
+    }
+
+    @Test
     fun `find netto revenu factor`() {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)

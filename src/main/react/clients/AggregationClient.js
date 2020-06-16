@@ -48,11 +48,22 @@ export const sickdayPerPersonByYear = year => {
   })
 }
 
-export const revenuePerClientByYear = year => {
+export const totalPerClientByYear = year => {
   const opts = {
     method: "GET",
   }
-  return fetch(`${path}/revenue-per-client?year=${year}`, opts).then(res => {
+  return fetch(`${path}/total-per-client?year=${year}`, opts).then(res => {
+    if (res.status === 200) {
+      return res.json()
+    }
+    throw res.json()
+  })
+}
+export const totalPerPersonByYear = year => {
+  const opts = {
+    method: "GET",
+  }
+  return fetch(`${path}/total-per-person?year=${year}`, opts).then(res => {
     if (res.status === 200) {
       return res.json()
     }
@@ -88,9 +99,8 @@ export const totalPerMonthByYear = year => {
 export const AggregationClient = {
   revenuePerMonthByYear,
   costPerMonthByYear,
-  holidayPerPersonByYear,
-  sickdayPerPersonByYear,
-  revenuePerClientByYear,
+  totalPerClientByYear,
+  totalPerPersonByYear,
   totalPerPersonByYearMonth,
   totalPerMonthByYear,
 }
