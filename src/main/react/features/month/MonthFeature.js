@@ -55,7 +55,7 @@ export function MonthFeature() {
     .map(it => ({
       ...it,
       missing: Math.max(
-        it.total - (it.workDays + it.holiDays + it.sickDays + it.event),
+        it.total - (it.workDays + it.holiDayUsed + it.sickDays + it.event),
         0
       ),
     }))
@@ -74,7 +74,12 @@ export function MonthFeature() {
           <Tooltip formatter={value => new Intl.NumberFormat().format(value)} />
           <Legend />
           <Bar stackId="days" dataKey="workDays" name="worked hours" fill="#1de8b5" />
-          <Bar stackId="days" dataKey="holiDays" name="holiday hours" fill="#42a5f5" />
+          <Bar
+            stackId="days"
+            dataKey="holiDayUsed"
+            name="holiday hours"
+            fill="#42a5f5"
+          />
           <Bar stackId="days" dataKey="sickDays" name="sick hours" fill="#ef5350" />
           <Bar stackId="days" dataKey="event" name="event hours" fill="#fed766" />
           <Bar stackId="days" dataKey="missing" name="missing hours" fill="#9e9e9e" />
