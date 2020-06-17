@@ -35,6 +35,9 @@ class ExpenseService(
     fun findAllByPersonCode(personCode: String, pageable: Pageable): Page<Expense> = expenseRepository
         .findAllByPersonCode(personCode, pageable)
 
+    fun findAllByPersonUserCode(personCode: String, pageable: Pageable): Page<Expense> = expenseRepository
+        .findAllByPersonUserCode(personCode, pageable)
+
     fun findAllByStatus(status: Status) = expenseRepository.findAllByStatus(status)
 
     @Transactional
