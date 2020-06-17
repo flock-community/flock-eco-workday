@@ -47,7 +47,7 @@ class ExpenseController(
         pageable: Pageable
     ) = when {
         authentication.isAdmin() -> expenseService.findAllByPersonCode(personCode, pageable)
-        else -> expenseService.findAllByPersonCode(authentication.name, pageable)
+        else -> expenseService.findAllByPersonUserCode(authentication.name, pageable)
     }
         .toResponse()
 
