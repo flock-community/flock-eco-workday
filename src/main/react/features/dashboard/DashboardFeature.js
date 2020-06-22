@@ -30,7 +30,7 @@ export function DashboardFeature() {
       <Grid container spacing={1}>
         <Grid item xs={12} md={12}>
           <Card>
-            <CardHeader title="Margin per  month" />
+            <CardHeader title="Cost revenu" />
             <CardContent>
               <div style={{height: CHART_HEIGHT * 2}}>
                 <TotalPerMonthChart />
@@ -40,7 +40,7 @@ export function DashboardFeature() {
         </Grid>
         <Grid item xs={12} md={12}>
           <Card>
-            <CardHeader title="Hours per month" />
+            <CardHeader title="Average hours per day" />
             <CardContent>
               <div style={{height: CHART_HEIGHT * 2}}>
                 <HoursPerMonthChart />
