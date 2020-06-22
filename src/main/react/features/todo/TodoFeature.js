@@ -21,11 +21,11 @@ export function TodoFeature() {
   const [refresh, setRefresh] = useState(false)
 
   const handleItemClick = (status, item) => {
-    console.log(status, item)
     updateStatus(status, item).then(() => {
       setRefresh(!refresh)
     })
   }
+
   return (
     <Container className={classes.root}>
       <Grid container spacing={1}>

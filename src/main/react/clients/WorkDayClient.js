@@ -5,6 +5,7 @@ const internalize = it => ({
   ...it,
   from: moment(it.from),
   to: moment(it.to),
+  days: it.days && it.days.length === 0 ? null : it.days,
 })
 
 const path = "/api/workdays"
