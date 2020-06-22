@@ -7,7 +7,7 @@ import {HolidaysPerPersonChart} from "../../components/charts/HolidaysPerPersonC
 import {SickdayPerPersonChart} from "../../components/charts/SickdayPerPersonChart"
 import {RevenuePerClientChart} from "../../components/charts/RevenuePerClientChart"
 import {TotalPerMonthChart} from "../../components/charts/TotalPerMonthChart"
-import {HoursPerMonthChart} from "../../components/charts/HoursPerMonthChart"
+import {AverageHoursPerDayChart} from "../../components/charts/AverageHoursPerDayChart"
 
 const useStyles = makeStyles({
   root: {
@@ -30,7 +30,7 @@ export function DashboardFeature() {
       <Grid container spacing={1}>
         <Grid item xs={12} md={12}>
           <Card>
-            <CardHeader title="Cost revenu" />
+            <CardHeader title="Actual cost revenu" />
             <CardContent>
               <div style={{height: CHART_HEIGHT * 2}}>
                 <TotalPerMonthChart />
@@ -43,7 +43,7 @@ export function DashboardFeature() {
             <CardHeader title="Average hours per day" />
             <CardContent>
               <div style={{height: CHART_HEIGHT * 2}}>
-                <HoursPerMonthChart />
+                <AverageHoursPerDayChart />
               </div>
             </CardContent>
           </Card>

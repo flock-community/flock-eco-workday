@@ -11,7 +11,7 @@ import PropTypes from "prop-types"
 import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader"
 import {AggregationClient} from "../../clients/AggregationClient"
 
-export function HoursPerMonthChart({year}) {
+export function AverageHoursPerDayChart({year}) {
   const [state, setState] = useState(null)
 
   useEffect(() => {
@@ -38,6 +38,6 @@ export function HoursPerMonthChart({year}) {
   )
 }
 
-HoursPerMonthChart.propTypes = {
+AverageHoursPerDayChart.propTypes = {
   year: PropTypes.number,
 }
