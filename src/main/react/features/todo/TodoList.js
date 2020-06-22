@@ -5,6 +5,7 @@ import Grid from "@material-ui/core/Grid"
 import CardHeader from "@material-ui/core/CardHeader"
 import Button from "@material-ui/core/Button"
 import PropTypes from "prop-types"
+import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader"
 import {TodoClient} from "../../clients/TodoClient"
 
 const useStyles = makeStyles(theme => ({
@@ -25,10 +26,9 @@ const useStyles = makeStyles(theme => ({
 export function TodoList({onItemClick, refresh}) {
   const classes = useStyles()
 
-  const [list, setList] = useState([])
+  const [list, setList] = useState(null)
 
   useEffect(() => {
-    console.log(refresh)
     TodoClient.all().then(res => {
       setList(res.body)
     })
@@ -70,6 +70,10 @@ export function TodoList({onItemClick, refresh}) {
         </Card>
       </Grid>
     )
+  }
+
+  if (!list) {
+    return <AlignedLoader />
   }
 
   if (list.length === 0) {

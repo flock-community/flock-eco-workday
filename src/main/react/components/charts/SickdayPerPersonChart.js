@@ -8,6 +8,7 @@ import Tooltip from "recharts/es6/component/Tooltip"
 import Bar from "recharts/es6/cartesian/Bar"
 import ResponsiveContainer from "recharts/es6/component/ResponsiveContainer"
 import PropTypes from "prop-types"
+import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader"
 import {AggregationClient} from "../../clients/AggregationClient"
 
 export function SickdayPerPersonChart({year}) {
@@ -20,7 +21,7 @@ export function SickdayPerPersonChart({year}) {
     )
   }, [])
 
-  if (!state) return null
+  if (!state) return <AlignedLoader />
 
   const height = 50 + state.length * 50
 

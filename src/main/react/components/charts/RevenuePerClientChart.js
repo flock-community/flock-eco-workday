@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {Pie, PieChart, ResponsiveContainer, Tooltip} from "recharts"
 import PropTypes from "prop-types"
+import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader"
 import {AggregationClient} from "../../clients/AggregationClient"
 
 export function RevenuePerClientChart({year}) {
@@ -12,6 +13,8 @@ export function RevenuePerClientChart({year}) {
       setState(res)
     )
   }, [])
+
+  if (!state) return <AlignedLoader />
 
   return (
     <ResponsiveContainer>
