@@ -79,7 +79,7 @@ class AggregationServiceTest {
         assertNotNull(res[0].actualRevenue)
         assertEquals("8000.0000000000", res[1].actualCostContractInternal.toString())
         assertEquals("0", res[1].actualCostContractExternal.toString())
-        assertEquals("3.2977099237", res[1].forecastHoursGross.toString())
+        assertEquals("43.2000000000", res[1].forecastHoursGross.toString())
     }
 
     @Test
