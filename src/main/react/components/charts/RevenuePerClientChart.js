@@ -18,8 +18,8 @@ export function RevenuePerClientChart({year}) {
 
   return (
     <ResponsiveContainer>
-      <PieChart width={400} height={400}>
-        <Pie data={state} valueKey="revenue" nameKey="name" fill="#3f51b5" label />
+      <PieChart height={500}>
+        <Pie data={state} valueKey="revenueGross" nameKey="name" fill="#3f51b5" label />
         <Tooltip formatter={value => new Intl.NumberFormat("en").format(value)} />
       </PieChart>
     </ResponsiveContainer>
