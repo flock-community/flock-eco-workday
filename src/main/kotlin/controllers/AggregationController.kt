@@ -15,23 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 class AggregationController(
     val aggregationService: AggregationService
 ) {
-
-    @GetMapping("/revenue-per-month", params = ["year"])
-    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun revenuePerMonthByYear(@RequestParam year: Int): Map<YearMonth, BigDecimal> {
-        val from = LocalDate.of(year, 1, 1)
-        val to = LocalDate.of(year, 12, 31)
-        return aggregationService.revenuePerMonth(from, to)
-    }
-
-    @GetMapping("/cost-per-month", params = ["year"])
-    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun costPerMonthByYear(@RequestParam year: Int): Map<YearMonth, BigDecimal> {
-        val from = LocalDate.of(year, 1, 1)
-        val to = LocalDate.of(year, 12, 31)
-        return aggregationService.costPerMonth(from, to)
-    }
-
+    
     @GetMapping("/total-per-client", params = ["year"])
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
     fun revenuePerClientByYear(@RequestParam year: Int): List<Map<String, Any>> {

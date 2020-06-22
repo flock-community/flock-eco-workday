@@ -39,22 +39,6 @@ class AggregationService(
     private val applicationConstants: ApplicationConstants
 ) {
 
-    fun revenuePerMonth(from: LocalDate, to: LocalDate): Map<YearMonth, BigDecimal> {
-        return assignmentService.findAllActive(from, to)
-            .toMapWorkingDay(from, to)
-            .entries
-            .groupingBy { YearMonth.of(it.key.year, it.key.month) }
-            .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.value.fold(BigDecimal.ZERO) { a, c -> a + c.revenuePerDay() } }
-    }
-
-    fun costPerMonth(from: LocalDate, to: LocalDate): Map<YearMonth, BigDecimal> {
-        return contractService.findAllActive(from, to)
-            .toMapWorkingDay(from, to)
-            .entries
-            .groupingBy { YearMonth.of(it.key.year, it.key.month) }
-            .fold(BigDecimal.ZERO) { acc, cur -> acc + (cur.value.sumAmount(YearMonth.of(cur.key.year, cur.key.month))) }
-    }
-
     fun totalPerClient(from: LocalDate, to: LocalDate): List<Map<String, Any>> {
         val allAssignments = assignmentService.findAllActive(from, to)
         return clientService.findAll()
