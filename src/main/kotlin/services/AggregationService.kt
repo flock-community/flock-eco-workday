@@ -4,6 +4,9 @@ import community.flock.eco.workday.ApplicationConstants
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
 import community.flock.eco.workday.interfaces.inRange
+import community.flock.eco.workday.model.AggregationClient
+import community.flock.eco.workday.model.AggregationMonth
+import community.flock.eco.workday.model.AggregationPerson
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.ContractExternal
@@ -39,14 +42,14 @@ class AggregationService(
     private val applicationConstants: ApplicationConstants
 ) {
 
-    fun totalPerClient(from: LocalDate, to: LocalDate): List<Map<String, Any>> {
+    fun totalPerClient(from: LocalDate, to: LocalDate): List<AggregationClient> {
         val allAssignments = assignmentService.findAllActive(from, to)
         return clientService.findAll()
-            .map {
-                client -> mapOf(
-                    "name" to client.name,
-                    "revenue" to allAssignments
-                        .filter{ it.client == client}
+            .map { client ->
+                AggregationClient(
+                    name = client.name,
+                    revenueGross = allAssignments
+                        .filter { it.client == client }
                         .toMapWorkingDay(from, to).values
                         .flatten()
                         .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.revenuePerDay() }
@@ -56,44 +59,43 @@ class AggregationService(
 
     @Transactional
     fun
-        totalPerPerson(from: LocalDate, to: LocalDate): List<Map<String, Any>> {
-        val all = fetchAll(from, to)
+        totalPerPerson(from: LocalDate, to: LocalDate): List<AggregationPerson> {
+        val all = fetchAllData(from, to)
         val totalWorkDays = countWorkDaysInPeriod(from, to)
         return all.allPersons()
             .sortedBy { it.lastname }
             .map { person ->
-                mapOf(
-                    "name" to "${person.firstname} ${person.lastname}",
-                    "type" to all.contract
+                AggregationPerson(
+                    name = "${person.firstname} ${person.lastname}",
+                    contractTypes = all.contract
                         .filter { it.person == person }
-                        .map { it::class.simpleName }
-                        .toSet()
-                        .joinToString(","),
-                    "sickDays" to all.sickDay.filter { it.person == person }.totalHoursInPeriod(from, to),
-                    "workDays" to all.workDay.filter { it.assignment.person == person }.totalHoursInPeriod(from, to),
-                    "assignment" to all.assignment
+                        .mapNotNull { it::class.simpleName }
+                        .toSet(),
+                    sickDays = all.sickDay.filter { it.person == person }.totalHoursInPeriod(from, to),
+                    workDays = all.workDay.filter { it.assignment.person == person }.totalHoursInPeriod(from, to),
+                    assignment = all.assignment
                         .filter { it.person == person }
                         .toMapWorkingDay(from, to).values
                         .flatten()
                         .fold(0) { acc, cur -> acc + cur.hoursPerWeek }
                         .div(5),
-                    "event" to all.event
+                    event = all.event
                         .filter { it.persons.isEmpty() || it.persons.contains(person) }
                         .fold(0) { acc, cur -> acc + cur.hours },
-                    "total" to all.contract
+                    total = all.contract
                         .filter { it.person == person }
                         .map { it.totalHoursPerWeek() }
                         .sum()
                         .let { countWorkDaysInPeriod(from, to) * 8 * it / 40 },
-                    "holiDayUsed" to all.holiDay.filter { it.person == person }.totalHoursInPeriod(from, to),
-                    "holiDayBalance" to all.contract
+                    holiDayUsed = all.holiDay.filter { it.person == person }.totalHoursInPeriod(from, to),
+                    holiDayBalance = all.contract
                         .filter { it.person == person }
                         .filterIsInstance(ContractInternal::class.java)
                         .mapWorkingDay(from, to)
-                        .map { BigDecimal(it.hoursPerWeek * 24 * 8)  }
+                        .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                         .sum()
-                        .divide(BigDecimal(totalWorkDays * 40),10, RoundingMode.HALF_UP),
-                    "revenue" to all.workDay
+                        .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
+                    revenue = all.workDay
                         .filter { it.assignment.person == person }
                         .sumAmount()
                 )
@@ -101,36 +103,44 @@ class AggregationService(
     }
 
     @Transactional
-    fun totalPerMonth(from: LocalDate, to: LocalDate): List<Map<String, Any>> {
+    fun totalPerMonth(from: LocalDate, to: LocalDate): List<AggregationMonth> {
 
-        val all = fetchAll(from, to)
+        val all = fetchAllData(from, to)
         val months = (0..ChronoUnit.MONTHS.between(from, to))
             .map { from.plusMonths(it) }
             .map { YearMonth.from(it) }
         return months
             .map { yearMonth ->
-                mapOf(
-                    "yearMonth" to yearMonth.toString(),
-                    "countContractInternal" to all.contract
+                AggregationMonth(
+                    yearMonth = yearMonth.toString(),
+                    countContractInternal = all.contract
                         .filterIsInstance(ContractInternal::class.java)
                         .map { it.toDateRangeInPeriod(yearMonth) }
                         .filter { it.isNotEmpty() }
                         .count(),
-                    "forecastRevenueGross" to all.assignment
+                    forecastRevenueGross = all.assignment
                         .mapWorkingDay(yearMonth)
                         .sumAmount(yearMonth),
-                    "forecastRevenueNet" to all.assignment
+                    forecastRevenueNet = all.assignment
                         .mapWorkingDay(yearMonth)
                         .sumAmount(yearMonth)
                         .multiply(netRevenueFactor(from, to)),
-                    "actualRevenue" to all.workDay
+                    forecastHoursGross =  all.assignment
+                        .mapWorkingDay(yearMonth)
+                        .sumAssignmentHoursPerWeek()
+                        .divide(yearMonth.countWorkDaysInMonth().times(5).toBigDecimal(), 10, RoundingMode.HALF_UP),
+                    actualRevenue = all.workDay
                         .map { it.totalRevenueInPeriod(yearMonth) }
                         .sum(),
-                    "actualCostContractInternal" to all.contract
+                    actualHours = all.workDay
+                        .map { it.totalHoursInPeriod(yearMonth) }
+                        .sum()
+                        .divide(yearMonth.countWorkDaysInMonth().toBigDecimal(), 10, RoundingMode.HALF_UP),
+                    actualCostContractInternal = all.contract
                         .filterIsInstance(ContractInternal::class.java)
                         .map { it.totalCostInPeriod(yearMonth) }
                         .sum(),
-                    "actualCostContractExternal" to yearMonth.toDateRange()
+                    actualCostContractExternal = yearMonth.toDateRange()
                         .flatMap { date ->
                             cartesianProducts(all.contract.filterIsInstance(ContractExternal::class.java), all.workDay)
                                 .filter { (contract, workDay) -> contract.person == workDay.assignment.person }
@@ -138,11 +148,11 @@ class AggregationService(
                                 .map { (contract, workDay) -> contract.hourlyRate.toBigDecimal() * workDay.hoursPerDay().getValue(date) }
                         }
                         .sum(),
-                    "actualCostContractManagement" to all.contract
+                    actualCostContractManagement = all.contract
                         .filterIsInstance(ContractManagement::class.java)
                         .map { it.totalCostInPeriod(yearMonth) }
                         .sum(),
-                    "actualCostContractService" to all.contract
+                    actualCostContractService = all.contract
                         .filterIsInstance(ContractServiceModel::class.java)
                         .map { it.totalCostInPeriod(yearMonth) }
                         .sum()
@@ -150,7 +160,7 @@ class AggregationService(
             }
     }
 
-    data class All(
+    data class AllData(
         val sickDay: List<SickDay>,
         val holiDay: List<HoliDay>,
         val workDay: List<WorkDay>,
@@ -175,7 +185,7 @@ class AggregationService(
         .fold(0.0) { acc, cur -> acc + cur.hoursPerWeek / 5 }
         .pow(countWorkDaysInPeriod(from, to))
 
-    private fun All.allPersons(): Set<Person> {
+    private fun AllData.allPersons(): Set<Person> {
         return (this.assignment.map { it.person } +
             this.contract.map { it.person } +
             this.sickDay.map { it.person } +
@@ -185,14 +195,14 @@ class AggregationService(
             .toSet()
     }
 
-    private fun fetchAll(from: LocalDate, to: LocalDate): All {
+    private fun fetchAllData(from: LocalDate, to: LocalDate): AllData {
         val activeWorkDay = workDayService.findAllActive(from, to)
         val activeHoliDay = holiDayService.findAllActive(from, to)
         val activeSickDay = sickDayService.findAllActive(from, to)
         val activeAssignment = assignmentService.findAllActive(from, to)
         val activeContract = contractService.findAllActive(from, to)
         val activeEvent = eventService.findAllActive(from, to)
-        return All(
+        return AllData(
             activeSickDay,
             activeHoliDay,
             activeWorkDay,
@@ -303,6 +313,14 @@ private fun <T : Period> List<T>.mapWorkingDay(yearMonth: YearMonth) = yearMonth
 private fun <T : Period> Iterable<T>.sumAmount(yearMonth: YearMonth) = this
     .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.amountPerWorkingDay(yearMonth) }
 
+private fun Iterable<WorkDay>.sumWorkDayHoursPerWeek() = this
+    .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.hours.toBigDecimal() }
+
+private fun Iterable<Assignment>.sumAssignmentHoursPerWeek() = this
+    .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.hoursPerWeek.toBigDecimal() }
+
+
+
 private fun Iterable<WorkDay>.sumAmount() = this
     .fold(BigDecimal.ZERO) { acc, cur -> acc + (cur.hours * cur.assignment.hourlyRate).toBigDecimal() }
 
@@ -338,6 +356,9 @@ fun WorkDay.totalRevenueInPeriod(period: Period): BigDecimal = this
 
 fun WorkDay.totalRevenueInPeriod(yearMonth: YearMonth): BigDecimal = this
     .totalRevenueInPeriod(yearMonth.toPeriod())
+
+fun WorkDay.totalHoursInPeriod(yearMonth: YearMonth): BigDecimal = this
+    .totalHoursInPeriod(yearMonth.toPeriod())
 
 fun ContractInternal.totalCostInPeriod(yearMonth: YearMonth): BigDecimal = this
     .toDateRangeInPeriod(yearMonth)

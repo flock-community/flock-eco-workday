@@ -120,10 +120,13 @@ export function MonthFeature() {
             <CardHeader title="Internal" />
             <CardContent>
               {renderChart(
-                data.filter(
-                  it =>
-                    it.type === "ContractInternal" || it.type === "ContractManagement"
-                )
+                data
+                  .filter(it => it.contractTypes != null)
+                  .filter(
+                    it =>
+                      it.contractTypes.includes("ContractInternal") ||
+                      it.contractTypes.includes("ContractManagement")
+                  )
               )}
             </CardContent>
           </Card>
@@ -133,7 +136,13 @@ export function MonthFeature() {
             <CardHeader title="External" />
             <CardContent>
               {renderChart(
-                data.filter(it => it.type === "" || it.type === "ContractExternal")
+                data
+                  .filter(it => it.contractTypes != null)
+                  .filter(
+                    it =>
+                      it.contractTypes.length === 0 ||
+                      it.contractTypes.includes("ContractExternal")
+                  )
               )}
             </CardContent>
           </Card>

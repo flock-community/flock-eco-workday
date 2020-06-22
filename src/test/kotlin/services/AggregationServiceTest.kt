@@ -56,7 +56,7 @@ class AggregationServiceTest {
         val res = aggregationService
             .totalPerPerson(from, to)
 
-        assertNotNull(res[0]["name"])
+        assertNotNull(res[0].name)
     }
 
     @Test
@@ -76,9 +76,10 @@ class AggregationServiceTest {
         val res = aggregationService
             .totalPerMonth(from, to)
 
-        assertNotNull(res[0]["actualRevenue"])
-        assertEquals("8000.0000000000", res[1]["actualCostContractInternal"].toString())
-        assertEquals("0", res[1]["actualCostContractExternal"].toString())
+        assertNotNull(res[0].actualRevenue)
+        assertEquals("8000.0000000000", res[1].actualCostContractInternal.toString())
+        assertEquals("0", res[1].actualCostContractExternal.toString())
+        assertEquals("3.2977099237", res[1].forecastHoursGross.toString())
     }
 
     @Test
@@ -132,7 +133,7 @@ class AggregationServiceTest {
         val res = aggregationService
             .totalPerPerson(from, to)
 
-        val holiDayBalance:BigDecimal = res.first()["holiDayBalance"] as BigDecimal
+        val holiDayBalance:BigDecimal = res.first().holiDayBalance as BigDecimal
         assertEquals(holiDayBalance.toString(), "192.0000000000")
     }
 
@@ -149,7 +150,7 @@ class AggregationServiceTest {
         val res = aggregationService
             .totalPerPerson(from, to)
 
-        val holiDayBalance:BigDecimal = res.first()["holiDayBalance"] as BigDecimal
+        val holiDayBalance:BigDecimal = res.first().holiDayBalance as BigDecimal
         assertEquals(holiDayBalance.toString(), "192.0000000000")
     }
 
@@ -161,7 +162,7 @@ class AggregationServiceTest {
         createHelper.createContractInternal(person, from, to, hoursPerWeek = 32)
         val res = aggregationService
             .totalPerPerson(from, to)
-        val holiDayBalance:BigDecimal = res.first()["holiDayBalance"] as BigDecimal
+        val holiDayBalance:BigDecimal = res.first().holiDayBalance as BigDecimal
         assertEquals(holiDayBalance.toString(), "153.6000000000")
     }
 
