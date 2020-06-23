@@ -13,6 +13,7 @@ import community.flock.eco.workday.services.HoliDayService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.SickDayService
 import community.flock.eco.workday.services.isUser
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
@@ -46,10 +47,11 @@ class SickdayController(
     @PreAuthorize("hasAuthority('SickdayAuthority.READ')")
     fun getAllByPersonCode(
         @RequestParam personCode: String,
-        authentication: Authentication
-    ): ResponseEntity<Iterable<SickDay>> = when {
-        authentication.isAdmin() -> service.findAllByPersonCode(personCode)
-        else -> service.findAllByPersonUserCode(authentication.name)
+        authentication: Authentication,
+        pageable: Pageable
+    ): ResponseEntity<List<SickDay>> = when {
+        authentication.isAdmin() -> service.findAllByPersonCode(personCode, pageable)
+        else -> service.findAllByPersonUserCode(authentication.name, pageable)
     }.toResponse()
 
     @GetMapping("/{code}")

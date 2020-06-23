@@ -10,6 +10,7 @@ import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.model.WorkDaySheet
 import community.flock.eco.workday.repository.WorkDayRepository
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -30,11 +31,11 @@ class WorkDayService(
         .findByCode(code)
         .toNullable()
 
-    fun findAllByPersonPersonCode(userCode: String) = workDayRepository
-        .findAllByAssignmentPersonCode(userCode)
+    fun findAllByPersonPersonCode(userCode: String, pageable: Pageable) = workDayRepository
+        .findAllByAssignmentPersonCode(userCode,pageable)
 
-    fun findAllByPersonUserCode(userCode: String) = workDayRepository
-        .findAllByAssignmentPersonUserCode(userCode)
+    fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = workDayRepository
+        .findAllByAssignmentPersonUserCode(userCode,pageable)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<WorkDay> {
         val query = "SELECT it FROM WorkDay it WHERE it.from <= :to AND (it.to is null OR it.to >= :from)"

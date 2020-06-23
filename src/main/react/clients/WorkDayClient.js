@@ -12,7 +12,7 @@ const path = "/api/workdays"
 const resourceClient = ResourceClient(path, internalize)
 
 const findAllByPersonCode = personCode => {
-  return fetch(`${path}?personCode=${personCode}`)
+  return fetch(`${path}?personCode=${personCode}&sort=from,desc`)
     .then(responseValidation)
     .then(it => it.map(internalize))
 }

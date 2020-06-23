@@ -9,6 +9,7 @@ import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.WorkDayService
 import community.flock.eco.workday.services.isUser
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.MediaType
@@ -38,10 +39,11 @@ class WorkdayController(
     @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")
     fun getAll(
         @RequestParam personCode: String,
-        authentication: Authentication
+        authentication: Authentication,
+        pageable: Pageable
     ): ResponseEntity<Iterable<WorkDay>> = when {
-        authentication.isAdmin() -> service.findAllByPersonPersonCode(personCode)
-        else -> service.findAllByPersonUserCode(authentication.name)
+        authentication.isAdmin() -> service.findAllByPersonPersonCode(personCode, pageable)
+        else -> service.findAllByPersonUserCode(authentication.name, pageable)
     }
         .sortedByDescending { it.from }
         .toResponse()

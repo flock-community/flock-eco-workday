@@ -6,6 +6,7 @@ import CardHeader from "@material-ui/core/CardHeader"
 import Button from "@material-ui/core/Button"
 import PropTypes from "prop-types"
 import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader"
+import {useHistory} from "react-router-dom"
 import {TodoClient} from "../../clients/TodoClient"
 
 const useStyles = makeStyles(theme => ({
@@ -23,8 +24,24 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const typeToPath = type => {
+  switch (type) {
+    case "WORKDAY":
+      return "workdays"
+    case "SICKDAY":
+      return "sickdays"
+    case "HOLIDAY":
+      return "holidays"
+    case "EXPENSE":
+      return "expenses"
+    default:
+      return null
+  }
+}
+
 export function TodoList({onItemClick, refresh}) {
   const classes = useStyles()
+  const history = useHistory()
 
   const [list, setList] = useState(null)
 
@@ -39,6 +56,9 @@ export function TodoList({onItemClick, refresh}) {
   }
   const handleRejectClick = item => () => {
     onItemClick("REJECTED", item)
+  }
+  const handleCardClick = item => () => {
+    history.push(`/${typeToPath(item.type)}?personId=${item.personId}`)
   }
 
   function renderAction(item) {
@@ -61,9 +81,9 @@ export function TodoList({onItemClick, refresh}) {
   function renderItem(item, key) {
     return (
       <Grid item xs={12} key={`todo-list-item-${key}`}>
-        <Card>
+        <Card onClick={handleCardClick(item)}>
           <CardHeader
-            title={item.person}
+            title={item.personName}
             subheader={`${item.type}: ${item.description}`}
             action={renderAction(item)}
           />

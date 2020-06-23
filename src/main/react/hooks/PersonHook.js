@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react"
+import {useLocation} from "react-router-dom"
 import {PersonClient} from "../clients/PersonClient"
 import {useLoginStatus} from "./StatusHook"
 
@@ -12,21 +13,27 @@ function update(it) {
 
 export function usePerson() {
   const status = useLoginStatus()
+  const location = useLocation()
 
   const [state, setState] = useState(store)
 
   useEffect(() => {
     const listener = it => setState(it)
+    listeners.push(listener)
     if (store === null && listeners.length === 0) {
       if (status && status.loggedIn) {
         PersonClient.me().then(update)
       }
     }
-    listeners.push(listener)
+    const params = new URLSearchParams(location.search)
+    const personId = params.get("personId")
+    if (personId) {
+      PersonClient.get(personId).then(update)
+    }
     return () => {
       listeners.filter(it => it !== listener)
     }
-  }, [status])
+  }, [status, location])
 
   const handlePerson = personCode => {
     PersonClient.get(personCode).then(update)
