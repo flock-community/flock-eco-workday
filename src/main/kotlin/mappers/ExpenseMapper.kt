@@ -17,8 +17,8 @@ class TravelExpenseMapper(
         id = id ?: UUID.randomUUID(),
         date = input.date,
         description = input.description,
-        distance = input.distance.toDouble(),
-        allowance = input.allowance.toDouble(),
+        distance = input.distance.toString().toDouble(),
+        allowance = input.allowance.toString().toDouble(),
         status = input.status,
         person = personService
             .findByCode(input.personCode.toString())
@@ -34,7 +34,7 @@ class CostExpenseMapper(
         id = id ?: UUID.randomUUID(),
         date = input.date,
         description = input.description,
-        amount = input.amount.toDouble(),
+        amount = input.amount.toString().toDouble(),
         files = input.files.map {
             Document(
                 name = it.name,

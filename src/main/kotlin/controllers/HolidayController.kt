@@ -10,6 +10,8 @@ import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.HoliDayService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.isUser
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
@@ -36,10 +38,11 @@ class HolidayController(
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
     fun getAll(
         @RequestParam personCode: String,
-        authentication: Authentication
-    ): ResponseEntity<Iterable<HoliDay>> = when {
-        authentication.isAdmin() -> service.findAllByPersonCode(personCode)
-        else -> service.findAllByPersonUserCode(authentication.name)
+        authentication: Authentication,
+        pageable: Pageable
+    ): ResponseEntity<List<HoliDay>> = when {
+        authentication.isAdmin() -> service.findAllByPersonCode(personCode, pageable)
+        else -> service.findAllByPersonUserCode(authentication.name, pageable)
     }.toResponse()
 
     @GetMapping("/{code}")

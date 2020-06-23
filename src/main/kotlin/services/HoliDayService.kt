@@ -8,6 +8,7 @@ import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.HolidayRepository
+import org.springframework.data.domain.Pageable
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.EntityManager
@@ -22,8 +23,8 @@ class HoliDayService(
 ) {
 
     fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
-    fun findAllByPersonCode(personCode: String) = holidayRepository.findAllByPersonCode(personCode)
-    fun findAllByPersonUserCode(personCode: String) = holidayRepository.findAllByPersonUserCode(personCode)
+    fun findAllByPersonCode(personCode: String, pageable: Pageable) = holidayRepository.findAllByPersonCode(personCode, pageable)
+    fun findAllByPersonUserCode(personCode: String, pageable: Pageable) = holidayRepository.findAllByPersonUserCode(personCode, pageable)
     fun findAllByStatus(status: Status) = holidayRepository.findAllByStatus(status)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<HoliDay> {

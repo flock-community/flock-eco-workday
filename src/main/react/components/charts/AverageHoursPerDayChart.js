@@ -27,7 +27,7 @@ export function AverageHoursPerDayChart({year}) {
     <ResponsiveContainer>
       <BarChart data={state}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
+        <XAxis dataKey="yearMonth" />
         <YAxis />
         <Tooltip formatter={value => new Intl.NumberFormat("en").format(value)} />
         <Legend />

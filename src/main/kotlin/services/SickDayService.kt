@@ -6,6 +6,7 @@ import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.SickdayRepository
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -26,11 +27,11 @@ class SickDayService(
         .findByCode(code)
         .toNullable()
 
-    fun findAllByPersonCode(personCode: String) = repository
-        .findAllByPersonCode(personCode)
+    fun findAllByPersonCode(personCode: String, pageable: Pageable) = repository
+        .findAllByPersonCode(personCode, pageable)
 
-    fun findAllByPersonUserCode(userCode: String) = repository
-        .findAllByPersonUserCode(userCode)
+    fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = repository
+        .findAllByPersonUserCode(userCode, pageable)
 
     fun findAllByStatus(status: Status) = repository.findAllByStatus(status)
 
