@@ -5,8 +5,11 @@ import CardContent from "@material-ui/core/CardContent"
 import Grid from "@material-ui/core/Grid"
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
 import CardHeader from "@material-ui/core/CardHeader"
-import {ExpenseClient} from "../../clients/ExpenseClient"
+import List from "@material-ui/core/List"
+import ListItemText from "@material-ui/core/ListItemText"
+import ListItem from "@material-ui/core/ListItem"
 import {StatusMenu} from "../../components/StatusMenu"
+import {ExpenseClient} from "../../clients/ExpenseClient"
 
 export function ExpenseList({personCode, refresh, onClickRow}) {
   const [state, setState] = useState([])
@@ -52,10 +55,20 @@ export function ExpenseList({personCode, refresh, onClickRow}) {
             title={item.description ? item.description : "empty"}
             subheader={`Date: ${item.date.format("DD-MM-YYYY")}`}
           />
-          <CardContent>
-            <Typography variant="h6"></Typography>
-            <Typography></Typography>
-          </CardContent>
+          <List>
+            {item.files.map(file => (
+              <ListItem
+                key={file.file}
+                button
+                component="a"
+                target="_blank"
+                href={`/api/expenses/files/${file.file}/${file.name}`}
+                onClick={event => event.stopPropagation()}
+              >
+                <ListItemText primary={file.name} />
+              </ListItem>
+            ))}
+          </List>
         </Card>
       </Grid>
     )
