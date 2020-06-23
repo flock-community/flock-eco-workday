@@ -1,7 +1,8 @@
 type Todo {
     id:UUID!
     type: TodoType!
-    person: String!
+    personId: UUID!
+    personName: String!
     description: String!
 }
 
