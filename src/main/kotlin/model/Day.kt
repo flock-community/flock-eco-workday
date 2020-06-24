@@ -2,6 +2,7 @@ package community.flock.eco.workday.model
 
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
+import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.interfaces.Period
 import java.time.LocalDate
 import java.util.UUID
@@ -24,9 +25,9 @@ abstract class Day(
     override val from: LocalDate = LocalDate.now(),
     override val to: LocalDate = LocalDate.now(),
 
-    open val hours: Int,
+    override val hours: Int,
 
     @ElementCollection
-    open val days: List<Int>? = null
+    override val days: List<Int>? = null
 
-) : Period, AbstractCodeEntity(id, code)
+) : Dayly, AbstractCodeEntity(id, code)

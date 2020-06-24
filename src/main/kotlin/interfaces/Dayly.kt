@@ -2,9 +2,9 @@ package community.flock.eco.workday.interfaces
 
 import java.time.temporal.ChronoUnit
 
-interface DayForm : Hours, Period
+interface Dayly : Hours, Period
 
-fun <T : DayForm> T.validate(): T = apply {
+fun <T : Dayly> T.validate(): T = apply {
 
     if (this.hours < 0) {
         throw error("Hours cannot have negative value")

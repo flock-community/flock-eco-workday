@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
-import community.flock.eco.workday.interfaces.DayForm
+import community.flock.eco.workday.interfaces.Dayly
 import java.time.LocalDate
 
 data class EventForm(
@@ -25,4 +25,4 @@ data class EventForm(
 
     val personCodes: List<String>
 
-) : DayForm
+) : Dayly

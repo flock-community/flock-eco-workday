@@ -12,6 +12,7 @@ import java.util.Optional
 interface SickdayRepository : PagingAndSortingRepository<SickDay, Long> {
     fun findByCode(code: String): Optional<SickDay>
     fun deleteByCode(code: String)
+    fun findAllByPersonCode(personCode: String): Iterable<SickDay>
     fun findAllByPersonCode(personCode: String, pageable: Pageable): Page<SickDay>
     fun findAllByPersonUserCode(userCode: String, pageable: Pageable): Page<SickDay>
     fun findAllByStatus(status: Status): Iterable<SickDay>

@@ -2,6 +2,7 @@ package community.flock.eco.workday.model
 
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
+import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.interfaces.Hours
 import community.flock.eco.workday.interfaces.Period
 import java.time.LocalDate
@@ -31,4 +32,4 @@ class Event(
     @ManyToMany
     val persons: List<Person>
 
-) : Period, Hours, AbstractCodeEntity(id, code)
+) : Dayly, AbstractCodeEntity(id, code)
