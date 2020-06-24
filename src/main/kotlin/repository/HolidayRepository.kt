@@ -11,6 +11,7 @@ import java.util.Optional
 @Repository
 interface HolidayRepository : PagingAndSortingRepository<HoliDay, Long> {
     fun findByCode(code: String): Optional<HoliDay>
+    fun findAllByPersonCode(personCode: String): Iterable<HoliDay>
     fun findAllByPersonCode(personCode: String, pageable: Pageable): Page<HoliDay>
     fun findAllByPersonUserCode(personCode: String, pageable: Pageable): Page<HoliDay>
     fun findAllByStatus(status: Status): Iterable<HoliDay>

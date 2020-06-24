@@ -23,8 +23,9 @@ class HoliDayService(
 ) {
 
     fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
+    fun findAllByPersonCode(personCode: String) = holidayRepository.findAllByPersonCode(personCode)
     fun findAllByPersonCode(personCode: String, pageable: Pageable) = holidayRepository.findAllByPersonCode(personCode, pageable)
-    fun findAllByPersonUserCode(personCode: String, pageable: Pageable) = holidayRepository.findAllByPersonUserCode(personCode, pageable)
+    fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = holidayRepository.findAllByPersonUserCode(userCode, pageable)
     fun findAllByStatus(status: Status) = holidayRepository.findAllByStatus(status)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<HoliDay> {

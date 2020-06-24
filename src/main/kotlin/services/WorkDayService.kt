@@ -31,8 +31,11 @@ class WorkDayService(
         .findByCode(code)
         .toNullable()
 
-    fun findAllByPersonPersonCode(userCode: String, pageable: Pageable) = workDayRepository
-        .findAllByAssignmentPersonCode(userCode,pageable)
+    fun findAllByPersonPersonCode(personCode: String) = workDayRepository
+        .findAllByAssignmentPersonCode(personCode)
+
+    fun findAllByPersonPersonCode(personCode: String, pageable: Pageable) = workDayRepository
+        .findAllByAssignmentPersonCode(personCode,pageable)
 
     fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = workDayRepository
         .findAllByAssignmentPersonUserCode(userCode,pageable)

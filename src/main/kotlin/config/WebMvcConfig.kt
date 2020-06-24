@@ -1,17 +1,19 @@
 package community.flock.eco.workday.config
 
-import java.io.IOException
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import org.springframework.web.servlet.resource.EncodedResourceResolver
 import org.springframework.web.servlet.resource.PathResourceResolver
+import java.io.IOException
 
 class WebMvcConfig : WebMvcConfigurer {
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/**")
             .addResourceLocations("classpath:/static/")
+            .setCachePeriod(3600)
             .resourceChain(true)
             .addResolver(object : PathResourceResolver() {
                 @Throws(IOException::class)

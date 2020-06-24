@@ -27,6 +27,9 @@ class SickDayService(
         .findByCode(code)
         .toNullable()
 
+    fun findAllByPersonCode(personCode: String) = repository
+        .findAllByPersonCode(personCode)
+
     fun findAllByPersonCode(personCode: String, pageable: Pageable) = repository
         .findAllByPersonCode(personCode, pageable)
 

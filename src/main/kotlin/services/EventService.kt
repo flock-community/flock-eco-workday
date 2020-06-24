@@ -23,6 +23,8 @@ class EventService(
     fun findAll(): Iterable<Event> = eventRepository.findAll()
     fun findAll(sort: Sort): Iterable<Event> = eventRepository.findAll(sort)
 
+    fun findAllByPersonCode(personCode: String) = eventRepository
+        .findAllByPersonsIsEmptyOrPersonsCode(personCode)
     fun findByCode(code: String) = eventRepository.findByCode(code).toNullable()
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Event> {
