@@ -19,7 +19,6 @@ export function usePerson() {
 
   useEffect(() => {
     const listener = it => setState(it)
-    listeners.push(listener)
     if (store === null && listeners.length === 0) {
       if (status && status.loggedIn) {
         PersonClient.me().then(update)
@@ -30,6 +29,7 @@ export function usePerson() {
     if (personId) {
       PersonClient.get(personId).then(update)
     }
+    listeners.push(listener)
     return () => {
       listeners.filter(it => it !== listener)
     }
