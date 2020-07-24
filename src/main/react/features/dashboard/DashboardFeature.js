@@ -1,29 +1,29 @@
-import React from "react"
-import Grid from "@material-ui/core/Grid"
-import Card from "@material-ui/core/Card"
-import {CardContent, makeStyles} from "@material-ui/core"
-import CardHeader from "@material-ui/core/CardHeader"
-import {HolidaysPerPersonChart} from "../../components/charts/HolidaysPerPersonChart"
-import {SickdayPerPersonChart} from "../../components/charts/SickdayPerPersonChart"
-import {RevenuePerClientChart} from "../../components/charts/RevenuePerClientChart"
-import {TotalPerMonthChart} from "../../components/charts/TotalPerMonthChart"
-import {AverageHoursPerDayChart} from "../../components/charts/AverageHoursPerDayChart"
+import React from "react";
+import Grid from "@material-ui/core/Grid";
+import Card from "@material-ui/core/Card";
+import { CardContent, makeStyles } from "@material-ui/core";
+import CardHeader from "@material-ui/core/CardHeader";
+import { HolidaysPerPersonChart } from "../../components/charts/HolidaysPerPersonChart";
+import { SickdayPerPersonChart } from "../../components/charts/SickdayPerPersonChart";
+import { RevenuePerClientChart } from "../../components/charts/RevenuePerClientChart";
+import { TotalPerMonthChart } from "../../components/charts/TotalPerMonthChart";
+import { AverageHoursPerDayChart } from "../../components/charts/AverageHoursPerDayChart";
 
 const useStyles = makeStyles({
   root: {
-    padding: 10,
+    padding: 10
   },
   fab: {
     position: "absolute",
     bottom: "25px",
-    right: "25px",
-  },
-})
+    right: "25px"
+  }
+});
 
-const CHART_HEIGHT = 200
+const CHART_HEIGHT = 200;
 
 export function DashboardFeature() {
-  const classes = useStyles()
+  const classes = useStyles();
 
   return (
     <div className={classes.root}>
@@ -32,7 +32,7 @@ export function DashboardFeature() {
           <Card>
             <CardHeader title="Actual cost revenu" />
             <CardContent>
-              <div style={{height: CHART_HEIGHT * 2}}>
+              <div style={{ height: CHART_HEIGHT * 2 }}>
                 <TotalPerMonthChart />
               </div>
             </CardContent>
@@ -42,7 +42,7 @@ export function DashboardFeature() {
           <Card>
             <CardHeader title="Average hours per day" />
             <CardContent>
-              <div style={{height: CHART_HEIGHT * 2}}>
+              <div style={{ height: CHART_HEIGHT * 2 }}>
                 <AverageHoursPerDayChart />
               </div>
             </CardContent>
@@ -52,7 +52,7 @@ export function DashboardFeature() {
           <Card>
             <CardHeader title="Gross revenue per client" />
             <CardContent>
-              <div style={{height: CHART_HEIGHT}}>
+              <div style={{ height: CHART_HEIGHT }}>
                 <RevenuePerClientChart />
               </div>
             </CardContent>
@@ -76,5 +76,5 @@ export function DashboardFeature() {
         </Grid>
       </Grid>
     </div>
-  )
+  );
 }

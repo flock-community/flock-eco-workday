@@ -1,21 +1,21 @@
-import React from "react"
-import PropTypes from "prop-types"
-import * as Yup from "yup"
-import {Field, Form, Formik} from "formik"
-import moment from "moment"
-import Grid from "@material-ui/core/Grid"
-import {MuiPickersUtilsProvider} from "@material-ui/pickers"
-import MomentUtils from "@date-io/moment"
-import {TextField} from "formik-material-ui"
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
-import MenuItem from "@material-ui/core/MenuItem"
-import {isDefined} from "../../utils/validation"
-import {DatePickerField} from "../../components/fields/DatePickerField"
-import {PeriodInputField} from "../../components/fields/PeriodInputField"
+import React from "react";
+import PropTypes from "prop-types";
+import * as Yup from "yup";
+import { Field, Form, Formik } from "formik";
+import moment from "moment";
+import Grid from "@material-ui/core/Grid";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import MomentUtils from "@date-io/moment";
+import { TextField } from "formik-material-ui";
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import MenuItem from "@material-ui/core/MenuItem";
+import { isDefined } from "../../utils/validation";
+import { DatePickerField } from "../../components/fields/DatePickerField";
+import { PeriodInputField } from "../../components/fields/PeriodInputField";
 
-export const SICKDAY_FORM_ID = "sick-day-form"
+export const SICKDAY_FORM_ID = "sick-day-form";
 
-const now = moment()
+const now = moment();
 
 export const schemaSickDayForm = Yup.object().shape({
   status: Yup.string()
@@ -27,21 +27,21 @@ export const schemaSickDayForm = Yup.object().shape({
   to: Yup.date()
     .required("To date is required")
     .default(now),
-  days: Yup.array().required("Required"),
-})
+  days: Yup.array().required("Required")
+});
 
-export function SickDayForm({value, onSubmit, onChange}) {
+export function SickDayForm({ value, onSubmit, onChange }) {
   const handleSubmit = data => {
     if (isDefined(onSubmit))
       onSubmit({
         ...value,
-        ...data,
-      })
-  }
+        ...data
+      });
+  };
 
   const handleChange = it => {
-    onChange(it)
-  }
+    onChange(it);
+  };
 
   const renderForm = () => (
     <Form id={SICKDAY_FORM_ID}>
@@ -94,7 +94,7 @@ export function SickDayForm({value, onSubmit, onChange}) {
         </Grid>
       </MuiPickersUtilsProvider>
     </Form>
-  )
+  );
 
   return (
     value && (
@@ -107,10 +107,10 @@ export function SickDayForm({value, onSubmit, onChange}) {
         render={renderForm}
       />
     )
-  )
+  );
 }
 
 SickDayForm.propTypes = {
   value: PropTypes.object,
-  onSubmit: PropTypes.func,
-}
+  onSubmit: PropTypes.func
+};

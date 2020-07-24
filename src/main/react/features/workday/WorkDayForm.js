@@ -1,26 +1,26 @@
-import React, {useEffect, useState} from "react"
-import * as Yup from "yup"
-import {Field, Form, Formik} from "formik"
-import moment from "moment"
-import Grid from "@material-ui/core/Grid"
-import MomentUtils from "@date-io/moment"
-import {MuiPickersUtilsProvider} from "@material-ui/pickers"
-import Switch from "@material-ui/core/Switch"
-import {Typography} from "@material-ui/core"
-import {TextField} from "formik-material-ui"
-import * as PropTypes from "prop-types"
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
-import MenuItem from "@material-ui/core/MenuItem"
-import {PeriodInputField} from "../../components/fields/PeriodInputField"
-import {isDefined} from "../../utils/validation"
-import {usePerson} from "../../hooks/PersonHook"
-import {AssignmentSelectorField} from "../../components/fields/AssignmentSelectorField"
-import {DatePickerField} from "../../components/fields/DatePickerField"
-import {DropzoneAreaField} from "../../components/fields/DropzoneAreaField"
+import React, { useEffect, useState } from "react";
+import * as Yup from "yup";
+import { Field, Form, Formik } from "formik";
+import moment from "moment";
+import Grid from "@material-ui/core/Grid";
+import MomentUtils from "@date-io/moment";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import Switch from "@material-ui/core/Switch";
+import { Typography } from "@material-ui/core";
+import { TextField } from "formik-material-ui";
+import * as PropTypes from "prop-types";
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import MenuItem from "@material-ui/core/MenuItem";
+import { PeriodInputField } from "../../components/fields/PeriodInputField";
+import { isDefined } from "../../utils/validation";
+import { usePerson } from "../../hooks/PersonHook";
+import { AssignmentSelectorField } from "../../components/fields/AssignmentSelectorField";
+import { DatePickerField } from "../../components/fields/DatePickerField";
+import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
 
-export const WORKDAY_FORM_ID = "work-day-form"
+export const WORKDAY_FORM_ID = "work-day-form";
 
-const now = moment()
+const now = moment();
 
 export const schema = Yup.object().shape({
   status: Yup.string()
@@ -37,22 +37,22 @@ export const schema = Yup.object().shape({
     .default(now),
   days: Yup.array().default([8]),
   hours: Yup.number(),
-  sheets: Yup.array().default([]),
-})
+  sheets: Yup.array().default([])
+});
 
 /**
  * @return {null}
  */
-export function WorkDayForm({value, onSubmit}) {
-  const [person] = usePerson()
+export function WorkDayForm({ value, onSubmit }) {
+  const [person] = usePerson();
 
-  const [daysSwitch, setDaysSwitch] = useState(false)
+  const [daysSwitch, setDaysSwitch] = useState(false);
 
   useEffect(() => {
     if (value && value.days) {
-      setDaysSwitch(value.days.length === 0)
+      setDaysSwitch(value.days.length === 0);
     }
-  }, [value])
+  }, [value]);
 
   const handleSubmit = data => {
     if (isDefined(onSubmit))
@@ -63,13 +63,13 @@ export function WorkDayForm({value, onSubmit}) {
         days: daysSwitch ? undefined : data.days,
         hours: data.hours,
         status: data.status,
-        sheets: data.sheets,
-      })
-  }
+        sheets: data.sheets
+      });
+  };
 
   const handleSwitchChange = ev => {
-    setDaysSwitch(ev.target.checked)
-  }
+    setDaysSwitch(ev.target.checked);
+  };
 
   const renderSwitch = (
     <Grid container alignItems="center" spacing={1}>
@@ -80,7 +80,7 @@ export function WorkDayForm({value, onSubmit}) {
         <Typography>Hours only</Typography>
       </Grid>
     </Grid>
-  )
+  );
 
   const renderFormHours = () => (
     <>
@@ -111,7 +111,7 @@ export function WorkDayForm({value, onSubmit}) {
         )}
       </Grid>
     </>
-  )
+  );
 
   const renderForm = () => (
     <Form id={WORKDAY_FORM_ID}>
@@ -157,7 +157,7 @@ export function WorkDayForm({value, onSubmit}) {
         </Grid>
       </MuiPickersUtilsProvider>
     </Form>
-  )
+  );
 
   return value ? (
     <Formik
@@ -167,7 +167,7 @@ export function WorkDayForm({value, onSubmit}) {
       validationSchema={schema}
       render={renderForm}
     />
-  ) : null
+  ) : null;
 }
 
 WorkDayForm.propTypes = {
@@ -175,5 +175,5 @@ WorkDayForm.propTypes = {
   onSubmit: PropTypes.func,
   onChange: PropTypes.func,
   onSwitchChange: PropTypes.func,
-  daysSwitch: PropTypes.func,
-}
+  daysSwitch: PropTypes.func
+};

@@ -1,52 +1,52 @@
-import {Field} from "formik"
-import React, {useState} from "react"
-import PropTypes from "prop-types"
-import {DropzoneArea} from "material-ui-dropzone"
+import { Field } from "formik";
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import { DropzoneArea } from "material-ui-dropzone";
 
-import List from "@material-ui/core/List"
-import ListItem from "@material-ui/core/ListItem"
-import ListItemAvatar from "@material-ui/core/ListItemAvatar"
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction"
-import ListItemText from "@material-ui/core/ListItemText"
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemText from "@material-ui/core/ListItemText";
 
-import FolderIcon from "@material-ui/icons/Folder"
-import DeleteIcon from "@material-ui/icons/Delete"
-import Avatar from "@material-ui/core/Avatar"
-import IconButton from "@material-ui/core/IconButton"
-import Grid from "@material-ui/core/Grid"
-import CircularProgress from "@material-ui/core/CircularProgress"
-import {Typography} from "@material-ui/core"
+import FolderIcon from "@material-ui/icons/Folder";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Avatar from "@material-ui/core/Avatar";
+import IconButton from "@material-ui/core/IconButton";
+import Grid from "@material-ui/core/Grid";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { Typography } from "@material-ui/core";
 
-export function DropzoneAreaField({name, endpoint}) {
-  const [upload, setUpload] = useState(false)
+export function DropzoneAreaField({ name, endpoint }) {
+  const [upload, setUpload] = useState(false);
 
-  const renderField = ({field: {value}, form: {setFieldValue}}) => {
+  const renderField = ({ field: { value }, form: { setFieldValue } }) => {
     const handleDropFile = files => {
-      setUpload(true)
+      setUpload(true);
       return Promise.all(
         files.map(file => {
-          const formData = new FormData()
-          formData.append("file", file)
+          const formData = new FormData();
+          formData.append("file", file);
           const opts = {
             method: "POST",
-            body: formData,
-          }
+            body: formData
+          };
           return fetch(endpoint, opts)
             .then(res => res.json())
             .then(uuid => ({
               name: file.name,
-              file: uuid,
-            }))
+              file: uuid
+            }));
         })
       ).then(res => {
-        setFieldValue(name, [...value, ...res])
-        setUpload(false)
-      })
-    }
+        setFieldValue(name, [...value, ...res]);
+        setUpload(false);
+      });
+    };
 
     const handleDeleteFile = file => () => {
-      setFieldValue(name, value.filter(it => it.file !== file))
-    }
+      setFieldValue(name, value.filter(it => it.file !== file));
+    };
 
     const renderFilesItem = it => (
       <ListItem
@@ -72,24 +72,24 @@ export function DropzoneAreaField({name, endpoint}) {
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>
-    )
+    );
 
     const progressStyle = {
       height: 250,
       border: "dashed",
       borderColor: "#C8C8C8",
       borderWidth: 3,
-      backgroundColor: "#F0F0F0",
-    }
+      backgroundColor: "#F0F0F0"
+    };
     const renderProgress = () => (
       <Grid container alignItems="center" style={progressStyle}>
         <Grid item xs={12} align="center">
           <CircularProgress />
         </Grid>
       </Grid>
-    )
+    );
 
-    const renderEmpty = <Typography>No files found</Typography>
+    const renderEmpty = <Typography>No files found</Typography>;
 
     return value ? (
       <Grid container spacing={1}>
@@ -114,23 +114,23 @@ export function DropzoneAreaField({name, endpoint}) {
           )}
         </Grid>
       </Grid>
-    ) : null
-  }
+    ) : null;
+  };
 
   const validate = () => {
-    return upload ? "Uploading files" : null
-  }
+    return upload ? "Uploading files" : null;
+  };
 
   return (
     <>
       <Field id={name} name={name} render={renderField} validate={validate} />
     </>
-  )
+  );
 }
 
 DropzoneAreaField.propTypes = {
   name: PropTypes.string,
   endpoint: PropTypes.string,
   field: PropTypes.object,
-  form: PropTypes.object,
-}
+  form: PropTypes.object
+};

@@ -1,12 +1,15 @@
-import React from "react"
-import {Field} from "formik"
-import PropTypes from "prop-types"
-import {ClientSelector} from "../selector/ClientSelector"
+import React from "react";
+import { Field } from "formik";
+import PropTypes from "prop-types";
+import { ClientSelector } from "../selector/ClientSelector";
 
-function ClientSelectorField({name, ...props}) {
+function ClientSelectorField({ name, ...props }) {
   return (
     <Field id={name} name={name} as="select">
-      {({field: {value}, form: {touched, errors, setFieldValue, setFieldTouched}}) => (
+      {({
+        field: { value },
+        form: { touched, errors, setFieldValue, setFieldTouched }
+      }) => (
         <ClientSelector
           embedded
           value={value}
@@ -17,11 +20,11 @@ function ClientSelectorField({name, ...props}) {
         />
       )}
     </Field>
-  )
+  );
 }
 
 ClientSelectorField.propTypes = {
-  name: PropTypes.string,
-}
+  name: PropTypes.string
+};
 
-export {ClientSelectorField}
+export { ClientSelectorField };

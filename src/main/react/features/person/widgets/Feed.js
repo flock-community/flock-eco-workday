@@ -1,9 +1,15 @@
-import React from "react"
-import PropTypes from "prop-types"
-import {Card, CardContent, Typography, CardActions, IconButton} from "@material-ui/core"
-import CreateIcon from "@material-ui/icons/Create"
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded"
-import {makeStyles} from "@material-ui/styles"
+import React from "react";
+import PropTypes from "prop-types";
+import {
+  Card,
+  CardContent,
+  Typography,
+  CardActions,
+  IconButton
+} from "@material-ui/core";
+import CreateIcon from "@material-ui/icons/Create";
+import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
+import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -12,23 +18,23 @@ const useStyles = makeStyles(() => ({
     flexDirection: "row",
     padding: "1rem",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "space-between"
   },
-  title: {fontSize: ".75rem"},
+  title: { fontSize: ".75rem" },
   btnOval: {
-    "borderRadius": "50%",
-    "fontSize": "1.5rem",
-    "textAlign": "center",
-    "padding": 12,
-    "minWidth": 24, // override MuiButtonBase-root attribute
-    "height": 24,
-    "&:hover": {backgroundColor: "grey"},
-  },
-}))
+    borderRadius: "50%",
+    fontSize: "1.5rem",
+    textAlign: "center",
+    padding: 12,
+    minWidth: 24, // override MuiButtonBase-root attribute
+    height: 24,
+    "&:hover": { backgroundColor: "grey" }
+  }
+}));
 
 export const Feed = props => {
-  const {title, onEdit, onDelete} = props
-  const classes = useStyles()
+  const { title, onEdit, onDelete } = props;
+  const classes = useStyles();
 
   return (
     <Card className={classes.root}>
@@ -57,12 +63,12 @@ export const Feed = props => {
       </header>
       <CardContent>{props.children}</CardContent>
     </Card>
-  )
-}
+  );
+};
 
 Feed.propTypes = {
   title: PropTypes.string.isRequired,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
-  children: PropTypes.any,
-}
+  children: PropTypes.any
+};

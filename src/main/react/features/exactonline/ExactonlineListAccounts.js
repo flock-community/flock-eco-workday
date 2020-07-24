@@ -1,17 +1,17 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react";
 
-import List from "@material-ui/core/List"
-import ListItemText from "@material-ui/core/ListItemText"
-import {ExactonlineClient} from "../../clients/ExactonlineClient"
+import List from "@material-ui/core/List";
+import ListItemText from "@material-ui/core/ListItemText";
+import { ExactonlineClient } from "../../clients/ExactonlineClient";
 
 export function ExactonlineListAccounts() {
-  const [list, setList] = useState([])
+  const [list, setList] = useState([]);
 
   useEffect(() => {
     ExactonlineClient.accounts().then(accounts => {
-      setList(accounts)
-    })
-  }, [])
+      setList(accounts);
+    });
+  }, []);
 
   return (
     <List>
@@ -19,7 +19,7 @@ export function ExactonlineListAccounts() {
         <ListItemText key={it.ID} primary={`${it.Name} (${it.Code.trim()})`} />
       ))}
     </List>
-  )
+  );
 }
 
-ExactonlineListAccounts.propTypes = {}
+ExactonlineListAccounts.propTypes = {};

@@ -3,7 +3,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint --fix .",
-    "format": "prettier --fix .",
+    "format": "prettier --write './src/main/react/**/*.{js,jsx,ts,tsx}'",
     "start": "npm run start:local",
     "start:local": "webpack-dev-server --mode development --env.proxy local",
     "start:remote": "webpack-dev-server --mode development --env.proxy remote",

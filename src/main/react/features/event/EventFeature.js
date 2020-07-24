@@ -1,46 +1,46 @@
-import React, {useState} from "react"
+import React, { useState } from "react";
 
-import {makeStyles} from "@material-ui/core/styles"
-import Grid from "@material-ui/core/Grid"
-import {EventDialog} from "./EventDialog"
-import {EventList} from "./EventList"
-import {AddActionFab} from "../../components/FabButtons"
+import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import { EventDialog } from "./EventDialog";
+import { EventList } from "./EventList";
+import { AddActionFab } from "../../components/FabButtons";
 
 const useStyles = makeStyles({
   root: {
-    padding: 20,
+    padding: 20
   },
   fab: {
     position: "absolute",
     bottom: "25px",
-    right: "25px",
-  },
-})
+    right: "25px"
+  }
+});
 
 /**
  * @return {null}
  */
 export function EventFeature() {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const [reload, setReload] = useState(false)
-  const [open, setOpen] = useState(false)
-  const [state, setState] = useState(null)
+  const [reload, setReload] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [state, setState] = useState(null);
 
   function handleCompleteDialog() {
-    setReload(!reload)
-    setOpen(false)
-    setState(null)
+    setReload(!reload);
+    setOpen(false);
+    setState(null);
   }
 
   function handleClickAdd() {
-    setState(null)
-    setOpen(true)
+    setState(null);
+    setOpen(true);
   }
 
   function handleClickRow(item) {
-    setState(item)
-    setOpen(true)
+    setState(item);
+    setOpen(true);
   }
 
   return (
@@ -59,7 +59,7 @@ export function EventFeature() {
 
       <AddActionFab color="primary" onClick={handleClickAdd} />
     </div>
-  )
+  );
 }
 
-EventFeature.propTypes = {}
+EventFeature.propTypes = {};

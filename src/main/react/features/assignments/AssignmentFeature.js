@@ -1,44 +1,44 @@
-import React, {useState} from "react"
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
-import Grid from "@material-ui/core/Grid"
-import {makeStyles} from "@material-ui/core"
-import {PersonSelector} from "../../components/selector"
-import {AssignmentList} from "./AssignmentList"
-import {AddActionFab} from "../../components/FabButtons"
-import {AssignmentDialog} from "./AssignmentDialog"
-import {usePerson} from "../../hooks/PersonHook"
+import React, { useState } from "react";
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@material-ui/core";
+import { PersonSelector } from "../../components/selector";
+import { AssignmentList } from "./AssignmentList";
+import { AddActionFab } from "../../components/FabButtons";
+import { AssignmentDialog } from "./AssignmentDialog";
+import { usePerson } from "../../hooks/PersonHook";
 
 const useStyles = makeStyles({
   root: {
-    padding: 20,
-  },
-})
+    padding: 20
+  }
+});
 
 /**
  * @return {null}
  */
 export function AssignmentFeature() {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const [reload, setReload] = useState(true)
-  const [dialog, setDialog] = useState({open: false, code: null})
-  const [person, setPerson] = usePerson()
+  const [reload, setReload] = useState(true);
+  const [dialog, setDialog] = useState({ open: false, code: null });
+  const [person, setPerson] = usePerson();
 
   function handleClickAdd() {
-    setDialog({open: true, code: null})
+    setDialog({ open: true, code: null });
   }
 
   function handleClose() {
-    setDialog({open: false, code: null})
-    setReload(!reload)
+    setDialog({ open: false, code: null });
+    setReload(!reload);
   }
 
   function handleChangePerson(it) {
-    if (it) setPerson(it)
+    if (it) setPerson(it);
   }
 
   function handleItemClick(it) {
-    setDialog({open: true, code: it.code})
+    setDialog({ open: true, code: it.code });
   }
 
   return (
@@ -60,10 +60,14 @@ export function AssignmentFeature() {
           />
         </Grid>
       </Grid>
-      <AssignmentDialog code={dialog.code} open={dialog.open} onClose={handleClose} />
+      <AssignmentDialog
+        code={dialog.code}
+        open={dialog.open}
+        onClose={handleClose}
+      />
       <AddActionFab color="primary" onClick={handleClickAdd} />
     </div>
-  )
+  );
 }
 
-AssignmentFeature.propTypes = {}
+AssignmentFeature.propTypes = {};

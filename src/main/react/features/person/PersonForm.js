@@ -1,27 +1,27 @@
-import React from "react"
-import PropTypes from "prop-types"
-import {FormControl, Grid} from "@material-ui/core"
-import {makeStyles} from "@material-ui/styles"
-import {Field, Form, Formik} from "formik"
-import {TextField as FormikTextField} from "formik-material-ui"
-import {UserSelectorFormInput} from "../../components/selector"
-import {PERSON_FORM_SCHEMA} from "./schema"
+import React from "react";
+import PropTypes from "prop-types";
+import { FormControl, Grid } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
+import { Field, Form, Formik } from "formik";
+import { TextField as FormikTextField } from "formik-material-ui";
+import { UserSelectorFormInput } from "../../components/selector";
+import { PERSON_FORM_SCHEMA } from "./schema";
 
 const useStyles = makeStyles(() => ({
-  h70: {height: 70},
-  w100: {width: "100%"},
-}))
+  h70: { height: 70 },
+  w100: { width: "100%" }
+}));
 
 // form id as a reference point for buttons outside of the <form></form> scope to be
 // able to submit this form
-export const PERSON_FORM_ID = "person-form"
+export const PERSON_FORM_ID = "person-form";
 
 /** PersonForm
  *
  * @param {*} props
  */
-export function PersonForm({item, onSubmit}) {
-  const classes = useStyles()
+export function PersonForm({ item, onSubmit }) {
+  const classes = useStyles();
 
   const form = () => (
     <Form id={PERSON_FORM_ID}>
@@ -76,17 +76,21 @@ export function PersonForm({item, onSubmit}) {
         </Grid>
       </Grid>
     </Form>
-  )
+  );
 
   return (
     <Formik
-      initialValues={{...PERSON_FORM_SCHEMA.cast(), ...item, userCode: item.user}}
+      initialValues={{
+        ...PERSON_FORM_SCHEMA.cast(),
+        ...item,
+        userCode: item.user
+      }}
       onSubmit={onSubmit} // use onSubmit func @PersonDialog
       validationSchema={PERSON_FORM_SCHEMA}
       enableReinitialize
       render={form}
     />
-  )
+  );
 }
 
 PersonForm.propTypes = {
@@ -95,10 +99,10 @@ PersonForm.propTypes = {
     lastname: PropTypes.string,
     email: PropTypes.string,
     position: PropTypes.string,
-    user: PropTypes.any,
+    user: PropTypes.any
   }),
-  onSubmit: PropTypes.func.isRequired,
-}
+  onSubmit: PropTypes.func.isRequired
+};
 
 PersonForm.defaultProps = {
   item: {
@@ -106,6 +110,6 @@ PersonForm.defaultProps = {
     lastname: null,
     email: null,
     position: null,
-    user: null,
-  },
-}
+    user: null
+  }
+};

@@ -1,34 +1,34 @@
-import React, {useEffect, useState} from "react"
-import PropTypes from "prop-types"
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   Card,
   CardContent,
   FormControl,
   InputLabel,
   MenuItem,
-  Select,
-} from "@material-ui/core"
-import {PersonService} from "../../features/person/PersonService"
+  Select
+} from "@material-ui/core";
+import { PersonService } from "../../features/person/PersonService";
 
-export function PersonSelector({value, onChange, label, embedded, multiple}) {
-  const [items, setItems] = useState([])
-  const [state, setState] = useState(value)
-
-  useEffect(() => {
-    PersonService.findAllByPage({page: 0, size: 100, sort: "lastname"}).then(res =>
-      setItems(res.list)
-    )
-  }, [])
+export function PersonSelector({ value, onChange, label, embedded, multiple }) {
+  const [items, setItems] = useState([]);
+  const [state, setState] = useState(value);
 
   useEffect(() => {
-    setState(value)
-  }, [value])
+    PersonService.findAllByPage({ page: 0, size: 100, sort: "lastname" }).then(
+      res => setItems(res.list)
+    );
+  }, []);
+
+  useEffect(() => {
+    setState(value);
+  }, [value]);
 
   function handleChange(event) {
     // eslint-disable-next-line no-shadow
-    const selected = event.target.value
-    setState(selected)
-    onChange(selected)
+    const selected = event.target.value;
+    setState(selected);
+    onChange(selected);
   }
 
   function renderMenuItem(item, key) {
@@ -36,7 +36,7 @@ export function PersonSelector({value, onChange, label, embedded, multiple}) {
       <MenuItem key={`person-selector-menu-item-${key}`} value={item.code}>
         {`${item.firstname} ${item.lastname}`}
       </MenuItem>
-    )
+    );
   }
 
   const selectInput = (
@@ -56,7 +56,7 @@ export function PersonSelector({value, onChange, label, embedded, multiple}) {
         {items.map(renderMenuItem)}
       </Select>
     </FormControl>
-  )
+  );
 
   return embedded ? (
     <div>{selectInput}</div>
@@ -64,7 +64,7 @@ export function PersonSelector({value, onChange, label, embedded, multiple}) {
     <Card>
       <CardContent>{selectInput}</CardContent>
     </Card>
-  )
+  );
 }
 
 PersonSelector.propTypes = {
@@ -72,10 +72,10 @@ PersonSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string,
   embedded: PropTypes.bool,
-  multiple: PropTypes.bool,
-}
+  multiple: PropTypes.bool
+};
 
 PersonSelector.defaultProps = {
   value: "",
-  label: "Select Person",
-}
+  label: "Select Person"
+};

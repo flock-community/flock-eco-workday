@@ -1,6 +1,6 @@
 // import * as Yup from "yup"
-import {mixed, object, string, number} from "yup"
-import moment from "moment"
+import { mixed, object, string, number } from "yup";
+import moment from "moment";
 
 // eslint-disable-next-line no-underscore-dangle
 const schema = {
@@ -15,7 +15,7 @@ const schema = {
     .required()
     .default(moment()),
   to: mixed().default(null),
-  clientCode: mixed().required(),
-}
+  clientCode: mixed().required()
+};
 
-export const ASSIGNMENT_FORM_SCHEMA = object(schema)
+export const ASSIGNMENT_FORM_SCHEMA = object(schema);

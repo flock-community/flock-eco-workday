@@ -1,1 +1,1 @@
-export {PersonFeature} from "./PersonFeature"
+export { PersonFeature } from "./PersonFeature";

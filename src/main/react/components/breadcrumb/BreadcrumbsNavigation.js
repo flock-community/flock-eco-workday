@@ -1,25 +1,25 @@
-import React from "react"
-import {makeStyles} from "@material-ui/styles"
-import {Paper, Breadcrumbs} from "@material-ui/core"
-import {BreadcrumbLink} from "./BreadcrumbLink"
-import {useBreadcrumbs} from "./Breadcrumb"
+import React from "react";
+import { makeStyles } from "@material-ui/styles";
+import { Paper, Breadcrumbs } from "@material-ui/core";
+import { BreadcrumbLink } from "./BreadcrumbLink";
+import { useBreadcrumbs } from "./Breadcrumb";
 
 const useStyles = makeStyles(() => ({
   root: {
     width: "100%",
     padding: "0 16px",
-    borderRadius: 0,
+    borderRadius: 0
   },
   breadcrumbs: {
     display: "flex",
     fontSize: 12,
-    height: 30,
-  },
-}))
+    height: 30
+  }
+}));
 
 export const BreadcrumbsNavigation = () => {
-  const [navItemList] = useBreadcrumbs()
-  const classes = useStyles()
+  const [navItemList] = useBreadcrumbs();
+  const classes = useStyles();
 
   return (
     <Paper className={classes.root}>
@@ -36,5 +36,5 @@ export const BreadcrumbsNavigation = () => {
         ))}
       </Breadcrumbs>
     </Paper>
-  )
-}
+  );
+};

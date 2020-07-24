@@ -1,44 +1,44 @@
-import React, {useState} from "react"
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
-import Grid from "@material-ui/core/Grid"
-import {makeStyles} from "@material-ui/core"
-import {PersonSelector} from "../../components/selector"
-import {ContractList} from "./ContractList"
-import {AddActionFab} from "../../components/FabButtons"
-import {usePerson} from "../../hooks/PersonHook"
-import {ContractDialog} from "./ContractDialog"
+import React, { useState } from "react";
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@material-ui/core";
+import { PersonSelector } from "../../components/selector";
+import { ContractList } from "./ContractList";
+import { AddActionFab } from "../../components/FabButtons";
+import { usePerson } from "../../hooks/PersonHook";
+import { ContractDialog } from "./ContractDialog";
 
 const useStyles = makeStyles({
   root: {
-    padding: 20,
-  },
-})
+    padding: 20
+  }
+});
 
 /**
  * @return {null}
  */
 export function ContractFeature() {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const [reload, setReload] = useState(true)
-  const [dialog, setDialog] = useState({open: false, code: null})
-  const [person, setPerson] = usePerson()
+  const [reload, setReload] = useState(true);
+  const [dialog, setDialog] = useState({ open: false, code: null });
+  const [person, setPerson] = usePerson();
 
   function handleClickAdd() {
-    setDialog({open: true, code: null})
+    setDialog({ open: true, code: null });
   }
 
   function handleClose() {
-    setDialog({open: false, code: null})
-    setReload(!reload)
+    setDialog({ open: false, code: null });
+    setReload(!reload);
   }
 
   function handleChangePerson(it) {
-    if (it) setPerson(it)
+    if (it) setPerson(it);
   }
 
   function handleItemClick(it) {
-    setDialog({open: true, code: it.code})
+    setDialog({ open: true, code: it.code });
   }
 
   return (
@@ -60,10 +60,14 @@ export function ContractFeature() {
           />
         </Grid>
       </Grid>
-      <ContractDialog code={dialog.code} open={dialog.open} onClose={handleClose} />
+      <ContractDialog
+        code={dialog.code}
+        open={dialog.open}
+        onClose={handleClose}
+      />
       <AddActionFab color="primary" onClick={handleClickAdd} />
     </div>
-  )
+  );
 }
 
-ContractFeature.propTypes = {}
+ContractFeature.propTypes = {};

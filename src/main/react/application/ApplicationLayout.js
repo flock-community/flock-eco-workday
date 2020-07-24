@@ -1,54 +1,54 @@
-import React, {useState} from "react"
-import PropTypes from "prop-types"
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 
-import AppBar from "@material-ui/core/AppBar"
-import Toolbar from "@material-ui/core/Toolbar"
-import IconButton from "@material-ui/core/IconButton"
-import Menu from "@material-ui/core/Menu"
-import MenuIcon from "@material-ui/icons/Menu"
-import AccountCircle from "@material-ui/icons/AccountCircle"
-import Typography from "@material-ui/core/Typography"
-import MenuItem from "@material-ui/core/MenuItem"
-import makeStyles from "@material-ui/core/styles/makeStyles"
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuIcon from "@material-ui/icons/Menu";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import Typography from "@material-ui/core/Typography";
+import MenuItem from "@material-ui/core/MenuItem";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const useStyles = makeStyles({
   root: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   grow: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   menuButton: {
     marginLeft: -12,
-    marginRight: 20,
-  },
-})
+    marginRight: 20
+  }
+});
 
 export function ApplicationLayout(props) {
-  const {open, onDrawer} = props
-  const classes = useStyles()
+  const { open, onDrawer } = props;
+  const classes = useStyles();
 
   const [state, setState] = useState({
-    anchorEl: null,
-  })
+    anchorEl: null
+  });
 
   const handleMenu = event => {
-    setState({anchorEl: event.currentTarget})
-  }
+    setState({ anchorEl: event.currentTarget });
+  };
 
   const handleClose = () => {
-    setState({anchorEl: null})
-  }
+    setState({ anchorEl: null });
+  };
 
   const handleLogout = () => {
-    window.location.href = "/logout"
-  }
+    window.location.href = "/logout";
+  };
 
   const handleClickDrawer = () => {
     if (onDrawer) {
-      onDrawer()
+      onDrawer();
     }
-  }
+  };
 
   return (
     <React.Fragment>
@@ -80,11 +80,11 @@ export function ApplicationLayout(props) {
               anchorEl={state.anchorEl}
               anchorOrigin={{
                 vertical: "top",
-                horizontal: "right",
+                horizontal: "right"
               }}
               transformOrigin={{
                 vertical: "top",
-                horizontal: "right",
+                horizontal: "right"
               }}
               open={state.anchorEl != null}
               onClose={handleClose}
@@ -96,9 +96,9 @@ export function ApplicationLayout(props) {
         </Toolbar>
       </AppBar>
     </React.Fragment>
-  )
+  );
 }
 ApplicationLayout.propTypes = {
   open: PropTypes.func,
-  onDrawer: PropTypes.func,
-}
+  onDrawer: PropTypes.func
+};

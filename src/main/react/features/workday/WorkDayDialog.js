@@ -1,30 +1,30 @@
-import React, {useEffect, useState} from "react"
-import PropTypes from "prop-types"
-import {Dialog, DialogContent, Divider} from "@material-ui/core"
-import {makeStyles} from "@material-ui/styles"
-import WorkIcon from "@material-ui/icons/Work"
-import {HTML5_FMT} from "moment"
-import {ConfirmDialog} from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog"
-import Typography from "@material-ui/core/Typography"
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
-import {WorkDayClient} from "../../clients/WorkDayClient"
-import {TransitionSlider} from "../../components/transitions/Slide"
-import {DialogFooter, DialogHeader} from "../../components/dialog"
-import {WORKDAY_FORM_ID, WorkDayForm, schema} from "./WorkDayForm"
-import {isDefined} from "../../utils/validation"
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import { Dialog, DialogContent, Divider } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
+import WorkIcon from "@material-ui/icons/Work";
+import { HTML5_FMT } from "moment";
+import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import Typography from "@material-ui/core/Typography";
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import { WorkDayClient } from "../../clients/WorkDayClient";
+import { TransitionSlider } from "../../components/transitions/Slide";
+import { DialogFooter, DialogHeader } from "../../components/dialog";
+import { WORKDAY_FORM_ID, WorkDayForm, schema } from "./WorkDayForm";
+import { isDefined } from "../../utils/validation";
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
     margin: "auto",
-    maxWidth: 768, // should be a decent medium-sized breakpoint
-  },
-}))
+    maxWidth: 768 // should be a decent medium-sized breakpoint
+  }
+}));
 
-export function WorkDayDialog({open, code, onComplete}) {
-  const classes = useStyles()
-  const [openDelete, setOpenDelete] = useState(false)
+export function WorkDayDialog({ open, code, onComplete }) {
+  const classes = useStyles();
+  const [openDelete, setOpenDelete] = useState(false);
 
-  const [state, setState] = useState(null)
+  const [state, setState] = useState(null);
 
   useEffect(() => {
     if (open) {
@@ -37,14 +37,14 @@ export function WorkDayDialog({open, code, onComplete}) {
             days: res.days,
             hours: res.hours,
             status: res.status,
-            sheets: res.sheets,
-          })
-        })
+            sheets: res.sheets
+          });
+        });
       } else {
-        setState(schema.cast())
+        setState(schema.cast());
       }
     }
-  }, [open, code])
+  }, [open, code]);
 
   const handleSubmit = it => {
     const body = {
@@ -56,36 +56,36 @@ export function WorkDayDialog({open, code, onComplete}) {
         : it.hours,
       assignmentCode: it.assignmentCode,
       status: it.status,
-      sheets: it.sheets,
-    }
+      sheets: it.sheets
+    };
     if (code) {
       WorkDayClient.put(code, body).then(res => {
-        if (isDefined(onComplete)) onComplete(res)
-        setState(null)
-      })
+        if (isDefined(onComplete)) onComplete(res);
+        setState(null);
+      });
     } else {
       WorkDayClient.post(body).then(res => {
-        if (isDefined(onComplete)) onComplete(res)
-        setState(null)
-      })
+        if (isDefined(onComplete)) onComplete(res);
+        setState(null);
+      });
     }
-  }
+  };
 
   const handleDelete = () => {
     WorkDayClient.delete(code).then(() => {
-      if (isDefined(onComplete)) onComplete()
-      setOpenDelete(false)
-    })
-  }
+      if (isDefined(onComplete)) onComplete();
+      setOpenDelete(false);
+    });
+  };
   const handleDeleteOpen = () => {
-    setOpenDelete(true)
-  }
+    setOpenDelete(true);
+  };
   const handleDeleteClose = () => {
-    setOpenDelete(false)
-  }
+    setOpenDelete(false);
+  };
   const handleClose = () => {
-    if (isDefined(onComplete)) onComplete()
-  }
+    if (isDefined(onComplete)) onComplete();
+  };
 
   return (
     <>
@@ -94,7 +94,7 @@ export function WorkDayDialog({open, code, onComplete}) {
         open={open}
         onClose={handleClose}
         TransitionComponent={TransitionSlider}
-        TransitionProps={{direction: "right"}}
+        TransitionProps={{ direction: "right" }}
       >
         <DialogHeader
           icon={<WorkIcon />}
@@ -130,11 +130,11 @@ export function WorkDayDialog({open, code, onComplete}) {
         <Typography>Are you sure you want to remove this workday.</Typography>
       </ConfirmDialog>
     </>
-  )
+  );
 }
 
 WorkDayDialog.propTypes = {
   open: PropTypes.bool,
   code: PropTypes.string,
-  onComplete: PropTypes.func,
-}
+  onComplete: PropTypes.func
+};

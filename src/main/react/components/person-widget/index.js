@@ -1,1 +1,1 @@
-export {PersonWidget} from "./PersonWidget"
+export { PersonWidget } from "./PersonWidget";

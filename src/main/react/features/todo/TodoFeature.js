@@ -1,30 +1,30 @@
-import React, {useState} from "react"
+import React, { useState } from "react";
 
-import {makeStyles} from "@material-ui/core/styles"
-import Grid from "@material-ui/core/Grid"
-import {Container} from "@material-ui/core"
-import {TodoList} from "./TodoList"
-import {updateStatus} from "./TodoService"
+import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import { Container } from "@material-ui/core";
+import { TodoList } from "./TodoList";
+import { updateStatus } from "./TodoService";
 
 const useStyles = makeStyles({
   root: {
-    padding: 20,
-  },
-})
+    padding: 20
+  }
+});
 
 /**
  * @return {null}
  */
 export function TodoFeature() {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const [refresh, setRefresh] = useState(false)
+  const [refresh, setRefresh] = useState(false);
 
   const handleItemClick = (status, item) => {
     updateStatus(status, item).then(() => {
-      setRefresh(!refresh)
-    })
-  }
+      setRefresh(!refresh);
+    });
+  };
 
   return (
     <Container className={classes.root}>
@@ -34,7 +34,7 @@ export function TodoFeature() {
         </Grid>
       </Grid>
     </Container>
-  )
+  );
 }
 
-TodoFeature.propTypes = {}
+TodoFeature.propTypes = {};

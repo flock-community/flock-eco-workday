@@ -1,57 +1,57 @@
-import React, {useContext, useState} from "react"
+import React, { useContext, useState } from "react";
 
-import {makeStyles} from "@material-ui/core/styles"
-import Grid from "@material-ui/core/Grid"
-import {Container} from "@material-ui/core"
-import {SickDayDialog} from "./SickDayDialog"
-import {SickDayList} from "./SickDayList"
-import {PersonSelector} from "../../components/selector"
-import {ApplicationContext} from "../../application/ApplicationContext"
-import {AddActionFab} from "../../components/FabButtons"
-import {usePerson} from "../../hooks/PersonHook"
-import {SickDayClient} from "../../clients/SickDayClient"
+import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import { Container } from "@material-ui/core";
+import { SickDayDialog } from "./SickDayDialog";
+import { SickDayList } from "./SickDayList";
+import { PersonSelector } from "../../components/selector";
+import { ApplicationContext } from "../../application/ApplicationContext";
+import { AddActionFab } from "../../components/FabButtons";
+import { usePerson } from "../../hooks/PersonHook";
+import { SickDayClient } from "../../clients/SickDayClient";
 
 const useStyles = makeStyles({
   root: {
-    padding: 20,
-  },
-})
+    padding: 20
+  }
+});
 
 /**
  * @return {null}
  */
 export function SickDayFeature() {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const [person, setPerson] = usePerson()
+  const [person, setPerson] = usePerson();
 
-  const [refresh, setRefresh] = useState(false)
-  const [open, setOpen] = useState(false)
-  const [value, setValue] = useState(null)
-  const {authorities} = useContext(ApplicationContext)
+  const [refresh, setRefresh] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(null);
+  const { authorities } = useContext(ApplicationContext);
 
   function isSuperUser() {
-    return authorities && authorities.includes("SickdayAuthority.ADMIN")
+    return authorities && authorities.includes("SickdayAuthority.ADMIN");
   }
 
   function handleCompleteDialog() {
-    setRefresh(!refresh)
-    setOpen(false)
-    setValue(null)
+    setRefresh(!refresh);
+    setOpen(false);
+    setValue(null);
   }
 
   function handleClickAdd() {
-    setValue(null)
-    setOpen(true)
+    setValue(null);
+    setOpen(true);
   }
 
   function handleClickRow(e, item) {
-    setValue(item)
-    setOpen(true)
+    setValue(item);
+    setOpen(true);
   }
 
   function handlePersonChange(it) {
-    setPerson(it)
+    setPerson(it);
   }
 
   function handleStatusChange(status, it) {
@@ -59,10 +59,10 @@ export function SickDayFeature() {
       ...it,
       status,
       from: it.from.format("YYYY-MM-DD"),
-      to: it.to.format("YYYY-MM-DD"),
+      to: it.to.format("YYYY-MM-DD")
     })
       .then(() => setRefresh(!refresh))
-      .catch(err => console.log(err))
+      .catch(err => console.log(err));
   }
 
   return (
@@ -95,7 +95,7 @@ export function SickDayFeature() {
 
       <AddActionFab color="primary" onClick={handleClickAdd} />
     </Container>
-  )
+  );
 }
 
-SickDayFeature.propTypes = {}
+SickDayFeature.propTypes = {};

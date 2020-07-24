@@ -1,22 +1,27 @@
-import React from "react"
-import PropTypes from "prop-types"
-import {Card, CardContent, makeStyles, Typography} from "@material-ui/core"
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
-import {StatusMenu} from "../../components/StatusMenu"
+import React from "react";
+import PropTypes from "prop-types";
+import { Card, CardContent, makeStyles, Typography } from "@material-ui/core";
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import { StatusMenu } from "../../components/StatusMenu";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    position: "relative",
+    position: "relative"
   },
   status: {
     position: "absolute",
     top: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-}))
+    right: theme.spacing(2)
+  }
+}));
 
-export function WorkDayListItem({value, onClick, onClickStatus, hasAuthority}) {
-  const classes = useStyles()
+export function WorkDayListItem({
+  value,
+  onClick,
+  onClickStatus,
+  hasAuthority
+}) {
+  const classes = useStyles();
 
   return (
     <Card onClick={onClick}>
@@ -25,9 +30,12 @@ export function WorkDayListItem({value, onClick, onClickStatus, hasAuthority}) {
           {value.assignment.client.name} - {value.assignment.role}
         </Typography>
         <Typography>
-          Period: {value.from.format("DD-MM-YYYY")} - {value.to.format("DD-MM-YYYY")}
+          Period: {value.from.format("DD-MM-YYYY")} -{" "}
+          {value.to.format("DD-MM-YYYY")}
         </Typography>
-        <Typography>Aantal dagen: {value.to.diff(value.from, "days") + 1}</Typography>
+        <Typography>
+          Aantal dagen: {value.to.diff(value.from, "days") + 1}
+        </Typography>
         <Typography>Aantal uren: {value.hours}</Typography>
         <div className={classes.status}>
           <StatusMenu
@@ -38,12 +46,12 @@ export function WorkDayListItem({value, onClick, onClickStatus, hasAuthority}) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 WorkDayListItem.propTypes = {
   value: PropTypes.object,
   onClick: PropTypes.func,
   onClickStatus: PropTypes.func,
-  hasAuthority: PropTypes.string,
-}
+  hasAuthority: PropTypes.string
+};

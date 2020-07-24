@@ -1,16 +1,16 @@
-import React from "react"
-import PropTypes from "prop-types"
-import {Grid} from "@material-ui/core"
-import {Field, Form, Formik} from "formik"
-import {MuiPickersUtilsProvider} from "@material-ui/pickers"
-import MomentUtils from "@date-io/moment"
-import {TextField} from "formik-material-ui"
-import * as Yup from "yup"
-import {DatePickerField} from "../../components/fields/DatePickerField"
+import React from "react";
+import PropTypes from "prop-types";
+import { Grid } from "@material-ui/core";
+import { Field, Form, Formik } from "formik";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import MomentUtils from "@date-io/moment";
+import { TextField } from "formik-material-ui";
+import * as Yup from "yup";
+import { DatePickerField } from "../../components/fields/DatePickerField";
 
-export const EXPENSE_TRAVEL_FORM_ID = "cost-expense-form"
+export const EXPENSE_TRAVEL_FORM_ID = "cost-expense-form";
 
-export const ExpenseFormTravel = ({value, onSubmit}) => {
+export const ExpenseFormTravel = ({ value, onSubmit }) => {
   const schema = Yup.object({
     description: Yup.string()
       .required()
@@ -20,8 +20,8 @@ export const ExpenseFormTravel = ({value, onSubmit}) => {
       .default(0),
     allowance: Yup.number()
       .required()
-      .default(0),
-  })
+      .default(0)
+  });
 
   const form = () => (
     <Form id={EXPENSE_TRAVEL_FORM_ID}>
@@ -59,23 +59,23 @@ export const ExpenseFormTravel = ({value, onSubmit}) => {
         </Grid>
       </MuiPickersUtilsProvider>
     </Form>
-  )
+  );
 
   return (
     <Formik
       initialValues={{
         ...schema.cast(),
-        ...value,
+        ...value
       }}
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize
       render={form}
     />
-  )
-}
+  );
+};
 
 ExpenseFormTravel.propTypes = {
   value: PropTypes.object,
-  onSubmit: PropTypes.func.isRequired,
-}
+  onSubmit: PropTypes.func.isRequired
+};

@@ -1,12 +1,15 @@
-import React from "react"
-import {Field} from "formik"
-import PropTypes from "prop-types"
-import {PersonSelector} from "../selector"
+import React from "react";
+import { Field } from "formik";
+import PropTypes from "prop-types";
+import { PersonSelector } from "../selector";
 
-function PersonSelectorField({name, ...props}) {
+function PersonSelectorField({ name, ...props }) {
   return (
     <Field id={name} name={name} as="select">
-      {({field: {value}, form: {touched, errors, setFieldValue, setFieldTouched}}) => (
+      {({
+        field: { value },
+        form: { touched, errors, setFieldValue, setFieldTouched }
+      }) => (
         <PersonSelector
           value={value}
           onBlur={() => setFieldTouched(name, true)}
@@ -17,11 +20,11 @@ function PersonSelectorField({name, ...props}) {
         />
       )}
     </Field>
-  )
+  );
 }
 
 PersonSelectorField.propTypes = {
-  name: PropTypes.string,
-}
+  name: PropTypes.string
+};
 
-export {PersonSelectorField}
+export { PersonSelectorField };

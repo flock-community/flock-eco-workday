@@ -1,18 +1,18 @@
-import {createMuiTheme} from "@material-ui/core/styles"
-import {blueGrey, green, red} from "@material-ui/core/colors"
+import { createMuiTheme } from "@material-ui/core/styles";
+import { blueGrey, green, red } from "@material-ui/core/colors";
 
 export const themeLight = createMuiTheme({
   palette: {
     primary: {
-      main: "#fcde00",
+      main: "#fcde00"
     },
     secondary: blueGrey,
     success: green,
-    error: red,
+    error: red
   },
   overrides: {
     MuiDialogTitle: {
-      root: {backgroundColor: "#fcde00"},
-    },
-  },
-})
+      root: { backgroundColor: "#fcde00" }
+    }
+  }
+});

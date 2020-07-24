@@ -1,6 +1,6 @@
-import React from "react"
-import PropTypes from "prop-types"
-import {Button, DialogActions} from "@material-ui/core"
+import React from "react";
+import PropTypes from "prop-types";
+import { Button, DialogActions } from "@material-ui/core";
 
 export function DialogFooter({
   formId,
@@ -8,7 +8,7 @@ export function DialogFooter({
   onSubmit,
   onDelete,
   disableDelete = false,
-  disableEdit = false,
+  disableEdit = false
 }) {
   return (
     <DialogActions>
@@ -33,7 +33,7 @@ export function DialogFooter({
         </Button>
       )}
     </DialogActions>
-  )
+  );
 }
 
 DialogFooter.propTypes = {
@@ -42,11 +42,11 @@ DialogFooter.propTypes = {
   onSubmit: PropTypes.func,
   onDelete: PropTypes.func,
   disableDelete: PropTypes.bool,
-  disableEdit: PropTypes.bool,
-}
+  disableEdit: PropTypes.bool
+};
 
 DialogFooter.defaultProps = {
   onSubmit: null,
   disableDelete: false,
-  disableEdit: false,
-}
+  disableEdit: false
+};

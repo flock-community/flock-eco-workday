@@ -1,21 +1,21 @@
-import React, {useEffect, useState} from "react"
-import PropTypes from "prop-types"
-import * as Yup from "yup"
-import {Field, Form, Formik} from "formik"
-import moment from "moment"
-import Grid from "@material-ui/core/Grid"
-import MomentUtils from "@date-io/moment"
-import {MuiPickersUtilsProvider} from "@material-ui/pickers"
-import {TextField} from "formik-material-ui"
-import {isDefined} from "../../utils/validation"
-import {EventClient} from "../../clients/EventClient"
-import {DatePickerField} from "../../components/fields/DatePickerField"
-import {PersonSelectorField} from "../../components/fields/PersonSelectorField"
-import {PeriodInputField} from "../../components/fields/PeriodInputField"
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import * as Yup from "yup";
+import { Field, Form, Formik } from "formik";
+import moment from "moment";
+import Grid from "@material-ui/core/Grid";
+import MomentUtils from "@date-io/moment";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { TextField } from "formik-material-ui";
+import { isDefined } from "../../utils/validation";
+import { EventClient } from "../../clients/EventClient";
+import { DatePickerField } from "../../components/fields/DatePickerField";
+import { PersonSelectorField } from "../../components/fields/PersonSelectorField";
+import { PeriodInputField } from "../../components/fields/PeriodInputField";
 
-export const EVENT_FORM_ID = "work-day-form"
+export const EVENT_FORM_ID = "work-day-form";
 
-const now = moment()
+const now = moment();
 
 const schema = Yup.object().shape({
   description: Yup.string()
@@ -28,14 +28,14 @@ const schema = Yup.object().shape({
     .required("To date is required")
     .default(now),
   days: Yup.array().required("Required"),
-  personCodes: Yup.array().default([]),
-})
+  personCodes: Yup.array().default([])
+});
 
 /**
  * @return {null}
  */
-export function EventForm({code, onSubmit}) {
-  const [state, setState] = useState(null)
+export function EventForm({ code, onSubmit }) {
+  const [state, setState] = useState(null);
 
   useEffect(() => {
     if (code) {
@@ -45,25 +45,25 @@ export function EventForm({code, onSubmit}) {
           from: res.from,
           to: res.to,
           days: res.days,
-          personCodes: res.persons.map(it => it.code),
-        })
-      })
+          personCodes: res.persons.map(it => it.code)
+        });
+      });
     } else {
-      setState(schema.cast())
+      setState(schema.cast());
     }
-  }, [code])
+  }, [code]);
 
   const handleSubmit = value => {
     if (isDefined(onSubmit))
       onSubmit({
         ...state,
-        ...value,
-      })
-  }
+        ...value
+      });
+  };
 
   const handleChange = it => {
-    setState(it)
-  }
+    setState(it);
+  };
 
   const renderForm = () => (
     <Form id={EVENT_FORM_ID}>
@@ -97,7 +97,7 @@ export function EventForm({code, onSubmit}) {
         </Grid>
       </MuiPickersUtilsProvider>
     </Form>
-  )
+  );
 
   return (
     state && (
@@ -110,10 +110,10 @@ export function EventForm({code, onSubmit}) {
         render={renderForm}
       />
     )
-  )
+  );
 }
 
 EventForm.propTypes = {
   code: PropTypes.string,
-  onSubmit: PropTypes.func,
-}
+  onSubmit: PropTypes.func
+};

@@ -1,13 +1,13 @@
-import React from "react"
-import {Field} from "formik"
-import {PersonSelector} from "./PersonSelector"
+import React from "react";
+import { Field } from "formik";
+import { PersonSelector } from "./PersonSelector";
 
-const fieldName = "personCode"
+const fieldName = "personCode";
 
 function PersonSelectorFormInput() {
   return (
     <Field id={fieldName} name={fieldName} as="select">
-      {({field: {value}, form: {setFieldValue}}) => (
+      {({ field: { value }, form: { setFieldValue } }) => (
         <PersonSelector
           embedded
           value={value}
@@ -15,9 +15,9 @@ function PersonSelectorFormInput() {
         />
       )}
     </Field>
-  )
+  );
 }
 
-PersonSelectorFormInput.propTypes = {}
+PersonSelectorFormInput.propTypes = {};
 
-export {PersonSelectorFormInput}
+export { PersonSelectorFormInput };

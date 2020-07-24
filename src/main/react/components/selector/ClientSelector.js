@@ -1,33 +1,40 @@
-import React, {useEffect, useState} from "react"
-import PropTypes from "prop-types"
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   Card,
   CardContent,
   FormControl,
   InputLabel,
   MenuItem,
-  Select,
-} from "@material-ui/core"
-import FormHelperText from "@material-ui/core/FormHelperText"
-import {ClientClient} from "../../clients/ClientClient"
+  Select
+} from "@material-ui/core";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import { ClientClient } from "../../clients/ClientClient";
 
-export function ClientSelector({value, onChange, embedded, label, error, ...props}) {
-  const [items, setItems] = useState([])
-  const [state, setState] = useState(value)
+export function ClientSelector({
+  value,
+  onChange,
+  embedded,
+  label,
+  error,
+  ...props
+}) {
+  const [items, setItems] = useState([]);
+  const [state, setState] = useState(value);
 
   useEffect(() => {
-    ClientClient.all().then(res => setItems(res))
-  }, [])
+    ClientClient.all().then(res => setItems(res));
+  }, []);
 
   useEffect(() => {
-    setState(value)
-  }, [value])
+    setState(value);
+  }, [value]);
 
   function handleChange(event) {
     // eslint-disable-next-line no-shadow
-    const selected = event.target.value
-    setState(selected)
-    onChange(selected === "" ? null : selected)
+    const selected = event.target.value;
+    setState(selected);
+    onChange(selected === "" ? null : selected);
   }
 
   function renderMenuItem(item, key) {
@@ -35,7 +42,7 @@ export function ClientSelector({value, onChange, embedded, label, error, ...prop
       <MenuItem key={`person-selector-menu-item-${key}`} value={item.code}>
         {item.name}
       </MenuItem>
-    )
+    );
   }
 
   const selectInput = (
@@ -49,7 +56,7 @@ export function ClientSelector({value, onChange, embedded, label, error, ...prop
       </Select>
       <FormHelperText>{error}</FormHelperText>
     </FormControl>
-  )
+  );
 
   return embedded ? (
     selectInput
@@ -57,7 +64,7 @@ export function ClientSelector({value, onChange, embedded, label, error, ...prop
     <Card>
       <CardContent>{selectInput}</CardContent>
     </Card>
-  )
+  );
 }
 
 ClientSelector.propTypes = {
@@ -65,10 +72,10 @@ ClientSelector.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
-  embedded: PropTypes.bool,
-}
+  embedded: PropTypes.bool
+};
 
 ClientSelector.defaultProps = {
   value: "",
-  label: "Select Client",
-}
+  label: "Select Client"
+};

@@ -1,21 +1,21 @@
-import React from "react"
-import PropTypes from "prop-types"
-import * as Yup from "yup"
-import {Field, Form, Formik} from "formik"
-import {TextField} from "formik-material-ui"
-import Grid from "@material-ui/core/Grid"
-import MenuItem from "@material-ui/core/MenuItem"
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
-import {MuiPickersUtilsProvider} from "@material-ui/pickers"
-import MomentUtils from "@date-io/moment"
-import moment from "moment"
-import {isDefined} from "../../utils/validation"
-import {DatePickerField} from "../../components/fields/DatePickerField"
-import {PeriodInputField} from "../../components/fields/PeriodInputField"
+import React from "react";
+import PropTypes from "prop-types";
+import * as Yup from "yup";
+import { Field, Form, Formik } from "formik";
+import { TextField } from "formik-material-ui";
+import Grid from "@material-ui/core/Grid";
+import MenuItem from "@material-ui/core/MenuItem";
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import MomentUtils from "@date-io/moment";
+import moment from "moment";
+import { isDefined } from "../../utils/validation";
+import { DatePickerField } from "../../components/fields/DatePickerField";
+import { PeriodInputField } from "../../components/fields/PeriodInputField";
 
-export const HOLIDAY_FORM_ID = "holiday-form-id"
+export const HOLIDAY_FORM_ID = "holiday-form-id";
 
-const now = moment()
+const now = moment();
 
 export const schemaHolidayForm = Yup.object().shape({
   description: Yup.string()
@@ -30,17 +30,17 @@ export const schemaHolidayForm = Yup.object().shape({
   to: Yup.date()
     .required("To date is required")
     .default(now),
-  days: Yup.array().required("Required"),
-})
+  days: Yup.array().required("Required")
+});
 
-export function HolidayForm({value, onSubmit, onChange}) {
+export function HolidayForm({ value, onSubmit, onChange }) {
   const handleSubmit = data => {
-    if (isDefined(onSubmit)) onSubmit(data)
-  }
+    if (isDefined(onSubmit)) onSubmit(data);
+  };
 
   const handleChange = it => {
-    onChange(it)
-  }
+    onChange(it);
+  };
 
   const renderForm = () => (
     <Form id={HOLIDAY_FORM_ID}>
@@ -92,7 +92,7 @@ export function HolidayForm({value, onSubmit, onChange}) {
         </Grid>
       </MuiPickersUtilsProvider>
     </Form>
-  )
+  );
 
   return (
     value && (
@@ -105,10 +105,10 @@ export function HolidayForm({value, onSubmit, onChange}) {
         render={renderForm}
       />
     )
-  )
+  );
 }
 
 HolidayForm.propTypes = {
   value: PropTypes.object,
-  onSubmit: PropTypes.func,
-}
+  onSubmit: PropTypes.func
+};

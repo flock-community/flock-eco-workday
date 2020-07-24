@@ -1,6 +1,6 @@
-import React from "react"
-import PropTypes from "prop-types"
-import clsx from "clsx"
+import React from "react";
+import PropTypes from "prop-types";
+import clsx from "clsx";
 import {
   Card,
   CardHeader,
@@ -13,37 +13,37 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText,
-} from "@material-ui/core"
-import {makeStyles} from "@material-ui/styles"
-import {blue} from "@material-ui/core/colors"
-import FavoriteIcon from "@material-ui/icons/Favorite"
-import InboxIcon from "@material-ui/icons/Inbox"
-import DraftsIcon from "@material-ui/icons/Drafts"
-import FaceIcon from "@material-ui/icons/Face"
+  ListItemText
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
+import { blue } from "@material-ui/core/colors";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import InboxIcon from "@material-ui/icons/Inbox";
+import DraftsIcon from "@material-ui/icons/Drafts";
+import FaceIcon from "@material-ui/icons/Face";
 
 const useStyles = makeStyles(() => ({
   card: {
-    maxWidth: 328,
+    maxWidth: 328
   },
   chipWrapper: {
     display: "flex",
     flexDirection: "row-reverse",
-    padding: "1em 1em 0.625em",
+    padding: "1em 1em 0.625em"
   },
   avatar: {
-    backgroundColor: blue[500],
+    backgroundColor: blue[500]
   },
-  dflex: {display: "flex"},
-  flexColumn: {flexDirection: "column"},
-  p1: {padding: "1rem"},
-  m1: {margin: "1rem"},
-  mb1: {marginBottom: "1rem"},
-}))
+  dflex: { display: "flex" },
+  flexColumn: { flexDirection: "column" },
+  p1: { padding: "1rem" },
+  m1: { margin: "1rem" },
+  mb1: { marginBottom: "1rem" }
+}));
 
 export function PersonWidget(props) {
-  const {person} = props
-  const classes = useStyles()
+  const { person } = props;
+  const classes = useStyles();
 
   return (
     <Card className={clsx(classes.card, classes.mb1)}>
@@ -105,9 +105,9 @@ export function PersonWidget(props) {
         </IconButton>
       </CardActions>
     </Card>
-  )
+  );
 }
 
 PersonWidget.propTypes = {
-  person: PropTypes.object.isRequired,
-}
+  person: PropTypes.object.isRequired
+};

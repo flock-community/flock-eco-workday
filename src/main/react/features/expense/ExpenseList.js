@@ -1,44 +1,45 @@
-import React, {useEffect, useState} from "react"
-import PropTypes from "prop-types"
-import {Card, Typography} from "@material-ui/core"
-import CardContent from "@material-ui/core/CardContent"
-import Grid from "@material-ui/core/Grid"
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
-import CardHeader from "@material-ui/core/CardHeader"
-import List from "@material-ui/core/List"
-import ListItemText from "@material-ui/core/ListItemText"
-import ListItem from "@material-ui/core/ListItem"
-import {StatusMenu} from "../../components/StatusMenu"
-import {ExpenseClient} from "../../clients/ExpenseClient"
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import { Card, Typography } from "@material-ui/core";
+import CardContent from "@material-ui/core/CardContent";
+import Grid from "@material-ui/core/Grid";
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import CardHeader from "@material-ui/core/CardHeader";
+import List from "@material-ui/core/List";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItem from "@material-ui/core/ListItem";
+import { StatusMenu } from "../../components/StatusMenu";
+import { ExpenseClient } from "../../clients/ExpenseClient";
 
-export function ExpenseList({personCode, refresh, onClickRow}) {
-  const [state, setState] = useState([])
+export function ExpenseList({ personCode, refresh, onClickRow }) {
+  const [state, setState] = useState([]);
 
   const loadState = () => {
-    ExpenseClient.findAllByPersonCode(personCode).then(res => setState(res))
-  }
+    ExpenseClient.findAllByPersonCode(personCode).then(res => setState(res));
+  };
 
   useEffect(() => {
     if (personCode) {
-      loadState()
+      loadState();
     }
-  }, [personCode, refresh])
+  }, [personCode, refresh]);
 
-  const isAdmin = () => !UserAuthorityUtil.hasAuthority("ExpenseAuthority.ADMIN")
+  const isAdmin = () =>
+    !UserAuthorityUtil.hasAuthority("ExpenseAuthority.ADMIN");
 
   const handleClickRow = item => {
     return () => {
-      if (onClickRow) onClickRow(item)
-    }
-  }
+      if (onClickRow) onClickRow(item);
+    };
+  };
 
   const handleStatusChange = item => status => {
     ExpenseClient.put(item.id, item.type.toLowerCase(), {
       ...item,
       personCode,
-      status,
-    }).then(() => loadState())
-  }
+      status
+    }).then(() => loadState());
+  };
 
   function renderItem(item, key) {
     return (
@@ -71,7 +72,7 @@ export function ExpenseList({personCode, refresh, onClickRow}) {
           </List>
         </Card>
       </Grid>
-    )
+    );
   }
 
   if (state.length === 0) {
@@ -81,18 +82,18 @@ export function ExpenseList({personCode, refresh, onClickRow}) {
           <Typography>No expenses</Typography>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
     <Grid container spacing={1}>
       {state.map(renderItem)}
     </Grid>
-  )
+  );
 }
 
 ExpenseList.propTypes = {
   refresh: PropTypes.bool,
   personCode: PropTypes.string,
-  onClickRow: PropTypes.func,
-}
+  onClickRow: PropTypes.func
+};

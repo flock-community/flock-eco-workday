@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from "react"
-import PropTypes from "prop-types"
-import {FormControl, InputLabel, MenuItem, Select} from "@material-ui/core"
-import FormHelperText from "@material-ui/core/FormHelperText"
-import {AssignmentClient} from "../../clients/AssignmentClient"
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import { AssignmentClient } from "../../clients/AssignmentClient";
 
 export function AssignmentSelector({
   personCode,
@@ -12,22 +12,22 @@ export function AssignmentSelector({
   error,
   ...props
 }) {
-  const [items, setItems] = useState([])
-  const [state, setState] = useState(value)
+  const [items, setItems] = useState([]);
+  const [state, setState] = useState(value);
 
   useEffect(() => {
-    AssignmentClient.findAllByPersonCode(personCode).then(res => setItems(res))
-  }, [])
+    AssignmentClient.findAllByPersonCode(personCode).then(res => setItems(res));
+  }, []);
 
   useEffect(() => {
-    setState(value)
-  }, [value])
+    setState(value);
+  }, [value]);
 
   function handleChange(event) {
     // eslint-disable-next-line no-shadow
-    const selected = event.target.value
-    setState(selected)
-    onChange(selected === "" ? null : selected)
+    const selected = event.target.value;
+    setState(selected);
+    onChange(selected === "" ? null : selected);
   }
 
   function renderMenuItem(item, key) {
@@ -38,7 +38,7 @@ export function AssignmentSelector({
       >
         {item.client.name} - {item.role}
       </MenuItem>
-    )
+    );
   }
 
   return (
@@ -52,7 +52,7 @@ export function AssignmentSelector({
       </Select>
       {error && <FormHelperText>{error}</FormHelperText>}
     </FormControl>
-  )
+  );
 }
 
 AssignmentSelector.propTypes = {
@@ -60,5 +60,5 @@ AssignmentSelector.propTypes = {
   error: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  label: PropTypes.string,
-}
+  label: PropTypes.string
+};

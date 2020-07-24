@@ -1,20 +1,20 @@
-const path = "/login/status"
+const path = "/login/status";
 
 const validateResponse = res => {
-  if (!res.ok) throw new Error(res.statusText)
-  if (res.status === 204) return null
+  if (!res.ok) throw new Error(res.statusText);
+  if (res.status === 204) return null;
 
-  return res.json()
-}
+  return res.json();
+};
 
 const get = () => {
   const opts = {
-    method: "GET",
-  }
+    method: "GET"
+  };
 
-  return fetch(path, opts).then(validateResponse)
-}
+  return fetch(path, opts).then(validateResponse);
+};
 
 export const UserStatusClient = {
-  get,
-}
+  get
+};

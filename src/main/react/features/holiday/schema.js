@@ -1,5 +1,5 @@
-import {object, string, array, number} from "yup"
-import {PERIOD_FORM_SCHEMA} from "../../components/period"
+import { object, string, array, number } from "yup";
+import { PERIOD_FORM_SCHEMA } from "../../components/period";
 
 // eslint-disable-next-line no-underscore-dangle
 const _defaultObject = {
@@ -9,8 +9,8 @@ const _defaultObject = {
     .required("Field required")
     .default(""),
   hours: number(),
-  status: string(),
-}
+  status: string()
+};
 
 const HOLIDAY_SCHEMA = object(_defaultObject)
   .shape({
@@ -21,42 +21,42 @@ const HOLIDAY_SCHEMA = object(_defaultObject)
         object().shape({
           id: number(),
           hours: number(),
-          date: string(),
+          date: string()
         })
       ),
       from: string(),
-      to: string(),
-    }),
+      to: string()
+    })
   })
-  .from("personCode", "person", false)
+  .from("personCode", "person", false);
 
 const HOLIDAY_FORM_SCHEMA = object(_defaultObject)
   .shape({
     personCode: string().transform(value => (value === null ? "" : value)),
-    period: PERIOD_FORM_SCHEMA,
+    period: PERIOD_FORM_SCHEMA
   })
-  .from("person", "personCode", false)
+  .from("person", "personCode", false);
 
 const isHoliday = async it => {
-  const valid = await HOLIDAY_SCHEMA.isValid(it)
-  return valid
-}
+  const valid = await HOLIDAY_SCHEMA.isValid(it);
+  return valid;
+};
 
 const isHolidayForm = async it => {
-  const valid = await HOLIDAY_FORM_SCHEMA.isValid(it)
-  return valid
-}
+  const valid = await HOLIDAY_FORM_SCHEMA.isValid(it);
+  return valid;
+};
 
 const toHoliday = holidayForm => {
-  if (isHolidayForm) return HOLIDAY_SCHEMA.cast(holidayForm)
-  return null
-}
+  if (isHolidayForm) return HOLIDAY_SCHEMA.cast(holidayForm);
+  return null;
+};
 
 const toHolidayForm = holiday => {
-  if (isHoliday(holiday)) return HOLIDAY_FORM_SCHEMA.cast(holiday)
-  if (isHolidayForm) return holiday
-  return null
-}
+  if (isHoliday(holiday)) return HOLIDAY_FORM_SCHEMA.cast(holiday);
+  if (isHolidayForm) return holiday;
+  return null;
+};
 
 export {
   HOLIDAY_SCHEMA,
@@ -64,5 +64,5 @@ export {
   isHoliday,
   isHolidayForm,
   toHoliday,
-  toHolidayForm,
-}
+  toHolidayForm
+};

@@ -1,13 +1,13 @@
-import React from "react"
-import {Field} from "formik"
-import {UserSelector} from "./UserSelector"
+import React from "react";
+import { Field } from "formik";
+import { UserSelector } from "./UserSelector";
 
-const fieldName = "userCode"
+const fieldName = "userCode";
 
 function UserSelectorFormInput() {
   return (
     <Field id={fieldName} name={fieldName} as="select">
-      {({field: {value}, form: {setFieldValue}}) => (
+      {({ field: { value }, form: { setFieldValue } }) => (
         <UserSelector
           embedded
           selectedItem={value}
@@ -15,9 +15,9 @@ function UserSelectorFormInput() {
         />
       )}
     </Field>
-  )
+  );
 }
 
-UserSelectorFormInput.propTypes = {}
+UserSelectorFormInput.propTypes = {};
 
-export {UserSelectorFormInput}
+export { UserSelectorFormInput };

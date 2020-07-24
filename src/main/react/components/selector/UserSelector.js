@@ -1,30 +1,30 @@
-import React, {useEffect, useState} from "react"
-import PropTypes from "prop-types"
-import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient"
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient";
 import {
   Card,
   CardContent,
   FormControl,
   InputLabel,
   Select,
-  MenuItem,
-} from "@material-ui/core"
+  MenuItem
+} from "@material-ui/core";
 
 export function UserSelector(props) {
-  const {embedded, onChange, label, selectedItem} = props
-  const [users, setUsers] = useState([])
-  const [selected, setSelected] = useState("")
+  const { embedded, onChange, label, selectedItem } = props;
+  const [users, setUsers] = useState([]);
+  const [selected, setSelected] = useState("");
 
   useEffect(() => {
-    UserClient.findAllUsers("", 0, 100).then(res => setUsers(res.list))
-    setSelected(selectedItem)
-  }, [])
+    UserClient.findAllUsers("", 0, 100).then(res => setUsers(res.list));
+    setSelected(selectedItem);
+  }, []);
 
   function handleChange(event) {
     // eslint-disable-next-line no-shadow
-    const selected = event.target.value
-    setSelected(selected)
-    onChange(selected)
+    const selected = event.target.value;
+    setSelected(selected);
+    onChange(selected);
   }
 
   function renderMenuItem(user, key) {
@@ -32,7 +32,7 @@ export function UserSelector(props) {
       <MenuItem key={`user-selector-menu-item-${key}`} value={user.code}>
         {user.name} &lt;{user.email}&gt;
       </MenuItem>
-    )
+    );
   }
 
   const selectInput = (
@@ -45,7 +45,7 @@ export function UserSelector(props) {
         {users.map(renderMenuItem)}
       </Select>
     </FormControl>
-  )
+  );
 
   return embedded ? (
     <div>{selectInput}</div>
@@ -53,18 +53,18 @@ export function UserSelector(props) {
     <Card>
       <CardContent>{selectInput}</CardContent>
     </Card>
-  )
+  );
 }
 
 UserSelector.propTypes = {
   embedded: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string,
-  selectedItem: PropTypes.string,
-}
+  selectedItem: PropTypes.string
+};
 
 UserSelector.defaultProps = {
   embedded: false,
   selectedItem: "",
-  label: "Select User",
-}
+  label: "Select User"
+};

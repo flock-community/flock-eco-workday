@@ -1,26 +1,27 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react";
 
-import List from "@material-ui/core/List"
-import ListItemText from "@material-ui/core/ListItemText"
-import ListItem from "@material-ui/core/ListItem"
-import ListItemAvatar from "@material-ui/core/ListItemAvatar"
-import Avatar from "@material-ui/core/Avatar"
-import ExpensesIcon from "@material-ui/icons/Money"
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction"
-import IconButton from "@material-ui/core/IconButton"
-import PublishIcon from "@material-ui/icons/Publish"
-import {InvoiceClient} from "../../clients/InvoiceClient"
+import List from "@material-ui/core/List";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import Avatar from "@material-ui/core/Avatar";
+import ExpensesIcon from "@material-ui/icons/Money";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import IconButton from "@material-ui/core/IconButton";
+import PublishIcon from "@material-ui/icons/Publish";
+import { InvoiceClient } from "../../clients/InvoiceClient";
 
 export function ExactonlineListInvoices() {
-  const [list, setList] = useState([])
+  const [list, setList] = useState([]);
 
   useEffect(() => {
     InvoiceClient.all().then(accounts => {
-      setList(accounts)
-    })
-  }, [])
+      setList(accounts);
+    });
+  }, []);
 
-  const handleClickInvoice = invoice => () => InvoiceClient.uploadInvoice(invoice.id)
+  const handleClickInvoice = invoice => () =>
+    InvoiceClient.uploadInvoice(invoice.id);
 
   return (
     <List>
@@ -31,7 +32,10 @@ export function ExactonlineListInvoices() {
               <ExpensesIcon />
             </Avatar>
           </ListItemAvatar>
-          <ListItemText primary={`${it.description}`} secondary={`${it.type}`} />
+          <ListItemText
+            primary={`${it.description}`}
+            secondary={`${it.type}`}
+          />
           <ListItemSecondaryAction>
             <IconButton edge="end" onClick={handleClickInvoice(it)}>
               <PublishIcon />
@@ -40,7 +44,7 @@ export function ExactonlineListInvoices() {
         </ListItem>
       ))}
     </List>
-  )
+  );
 }
 
-ExactonlineListInvoices.propTypes = {}
+ExactonlineListInvoices.propTypes = {};

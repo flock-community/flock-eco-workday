@@ -1,64 +1,64 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react";
 
-import {BrowserRouter as Router, Route} from "react-router-dom"
-import {UserFeature} from "@flock-community/flock-eco-feature-user/src/main/react/user/UserFeature"
-import {CircularProgress, makeStyles} from "@material-ui/core"
-import ThemeProvider from "@material-ui/styles/ThemeProvider"
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil"
-import {HolidayFeature} from "../features/holiday/HolidayFeature"
-import {ApplicationLayout} from "./ApplicationLayout"
-import {ApplicationDrawer} from "./ApplicationDrawer"
-import {ApplicationContext} from "./ApplicationContext"
-import {HomeFeature} from "../features/home/HomeFeature"
-import {ClientFeature} from "../features/client/ClientFeature"
-import {AssignmentFeature} from "../features/assignments/AssignmentFeature"
-import {PersonFeature} from "../features/person/PersonFeature"
-import {SickDayFeature} from "../features/sickday/SickDayFeature"
-import {useUserMe} from "../hooks/UserMeHook"
-import {DashboardFeature} from "../features/dashboard/DashboardFeature"
-import {ContractFeature} from "../features/contract/ContractFeature"
-import {WorkDayFeature} from "../features/workday/WorkDayFeature"
-import {MonthFeature} from "../features/month/MonthFeature"
-import {EventFeature} from "../features/event/EventFeature"
-import {EventRatingFeature} from "../features/event_rating/EventRatingFeature"
-import {useLoginStatus} from "../hooks/StatusHook"
-import {getTheme} from "../theme/theme"
-import {ExpenseFeature} from "../features/expense/ExpenseFeature"
-import {ExactonlineFeature} from "../features/exactonline/ExactonlineFeature"
-import {TodoFeature} from "../features/todo/TodoFeature"
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import { UserFeature } from "@flock-community/flock-eco-feature-user/src/main/react/user/UserFeature";
+import { CircularProgress, makeStyles } from "@material-ui/core";
+import ThemeProvider from "@material-ui/styles/ThemeProvider";
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import { HolidayFeature } from "../features/holiday/HolidayFeature";
+import { ApplicationLayout } from "./ApplicationLayout";
+import { ApplicationDrawer } from "./ApplicationDrawer";
+import { ApplicationContext } from "./ApplicationContext";
+import { HomeFeature } from "../features/home/HomeFeature";
+import { ClientFeature } from "../features/client/ClientFeature";
+import { AssignmentFeature } from "../features/assignments/AssignmentFeature";
+import { PersonFeature } from "../features/person/PersonFeature";
+import { SickDayFeature } from "../features/sickday/SickDayFeature";
+import { useUserMe } from "../hooks/UserMeHook";
+import { DashboardFeature } from "../features/dashboard/DashboardFeature";
+import { ContractFeature } from "../features/contract/ContractFeature";
+import { WorkDayFeature } from "../features/workday/WorkDayFeature";
+import { MonthFeature } from "../features/month/MonthFeature";
+import { EventFeature } from "../features/event/EventFeature";
+import { EventRatingFeature } from "../features/event_rating/EventRatingFeature";
+import { useLoginStatus } from "../hooks/StatusHook";
+import { getTheme } from "../theme/theme";
+import { ExpenseFeature } from "../features/expense/ExpenseFeature";
+import { ExactonlineFeature } from "../features/exactonline/ExactonlineFeature";
+import { TodoFeature } from "../features/todo/TodoFeature";
 
 const useStyles = makeStyles(() => ({
   spinner: {
     height: "100%",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-  },
-}))
+    justifyContent: "center"
+  }
+}));
 
-const theme = getTheme("light")
+const theme = getTheme("light");
 
-const unauthorizedRoutes = [/^#\/event_rating\/.*/]
+const unauthorizedRoutes = [/^#\/event_rating\/.*/];
 
 export const Application = () => {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const status = useLoginStatus()
-  const user = useUserMe()
-  const [openDrawer, setOpenDrawer] = useState(false)
+  const status = useLoginStatus();
+  const user = useUserMe();
+  const [openDrawer, setOpenDrawer] = useState(false);
 
   useEffect(() => {
     if (status) {
-      UserAuthorityUtil.setAuthorities(status.authorities)
+      UserAuthorityUtil.setAuthorities(status.authorities);
     }
-  }, [status])
+  }, [status]);
 
   function handleDrawerClose() {
-    setOpenDrawer(false)
+    setOpenDrawer(false);
   }
 
   function handleDrawerOpen() {
-    setOpenDrawer(true)
+    setOpenDrawer(true);
   }
 
   if (!status) {
@@ -66,19 +66,23 @@ export const Application = () => {
       <div className={classes.spinner}>
         <CircularProgress />
       </div>
-    )
+    );
   }
 
-  const authorize = !unauthorizedRoutes.find(it => it.exec(window.location.hash))
+  const authorize = !unauthorizedRoutes.find(it =>
+    it.exec(window.location.hash)
+  );
 
   if (authorize && !status.loggedIn) {
-    window.location.href = "/login"
-    return null
+    window.location.href = "/login";
+    return null;
   }
 
   return (
     <ThemeProvider theme={theme}>
-      <ApplicationContext.Provider value={{authorities: status.authorities, user}}>
+      <ApplicationContext.Provider
+        value={{ authorities: status.authorities, user }}
+      >
         <Router>
           <ApplicationDrawer open={openDrawer} onClose={handleDrawerClose} />
           <ApplicationLayout onDrawer={handleDrawerOpen} />
@@ -97,9 +101,12 @@ export const Application = () => {
           <Route path="/users" exact component={UserFeature} />
           <Route path="/person" component={PersonFeature} />
           <Route path="/event" component={EventFeature} />
-          <Route path="/event_rating/:eventCode" component={EventRatingFeature} />
+          <Route
+            path="/event_rating/:eventCode"
+            component={EventRatingFeature}
+          />
         </Router>
       </ApplicationContext.Provider>
     </ThemeProvider>
-  )
-}
+  );
+};

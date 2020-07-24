@@ -1,18 +1,18 @@
-import React from "react"
-import PropTypes from "prop-types"
-import {Grid} from "@material-ui/core"
-import {Field, Form, Formik} from "formik"
-import {MuiPickersUtilsProvider} from "@material-ui/pickers"
-import MomentUtils from "@date-io/moment"
-import {TextField} from "formik-material-ui"
-import moment from "moment"
-import * as Yup from "yup"
-import {DatePickerField} from "../../components/fields/DatePickerField"
-import {DropzoneAreaField} from "../../components/fields/DropzoneAreaField"
+import React from "react";
+import PropTypes from "prop-types";
+import { Grid } from "@material-ui/core";
+import { Field, Form, Formik } from "formik";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import MomentUtils from "@date-io/moment";
+import { TextField } from "formik-material-ui";
+import moment from "moment";
+import * as Yup from "yup";
+import { DatePickerField } from "../../components/fields/DatePickerField";
+import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
 
-export const EXPENSE_COST_FORM_ID = "cost-expense-form"
+export const EXPENSE_COST_FORM_ID = "cost-expense-form";
 
-export const ExpenseFormCost = ({value, onSubmit}) => {
+export const ExpenseFormCost = ({ value, onSubmit }) => {
   const schema = Yup.object({
     description: Yup.string()
       .required()
@@ -23,8 +23,8 @@ export const ExpenseFormCost = ({value, onSubmit}) => {
     date: Yup.mixed()
       .required()
       .default(moment()),
-    files: Yup.array().default([]),
-  })
+    files: Yup.array().default([])
+  });
 
   const form = () => (
     <Form id={EXPENSE_COST_FORM_ID}>
@@ -56,23 +56,23 @@ export const ExpenseFormCost = ({value, onSubmit}) => {
         </Grid>
       </MuiPickersUtilsProvider>
     </Form>
-  )
+  );
 
   return (
     <Formik
       initialValues={{
         ...schema.cast(),
-        ...value,
+        ...value
       }}
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize
       render={form}
     />
-  )
-}
+  );
+};
 
 ExpenseFormCost.propTypes = {
   value: PropTypes.object,
-  onSubmit: PropTypes.func.isRequired,
-}
+  onSubmit: PropTypes.func.isRequired
+};

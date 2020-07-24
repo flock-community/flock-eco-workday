@@ -1,43 +1,43 @@
-import React from "react"
-import PropTypes from "prop-types"
-import {Dialog, Divider, DialogContent} from "@material-ui/core"
-import PersonAdd from "@material-ui/icons/PersonAdd"
-import {makeStyles} from "@material-ui/styles"
-import {PersonForm, PERSON_FORM_ID} from "./PersonForm"
-import {PersonService} from "./PersonService"
-import {usePerson} from "./context/PersonContext"
-import {isEmptyObject} from "../../utils/validation"
-import {TransitionSlider} from "../../components/transitions/Slide"
-import {DialogHeader, DialogFooter} from "../../components/dialog"
+import React from "react";
+import PropTypes from "prop-types";
+import { Dialog, Divider, DialogContent } from "@material-ui/core";
+import PersonAdd from "@material-ui/icons/PersonAdd";
+import { makeStyles } from "@material-ui/styles";
+import { PersonForm, PERSON_FORM_ID } from "./PersonForm";
+import { PersonService } from "./PersonService";
+import { usePerson } from "./context/PersonContext";
+import { isEmptyObject } from "../../utils/validation";
+import { TransitionSlider } from "../../components/transitions/Slide";
+import { DialogHeader, DialogFooter } from "../../components/dialog";
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
     margin: "auto",
-    maxWidth: 700, // should be a decent medium-sized breakpoint
-  },
-}))
+    maxWidth: 700 // should be a decent medium-sized breakpoint
+  }
+}));
 
 /** PersonDialog
  *
  * @param {*} props
  */
 export const PersonDialog = props => {
-  const {open, onClose} = props
-  const classes = useStyles()
-  const [person, setPerson] = usePerson()
+  const { open, onClose } = props;
+  const classes = useStyles();
+  const [person, setPerson] = usePerson();
 
   const successfulSubmit = () => {
-    setPerson(person)
-    onClose(true)
-  }
+    setPerson(person);
+    onClose(true);
+  };
 
   const handleSubmit = values => {
     if (isEmptyObject(person)) {
-      PersonService.post(values).then(() => successfulSubmit())
+      PersonService.post(values).then(() => successfulSubmit());
     } else {
-      PersonService.put(person.code, values).then(() => successfulSubmit())
+      PersonService.put(person.code, values).then(() => successfulSubmit());
     }
-  }
+  };
 
   return (
     <Dialog
@@ -45,7 +45,7 @@ export const PersonDialog = props => {
       open={open}
       onClose={onClose}
       TransitionComponent={TransitionSlider}
-      TransitionProps={{direction: "right"}}
+      TransitionProps={{ direction: "right" }}
     >
       <DialogHeader
         icon={<PersonAdd className={classes.personAddIcon} />}
@@ -59,10 +59,10 @@ export const PersonDialog = props => {
       <Divider />
       <DialogFooter formId={PERSON_FORM_ID} onClose={onClose} />
     </Dialog>
-  )
-}
+  );
+};
 
 PersonDialog.propTypes = {
   open: PropTypes.bool,
-  onClose: PropTypes.func.isRequired,
-}
+  onClose: PropTypes.func.isRequired
+};
