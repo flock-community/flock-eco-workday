@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Card, CardContent, makeStyles, Typography } from "@material-ui/core";
+import { Card, CardContent, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import { StatusMenu } from "./StatusMenu";
 

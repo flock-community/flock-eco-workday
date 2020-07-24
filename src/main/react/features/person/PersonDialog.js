@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Dialog, Divider, DialogContent } from "@material-ui/core";
 import PersonAdd from "@material-ui/icons/PersonAdd";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { PersonForm, PERSON_FORM_ID } from "./PersonForm";
 import { PersonService } from "./PersonService";
 import { usePerson } from "./context/PersonContext";

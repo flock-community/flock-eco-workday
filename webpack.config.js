@@ -19,6 +19,29 @@ const proxyTarget = env => ({
   autoRewrite: true,
 })
 
+const babelPlugins = [
+  [
+    'babel-plugin-import',
+    {
+      'libraryName': '@material-ui/core',
+      // Use "'libraryDirectory': ''," if your bundler does not support ES modules
+      'libraryDirectory': 'esm',
+      'camel2DashComponentName': false
+    },
+    'core'
+  ],
+  [
+    'babel-plugin-import',
+    {
+      'libraryName': '@material-ui/icons',
+      // Use "'libraryDirectory': ''," if your bundler does not support ES modules
+      'libraryDirectory': 'esm',
+      'camel2DashComponentName': false
+    },
+    'icons'
+  ]
+];
+
 module.exports = (env, argv) => ({
   entry: path.join(__dirname, "src/main/react"),
 
@@ -29,10 +52,15 @@ module.exports = (env, argv) => ({
   },
 
   devtool: "eval-source-map",
+
+  resolve: {
+    extensions: [".js", ".jsx", ".ts", ".tsx"]
+  },
+
   module: {
     rules: [
       {
-        test: /\.js|jsx$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules[\\\/](?!(@flock-community)[\\\/]).*/,
         use: {
           loader: "babel-loader",
@@ -40,8 +68,9 @@ module.exports = (env, argv) => ({
             plugins: [
               "@babel/plugin-proposal-class-properties",
               "@babel/plugin-transform-runtime",
+              ...babelPlugins
             ],
-            presets: ["@babel/preset-env", "@babel/preset-react"],
+            presets: ["@babel/preset-env", "@babel/preset-typescript", "@babel/preset-react"],
           },
         },
       },

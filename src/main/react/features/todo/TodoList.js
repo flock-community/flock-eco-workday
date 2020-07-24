@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Card, makeStyles, Typography } from "@material-ui/core";
+import { Card, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import CardHeader from "@material-ui/core/CardHeader";

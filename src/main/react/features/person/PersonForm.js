@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { FormControl, Grid } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { Field, Form, Formik } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
 import { UserSelectorFormInput } from "../../components/selector";

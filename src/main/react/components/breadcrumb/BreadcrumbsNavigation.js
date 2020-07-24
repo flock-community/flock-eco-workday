@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Breadcrumbs } from "@material-ui/core";
 import { BreadcrumbLink } from "./BreadcrumbLink";
 import { useBreadcrumbs } from "./Breadcrumb";

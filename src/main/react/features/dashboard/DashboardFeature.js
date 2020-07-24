@@ -1,7 +1,8 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
-import { CardContent, makeStyles } from "@material-ui/core";
+import { CardContent } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import CardHeader from "@material-ui/core/CardHeader";
 import { HolidaysPerPersonChart } from "../../components/charts/HolidaysPerPersonChart";
 import { SickdayPerPersonChart } from "../../components/charts/SickdayPerPersonChart";

@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import CreateIcon from "@material-ui/icons/Create";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() => ({
   root: {},

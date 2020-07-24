@@ -5,7 +5,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 
 import { useHistory } from "react-router-dom";
-import AssignmentIcon from "@material-ui/icons/Assignment";
+import { Assignment as AssignmentIcon } from "@material-ui/icons";
 import ContractIcon from "@material-ui/icons/Description";
 import HolidayIcon from "@material-ui/icons/WbSunny";
 import HealingIcon from "@material-ui/icons/Healing";
@@ -20,7 +20,7 @@ import ExactonlineIcon from "@material-ui/icons/AccountBalance";
 import TodoIcon from "@material-ui/icons/AssignmentTurnedIn";
 
 import Drawer from "@material-ui/core/Drawer";
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import { useUserMe } from "../hooks/UserMeHook";
 

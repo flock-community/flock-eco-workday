@@ -9,7 +9,7 @@ import {
   TablePagination,
   Paper
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { PersonTableHead } from "./PersonTableHead";
 import { PersonService } from "../PersonService";
 import { AddActionFab } from "../../../components/FabButtons";
