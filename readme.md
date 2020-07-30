@@ -6,6 +6,17 @@
 mvn clean spring-boot:run -Pdevelop -Dspring-boot.run.profiles=local
 ```
 
+Mark `src/develop/kotlin` as source directory.
+
+Add `develop` to the springboot `application` run configuration active profiles.
+
+```bash
+mvn clean install
+npm install
+```
+
+Run `application` and `run:local`.
+
 ## Users
 
 | User                     | Password    | Role  |
