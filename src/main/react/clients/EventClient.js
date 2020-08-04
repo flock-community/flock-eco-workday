@@ -1,5 +1,6 @@
 import moment from "moment";
 import { ResourceClient, responseValidation } from "../utils/ResourceClient";
+import { addError } from "../hooks/ErrorHook";
 
 const internalize = it => ({
   ...it,
@@ -14,7 +15,9 @@ const getRatings = id => {
   const opts = {
     method: "GET"
   };
-  return fetch(`${path}/${id}/ratings`, opts).then(responseValidation);
+  return fetch(`${path}/${id}/ratings`, opts)
+    .then(responseValidation)
+    .catch(e => addError(e.message));
 };
 
 const postRatings = (eventCode, item) => {
@@ -25,16 +28,18 @@ const postRatings = (eventCode, item) => {
     },
     body: JSON.stringify(item)
   };
-  return fetch(`${path}/${eventCode}/ratings`, opts).then(responseValidation);
+  return fetch(`${path}/${eventCode}/ratings`, opts)
+    .then(responseValidation)
+    .catch(e => addError(e.message));
 };
 
 const deleteRatings = (eventCode, personCode) => {
   const opts = {
     method: "DELETE"
   };
-  return fetch(`${path}/${eventCode}/ratings/${personCode}`, opts).then(
-    responseValidation
-  );
+  return fetch(`${path}/${eventCode}/ratings/${personCode}`, opts)
+    .then(responseValidation)
+    .catch(e => addError(e.message));
 };
 
 export const EventClient = {

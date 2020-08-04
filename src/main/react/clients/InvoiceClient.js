@@ -1,5 +1,6 @@
 import moment from "moment";
 import { ResourceClient, responseValidation } from "../utils/ResourceClient";
+import { addError } from "../hooks/ErrorHook";
 
 const internalize = it => ({
   ...it,
@@ -17,7 +18,9 @@ const uploadInvoice = id => {
     },
     body: JSON.stringify({ id })
   };
-  return fetch(`${path}/upload_invoice`, opts).then(responseValidation);
+  return fetch(`${path}/upload_invoice`, opts)
+    .then(responseValidation)
+    .catch(e => addError(e.message));
 };
 
 export const InvoiceClient = {

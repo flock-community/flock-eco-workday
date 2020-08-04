@@ -1,6 +1,7 @@
 import moment from "moment";
 import { ResourceClient } from "../utils/ResourceClient";
 import { PageableClient } from "../utils/PageableClient";
+import { addError } from "../hooks/ErrorHook";
 
 const path = "/api/contracts";
 
@@ -21,7 +22,9 @@ const post = (type, item) => {
     },
     body: JSON.stringify(item)
   };
-  return fetch(`/api/contracts-${type.toLowerCase()}`, opts).then(internalize);
+  return fetch(`/api/contracts-${type.toLowerCase()}`, opts)
+    .then(internalize)
+    .catch(e => addError(e.message));
 };
 
 const put = (id, type, item) => {
@@ -32,16 +35,18 @@ const put = (id, type, item) => {
     },
     body: JSON.stringify(item)
   };
-  return fetch(`/api/contracts-${type.toLowerCase()}/${id}`, opts).then(
-    internalize
-  );
+  return fetch(`/api/contracts-${type.toLowerCase()}/${id}`, opts)
+    .then(internalize)
+    .catch(e => addError(e.message));
 };
 
 export const findByCode = code => {
   const opts = {
     method: "GET"
   };
-  return fetch(`${path}/${code}`, opts).then(res => res.json());
+  return fetch(`${path}/${code}`, opts)
+    .then(res => res.json())
+    .catch(e => addError(e.message));
 };
 
 function findAllByPersonCode(personCode) {
@@ -52,7 +57,8 @@ function findAllByPersonCode(personCode) {
       }
       throw res.json();
     })
-    .then(data => data.map(internalize));
+    .then(data => data.map(internalize))
+    .catch(e => addError(e.message));
 }
 
 export const ContractClient = {

@@ -1,5 +1,6 @@
 import moment from "moment";
 import { ResourceClient, responseValidation } from "../utils/ResourceClient";
+import { addError } from "../hooks/ErrorHook";
 
 const internalize = it => ({
   ...it,
@@ -12,7 +13,8 @@ const resourceClient = ResourceClient(path, internalize);
 const findAllByPersonCode = personCode => {
   return fetch(`${path}?personCode=${personCode}&sort=date,desc`)
     .then(responseValidation)
-    .then(data => data.map(internalize));
+    .then(data => data.map(internalize))
+    .catch(e => addError(e.message));
 };
 
 const post = (type, item) => {
@@ -23,7 +25,9 @@ const post = (type, item) => {
     },
     body: JSON.stringify(item)
   };
-  return fetch(`/api/expenses-${type.toLowerCase()}`, opts).then(internalize);
+  return fetch(`/api/expenses-${type.toLowerCase()}`, opts)
+    .then(internalize)
+    .catch(e => addError(e.message));
 };
 
 const put = (id, type, item) => {
@@ -34,9 +38,9 @@ const put = (id, type, item) => {
     },
     body: JSON.stringify(item)
   };
-  return fetch(`/api/expenses-${type.toLowerCase()}/${id}`, opts).then(
-    internalize
-  );
+  return fetch(`/api/expenses-${type.toLowerCase()}/${id}`, opts)
+    .then(internalize)
+    .catch(e => addError(e.message));
 };
 
 export const ExpenseClient = {

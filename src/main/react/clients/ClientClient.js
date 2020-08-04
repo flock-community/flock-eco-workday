@@ -1,5 +1,6 @@
 import { ResourceClient } from "../utils/ResourceClient";
 import { PageableClient } from "../utils/PageableClient";
+import { addError } from "../hooks/ErrorHook";
 
 const path = "/api/clients";
 
@@ -10,7 +11,9 @@ export const findByCode = code => {
   const opts = {
     method: "GET"
   };
-  return fetch(`${path}/${code}`, opts).then(res => res.json());
+  return fetch(`${path}/${code}`, opts)
+    .then(res => res.json())
+    .catch(e => addError(e.message));
 };
 
 export const ClientClient = {

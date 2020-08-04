@@ -1,3 +1,5 @@
+import { addError } from "../hooks/ErrorHook";
+
 const path = "/login/status";
 
 const validateResponse = res => {
@@ -12,7 +14,9 @@ const get = () => {
     method: "GET"
   };
 
-  return fetch(path, opts).then(validateResponse);
+  return fetch(path, opts)
+    .then(validateResponse)
+    .catch(e => addError(e.message));
 };
 
 export const UserStatusClient = {
