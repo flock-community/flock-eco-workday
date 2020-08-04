@@ -26,7 +26,11 @@ export function useUserMe() {
     }
     listeners.push(setState);
     return () => {
-      listeners.filter(it => it !== setState);
+      const index = listeners.indexOf(setState);
+      if (index !== -1) {
+        // Remove setState at cleanup
+        listeners.splice(index, 1);
+      }
     };
   }, [status]);
 
