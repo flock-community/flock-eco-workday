@@ -1,5 +1,5 @@
 import moment from "moment";
-import { ResourceClient, responseValidation } from "../utils/ResourceClient";
+import { ExtractJSON, ResourceClient } from "../utils/ResourceClient";
 import { addError } from "../hooks/ErrorHook";
 
 const internalize = it => ({
@@ -16,7 +16,7 @@ const getRatings = id => {
     method: "GET"
   };
   return fetch(`${path}/${id}/ratings`, opts)
-    .then(responseValidation)
+    .then(ExtractJSON)
     .catch(e => addError(e.message));
 };
 
@@ -29,7 +29,7 @@ const postRatings = (eventCode, item) => {
     body: JSON.stringify(item)
   };
   return fetch(`${path}/${eventCode}/ratings`, opts)
-    .then(responseValidation)
+    .then(ExtractJSON)
     .catch(e => addError(e.message));
 };
 
@@ -38,7 +38,7 @@ const deleteRatings = (eventCode, personCode) => {
     method: "DELETE"
   };
   return fetch(`${path}/${eventCode}/ratings/${personCode}`, opts)
-    .then(responseValidation)
+    .then(ExtractJSON)
     .catch(e => addError(e.message));
 };
 

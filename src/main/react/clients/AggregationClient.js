@@ -1,4 +1,5 @@
 import { addError } from "../hooks/ErrorHook";
+import { ExtractJSON } from "../utils/ResourceClient";
 
 const path = "/api/aggregations";
 
@@ -7,14 +8,7 @@ export const totalPerClientByYear = year => {
     method: "GET"
   };
   return fetch(`${path}/total-per-client?year=${year}`, opts)
-    .then(res => {
-      if (res.status === 200) {
-        return res.json();
-      }
-      return res.text().then(message => {
-        throw new Error(message);
-      });
-    })
+    .then(ExtractJSON)
     .catch(e => addError(e.message));
 };
 export const totalPerPersonByYear = year => {
@@ -22,14 +16,7 @@ export const totalPerPersonByYear = year => {
     method: "GET"
   };
   return fetch(`${path}/total-per-person?year=${year}`, opts)
-    .then(res => {
-      if (res.status === 200) {
-        return res.json();
-      }
-      return res.text().then(message => {
-        throw new Error(message);
-      });
-    })
+    .then(ExtractJSON)
     .catch(e => addError(e.message));
 };
 export const totalPerPersonByYearMonth = (year, month) => {
@@ -37,14 +24,7 @@ export const totalPerPersonByYearMonth = (year, month) => {
     method: "GET"
   };
   return fetch(`${path}/total-per-person?year=${year}&month=${month}`, opts)
-    .then(res => {
-      if (res.status === 200) {
-        return res.json();
-      }
-      return res.text().then(message => {
-        throw new Error(message);
-      });
-    })
+    .then(ExtractJSON)
     .catch(e => addError(e.message));
 };
 
@@ -53,14 +33,7 @@ export const totalPerMonthByYear = year => {
     method: "GET"
   };
   return fetch(`${path}/total-per-month?year=${year}`, opts)
-    .then(res => {
-      if (res.status === 200) {
-        return res.json();
-      }
-      return res.text().then(message => {
-        throw new Error(message);
-      });
-    })
+    .then(ExtractJSON)
     .catch(e => addError(e.message));
 };
 

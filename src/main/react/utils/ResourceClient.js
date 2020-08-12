@@ -1,12 +1,12 @@
-export const responseValidation = res => {
+export const ExtractJSON = res => {
   if (res.ok) {
     if (res.status === 204) {
       return null;
     }
     return res.json();
   }
-  return res.text().then(text => {
-    throw new Error(text);
+  return res.text().then(message => {
+    throw new Error(message);
   });
 };
 
@@ -16,7 +16,7 @@ export function ResourceClient(path, internalize) {
       method: "GET"
     };
     return fetch(`${path}`, opts)
-      .then(responseValidation)
+      .then(ExtractJSON)
       .then(it => (internalize ? it.map(internalize) : it));
   };
 
@@ -25,7 +25,7 @@ export function ResourceClient(path, internalize) {
       method: "GET"
     };
     return fetch(`${path}/${id}`, opts)
-      .then(responseValidation)
+      .then(ExtractJSON)
       .then(it => (internalize ? internalize(it) : it));
   };
 
@@ -38,7 +38,7 @@ export function ResourceClient(path, internalize) {
       body: JSON.stringify(item)
     };
     return fetch(path, opts)
-      .then(responseValidation)
+      .then(ExtractJSON)
       .then(it => (internalize ? internalize(it) : it));
   };
 
@@ -51,7 +51,7 @@ export function ResourceClient(path, internalize) {
       body: JSON.stringify(item)
     };
     return fetch(`${path}/${id}`, opts)
-      .then(responseValidation)
+      .then(ExtractJSON)
       .then(it => (internalize ? internalize(it) : it));
   };
 
@@ -59,7 +59,7 @@ export function ResourceClient(path, internalize) {
     const opts = {
       method: "DELETE"
     };
-    return fetch(`${path}/${id}`, opts).then(responseValidation);
+    return fetch(`${path}/${id}`, opts).then(ExtractJSON);
   };
 
   return { all, get, post, put, delete: del };

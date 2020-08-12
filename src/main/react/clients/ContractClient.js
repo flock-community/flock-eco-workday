@@ -1,5 +1,5 @@
 import moment from "moment";
-import { ResourceClient } from "../utils/ResourceClient";
+import { ExtractJSON, ResourceClient } from "../utils/ResourceClient";
 import { PageableClient } from "../utils/PageableClient";
 import { addError } from "../hooks/ErrorHook";
 
@@ -45,20 +45,13 @@ export const findByCode = code => {
     method: "GET"
   };
   return fetch(`${path}/${code}`, opts)
-    .then(res => res.json())
+    .then(ExtractJSON)
     .catch(e => addError(e.message));
 };
 
 function findAllByPersonCode(personCode) {
   return fetch(`${path}?personCode=${personCode}`)
-    .then(res => {
-      if (res.status === 200) {
-        return res.json();
-      }
-      return res.text().then(message => {
-        throw new Error(message);
-      });
-    })
+    .then(ExtractJSON)
     .then(data => data.map(internalize))
     .catch(e => addError(e.message));
 }

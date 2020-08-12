@@ -1,4 +1,4 @@
-import { ResourceClient } from "../utils/ResourceClient";
+import { ExtractJSON, ResourceClient } from "../utils/ResourceClient";
 import { PageableClient } from "../utils/PageableClient";
 import { addError } from "../hooks/ErrorHook";
 
@@ -10,5 +10,9 @@ const pageableClient = PageableClient(path);
 export const PersonClient = {
   ...resourceClient,
   ...pageableClient,
-  me: () => resourceClient.get("me").catch(e => addError(e.message))
+  me: () =>
+    resourceClient
+      .get("me")
+      .then(ExtractJSON)
+      .catch(e => addError(e.message))
 };
