@@ -27,6 +27,8 @@ import { getTheme } from "../theme/theme";
 import { ExpenseFeature } from "../features/expense/ExpenseFeature";
 import { ExactonlineFeature } from "../features/exactonline/ExactonlineFeature";
 import { TodoFeature } from "../features/todo/TodoFeature";
+import { useError } from "../hooks/ErrorHook";
+import { ErrorStack } from "../components/error/ErrorBarStack";
 
 const useStyles = makeStyles(() => ({
   spinner: {
@@ -46,6 +48,7 @@ export const Application = () => {
 
   const status = useLoginStatus();
   const user = useUserMe();
+  const errors = useError();
   const [openDrawer, setOpenDrawer] = useState(false);
 
   useEffect(() => {
@@ -107,6 +110,7 @@ export const Application = () => {
             component={EventRatingFeature}
           />
         </Router>
+        <ErrorStack ErrorList={errors} />
       </ApplicationContext.Provider>
     </ThemeProvider>
   );

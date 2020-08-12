@@ -11,7 +11,9 @@ export const totalPerClientByYear = year => {
       if (res.status === 200) {
         return res.json();
       }
-      throw res.json();
+      return res.text().then(message => {
+        throw new Error(message);
+      });
     })
     .catch(e => addError(e.message));
 };
@@ -24,7 +26,9 @@ export const totalPerPersonByYear = year => {
       if (res.status === 200) {
         return res.json();
       }
-      throw res.json();
+      return res.text().then(message => {
+        throw new Error(message);
+      });
     })
     .catch(e => addError(e.message));
 };
@@ -37,7 +41,9 @@ export const totalPerPersonByYearMonth = (year, month) => {
       if (res.status === 200) {
         return res.json();
       }
-      throw res.json();
+      return res.text().then(message => {
+        throw new Error(message);
+      });
     })
     .catch(e => addError(e.message));
 };
@@ -51,7 +57,9 @@ export const totalPerMonthByYear = year => {
       if (res.status === 200) {
         return res.json();
       }
-      throw res.json();
+      return res.text().then(message => {
+        throw new Error(message);
+      });
     })
     .catch(e => addError(e.message));
 };

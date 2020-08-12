@@ -55,7 +55,9 @@ function findAllByPersonCode(personCode) {
       if (res.status === 200) {
         return res.json();
       }
-      throw res.json();
+      return res.text().then(message => {
+        throw new Error(message);
+      });
     })
     .then(data => data.map(internalize))
     .catch(e => addError(e.message));

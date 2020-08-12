@@ -2,9 +2,20 @@ import { useEffect, useState } from "react";
 
 let errorStore = [];
 const listeners = [];
+const ErrorOpenTimeMilliSeconds = 5000;
 
 export function addError(error) {
-  errorStore = [...errorStore, error];
+  console.log(`An error has occurred: ${error}`);
+  const errorObject = {
+    message: error,
+    time: Date.now(),
+    open: true,
+    onClose: {}
+  };
+  setTimeout(() => {
+    errorObject.open = false;
+  }, ErrorOpenTimeMilliSeconds);
+  errorStore = [...errorStore, errorObject];
   listeners.forEach(func => func(errorStore));
 }
 
@@ -23,5 +34,5 @@ export function useError() {
     };
   }, []);
 
-  return [state, addError];
+  return state;
 }
