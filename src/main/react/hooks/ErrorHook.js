@@ -9,14 +9,15 @@ export function addError(error) {
   const errorObject = {
     message: error,
     time: Date.now(),
-    open: true,
-    onClose: {}
+    open: true
   };
-  setTimeout(() => {
-    errorObject.open = false;
-  }, ErrorOpenTimeMilliSeconds);
   errorStore = [...errorStore, errorObject];
   listeners.forEach(func => func(errorStore));
+  setTimeout(() => {
+    errorObject.open = false;
+    errorStore = errorStore.map(it => (it === errorObject ? errorObject : it));
+    listeners.forEach(func => func(errorStore));
+  }, ErrorOpenTimeMilliSeconds);
 }
 
 export function useError() {

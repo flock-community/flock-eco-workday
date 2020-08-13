@@ -23,6 +23,7 @@ const post = (type, item) => {
     body: JSON.stringify(item)
   };
   return fetch(`/api/contracts-${type.toLowerCase()}`, opts)
+    .then(ExtractJSON)
     .then(internalize)
     .catch(e => addError(e.message));
 };
@@ -35,9 +36,9 @@ const put = (id, type, item) => {
     },
     body: JSON.stringify(item)
   };
-  return fetch(`/api/contracts-${type.toLowerCase()}/${id}`, opts)
-    .then(internalize)
-    .catch(e => addError(e.message));
+  return fetch(`/api/contracts-${type.toLowerCase()}/${id}`, opts).then(
+    internalize
+  );
 };
 
 export const findByCode = code => {

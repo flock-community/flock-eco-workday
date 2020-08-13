@@ -1,3 +1,5 @@
+import { addError } from "../hooks/ErrorHook";
+
 export const ExtractJSON = res => {
   if (res.ok) {
     if (res.status === 204) {
@@ -17,7 +19,8 @@ export function ResourceClient(path, internalize) {
     };
     return fetch(`${path}`, opts)
       .then(ExtractJSON)
-      .then(it => (internalize ? it.map(internalize) : it));
+      .then(it => (internalize ? it.map(internalize) : it))
+      .catch(e => addError(e.message));
   };
 
   const get = id => {
@@ -26,7 +29,8 @@ export function ResourceClient(path, internalize) {
     };
     return fetch(`${path}/${id}`, opts)
       .then(ExtractJSON)
-      .then(it => (internalize ? internalize(it) : it));
+      .then(it => (internalize ? internalize(it) : it))
+      .catch(e => addError(e.message));
   };
 
   const post = item => {
@@ -39,7 +43,8 @@ export function ResourceClient(path, internalize) {
     };
     return fetch(path, opts)
       .then(ExtractJSON)
-      .then(it => (internalize ? internalize(it) : it));
+      .then(it => (internalize ? internalize(it) : it))
+      .catch(e => addError(e.message));
   };
 
   const put = (id, item) => {
@@ -52,14 +57,17 @@ export function ResourceClient(path, internalize) {
     };
     return fetch(`${path}/${id}`, opts)
       .then(ExtractJSON)
-      .then(it => (internalize ? internalize(it) : it));
+      .then(it => (internalize ? internalize(it) : it))
+      .catch(e => addError(e.message));
   };
 
   const del = id => {
     const opts = {
       method: "DELETE"
     };
-    return fetch(`${path}/${id}`, opts).then(ExtractJSON);
+    return fetch(`${path}/${id}`, opts)
+      .then(ExtractJSON)
+      .catch(e => addError(e.message));
   };
 
   return { all, get, post, put, delete: del };

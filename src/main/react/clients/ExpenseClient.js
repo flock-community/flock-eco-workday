@@ -26,6 +26,7 @@ const post = (type, item) => {
     body: JSON.stringify(item)
   };
   return fetch(`/api/expenses-${type.toLowerCase()}`, opts)
+    .then(ExtractJSON)
     .then(internalize)
     .catch(e => addError(e.message));
 };
@@ -39,6 +40,7 @@ const put = (id, type, item) => {
     body: JSON.stringify(item)
   };
   return fetch(`/api/expenses-${type.toLowerCase()}/${id}`, opts)
+    .then(ExtractJSON)
     .then(internalize)
     .catch(e => addError(e.message));
 };
