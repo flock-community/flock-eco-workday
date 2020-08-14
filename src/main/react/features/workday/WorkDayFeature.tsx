@@ -63,8 +63,7 @@ export function WorkDayFeature() {
       assignmentCode: it.assignment.code,
       days: it.days.length > 0 ? it.days : null
     })
-      .then(() => setRefresh(!refresh))
-      .catch(err => console.log(err));
+      .then(() => setRefresh(!refresh));
   }
 
   return (

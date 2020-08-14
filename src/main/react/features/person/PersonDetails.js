@@ -58,14 +58,12 @@ export const PersonDetails = props => {
   };
 
   const handleDelete = () => {
-    PersonService.delete(person.code)
-      .then(() => {
-        handleDelDialog();
-        // remove link to person from linkList after deleting the person
-        setLinkList(linkList.filter(link => link.url !== url));
-        history.push("/person");
-      })
-      .catch(err => console.log(err));
+    PersonService.delete(person.code).then(() => {
+      handleDelDialog();
+      // remove link to person from linkList after deleting the person
+      setLinkList(linkList.filter(link => link.url !== url));
+      history.push("/person");
+    });
   };
 
   return (

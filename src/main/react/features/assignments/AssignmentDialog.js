@@ -7,7 +7,6 @@ import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
-import Snackbar from "@material-ui/core/Snackbar";
 import { HTML5_FMT } from "moment";
 import { AssignmentClient } from "../../clients/AssignmentClient";
 import { isDefined } from "../../utils/validation";
@@ -22,7 +21,6 @@ export function AssignmentDialog(props) {
   const classes = useStyles(); // eslint-disable-line
 
   const [state, setState] = useState(null);
-  const [message, setMessage] = useState(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const [person] = usePerson();
@@ -43,13 +41,9 @@ export function AssignmentDialog(props) {
       personCode: person.code
     };
     if (code) {
-      AssignmentClient.put(code, body)
-        .then(() => onClose && onClose())
-        .catch(err => setMessage(err.message));
+      AssignmentClient.put(code, body).then(() => onClose && onClose());
     } else {
-      AssignmentClient.post(body)
-        .then(() => onClose && onClose())
-        .catch(err => setMessage(err.message));
+      AssignmentClient.post(body).then(() => onClose && onClose());
     }
   };
 
@@ -57,15 +51,11 @@ export function AssignmentDialog(props) {
   const handelDeleteClose = () => setDeleteOpen(false);
 
   const handleDelete = () => {
-    AssignmentClient.delete(code)
-      .then(() => {
-        handelDeleteClose();
-        if (isDefined(onClose)) onClose();
-      })
-      .catch(err => setMessage(err.message));
+    AssignmentClient.delete(code).then(() => {
+      handelDeleteClose();
+      if (isDefined(onClose)) onClose();
+    });
   };
-
-  const handelMessageClose = () => setMessage(null);
 
   return (
     <>
@@ -97,12 +87,6 @@ export function AssignmentDialog(props) {
           &apos;
         </Typography>
       </ConfirmDialog>
-      <Snackbar
-        open={!!message}
-        autoHideDuration={5000}
-        onClose={handelMessageClose}
-        message={message}
-      />
     </>
   );
 }
