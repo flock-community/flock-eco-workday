@@ -57,18 +57,19 @@ export function ExpenseList({ personCode, refresh, onClickRow }) {
             subheader={`Date: ${item.date.format("DD-MM-YYYY")}`}
           />
           <List>
-            {item.files.map(file => (
-              <ListItem
-                key={file.file}
-                button
-                component="a"
-                target="_blank"
-                href={`/api/expenses/files/${file.file}/${file.name}`}
-                onClick={event => event.stopPropagation()}
-              >
-                <ListItemText primary={file.name} />
-              </ListItem>
-            ))}
+            {item.files &&
+              item.files.map(file => (
+                <ListItem
+                  key={file.file}
+                  button
+                  component="a"
+                  target="_blank"
+                  href={`/api/expenses/files/${file.file}/${file.name}`}
+                  onClick={event => event.stopPropagation()}
+                >
+                  <ListItemText primary={file.name} />
+                </ListItem>
+              ))}
           </List>
         </Card>
       </Grid>
