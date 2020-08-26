@@ -31,11 +31,7 @@ export function WorkDayFeature() {
   const { authorities } = useContext(ApplicationContext);
 
   function isSuperUser() {
-    if (authorities !== null)
-      // @ts-ignore
-      // not sure why typescript thinks this can be null -.-
-      return authorities.includes("WorkDayAuthority.ADMIN");
-    return false;
+    return authorities && authorities.includes("WorkDayAuthority.ADMIN");
   }
 
   function handleCompleteDialog() {
@@ -96,7 +92,10 @@ export function WorkDayFeature() {
         code={value && value.code}
         onComplete={handleCompleteDialog}
       />
-      <AddActionFab color="primary" onClick={handleClickAdd} />
+      {
+        //@ts-ignore
+        <AddActionFab color="primary" onClick={handleClickAdd} />
+      }
     </Container>
   );
 }
