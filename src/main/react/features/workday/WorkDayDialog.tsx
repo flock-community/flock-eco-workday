@@ -22,9 +22,9 @@ const useStyles = makeStyles(() => ({
 
 export function WorkDayDialog({ open, code, onComplete }) {
   const classes = useStyles();
-  const [openDelete, setOpenDelete] = useState(false);
+  const [openDelete, setOpenDelete] = useState<boolean>(false);
 
-  const [state, setState] = useState(null);
+  const [state, setState] = useState<any>(null);
 
   useEffect(() => {
     if (open) {
@@ -93,7 +93,9 @@ export function WorkDayDialog({ open, code, onComplete }) {
         fullScreen
         open={open}
         onClose={handleClose}
+        // @ts-ignore
         TransitionComponent={TransitionSlider}
+        // @ts-ignore
         TransitionProps={{ direction: "right" }}
       >
         <DialogHeader
@@ -132,9 +134,3 @@ export function WorkDayDialog({ open, code, onComplete }) {
     </>
   );
 }
-
-WorkDayDialog.propTypes = {
-  open: PropTypes.bool,
-  code: PropTypes.string,
-  onComplete: PropTypes.func
-};

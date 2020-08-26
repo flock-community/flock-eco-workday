@@ -31,7 +31,11 @@ export function WorkDayFeature() {
   const { authorities } = useContext(ApplicationContext);
 
   function isSuperUser() {
-    return authorities && authorities.includes("WorkDayAuthority.ADMIN");
+    if (authorities !== null)
+      // @ts-ignore
+      // not sure why typescript thinks this can be null -.-
+      return authorities.includes("WorkDayAuthority.ADMIN");
+    return false;
   }
 
   function handleCompleteDialog() {
@@ -62,8 +66,7 @@ export function WorkDayFeature() {
       status,
       assignmentCode: it.assignment.code,
       days: it.days.length > 0 ? it.days : null
-    })
-      .then(() => setRefresh(!refresh));
+    }).then(() => setRefresh(!refresh));
   }
 
   return (
@@ -71,6 +74,7 @@ export function WorkDayFeature() {
       <Grid container spacing={1}>
         <Grid item xs={12}>
           {isSuperUser() && (
+            // @ts-ignore
             <PersonSelector
               value={person && person.code}
               onChange={handlePersonChange}
@@ -88,13 +92,11 @@ export function WorkDayFeature() {
       </Grid>
       <WorkDayDialog
         open={open}
+        // @ts-ignore
         code={value && value.code}
-        value={value}
         onComplete={handleCompleteDialog}
       />
       <AddActionFab color="primary" onClick={handleClickAdd} />
     </Container>
   );
 }
-
-WorkDayFeature.propTypes = {};
