@@ -24,13 +24,13 @@ const calcDays = (from, to, days) => {
   return diff < 0
     ? {}
     : [...Array(diff + 1).keys()]
-        .map(it => ({ index: it, date: moment(from).add(it, "days") }))
-        .reduce((acc, cur) => {
-          const key = stringifyDate(cur.date);
-          if (days && days[cur.index] != null) {
-            acc[key] = days[cur.index];
+        .map(it => moment(from).add(it, "days"))
+        .reduce((acc, cur, index) => {
+          const key = stringifyDate(cur);
+          if (days && days[index] != null) {
+            acc[key] = days[index];
           } else {
-            acc[key] = inWeekday(cur.date) ? 8 : 0;
+            acc[key] = inWeekday(cur) ? 8 : 0;
           }
           return acc;
         }, {});
