@@ -46,7 +46,7 @@ export const schema = Yup.object().shape({
 export function WorkDayForm({ value, onSubmit }) {
   const [person] = usePerson();
 
-  const [daysSwitch, setDaysSwitch] = useState(false);
+  const [daysSwitch, setDaysSwitch] = useState(!value.days);
 
   useEffect(() => {
     if (value && value.days) {
