@@ -19,9 +19,9 @@ data class EventForm(
     @JsonSerialize(using = LocalDateSerializer::class)
     override val to: LocalDate,
 
-    override val hours: Int,
+    override val hours: Double,
 
-    override val days: List<Int>,
+    override val days: List<Double>,
 
     val personCodes: List<String>
 

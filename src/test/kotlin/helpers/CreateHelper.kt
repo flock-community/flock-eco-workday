@@ -109,8 +109,8 @@ class CreateHelper(
         from = from,
         to = to,
         personCode = person.code,
-        hours = 40,
-        days = listOf(8, 8, 8, 8, 8)
+        hours = 40.0,
+        days = listOf(8.0, 8.0, 8.0, 8.0, 8.0)
     ).run {
         sickDayService.create(this)
     } ?: error("Cannot create sick day contract")
@@ -119,14 +119,14 @@ class CreateHelper(
         assignment: Assignment,
         from: LocalDate,
         to: LocalDate,
-        hours: Int = 40,
-        days: List<Int>? = null
+        hours: Double = 40.0,
+        days: List<Double>? = null
     ) = WorkDayForm(
         from = from,
         to = to,
         assignmentCode = assignment.code,
         hours = hours,
-        days = days ?: listOf(8, 8, 8, 8, 8),
+        days = days ?: listOf(8.0, 8.0, 8.0, 8.0, 8.0),
         sheets = listOf()
     ).run {
         workDayService.create(this)
@@ -137,8 +137,8 @@ class CreateHelper(
         from = from,
         to = to,
         personCode = person.code,
-        hours = 40,
-        days = listOf(8, 8, 8, 8, 8)
+        hours = 40.0,
+        days = listOf(8.0, 8.0, 8.0, 8.0, 8.0)
     ).run {
         holiDayService.create(this)
     } ?: error("Cannot create sick day contract")

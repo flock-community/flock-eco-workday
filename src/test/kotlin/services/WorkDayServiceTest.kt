@@ -49,24 +49,24 @@ class WorkDayServiceTest {
             from = from,
             to = to,
             assignmentCode = assignment.code,
-            hours = 50,
+            hours = 50.0,
             sheets = listOf()
         )
 
         val created = workDayService.create(createForm)
         assertNotNull(created.id)
-        assertEquals(50, created.hours)
+        assertEquals(50.0, created.hours)
 
         val updateForm = WorkDayForm(
             from = from,
             to = to,
             assignmentCode = assignment.code,
-            hours = 25,
+            hours = 25.0,
             sheets = listOf()
         )
         val updated = workDayService.update(created.code, updateForm)
         assertNotNull(updated.id)
-        assertEquals(25, updated.hours)
+        assertEquals(25.0, updated.hours)
         assertEquals(created.code, updated.code)
 
         assertNotNull(workDayService.findByCode(created.code))

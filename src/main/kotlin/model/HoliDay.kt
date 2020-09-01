@@ -26,9 +26,9 @@ class HoliDay(
     override val from: LocalDate = LocalDate.now(),
     override val to: LocalDate = LocalDate.now(),
 
-    override val hours: Int,
+    override val hours: Double,
 
-    override val days: List<Int>? = null,
+    override val days: List<Double>? = null,
 
     val description: String,
 

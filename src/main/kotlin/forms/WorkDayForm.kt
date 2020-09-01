@@ -20,8 +20,8 @@ data class WorkDayForm(
     @JsonSerialize(using = LocalDateSerializer::class)
     override val to: LocalDate,
 
-    override val hours: Int,
-    override val days: List<Int>? = null,
+    override val hours: Double,
+    override val days: List<Double>? = null,
     override val status: Status = Status.REQUESTED,
 
     val assignmentCode: String,

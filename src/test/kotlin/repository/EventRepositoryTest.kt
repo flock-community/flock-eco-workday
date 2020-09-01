@@ -38,8 +38,8 @@ class EventRepositoryTest {
             description = "Nieuwjaarsdag",
             from = LocalDate.now(),
             to = LocalDate.now().plusDays(5),
-            hours = 40,
-            days = listOf(8, 8, 8, 8, 8),
+            hours = 40.0,
+            days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
             persons = listOf(person1, person2)
         )
 

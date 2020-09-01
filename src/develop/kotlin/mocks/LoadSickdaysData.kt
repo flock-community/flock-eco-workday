@@ -26,16 +26,16 @@ class LoadSickdaysData(
             SickDayForm(
                 from = now.plusDays(random),
                 to = now.plusDays(random + 5),
-                days = listOf(8, 8, 8, 8, 8, 8),
-                hours = 48,
+                days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
+                hours = 48.0,
                 personCode = it.code
             ).create()
 
             SickDayForm(
                 from = now.plusDays(random + 100),
                 to = now.plusDays(random + 105),
-                days = listOf(8, 8, 8, 8, 8, 8),
-                hours = 48,
+                days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
+                hours = 48.0,
                 personCode = it.code
             ).run {
                 service.create(this)

@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1591270336647-1
+      author: michieldoorn (generated)
+      changes:
+        - modifyDataType:
+            tableName: day
+            columnName: hours
+            newDataType: DOUBLE
+        - modifyDataType:
+            tableName: day_days
+            columnName: days
+            newDataType: DOUBLE

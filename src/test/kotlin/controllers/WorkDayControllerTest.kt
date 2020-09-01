@@ -66,7 +66,7 @@ class WorkDayControllerTest {
             from = from,
             to = to,
             assignmentCode = assignment.code,
-            hours = 50,
+            hours = 50.0,
             sheets = listOf()
         )
 
@@ -94,7 +94,7 @@ class WorkDayControllerTest {
             from = from,
             to = to,
             assignmentCode = assignment.code,
-            hours = 50,
+            hours = 50.0,
             sheets = listOf()
         )
 
@@ -125,7 +125,7 @@ class WorkDayControllerTest {
             from = from,
             to = to,
             assignmentCode = assignment.code,
-            hours = 50,
+            hours = 50.0,
             sheets = listOf()
         )
 
@@ -160,7 +160,7 @@ class WorkDayControllerTest {
             from = from,
             to = to,
             assignmentCode = assignment.code,
-            hours = 50,
+            hours = 50.0,
             sheets = listOf()
         )
 
@@ -197,7 +197,7 @@ class WorkDayControllerTest {
             from = from,
             to = to,
             assignmentCode = assignment.code,
-            hours = 50,
+            hours = 50.0,
             sheets = listOf()
         )
 

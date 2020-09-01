@@ -71,10 +71,10 @@ class HoliDayRepositoryTest {
                 createAndPersist(HoliDay(
                     description = "",
                     status = Status.REQUESTED,
-                    hours = 42,
+                    hours = 42.0,
                     from = dayFromLocalDate(),
                     to = dayFromLocalDate(1),
-                    days = listOf(8),
+                    days = listOf(8.0),
                     person = person
                 ))
             )

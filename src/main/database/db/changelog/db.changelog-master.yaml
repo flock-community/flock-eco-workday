@@ -7,3 +7,6 @@ databaseChangeLog:
   - include:
     - file: db.changelog-002-expenses.yaml
       relativeToChangelogFile: true
+  - include:
+    - file: db.changelog-003-float-hours.yaml
+      relativeToChangelogFile: true
