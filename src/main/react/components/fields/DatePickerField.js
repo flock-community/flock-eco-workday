@@ -3,7 +3,7 @@ import React from "react";
 import { DatePicker } from "@material-ui/pickers";
 import PropTypes from "prop-types";
 
-export function DatePickerField({ name, onChange, ...props }) {
+export function DatePickerField({ name, ...props }) {
   return (
     <Field id={name} name={name}>
       {({ field: { value }, form: { setFieldValue } }) => (
@@ -18,6 +18,5 @@ export function DatePickerField({ name, onChange, ...props }) {
 }
 
 DatePickerField.propTypes = {
-  name: PropTypes.string,
-  onChange: PropTypes.func
+  name: PropTypes.string
 };

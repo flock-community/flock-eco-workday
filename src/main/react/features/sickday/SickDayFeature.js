@@ -6,7 +6,7 @@ import { Container } from "@material-ui/core";
 import { SickDayDialog } from "./SickDayDialog";
 import { SickDayList } from "./SickDayList";
 import { PersonSelector } from "../../components/selector";
-import { ApplicationContext } from "../../application/ApplicationContext";
+import { ApplicationContext } from "../../application/ApplicationContext.ts";
 import { AddActionFab } from "../../components/FabButtons";
 import { usePerson } from "../../hooks/PersonHook";
 import { SickDayClient } from "../../clients/SickDayClient";

@@ -9,7 +9,7 @@ import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/
 import { HolidayFeature } from "../features/holiday/HolidayFeature";
 import { ApplicationLayout } from "./ApplicationLayout";
 import { ApplicationDrawer } from "./ApplicationDrawer";
-import { ApplicationContext } from "./ApplicationContext";
+import { ApplicationContext } from "./ApplicationContext.ts";
 import { HomeFeature } from "../features/home/HomeFeature";
 import { ClientFeature } from "../features/client/ClientFeature";
 import { AssignmentFeature } from "../features/assignments/AssignmentFeature";

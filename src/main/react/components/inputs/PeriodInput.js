@@ -25,12 +25,12 @@ const calcDays = (from, to, days) => {
     ? {}
     : [...Array(diff + 1).keys()]
         .map(it => moment(from).add(it, "days"))
-        .reduce((acc, cur) => {
+        .reduce((acc, cur, index) => {
           const key = stringifyDate(cur);
-          if (days && days[key] != null) {
-            acc[key] = days[key];
+          if (days && days[index] != null) {
+            acc[key] = days[index];
           } else {
-            acc[key] = inWeekday(cur) ? "8" : "0";
+            acc[key] = inWeekday(cur) ? 8 : 0;
           }
           return acc;
         }, {});
@@ -93,8 +93,8 @@ export function PeriodInput({ value, onChange }) {
   );
 
   useEffect(() => {
-    if (value) {
-      const days = calcDays(from, to, state);
+    if (value && value.days) {
+      const days = calcDays(from, to, value.days);
       setState(days);
       if (onChange) onChange(Object.keys(days).map(key => days[key]));
     }
