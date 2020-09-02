@@ -159,7 +159,7 @@ private fun Expense.applyAuthentication(authentication: Authentication) = apply 
 }
 
 private fun getMediaType(name: String): MediaType {
-    val extension = java.io.File(name).extension
+    val extension = java.io.File(name).extension.toLowerCase()
     val mime = org.springframework.boot.web.server.MimeMappings.DEFAULT.get(extension)
     return MediaType.parseMediaType(mime)
 }
