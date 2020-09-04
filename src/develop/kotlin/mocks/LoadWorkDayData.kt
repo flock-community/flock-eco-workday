@@ -5,9 +5,8 @@ import community.flock.eco.workday.forms.WorkDaySheetForm
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.WorkDayService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import java.time.LocalDate
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 import java.util.UUID
 
 @Component
@@ -40,9 +39,9 @@ class LoadWorkDayData(
                     .map {
                         WorkDayForm(
                             from = now.withMonth(it).withDayOfMonth(1),
-                            to = now.withMonth(it).withDayOfMonth(1).plusDays(9),
-                            hours = 80,
-                            days = listOf(8, 8, 8, 8, 8, 8, 8, 8, 8, 8),
+                            to = now.withMonth(it).withDayOfMonth(1).plusMonths(1).minusDays(1),
+                            hours = now.withMonth(it).lengthOfMonth() * 8,
+                            days = List(now.withMonth(it).lengthOfMonth()) { 8 },
                             assignmentCode = assignment.code,
                             sheets = listOf(
                                 WorkDaySheetForm(
