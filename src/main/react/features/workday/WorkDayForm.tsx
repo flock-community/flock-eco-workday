@@ -123,6 +123,8 @@ export function WorkDayForm({ value, onSubmit }) {
               name="assignmentCode"
               label="Assignment"
               personCode={person.code}
+              from={value && value.from}
+              to={value && value.to}
             />
           </Grid>
           {value && (

@@ -10,6 +10,8 @@ export function AssignmentSelector({
   onChange,
   label,
   error,
+  from,
+  to,
   ...props
 }) {
   const [items, setItems] = useState([]);
@@ -41,6 +43,10 @@ export function AssignmentSelector({
     );
   }
 
+  function AssignmentInPeriod(assignment) {
+    return assignment.from.isBefore(to) && assignment.to.isAfter(from);
+  }
+
   return (
     <FormControl {...props} error={!!error}>
       <InputLabel shrink>{label}</InputLabel>
@@ -48,7 +54,7 @@ export function AssignmentSelector({
         <MenuItem value="">
           <em>None</em>
         </MenuItem>
-        {items.map(renderMenuItem)}
+        {items.filter(AssignmentInPeriod).map(renderMenuItem)}
       </Select>
       {error && <FormHelperText>{error}</FormHelperText>}
     </FormControl>
