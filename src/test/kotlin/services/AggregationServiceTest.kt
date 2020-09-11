@@ -99,8 +99,8 @@ class AggregationServiceTest {
         val hours = workDay.totalHoursInPeriod(period)
         val revenue = workDay.totalRevenueInPeriod(period)
 
-        assertEquals(152.toBigDecimal(), hours)
-        assertEquals(12160.0.toBigDecimal(), revenue)
+        assertEquals(152.0.toBigDecimal(), hours)
+        assertEquals(12160.0.toBigDecimal().setScale(2), revenue)
     }
 
     @Test
@@ -120,8 +120,8 @@ class AggregationServiceTest {
         val hours = workDay.totalHoursInPeriod(period)
         val revenue = workDay.totalRevenueInPeriod(period)
 
-        assertEquals(64.toBigDecimal(), hours)
-        assertEquals(5120.0.toBigDecimal(), revenue)
+        assertEquals(64.0.toBigDecimal(), hours)
+        assertEquals(5120.0.toBigDecimal().setScale(2), revenue)
     }
 
     @Test
