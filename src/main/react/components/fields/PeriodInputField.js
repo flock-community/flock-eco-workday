@@ -10,7 +10,7 @@ export function PeriodInputField({ name, ...props }) {
         const val = {
           from: values.from,
           to: values.to,
-          days: value
+          days: value || []
         };
         return (
           <PeriodInput

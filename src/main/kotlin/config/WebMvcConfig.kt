@@ -13,7 +13,6 @@ class WebMvcConfig : WebMvcConfigurer {
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/**")
             .addResourceLocations("classpath:/static/")
-            .setCachePeriod(3600)
             .resourceChain(true)
             .addResolver(object : PathResourceResolver() {
                 @Throws(IOException::class)
