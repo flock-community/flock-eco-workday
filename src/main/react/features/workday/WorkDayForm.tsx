@@ -35,8 +35,8 @@ export const schema = Yup.object().shape({
   to: Yup.date()
     .required("To date is required")
     .default(now),
-  days: Yup.array().default([8]),
-  hours: Yup.number(),
+  days: Yup.array().default([8]).nullable(),
+  hours: Yup.number().default('0'),
   sheets: Yup.array().default([])
 });
 
@@ -162,7 +162,7 @@ export function WorkDayForm({ value, onSubmit }) {
   return value ? (
     <Formik
       enableReinitialize
-      initialValues={value || schema.cast()}
+      initialValues={value || schema.default()}
       onSubmit={handleSubmit}
       validationSchema={schema}
       render={renderForm}
