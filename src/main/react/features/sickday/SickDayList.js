@@ -15,7 +15,11 @@ export function SickDayList({
   const [list, setList] = useState([]);
 
   useEffect(() => {
-    SickDayClient.findAllByPersonCode(personCode).then(res => setList(res));
+    if (personCode) {
+      SickDayClient.findAllByPersonCode(personCode).then(res => setList(res));
+    } else {
+      setList([]);
+    }
   }, [personCode, refresh]);
 
   function renderItem(item, key) {

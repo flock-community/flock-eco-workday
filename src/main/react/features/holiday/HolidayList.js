@@ -19,6 +19,8 @@ export function HolidayList({
   useEffect(() => {
     if (personCode) {
       HolidayClient.findAllByPersonCode(personCode).then(res => setList(res));
+    } else {
+      setList([]);
     }
   }, [personCode, refresh, update]);
 
