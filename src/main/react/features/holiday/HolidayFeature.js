@@ -7,7 +7,7 @@ import { HolidayDialog } from "./HolidayDialog";
 import { HolidayList } from "./HolidayList";
 import { PersonSelector } from "../../components/selector";
 import { AddActionFab } from "../../components/FabButtons";
-import { usePerson } from "../../hooks/PersonHook";
+import { usePerson } from "../../hooks/PersonHook.ts";
 import { HolidayClient } from "../../clients/HolidayClient";
 
 const useStyles = makeStyles({

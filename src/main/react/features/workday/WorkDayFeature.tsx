@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, {useContext, useEffect, useState} from "react"
 
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -10,6 +10,7 @@ import { ApplicationContext } from "../../application/ApplicationContext";
 import { AddActionFab } from "../../components/FabButtons";
 import { usePerson } from "../../hooks/PersonHook";
 import { WorkDayClient } from "../../clients/WorkDayClient";
+import {addError} from "../../hooks/ErrorHook"
 
 const useStyles = makeStyles({
   root: {
@@ -41,8 +42,12 @@ export function WorkDayFeature() {
   }
 
   function handleClickAdd() {
-    setValue(null);
-    setOpen(true);
+    if(person === null){
+      addError("No person selected")
+    }else{
+      setValue(null);
+      setOpen(true);
+    }
   }
 
   function handleClickRow(e, item) {
@@ -51,7 +56,7 @@ export function WorkDayFeature() {
   }
 
   function handlePersonChange(it) {
-    setPerson(it);
+    setPerson(it ? it : null);
   }
 
   function handleStatusChange(status, it) {

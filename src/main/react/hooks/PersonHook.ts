@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { PersonClient } from "../clients/PersonClient";
+import {Person, PersonClient} from "../clients/PersonClient"
 import { useLoginStatus } from "./StatusHook";
 
-let store = null;
-const listeners = [];
+let store:Person | null = null;
+const listeners: ((person:Person|null) => void)[] =  [];
 
-function update(it) {
+function update(it:Person|null) {
   store = it;
   listeners.forEach(func => func(it));
 }
 
-export function usePerson() {
+export function usePerson(): [Person|null, (personCode:string) => void] {
   const status = useLoginStatus();
   const location = useLocation();
 
@@ -35,8 +35,13 @@ export function usePerson() {
     };
   }, [status, location]);
 
-  const handlePerson = personCode => {
-    PersonClient.get(personCode).then(update);
+  const handlePerson:(personCode:string|null) => void = (personCode) => {
+    if(personCode !== null){
+      PersonClient.get(personCode).then(update);
+    }else{
+      update(null)
+    }
+
   };
 
   return [state, handlePerson];

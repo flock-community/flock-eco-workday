@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { PersonSelector } from "../../components/selector";
 import { ContractList } from "./ContractList";
 import { AddActionFab } from "../../components/FabButtons";
-import { usePerson } from "../../hooks/PersonHook";
+import { usePerson } from "../../hooks/PersonHook.ts";
 import { ContractDialog } from "./ContractDialog";
 
 const useStyles = makeStyles({

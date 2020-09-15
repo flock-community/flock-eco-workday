@@ -12,8 +12,8 @@ export const ExtractJSON = res => {
   });
 };
 
-export function ResourceClient(path, internalize) {
-  const all = () => {
+export function ResourceClient<ID, T>(path:string, internalize?: ((input: T) => T)) {
+  const all: () => Promise<T[]> = () => {
     const opts = {
       method: "GET"
     };
@@ -23,7 +23,7 @@ export function ResourceClient(path, internalize) {
       .catch(e => addError(e.message));
   };
 
-  const get = id => {
+  const get: (id:ID) => Promise<T> = id => {
     const opts = {
       method: "GET"
     };
@@ -33,7 +33,7 @@ export function ResourceClient(path, internalize) {
       .catch(e => addError(e.message));
   };
 
-  const post = item => {
+  const post: (item:T) => Promise<T> = item => {
     const opts = {
       method: "POST",
       headers: {
@@ -47,7 +47,7 @@ export function ResourceClient(path, internalize) {
       .catch(e => addError(e.message));
   };
 
-  const put = (id, item) => {
+  const put: (id: ID, item:T) => Promise<T> = (id, item) => {
     const opts = {
       method: "PUT",
       headers: {
@@ -61,7 +61,7 @@ export function ResourceClient(path, internalize) {
       .catch(e => addError(e.message));
   };
 
-  const del = id => {
+  const del: (id:ID) => Promise<void> = id => {
     const opts = {
       method: "DELETE"
     };

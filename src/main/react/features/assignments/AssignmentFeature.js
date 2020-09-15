@@ -6,7 +6,7 @@ import { PersonSelector } from "../../components/selector";
 import { AssignmentList } from "./AssignmentList";
 import { AddActionFab } from "../../components/FabButtons";
 import { AssignmentDialog } from "./AssignmentDialog";
-import { usePerson } from "../../hooks/PersonHook";
+import { usePerson } from "../../hooks/PersonHook.ts";
 
 const useStyles = makeStyles({
   root: {

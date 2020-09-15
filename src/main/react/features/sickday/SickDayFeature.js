@@ -8,7 +8,7 @@ import { SickDayList } from "./SickDayList";
 import { PersonSelector } from "../../components/selector";
 import { ApplicationContext } from "../../application/ApplicationContext.ts";
 import { AddActionFab } from "../../components/FabButtons";
-import { usePerson } from "../../hooks/PersonHook";
+import { usePerson } from "../../hooks/PersonHook.ts";
 import { SickDayClient } from "../../clients/SickDayClient";
 
 const useStyles = makeStyles({
