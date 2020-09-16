@@ -1,4 +1,4 @@
-import { ResourceClient } from "../utils/ResourceClient";
+import { ResourceClient } from "../utils/ResourceClient.ts";
 
 const path = "/api/exactonline";
 const resourceClient = ResourceClient(path);

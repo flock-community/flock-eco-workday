@@ -16,6 +16,7 @@ export function AssignmentSelector({
 }) {
   const [items, setItems] = useState([]);
   const [state, setState] = useState(value);
+  const [assignments, setAssignments] = useState([]);
 
   useEffect(() => {
     AssignmentClient.findAllByPersonCode(personCode).then(res => setItems(res));
@@ -24,6 +25,14 @@ export function AssignmentSelector({
   useEffect(() => {
     setState(value);
   }, [value]);
+
+  function AssignmentInPeriod(assignment) {
+    return assignment.from.isBefore(to) && assignment.to.isAfter(from);
+  }
+
+  useEffect(() => {
+    setAssignments(items.filter(AssignmentInPeriod));
+  }, [from, to, items]);
 
   function handleChange(event) {
     // eslint-disable-next-line no-shadow
@@ -43,10 +52,6 @@ export function AssignmentSelector({
     );
   }
 
-  function AssignmentInPeriod(assignment) {
-    return assignment.from.isBefore(to) && assignment.to.isAfter(from);
-  }
-
   return (
     <FormControl {...props} error={!!error}>
       <InputLabel shrink>{label}</InputLabel>
@@ -54,7 +59,7 @@ export function AssignmentSelector({
         <MenuItem value="">
           <em>None</em>
         </MenuItem>
-        {items.filter(AssignmentInPeriod).map(renderMenuItem)}
+        {assignments.map(renderMenuItem)}
       </Select>
       {error && <FormHelperText>{error}</FormHelperText>}
     </FormControl>

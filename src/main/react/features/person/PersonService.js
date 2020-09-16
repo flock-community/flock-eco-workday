@@ -1,5 +1,5 @@
-import { ResourceClient } from "../../utils/ResourceClient";
-import { PageableClient } from "../../utils/PageableClient";
+import { ResourceClient } from "../../utils/ResourceClient.ts";
+import { PageableClient } from "../../utils/PageableClient.ts";
 
 const path = "/api/persons";
 const resourceClient = ResourceClient(path);

@@ -1,5 +1,5 @@
 import { addError } from "../hooks/ErrorHook";
-import { ExtractJSON } from "../utils/ResourceClient";
+import { ExtractJSON } from "../utils/ResourceClient.ts";
 
 const path = "/api/aggregations";
 

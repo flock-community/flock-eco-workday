@@ -6,7 +6,7 @@ import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/
 import { ExpenseList } from "./ExpenseList";
 import { AddActionFab } from "../../components/FabButtons";
 import { PersonSelector } from "../../components/selector";
-import { usePerson } from "../../hooks/PersonHook";
+import { usePerson } from "../../hooks/PersonHook.ts";
 import { ExpenseDialog } from "./ExpenseDialog";
 
 const useStyles = makeStyles({
