@@ -11,7 +11,7 @@ import { HTML5_FMT } from "moment";
 import { AssignmentClient } from "../../clients/AssignmentClient";
 import { isDefined } from "../../utils/validation";
 import { ASSIGNMENT_FORM_ID, AssignmentForm } from "./AssignmentForm";
-import { usePerson } from "../../hooks/PersonHook";
+import { usePerson } from "../../hooks/PersonHook.ts";
 
 const useStyles = makeStyles({});
 

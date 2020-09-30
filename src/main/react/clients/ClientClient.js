@@ -1,5 +1,5 @@
-import { ExtractJSON, ResourceClient } from "../utils/ResourceClient";
-import { PageableClient } from "../utils/PageableClient";
+import { ExtractJSON, ResourceClient } from "../utils/ResourceClient.ts";
+import { PageableClient } from "../utils/PageableClient.ts";
 import { addError } from "../hooks/ErrorHook";
 
 const path = "/api/clients";

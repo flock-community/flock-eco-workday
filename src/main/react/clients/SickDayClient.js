@@ -1,5 +1,5 @@
 import moment from "moment";
-import { ExtractJSON, ResourceClient } from "../utils/ResourceClient";
+import { ExtractJSON, ResourceClient } from "../utils/ResourceClient.ts";
 import { addError } from "../hooks/ErrorHook";
 
 const internalize = it => ({

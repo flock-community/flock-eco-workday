@@ -47,6 +47,7 @@ export function WorkDayForm({ value, onSubmit }) {
   const [person] = usePerson();
 
   const [daysSwitch, setDaysSwitch] = useState(!value.days);
+  const [period, setPeriod] = useState({ from: value.from, to: value.to });
 
   useEffect(() => {
     if (value && value.days) {
@@ -85,10 +86,20 @@ export function WorkDayForm({ value, onSubmit }) {
   const renderFormHours = () => (
     <>
       <Grid item xs={6}>
-        <DatePickerField name="from" label="From" fullWidth />
+        <DatePickerField
+          name="from"
+          label="From"
+          onChange={date => setPeriod({ ...period, from: date })}
+          fullWidth
+        />
       </Grid>
       <Grid item xs={6}>
-        <DatePickerField name="to" label="To" fullWidth />
+        <DatePickerField
+          name="to"
+          label="To"
+          onChange={date => setPeriod({ ...period, to: date })}
+          fullWidth
+        />
       </Grid>
       <Grid item xs={12}>
         {renderSwitch}
@@ -123,6 +134,8 @@ export function WorkDayForm({ value, onSubmit }) {
               name="assignmentCode"
               label="Assignment"
               personCode={person.code}
+              from={period.from}
+              to={period.to}
             />
           </Grid>
           {value && (

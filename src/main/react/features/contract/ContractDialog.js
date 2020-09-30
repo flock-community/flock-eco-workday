@@ -16,7 +16,7 @@ import { ContractClient } from "../../clients/ContractClient";
 import { isDefined } from "../../utils/validation";
 import { ContractFormInternal } from "./ContractFormInternal";
 import { ContractFormExternal } from "./ContractFormExternal";
-import { usePerson } from "../../hooks/PersonHook";
+import { usePerson } from "../../hooks/PersonHook.ts";
 import { ContractFormManagement } from "./ContractFormManagement";
 import { ContractFormService } from "./ContractFormService";
 import { ContractType } from "./ContractType";
