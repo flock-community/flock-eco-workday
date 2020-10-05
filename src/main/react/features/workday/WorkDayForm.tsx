@@ -17,6 +17,7 @@ import { usePerson } from "../../hooks/PersonHook";
 import { AssignmentSelectorField } from "../../components/fields/AssignmentSelectorField";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
+import {Period} from "../period/Period"
 
 export const WORKDAY_FORM_ID = "work-day-form";
 
@@ -35,8 +36,10 @@ export const schema = Yup.object().shape({
   to: Yup.date()
     .required("To date is required")
     .default(now),
-  days: Yup.array().default([8]).nullable(),
-  hours: Yup.number().default('0'),
+  days: Yup.array()
+    .default([8])
+    .nullable(),
+  hours: Yup.number().default("0"),
   sheets: Yup.array().default([])
 });
 
@@ -47,7 +50,7 @@ export function WorkDayForm({ value, onSubmit }) {
   const [person] = usePerson();
 
   const [daysSwitch, setDaysSwitch] = useState(!value.days);
-  const [period, setPeriod] = useState({ from: value.from, to: value.to });
+  let period = Period({ from: value.from, to: value.to, days: value.days });
 
   useEffect(() => {
     if (value && value.days) {
@@ -89,7 +92,7 @@ export function WorkDayForm({ value, onSubmit }) {
         <DatePickerField
           name="from"
           label="From"
-          onChange={date => setPeriod({ ...period, from: date })}
+          onChange={it => period = Period(period, {from: it, to: period.to})}
           fullWidth
         />
       </Grid>
@@ -97,7 +100,7 @@ export function WorkDayForm({ value, onSubmit }) {
         <DatePickerField
           name="to"
           label="To"
-          onChange={date => setPeriod({ ...period, to: date })}
+          onChange={it => period = Period(period, {from: period.from, to: it})}
           fullWidth
         />
       </Grid>
@@ -116,8 +119,8 @@ export function WorkDayForm({ value, onSubmit }) {
         ) : (
           <PeriodInputField
             name="days"
-            from={value && value.from}
-            to={value && value.to}
+            from={period.from}
+            to={period.to}
           />
         )}
       </Grid>
@@ -133,7 +136,7 @@ export function WorkDayForm({ value, onSubmit }) {
               fullWidth
               name="assignmentCode"
               label="Assignment"
-              personCode={person.code}
+              personCode={person?.code}
               from={period.from}
               to={period.to}
             />

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { CircularProgress, Grid, TextField } from "@material-ui/core";
 import moment from "moment";
 import Typography from "@material-ui/core/Typography";
-import { Period } from "../../features/period/Period";
+import { Period, dateInPeriod } from "../../features/period/Period.tsx";
 
 const daysOfWeek = ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"];
 
@@ -27,7 +27,7 @@ const calcGrid = period => {
     const year = day.year();
     const res = [...Array(7).keys()].map(dayDiff => {
       const date = moment(day).add(dayDiff, "days");
-      const enabled = period.dateInPeriod(date);
+      const enabled = dateInPeriod(period, date);
       const key = stringifyDate(date);
       return {
         key,
@@ -47,7 +47,8 @@ export function PeriodInput({ value }) {
   const period = Period(value);
   console.log(period);
 
-  if (period.loading) {
+  if (period.days === undefined) {
+    console.log("loading period days");
     return <CircularProgress />;
   }
   const grid = calcGrid(period);
