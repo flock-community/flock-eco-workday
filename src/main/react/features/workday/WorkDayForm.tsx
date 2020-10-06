@@ -17,7 +17,7 @@ import { usePerson } from "../../hooks/PersonHook";
 import { AssignmentSelectorField } from "../../components/fields/AssignmentSelectorField";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
-import {Period} from "../period/Period"
+import { MutatePeriod } from "../period/Period";
 
 export const WORKDAY_FORM_ID = "work-day-form";
 
@@ -50,7 +50,7 @@ export function WorkDayForm({ value, onSubmit }) {
   const [person] = usePerson();
 
   const [daysSwitch, setDaysSwitch] = useState(!value.days);
-  let period = Period({ from: value.from, to: value.to, days: value.days });
+  const [period, setPeriod] = useState(MutatePeriod({ from: value.from, to: value.to, days: value.days }));
 
   useEffect(() => {
     if (value && value.days) {
@@ -92,7 +92,7 @@ export function WorkDayForm({ value, onSubmit }) {
         <DatePickerField
           name="from"
           label="From"
-          onChange={it => period = Period(period, {from: it, to: period.to})}
+          onChange={it => setPeriod(MutatePeriod(period, {from: it, to: period.to}))}
           fullWidth
         />
       </Grid>
@@ -100,7 +100,7 @@ export function WorkDayForm({ value, onSubmit }) {
         <DatePickerField
           name="to"
           label="To"
-          onChange={it => period = Period(period, {from: period.from, to: it})}
+          onChange={it => setPeriod(MutatePeriod(period, {from: period.from, to: it}))}
           fullWidth
         />
       </Grid>
@@ -121,6 +121,7 @@ export function WorkDayForm({ value, onSubmit }) {
             name="days"
             from={period.from}
             to={period.to}
+            days={period.days}
           />
         )}
       </Grid>
@@ -136,9 +137,9 @@ export function WorkDayForm({ value, onSubmit }) {
               fullWidth
               name="assignmentCode"
               label="Assignment"
-              personCode={person?.code}
-              from={period.from}
-              to={period.to}
+              personCode={person && person.code}
+              from={value.from}
+              to={value.to}
             />
           </Grid>
           {value && (
