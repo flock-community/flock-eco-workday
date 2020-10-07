@@ -1,5 +1,5 @@
-import { Moment } from "moment";
-import { addError } from "../../hooks/ErrorHook";
+import {Moment} from "moment"
+import {addError} from "../../hooks/ErrorHook"
 
 export type Period = {
   from: Moment;
@@ -17,6 +17,13 @@ function correctDaysLength(period: Period): boolean {
     : false;
 }
 
+function initDay(date: Moment): number {
+  const day = date.day();
+  if(day === 0 || day === 6)
+    return 0;
+  return 8;
+}
+
 function initDays(period: Period): number[] {
   if (period.days) {
     if (correctDaysLength(period)) {
@@ -27,7 +34,8 @@ function initDays(period: Period): number[] {
     );
   }
   const length = daysBefore(period.from, period.to) + 1;
-  return Array(length).fill(10);
+  const array = Array(length).fill(0);
+  return array.map((_, index) => initDay(period.from.clone().add(index, "days")));
 }
 
 export function dateInPeriod(period: Period, date: Moment): boolean {
