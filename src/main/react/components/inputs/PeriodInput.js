@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { CircularProgress, Grid, TextField } from "@material-ui/core";
+import { Grid, TextField } from "@material-ui/core";
 import moment from "moment";
 import Typography from "@material-ui/core/Typography";
 import { dateInPeriod, GetDay } from "../../features/period/Period.tsx";
@@ -45,11 +45,6 @@ const calcGrid = period => {
 
 export function PeriodInput({ value }) {
   console.log(value);
-  // const period = MutatePeriod(value);
-
-  if (!value.days) {
-    return <CircularProgress />;
-  }
 
   const grid = calcGrid(value);
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { Dialog, DialogContent, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import WorkIcon from "@material-ui/icons/Work";
@@ -105,7 +104,7 @@ export function WorkDayDialog({ open, code, onComplete }) {
           onClose={handleClose}
         />
         <DialogContent className={classes.dialogContent}>
-          {state && <WorkDayForm value={state} onSubmit={handleSubmit} />}
+          {state && <WorkDayForm value={state} onSubmit={handleSubmit} onChange={change => setState({...state, ...change})}/>}
         </DialogContent>
         <Divider />
         <DialogFooter

@@ -46,11 +46,18 @@ export const schema = Yup.object().shape({
 /**
  * @return {null}
  */
-export function WorkDayForm({ value, onSubmit }) {
+export function WorkDayForm({ value, onSubmit, onChange }) {
   const [person] = usePerson();
 
   const [daysSwitch, setDaysSwitch] = useState(!value.days);
-  const [period, setPeriod] = useState(MutatePeriod({ from: value.from, to: value.to, days: value.days }));
+  const [period, setPeriod1] = useState(
+    MutatePeriod({ from: value.from, to: value.to, days: value.days })
+  );
+
+  const setPeriod = newPeriod => {
+    onChange(newPeriod);
+    setPeriod1(newPeriod);
+  }
 
   useEffect(() => {
     if (value && value.days) {
@@ -92,7 +99,9 @@ export function WorkDayForm({ value, onSubmit }) {
         <DatePickerField
           name="from"
           label="From"
-          onChange={it => setPeriod(MutatePeriod(period, {from: it, to: period.to}))}
+          onChange={it =>
+            setPeriod(MutatePeriod(period, { from: it, to: period.to }))
+          }
           fullWidth
         />
       </Grid>
@@ -100,7 +109,9 @@ export function WorkDayForm({ value, onSubmit }) {
         <DatePickerField
           name="to"
           label="To"
-          onChange={it => setPeriod(MutatePeriod(period, {from: period.from, to: it}))}
+          onChange={it =>
+            setPeriod(MutatePeriod(period, { from: period.from, to: it }))
+          }
           fullWidth
         />
       </Grid>
