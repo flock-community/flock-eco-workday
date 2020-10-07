@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Grid, TextField } from "@material-ui/core";
 import moment from "moment";
 import Typography from "@material-ui/core/Typography";
-import { dateInPeriod, GetDay } from "../../features/period/Period.tsx";
+import { dateInPeriod, getDay } from "../../features/period/Period.tsx";
 
 const daysOfWeek = ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"];
 
@@ -33,7 +33,7 @@ const calcGrid = period => {
         key,
         date,
         disabled: !enabled,
-        value: enabled ? String(GetDay(period, date)) : ""
+        value: enabled ? String(getDay(period, date)) : ""
       };
     });
     const total = res
@@ -43,9 +43,7 @@ const calcGrid = period => {
   });
 };
 
-export function PeriodInput({ value }) {
-  console.log(value);
-
+export function PeriodInput({ value, editDay }) {
   const grid = calcGrid(value);
 
   return (
@@ -82,9 +80,9 @@ export function PeriodInput({ value }) {
                     label={day.disabled ? "-" : day.date.format("DD MMM")}
                     value={day.value}
                     disabled={day.disabled}
-                    // onChange={ev =>
-                    //   EditDay(period, day.date, parseInt(ev.target.value, 10))
-                    // }
+                    onChange={ev =>
+                      editDay(day.date, parseInt(ev.target.value, 10))
+                    }
                     type="number"
                     InputLabelProps={{
                       shrink: !day.disabled

@@ -17,7 +17,7 @@ import { usePerson } from "../../hooks/PersonHook";
 import { AssignmentSelectorField } from "../../components/fields/AssignmentSelectorField";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
-import { MutatePeriod } from "../period/Period";
+import {editDay, mutatePeriod} from "../period/Period"
 
 export const WORKDAY_FORM_ID = "work-day-form";
 
@@ -51,7 +51,7 @@ export function WorkDayForm({ value, onSubmit, onChange }) {
 
   const [daysSwitch, setDaysSwitch] = useState(!value.days);
   const [period, setPeriod1] = useState(
-    MutatePeriod({ from: value.from, to: value.to, days: value.days })
+    mutatePeriod({ from: value.from, to: value.to, days: value.days })
   );
 
   const setPeriod = newPeriod => {
@@ -100,7 +100,7 @@ export function WorkDayForm({ value, onSubmit, onChange }) {
           name="from"
           label="From"
           onChange={it =>
-            setPeriod(MutatePeriod(period, { from: it, to: period.to }))
+            setPeriod(mutatePeriod(period, { from: it, to: period.to }))
           }
           fullWidth
         />
@@ -110,7 +110,7 @@ export function WorkDayForm({ value, onSubmit, onChange }) {
           name="to"
           label="To"
           onChange={it =>
-            setPeriod(MutatePeriod(period, { from: period.from, to: it }))
+            setPeriod(mutatePeriod(period, { from: period.from, to: it }))
           }
           fullWidth
         />
@@ -133,6 +133,7 @@ export function WorkDayForm({ value, onSubmit, onChange }) {
             from={period.from}
             to={period.to}
             days={period.days}
+            editDay={(date, day) => setPeriod(editDay(period, date, day))}
           />
         )}
       </Grid>

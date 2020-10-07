@@ -42,7 +42,7 @@ export function dateInPeriod(period: Period, date: Moment): boolean {
   return daysBefore(period.from, date) >= 0 && daysBefore(date, period.to) >= 0;
 }
 
-export function MutatePeriod(value: Period, mutation?: Omit<Period, "days">): Period {
+export function mutatePeriod(value: Period, mutation?: Omit<Period, "days">): Period {
   console.log(value, mutation);
   let period: Period = {
     ...value,
@@ -116,7 +116,7 @@ export function MutatePeriod(value: Period, mutation?: Omit<Period, "days">): Pe
   return period;
 }
 
-export function GetDay(period: Period, date: Moment): number {
+export function getDay(period: Period, date: Moment): number {
   if (!dateInPeriod(period, date)) {
     addError(`${date} not in ${period}`);
     return -1;
@@ -127,4 +127,14 @@ export function GetDay(period: Period, date: Moment): number {
   }
   const index = daysBefore(period.from, date);
   return period.days[index];
+}
+
+export function editDay(period: Period, date: Moment, day: number) {
+  if(!dateInPeriod(period, date) || !period.days){
+    addError(`Please edit a date (${date}) within the period (${period})`);
+    return 0;
+  }
+  const index = daysBefore(period.from, date);
+  period.days[index] = day;
+  return period;
 }
