@@ -104,7 +104,7 @@ export function WorkDayDialog({ open, code, onComplete }) {
           onClose={handleClose}
         />
         <DialogContent className={classes.dialogContent}>
-          {state && <WorkDayForm value={state} onSubmit={handleSubmit} onChange={change => setState({...state, ...change})}/>}
+          {state && <WorkDayForm value={state} onSubmit={handleSubmit} />}
         </DialogContent>
         <Divider />
         <DialogFooter

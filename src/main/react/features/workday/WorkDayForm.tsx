@@ -46,18 +46,13 @@ export const schema = Yup.object().shape({
 /**
  * @return {null}
  */
-export function WorkDayForm({ value, onSubmit, onChange }) {
+export function WorkDayForm({ value, onSubmit }) {
   const [person] = usePerson();
 
   const [daysSwitch, setDaysSwitch] = useState(!value.days);
-  const [period, setPeriod1] = useState(
-    mutatePeriod({ from: value.from, to: value.to, days: value.days })
+  const [period, setPeriod] = useState(
+    mutatePeriod({ from: value.from.clone(), to: value.to.clone(), days: value.days })
   );
-
-  const setPeriod = newPeriod => {
-    onChange(newPeriod);
-    setPeriod1(newPeriod);
-  }
 
   useEffect(() => {
     if (value && value.days) {
