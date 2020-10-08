@@ -1,5 +1,5 @@
-import {Moment} from "moment"
-import {addError} from "../../hooks/ErrorHook"
+import { Moment } from "moment";
+import { addError } from "../../hooks/ErrorHook";
 
 export type Period = {
   from: Moment;
@@ -19,8 +19,7 @@ function correctDaysLength(period: Period): boolean {
 
 function initDay(date: Moment): number {
   const day = date.day();
-  if(day === 0 || day === 6)
-    return 0;
+  if (day === 0 || day === 6) return 0;
   return 8;
 }
 
@@ -35,14 +34,19 @@ function initDays(period: Period): number[] {
   }
   const length = daysBefore(period.from, period.to) + 1;
   const array = Array(length).fill(0);
-  return array.map((_, index) => initDay(period.from.clone().add(index, "days")));
+  return array.map((_, index) =>
+    initDay(period.from.clone().add(index, "days"))
+  );
 }
 
 export function dateInPeriod(period: Period, date: Moment): boolean {
   return daysBefore(period.from, date) >= 0 && daysBefore(date, period.to) >= 0;
 }
 
-export function mutatePeriod(value: Period, mutation?: Omit<Period, "days">): Period {
+export function mutatePeriod(
+  value: Period,
+  mutation?: Omit<Period, "days">
+): Period {
   let period: Period = {
     ...value,
     days: initDays(value)
@@ -91,10 +95,12 @@ export function mutatePeriod(value: Period, mutation?: Omit<Period, "days">): Pe
         addError(
           `Please pick a enddate (${to}) later than the startdate (${period.from}).`
         );
+      } else if (!period.days) {
+        throw new Error(`Initialize period ${period} properly before editing.`);
       } else {
-        const diff = daysBefore(to, period.to);
-        const days = period.days ? period.days.slice(diff) : undefined;
-        setPeriod({ ...period, to, days });
+        const diff = period.days.length - daysBefore(to, period.to);
+        const days = period.days.slice(0, diff);
+        setPeriod({ ...period, to: to, days: days });
       }
     }
   };
@@ -120,12 +126,14 @@ export function getDay(period: Period, date: Moment): number {
   return period.days[index];
 }
 
-export function editDay(period: Period, date: Moment, day: number):Period {
-  if(!dateInPeriod(period, date) || !period.days){
-    throw new Error(`Please edit a date (${date}) within the period (${period})`);
+export function editDay(period: Period, date: Moment, day: number): Period {
+  if (!dateInPeriod(period, date) || !period.days) {
+    throw new Error(
+      `Please edit a date (${date}) within the period (${period})`
+    );
   }
   const index = daysBefore(period.from, date);
   const days = [...period.days];
   days[index] = day;
-  return {from: period.from, to: period.to, days: days};
+  return { from: period.from, to: period.to, days: days };
 }

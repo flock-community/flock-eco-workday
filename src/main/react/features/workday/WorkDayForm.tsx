@@ -64,9 +64,9 @@ export function WorkDayForm({ value, onSubmit }) {
     if (isDefined(onSubmit))
       onSubmit({
         assignmentCode: data.assignmentCode,
-        from: data.from,
-        to: data.to,
-        days: daysSwitch ? undefined : data.days,
+        from: period.from,
+        to: period.to,
+        days: daysSwitch ? undefined : period.days,
         hours: data.hours,
         status: data.status,
         sheets: data.sheets
