@@ -8,7 +8,7 @@ export type Period = {
 };
 
 function daysBefore(before: Moment, after: Moment): number {
-  return after.diff(before, "days");
+  return after.startOf("days").diff(before.startOf("days"), "days");
 }
 
 function correctDaysLength(period: Period): boolean {
@@ -29,7 +29,7 @@ function initDays(period: Period): number[] {
       return period.days;
     }
     throw new Error(
-      `The amount of days (with hours) (${period.days.length}) is incorrect. They will be reset.`
+      `The amount of days (with hours) (${period.days.length}) is incorrect in period (${period.from} - ${period.to}).`
     );
   }
   const length = daysBefore(period.from, period.to) + 1;
@@ -47,18 +47,25 @@ export function mutatePeriod(
   value: Period,
   mutation?: Omit<Period, "days">
 ): Period {
+  console.log(value);
   let period: Period = {
     ...value,
     days: initDays(value)
   };
+
+  console.log(period, mutation);
 
   const setPeriod = (period1: Period) => {
     period = period1;
   };
 
   const newStartDate = from => {
+    console.log(from)
+    if (!period.days) {
+      throw new Error(`Initialize period (${period.from} - ${period.to}) properly before editing.`);
+    }
     if (period.from.isAfter(from)) {
-      const oldDays = period.days ? period.days : [];
+      const oldDays = period.days;
       const addedDays = initDays({
         from,
         to: period.from.add(-1, "days")
@@ -73,13 +80,17 @@ export function mutatePeriod(
         );
       } else {
         const diff = daysBefore(period.from, from);
-        const days = period.days ? period.days.slice(diff) : undefined;
+        const days = period.days.slice(diff);
         setPeriod({ ...period, from, days });
       }
     }
   };
 
   const newEndDate = to => {
+    console.log(to)
+    if (!period.days) {
+      throw new Error(`Initialize period (${period.from} - ${period.to}) properly before editing.`);
+    }
     if (period.to.isBefore(to)) {
       const oldDays = period.days;
       const addedDays = initDays({
@@ -87,7 +98,7 @@ export function mutatePeriod(
         to: to,
         days: undefined
       });
-      const days = oldDays ? oldDays.concat(addedDays) : undefined;
+      const days = oldDays.concat(addedDays);
       setPeriod({ ...period, to: to, days: days });
     }
     if (period.to.isAfter(to)) {
@@ -95,9 +106,7 @@ export function mutatePeriod(
         addError(
           `Please pick a enddate (${to}) later than the startdate (${period.from}).`
         );
-      } else if (!period.days) {
-        throw new Error(`Initialize period ${period} properly before editing.`);
-      } else {
+      }  else {
         const diff = period.days.length - daysBefore(to, period.to);
         const days = period.days.slice(0, diff);
         setPeriod({ ...period, to: to, days: days });
@@ -117,7 +126,7 @@ export function mutatePeriod(
 
 export function getDay(period: Period, date: Moment): number {
   if (!dateInPeriod(period, date)) {
-    throw new Error(`${date} not in ${period}`);
+    throw new Error(`${date} not in period (${period.from} - ${period.to})`);
   }
   if (!period.days) {
     throw new Error(`Days in period not in initialized.`);
@@ -129,7 +138,7 @@ export function getDay(period: Period, date: Moment): number {
 export function editDay(period: Period, date: Moment, day: number): Period {
   if (!dateInPeriod(period, date) || !period.days) {
     throw new Error(
-      `Please edit a date (${date}) within the period (${period})`
+      `Please edit a date (${date}) within the period (${period.from} - ${period.to})`
     );
   }
   const index = daysBefore(period.from, date);
