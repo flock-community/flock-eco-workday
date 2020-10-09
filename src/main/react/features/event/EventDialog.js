@@ -81,7 +81,7 @@ export function EventDialog({ open, code, onComplete }) {
           onClose={handleClose}
         />
         <DialogContent className={classes.dialogContent}>
-          <EventForm code={code} onSubmit={handleSubmit} />
+          <EventForm code={code} onSubmit={handleSubmit} open={open} />
         </DialogContent>
         <Divider />
         <DialogFooter

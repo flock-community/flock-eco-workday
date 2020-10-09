@@ -12,6 +12,7 @@ import { EventClient } from "../../clients/EventClient";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PersonSelectorField } from "../../components/fields/PersonSelectorField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
+import { editDay, mutatePeriod } from "../period/Period.tsx";
 
 export const EVENT_FORM_ID = "work-day-form";
 
@@ -34,30 +35,52 @@ const schema = Yup.object().shape({
 /**
  * @return {null}
  */
-export function EventForm({ code, onSubmit }) {
+export function EventForm({ code, onSubmit, open }) {
   const [state, setState] = useState(null);
+  const [period, setPeriod] = useState(
+    mutatePeriod({
+      from: moment(),
+      to: moment()
+    })
+  );
 
   useEffect(() => {
-    if (code) {
-      EventClient.get(code).then(res => {
-        setState({
-          description: res.description,
-          from: res.from,
-          to: res.to,
-          days: res.days,
-          personCodes: res.persons.map(it => it.code)
+    if (open) {
+      if (code) {
+        EventClient.get(code).then(res => {
+          setState({
+            description: res.description,
+            from: res.from,
+            to: res.to,
+            days: res.days,
+            personCodes: res.persons.map(it => it.code)
+          });
+          setPeriod(
+            mutatePeriod({
+              from: res.from,
+              to: res.to,
+              days: res.days
+            })
+          );
         });
-      });
-    } else {
-      setState(schema.cast());
+      } else {
+        setState(schema.cast());
+        setPeriod(
+          mutatePeriod({
+            from: moment(),
+            to: moment()
+          })
+        );
+      }
     }
   }, [code]);
 
   const handleSubmit = value => {
     if (isDefined(onSubmit))
       onSubmit({
+        ...value,
         ...state,
-        ...value
+        ...period
       });
   };
 
@@ -82,17 +105,39 @@ export function EventForm({ code, onSubmit }) {
             <PersonSelectorField name="personCodes" multiple />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="from" fullWidth />
+            {period && (
+              <DatePickerField
+                name="from"
+                label="From"
+                onChange={it =>
+                  setPeriod(mutatePeriod(period, { from: it, to: period.to }))
+                }
+                fullWidth
+              />
+            )}
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="to" fullWidth />
+            {period && (
+              <DatePickerField
+                name="to"
+                label="To"
+                onChange={it =>
+                  setPeriod(mutatePeriod(period, { from: period.from, to: it }))
+                }
+                fullWidth
+              />
+            )}
           </Grid>
           <Grid item xs={12}>
-            <PeriodInputField
-              name="days"
-              from={state && state.from}
-              to={state && state.to}
-            />
+            {period && (
+              <PeriodInputField
+                name="days"
+                from={period.from}
+                to={period.to}
+                days={period.days}
+                editDay={(date, day) => setPeriod(editDay(period, date, day))}
+              />
+            )}
           </Grid>
         </Grid>
       </MuiPickersUtilsProvider>
