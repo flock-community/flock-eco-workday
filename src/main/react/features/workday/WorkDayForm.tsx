@@ -17,7 +17,7 @@ import { usePerson } from "../../hooks/PersonHook";
 import { AssignmentSelectorField } from "../../components/fields/AssignmentSelectorField";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
-import {editDay, mutatePeriod} from "../period/Period"
+import { editDay, mutatePeriod } from "../period/Period";
 
 export const WORKDAY_FORM_ID = "work-day-form";
 
@@ -51,12 +51,25 @@ export function WorkDayForm({ value, onSubmit }) {
 
   const [daysSwitch, setDaysSwitch] = useState(!value.days);
   const [period, setPeriod] = useState(
-    mutatePeriod({ from: value.from.clone(), to: value.to.clone(), days: value.days })
+    mutatePeriod({
+      from: value.from.clone(),
+      to: value.to.clone(),
+      days: value.days
+    })
   );
 
   useEffect(() => {
-    if (value && value.days) {
-      setDaysSwitch(value.days.length === 0);
+    if (value) {
+      if (value.days) {
+        setDaysSwitch(value.days.length === 0);
+      }
+      setPeriod(
+        mutatePeriod({
+          from: value.from.clone(),
+          to: value.to.clone(),
+          days: value.days
+        })
+      );
     }
   }, [value]);
 
