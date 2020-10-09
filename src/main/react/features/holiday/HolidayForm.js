@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
@@ -37,13 +37,10 @@ export const schemaHolidayForm = Yup.object().shape({
 export function HolidayForm({ value, onSubmit }) {
   const [period, setPeriod] = useState(
     mutatePeriod({
-      from: value.from.clone(),
-      to: value.to.clone(),
-      days: value.days
+      from: moment(),
+      to: moment()
     })
   );
-
-  console.log(value, period);
 
   const handleSubmit = data => {
     if (isDefined(onSubmit))
@@ -53,6 +50,16 @@ export function HolidayForm({ value, onSubmit }) {
         ...period
       });
   };
+
+  useEffect(() => {
+    setPeriod(
+      mutatePeriod({
+        from: value.from.clone(),
+        to: value.to.clone(),
+        days: value.days
+      })
+    );
+  }, [value]);
 
   const renderForm = () => (
     <Form id={HOLIDAY_FORM_ID}>

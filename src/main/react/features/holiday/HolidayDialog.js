@@ -6,7 +6,6 @@ import HolidayIcon from "@material-ui/icons/WbSunny";
 import Typography from "@material-ui/core/Typography";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { HolidayClient } from "../../clients/HolidayClient";
 import { HOLIDAY_FORM_ID, HolidayForm, schemaHolidayForm } from "./HolidayForm";
@@ -40,20 +39,22 @@ export function HolidayDialog({ open, code, personCode, onComplete }) {
   };
 
   useEffect(() => {
-    if (code) {
-      HolidayClient.get(code).then(res => {
-        setState({
-          description: res.description,
-          status: res.status,
-          from: res.from,
-          to: res.to,
-          days: res.days
+    if (open) {
+      if (code) {
+        HolidayClient.get(code).then(res => {
+          setState({
+            description: res.description,
+            status: res.status,
+            from: res.from,
+            to: res.to,
+            days: res.days
+          });
         });
-      });
-    } else {
-      setState(schemaHolidayForm.cast());
+      } else {
+        setState(schemaHolidayForm.cast());
+      }
     }
-  }, [code]);
+  }, [code, open]);
 
   const handleDelete = () => {
     HolidayClient.delete(code).then(() => {
@@ -89,11 +90,7 @@ export function HolidayDialog({ open, code, personCode, onComplete }) {
           onClose={handleClose}
         />
         <DialogContent>
-          {state && state.days ? (
-            <HolidayForm value={state} onSubmit={handleSubmit} />
-          ) : (
-            <CircularProgress />
-          )}
+          {state && <HolidayForm value={state} onSubmit={handleSubmit} />}
         </DialogContent>
         <DialogFooter
           formId={HOLIDAY_FORM_ID}
