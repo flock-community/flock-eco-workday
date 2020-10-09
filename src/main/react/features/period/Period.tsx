@@ -47,20 +47,16 @@ export function mutatePeriod(
   value: Period,
   mutation?: Omit<Period, "days">
 ): Period {
-  console.log(value);
   let period: Period = {
     ...value,
     days: initDays(value)
   };
-
-  console.log(period, mutation);
 
   const setPeriod = (period1: Period) => {
     period = period1;
   };
 
   const newStartDate = from => {
-    console.log(from)
     if (!period.days) {
       throw new Error(`Initialize period (${period.from} - ${period.to}) properly before editing.`);
     }
@@ -87,7 +83,6 @@ export function mutatePeriod(
   };
 
   const newEndDate = to => {
-    console.log(to)
     if (!period.days) {
       throw new Error(`Initialize period (${period.from} - ${period.to}) properly before editing.`);
     }

@@ -55,25 +55,23 @@ export function EventForm({ code, onSubmit, open }) {
             days: res.days,
             personCodes: res.persons.map(it => it.code)
           });
-          setPeriod(
-            mutatePeriod({
-              from: res.from,
-              to: res.to,
-              days: res.days
-            })
-          );
         });
       } else {
         setState(schema.cast());
-        setPeriod(
-          mutatePeriod({
-            from: moment(),
-            to: moment()
-          })
-        );
       }
     }
   }, [code]);
+  useEffect(() => {
+    if (state) {
+      setPeriod(
+        mutatePeriod({
+          from: state.from,
+          to: state.to,
+          days: state.days
+        })
+      );
+    }
+  }, [state]);
 
   const handleSubmit = value => {
     if (isDefined(onSubmit))
