@@ -27,29 +27,13 @@ export function SickDayDialog({ open, code, personCode, onComplete }) {
 
   const [state, setState] = useState(null);
 
-  useEffect(() => {
-    if (code) {
-      SickDayClient.get(code).then(res => {
-        setState({
-          from: res.from,
-          to: res.to,
-          days: res.days,
-          description: res.description,
-          status: res.status
-        });
-      });
-    } else {
-      setState(schemaSickDayForm.cast());
-    }
-  }, [code]);
-
   const handleSubmit = it => {
     const body = {
+      description: it.description,
+      status: it.status,
       from: it.from.format(HTML5_FMT.DATE),
       to: it.to.format(HTML5_FMT.DATE),
       days: it.days,
-      description: it.description,
-      status: it.status,
       hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
       personCode
     };
@@ -64,25 +48,42 @@ export function SickDayDialog({ open, code, personCode, onComplete }) {
     }
   };
 
+  useEffect(() => {
+    if (open) {
+      if (code) {
+        SickDayClient.get(code).then(res => {
+          setState({
+            description: res.description,
+            status: res.status,
+            from: res.from,
+            to: res.to,
+            days: res.days
+          });
+        });
+      } else {
+        setState(schemaSickDayForm.cast());
+      }
+    }
+  }, [code, open]);
+
   const handleDelete = () => {
     SickDayClient.delete(code).then(() => {
       if (isDefined(onComplete)) onComplete();
       setOpenDelete(false);
     });
   };
+
+  function handleClose() {
+    if (isDefined(onComplete)) onComplete();
+  }
+
   const handleDeleteOpen = () => {
     setOpenDelete(true);
   };
   const handleDeleteClose = () => {
     setOpenDelete(false);
   };
-  const handleClose = () => {
-    if (isDefined(onComplete)) onComplete();
-  };
 
-  const handleChange = it => {
-    setState(it);
-  };
   return (
     <>
       <Dialog
@@ -99,11 +100,7 @@ export function SickDayDialog({ open, code, personCode, onComplete }) {
           onClose={handleClose}
         />
         <DialogContent className={classes.dialogContent}>
-          <SickDayForm
-            value={state}
-            onSubmit={handleSubmit}
-            onChange={handleChange}
-          />
+          {state && <SickDayForm value={state} onSubmit={handleSubmit} />}
         </DialogContent>
         <Divider />
         <DialogFooter

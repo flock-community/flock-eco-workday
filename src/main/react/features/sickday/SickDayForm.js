@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
@@ -12,6 +12,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { isDefined } from "../../utils/validation";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
+import { editDay, mutatePeriod } from "../period/Period.tsx";
 
 export const SICKDAY_FORM_ID = "sick-day-form";
 
@@ -30,18 +31,32 @@ export const schemaSickDayForm = Yup.object().shape({
   days: Yup.array().required("Required")
 });
 
-export function SickDayForm({ value, onSubmit, onChange }) {
+export function SickDayForm({ value, onSubmit }) {
+  const [period, setPeriod] = useState(
+    mutatePeriod({
+      from: moment(),
+      to: moment()
+    })
+  );
+
   const handleSubmit = data => {
     if (isDefined(onSubmit))
       onSubmit({
         ...value,
-        ...data
+        ...data,
+        ...period
       });
   };
 
-  const handleChange = it => {
-    onChange(it);
-  };
+  useEffect(() => {
+    setPeriod(
+      mutatePeriod({
+        from: value.from.clone(),
+        to: value.to.clone(),
+        days: value.days
+      })
+    );
+  }, [value]);
 
   const renderForm = () => (
     <Form id={SICKDAY_FORM_ID}>
@@ -77,18 +92,33 @@ export function SickDayForm({ value, onSubmit, onChange }) {
               </UserAuthorityUtil>
             </Grid>
           )}
-
           <Grid item xs={6}>
-            <DatePickerField name="from" label="From" fullWidth />
+            <DatePickerField
+              name="from"
+              label="From"
+              onChange={it =>
+                setPeriod(mutatePeriod(period, { from: it, to: period.to }))
+              }
+              fullWidth
+            />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="to" label="To" fullWidth />
+            <DatePickerField
+              name="to"
+              label="To"
+              onChange={it =>
+                setPeriod(mutatePeriod(period, { from: period.from, to: it }))
+              }
+              fullWidth
+            />
           </Grid>
           <Grid item xs={12}>
             <PeriodInputField
               name="days"
-              from={value && value.from}
-              to={value && value.to}
+              from={period.from}
+              to={period.to}
+              days={period.days}
+              editDay={(date, day) => setPeriod(editDay(period, date, day))}
             />
           </Grid>
         </Grid>
@@ -103,7 +133,6 @@ export function SickDayForm({ value, onSubmit, onChange }) {
         initialValues={value}
         onSubmit={handleSubmit}
         validationSchema={schemaSickDayForm}
-        validate={handleChange}
         render={renderForm}
       />
     )
