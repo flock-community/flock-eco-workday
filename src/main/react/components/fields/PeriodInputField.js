@@ -3,14 +3,14 @@ import React from "react";
 import PropTypes from "prop-types";
 import { PeriodInput } from "../inputs/PeriodInput";
 
-export function PeriodInputField({ name, ...props }) {
+export function PeriodInputField({ name, from, to, days, ...props }) {
   return (
     <Field id={name} name={name}>
-      {({ field: { value }, form: { values, setFieldValue } }) => {
+      {({ form: { setFieldValue } }) => {
         const val = {
-          from: values.from,
-          to: values.to,
-          days: value || []
+          from,
+          to,
+          days
         };
         return (
           <PeriodInput

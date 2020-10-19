@@ -17,6 +17,7 @@ import { usePerson } from "../../hooks/PersonHook";
 import { AssignmentSelectorField } from "../../components/fields/AssignmentSelectorField";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
+import { editDay, mutatePeriod } from "../period/Period";
 
 export const WORKDAY_FORM_ID = "work-day-form";
 
@@ -35,8 +36,10 @@ export const schema = Yup.object().shape({
   to: Yup.date()
     .required("To date is required")
     .default(now),
-  days: Yup.array().default([8]).nullable(),
-  hours: Yup.number().default('0'),
+  days: Yup.array()
+    .default([8])
+    .nullable(),
+  hours: Yup.number().default("0"),
   sheets: Yup.array().default([])
 });
 
@@ -47,11 +50,26 @@ export function WorkDayForm({ value, onSubmit }) {
   const [person] = usePerson();
 
   const [daysSwitch, setDaysSwitch] = useState(!value.days);
-  const [period, setPeriod] = useState({ from: value.from, to: value.to });
+  const [period, setPeriod] = useState(
+    mutatePeriod({
+      from: value.from.clone(),
+      to: value.to.clone(),
+      days: value.days
+    })
+  );
 
   useEffect(() => {
-    if (value && value.days) {
-      setDaysSwitch(value.days.length === 0);
+    if (value) {
+      if (value.days) {
+        setDaysSwitch(value.days.length === 0);
+      }
+      setPeriod(
+        mutatePeriod({
+          from: value.from.clone(),
+          to: value.to.clone(),
+          days: value.days
+        })
+      );
     }
   }, [value]);
 
@@ -59,9 +77,9 @@ export function WorkDayForm({ value, onSubmit }) {
     if (isDefined(onSubmit))
       onSubmit({
         assignmentCode: data.assignmentCode,
-        from: data.from,
-        to: data.to,
-        days: daysSwitch ? undefined : data.days,
+        from: period.from,
+        to: period.to,
+        days: daysSwitch ? undefined : period.days,
         hours: data.hours,
         status: data.status,
         sheets: data.sheets
@@ -89,7 +107,9 @@ export function WorkDayForm({ value, onSubmit }) {
         <DatePickerField
           name="from"
           label="From"
-          onChange={date => setPeriod({ ...period, from: date })}
+          onChange={it =>
+            setPeriod(mutatePeriod(period, { from: it, to: period.to }))
+          }
           fullWidth
         />
       </Grid>
@@ -97,7 +117,9 @@ export function WorkDayForm({ value, onSubmit }) {
         <DatePickerField
           name="to"
           label="To"
-          onChange={date => setPeriod({ ...period, to: date })}
+          onChange={it =>
+            setPeriod(mutatePeriod(period, { from: period.from, to: it }))
+          }
           fullWidth
         />
       </Grid>
@@ -116,8 +138,10 @@ export function WorkDayForm({ value, onSubmit }) {
         ) : (
           <PeriodInputField
             name="days"
-            from={value && value.from}
-            to={value && value.to}
+            from={period.from}
+            to={period.to}
+            days={period.days}
+            editDay={(date, day) => setPeriod(editDay(period, date, day))}
           />
         )}
       </Grid>
@@ -133,9 +157,9 @@ export function WorkDayForm({ value, onSubmit }) {
               fullWidth
               name="assignmentCode"
               label="Assignment"
-              personCode={person.code}
-              from={period.from}
-              to={period.to}
+              personCode={person && person.code}
+              from={value.from}
+              to={value.to}
             />
           </Grid>
           {value && (

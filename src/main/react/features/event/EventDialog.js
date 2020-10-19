@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Dialog, DialogContent, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import WorkIcon from "@material-ui/icons/Work";
+import EventIcon from "@material-ui/icons/CalendarToday";
 import moment, { HTML5_FMT } from "moment";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
@@ -75,13 +75,13 @@ export function EventDialog({ open, code, onComplete }) {
         TransitionProps={{ direction: "right" }}
       >
         <DialogHeader
-          icon={<WorkIcon />}
-          headline="Create Workday"
-          subheadline="Add your workday."
+          icon={<EventIcon />}
+          headline="Create Event"
+          subheadline="Have a fun time!"
           onClose={handleClose}
         />
         <DialogContent className={classes.dialogContent}>
-          <EventForm code={code} onSubmit={handleSubmit} />
+          <EventForm code={code} onSubmit={handleSubmit} open={open} />
         </DialogContent>
         <Divider />
         <DialogFooter

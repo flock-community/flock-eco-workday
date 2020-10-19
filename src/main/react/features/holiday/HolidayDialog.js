@@ -39,20 +39,22 @@ export function HolidayDialog({ open, code, personCode, onComplete }) {
   };
 
   useEffect(() => {
-    if (code) {
-      HolidayClient.get(code).then(res => {
-        setState({
-          description: res.description,
-          status: res.status,
-          from: res.from,
-          to: res.to,
-          days: res.days
+    if (open) {
+      if (code) {
+        HolidayClient.get(code).then(res => {
+          setState({
+            description: res.description,
+            status: res.status,
+            from: res.from,
+            to: res.to,
+            days: res.days
+          });
         });
-      });
-    } else {
-      setState(schemaHolidayForm.cast());
+      } else {
+        setState(schemaHolidayForm.cast());
+      }
     }
-  }, [code]);
+  }, [code, open]);
 
   const handleDelete = () => {
     HolidayClient.delete(code).then(() => {
@@ -72,10 +74,6 @@ export function HolidayDialog({ open, code, personCode, onComplete }) {
     setOpenDelete(false);
   };
 
-  const handleChange = it => {
-    setState(it);
-  };
-
   return (
     <>
       <Dialog
@@ -92,11 +90,7 @@ export function HolidayDialog({ open, code, personCode, onComplete }) {
           onClose={handleClose}
         />
         <DialogContent>
-          <HolidayForm
-            value={state}
-            onSubmit={handleSubmit}
-            onChange={handleChange}
-          />
+          {state && <HolidayForm value={state} onSubmit={handleSubmit} />}
         </DialogContent>
         <DialogFooter
           formId={HOLIDAY_FORM_ID}
