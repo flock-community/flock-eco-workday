@@ -142,6 +142,12 @@ class AggregationService(
         val months = (0..ChronoUnit.MONTHS.between(from, to))
             .map { from.plusMonths(it) }
             .map { YearMonth.from(it) }
+        fun contractTypes(person:Person, yearMonth:YearMonth) = all.contract
+                .filter { it.person == person }
+                .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
+                .map { it::class.java }
+                .toSet()
+
         return months
             .map { yearMonth ->
                 AggregationMonth(
@@ -163,6 +169,14 @@ class AggregationService(
                         .sumAssignmentHoursPerWeek()
                         .divide(yearMonth.countWorkDaysInMonth().times(5).toBigDecimal(), 10, RoundingMode.HALF_UP),
                     actualRevenue = all.workDay
+                        .map { it.totalRevenueInPeriod(yearMonth) }
+                        .sum(),
+                    actualRevenueInternal = all.workDay
+                        .filter{contractTypes(it.assignment.person, yearMonth).contains(ContractInternal::class.java)}
+                        .map { it.totalRevenueInPeriod(yearMonth) }
+                        .sum(),
+                    actualRevenueExternal = all.workDay
+                        .filter{contractTypes(it.assignment.person, yearMonth).contains(ContractExternal::class.java)}
                         .map { it.totalRevenueInPeriod(yearMonth) }
                         .sum(),
                     actualHours = all.workDay

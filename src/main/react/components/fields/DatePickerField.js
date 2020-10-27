@@ -11,7 +11,7 @@ export function DatePickerField({ name, onChange, ...props }) {
           value={value}
           onChange={it => {
             setFieldValue(name, it);
-            onChange(it);
+            if (onChange) onChange(it);
           }}
           {...props}
         />
