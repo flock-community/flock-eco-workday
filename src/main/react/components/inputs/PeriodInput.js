@@ -38,7 +38,10 @@ const calcGrid = period => {
     });
     const total = res
       .filter(it => !it.disabled)
-      .reduce((acc, cur) => acc + parseFloat(getDay(period, cur.date)) || acc, 0);
+      .reduce(
+        (acc, cur) => acc + parseFloat(getDay(period, cur.date)) || acc,
+        0
+      );
     return { year, weekNumber, days: res, total };
   });
 };
@@ -81,7 +84,7 @@ export function PeriodInput({ value, editDay }) {
                     value={day.value}
                     disabled={day.disabled}
                     onChange={ev =>
-                      editDay(day.date, parseInt(ev.target.value, 10))
+                      editDay(day.date, parseFloat(ev.target.value))
                     }
                     type="number"
                     InputLabelProps={{
