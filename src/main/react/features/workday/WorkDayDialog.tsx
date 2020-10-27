@@ -9,7 +9,7 @@ import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/
 import { WorkDayClient } from "../../clients/WorkDayClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
-import { WORKDAY_FORM_ID, WorkDayForm, schema } from "./WorkDayForm";
+import { schema, WORKDAY_FORM_ID, WorkDayForm } from "./WorkDayForm";
 import { isDefined } from "../../utils/validation";
 
 const useStyles = makeStyles(() => ({
@@ -51,7 +51,7 @@ export function WorkDayDialog({ open, code, onComplete }) {
       to: it.to.format(HTML5_FMT.DATE),
       days: it.days ? it.days : null,
       hours: it.days
-        ? it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0)
+        ? it.days.reduce((acc, cur) => acc + parseFloat(cur), 0)
         : it.hours,
       assignmentCode: it.assignmentCode,
       status: it.status,

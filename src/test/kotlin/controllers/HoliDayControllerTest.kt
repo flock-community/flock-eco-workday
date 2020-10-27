@@ -58,8 +58,8 @@ class HoliDayControllerTest {
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
-        val days = listOf(6, 6, 6)
-        val hours = 18
+        val days = listOf(6.0, 6.0, 6.0)
+        val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
@@ -96,8 +96,8 @@ class HoliDayControllerTest {
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
-        val days = listOf(6, 6, 6)
-        val hours = 18
+        val days = listOf(6.0, 6.0, 6.0)
+        val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
@@ -135,8 +135,8 @@ class HoliDayControllerTest {
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
-        val days = listOf(6, 6, 6)
-        val hours = 18
+        val days = listOf(6.0, 6.0, 6.0)
+        val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val updatedDescription = "All the leaves are brown"
         val status = Status.REQUESTED
@@ -179,8 +179,8 @@ class HoliDayControllerTest {
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
-        val days = listOf(6, 6, 6)
-        val hours = 18
+        val days = listOf(6.0, 6.0, 6.0)
+        val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
         val updatedStatus = Status.APPROVED
@@ -217,8 +217,8 @@ class HoliDayControllerTest {
         val admin = createHelper.createUser(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
-        val days = listOf(6, 6, 6)
-        val hours = 18
+        val days = listOf(6.0, 6.0, 6.0)
+        val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
         val updatedStatus = Status.APPROVED
@@ -256,8 +256,8 @@ class HoliDayControllerTest {
         val admin = createHelper.createUser(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
-        val days = listOf(6, 6, 6)
-        val hours = 18
+        val days = listOf(6.0, 6.0, 6.0)
+        val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
         val updatedStatus = Status.APPROVED

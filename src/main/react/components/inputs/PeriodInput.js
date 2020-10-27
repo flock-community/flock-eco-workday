@@ -38,7 +38,7 @@ const calcGrid = period => {
     });
     const total = res
       .filter(it => !it.disabled)
-      .reduce((acc, cur) => acc + getDay(period, cur.date) || acc, 0);
+      .reduce((acc, cur) => acc + parseFloat(getDay(period, cur.date)) || acc, 0);
     return { year, weekNumber, days: res, total };
   });
 };

@@ -31,7 +31,7 @@ export function EventDialog({ open, code, onComplete }) {
         from: it.from.format(HTML5_FMT.DATE),
         to: it.to.format(HTML5_FMT.DATE),
         days: it.days,
-        hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
+        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur), 0),
         personCodes: it.personCodes
       }).then(res => {
         if (isDefined(onComplete)) onComplete(res);
@@ -42,7 +42,7 @@ export function EventDialog({ open, code, onComplete }) {
         from: it.from.format(moment.HTML5_FMT.DATE),
         to: it.to.format(moment.HTML5_FMT.DATE),
         days: it.days,
-        hours: it.days.reduce((acc, cur) => acc + parseInt(cur, 10), 0),
+        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur), 0),
         personCodes: it.personCodes
       }).then(res => {
         if (isDefined(onComplete)) onComplete(res);

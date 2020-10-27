@@ -16,7 +16,7 @@ const findAllByPersonCode = personCode => {
   return fetch(`${path}?personCode=${personCode}&sort=from,desc`)
     .then(ExtractJSON)
     .then(it => it.map(internalize))
-    .catch(e => addError([e.message, e]));
+    .catch(e => addError(e.message));
 };
 
 export const WorkDayClient = {

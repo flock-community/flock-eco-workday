@@ -21,8 +21,8 @@ data class HoliDayForm(
     @JsonSerialize(using = LocalDateSerializer::class)
     override val to: LocalDate,
 
-    override val hours: Int,
-    override val days: List<Int>,
+    override val hours: Double,
+    override val days: List<Double>,
 
     override val status: Status = Status.REQUESTED,
 

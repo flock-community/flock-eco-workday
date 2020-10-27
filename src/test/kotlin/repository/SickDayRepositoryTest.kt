@@ -48,11 +48,11 @@ class SickDayRepositoryTest {
         val from = LocalDate.of(1970, 1, 1)
 
         val sickDay = SickDay(
-            hours = 8,
+            hours = 8.0,
             person = person,
             from = from,
             to = LocalDate.of(1970, 1, 6),
-            days = listOf(8, 8, 8, 8, 8),
+            days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
             status = Status.REQUESTED
         )
 
@@ -91,11 +91,11 @@ class SickDayRepositoryTest {
 
             sickDayList.add(
                 SickDay(
-                    hours = i * 8,
+                    hours = i * 8.0,
                     person = person,
                     from = from,
                     to = LocalDate.of(1970, 1, i),
-                    days = listOf(8, 8, 8, 8, 8),
+                    days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
                     status = Status.REQUESTED
                 )
             )

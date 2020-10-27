@@ -24,24 +24,24 @@ class LoadEventData(
                 description = "New years eve",
                 from = LocalDate.of(now.year, 1, 1),
                 to = LocalDate.of(now.year, 1, 1),
-                days = listOf(8),
-                hours = 8,
+                days = listOf(8.0),
+                hours = 8.0,
                 personCodes = loadPersonData.data.map { it.code }
             ),
             EventForm(
                 description = "Flock. dag",
                 from = LocalDate.of(now.year, 1, 3),
                 to = LocalDate.of(now.year, 1, 3),
-                days = listOf(8),
-                hours = 8,
+                days = listOf(8.0),
+                hours = 8.0,
                 personCodes = loadPersonData.data.map { it.code }
             ),
             EventForm(
                 description = "Conference",
                 from = LocalDate.of(now.year, 5, 27),
                 to = LocalDate.of(now.year, 5, 29),
-                days = listOf(8, 8, 8),
-                hours = 24,
+                days = listOf(8.0, 8.0, 8.0),
+                hours = 24.0,
                 personCodes = loadPersonData.data.take(2).map { it.code }
             ))
             .map { it.create() }

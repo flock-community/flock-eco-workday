@@ -99,7 +99,7 @@ export function PeriodForm({ value, onChange }) {
         });
         const total = res
           .filter(it => !it.disabled)
-          .reduce((acc, cur) => acc + parseInt(days[cur.key], 10) || acc, 0);
+          .reduce((acc, cur) => acc + parseFloat(days[cur.key]) || acc, 0);
         return { weekNumber, days: res, total };
       })
     );

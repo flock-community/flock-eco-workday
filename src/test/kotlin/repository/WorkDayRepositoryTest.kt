@@ -45,7 +45,7 @@ class WorkDayRepositoryTest {
             assignment = assignment,
             from = from,
             to = LocalDate.of(2020, 1, 31),
-            hours = 10,
+            hours = 10.0,
             status = Status.REQUESTED,
             sheets = listOf()
         )

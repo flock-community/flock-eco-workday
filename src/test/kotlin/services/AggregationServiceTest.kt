@@ -89,7 +89,7 @@ class AggregationServiceTest {
         val client = createHelper.createClient()
         val person = createHelper.createPerson()
         val assignment = createHelper.createAssignment(client, person, from, to)
-        val workDay = createHelper.createWorkDay(assignment, from, to, 152, listOf(0, 0, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8))
+        val workDay = createHelper.createWorkDay(assignment, from, to, 152.0, listOf(0.0, 0.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0))
 
         val period: Period = object : Period {
             override val from: LocalDate get() = from
@@ -99,8 +99,8 @@ class AggregationServiceTest {
         val hours = workDay.totalHoursInPeriod(period)
         val revenue = workDay.totalRevenueInPeriod(period)
 
-        assertEquals(152.toBigDecimal(), hours)
-        assertEquals(12160.0.toBigDecimal(), revenue)
+        assertEquals(152.0.toBigDecimal(), hours)
+        assertEquals(12160.0.toBigDecimal().setScale(2), revenue)
     }
 
     @Test
@@ -110,7 +110,7 @@ class AggregationServiceTest {
         val client = createHelper.createClient()
         val person = createHelper.createPerson()
         val assignment = createHelper.createAssignment(client, person, from, to)
-        val workDay = createHelper.createWorkDay(assignment, from, to, 152, listOf(0, 0, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8, 0, 0, 8, 8, 8, 8, 0, 0, 0, 8, 8, 8, 8, 8))
+        val workDay = createHelper.createWorkDay(assignment, from, to, 152.0, listOf(0.0, 0.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0))
 
         val period: Period = object : Period {
             override val from: LocalDate get() = from
@@ -120,8 +120,8 @@ class AggregationServiceTest {
         val hours = workDay.totalHoursInPeriod(period)
         val revenue = workDay.totalRevenueInPeriod(period)
 
-        assertEquals(64.toBigDecimal(), hours)
-        assertEquals(5120.0.toBigDecimal(), revenue)
+        assertEquals(64.0.toBigDecimal(), hours)
+        assertEquals(5120.0.toBigDecimal().setScale(2), revenue)
     }
 
     @Test
