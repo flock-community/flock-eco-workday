@@ -5,7 +5,6 @@ const listeners = [];
 const ErrorOpenTimeMilliSeconds = 5000;
 
 export function addError(error) {
-  console.log(`An error has occurred: ${error}`);
   const errorObject = {
     message: error,
     time: Date.now(),

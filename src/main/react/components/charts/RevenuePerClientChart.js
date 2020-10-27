@@ -21,7 +21,7 @@ export function RevenuePerClientChart({ year }) {
       <PieChart height={500}>
         <Pie
           data={state}
-          valueKey="revenueGross"
+          dataKey="revenueGross"
           nameKey="name"
           fill="#3f51b5"
           label
