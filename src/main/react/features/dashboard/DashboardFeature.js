@@ -9,6 +9,7 @@ import { SickdayPerPersonChart } from "../../components/charts/SickdayPerPersonC
 import { RevenuePerClientChart } from "../../components/charts/RevenuePerClientChart";
 import { TotalPerMonthChart } from "../../components/charts/TotalPerMonthChart";
 import { AverageHoursPerDayChart } from "../../components/charts/AverageHoursPerDayChart";
+import { InternalCostChart } from "../../components/charts/InternalCostChart.tsx";
 
 const useStyles = makeStyles({
   root: {
@@ -45,6 +46,16 @@ export function DashboardFeature() {
             <CardContent>
               <div style={{ height: CHART_HEIGHT * 2 }}>
                 <AverageHoursPerDayChart />
+              </div>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <Card>
+            <CardHeader title="Internal cost" />
+            <CardContent>
+              <div style={{ height: CHART_HEIGHT * 2 }}>
+                <InternalCostChart />
               </div>
             </CardContent>
           </Card>
