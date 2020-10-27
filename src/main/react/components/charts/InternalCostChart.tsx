@@ -37,7 +37,7 @@ export function InternalCostChart({ year }) {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis yAxisId="left" type="number"  />
-        <YAxis yAxisId="right" type="number" orientation='right' />
+        <YAxis yAxisId="right" type="number" orientation='right' domain={['dataMin ', 'dataMax ']} />
 
         <Tooltip
           formatter={value => new Intl.NumberFormat("en").format(value)}
