@@ -148,8 +148,8 @@ class AggregationService(
                     yearMonth = yearMonth.toString(),
                     countContractInternal = all.contract
                         .filterIsInstance(ContractInternal::class.java)
-                        .map { it.toDateRangeInPeriod(yearMonth) }
-                        .filter { it.isNotEmpty() }
+                        .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
+                        .distinctBy { it.person.id }
                         .count(),
                     forecastRevenueGross = all.assignment
                         .mapWorkingDay(yearMonth)
