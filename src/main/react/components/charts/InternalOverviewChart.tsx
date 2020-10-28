@@ -9,7 +9,7 @@ import {LineChart, XAxis,
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { AggregationClient } from "../../clients/AggregationClient";
 
-export function InternalCostChart({ year }) {
+export function InternalOverviewChart({ year }) {
   const [state, setState] = useState<any | null>(null);
 
   useEffect(() => {

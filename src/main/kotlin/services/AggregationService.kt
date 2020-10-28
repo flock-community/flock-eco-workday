@@ -157,6 +157,11 @@ class AggregationService(
                         .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
                         .distinctBy { it.person.id }
                         .count(),
+                    countContractExternal = all.contract
+                        .filterIsInstance(ContractExternal::class.java)
+                        .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
+                        .distinctBy { it.person.id }
+                        .count(),
                     forecastRevenueGross = all.assignment
                         .mapWorkingDay(yearMonth)
                         .sumAmount(yearMonth),
