@@ -9,7 +9,7 @@ import { isDefined } from "../../utils/validation";
 import { ContractType } from "./ContractType";
 
 export function ContractList({ reload, personCode, onItemClick }) {
-  const [state, setState] = useState([]);
+  const [state, setState] = useState<any[]>([]);
 
   useEffect(() => {
     ContractClient.findAllByPersonCode(personCode).then(res => setState(res));

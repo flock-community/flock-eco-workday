@@ -6,7 +6,7 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 import { TextField } from "formik-material-ui";
 import * as Yup from "yup";
-import { DatePickerField } from "../../components/fields/DatePickerField";
+import { DatePickerField } from "../../components/fields/DatePickerField.tsx";
 
 export const EXPENSE_TRAVEL_FORM_ID = "cost-expense-form";
 

@@ -7,7 +7,7 @@ import MomentUtils from "@date-io/moment";
 import { TextField } from "formik-material-ui";
 import moment from "moment";
 import * as Yup from "yup";
-import { DatePickerField } from "../../components/fields/DatePickerField";
+import { DatePickerField } from "../../components/fields/DatePickerField.tsx";
 import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
 
 export const EXPENSE_COST_FORM_ID = "cost-expense-form";

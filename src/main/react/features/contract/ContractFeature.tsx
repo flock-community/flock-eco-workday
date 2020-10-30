@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { PersonSelector } from "../../components/selector";
 import { ContractList } from "./ContractList";
 import { AddActionFab } from "../../components/FabButtons";
-import { usePerson } from "../../hooks/PersonHook.ts";
+import { usePerson } from "../../hooks/PersonHook";
 import { ContractDialog } from "./ContractDialog";
 
 const useStyles = makeStyles({
@@ -49,6 +49,9 @@ export function ContractFeature() {
             <PersonSelector
               value={person && person.code}
               onChange={handleChangePerson}
+              label="Select person"
+              embedded={false}
+              multiple={false}
             />
           </Grid>
         </UserAuthorityUtil>
@@ -69,5 +72,3 @@ export function ContractFeature() {
     </div>
   );
 }
-
-ContractFeature.propTypes = {};

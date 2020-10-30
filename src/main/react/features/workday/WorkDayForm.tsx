@@ -15,7 +15,7 @@ import { PeriodInputField } from "../../components/fields/PeriodInputField";
 import { isDefined } from "../../utils/validation";
 import { usePerson } from "../../hooks/PersonHook";
 import { AssignmentSelectorField } from "../../components/fields/AssignmentSelectorField";
-import { DatePickerField } from "../../components/fields/DatePickerField";
+import { DatePickerField } from "../../components/fields/DatePickerField.tsx";
 import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
 import { editDay, mutatePeriod } from "../period/Period";
 

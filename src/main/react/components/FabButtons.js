@@ -2,6 +2,7 @@ import React from "react";
 import AddIcon from "@material-ui/icons/Add";
 import { Fab } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -21,6 +22,9 @@ const AddActionFab = props => {
   );
 };
 
-AddActionFab.propTypes = {};
+AddActionFab.propTypes = {
+  color: PropTypes.string,
+  onClick: PropTypes.func
+};
 
 export { AddActionFab };

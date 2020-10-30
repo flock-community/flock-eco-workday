@@ -4,8 +4,8 @@ import { Grid } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
-import { TextField } from "formik-material-ui";
-import { mixed, number, object } from "yup";
+import { TextField, CheckboxWithLabel} from "formik-material-ui";
+import { mixed, number, object, boolean } from "yup";
 import moment from "moment";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 
@@ -21,7 +21,7 @@ export const ContractFormExternal = props => {
   const { value, onSubmit } = props;
 
   const form = () => (
-    <Form id={EXTERNAL_CONTRACT_FORM_ID}>
+    <Form id={EXTERNAL_CONTRACT_FORM_ID} >
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
@@ -48,17 +48,19 @@ export const ContractFormExternal = props => {
           <Grid item xs={6}>
             <DatePickerField name="to" label="End date" fullWidth clearable />
           </Grid>
+          <Grid item xs={12}>
+            <Field
+              name="billable"
+              type="checkbox"
+              Label={{label:"Billable"}}
+              component={CheckboxWithLabel}
+              fullWidth
+            />
+          </Grid>
         </Grid>
       </MuiPickersUtilsProvider>
     </Form>
   );
-
-  const init = value && {
-    hourlyRate: value.hourlyRate,
-    hoursPerWeek: value.hoursPerWeek,
-    from: value.from,
-    to: value.to
-  };
 
   const schema = object({
     hourlyRate: number()
@@ -70,12 +72,13 @@ export const ContractFormExternal = props => {
     from: mixed()
       .required()
       .default(moment()),
-    to: mixed().default(null)
+    to: mixed().default(null),
+    billable: boolean().default(true)
   });
 
   return (
     <Formik
-      initialValues={{ ...schema.cast(), ...init }}
+      initialValues={{ ...schema.default(), ...value }}
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize

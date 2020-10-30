@@ -10,7 +10,7 @@ import { TextField } from "formik-material-ui";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import MenuItem from "@material-ui/core/MenuItem";
 import { isDefined } from "../../utils/validation";
-import { DatePickerField } from "../../components/fields/DatePickerField";
+import { DatePickerField } from "../../components/fields/DatePickerField.tsx";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
 import { editDay, mutatePeriod } from "../period/Period.tsx";
 

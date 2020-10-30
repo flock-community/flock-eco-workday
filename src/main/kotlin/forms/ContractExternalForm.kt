@@ -11,5 +11,8 @@ data class ContractExternalForm(
     val hoursPerWeek: Int,
 
     override val from: LocalDate,
-    override val to: LocalDate?
+    override val to: LocalDate?,
+
+    val billable: Boolean
+
 ) : Period

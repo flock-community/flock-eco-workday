@@ -5,7 +5,7 @@ import { Field, Form, Formik } from "formik";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 import { TextField } from "formik-material-ui";
-import { DatePickerField } from "../../components/fields/DatePickerField";
+import { DatePickerField } from "../../components/fields/DatePickerField.tsx";
 import { ClientSelectorField } from "../../components/fields/ClientSelectorField";
 import { ASSIGNMENT_FORM_SCHEMA } from "./AssignmentSchema";
 
