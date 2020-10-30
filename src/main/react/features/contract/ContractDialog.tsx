@@ -50,7 +50,7 @@ export function ContractDialog(props) {
       ...it,
       from: it.from.format(HTML5_FMT.DATE),
       to: it.to && it.to.format(HTML5_FMT.DATE),
-      personCode: person?.code
+      personCode: person && person.code
     };
     if (code) {
       ContractClient.put(code, type, body).then(() => onClose && onClose());
@@ -131,7 +131,7 @@ export function ContractDialog(props) {
       >
         <Typography>
           Are you sure you would like to delete contract: &apos;
-          {state?.code}
+          {state && state.code}
           &apos;
         </Typography>
       </ConfirmDialog>

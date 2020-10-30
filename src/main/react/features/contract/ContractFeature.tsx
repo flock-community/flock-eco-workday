@@ -7,7 +7,6 @@ import { ContractList } from "./ContractList";
 import { AddActionFab } from "../../components/FabButtons";
 import { usePerson } from "../../hooks/PersonHook";
 import { ContractDialog } from "./ContractDialog";
-import PropTypes from "prop-types"
 
 const useStyles = makeStyles({
   root: {
@@ -73,7 +72,3 @@ export function ContractFeature() {
     </div>
   );
 }
-
-ContractFeature.propTypes = {
-
-};
