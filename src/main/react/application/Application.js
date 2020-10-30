@@ -17,7 +17,7 @@ import { PersonFeature } from "../features/person";
 import { SickDayFeature } from "../features/sickday/SickDayFeature";
 import { useUserMe } from "../hooks/UserMeHook";
 import { DashboardFeature } from "../features/dashboard/DashboardFeature";
-import { ContractFeature } from "../features/contract/ContractFeature";
+import { ContractFeature } from "../features/contract/ContractFeature.tsx";
 import { WorkDayFeature } from "../features/workday/WorkDayFeature.tsx";
 import { MonthFeature } from "../features/month/MonthFeature";
 import { EventFeature } from "../features/event/EventFeature";

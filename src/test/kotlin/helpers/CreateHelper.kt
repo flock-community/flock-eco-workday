@@ -90,7 +90,8 @@ class CreateHelper(
         monthlySalary = monthlySalary,
         hoursPerWeek = hoursPerWeek,
         from = from,
-        to = to
+        to = to,
+        billable = true
     ).run {
         contractService.create(this)
     } ?: error("Cannot create internal contract")
@@ -100,7 +101,8 @@ class CreateHelper(
         hourlyRate = 75.0,
         hoursPerWeek = 40,
         from = from,
-        to = to
+        to = to,
+        billable = true
     ).run {
         contractService.create(this)
     } ?: error("Cannot create external contract")

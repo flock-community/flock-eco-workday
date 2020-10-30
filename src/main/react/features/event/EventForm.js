@@ -9,7 +9,7 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { TextField } from "formik-material-ui";
 import { isDefined } from "../../utils/validation";
 import { EventClient } from "../../clients/EventClient";
-import { DatePickerField } from "../../components/fields/DatePickerField";
+import { DatePickerField } from "../../components/fields/DatePickerField.tsx";
 import { PersonSelectorField } from "../../components/fields/PersonSelectorField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
 import { editDay, mutatePeriod } from "../period/Period.tsx";

@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1591270336999-1
+      author: wveelenturf (generated)
+      changes:
+        - addColumn:
+            tableName: contract_internal
+            columns:
+              - column:
+                  name: billable
+                  type: boolean
+                  defaultValue: true
+        - addColumn:
+            tableName: contract_external
+            columns:
+              - column:
+                  name: billable
+                  type: boolean
+                  defaultValue: true

@@ -68,14 +68,9 @@ export function PersonSelector({ value, onChange, label, embedded, multiple }) {
 }
 
 PersonSelector.propTypes = {
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
-  onChange: PropTypes.func.isRequired,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
   label: PropTypes.string,
   embedded: PropTypes.bool,
   multiple: PropTypes.bool
-};
-
-PersonSelector.defaultProps = {
-  value: "",
-  label: "Select Person"
 };

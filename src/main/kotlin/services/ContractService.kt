@@ -103,6 +103,7 @@ class ContractService(
         id = it?.id ?: 0,
         from = this.from,
         to = this.to,
+        billable = this.billable,
         hourlyRate = this.hourlyRate,
         hoursPerWeek = this.hoursPerWeek,
         person = it?.person
@@ -114,6 +115,7 @@ class ContractService(
         id = it?.id ?: 0,
         from = this.from,
         to = this.to,
+        billable = this.billable,
         monthlySalary = this.monthlySalary,
         hoursPerWeek = this.hoursPerWeek,
         person = it?.person

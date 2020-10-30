@@ -143,6 +143,8 @@ class AggregationService(
             .map { from.plusMonths(it) }
             .map { YearMonth.from(it) }
         fun contractTypes(person:Person, yearMonth:YearMonth) = all.contract
+                .filter { it is ContractInternal && it.billable }
+                .filter { it is ContractExternal && it.billable }
                 .filter { it.person == person }
                 .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
                 .map { it::class.java }
@@ -155,10 +157,12 @@ class AggregationService(
                     countContractInternal = all.contract
                         .filterIsInstance(ContractInternal::class.java)
                         .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
+                        .filter{ it.billable }
                         .distinctBy { it.person.id }
                         .count(),
                     countContractExternal = all.contract
                         .filterIsInstance(ContractExternal::class.java)
+                        .filter{ it.billable }
                         .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
                         .distinctBy { it.person.id }
                         .count(),
@@ -195,6 +199,7 @@ class AggregationService(
                     actualCostContractExternal = yearMonth.toDateRange()
                         .flatMap { date ->
                             cartesianProducts(all.contract.filterIsInstance(ContractExternal::class.java), all.workDay)
+                                .filter { (contract, workDay) -> contract.billable }
                                 .filter { (contract, workDay) -> contract.person == workDay.assignment.person }
                                 .filter { (contract, workDay) -> contract.inRange(date) && workDay.inRange(date) }
                                 .map { (contract, workDay) -> contract.hourlyRate.toBigDecimal() * workDay.hoursPerDay().getValue(date) }

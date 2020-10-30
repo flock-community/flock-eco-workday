@@ -19,7 +19,9 @@ data class ContractExternal(
     override val to: LocalDate? = null,
 
     override val hourlyRate: Double,
-    override val hoursPerWeek: Int
+    override val hoursPerWeek: Int,
+
+    val billable:Boolean = true
 
 ) : Hourly, Contract(id, code, from, to, person, ContractType.EXTERNAL) {
     override fun equals(obj: Any?) = super.equals(obj)
