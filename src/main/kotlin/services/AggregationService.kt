@@ -143,8 +143,7 @@ class AggregationService(
             .map { from.plusMonths(it) }
             .map { YearMonth.from(it) }
         fun contractTypes(person:Person, yearMonth:YearMonth) = all.contract
-                .filter { it is ContractInternal && it.billable }
-                .filter { it is ContractExternal && it.billable }
+                .filter { (it is ContractInternal && it.billable) || (it is ContractExternal && it.billable) }
                 .filter { it.person == person }
                 .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
                 .map { it::class.java }
