@@ -16,7 +16,7 @@ import { ContractClient } from "../../clients/ContractClient";
 import { isDefined } from "../../utils/validation";
 import { ContractFormInternal } from "./ContractFormInternal";
 import { ContractFormExternal } from "./ContractFormExternal";
-import { usePerson } from "../../hooks/PersonHook.ts";
+import { usePerson } from "../../hooks/PersonHook";
 import { ContractFormManagement } from "./ContractFormManagement";
 import { ContractFormService } from "./ContractFormService";
 import { ContractType } from "./ContractType";
@@ -29,7 +29,7 @@ export function ContractDialog(props) {
   const classes = useStyles(); // eslint-disable-line
 
   const [type, setType] = useState("INTERNAL");
-  const [state, setState] = useState(null);
+  const [state, setState] = useState<any | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const [person] = usePerson();
@@ -50,7 +50,7 @@ export function ContractDialog(props) {
       ...it,
       from: it.from.format(HTML5_FMT.DATE),
       to: it.to && it.to.format(HTML5_FMT.DATE),
-      personCode: person.code
+      personCode: person?.code
     };
     if (code) {
       ContractClient.put(code, type, body).then(() => onClose && onClose());
@@ -131,7 +131,7 @@ export function ContractDialog(props) {
       >
         <Typography>
           Are you sure you would like to delete contract: &apos;
-          {state && state.code}
+          {state?.code}
           &apos;
         </Typography>
       </ConfirmDialog>
