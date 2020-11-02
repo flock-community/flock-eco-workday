@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Dialog, DialogContent } from "@material-ui/core";
+import {Dialog, DialogContent, Slide} from "@material-ui/core"
 import { HTML5_FMT } from "moment";
 import HolidayIcon from "@material-ui/icons/WbSunny";
 import Typography from "@material-ui/core/Typography";
@@ -10,12 +10,11 @@ import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { HolidayClient } from "../../clients/HolidayClient";
 import { HOLIDAY_FORM_ID, HolidayForm, schemaHolidayForm } from "./HolidayForm";
 import { isDefined } from "../../utils/validation";
-import { TransitionSlider } from "../../components/transitions/Slide";
 
 export function HolidayDialog({ open, code, personCode, onComplete }) {
   const [openDelete, setOpenDelete] = useState(false);
 
-  const [state, setState] = useState(null);
+  const [state, setState] = useState<any|undefined>();
 
   const handleSubmit = it => {
     const body = {
@@ -51,7 +50,7 @@ export function HolidayDialog({ open, code, personCode, onComplete }) {
           });
         });
       } else {
-        setState(schemaHolidayForm.cast());
+        setState(schemaHolidayForm.default());
       }
     }
   }, [code, open]);
@@ -80,8 +79,7 @@ export function HolidayDialog({ open, code, personCode, onComplete }) {
         fullScreen
         open={open}
         onClose={handleClose}
-        TransitionComponent={TransitionSlider}
-        TransitionProps={{ direction: "right" }}
+        TransitionComponent={Slide}
       >
         <DialogHeader
           icon={<HolidayIcon />}

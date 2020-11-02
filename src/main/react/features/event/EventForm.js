@@ -28,7 +28,9 @@ const schema = Yup.object().shape({
   to: Yup.date()
     .required("To date is required")
     .default(now),
-  days: Yup.array().required("Required"),
+  days: Yup.array()
+    .default([8])
+    .nullable(),
   personCodes: Yup.array().default([])
 });
 
