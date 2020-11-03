@@ -26,12 +26,15 @@ export function AssignmentSelector({
     setState(value);
   }, [value]);
 
-  function AssignmentInPeriod(assignment) {
-    return assignment.from.isBefore(to) && assignment.to.isAfter(from);
+  function assignmentInPeriod(assignment) {
+    return (
+      assignment.from.isBefore(to) &&
+      (!assignment.to || assignment.to.isAfter(from))
+    );
   }
 
   useEffect(() => {
-    setAssignments(items.filter(AssignmentInPeriod));
+    setAssignments(items.filter(assignmentInPeriod));
   }, [from, to, items]);
 
   function handleChange(event) {
