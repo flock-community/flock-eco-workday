@@ -29,6 +29,7 @@ export const schema = Yup.object().shape({
     .default("REQUESTED"),
   assignmentCode: Yup.string()
     .required("Assignment is required")
+    .nullable()
     .default(""),
   from: Yup.date()
     .required("From date is required")
