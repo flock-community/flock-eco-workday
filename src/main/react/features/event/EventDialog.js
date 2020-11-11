@@ -6,6 +6,8 @@ import EventIcon from "@material-ui/icons/CalendarToday";
 import moment, { HTML5_FMT } from "moment";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+import Grid from "@material-ui/core/Grid";
 import { EventClient } from "../../clients/EventClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
@@ -81,7 +83,21 @@ export function EventDialog({ open, code, onComplete }) {
           onClose={handleClose}
         />
         <DialogContent className={classes.dialogContent}>
-          <EventForm code={code} onSubmit={handleSubmit} open={open} />
+          <Grid container spacing={1}>
+            <Grid item>
+              <EventForm code={code} onSubmit={handleSubmit} open={open} />
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                color={"primary"}
+                component="a"
+                href={`/event_rating/${code}`}
+              >
+                Event rating
+              </Button>
+            </Grid>
+          </Grid>
         </DialogContent>
         <Divider />
         <DialogFooter

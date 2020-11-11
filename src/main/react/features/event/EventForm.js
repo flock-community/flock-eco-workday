@@ -50,30 +50,27 @@ export function EventForm({ code, onSubmit, open }) {
     if (open) {
       if (code) {
         EventClient.get(code).then(res => {
-          setState({
+          const value = {
             description: res.description,
             from: res.from,
             to: res.to,
             days: res.days,
             personCodes: res.persons.map(it => it.code)
-          });
+          };
+          setPeriod(
+            mutatePeriod({
+              from: value.from.clone(),
+              to: value.to.clone(),
+              days: value.days
+            })
+          );
+          setState(value);
         });
       } else {
         setState(schema.cast());
       }
     }
   }, [code]);
-  useEffect(() => {
-    if (state) {
-      setPeriod(
-        mutatePeriod({
-          from: state.from,
-          to: state.to,
-          days: state.days
-        })
-      );
-    }
-  }, [state]);
 
   const handleSubmit = value => {
     if (isDefined(onSubmit))
@@ -105,39 +102,33 @@ export function EventForm({ code, onSubmit, open }) {
             <PersonSelectorField name="personCodes" multiple />
           </Grid>
           <Grid item xs={6}>
-            {period && (
-              <DatePickerField
-                name="from"
-                label="From"
-                onChange={it =>
-                  setPeriod(mutatePeriod(period, { from: it, to: period.to }))
-                }
-                fullWidth
-              />
-            )}
+            <DatePickerField
+              name="from"
+              label="From"
+              onChange={it =>
+                setPeriod(mutatePeriod(period, { from: it, to: period.to }))
+              }
+              fullWidth
+            />
           </Grid>
           <Grid item xs={6}>
-            {period && (
-              <DatePickerField
-                name="to"
-                label="To"
-                onChange={it =>
-                  setPeriod(mutatePeriod(period, { from: period.from, to: it }))
-                }
-                fullWidth
-              />
-            )}
+            <DatePickerField
+              name="to"
+              label="To"
+              onChange={it =>
+                setPeriod(mutatePeriod(period, { from: period.from, to: it }))
+              }
+              fullWidth
+            />
           </Grid>
           <Grid item xs={12}>
-            {period && (
-              <PeriodInputField
-                name="days"
-                from={period.from}
-                to={period.to}
-                days={period.days}
-                editDay={(date, day) => setPeriod(editDay(period, date, day))}
-              />
-            )}
+            <PeriodInputField
+              name="days"
+              from={period.from}
+              to={period.to}
+              days={period.days}
+              editDay={(date, day) => setPeriod(editDay(period, date, day))}
+            />
           </Grid>
         </Grid>
       </MuiPickersUtilsProvider>
