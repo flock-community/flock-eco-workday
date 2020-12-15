@@ -1,23 +1,15 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.Application
-import community.flock.eco.workday.ApplicationConfiguration
-import community.flock.eco.workday.ApplicationConstants
-import community.flock.eco.workday.exactonline.properties.ExactonlineProperties
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
 import community.flock.eco.workday.interfaces.Period
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -67,19 +59,25 @@ class AggregationServiceTest {
 
         dataHelper.createContractExternalData()
         dataHelper.createContractInternalData()
-        dataHelper.createAssignmentData()
+        val assignments = dataHelper.createAssignmentData()
         dataHelper.createSickDayData()
         dataHelper.createHoliDayData()
         dataHelper.createHoliDayData()
         dataHelper.createWorkDayData()
 
+        createHelper.createWorkDay(assignments["in1"]!!, from, from.plusDays(4))
+        createHelper.createWorkDay(assignments["in1"]!!, from.plusDays(28), from.plusDays(32))
+
         val res = aggregationService
             .totalPerMonth(from, to)
 
         assertNotNull(res[0].actualRevenue)
-        assertEquals("8000.0000000000", res[1].actualCostContractInternal.toString())
-        assertEquals("0", res[1].actualCostContractExternal.toString())
-        assertEquals("43.2000000000", res[1].forecastHoursGross.toString())
+        assertEquals("8000.0000000000", res[0].actualCostContractInternal.toString())
+        assertEquals("0", res[0].actualCostContractExternal.toString())
+        assertEquals("11520.00", res[0].actualRevenue.toString())
+        assertEquals("0", res[0].actualRevenueInternal.toString())
+        assertEquals("0", res[0].actualRevenueExternal.toString())
+        assertEquals("23.4782608696", res[0].forecastHoursGross.toString())
     }
 
     @Test
@@ -133,7 +131,7 @@ class AggregationServiceTest {
         val res = aggregationService
             .totalPerPerson(from, to)
 
-        val holiDayBalance:BigDecimal = res.first().holiDayBalance as BigDecimal
+        val holiDayBalance: BigDecimal = res.first().holiDayBalance as BigDecimal
         assertEquals(holiDayBalance.toString(), "192.0000000000")
     }
 
@@ -150,7 +148,7 @@ class AggregationServiceTest {
         val res = aggregationService
             .totalPerPerson(from, to)
 
-        val holiDayBalance:BigDecimal = res.first().holiDayBalance as BigDecimal
+        val holiDayBalance: BigDecimal = res.first().holiDayBalance as BigDecimal
         assertEquals(holiDayBalance.toString(), "192.0000000000")
     }
 
@@ -162,7 +160,7 @@ class AggregationServiceTest {
         createHelper.createContractInternal(person, from, to, hoursPerWeek = 32)
         val res = aggregationService
             .totalPerPerson(from, to)
-        val holiDayBalance:BigDecimal = res.first().holiDayBalance as BigDecimal
+        val holiDayBalance: BigDecimal = res.first().holiDayBalance as BigDecimal
         assertEquals(holiDayBalance.toString(), "153.6000000000")
     }
 

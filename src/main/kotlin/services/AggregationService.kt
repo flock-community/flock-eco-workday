@@ -142,8 +142,9 @@ class AggregationService(
         val months = (0..ChronoUnit.MONTHS.between(from, to))
             .map { from.plusMonths(it) }
             .map { YearMonth.from(it) }
+
         fun contractTypes(person:Person, yearMonth:YearMonth) = all.contract
-                .filter { (it is ContractInternal && it.billable) || (it is ContractExternal && it.billable) }
+                .filter { (it is ContractInternal && it.billable) || (it is ContractExternal && it.billable) || it is ContractManagement}
                 .filter { it.person == person }
                 .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
                 .map { it::class.java }
@@ -162,6 +163,11 @@ class AggregationService(
                     countContractExternal = all.contract
                         .filterIsInstance(ContractExternal::class.java)
                         .filter{ it.billable }
+                        .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
+                        .distinctBy { it.person.id }
+                        .count(),
+                    countContractManagement = all.contract
+                        .filterIsInstance(ContractManagement::class.java)
                         .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
                         .distinctBy { it.person.id }
                         .count(),
@@ -185,6 +191,10 @@ class AggregationService(
                         .sum(),
                     actualRevenueExternal = all.workDay
                         .filter{contractTypes(it.assignment.person, yearMonth).contains(ContractExternal::class.java)}
+                        .map { it.totalRevenueInPeriod(yearMonth) }
+                        .sum(),
+                    actualRevenueManagement = all.workDay
+                        .filter{contractTypes(it.assignment.person, yearMonth).contains(ContractManagement::class.java)}
                         .map { it.totalRevenueInPeriod(yearMonth) }
                         .sum(),
                     actualHours = all.workDay
