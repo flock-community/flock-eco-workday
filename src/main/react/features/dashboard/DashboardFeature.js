@@ -11,6 +11,7 @@ import { TotalPerMonthChart } from "../../components/charts/TotalPerMonthChart";
 import { AverageHoursPerDayChart } from "../../components/charts/AverageHoursPerDayChart";
 import { InternalOverviewChart } from "../../components/charts/InternalOverviewChart.tsx";
 import { ExternalOverviewChart } from "../../components/charts/ExternalOverviewChart.tsx";
+import { ManagementOverviewChart } from "../../components/charts/ManagementOverviewChart.tsx";
 
 const useStyles = makeStyles({
   root: {
@@ -67,6 +68,16 @@ export function DashboardFeature() {
             <CardContent>
               <div style={{ height: CHART_HEIGHT * 2 }}>
                 <ExternalOverviewChart />
+              </div>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <Card>
+            <CardHeader title="Management overview" />
+            <CardContent>
+              <div style={{ height: CHART_HEIGHT * 2 }}>
+                <ManagementOverviewChart />
               </div>
             </CardContent>
           </Card>

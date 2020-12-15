@@ -5,6 +5,8 @@ import java.math.BigDecimal
 data class AggregationMonth(
     val yearMonth: String,
     val countContractInternal: Int,
+    val countContractManagement: Int,
+    val countContractExternal: Int,
     val forecastRevenueGross: BigDecimal,
     val forecastRevenueNet: BigDecimal,
     val forecastHoursGross: BigDecimal,
@@ -16,5 +18,5 @@ data class AggregationMonth(
     val actualCostContractService: BigDecimal,
     val actualRevenueInternal: BigDecimal,
     val actualRevenueExternal: BigDecimal,
-    val countContractExternal: Int
+    val actualRevenueManagement: BigDecimal
 )
