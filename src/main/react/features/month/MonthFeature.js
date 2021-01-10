@@ -22,8 +22,8 @@ import { AggregationClient } from "../../clients/AggregationClient";
 
 const useStyles = makeStyles({
   root: {
-    padding: 20
-  }
+    padding: 20,
+  },
 });
 
 /**
@@ -39,32 +39,32 @@ export function MonthFeature() {
     AggregationClient.totalPerPersonByYearMonth(
       date.year(),
       date.month() + 1
-    ).then(res => !cancel && setState(res));
+    ).then((res) => !cancel && setState(res));
     return () => {
       cancel = true;
     };
   }, [date]);
 
-  const handleMonth = amount => () => {
+  const handleMonth = (amount) => () => {
     setDate(moment(date).add(amount, "month"));
   };
 
   if (!state) return null;
 
   const data = state
-    .filter(it => it.assignment + it.revenue > 0)
-    .map(it => ({
+    .filter((it) => it.assignment + it.revenue > 0)
+    .map((it) => ({
       ...it,
       missing: Math.max(
         it.total - (it.workDays + it.holiDayUsed + it.sickDays + it.event),
         0
-      )
+      ),
     }));
 
   const totalHours = data.reduce((acc, cur) => acc + cur.workDays, 0);
   const totalRevenue = data.reduce((acc, cur) => acc + cur.revenue, 0.0);
 
-  const renderChart = x => {
+  const renderChart = (x) => {
     const height = 50 + x.length * 50;
     return (
       <ResponsiveContainer height={height}>
@@ -72,7 +72,9 @@ export function MonthFeature() {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" />
           <YAxis type="category" dataKey="name" width={150} />
-          <Tooltip formatter={value => new Intl.NumberFormat().format(value)} />
+          <Tooltip
+            formatter={(value) => new Intl.NumberFormat().format(value)}
+          />
           <Legend />
           <Bar
             stackId="days"
@@ -144,9 +146,9 @@ export function MonthFeature() {
             <CardContent>
               {renderChart(
                 data
-                  .filter(it => it.contractTypes != null)
+                  .filter((it) => it.contractTypes != null)
                   .filter(
-                    it =>
+                    (it) =>
                       it.contractTypes.includes("ContractInternal") ||
                       it.contractTypes.includes("ContractManagement")
                   )
@@ -160,9 +162,9 @@ export function MonthFeature() {
             <CardContent>
               {renderChart(
                 data
-                  .filter(it => it.contractTypes != null)
+                  .filter((it) => it.contractTypes != null)
                   .filter(
-                    it =>
+                    (it) =>
                       it.contractTypes.length === 0 ||
                       it.contractTypes.includes("ContractExternal")
                   )

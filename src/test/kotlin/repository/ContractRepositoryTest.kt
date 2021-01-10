@@ -5,29 +5,23 @@ import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractType
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 import javax.transaction.Transactional
 import kotlin.test.assertEquals
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class, CreateHelper::class])
 @AutoConfigureTestDatabase
 @ActiveProfiles(profiles = ["test"])
 @Transactional
-class ContractRepositoryTest {
-
-    @Autowired
-    private lateinit var contractRepository: ContractRepository
-
-    @Autowired
-    private lateinit var createHelper: CreateHelper
+class ContractRepositoryTest(
+    @Autowired private val contractRepository: ContractRepository,
+    @Autowired private val createHelper: CreateHelper
+) {
 
     @Test
     fun `create and update internal contract`() {

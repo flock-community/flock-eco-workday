@@ -13,15 +13,15 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   grow: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   menuButton: {
     marginLeft: -12,
-    marginRight: 20
-  }
+    marginRight: 20,
+  },
 });
 
 export function ApplicationLayout(props) {
@@ -29,10 +29,10 @@ export function ApplicationLayout(props) {
   const classes = useStyles();
 
   const [state, setState] = useState({
-    anchorEl: null
+    anchorEl: null,
   });
 
-  const handleMenu = event => {
+  const handleMenu = (event) => {
     setState({ anchorEl: event.currentTarget });
   };
 
@@ -80,11 +80,11 @@ export function ApplicationLayout(props) {
               anchorEl={state.anchorEl}
               anchorOrigin={{
                 vertical: "top",
-                horizontal: "right"
+                horizontal: "right",
               }}
               transformOrigin={{
                 vertical: "top",
-                horizontal: "right"
+                horizontal: "right",
               }}
               open={state.anchorEl != null}
               onClose={handleClose}
@@ -100,5 +100,5 @@ export function ApplicationLayout(props) {
 }
 ApplicationLayout.propTypes = {
   open: PropTypes.func,
-  onDrawer: PropTypes.func
+  onDrawer: PropTypes.func,
 };

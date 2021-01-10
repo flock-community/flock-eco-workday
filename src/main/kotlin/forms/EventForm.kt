@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
 import community.flock.eco.workday.interfaces.Dayly
 import java.time.LocalDate
+import java.util.*
 
 data class EventForm(
 
@@ -23,6 +24,6 @@ data class EventForm(
 
     override val days: List<Double>,
 
-    val personCodes: List<String>
+    val personIds: List<UUID>
 
 ) : Dayly

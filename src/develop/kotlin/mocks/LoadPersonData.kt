@@ -11,9 +11,8 @@ import org.springframework.stereotype.Component
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadPersonData(
-    userData: LoadUserData,
-    private val repository: PersonRepository,
-    private val userRepo: UserRepository
+    private val userData: LoadUserData,
+    private val repository: PersonRepository
 ) {
     val data: MutableSet<Person> = mutableSetOf()
 

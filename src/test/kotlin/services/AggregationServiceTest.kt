@@ -4,34 +4,26 @@ import community.flock.eco.workday.Application
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
 import community.flock.eco.workday.interfaces.Period
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import java.math.BigDecimal
 import java.time.LocalDate
 import javax.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class, DataHelper::class])
 @AutoConfigureTestDatabase
 @ActiveProfiles(profiles = ["test"])
 @Transactional
-class AggregationServiceTest {
-
-    @Autowired
-    lateinit var dataHelper: DataHelper
-
-    @Autowired
-    lateinit var createHelper: CreateHelper
-
-    @Autowired
-    lateinit var aggregationService: AggregationService
+class AggregationServiceTest(
+    @Autowired val dataHelper: DataHelper,
+    @Autowired val createHelper: CreateHelper,
+    @Autowired val aggregationService: AggregationService
+) {
 
     @Test
     fun `days per person`() {

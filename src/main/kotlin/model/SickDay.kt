@@ -38,9 +38,9 @@ class SickDay(
     override val status: Status,
 
     @ManyToOne
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "uuid")
     @JsonIdentityReference(alwaysAsId = true)
-    @JsonProperty("personCode")
+    @JsonProperty("personId")
     val person: Person
 
 ) : Day(id, code, from, to, hours, days), Approve

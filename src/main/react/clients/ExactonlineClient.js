@@ -10,5 +10,5 @@ const accounts = () => resourceClient.get("accounts");
 export const ExactonlineClient = {
   status,
   accounts,
-  authorizeUrl
+  authorizeUrl,
 };

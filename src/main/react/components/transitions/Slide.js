@@ -8,7 +8,7 @@ const TransitionSlider = forwardRef((props, ref) => (
 ));
 
 TransitionSlider.propTypes = {
-  direction: PropTypes.string.isRequired
+  direction: PropTypes.string.isRequired,
 };
 
 export { TransitionSlider };

@@ -6,19 +6,19 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   buttonDefault: {
-    backgroundColor: "unset"
+    backgroundColor: "unset",
   },
   buttonRequested: {
-    backgroundColor: "unset"
+    backgroundColor: "unset",
   },
   buttonApproved: {
-    backgroundColor: theme.palette.success[500]
+    backgroundColor: theme.palette.success[500],
   },
   buttonRejected: {
-    backgroundColor: theme.palette.error[500]
-  }
+    backgroundColor: theme.palette.error[500],
+  },
 }));
 
 export function StatusMenu({ onChange, disabled, value }) {
@@ -31,7 +31,7 @@ export function StatusMenu({ onChange, disabled, value }) {
     setColor(value);
   }, [value]);
 
-  const handleMenuClick = event => {
+  const handleMenuClick = (event) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
@@ -40,7 +40,7 @@ export function StatusMenu({ onChange, disabled, value }) {
     setAnchorEl(null);
   };
 
-  const handleMenuItemClick = event => {
+  const handleMenuItemClick = (event) => {
     event.stopPropagation();
     onChange(event.currentTarget.dataset.value);
     handleClose();
@@ -57,7 +57,7 @@ export function StatusMenu({ onChange, disabled, value }) {
           [classes.buttonDefault]: color === "default",
           [classes.buttonRequested]: color === "REQUESTED",
           [classes.buttonApproved]: color === "APPROVED",
-          [classes.buttonRejected]: color === "REJECTED"
+          [classes.buttonRejected]: color === "REJECTED",
         })}
       >
         {value}
@@ -88,5 +88,5 @@ export function StatusMenu({ onChange, disabled, value }) {
 StatusMenu.propTypes = {
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
-  value: PropTypes.string
+  value: PropTypes.string,
 };

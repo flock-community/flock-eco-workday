@@ -64,6 +64,7 @@ class AggregationService(
             .sortedBy { it.lastname }
             .map { person ->
                 AggregationPerson(
+                    id = person.uuid,
                     name = person.fullName(),
                     contractTypes = all.contract
                         .filter { it.person == person }
@@ -100,39 +101,6 @@ class AggregationService(
                         .sumAmount()
                 )
             }
-    }
-
-    @Transactional
-    fun totalPerPerson(personCode: UUID): AggregationPersonReport {
-        return personService.findByCode(personCode.toString())
-            ?.let { person ->
-                val all = dataService.findAllData(personCode)
-                val now = LocalDate.now()
-                val startDate = all.contract
-                    .map { it.from }
-                    .reduce { acc, it -> if (acc > it) it else acc }
-                val period = FromToPeriod(startDate, now)
-                val history = period
-                    .toDateRange()
-                    .map { it to all.filterInRange(it) }
-                    .groupBy({ YearMonth.of(it.first.year, it.first.month) }, { it.second })
-                    .map { AggregationPersonReportMonth(
-                            name = it.key.toString(),
-                            actualTotalHours = AggregationDayly(
-                                workDay = it.actualTotalHours{ workDay },
-                                holiDay = it.actualTotalHours{ holiDay },
-                                sickDay = it.actualTotalHours{ sickDay },
-                                eventDay = it.actualTotalHours{ eventDay }
-                            )
-                        )
-                    }
-                AggregationPersonReport(
-                    name = person.fullName(),
-                    startDate = startDate,
-                    month = history
-                )
-            }
-            ?: throw error("Cannot find person with code: $personCode")
     }
 
     @Transactional

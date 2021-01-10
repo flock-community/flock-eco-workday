@@ -67,7 +67,7 @@ class TodoController(
     fun HoliDay.mapTodo() = Todo(
         id = UUID.fromString(code),
         type = TodoType.HOLIDAY,
-        personId = UUID.fromString(person.code),
+        personId = person.uuid,
         personName = person.fullName(),
         description = "${from} - ${to}"
     )
@@ -75,7 +75,7 @@ class TodoController(
     fun SickDay.mapTodo() = Todo(
         id = UUID.fromString(code),
         type = TodoType.SICKDAY,
-        personId = UUID.fromString(person.code),
+        personId = person.uuid,
         personName = person.fullName(),
         description = "${from} - ${to}"
     )
@@ -83,7 +83,7 @@ class TodoController(
     fun WorkDay.mapTodo() = Todo(
         id = UUID.fromString(code),
         type = TodoType.WORKDAY,
-        personId = UUID.fromString(assignment.person.code),
+        personId = assignment.person.uuid,
         personName = assignment.person.fullName(),
         description = "${from} - ${to}"
     )
@@ -91,7 +91,7 @@ class TodoController(
     fun Expense.mapTodo() = Todo(
         id = id,
         type = TodoType.EXPENSE,
-        personId = UUID.fromString(person.code),
+        personId = person.uuid,
         personName = person.fullName(),
         description = "${description} : ${getAmount()}"
     )

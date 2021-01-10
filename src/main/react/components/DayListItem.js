@@ -5,15 +5,15 @@ import { makeStyles } from "@material-ui/core/styles";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import { StatusMenu } from "./StatusMenu";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    position: "relative"
+    position: "relative",
   },
   status: {
     position: "absolute",
     top: theme.spacing(2),
-    right: theme.spacing(2)
-  }
+    right: theme.spacing(2),
+  },
 }));
 
 export function DayListItem({ value, onClick, onClickStatus, hasAuthority }) {
@@ -49,5 +49,5 @@ DayListItem.propTypes = {
   value: PropTypes.object,
   onClick: PropTypes.func,
   onClickStatus: PropTypes.func,
-  hasAuthority: PropTypes.string
+  hasAuthority: PropTypes.string,
 };

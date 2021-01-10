@@ -6,29 +6,36 @@ import Grid from "@material-ui/core/Grid";
 import { SickDayClient } from "../../clients/SickDayClient";
 import { DayListItem } from "../../components/DayListItem";
 
+type SickDayListProps = {
+  refresh: boolean;
+  personId: string;
+  onClickRow: (item: any) => void;
+  onClickStatus: (status: string, item: any) => void;
+};
+
 export function SickDayList({
-  personCode,
+  personId,
   refresh,
   onClickRow,
-  onClickStatus
-}) {
+  onClickStatus,
+}: SickDayListProps) {
   const [list, setList] = useState([]);
 
   useEffect(() => {
-    if (personCode) {
-      SickDayClient.findAllByPersonCode(personCode).then(res => setList(res));
+    if (personId) {
+      SickDayClient.findAllByPersonId(personId).then((res) => setList(res));
     } else {
       setList([]);
     }
-  }, [personCode, refresh]);
+  }, [personId, refresh]);
 
   function renderItem(item, key) {
     return (
       <Grid item xs={12} key={`sickday-list-item-${key}`}>
         <DayListItem
           value={item}
-          onClick={e => onClickRow(e, item)}
-          onClickStatus={status => onClickStatus(status, item)}
+          onClick={() => onClickRow(item)}
+          onClickStatus={(status) => onClickStatus(status, item)}
           hasAuthority={"SickdayAuthority.ADMIN"}
         />
       </Grid>
@@ -51,10 +58,3 @@ export function SickDayList({
     </Grid>
   );
 }
-
-SickDayList.propTypes = {
-  refresh: PropTypes.bool,
-  personCode: PropTypes.string,
-  onClickRow: PropTypes.func,
-  onClickStatus: PropTypes.func
-};

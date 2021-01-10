@@ -9,7 +9,7 @@ const listeners = [];
 function update(it) {
   store = it;
   loading = false;
-  listeners.forEach(func => func(it));
+  listeners.forEach((func) => func(it));
 }
 
 export function useUserMe() {

@@ -5,13 +5,13 @@ import { useUserMe } from "../../hooks/UserMeHook";
 
 const useStyles = makeStyles({
   root: {
-    padding: 20
+    padding: 20,
   },
   fab: {
     position: "absolute",
     bottom: "25px",
-    right: "25px"
-  }
+    right: "25px",
+  },
 });
 
 export function HomeFeature() {

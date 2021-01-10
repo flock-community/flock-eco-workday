@@ -5,33 +5,25 @@ import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 import javax.transaction.Transactional
 import kotlin.test.assertNotNull
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
 @AutoConfigureTestDatabase
 @Import(CreateHelper::class)
 @ActiveProfiles(profiles = ["test"])
 @Transactional
-class WorkDayRepositoryTest {
-
-    @Autowired
-    private lateinit var repository: WorkDayRepository
-
-    @Autowired
-    private lateinit var createHelper: CreateHelper
-
-    lateinit var person: Person
+class WorkDayRepositoryTest(
+    @Autowired private val repository: WorkDayRepository,
+    @Autowired private val createHelper: CreateHelper
+) {
 
     @Test
     fun `expect workday to be created for an assignment`() {

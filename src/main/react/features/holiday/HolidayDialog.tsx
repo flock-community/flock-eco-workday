@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import {Dialog, DialogContent, Slide} from "@material-ui/core"
+import { Dialog, DialogContent, Slide } from "@material-ui/core";
 import { HTML5_FMT } from "moment";
 import HolidayIcon from "@material-ui/icons/WbSunny";
 import Typography from "@material-ui/core/Typography";
@@ -11,12 +11,24 @@ import { HolidayClient } from "../../clients/HolidayClient";
 import { HOLIDAY_FORM_ID, HolidayForm, schemaHolidayForm } from "./HolidayForm";
 import { isDefined } from "../../utils/validation";
 
-export function HolidayDialog({ open, code, personCode, onComplete }) {
+type HolidayDialogProps = {
+  open: boolean;
+  code?: string;
+  personId?: string;
+  onComplete?: (item?: any) => void;
+};
+
+export function HolidayDialog({
+  open,
+  code,
+  personId,
+  onComplete,
+}: HolidayDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
 
-  const [state, setState] = useState<any|undefined>();
+  const [state, setState] = useState<any>();
 
-  const handleSubmit = it => {
+  const handleSubmit = (it) => {
     const body = {
       description: it.description,
       status: it.status,
@@ -24,15 +36,17 @@ export function HolidayDialog({ open, code, personCode, onComplete }) {
       to: it.to.format(HTML5_FMT.DATE),
       days: it.days,
       hours: it.days.reduce((acc, cur) => acc + parseFloat(cur), 0),
-      personCode
+      personId,
     };
     if (code) {
-      HolidayClient.put(code, body).then(res => {
-        if (isDefined(onComplete)) onComplete(res);
+      HolidayClient.put(code, body).then((res) => {
+        setState(undefined);
+        onComplete?.(res);
       });
     } else {
-      HolidayClient.post(body).then(res => {
-        if (isDefined(onComplete)) onComplete(res);
+      HolidayClient.post(body).then((res) => {
+        setState(undefined);
+        onComplete?.(res);
       });
     }
   };
@@ -40,13 +54,13 @@ export function HolidayDialog({ open, code, personCode, onComplete }) {
   useEffect(() => {
     if (open) {
       if (code) {
-        HolidayClient.get(code).then(res => {
+        HolidayClient.get(code).then((res) => {
           setState({
             description: res.description,
             status: res.status,
             from: res.from,
             to: res.to,
-            days: res.days
+            days: res.days,
           });
         });
       } else {
@@ -57,13 +71,15 @@ export function HolidayDialog({ open, code, personCode, onComplete }) {
 
   const handleDelete = () => {
     HolidayClient.delete(code).then(() => {
-      if (isDefined(onComplete)) onComplete();
+      onComplete?.();
       setOpenDelete(false);
+      setState(undefined);
     });
   };
 
   function handleClose() {
-    if (isDefined(onComplete)) onComplete();
+    setState(undefined);
+    onComplete?.();
   }
 
   const handleDeleteOpen = () => {
@@ -116,10 +132,3 @@ export function HolidayDialog({ open, code, personCode, onComplete }) {
     </>
   );
 }
-
-HolidayDialog.propTypes = {
-  open: PropTypes.bool,
-  code: PropTypes.string,
-  personCode: PropTypes.string,
-  onComplete: PropTypes.func
-};

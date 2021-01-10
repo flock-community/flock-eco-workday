@@ -3,38 +3,32 @@ import { object, string } from "yup";
 // eslint-disable-next-line no-underscore-dangle
 const _defaultObject = {
   code: string(),
-  firstname: string()
-    .required()
-    .default(""),
-  lastname: string()
-    .required()
-    .default(""),
-  email: string()
-    .email()
-    .default(""),
+  firstname: string().required().default(""),
+  lastname: string().required().default(""),
+  email: string().email().default(""),
   number: string().default(""),
-  position: string().default("")
+  position: string().default(""),
 };
 
 const PERSON_SCHEMA = object(_defaultObject)
   .shape({
-    user: string().transform(value => (value === null ? "" : value))
+    user: string().transform((value) => (value === null ? "" : value)),
   })
   .from("userCode", "user", false);
 
 const PERSON_FORM_SCHEMA = object(_defaultObject)
   .shape({
-    userCode: string().transform(value => (value === null ? "" : value))
+    userCode: string().transform((value) => (value === null ? "" : value)),
   })
   .from("user", "userCode", false);
 
-const toPerson = async personForm => {
+const toPerson = async (personForm) => {
   const isPersonForm = await PERSON_FORM_SCHEMA.isValid(personForm);
   if (isPersonForm) return PERSON_SCHEMA.cast(personForm);
   return null;
 };
 
-const toPersonForm = async person => {
+const toPersonForm = async (person) => {
   const isPersonForm = await PERSON_FORM_SCHEMA.isValid(person);
   const isPerson = await PERSON_SCHEMA.isValid(person);
   if (isPerson) return PERSON_FORM_SCHEMA.cast(person);

@@ -3,30 +3,25 @@ package community.flock.eco.workday.repository
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Event
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
+
 import java.time.LocalDate
 import javax.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class, CreateHelper::class])
 @AutoConfigureTestDatabase
 @ActiveProfiles(profiles = ["test"])
 @Transactional
-class EventRepositoryTest {
-
-    @Autowired
-    private lateinit var eventRepository: EventRepository
-
-    @Autowired
-    private lateinit var createHelper: CreateHelper
+class EventRepositoryTest(
+    @Autowired private val eventRepository: EventRepository,
+    @Autowired private val createHelper: CreateHelper
+) {
 
     @Test
     fun `create update delete`() {

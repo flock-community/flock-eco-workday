@@ -13,21 +13,24 @@ import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { SICKDAY_FORM_ID, SickDayForm, schemaSickDayForm } from "./SickDayForm";
 import { isDefined } from "../../utils/validation";
 
-const useStyles = makeStyles(() => ({
-  dialogContent: {
-    margin: "auto",
-    maxWidth: 768 // should be a decent medium-sized breakpoint
-  }
-}));
+type SickDayDialogProps = {
+  open: boolean;
+  code: string;
+  personId?: string;
+  onComplete?: (item?: any) => void;
+};
 
-export function SickDayDialog({ open, code, personCode, onComplete }) {
-  const classes = useStyles();
-
+export function SickDayDialog({
+  open,
+  code,
+  personId,
+  onComplete,
+}: SickDayDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
 
-  const [state, setState] = useState(null);
+  const [state, setState] = useState();
 
-  const handleSubmit = it => {
+  const handleSubmit = (it) => {
     const body = {
       description: it.description,
       status: it.status,
@@ -35,15 +38,17 @@ export function SickDayDialog({ open, code, personCode, onComplete }) {
       to: it.to.format(HTML5_FMT.DATE),
       days: it.days,
       hours: it.days.reduce((acc, cur) => acc + parseFloat(cur), 0),
-      personCode
+      personId,
     };
     if (code) {
-      SickDayClient.put(code, body).then(res => {
-        if (isDefined(onComplete)) onComplete(res);
+      SickDayClient.put(code, body).then((res) => {
+        setState(undefined);
+        onComplete?.(res);
       });
     } else {
-      SickDayClient.post(body).then(res => {
-        if (isDefined(onComplete)) onComplete(res);
+      SickDayClient.post(body).then((res) => {
+        setState(undefined);
+        onComplete?.(res);
       });
     }
   };
@@ -51,30 +56,32 @@ export function SickDayDialog({ open, code, personCode, onComplete }) {
   useEffect(() => {
     if (open) {
       if (code) {
-        SickDayClient.get(code).then(res => {
+        SickDayClient.get(code).then((res) => {
           setState({
             description: res.description,
             status: res.status,
             from: res.from,
             to: res.to,
-            days: res.days
+            days: res.days,
           });
         });
       } else {
-        setState(schemaSickDayForm.cast());
+        setState(schemaSickDayForm.default());
       }
     }
   }, [code, open]);
 
   const handleDelete = () => {
     SickDayClient.delete(code).then(() => {
-      if (isDefined(onComplete)) onComplete();
       setOpenDelete(false);
+      setState(undefined);
+      onComplete?.();
     });
   };
 
   function handleClose() {
-    if (isDefined(onComplete)) onComplete();
+    setState(undefined);
+    onComplete?.();
   }
 
   const handleDeleteOpen = () => {
@@ -99,7 +106,7 @@ export function SickDayDialog({ open, code, personCode, onComplete }) {
           subheadline="Add your sick days. Hope you feel better soon."
           onClose={handleClose}
         />
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent>
           {state && <SickDayForm value={state} onSubmit={handleSubmit} />}
         </DialogContent>
         <Divider />
@@ -129,10 +136,3 @@ export function SickDayDialog({ open, code, personCode, onComplete }) {
     </>
   );
 }
-
-SickDayDialog.propTypes = {
-  open: PropTypes.bool,
-  code: PropTypes.string,
-  personCode: PropTypes.string,
-  onComplete: PropTypes.func
-};

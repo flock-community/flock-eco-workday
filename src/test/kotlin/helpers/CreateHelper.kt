@@ -70,7 +70,7 @@ class CreateHelper(
 
     fun createAssignment(client: Client, person: Person, from: LocalDate, to: LocalDate?) = AssignmentForm(
         clientCode = client.code,
-        personCode = person.code,
+        personId = person.uuid,
         hourlyRate = 80.0,
         hoursPerWeek = 36,
         role = "Senior software engineer",
@@ -86,7 +86,7 @@ class CreateHelper(
         to: LocalDate?,
         monthlySalary: Double = 4000.0,
         hoursPerWeek: Int = 40) = ContractInternalForm(
-        personCode = person.code,
+        personId = person.uuid,
         monthlySalary = monthlySalary,
         hoursPerWeek = hoursPerWeek,
         from = from,
@@ -97,7 +97,7 @@ class CreateHelper(
     } ?: error("Cannot create internal contract")
 
     fun createContractExternal(person: Person, from: LocalDate, to: LocalDate?) = ContractExternalForm(
-        personCode = person.code,
+        personId = person.uuid,
         hourlyRate = 75.0,
         hoursPerWeek = 40,
         from = from,
@@ -110,7 +110,7 @@ class CreateHelper(
     fun createSickDay(person: Person, from: LocalDate, to: LocalDate) = SickDayForm(
         from = from,
         to = to,
-        personCode = person.code,
+        personId = person.uuid,
         hours = 40.0,
         days = listOf(8.0, 8.0, 8.0, 8.0, 8.0)
     ).run {
@@ -138,7 +138,7 @@ class CreateHelper(
         description = "description",
         from = from,
         to = to,
-        personCode = person.code,
+        personId = person.uuid,
         hours = 40.0,
         days = listOf(8.0, 8.0, 8.0, 8.0, 8.0)
     ).run {

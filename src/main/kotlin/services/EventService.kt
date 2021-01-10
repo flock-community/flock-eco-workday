@@ -23,8 +23,8 @@ class EventService(
     fun findAll(): Iterable<Event> = eventRepository.findAll()
     fun findAll(sort: Sort): Iterable<Event> = eventRepository.findAll(sort)
 
-    fun findAllByPersonCode(personCode: String) = eventRepository
-        .findAllByPersonsIsEmptyOrPersonsCode(personCode)
+    fun findAllByPersonUuid(personCode: UUID) = eventRepository
+        .findAllByPersonsIsEmptyOrPersonsUuid(personCode)
     fun findByCode(code: String) = eventRepository.findByCode(code).toNullable()
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Event> {
@@ -61,7 +61,7 @@ class EventService(
 
     private fun EventForm.consume(it: Event? = null): Event {
         val persons = personService
-            .findByPersonCodeIdIn(this.personCodes)
+            .findByPersonCodeIdIn(this.personIds)
 
         return Event(
             id = it?.id ?: 0L,

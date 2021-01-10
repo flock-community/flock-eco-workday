@@ -26,14 +26,14 @@ import { useUserMe } from "../hooks/UserMeHook";
 
 const useStyles = makeStyles({
   head: {
-    height: 60
+    height: 60,
   },
   list: {
-    width: 250
+    width: 250,
   },
   fullList: {
-    width: "auto"
-  }
+    width: "auto",
+  },
 });
 
 export function ApplicationDrawer({ open, onClose }) {
@@ -41,7 +41,7 @@ export function ApplicationDrawer({ open, onClose }) {
   const history = useHistory();
   const user = useUserMe();
 
-  const handleClose = event => {
+  const handleClose = (event) => {
     if (
       event.type === "keydown" &&
       (event.key === "Tab" || event.key === "Shift")
@@ -53,7 +53,7 @@ export function ApplicationDrawer({ open, onClose }) {
     }
   };
 
-  const handleClickItem = item => () => {
+  const handleClickItem = (item) => () => {
     history.push(item.url);
   };
 
@@ -62,86 +62,86 @@ export function ApplicationDrawer({ open, onClose }) {
       name: "Dashboard",
       icon: DashboardIcon,
       url: "/dashboard",
-      authority: "AggregationAuthority.READ"
+      authority: "AggregationAuthority.READ",
     },
     {
       name: "Month",
       icon: MonthIcon,
       url: "/month",
-      authority: "AggregationAuthority.READ"
+      authority: "AggregationAuthority.READ",
     },
     {
       name: "Todo",
       icon: TodoIcon,
       url: "/todo",
-      authority: "TodoAuthority.READ"
+      authority: "TodoAuthority.READ",
     },
     {
       name: "Clients",
       icon: ClientIcon,
       url: "/clients",
-      authority: "ClientAuthority.READ"
+      authority: "ClientAuthority.READ",
     },
     {
       name: "Assignments",
       icon: AssignmentIcon,
       url: "/assignments",
-      authority: "AssignmentAuthority.READ"
+      authority: "AssignmentAuthority.READ",
     },
     {
       name: "Contracts",
       icon: ContractIcon,
       url: "/contracts",
-      authority: "AssignmentAuthority.READ"
+      authority: "AssignmentAuthority.READ",
     },
     {
       name: "Workdays",
       icon: WorkdayIcon,
       url: "/workdays",
-      authority: "WorkDayAuthority.READ"
+      authority: "WorkDayAuthority.READ",
     },
     {
       name: "Holidays",
       icon: HolidayIcon,
       url: "/holidays",
-      authority: "HolidayAuthority.READ"
+      authority: "HolidayAuthority.READ",
     },
     {
       name: "Sickday",
       icon: HealingIcon,
       url: "/sickdays",
-      authority: "SickdayAuthority.READ"
+      authority: "SickdayAuthority.READ",
     },
     {
       name: "Expenses",
       icon: ExpensesIcon,
       url: "/expenses",
-      authority: "ExpenseAuthority.READ"
+      authority: "ExpenseAuthority.READ",
     },
     {
       name: "Exact online",
       icon: ExactonlineIcon,
       url: "/exactonline",
-      authority: "ExactonlineAuthority.READ"
+      authority: "ExactonlineAuthority.READ",
     },
     {
       name: "Events",
       icon: EventIcon,
       url: "/event",
-      authority: "EventAuthority.READ"
+      authority: "EventAuthority.READ",
     },
     {
       name: "Users",
       icon: UserIcon,
       url: "/users",
-      authority: "UserAuthority.READ"
+      authority: "UserAuthority.READ",
     },
     {
       name: "Person",
       icon: UserIcon,
       url: "/person",
-      authority: "PersonAuthority.READ"
-    }
+      authority: "PersonAuthority.READ",
+    },
   ];
 
   const sideList = () => (
@@ -153,8 +153,8 @@ export function ApplicationDrawer({ open, onClose }) {
     >
       <List>
         {items
-          .filter(item => user.authorities.includes(item.authority))
-          .map(item => (
+          .filter((item) => user.authorities.includes(item.authority))
+          .map((item) => (
             <ListItem
               button
               key={`menu-item-${item.name}`}
@@ -182,5 +182,5 @@ export function ApplicationDrawer({ open, onClose }) {
 
 ApplicationDrawer.propTypes = {
   open: PropTypes.bool,
-  onClose: PropTypes.func
+  onClose: PropTypes.func,
 };

@@ -39,14 +39,14 @@ class ExpenseController(
     private val documentService: DocumentService,
     private val expenseService: ExpenseService
 ) {
-    @GetMapping(params = ["personCode"])
+    @GetMapping(params = ["personId"])
     @PreAuthorize("hasAuthority('ExpenseAuthority.READ')")
     fun getExpenseAll(
-        @RequestParam personCode: String,
+        @RequestParam personId: UUID,
         authentication: Authentication,
         pageable: Pageable
     ) = when {
-        authentication.isAdmin() -> expenseService.findAllByPersonCode(personCode, pageable)
+        authentication.isAdmin() -> expenseService.findAllByPersonCode(personId, pageable)
         else -> expenseService.findAllByPersonUserCode(authentication.name, pageable)
     }
         .toResponse()

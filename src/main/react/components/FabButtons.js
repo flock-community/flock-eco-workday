@@ -8,11 +8,11 @@ const useStyles = makeStyles(() => ({
   root: {
     position: "fixed",
     bottom: 16,
-    right: 16
-  }
+    right: 16,
+  },
 }));
 
-const AddActionFab = props => {
+const AddActionFab = (props) => {
   const classes = useStyles();
 
   return (
@@ -24,7 +24,7 @@ const AddActionFab = props => {
 
 AddActionFab.propTypes = {
   color: PropTypes.string,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
 };
 
 export { AddActionFab };

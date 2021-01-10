@@ -1,1 +1,0 @@
-export { PersonWidget } from "./PersonWidget";

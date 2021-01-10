@@ -12,8 +12,8 @@ import { ExactonlineListInvoices } from "./ExactonlineListInvoices";
 
 const useStyles = makeStyles({
   root: {
-    padding: 20
-  }
+    padding: 20,
+  },
 });
 
 /**
@@ -25,7 +25,7 @@ export function ExactonlineFeature() {
   const [status, setStatus] = useState(null);
 
   useEffect(() => {
-    ExactonlineClient.status().then(it => setStatus(it));
+    ExactonlineClient.status().then((it) => setStatus(it));
   }, []);
 
   if (!status) return null;

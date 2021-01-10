@@ -7,5 +7,5 @@ const pageableClient = PageableClient(path);
 
 export const PersonService = {
   ...resourceClient,
-  ...pageableClient
+  ...pageableClient,
 };

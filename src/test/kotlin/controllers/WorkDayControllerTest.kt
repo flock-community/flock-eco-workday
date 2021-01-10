@@ -7,8 +7,7 @@ import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.WorkDayService
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -17,7 +16,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -27,27 +25,19 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 import kotlin.test.assertEquals
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
 @AutoConfigureTestDatabase
 @AutoConfigureMockMvc
 @ActiveProfiles(profiles = ["test"])
 @Import(CreateHelper::class)
-class WorkDayControllerTest {
+class WorkDayControllerTest(
+    @Autowired private val mvc: MockMvc,
+    @Autowired private val mapper: ObjectMapper,
+    @Autowired private val createHelper: CreateHelper,
+    @Autowired private val workDayService: WorkDayService
+) {
 
     private val baseUrl: String = "/api/workdays"
-
-    @Autowired
-    private lateinit var mvc: MockMvc
-
-    @Autowired
-    private lateinit var mapper: ObjectMapper
-
-    @Autowired
-    private lateinit var createHelper: CreateHelper
-
-    @Autowired
-    private lateinit var workDayService: WorkDayService
 
     val adminAuthorities = setOf(WorkDayAuthority.READ, WorkDayAuthority.WRITE, WorkDayAuthority.ADMIN)
     val userAuthorities = setOf(WorkDayAuthority.READ, WorkDayAuthority.WRITE)
@@ -72,7 +62,7 @@ class WorkDayControllerTest {
 
         workDayService.create(createForm)
 
-        mvc.perform(get("$baseUrl?personCode=${person.code}")
+        mvc.perform(get("$baseUrl?personCode=${person.uuid}")
             .with(user(CreateHelper.UserSecurity(user)))
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
@@ -100,7 +90,7 @@ class WorkDayControllerTest {
 
         workDayService.create(createForm)
 
-        mvc.perform(get("$baseUrl?personCode=${personNotlinkedToUser.code}")
+        mvc.perform(get("$baseUrl?personCode=${personNotlinkedToUser.uuid}")
             .with(user(CreateHelper.UserSecurity(user)))
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)

@@ -2,10 +2,11 @@ package community.flock.eco.workday.forms
 
 import community.flock.eco.workday.interfaces.Period
 import java.time.LocalDate
+import java.util.*
 
 data class ContractManagementForm(
 
-    val personCode: String,
+    val personId: UUID,
 
     val monthlyFee: Double,
 

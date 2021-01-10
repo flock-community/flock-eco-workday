@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.util.*
 
 @RestController
 @RequestMapping("/api/assignments")
@@ -29,13 +30,13 @@ class AssignmentController(
     private val assignmentService: AssignmentService
 ) {
 
-    @GetMapping(params = ["personCode"])
+    @GetMapping(params = ["personId"])
     @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
-    fun findAll(@RequestParam(required = false) personCode: String?, principal: Principal): ResponseEntity<Iterable<Assignment>> =
+    fun findAll(@RequestParam(required = false) personId: UUID?, principal: Principal): ResponseEntity<Iterable<Assignment>> =
         principal.findUser()
             ?.let { user ->
-                if (user.isAdmin() && personCode != null) {
-                    assignmentService.findAllByPersonCode(personCode)
+                if (user.isAdmin() && personId != null) {
+                    assignmentService.findAllByPersonUuid(personId)
                         .sortedBy { it.from }
                         .reversed()
                 } else {
@@ -56,14 +57,12 @@ class AssignmentController(
     @PreAuthorize("hasAuthority('AssignmentAuthority.WRITE')")
     fun post(@RequestBody form: AssignmentForm, principal: Principal) = principal
         .findUser()
-        ?.let { person ->
+        ?.let { user ->
             val personCode = when {
-                person.isAdmin() -> form.personCode
-                else -> person.code
+                user.isAdmin() -> form.personId
+                else -> UUID.fromString(user.code)
             }
-            form.copy(personCode = personCode)
-
-            return@let assignmentService.create(form)
+            assignmentService.create(form.copy(personId = personCode))
         }
         ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
 

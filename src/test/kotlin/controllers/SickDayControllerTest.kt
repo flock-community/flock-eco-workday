@@ -7,8 +7,7 @@ import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.SickDayService
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -18,7 +17,6 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -31,7 +29,6 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
 @AutoConfigureTestDatabase
 @AutoConfigureMockMvc
@@ -74,7 +71,7 @@ class SickDayControllerTest {
         val person = createHelper.createPerson("john", "doe", user.code)
         val admin = createHelper.createUser(adminAuthorities)
 
-        mvc.perform(get("$baseUrl?code=${person.code}")
+        mvc.perform(get("$baseUrl?code=${person.uuid}")
             .with(user(CreateHelper.UserSecurity(admin)))
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk)
@@ -99,7 +96,7 @@ class SickDayControllerTest {
             to = to,
             days = days,
             hours = hours,
-            personCode = person.code,
+            personId = person.uuid,
             description = description,
             status = status
         )
@@ -117,7 +114,7 @@ class SickDayControllerTest {
             .andExpect(jsonPath("\$.description").value(description))
             .andExpect(jsonPath("\$.status").value(status.toString()))
             .andExpect(jsonPath("\$.hours").value(hours))
-            .andExpect(jsonPath("\$.personCode").value(person.code))
+            .andExpect(jsonPath("\$.personCode").value(person.uuid))
     }
 
     @Test
@@ -137,7 +134,7 @@ class SickDayControllerTest {
             to = to,
             days = days,
             hours = hours,
-            personCode = person.code,
+            personId = person.uuid,
             description = description,
             status = status
         )
@@ -155,7 +152,7 @@ class SickDayControllerTest {
             .andExpect(jsonPath("\$.description").value(description))
             .andExpect(jsonPath("\$.status").value(status.toString()))
             .andExpect(jsonPath("\$.hours").value(hours))
-            .andExpect(jsonPath("\$.personCode").value(person.code))
+            .andExpect(jsonPath("\$.personCode").value(person.uuid))
 
     }
 
@@ -177,7 +174,7 @@ class SickDayControllerTest {
             to = to,
             days = days,
             hours = hours,
-            personCode = person.code,
+            personId = person.uuid,
             description = description,
             status = status
         )
@@ -199,7 +196,7 @@ class SickDayControllerTest {
             .andExpect(jsonPath("\$.description").value(updatedDescription))
             .andExpect(jsonPath("\$.status").value(status.toString()))
             .andExpect(jsonPath("\$.hours").value(hours))
-            .andExpect(jsonPath("\$.personCode").value(person.code))
+            .andExpect(jsonPath("\$.personCode").value(person.uuid))
 
     }
 
@@ -221,7 +218,7 @@ class SickDayControllerTest {
             to = to,
             days = days,
             hours = hours,
-            personCode = person.code,
+            personId = person.uuid,
             description = description,
             status = status
         )
@@ -259,7 +256,7 @@ class SickDayControllerTest {
             to = to,
             days = days,
             hours = hours,
-            personCode = person.code,
+            personId = person.uuid,
             description = description,
             status = status
         )
@@ -298,7 +295,7 @@ class SickDayControllerTest {
             to = to,
             days = days,
             hours = hours,
-            personCode = person.code,
+            personId = person.uuid,
             description = description,
             status = status
         )

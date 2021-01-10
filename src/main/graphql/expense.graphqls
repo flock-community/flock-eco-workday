@@ -1,13 +1,3 @@
-extend type Query {
-    findExpenseById(id: ID): Expense
-    findExpenseAll(
-        page: Int,
-        size: Int,
-        sort:String,
-        order:String
-    ): [Expense!]!
-    countExpense:Int
-}
 
 interface Expense {
     id:ID!

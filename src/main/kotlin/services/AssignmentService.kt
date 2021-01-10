@@ -12,6 +12,7 @@ import javax.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class AssignmentService(
@@ -28,8 +29,8 @@ class AssignmentService(
         .findByCode(code)
         .toNullable()
 
-    fun findAllByPersonCode(personCode: String) = assignmentRepository
-        .findAllByPersonCode(personCode)
+    fun findAllByPersonUuid(personUuid: UUID) = assignmentRepository
+        .findAllByPersonUuid(personUuid)
 
     fun findAllByPersonUserCode(userCode: String) = assignmentRepository
         .findAllByPersonUserCode(userCode)
@@ -68,7 +69,7 @@ class AssignmentService(
             .let { clientRepository.findByCode(it).toNullable() }
             ?: error("Cannot find Client"),
         person = it?.person
-            ?: this.personCode.let { personRepository.findByCode(it).toNullable() }
+            ?: this.personId.let { personRepository.findByUuid(it).toNullable() }
             ?: error("Cannot find Person")
     )
 

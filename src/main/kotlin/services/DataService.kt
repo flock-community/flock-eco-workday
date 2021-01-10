@@ -39,13 +39,13 @@ class DataService(
         contractService.findAllActive(from, to)
     )
 
-    fun findAllData(personCode: UUID) = Data(
-        sickDayService.findAllByPersonCode(personCode.toString()),
-        holiDayService.findAllByPersonCode(personCode.toString()),
-        workDayService.findAllByPersonPersonCode(personCode.toString()),
-        eventService.findAllByPersonCode(personCode.toString()),
-        assignmentService.findAllByPersonCode(personCode.toString()),
-        contractService.findAllByPersonCode(personCode.toString())
+    fun findAllData(personId: UUID) = Data(
+        sickDayService.findAllByPersonUuid(personId),
+        holiDayService.findAllByPersonUuid(personId),
+        workDayService.findAllByPersonUuid(personId),
+        eventService.findAllByPersonUuid(personId),
+        assignmentService.findAllByPersonUuid(personId),
+        contractService.findAllByPersonUuid(personId)
     )
 }
 

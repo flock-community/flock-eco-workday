@@ -5,34 +5,24 @@ import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.Status
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 import javax.transaction.Transactional
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [Application::class])
 @AutoConfigureTestDatabase
 @ActiveProfiles(profiles = ["test"])
 @Transactional
-class SickDayRepositoryTest {
+class SickDayRepositoryTest(
+    @Autowired private val personRepository: PersonRepository,
+    @Autowired private val repository: SickdayRepository
+) {
 
-    @Autowired
-    private lateinit var personRepository: PersonRepository
-
-    @Autowired
-    private lateinit var repository: SickdayRepository
-
-    lateinit var person: Person
-
-    @Before
-    fun setup() {
+    init {
         personRepository.save(Person(
             firstname = "Denholm",
             lastname = "Reynholm",
@@ -41,10 +31,10 @@ class SickDayRepositoryTest {
             number = null,
             user = null
         ))
-        person = personRepository.findAll().first()
     }
 
     private final fun createSickdayAndPersist(): SickDay {
+        val person: Person =  personRepository.findAll().first()
         val from = LocalDate.of(1970, 1, 1)
 
         val sickDay = SickDay(
@@ -83,6 +73,7 @@ class SickDayRepositoryTest {
 
     @Test
     fun `should delete sickDay from repository`() {
+        val person: Person =  personRepository.findAll().first()
         var res: MutableIterable<SickDay>
         val sickDayList: MutableList<SickDay> = mutableListOf()
         val from = LocalDate.of(1970, 1, 1)

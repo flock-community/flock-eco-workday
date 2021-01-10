@@ -2,19 +2,13 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.SickdayAuthority
-import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.forms.SickDayForm
-import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.model.SickDay
-import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.model.WorkDay
-import community.flock.eco.workday.services.HoliDayService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.SickDayService
 import community.flock.eco.workday.services.isUser
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -29,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.util.*
 
 @RestController
 @RequestMapping("/api/sickdays")
@@ -43,14 +38,14 @@ class SickdayController(
         .findAll()
         .toResponse()
 
-    @GetMapping(params = ["personCode"])
+    @GetMapping(params = ["personId"])
     @PreAuthorize("hasAuthority('SickdayAuthority.READ')")
-    fun getAllByPersonCode(
-        @RequestParam personCode: String,
+    fun getAllByPersonId(
+        @RequestParam personId: UUID,
         authentication: Authentication,
         pageable: Pageable
     ): ResponseEntity<List<SickDay>> = when {
-        authentication.isAdmin() -> service.findAllByPersonCode(personCode, pageable)
+        authentication.isAdmin() -> service.findAllByPersonUuid(personId, pageable)
         else -> service.findAllByPersonUserCode(authentication.name, pageable)
     }.toResponse()
 
@@ -101,7 +96,7 @@ class SickdayController(
         }
         return personService.findByUserCode(authentication.name)
             ?.let {
-                this.copy(personCode = it.code)
+                this.copy(personId = it.uuid)
             }
             ?: throw ResponseStatusException(UNAUTHORIZED, "User is not linked to person")
     }

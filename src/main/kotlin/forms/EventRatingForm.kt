@@ -1,8 +1,10 @@
 package community.flock.eco.workday.forms
 
+import java.util.*
+
 data class EventRatingForm(
 
-    val personCode: String,
+    val personId: UUID,
     val eventCode: String,
     val rating: Int
 

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.util.*
 
 @RestController
 @RequestMapping("/api/events")
@@ -67,7 +68,7 @@ class EventController(
     ) = eventRatingService
         .create(EventRatingForm(
             eventCode = code,
-            personCode = form.personCode,
+            personId = form.personId,
             rating = form.rating
         ))
         .toResponse()
@@ -100,13 +101,13 @@ class EventController(
         ?.run { eventService.deleteByCode(this.code) }
         .toResponse()
 
-    @DeleteMapping("/{eventCode}/ratings/{personCode}")
+    @DeleteMapping("/{eventCode}/ratings/{personId}")
     // @PreAuthorize("hasAuthority('EventAuthority.WRITE')")
     fun deleteRatings(
         @PathVariable eventCode: String,
-        @PathVariable personCode: String,
+        @PathVariable personId: UUID,
         authentication: Authentication
-    ) = eventRatingService.deleteByEventCodeAndPersonCode(eventCode, personCode)
+    ) = eventRatingService.deleteByEventCodeAndPersonUuid(eventCode, personId)
         .toResponse()
 
     private fun Authentication.isAdmin(): Boolean = this.authorities

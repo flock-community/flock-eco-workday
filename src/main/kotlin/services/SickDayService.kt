@@ -27,11 +27,11 @@ class SickDayService(
         .findByCode(code)
         .toNullable()
 
-    fun findAllByPersonCode(personCode: String) = repository
-        .findAllByPersonCode(personCode)
+    fun findAllByPersonUuid(personCode: UUID) = repository
+        .findAllByPersonUuid(personCode)
 
-    fun findAllByPersonCode(personCode: String, pageable: Pageable) = repository
-        .findAllByPersonCode(personCode, pageable)
+    fun findAllByPersonUuid(personCode: UUID, pageable: Pageable) = repository
+        .findAllByPersonUuid(personCode, pageable)
 
     fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = repository
         .findAllByPersonUserCode(userCode, pageable)
@@ -67,8 +67,8 @@ class SickDayService(
 
     private fun SickDayForm.consume(it: SickDay? = null): SickDay {
         val person = personService
-            .findByCode(this.personCode)
-            ?: throw error("Cannot find person: ${this.personCode}")
+            .findByUuid(this.personId)
+            ?: throw error("Cannot find person: ${this.personId}")
 
         return SickDay(
             id = it?.id ?: 0L,

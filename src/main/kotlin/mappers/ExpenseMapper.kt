@@ -21,7 +21,7 @@ class TravelExpenseMapper(
         allowance = input.allowance.toString().toDouble(),
         status = input.status,
         person = personService
-            .findByCode(input.personCode.toString())
+            .findByUuid(input.personId)
             ?: error("Cannot find person")
     )
 }
@@ -43,7 +43,7 @@ class CostExpenseMapper(
         },
         status = input.status,
         person = personService
-            .findByCode(input.personCode.toString())
+            .findByUuid(input.personId)
             ?: error("Cannot find person")
     )
 }

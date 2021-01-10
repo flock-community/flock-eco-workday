@@ -13,8 +13,8 @@ describe("PeriodForm", () => {
           value={{
             dates: [
               moment("01-01-2020", "MM-DD-YYYY"),
-              moment("01-10-2020", "MM-DD-YYYY")
-            ]
+              moment("01-10-2020", "MM-DD-YYYY"),
+            ],
           }}
         />
       );

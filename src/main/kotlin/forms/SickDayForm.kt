@@ -8,6 +8,7 @@ import community.flock.eco.workday.interfaces.Approve
 import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.model.Status
 import java.time.LocalDate
+import java.util.*
 
 data class SickDayForm(
 
@@ -24,6 +25,6 @@ data class SickDayForm(
     override val status: Status = Status.REQUESTED,
 
     val description: String? = null,
-    val personCode: String
+    val personId: UUID
 
     ) : Dayly, Approve

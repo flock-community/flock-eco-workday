@@ -23,8 +23,8 @@ class HoliDayService(
 ) {
 
     fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
-    fun findAllByPersonCode(personCode: String) = holidayRepository.findAllByPersonCode(personCode)
-    fun findAllByPersonCode(personCode: String, pageable: Pageable) = holidayRepository.findAllByPersonCode(personCode, pageable)
+    fun findAllByPersonUuid(personCode: UUID) = holidayRepository.findAllByPersonUuid(personCode)
+    fun findAllByPersonUuid(personCode: UUID, pageable: Pageable) = holidayRepository.findAllByPersonUuid(personCode, pageable)
     fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = holidayRepository.findAllByPersonUserCode(userCode, pageable)
     fun findAllByStatus(status: Status) = holidayRepository.findAllByStatus(status)
 
@@ -60,8 +60,8 @@ class HoliDayService(
 
     private fun HoliDayForm.consume(it: HoliDay? = null): HoliDay {
         val person = personService
-            .findByCode(this.personCode)
-            ?: throw error("Cannot find person: ${this.personCode}")
+            .findByUuid(this.personId)
+            ?: throw error("Cannot find person: ${this.personId}")
 
         return HoliDay(
             id = it?.id ?: 0L,

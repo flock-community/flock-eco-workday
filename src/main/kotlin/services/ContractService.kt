@@ -17,6 +17,7 @@ import javax.persistence.EntityManager
 import javax.transaction.Transactional
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class ContractService(
@@ -32,8 +33,8 @@ class ContractService(
         .findByCode(code)
         .toNullable()
 
-    fun findAllByPersonCode(personCode: String) = contractRepository
-        .findAllByPersonCode(personCode)
+    fun findAllByPersonUuid(personUuid: UUID) = contractRepository
+        .findAllByPersonUuid(personUuid)
 
     fun findAllByPersonUserCode(userCode: String) = contractRepository
         .findAllByPersonUserCode(userCode)
@@ -107,7 +108,7 @@ class ContractService(
         hourlyRate = this.hourlyRate,
         hoursPerWeek = this.hoursPerWeek,
         person = it?.person
-            ?: this.personCode.let { personRepository.findByCode(it).toNullable() }
+            ?: this.personId.let { personRepository.findByUuid(it).toNullable() }
             ?: error("Cannot find Person")
     )
 
@@ -119,7 +120,7 @@ class ContractService(
         monthlySalary = this.monthlySalary,
         hoursPerWeek = this.hoursPerWeek,
         person = it?.person
-            ?: this.personCode.let { personRepository.findByCode(it).toNullable() }
+            ?: this.personId.let { personRepository.findByUuid(it).toNullable() }
             ?: error("Cannot find Person")
     )
 
@@ -129,7 +130,7 @@ class ContractService(
         to = this.to,
         monthlyFee = this.monthlyFee,
         person = it?.person
-            ?: this.personCode.let { personRepository.findByCode(it).toNullable() }
+            ?: this.personId.let { personRepository.findByUuid(it).toNullable() }
             ?: error("Cannot find Person")
     )
 

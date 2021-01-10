@@ -5,6 +5,7 @@ import community.flock.eco.workday.model.EventRating
 import community.flock.eco.workday.repository.EventRatingRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 class EventRatingService(
@@ -20,7 +21,7 @@ class EventRatingService(
         .save()
 
     fun EventRatingForm.consume(): EventRating {
-        val person = personService.findByCode(personCode) ?: error("Cannot find person")
+        val person = personService.findByUuid(personId) ?: error("Cannot find person")
         val event = eventService.findByCode(eventCode) ?: error("Cannot find event")
         return EventRating(
             person = person,
@@ -34,5 +35,5 @@ class EventRatingService(
     fun findByEventCode(eventCode: String) = eventRatingRepository.findByEventCode(eventCode)
 
     @Transactional
-    fun deleteByEventCodeAndPersonCode(eventCode: String, personCode: String) = eventRatingRepository.deleteByEventCodeAndPersonCode(eventCode, personCode)
+    fun deleteByEventCodeAndPersonUuid(eventCode: String, personId: UUID) = eventRatingRepository.deleteByEventCodeAndPersonUuid(eventCode, personId)
 }
