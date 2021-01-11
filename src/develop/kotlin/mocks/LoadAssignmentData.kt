@@ -3,9 +3,8 @@ package community.flock.eco.workday.mocks
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.repository.AssignmentRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import java.time.LocalDate
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
@@ -34,7 +33,8 @@ class LoadAssignmentData(
         client = loadClientData.findClientByCode(client),
         hourlyRate = hourlyRate,
         hoursPerWeek = 36,
-        role = role)
+        role = role
+    )
         .save()
 
     private fun Assignment.save(): Assignment = assignmentRepository

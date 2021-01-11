@@ -10,6 +10,8 @@ import community.flock.eco.workday.services.SickDayService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -29,11 +31,13 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-@SpringBootTest(classes = [Application::class])
+@SpringBootTest(classes = [Application::class], webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
+@AutoConfigureDataJpa
+@AutoConfigureWebClient
 @AutoConfigureMockMvc
-@ActiveProfiles(profiles = ["test"])
 @Import(CreateHelper::class)
+@ActiveProfiles(profiles = ["test"])
 class SickDayControllerTest {
 
     private val baseUrl: String = "/api/sickdays"
@@ -118,7 +122,7 @@ class SickDayControllerTest {
             .andExpect(jsonPath("\$.description").value(description))
             .andExpect(jsonPath("\$.status").value(status.toString()))
             .andExpect(jsonPath("\$.hours").value(hours))
-            .andExpect(jsonPath("\$.personCode").value(person.uuid))
+            .andExpect(jsonPath("\$.personId").value(person.uuid.toString()))
     }
 
     @Test
@@ -158,7 +162,7 @@ class SickDayControllerTest {
             .andExpect(jsonPath("\$.description").value(description))
             .andExpect(jsonPath("\$.status").value(status.toString()))
             .andExpect(jsonPath("\$.hours").value(hours))
-            .andExpect(jsonPath("\$.personCode").value(person.uuid))
+            .andExpect(jsonPath("\$.personId").value(person.uuid.toString()))
     }
 
     @Test
@@ -203,7 +207,7 @@ class SickDayControllerTest {
             .andExpect(jsonPath("\$.description").value(updatedDescription))
             .andExpect(jsonPath("\$.status").value(status.toString()))
             .andExpect(jsonPath("\$.hours").value(hours))
-            .andExpect(jsonPath("\$.personCode").value(person.uuid))
+            .andExpect(jsonPath("\$.personId").value(person.uuid.toString()))
     }
 
     @Test

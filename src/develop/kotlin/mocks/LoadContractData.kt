@@ -8,9 +8,8 @@ import community.flock.eco.workday.model.ContractService
 import community.flock.eco.workday.model.ContractType
 import community.flock.eco.workday.repository.ContractRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import java.time.LocalDate
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])

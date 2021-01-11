@@ -95,14 +95,14 @@ class PersonController(
         }
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
-    @DeleteMapping("/{code}")
+    @DeleteMapping("/{personId}")
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
-    fun delete(@PathVariable uuid: String, principal: Principal) =
+    fun delete(@PathVariable personId: UUID, principal: Principal) =
         principal
             .findUser()
             ?.let {
                 service
-                    .deleteByUuid(uuid)
+                    .deleteByUuid(personId)
                     .toResponse()
             }
             ?: throw ResponseStatusException(UNAUTHORIZED)

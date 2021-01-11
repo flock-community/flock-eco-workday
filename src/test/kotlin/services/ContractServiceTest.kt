@@ -1,11 +1,16 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.Application
+import community.flock.eco.workday.ApplicationConfiguration
+import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
@@ -14,11 +19,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-@SpringBootTest(classes = [Application::class, DataHelper::class])
+@SpringBootTest(classes = [ApplicationConfiguration::class])
 @AutoConfigureTestDatabase
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@ActiveProfiles(profiles = ["test"])
+@AutoConfigureDataJpa
+@AutoConfigureWebClient
 @Transactional
+@Import(CreateHelper::class)
+@ActiveProfiles(profiles = ["test"])
 class ContractServiceTest(
     @Autowired private val contractService: ContractService,
     @Autowired private val dataHelper: DataHelper

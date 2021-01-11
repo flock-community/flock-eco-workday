@@ -11,7 +11,7 @@ export const PersonRouter = () => {
       <Route exact path={url} component={PersonTable}></Route>
       <Route
         exact
-        path={`${url}/code/:personCode`}
+        path={`${url}/code/:personId`}
         component={PersonDetails}
       ></Route>
     </Switch>

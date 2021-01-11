@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import PropTypes from "prop-types";
-import { Card, Typography } from "@material-ui/core";
+import {Card, Typography} from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
-import { EventClient } from "../../clients/EventClient";
-import { isDefined } from "../../utils/validation";
+import {EventClient} from "../../clients/EventClient";
+import {isDefined} from "../../utils/validation";
 
-export function EventList(props) {
-  const { personCode, refresh, onClickRow } = props;
+type EventListProps = {
+  refresh: boolean,
+  personId: string,
+  onClickRow: (item: any) => void,
+};
+
+export function EventList({personId, refresh, onClickRow}: EventListProps) {
+
   const [state, setState] = useState([]);
 
   useEffect(() => {
     EventClient.all().then((res) => setState(res));
-  }, [personCode, refresh]);
+  }, [personId, refresh]);
 
   function handleClickRow(item) {
     return () => {
@@ -62,9 +68,3 @@ export function EventList(props) {
     </Grid>
   );
 }
-
-EventList.propTypes = {
-  refresh: PropTypes.bool,
-  personCode: PropTypes.string,
-  onClickRow: PropTypes.func,
-};

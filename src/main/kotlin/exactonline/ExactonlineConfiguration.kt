@@ -32,6 +32,5 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     ExactonlineAccountController::class,
     ExactonlineAuthenticationController::class,
     ExactonlineAuthenticationService::class,
-    ExactonlineProperties::class
 )
 class ExactonlineConfiguration

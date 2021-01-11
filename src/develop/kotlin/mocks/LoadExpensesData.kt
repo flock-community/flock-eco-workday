@@ -6,7 +6,6 @@ import community.flock.eco.workday.model.TravelExpense
 import community.flock.eco.workday.services.CostExpenseService
 import community.flock.eco.workday.services.TravelExpenseService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 
@@ -28,7 +27,8 @@ class LoadExpensesData(
                 description = "Travel expense description",
                 person = it,
                 distance = 100.0,
-                allowance = 0.19)
+                allowance = 0.19
+            )
                 .save()
                 .apply { data.add(this) }
 
@@ -36,7 +36,8 @@ class LoadExpensesData(
                 date = now,
                 description = "Cost expense description",
                 person = it,
-                amount = 50.0)
+                amount = 50.0
+            )
                 .save()
                 .apply { data.add(this) }
         }
@@ -47,7 +48,4 @@ class LoadExpensesData(
 
     private fun CostExpense.save() = costExpenseService
         .create(this)
-
 }
-
-

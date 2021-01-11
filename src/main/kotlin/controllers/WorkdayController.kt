@@ -33,14 +33,14 @@ class WorkdayController(
     private val service: WorkDayService,
     private val personService: PersonService
 ) {
-    @GetMapping(params = ["personUuid"])
+    @GetMapping(params = ["personId"])
     @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")
     fun getAll(
-        @RequestParam personUuid: UUID,
+        @RequestParam personId: UUID,
         authentication: Authentication,
         pageable: Pageable
     ): ResponseEntity<Iterable<WorkDay>> = when {
-        authentication.isAdmin() -> service.findAllByPersonUuid(personUuid, pageable)
+        authentication.isAdmin() -> service.findAllByPersonUuid(personId, pageable)
         else -> service.findAllByPersonUserCode(authentication.name, pageable)
     }
         .sortedByDescending { it.from }

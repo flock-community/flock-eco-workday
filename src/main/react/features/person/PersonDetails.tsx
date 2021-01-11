@@ -29,7 +29,7 @@ export const PersonDetails = (props) => {
   const classes = useStyle();
 
   useEffect(() => {
-    PersonService.get(params.personCode).then((person) => {
+    PersonService.get(params.personId).then((person) => {
       setPerson(person);
     });
   }, [reload]);

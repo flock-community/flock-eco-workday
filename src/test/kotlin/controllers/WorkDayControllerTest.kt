@@ -10,6 +10,8 @@ import community.flock.eco.workday.services.WorkDayService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -25,11 +27,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 import kotlin.test.assertEquals
 
-@SpringBootTest(classes = [Application::class])
+@SpringBootTest(classes = [Application::class], webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
+@AutoConfigureDataJpa
+@AutoConfigureWebClient
 @AutoConfigureMockMvc
-@ActiveProfiles(profiles = ["test"])
 @Import(CreateHelper::class)
+@ActiveProfiles(profiles = ["test"])
 class WorkDayControllerTest(
     @Autowired private val mvc: MockMvc,
     @Autowired private val mapper: ObjectMapper,
@@ -63,7 +67,7 @@ class WorkDayControllerTest(
         workDayService.create(createForm)
 
         mvc.perform(
-            get("$baseUrl?personCode=${person.uuid}")
+            get("$baseUrl?personId=${person.uuid}")
                 .with(user(CreateHelper.UserSecurity(user)))
                 .accept(APPLICATION_JSON)
         )
@@ -92,7 +96,7 @@ class WorkDayControllerTest(
         workDayService.create(createForm)
 
         mvc.perform(
-            get("$baseUrl?personCode=${personNotlinkedToUser.uuid}")
+            get("$baseUrl?personId=${personNotlinkedToUser.uuid}")
                 .with(user(CreateHelper.UserSecurity(user)))
                 .accept(APPLICATION_JSON)
         )

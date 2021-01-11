@@ -7,12 +7,17 @@ import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserSecurityService
 import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
+import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.forms.PersonForm
+import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.context.ActiveProfiles
@@ -26,9 +31,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.UUID
 
-@SpringBootTest(classes = [Application::class])
+@SpringBootTest(classes = [Application::class], webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
+@AutoConfigureDataJpa
+@AutoConfigureWebClient
 @AutoConfigureMockMvc
+@Import(CreateHelper::class)
 @ActiveProfiles(profiles = ["test"])
 class PersonControllerTest {
     private val baseUrl: String = "/api/persons"
@@ -82,8 +90,8 @@ class PersonControllerTest {
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
-            .andExpect(jsonPath("\$.code").exists())
-            .andExpect(jsonPath("\$.code").isString)
+            .andExpect(jsonPath("\$.uuid").exists())
+            .andExpect(jsonPath("\$.uuid").exists())
             .andExpect(jsonPath("\$.firstname").value(personForm.firstname))
             .andExpect(jsonPath("\$.lastname").value(personForm.lastname))
             .andExpect(jsonPath("\$.email").isEmpty)
@@ -121,15 +129,15 @@ class PersonControllerTest {
         /* DRY-Block */
 
         mvc.perform(
-            get("$baseUrl/${person("code")}")
+            get("$baseUrl/${person("uuid")}")
                 .with(user)
                 .accept(APPLICATION_JSON)
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
-            .andExpect(jsonPath("\$.code").exists())
-            .andExpect(jsonPath("\$.code").isString)
-            .andExpect(jsonPath("\$.code").value(person("code")))
+            .andExpect(jsonPath("\$.uuid").exists())
+            .andExpect(jsonPath("\$.uuid").isString)
+            .andExpect(jsonPath("\$.uuid").value(person("uuid")))
             .andExpect(jsonPath("\$.firstname").value(person("firstname")))
             .andExpect(jsonPath("\$.lastname").value(person("lastname")))
     }
@@ -173,7 +181,7 @@ class PersonControllerTest {
         )
 
         mvc.perform(
-            put("$baseUrl/${person("code")}")
+            put("$baseUrl/${person("uuid")}")
                 .with(user)
                 .content(mapper.writeValueAsString(personUpdate))
                 .contentType(APPLICATION_JSON)
@@ -181,9 +189,9 @@ class PersonControllerTest {
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
-            .andExpect(jsonPath("\$.code").isNotEmpty)
-            .andExpect(jsonPath("\$.code").isString)
-            .andExpect(jsonPath("\$.code").value(person("code")))
+            .andExpect(jsonPath("\$.uuid").isNotEmpty)
+            .andExpect(jsonPath("\$.uuid").isString)
+            .andExpect(jsonPath("\$.uuid").value(person("uuid")))
             .andExpect(jsonPath("\$.firstname").value(personUpdate.firstname))
             .andExpect(jsonPath("\$.lastname").value(personUpdate.lastname))
             .andExpect(jsonPath("\$.email").isNotEmpty)
@@ -221,28 +229,28 @@ class PersonControllerTest {
         fun person(key: String): String = person!!.get(key).textValue()
 
         mvc.perform(
-            get("$baseUrl/${person("code")}")
+            get("$baseUrl/${person("uuid")}")
                 .with(user)
                 .accept(APPLICATION_JSON)
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
-            .andExpect(jsonPath("\$.code").exists())
-            .andExpect(jsonPath("\$.code").isString)
-            .andExpect(jsonPath("\$.code").value(person("code")))
+            .andExpect(jsonPath("\$.uuid").exists())
+            .andExpect(jsonPath("\$.uuid").isString)
+            .andExpect(jsonPath("\$.uuid").value(person("uuid")))
             .andExpect(jsonPath("\$.firstname").value(person("firstname")))
             .andExpect(jsonPath("\$.lastname").value(person("lastname")))
         /* DRY-Block */
 
         mvc.perform(
-            delete("$baseUrl/${person("code")}")
+            delete("$baseUrl/${person("uuid")}")
                 .with(user)
                 .accept(APPLICATION_JSON)
         )
             .andExpect(status().isNoContent)
 
         /* DRY-Bock */
-        mvc.perform(get("$baseUrl/${person("code")}").with(user).accept(APPLICATION_JSON))
+        mvc.perform(get("$baseUrl/${person("uuid")}").with(user).accept(APPLICATION_JSON))
             .andExpect(status().isNotFound)
         /* DRY-Bock */
     }

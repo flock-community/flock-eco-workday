@@ -84,11 +84,3 @@ export function AssignmentSelector({
     </FormControl>
   );
 }
-
-AssignmentSelector.propTypes = {
-  personCode: PropTypes.string,
-  error: PropTypes.string,
-  value: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-  label: PropTypes.string,
-};

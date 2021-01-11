@@ -2,6 +2,7 @@ package community.flock.eco.workday.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.Application
+import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.helpers.CreateHelper
@@ -10,8 +11,11 @@ import community.flock.eco.workday.services.HoliDayService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.context.ActiveProfiles
@@ -24,27 +28,24 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
+import javax.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-@SpringBootTest(classes = [Application::class])
+@SpringBootTest(classes = [Application::class], webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
+@AutoConfigureDataJpa
+@AutoConfigureWebClient
 @AutoConfigureMockMvc
+@Import(CreateHelper::class)
 @ActiveProfiles(profiles = ["test"])
-class HoliDayControllerTest {
+class HoliDayControllerTest(
+    @Autowired private val mvc: MockMvc,
+    @Autowired private val mapper: ObjectMapper,
+    @Autowired private val createHelper: CreateHelper,
+    @Autowired private val holiDayService: HoliDayService
+) {
     private val baseUrl: String = "/api/holidays"
-
-    @Autowired
-    private lateinit var mvc: MockMvc
-
-    @Autowired
-    private lateinit var mapper: ObjectMapper
-
-    @Autowired
-    private lateinit var createHelper: CreateHelper
-
-    @Autowired
-    private lateinit var holiDayService: HoliDayService
 
     val adminAuthorities = setOf(HolidayAuthority.READ, HolidayAuthority.WRITE, HolidayAuthority.ADMIN)
     val userAuthorities = setOf(HolidayAuthority.READ, HolidayAuthority.WRITE)
@@ -86,7 +87,7 @@ class HoliDayControllerTest {
             .andExpect(jsonPath("\$.description").value(description))
             .andExpect(jsonPath("\$.status").value(status.toString()))
             .andExpect(jsonPath("\$.hours").value(hours))
-            .andExpect(jsonPath("\$.personCode").value(person.uuid))
+            .andExpect(jsonPath("\$.personId").value(person.uuid.toString()))
     }
 
     @Test
@@ -126,7 +127,7 @@ class HoliDayControllerTest {
             .andExpect(jsonPath("\$.description").value(description))
             .andExpect(jsonPath("\$.status").value(status.toString()))
             .andExpect(jsonPath("\$.hours").value(hours))
-            .andExpect(jsonPath("\$.personId").value(person.uuid))
+            .andExpect(jsonPath("\$.personId").value(person.uuid.toString()))
     }
 
     @Test
@@ -171,7 +172,7 @@ class HoliDayControllerTest {
             .andExpect(jsonPath("\$.description").value(updatedDescription))
             .andExpect(jsonPath("\$.status").value(status.toString()))
             .andExpect(jsonPath("\$.hours").value(hours))
-            .andExpect(jsonPath("\$.personId").value(person.uuid))
+            .andExpect(jsonPath("\$.personId").value(person.uuid.toString()))
     }
 
     @Test

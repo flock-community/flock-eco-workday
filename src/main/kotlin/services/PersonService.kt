@@ -79,7 +79,7 @@ class PersonService(
     }
 
     @Transactional
-    fun deleteByUuid(uuid: String) = repository.deleteByUuid(uuid)
+    fun deleteByUuid(uuid: UUID) = repository.deleteByUuid(uuid)
 }
 
 fun Person.isUser(userCode: String?) = this.user?.code == userCode

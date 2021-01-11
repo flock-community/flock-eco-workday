@@ -4,8 +4,8 @@ import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.services.SickDayService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import java.time.LocalDate
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])

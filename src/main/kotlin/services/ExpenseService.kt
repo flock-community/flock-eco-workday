@@ -31,8 +31,8 @@ class ExpenseService(
         .findById(id)
         .toNullable()
 
-    fun findAllByPersonCode(personUuid: UUID, pageable: Pageable): Page<Expense> = expenseRepository
-        .findAllByPersonUuid(personUuid, pageable)
+    fun findAllByPersonUuid(personId: UUID, pageable: Pageable): Page<Expense> = expenseRepository
+        .findAllByPersonUuid(personId, pageable)
 
     fun findAllByPersonUserCode(personCode: String, pageable: Pageable): Page<Expense> = expenseRepository
         .findAllByPersonUserCode(personCode, pageable)
