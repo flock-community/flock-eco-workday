@@ -52,9 +52,10 @@ class PersonService(
 
     fun create(form: PersonForm): Person? {
         val user = when (form.userCode) {
-            is String -> userRepository
-                .findByCode(form.userCode)
-                .toNullable()
+            is String ->
+                userRepository
+                    .findByCode(form.userCode)
+                    .toNullable()
             else -> null
         }
 

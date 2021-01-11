@@ -14,7 +14,7 @@ data class Person(
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long = 0,
 
-    @Column(name="code")
+    @Column(name = "code")
     val uuid: UUID = UUID.randomUUID(),
 
     val firstname: String,
@@ -28,7 +28,7 @@ data class Person(
     @JsonIdentityReference(alwaysAsId = true)
     val user: User?
 
-){
+) {
 
     override fun hashCode(): Int {
         return Objects.hashCode(uuid)
@@ -42,4 +42,3 @@ data class Person(
         return Objects.equals(uuid, other.uuid)
     }
 }
-

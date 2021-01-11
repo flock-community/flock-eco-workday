@@ -62,13 +62,14 @@ class WorkDayControllerTest(
 
         workDayService.create(createForm)
 
-        mvc.perform(get("$baseUrl?personCode=${person.uuid}")
-            .with(user(CreateHelper.UserSecurity(user)))
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            get("$baseUrl?personCode=${person.uuid}")
+                .with(user(CreateHelper.UserSecurity(user)))
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
     }
-
 
     @Test
     fun `user can only access its own workdays`() {
@@ -90,9 +91,11 @@ class WorkDayControllerTest(
 
         workDayService.create(createForm)
 
-        mvc.perform(get("$baseUrl?personCode=${personNotlinkedToUser.uuid}")
-            .with(user(CreateHelper.UserSecurity(user)))
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            get("$baseUrl?personCode=${personNotlinkedToUser.uuid}")
+                .with(user(CreateHelper.UserSecurity(user)))
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(content().string("[]"))
@@ -109,7 +112,6 @@ class WorkDayControllerTest(
         val person = createHelper.createPerson("john", "doe", user.code)
         val assignment = createHelper.createAssignment(client, person, from, to)
 
-
         val createForm = WorkDayForm(
             status = status,
             from = from,
@@ -121,16 +123,17 @@ class WorkDayControllerTest(
 
         val created = workDayService.create(createForm)
 
-        mvc.perform(get("$baseUrl/${created.code}")
-            .with(user(CreateHelper.UserSecurity(user)))
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            get("$baseUrl/${created.code}")
+                .with(user(CreateHelper.UserSecurity(user)))
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.id").exists())
             .andExpect(MockMvcResultMatchers.jsonPath("\$.code").exists())
             .andExpect(MockMvcResultMatchers.jsonPath("\$.code").isString)
             .andExpect(MockMvcResultMatchers.jsonPath("\$.status").value(Status.REQUESTED.toString()))
-
     }
 
     @Test
@@ -143,7 +146,6 @@ class WorkDayControllerTest(
         val client = createHelper.createClient()
         val person = createHelper.createPerson("john", "doe", user.code)
         val assignment = createHelper.createAssignment(client, person, from, to)
-
 
         val createForm = WorkDayForm(
             status = status,
@@ -158,16 +160,17 @@ class WorkDayControllerTest(
 
         val updatedForm = createForm.copy(status = Status.APPROVED)
 
-        mvc.perform(MockMvcRequestBuilders.put("$baseUrl/${created.code}")
-            .with(user(CreateHelper.UserSecurity(user)))
-            .content(mapper.writeValueAsString(updatedForm))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            MockMvcRequestBuilders.put("$baseUrl/${created.code}")
+                .with(user(CreateHelper.UserSecurity(user)))
+                .content(mapper.writeValueAsString(updatedForm))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isForbidden)
 
         assertEquals(workDayService.findByCode(created.code)?.status, status)
     }
-
 
     @Test
     fun `admin can update status field existing wrokday via PUT-Method`() {
@@ -180,7 +183,6 @@ class WorkDayControllerTest(
         val client = createHelper.createClient()
         val person = createHelper.createPerson("john", "doe", admin.code)
         val assignment = createHelper.createAssignment(client, person, from, to)
-
 
         val createForm = WorkDayForm(
             status = status,
@@ -195,16 +197,17 @@ class WorkDayControllerTest(
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 
-        mvc.perform(MockMvcRequestBuilders.put("$baseUrl/${created.code}")
-            .with(user(CreateHelper.UserSecurity(admin)))
-            .content(mapper.writeValueAsString(updatedCreateForm))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            MockMvcRequestBuilders.put("$baseUrl/${created.code}")
+                .with(user(CreateHelper.UserSecurity(admin)))
+                .content(mapper.writeValueAsString(updatedCreateForm))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.id").exists())
             .andExpect(MockMvcResultMatchers.jsonPath("\$.code").exists())
             .andExpect(MockMvcResultMatchers.jsonPath("\$.status").value(updatedStatus.toString()))
     }
-
 }

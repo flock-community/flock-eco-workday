@@ -110,6 +110,4 @@ class SickdayController(
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
         }
     }
-
-
 }

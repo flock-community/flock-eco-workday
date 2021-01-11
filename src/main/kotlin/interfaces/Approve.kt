@@ -1,10 +1,7 @@
 package community.flock.eco.workday.interfaces
 
-import community.flock.eco.workday.forms.SickDayForm
-import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.Status
 import org.springframework.http.HttpStatus
-import org.springframework.security.core.Authentication
 import org.springframework.web.server.ResponseStatusException
 
 interface Approve {

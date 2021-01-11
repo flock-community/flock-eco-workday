@@ -127,7 +127,6 @@ class AggregationServiceTest(
         assertEquals(holiDayBalance.toString(), "192.0000000000")
     }
 
-
     @Test
     fun `holiday balance one person full time split contract`() {
         val from = LocalDate.of(2020, 1, 1)

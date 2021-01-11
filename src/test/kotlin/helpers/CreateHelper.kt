@@ -85,7 +85,8 @@ class CreateHelper(
         from: LocalDate,
         to: LocalDate?,
         monthlySalary: Double = 4000.0,
-        hoursPerWeek: Int = 40) = ContractInternalForm(
+        hoursPerWeek: Int = 40
+    ) = ContractInternalForm(
         personId = person.uuid,
         monthlySalary = monthlySalary,
         hoursPerWeek = hoursPerWeek,
@@ -144,7 +145,6 @@ class CreateHelper(
     ).run {
         holiDayService.create(this)
     } ?: error("Cannot create sick day contract")
-
 
     class UserSecurity(val user: User) : UserDetails {
         override fun getAuthorities() = user.authorities.map { SimpleGrantedAuthority(it) }

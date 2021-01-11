@@ -23,18 +23,20 @@ class SickDayRepositoryTest(
 ) {
 
     init {
-        personRepository.save(Person(
-            firstname = "Denholm",
-            lastname = "Reynholm",
-            email = "denholm@reynholm-industries.co.uk",
-            position = "Chief Executive Officer",
-            number = null,
-            user = null
-        ))
+        personRepository.save(
+            Person(
+                firstname = "Denholm",
+                lastname = "Reynholm",
+                email = "denholm@reynholm-industries.co.uk",
+                position = "Chief Executive Officer",
+                number = null,
+                user = null
+            )
+        )
     }
 
     private final fun createSickdayAndPersist(): SickDay {
-        val person: Person =  personRepository.findAll().first()
+        val person: Person = personRepository.findAll().first()
         val from = LocalDate.of(1970, 1, 1)
 
         val sickDay = SickDay(
@@ -73,7 +75,7 @@ class SickDayRepositoryTest(
 
     @Test
     fun `should delete sickDay from repository`() {
-        val person: Person =  personRepository.findAll().first()
+        val person: Person = personRepository.findAll().first()
         var res: MutableIterable<SickDay>
         val sickDayList: MutableList<SickDay> = mutableListOf()
         val from = LocalDate.of(1970, 1, 1)

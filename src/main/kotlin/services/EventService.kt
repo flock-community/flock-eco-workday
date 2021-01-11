@@ -6,12 +6,12 @@ import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.repository.EventRatingRepository
 import community.flock.eco.workday.repository.EventRepository
-import java.time.LocalDate
-import java.util.UUID
-import javax.persistence.EntityManager
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.util.UUID
+import javax.persistence.EntityManager
 
 @Service
 class EventService(

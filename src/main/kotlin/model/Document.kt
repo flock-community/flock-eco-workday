@@ -8,5 +8,3 @@ class Document(
     val name: String,
     val file: UUID
 )
-
-

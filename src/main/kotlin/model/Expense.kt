@@ -35,4 +35,4 @@ abstract class Expense(
     @Enumerated(EnumType.STRING)
     open val type: ExpenseType
 
-): Approve
+) : Approve

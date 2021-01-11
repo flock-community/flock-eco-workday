@@ -1,6 +1,5 @@
 package community.flock.eco.workday.model
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import community.flock.eco.core.events.EventEntityListeners
 import java.time.LocalDate
 import java.util.UUID

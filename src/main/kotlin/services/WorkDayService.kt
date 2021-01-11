@@ -1,6 +1,5 @@
 package community.flock.eco.workday.services
 
-import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 import community.flock.eco.core.utils.toNullable
@@ -18,13 +17,12 @@ import java.time.temporal.ChronoUnit
 import java.util.UUID
 import javax.persistence.EntityManager
 
-
 @Service
 class WorkDayService(
     private val workDayRepository: WorkDayRepository,
     private val assignmentService: AssignmentService,
     private val entityManager: EntityManager,
-    @Value("\${flock.eco.workday.bucket.documents}") val bucketName:String
+    @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String
 ) {
 
     fun findByCode(code: String): WorkDay? = workDayRepository
@@ -35,10 +33,10 @@ class WorkDayService(
         .findAllByAssignmentPersonUuid(personCode)
 
     fun findAllByPersonUuid(personCode: UUID, pageable: Pageable) = workDayRepository
-        .findAllByAssignmentPersonUuid(personCode,pageable)
+        .findAllByAssignmentPersonUuid(personCode, pageable)
 
     fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = workDayRepository
-        .findAllByAssignmentPersonUserCode(userCode,pageable)
+        .findAllByAssignmentPersonUserCode(userCode, pageable)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<WorkDay> {
         val query = "SELECT it FROM WorkDay it WHERE it.from <= :to AND (it.to is null OR it.to >= :from)"
@@ -82,7 +80,6 @@ class WorkDayService(
         val blob = storage.get(bucketName, uuid.toString())
         return blob.getContent()
     }
-
 
     @Transactional
     fun deleteByCode(code: String) = workDayRepository.deleteByCode(code)

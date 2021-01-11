@@ -8,9 +8,6 @@ import community.flock.eco.workday.interfaces.inRange
 import community.flock.eco.workday.model.AggregationClient
 import community.flock.eco.workday.model.AggregationMonth
 import community.flock.eco.workday.model.AggregationPerson
-import community.flock.eco.workday.model.AggregationDayly
-import community.flock.eco.workday.model.AggregationPersonReport
-import community.flock.eco.workday.model.AggregationPersonReportMonth
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.ContractExternal
@@ -26,7 +23,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
-import java.util.UUID
 import javax.transaction.Transactional
 import community.flock.eco.workday.model.ContractService as ContractServiceModel
 
@@ -111,12 +107,12 @@ class AggregationService(
             .map { from.plusMonths(it) }
             .map { YearMonth.from(it) }
 
-        fun contractTypes(person:Person, yearMonth:YearMonth) = all.contract
-                .filter { (it is ContractInternal && it.billable) || (it is ContractExternal && it.billable) || it is ContractManagement}
-                .filter { it.person == person }
-                .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
-                .map { it::class.java }
-                .toSet()
+        fun contractTypes(person: Person, yearMonth: YearMonth) = all.contract
+            .filter { (it is ContractInternal && it.billable) || (it is ContractExternal && it.billable) || it is ContractManagement }
+            .filter { it.person == person }
+            .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
+            .map { it::class.java }
+            .toSet()
 
         return months
             .map { yearMonth ->
@@ -125,12 +121,12 @@ class AggregationService(
                     countContractInternal = all.contract
                         .filterIsInstance(ContractInternal::class.java)
                         .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
-                        .filter{ it.billable }
+                        .filter { it.billable }
                         .distinctBy { it.person.id }
                         .count(),
                     countContractExternal = all.contract
                         .filterIsInstance(ContractExternal::class.java)
-                        .filter{ it.billable }
+                        .filter { it.billable }
                         .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
                         .distinctBy { it.person.id }
                         .count(),
@@ -154,15 +150,15 @@ class AggregationService(
                         .map { it.totalRevenueInPeriod(yearMonth) }
                         .sum(),
                     actualRevenueInternal = all.workDay
-                        .filter{contractTypes(it.assignment.person, yearMonth).contains(ContractInternal::class.java)}
+                        .filter { contractTypes(it.assignment.person, yearMonth).contains(ContractInternal::class.java) }
                         .map { it.totalRevenueInPeriod(yearMonth) }
                         .sum(),
                     actualRevenueExternal = all.workDay
-                        .filter{contractTypes(it.assignment.person, yearMonth).contains(ContractExternal::class.java)}
+                        .filter { contractTypes(it.assignment.person, yearMonth).contains(ContractExternal::class.java) }
                         .map { it.totalRevenueInPeriod(yearMonth) }
                         .sum(),
                     actualRevenueManagement = all.workDay
-                        .filter{contractTypes(it.assignment.person, yearMonth).contains(ContractManagement::class.java)}
+                        .filter { contractTypes(it.assignment.person, yearMonth).contains(ContractManagement::class.java) }
                         .map { it.totalRevenueInPeriod(yearMonth) }
                         .sum(),
                     actualHours = all.workDay
@@ -204,11 +200,13 @@ class AggregationService(
         .sum()
 
     private fun Data.allPersons(): Set<Person> {
-        return (this.assignment.map { it.person } +
-            this.contract.map { it.person } +
-            this.sickDay.map { it.person } +
-            this.holiDay.map { it.person } +
-            this.workDay.map { it.assignment.person })
+        return (
+            this.assignment.map { it.person } +
+                this.contract.map { it.person } +
+                this.sickDay.map { it.person } +
+                this.holiDay.map { it.person } +
+                this.workDay.map { it.assignment.person }
+            )
             .filterNotNull()
             .toSet()
     }
@@ -218,7 +216,8 @@ class AggregationService(
             applicationConstants.averageHoliDays,
             applicationConstants.averageSickDays,
             applicationConstants.averagePublicDays,
-            applicationConstants.averageTrainingDays)
+            applicationConstants.averageTrainingDays
+        )
             .map { it.toInt() }
             .sum()
             .toBigDecimal()
@@ -320,10 +319,8 @@ private fun <T : Period> Iterable<T>.sumAmount(yearMonth: YearMonth) = this
 private fun Iterable<Assignment>.sumAssignmentHoursPerWeek() = this
     .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.hoursPerWeek.toBigDecimal() }
 
-
 private fun Iterable<WorkDay>.sumAmount() = this
     .fold(BigDecimal.ZERO) { acc, cur -> acc + (cur.hours * cur.assignment.hourlyRate).toBigDecimal() }
-
 
 fun Dayly.hoursPerDay(): Map<LocalDate, BigDecimal> = this
     .toDateRange()
@@ -383,6 +380,5 @@ fun Map.Entry<YearMonth, Iterable<Data>>.actualTotalHours(transform: Data.() -> 
     .flatMap(transform)
     .map { it.totalHoursInPeriod(key) }
     .sum()
-
 
 private fun <A, B> cartesianProducts(a_s: Iterable<A>, b_s: Iterable<B>) = a_s.flatMap { a -> b_s.map { b -> a to b } }

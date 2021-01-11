@@ -27,4 +27,4 @@ data class SickDayForm(
     val description: String? = null,
     val personId: UUID
 
-    ) : Dayly, Approve
+) : Dayly, Approve

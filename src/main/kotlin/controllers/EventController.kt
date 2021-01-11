@@ -66,11 +66,13 @@ class EventController(
         @RequestBody form: EventRatingForm,
         authentication: Authentication?
     ) = eventRatingService
-        .create(EventRatingForm(
-            eventCode = code,
-            personId = form.personId,
-            rating = form.rating
-        ))
+        .create(
+            EventRatingForm(
+                eventCode = code,
+                personId = form.personId,
+                rating = form.rating
+            )
+        )
         .toResponse()
 
     @PostMapping

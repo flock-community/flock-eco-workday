@@ -57,4 +57,3 @@ fun Data.filterInRange(date: LocalDate): Data = Data(
     assignment.filterInRange(date),
     contract.filterInRange(date)
 )
-

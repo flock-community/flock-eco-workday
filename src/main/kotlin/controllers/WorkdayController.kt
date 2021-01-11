@@ -4,13 +4,11 @@ import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.WorkDayAuthority
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
-import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.WorkDayService
 import community.flock.eco.workday.services.isUser
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -102,7 +100,6 @@ class WorkdayController(
                 .contentType(getMediaType(name))
                 .body(this)
         }
-
 
     @PostMapping("/sheets")
     @PreAuthorize("hasAuthority('WorkDayAuthority.WRITE')")

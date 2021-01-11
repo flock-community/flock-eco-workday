@@ -21,7 +21,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EnableJpaRepositories
 @EntityScan
 @EnableConfigurationProperties(ExactonlineProperties::class)
-@Import(UserControllerAdvice::class,
+@Import(
+    UserControllerAdvice::class,
     ExactonlineAccountClient::class,
     ExactonlineAuthenticationClient::class,
     ExactonlineDocumentClient::class,
@@ -31,8 +32,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     ExactonlineAccountController::class,
     ExactonlineAuthenticationController::class,
     ExactonlineAuthenticationService::class,
-    ExactonlineProperties::class)
-class ExactonlineConfiguration {
-
-
-}
+    ExactonlineProperties::class
+)
+class ExactonlineConfiguration

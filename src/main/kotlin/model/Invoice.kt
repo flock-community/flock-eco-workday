@@ -9,7 +9,6 @@ import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.Id
 
-
 @Entity
 @EntityListeners(EventEntityListeners::class)
 data class Invoice(

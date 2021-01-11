@@ -15,8 +15,8 @@ data class AggregationPersonReportMonth(
 )
 
 data class AggregationDayly(
-    val workDay:BigDecimal,
-    val holiDay:BigDecimal,
-    val sickDay:BigDecimal,
-    val eventDay:BigDecimal
+    val workDay: BigDecimal,
+    val holiDay: BigDecimal,
+    val sickDay: BigDecimal,
+    val eventDay: BigDecimal
 )

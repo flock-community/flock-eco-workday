@@ -6,7 +6,6 @@ import community.flock.eco.workday.interfaces.Approve
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.ElementCollection
-import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
 import javax.persistence.EnumType

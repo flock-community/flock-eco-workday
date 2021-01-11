@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service
 import java.util.UUID
 import javax.transaction.Transactional
 
-
 @Service
 class ExpenseService(
     private val expenseRepository: ExpenseRepository,
@@ -45,11 +44,9 @@ class ExpenseService(
         .findById(id)
         .toNullable()
         ?.also { expenseRepository.delete(it) }
-        ?.also{applicationEventPublisher.publishEvent(DeleteExpenseEvent(it))}
+        ?.also { applicationEventPublisher.publishEvent(DeleteExpenseEvent(it)) }
         .run { Unit }
-
 }
-
 
 @Service
 class CostExpenseService(
@@ -60,15 +57,14 @@ class CostExpenseService(
     @Transactional
     fun create(it: CostExpense): CostExpense = costExpenseRepository
         .save(it)
-        .also{applicationEventPublisher.publishEvent(CreateExpenseEvent(it))}
+        .also { applicationEventPublisher.publishEvent(CreateExpenseEvent(it)) }
 
     @Transactional
-    fun update(id:UUID, input: CostExpense): CostExpense? = costExpenseRepository
+    fun update(id: UUID, input: CostExpense): CostExpense? = costExpenseRepository
         .findById(id)
         .toNullable()
         ?.let { costExpenseRepository.save(input) }
-        ?.also{applicationEventPublisher.publishEvent(UpdateExpenseEvent(it))}
-
+        ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
 }
 
 @Service
@@ -80,15 +76,12 @@ class TravelExpenseService(
     @Transactional
     fun create(it: TravelExpense): TravelExpense = travelExpenseRepository
         .save(it)
-        .also{applicationEventPublisher.publishEvent(CreateExpenseEvent(it))}
+        .also { applicationEventPublisher.publishEvent(CreateExpenseEvent(it)) }
 
     @Transactional
-    fun update(id:UUID, input: TravelExpense): TravelExpense? = travelExpenseRepository
+    fun update(id: UUID, input: TravelExpense): TravelExpense? = travelExpenseRepository
         .findById(id)
         .toNullable()
         ?.let { travelExpenseRepository.save(input) }
-        ?.also{applicationEventPublisher.publishEvent(UpdateExpenseEvent(it))}
-
+        ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
 }
-
-

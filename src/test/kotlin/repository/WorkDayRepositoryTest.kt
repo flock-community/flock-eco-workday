@@ -2,7 +2,6 @@ package community.flock.eco.workday.repository
 
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
 import org.junit.jupiter.api.Test

@@ -84,5 +84,4 @@ class SickDayService(
     }
 
     private fun SickDay.save() = repository.save(this)
-
 }

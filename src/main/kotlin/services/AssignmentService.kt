@@ -6,13 +6,13 @@ import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.repository.AssignmentRepository
 import community.flock.eco.workday.repository.ClientRepository
 import community.flock.eco.workday.repository.PersonRepository
-import java.time.LocalDate
-import javax.persistence.EntityManager
-import javax.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import java.util.*
+import javax.persistence.EntityManager
+import javax.transaction.Transactional
 
 @Service
 class AssignmentService(

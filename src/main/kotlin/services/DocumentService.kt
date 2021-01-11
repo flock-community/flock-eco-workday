@@ -7,15 +7,13 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.UUID
 
-
 @Service
 class DocumentService(
-    @Value("\${flock.eco.workday.bucket.documents}") val bucketName:String
+    @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String
 ) {
     companion object {
         val storage = StorageOptions.getDefaultInstance().service
         var logger = LoggerFactory.getLogger(DocumentService::class.java)
-
     }
 
     fun storeDocument(byteArray: ByteArray): UUID {
@@ -36,5 +34,4 @@ class DocumentService(
         val blob = storage.get(bucketName, uuid.toString())
         return blob.getContent()
     }
-
 }

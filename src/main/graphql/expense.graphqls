@@ -1,7 +1,7 @@
 
 interface Expense {
     id:ID!
-    personCode: UUID!
+    personId: UUID!
     description: String!
     date: Date!
     status: Status!
@@ -9,7 +9,7 @@ interface Expense {
 
 type CostExpense implements Expense{
     id:ID!
-    personCode: UUID!
+    personId: UUID!
     description: String!
     date: Date!
     status: Status!
@@ -24,7 +24,7 @@ type CostExpenseFile {
 
 type TravelExpense implements Expense{
     id:ID!
-    personCode: UUID!
+    personId: UUID!
     description: String!
     date: Date!
     status: Status!
@@ -33,7 +33,7 @@ type TravelExpense implements Expense{
 }
 
 input CostExpenseInput {
-    personCode: UUID!
+    personId: UUID!
     description: String!
     date: Date!
     status: Status!
@@ -47,7 +47,7 @@ input CostExpenseFileInput {
 }
 
 input TravelExpenseInput {
-    personCode: UUID!
+    personId: UUID!
     description: String!
     date: Date!
     status: Status!

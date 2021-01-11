@@ -74,7 +74,6 @@ class HolidayController(
             ?.applyAllowedToUpdate(form, authentication)
             ?.run { service.update(code, form) }
 
-
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
     fun delete(
@@ -105,7 +104,6 @@ class HolidayController(
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
         }
     }
-
 
     private fun HoliDay.applyAllowedToUpdate(form: HoliDayForm, authentication: Authentication): HoliDay = apply {
         if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {

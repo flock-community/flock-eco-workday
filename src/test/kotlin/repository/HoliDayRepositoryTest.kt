@@ -43,21 +43,22 @@ class HoliDayRepositoryTest(
     ).apply { personRepository.saveAll(this) }
         .run { this.toList() }
 
-
     @Test
     fun `should find a Holiday via holidayCode by querying findByCode`() {
         val holiDays: MutableSet<HoliDay> = mutableSetOf()
         persons.forEach { person ->
             holiDays.add(
-                createAndPersist(HoliDay(
-                    description = "",
-                    status = Status.REQUESTED,
-                    hours = 42.0,
-                    from = dayFromLocalDate(),
-                    to = dayFromLocalDate(1),
-                    days = listOf(8.0),
-                    person = person
-                ))
+                createAndPersist(
+                    HoliDay(
+                        description = "",
+                        status = Status.REQUESTED,
+                        hours = 42.0,
+                        from = dayFromLocalDate(),
+                        to = dayFromLocalDate(1),
+                        days = listOf(8.0),
+                        person = person
+                    )
+                )
             )
         }
 

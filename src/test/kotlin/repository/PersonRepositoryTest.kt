@@ -55,5 +55,4 @@ class PersonRepositoryTest(
         assertThat(res.toSet().size).isEqualTo(1)
         assertThat(res.first()).isEqualTo(person)
     }
-
 }
