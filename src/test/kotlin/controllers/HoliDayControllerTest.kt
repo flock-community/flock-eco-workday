@@ -2,7 +2,6 @@ package community.flock.eco.workday.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.Application
-import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.helpers.CreateHelper
@@ -28,11 +27,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
-import javax.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-@SpringBootTest(classes = [Application::class], webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = [Application::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
 @AutoConfigureDataJpa
 @AutoConfigureWebClient

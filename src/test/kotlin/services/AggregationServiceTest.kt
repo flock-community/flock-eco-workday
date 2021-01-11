@@ -1,6 +1,5 @@
 package community.flock.eco.workday.services
 
-import community.flock.eco.workday.Application
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
@@ -24,7 +23,7 @@ import kotlin.test.assertNotNull
 @AutoConfigureDataJpa
 @AutoConfigureWebClient
 @Transactional
-@Import(CreateHelper::class)
+@Import(CreateHelper::class, DataHelper::class)
 @ActiveProfiles(profiles = ["test"])
 class AggregationServiceTest(
     @Autowired val dataHelper: DataHelper,

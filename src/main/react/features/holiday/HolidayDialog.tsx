@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Dialog, DialogContent, Slide } from "@material-ui/core";
+import {Dialog, DialogContent, Grid, MenuItem, Select, Slide} from "@material-ui/core";
 import { HTML5_FMT } from "moment";
 import HolidayIcon from "@material-ui/icons/WbSunny";
 import Typography from "@material-ui/core/Typography";
@@ -11,6 +11,9 @@ import { HolidayClient } from "../../clients/HolidayClient";
 import { HOLIDAY_FORM_ID, HolidayForm, schemaHolidayForm } from "./HolidayForm";
 import { isDefined } from "../../utils/validation";
 
+enum Types {
+  "HOLIDAY", "PLUSDAY"
+}
 type HolidayDialogProps = {
   open: boolean;
   code?: string;
@@ -27,6 +30,7 @@ export function HolidayDialog({
   const [openDelete, setOpenDelete] = useState(false);
 
   const [state, setState] = useState<any>();
+  const [type, setType] = useState<Types>(Types.HOLIDAY);
 
   const handleSubmit = (it) => {
     const body = {
@@ -92,7 +96,6 @@ export function HolidayDialog({
   return (
     <>
       <Dialog
-        fullScreen
         open={open}
         onClose={handleClose}
         TransitionComponent={Slide}
@@ -104,7 +107,27 @@ export function HolidayDialog({
           onClose={handleClose}
         />
         <DialogContent>
-          {state && <HolidayForm value={state} onSubmit={handleSubmit} />}
+          <Grid container>
+            <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+            <Grid item>
+
+                <Select
+                  value={type}
+                  onChange={(e) => {setType(e?.target?.value)}}
+                  fullWidth
+                >
+                  <MenuItem value={Types.HOLIDAY}>HoliDay</MenuItem>
+                  <MenuItem value={Types.PLUSDAY}>PlusDay</MenuItem>
+                </Select>
+
+            </Grid>
+            </UserAuthorityUtil>
+            <Grid item xs={12}>
+              {state && (type === Types.HOLIDAY) && <HolidayForm value={state} onSubmit={handleSubmit} />}
+            </Grid>
+          </Grid>
+
+
         </DialogContent>
         <DialogFooter
           formId={HOLIDAY_FORM_ID}

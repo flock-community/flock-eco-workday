@@ -1,7 +1,6 @@
 package community.flock.eco.workday.repository
 
 import community.flock.eco.core.utils.toNullable
-import community.flock.eco.workday.Application
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.HoliDay

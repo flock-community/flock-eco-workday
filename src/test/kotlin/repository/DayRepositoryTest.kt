@@ -1,6 +1,5 @@
 package community.flock.eco.workday.repository
 
-import community.flock.eco.workday.Application
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test

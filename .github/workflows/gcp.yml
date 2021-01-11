@@ -46,8 +46,5 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-
 
-      - run: npm ci
-      - run: npm run build
-
       - name: Build and Deploy
-        run: mvn -B compile jib:build --file pom.xml
+        run: mvn compile -P frontend jib:build --file pom.xml

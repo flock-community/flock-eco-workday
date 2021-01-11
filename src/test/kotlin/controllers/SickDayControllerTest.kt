@@ -31,7 +31,7 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-@SpringBootTest(classes = [Application::class], webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = [Application::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
 @AutoConfigureDataJpa
 @AutoConfigureWebClient

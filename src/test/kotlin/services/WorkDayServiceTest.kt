@@ -1,10 +1,8 @@
 package community.flock.eco.workday.services
 
-import community.flock.eco.workday.Application
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.helpers.DataHelper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -12,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
 import javax.transaction.Transactional
