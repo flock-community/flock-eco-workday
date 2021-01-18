@@ -22,7 +22,7 @@ import kotlin.test.assertTrue
 @AutoConfigureDataJpa
 @AutoConfigureWebClient
 @Transactional
-@Import(CreateHelper::class)
+@Import(CreateHelper::class, DataHelper::class)
 @ActiveProfiles(profiles = ["test"])
 class AssignmentServiceTest(
     @Autowired val assignmentService: AssignmentService,
