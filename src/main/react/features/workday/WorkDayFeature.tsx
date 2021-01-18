@@ -85,7 +85,7 @@ export function WorkDayFeature() {
         </Grid>
         <Grid item xs={12}>
           <WorkDayList
-            personUuid={person?.uuid}
+            personId={person?.uuid}
             onClickRow={handleClickRow}
             refresh={refresh}
             onClickStatus={handleStatusChange}

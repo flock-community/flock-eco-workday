@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import React, {useEffect, useState} from "react";
 import {Dialog, DialogContent, Grid, MenuItem, Select, Slide} from "@material-ui/core";
-import { HTML5_FMT } from "moment";
+import {HTML5_FMT} from "moment";
 import HolidayIcon from "@material-ui/icons/WbSunny";
 import Typography from "@material-ui/core/Typography";
-import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import {ConfirmDialog} from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
-import { DialogFooter, DialogHeader } from "../../components/dialog";
-import { HolidayClient } from "../../clients/HolidayClient";
-import { HOLIDAY_FORM_ID, HolidayForm, schemaHolidayForm } from "./HolidayForm";
-import { isDefined } from "../../utils/validation";
+import {DialogFooter, DialogHeader} from "../../components/dialog";
+import {HolidayClient} from "../../clients/HolidayClient";
+import {HOLIDAY_FORM_ID, HolidayForm, schemaHolidayForm} from "./HolidayForm";
+import {PlusDayForm} from "./PlusDayForm";
 
 enum Types {
   "HOLIDAY", "PLUSDAY"
 }
+
 type HolidayDialogProps = {
   open: boolean;
   code?: string;
@@ -22,11 +22,11 @@ type HolidayDialogProps = {
 };
 
 export function HolidayDialog({
-  open,
-  code,
-  personId,
-  onComplete,
-}: HolidayDialogProps) {
+                                open,
+                                code,
+                                personId,
+                                onComplete,
+                              }: HolidayDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
 
   const [state, setState] = useState<any>();
@@ -99,32 +99,35 @@ export function HolidayDialog({
         open={open}
         onClose={handleClose}
         TransitionComponent={Slide}
+        maxWidth={"md"}
+        fullWidth
       >
         <DialogHeader
-          icon={<HolidayIcon />}
+          icon={<HolidayIcon/>}
           headline="Holidays"
           subheadline="Have the best time of your life, beside working for flock"
           onClose={handleClose}
         />
         <DialogContent>
-          <Grid container>
-            <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
-            <Grid item>
-
+          <Grid container spacing={2}>
+            {!code && <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+              <Grid item xs={12}>
                 <Select
                   value={type}
-                  onChange={(e) => {setType(e?.target?.value)}}
+                  onChange={(e) => {
+                    setType(e.target.value as Types)
+                  }}
                   fullWidth
                 >
                   <MenuItem value={Types.HOLIDAY}>HoliDay</MenuItem>
                   <MenuItem value={Types.PLUSDAY}>PlusDay</MenuItem>
                 </Select>
-
-            </Grid>
-            </UserAuthorityUtil>
-            <Grid item xs={12}>
-              {state && (type === Types.HOLIDAY) && <HolidayForm value={state} onSubmit={handleSubmit} />}
-            </Grid>
+              </Grid>
+            </UserAuthorityUtil>}
+            {state && <Grid item xs={12}>
+              {(type === Types.HOLIDAY) && <HolidayForm value={state} onSubmit={handleSubmit}/>}
+              {(type === Types.PLUSDAY) && <PlusDayForm value={state} onSubmit={handleSubmit}/>}
+            </Grid>}
           </Grid>
 
 

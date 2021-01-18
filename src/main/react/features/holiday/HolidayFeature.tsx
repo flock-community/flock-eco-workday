@@ -15,7 +15,7 @@ export function HolidayFeature() {
 
   const [refresh, setRefresh] = useState(false);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState<any>();
 
   function handleCompleteDialog() {
     setRefresh(!refresh);

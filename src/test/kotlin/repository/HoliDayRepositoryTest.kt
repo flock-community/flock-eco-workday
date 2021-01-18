@@ -4,6 +4,7 @@ import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.HolidayType
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.utils.dayFromLocalDate
@@ -63,7 +64,8 @@ class HoliDayRepositoryTest(
                         from = dayFromLocalDate(),
                         to = dayFromLocalDate(1),
                         days = listOf(8.0),
-                        person = person
+                        person = person,
+                        type = HolidayType.PLUSDAY
                     )
                 )
             )

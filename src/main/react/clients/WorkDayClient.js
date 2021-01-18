@@ -13,7 +13,7 @@ const path = "/api/workdays";
 const resourceClient = ResourceClient(path, internalize);
 
 const findAllByPersonUuid = (personId) => {
-  return fetch(`${path}?personUuid=${personId}&sort=from,desc`)
+  return fetch(`${path}?personId=${personId}&sort=from,desc`)
     .then(ExtractJSON)
     .then((it) => it.map(internalize))
     .catch((e) => addError(e.message));

@@ -7,13 +7,13 @@ import { WorkDayClient } from "../../clients/WorkDayClient";
 import { WorkDayListItem } from "./WorkDayListItem";
 
 type WorkDayListProps = {
-  personUuid?: string;
+  personId?: string;
   refresh: boolean;
   onClickRow: (item: any) => void;
   onClickStatus: (status: any, item: any) => void;
 };
 export function WorkDayList({
-  personUuid,
+  personId,
   refresh,
   onClickRow,
   onClickStatus,
@@ -21,12 +21,12 @@ export function WorkDayList({
   const [state, setState] = useState([]);
 
   useEffect(() => {
-    if (personUuid) {
-      WorkDayClient.findAllByPersonUuid(personUuid).then((res) =>
+    if (personId) {
+      WorkDayClient.findAllByPersonUuid(personId).then((res) =>
         setState(res)
       );
     }
-  }, [personUuid, refresh]);
+  }, [personId, refresh]);
 
   function renderItem(item, key) {
     return (

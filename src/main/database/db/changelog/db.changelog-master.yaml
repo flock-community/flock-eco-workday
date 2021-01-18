@@ -13,3 +13,6 @@ databaseChangeLog:
   - include:
     - file: db.changelog-004-non-bilable-contract.yaml
       relativeToChangelogFile: true
+  - include:
+    - file: db.changelog-005-plus-holiday.yaml
+      relativeToChangelogFile: true

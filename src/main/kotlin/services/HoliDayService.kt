@@ -6,13 +6,14 @@ import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.HolidayType
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.HolidayRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 import javax.persistence.EntityManager
 
 @Service
@@ -38,8 +39,15 @@ class HoliDayService(
     }
 
     fun create(form: HoliDayForm): HoliDay = form.copy(status = Status.REQUESTED)
-        .validate()
         .consume()
+        .apply { if (type == HolidayType.HOLIDAY) validate() }
+        .let {
+            if (it.type == HolidayType.PLUSDAY) {
+                it.copy(hours = (0 - it.hours))
+            } else {
+                it
+            }
+        }
         .save()
 
     fun update(code: String, form: HoliDayForm): HoliDay? = holidayRepository
@@ -66,13 +74,14 @@ class HoliDayService(
         return HoliDay(
             id = it?.id ?: 0L,
             code = it?.code ?: UUID.randomUUID().toString(),
-            description = this.description,
-            status = this.status,
-            from = this.from,
-            to = this.to,
+            description = description,
+            status = status,
+            from = from,
+            to = to,
             person = person,
-            hours = this.hours,
-            days = this.days
+            hours = hours,
+            days = days,
+            type = type
         )
     }
 }

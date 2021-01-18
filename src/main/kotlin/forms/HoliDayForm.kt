@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
 import community.flock.eco.workday.interfaces.Approve
 import community.flock.eco.workday.interfaces.Dayly
+import community.flock.eco.workday.model.HolidayType
 import community.flock.eco.workday.model.Status
 import java.time.LocalDate
 import java.util.*
@@ -27,6 +28,7 @@ data class HoliDayForm(
 
     override val status: Status = Status.REQUESTED,
 
+    val type: HolidayType = HolidayType.HOLIDAY,
     val personId: UUID
 
 ) : Dayly, Approve

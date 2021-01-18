@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-005-plus-holiday-1
+      author: wveelenturf
+      changes:
+        - addColumn:
+            tableName: holi_day
+            columns:
+              - column:
+                  name: type
+                  type: varchar(64)
+                  defaultValue: 'HOLIDAY'

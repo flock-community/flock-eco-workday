@@ -15,10 +15,15 @@ import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.ManyToOne
 
+enum class HolidayType {
+    HOLIDAY,
+    PLUSDAY
+}
+
 @Entity
 @EntityListeners(EventEntityListeners::class)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-class HoliDay(
+data class HoliDay(
 
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
@@ -31,6 +36,9 @@ class HoliDay(
     override val days: List<Double>? = null,
 
     val description: String,
+
+    @Enumerated(EnumType.STRING)
+    val type: HolidayType,
 
     @Enumerated(EnumType.STRING)
     override val status: Status,
