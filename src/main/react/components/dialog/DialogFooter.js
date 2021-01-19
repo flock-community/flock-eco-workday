@@ -8,7 +8,7 @@ export function DialogFooter({
   onSubmit,
   onDelete,
   disableDelete = false,
-  disableEdit = false
+  disableEdit = false,
 }) {
   return (
     <DialogActions>
@@ -42,11 +42,11 @@ DialogFooter.propTypes = {
   onSubmit: PropTypes.func,
   onDelete: PropTypes.func,
   disableDelete: PropTypes.bool,
-  disableEdit: PropTypes.bool
+  disableEdit: PropTypes.bool,
 };
 
 DialogFooter.defaultProps = {
   onSubmit: null,
   disableDelete: false,
-  disableEdit: false
+  disableEdit: false,
 };

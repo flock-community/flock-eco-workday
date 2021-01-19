@@ -6,25 +6,33 @@ import Grid from "@material-ui/core/Grid";
 import { WorkDayClient } from "../../clients/WorkDayClient";
 import { WorkDayListItem } from "./WorkDayListItem";
 
+type WorkDayListProps = {
+  personId?: string;
+  refresh: boolean;
+  onClickRow: (item: any) => void;
+  onClickStatus: (status: any, item: any) => void;
+};
 export function WorkDayList({
-  personCode,
+  personId,
   refresh,
   onClickRow,
-  onClickStatus
-}) {
+  onClickStatus,
+}: WorkDayListProps) {
   const [state, setState] = useState([]);
 
   useEffect(() => {
-    WorkDayClient.findAllByPersonCode(personCode).then(res => setState(res));
-  }, [personCode, refresh]);
+    if (personId) {
+      WorkDayClient.findAllByPersonUuid(personId).then((res) => setState(res));
+    }
+  }, [personId, refresh]);
 
   function renderItem(item, key) {
     return (
       <Grid key={`workday-list-item-${key}`} item xs={12}>
         <WorkDayListItem
           value={item}
-          onClick={e => onClickRow(e, item)}
-          onClickStatus={status => onClickStatus(status, item)}
+          onClick={() => onClickRow(item)}
+          onClickStatus={(status) => onClickStatus(status, item)}
           hasAuthority={"WorkDayAuthority.ADMIN"}
         />
       </Grid>
@@ -47,10 +55,3 @@ export function WorkDayList({
     </Grid>
   );
 }
-
-WorkDayList.propTypes = {
-  refresh: PropTypes.bool,
-  personCode: PropTypes.string,
-  onClickRow: PropTypes.func,
-  onClickStatus: PropTypes.func
-};

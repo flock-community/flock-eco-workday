@@ -13,8 +13,8 @@ import { SickDayClient } from "../../clients/SickDayClient";
 
 const useStyles = makeStyles({
   root: {
-    padding: 20
-  }
+    padding: 20,
+  },
 });
 
 /**
@@ -45,7 +45,7 @@ export function SickDayFeature() {
     setOpen(true);
   }
 
-  function handleClickRow(e, item) {
+  function handleClickRow(item) {
     setValue(item);
     setOpen(true);
   }
@@ -59,7 +59,7 @@ export function SickDayFeature() {
       ...it,
       status,
       from: it.from.format("YYYY-MM-DD"),
-      to: it.to.format("YYYY-MM-DD")
+      to: it.to.format("YYYY-MM-DD"),
     }).then(() => setRefresh(!refresh));
   }
 
@@ -69,14 +69,15 @@ export function SickDayFeature() {
         <Grid item xs={12}>
           {isSuperUser() && (
             <PersonSelector
-              value={person && person.code}
+              value={person?.uuid}
               onChange={handlePersonChange}
+              fullWidth
             />
           )}
         </Grid>
         <Grid item xs={12}>
           <SickDayList
-            personCode={person && person.code}
+            personId={person?.uuid}
             onClickRow={handleClickRow}
             refresh={refresh}
             onClickStatus={handleStatusChange}
@@ -85,8 +86,8 @@ export function SickDayFeature() {
       </Grid>
       <SickDayDialog
         open={open}
-        code={value && value.code}
-        personCode={person && person.code}
+        code={value?.code}
+        personId={person?.uuid}
         value={value}
         onComplete={handleCompleteDialog}
       />

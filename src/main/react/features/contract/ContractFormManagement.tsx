@@ -13,14 +13,16 @@ import { DatePickerField } from "../../components/fields/DatePickerField";
 // able to submit this form
 export const MANAGEMENT_CONTRACT_FORM_ID = "management-contract-form";
 
-/** PersonForm
- *
- * @param {*} props
- */
-export const ContractFormManagement = props => {
-  const { value, onSubmit } = props;
+type ContractFormManagementProps = {
+  value: any;
+  onSubmit: (item: any) => void;
+};
 
-  const form = () => (
+export const ContractFormManagement = ({
+  value,
+  onSubmit,
+}: ContractFormManagementProps) => {
+  const form = ({ values }) => (
     <Form id={MANAGEMENT_CONTRACT_FORM_ID}>
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <Grid container spacing={1}>
@@ -34,10 +36,21 @@ export const ContractFormManagement = props => {
             />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="from" label="Start date" fullWidth />
+            <DatePickerField
+              name="from"
+              label="Start date"
+              maxDate={values.to ? values.to : undefined}
+              fullWidth
+            />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="to" label="End date" fullWidth clearable />
+            <DatePickerField
+              name="to"
+              label="End date"
+              minDate={values.from}
+              fullWidth
+              clearable
+            />
           </Grid>
         </Grid>
       </MuiPickersUtilsProvider>
@@ -48,17 +61,13 @@ export const ContractFormManagement = props => {
     monthlyFee: value.monthlyFee,
     role: value.role,
     from: value.from,
-    to: value.to
+    to: value.to,
   };
 
   const schema = object({
-    monthlyFee: number()
-      .required()
-      .default(4000),
-    from: mixed()
-      .required()
-      .default(moment()),
-    to: mixed().default(null)
+    monthlyFee: number().required().default(4000),
+    from: mixed().required().default(moment()),
+    to: mixed().default(null),
   });
 
   return (
@@ -67,19 +76,20 @@ export const ContractFormManagement = props => {
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize
-      render={form}
-    />
+    >
+      {form}
+    </Formik>
   );
 };
 
 ContractFormManagement.propTypes = {
   value: PropTypes.object,
-  onSubmit: PropTypes.func.isRequired
+  onSubmit: PropTypes.func.isRequired,
 };
 
 ContractFormManagement.defaultProps = {
   item: {
     client: null,
-    user: null
-  }
+    user: null,
+  },
 };

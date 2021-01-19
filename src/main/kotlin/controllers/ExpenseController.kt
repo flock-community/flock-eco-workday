@@ -1,18 +1,17 @@
 package community.flock.eco.workday.controllers
 
-
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.ExpenseAuthority
+import community.flock.eco.workday.graphql.CostExpenseInput
+import community.flock.eco.workday.graphql.TravelExpenseInput
 import community.flock.eco.workday.mappers.CostExpenseMapper
 import community.flock.eco.workday.mappers.TravelExpenseMapper
 import community.flock.eco.workday.model.Expense
 import community.flock.eco.workday.services.CostExpenseService
+import community.flock.eco.workday.services.DocumentService
 import community.flock.eco.workday.services.ExpenseService
 import community.flock.eco.workday.services.TravelExpenseService
 import community.flock.eco.workday.services.isUser
-import community.flock.eco.workday.graphql.CostExpenseInput
-import community.flock.eco.workday.graphql.TravelExpenseInput
-import community.flock.eco.workday.services.DocumentService
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -31,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import java.util.UUID
-import javax.transaction.Transactional
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -39,18 +37,17 @@ class ExpenseController(
     private val documentService: DocumentService,
     private val expenseService: ExpenseService
 ) {
-    @GetMapping(params = ["personCode"])
+    @GetMapping(params = ["personId"])
     @PreAuthorize("hasAuthority('ExpenseAuthority.READ')")
     fun getExpenseAll(
-        @RequestParam personCode: String,
+        @RequestParam personId: UUID,
         authentication: Authentication,
         pageable: Pageable
     ) = when {
-        authentication.isAdmin() -> expenseService.findAllByPersonCode(personCode, pageable)
+        authentication.isAdmin() -> expenseService.findAllByPersonUuid(personId, pageable)
         else -> expenseService.findAllByPersonUserCode(authentication.name, pageable)
     }
         .toResponse()
-
 
     @GetMapping("{id}")
     fun getExpenseById(
@@ -116,7 +113,7 @@ class TravelExpenseController(
         authentication: Authentication
     ) = input
         .run { mapper.consume(this, id) }
-        .run { service.update(id,this) }
+        .run { service.update(id, this) }
         .toResponse()
 }
 
@@ -125,7 +122,7 @@ class TravelExpenseController(
 class CostExpenseController(
     private val service: CostExpenseService,
     private val mapper: CostExpenseMapper
-)  {
+) {
     @PostMapping
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
     fun postCostExpense(
@@ -144,7 +141,7 @@ class CostExpenseController(
         authentication: Authentication
     ) = input
         .run { mapper.consume(this, id) }
-        .run { service.update(id,this) }
+        .run { service.update(id, this) }
         .toResponse()
 }
 
@@ -163,4 +160,3 @@ private fun getMediaType(name: String): MediaType {
     val mime = org.springframework.boot.web.server.MimeMappings.DEFAULT.get(extension)
     return MediaType.parseMediaType(mime)
 }
-

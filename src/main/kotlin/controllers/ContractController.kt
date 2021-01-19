@@ -10,19 +10,12 @@ import community.flock.eco.workday.forms.ContractManagementForm
 import community.flock.eco.workday.forms.ContractServiceForm
 import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.services.ContractService
-import java.security.Principal
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import java.security.Principal
+import java.util.*
 
 @RestController
 @RequestMapping("/api")
@@ -36,13 +29,13 @@ class ContractController(
     fun findAll(page: Pageable): ResponseEntity<List<Contract>> = contractService.findAll(page)
         .toResponse()
 
-    @GetMapping("/contracts", params = ["personCode"])
+    @GetMapping("/contracts", params = ["personId"])
     @PreAuthorize("hasAuthority('ContractAuthority.READ')")
-    fun findAllByPersonCode(@RequestParam(required = false) personCode: String?, principal: Principal): ResponseEntity<Iterable<Contract>> =
+    fun findAllByPersonCode(@RequestParam(required = false) personId: UUID?, principal: Principal): ResponseEntity<Iterable<Contract>> =
         principal.findUser()
             ?.let { user ->
-                if (user.isAdmin() && personCode != null) {
-                    contractService.findAllByPersonCode(personCode)
+                if (user.isAdmin() && personId != null) {
+                    contractService.findAllByPersonUuid(personId)
                         .sortedBy { it.from }
                         .reversed()
                 } else {
@@ -65,51 +58,29 @@ class ContractController(
         .findUser()
         ?.let { person ->
             val personCode = when {
-                person.isAdmin() -> form.personCode
-                else -> person.code
+                person.isAdmin() -> form.personId
+                else -> UUID.fromString(person.code)
             }
-            form.copy(personCode = personCode)
-            contractService.create(form)
+            contractService.create(form.copy(personId = personCode))
         }
         .toResponse()
 
     @PostMapping("/contracts-external")
     @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun postExternal(@RequestBody form: ContractExternalForm, principal: Principal) = principal
-        .findUser()
-        ?.let { person ->
-            val personCode = when {
-                person.isAdmin() -> form.personCode
-                else -> person.code
-            }
-            form.copy(personCode = personCode)
-            contractService.create(form)
-        }
+    fun postExternal(@RequestBody form: ContractExternalForm) = contractService
+        .create(form)
         .toResponse()
 
     @PostMapping("/contracts-management")
     @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun postManagement(@RequestBody form: ContractManagementForm, principal: Principal) = principal
-        .findUser()
-        ?.let { person ->
-            val personCode = when {
-                person.isAdmin() -> form.personCode
-                else -> person.code
-            }
-            form.copy(personCode = personCode)
-            contractService.create(form)
-        }
+    fun postManagement(@RequestBody form: ContractManagementForm) = contractService
+        .create(form)
         .toResponse()
 
     @PostMapping("/contracts-service")
     @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun postManagement(@RequestBody form: ContractServiceForm, principal: Principal) = principal
-        .findUser()
-        ?.let { person ->
-            if (person.isAdmin()) {
-                contractService.create(form)
-            }
-        }
+    fun postService(@RequestBody form: ContractServiceForm) = contractService
+        .create(form)
         .toResponse()
 
     @PutMapping("/contracts-internal/{code}")
@@ -118,12 +89,8 @@ class ContractController(
         @PathVariable code: String,
         @RequestBody form: ContractInternalForm,
         principal: Principal
-    ) = principal
-        .findUser()
-        ?.let {
-            contractService
-                .update(code, form)
-        }
+    ) = contractService
+        .update(code, form)
         .toResponse()
 
     @PutMapping("/contracts-external/{code}")
@@ -132,12 +99,8 @@ class ContractController(
         @PathVariable code: String,
         @RequestBody form: ContractExternalForm,
         principal: Principal
-    ) = principal
-        .findUser()
-        ?.let {
-            contractService
-                .update(code, form)
-        }
+    ) = contractService
+        .update(code, form)
         .toResponse()
 
     @PutMapping("/contracts-management/{code}")
@@ -146,12 +109,8 @@ class ContractController(
         @PathVariable code: String,
         @RequestBody form: ContractManagementForm,
         principal: Principal
-    ) = principal
-        .findUser()
-        ?.let {
-            contractService
-                .update(code, form)
-        }
+    ) = contractService
+        .update(code, form)
         .toResponse()
 
     @PutMapping("/contracts-service/{code}")
@@ -160,25 +119,16 @@ class ContractController(
         @PathVariable code: String,
         @RequestBody form: ContractServiceForm,
         principal: Principal
-    ) = principal
-        .findUser()
-        ?.let {
-            contractService
-                .update(code, form)
-        }
+    ) = contractService
+        .update(code, form)
         .toResponse()
 
     @DeleteMapping("/contracts/{code}")
     @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
-    fun delete(@PathVariable code: String, principal: Principal) =
-        principal
-            .findUser()
-            ?.let {
-                contractService
-                    .deleteByCode(code)
-                    .toResponse()
-            }
-            .toResponse()
+    fun delete(@PathVariable code: String, principal: Principal) = contractService
+        .deleteByCode(code)
+        .toResponse()
+        .toResponse()
 
     private fun Principal.findUser(): User? = userService
         .findByCode(this.name)

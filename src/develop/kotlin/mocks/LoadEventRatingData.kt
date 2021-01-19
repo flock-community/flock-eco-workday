@@ -6,9 +6,8 @@ import community.flock.eco.workday.model.EventRating
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.EventRatingService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import java.time.LocalDate
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
@@ -24,13 +23,15 @@ class LoadEventRatingData(
     init {
 
         val combined: List<Pair<Person, Event>> = loadPersonData.data
-            .flatMap { person -> loadEventData.data
-                .map { event -> person to event } }
+            .flatMap { person ->
+                loadEventData.data
+                    .map { event -> person to event }
+            }
 
         combined
             .map { (person, event) ->
                 EventRatingForm(
-                    personCode = person.code,
+                    personId = person.uuid,
                     eventCode = event.code,
                     rating = 7
                 )

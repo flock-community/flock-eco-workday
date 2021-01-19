@@ -5,14 +5,14 @@ const path = "/login/status";
 
 const get = () => {
   const opts = {
-    method: "GET"
+    method: "GET",
   };
 
   return fetch(path, opts)
     .then(ExtractJSON)
-    .catch(e => addError(e.message));
+    .catch((e) => addError(e.message));
 };
 
 export const UserStatusClient = {
-  get
+  get,
 };

@@ -8,14 +8,14 @@ export function ExactonlineListAccounts() {
   const [list, setList] = useState([]);
 
   useEffect(() => {
-    ExactonlineClient.accounts().then(accounts => {
+    ExactonlineClient.accounts().then((accounts) => {
       setList(accounts);
     });
   }, []);
 
   return (
     <List>
-      {list.map(it => (
+      {list.map((it) => (
         <ListItemText key={it.ID} primary={`${it.Name} (${it.Code.trim()})`} />
       ))}
     </List>

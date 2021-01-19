@@ -7,7 +7,7 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
 } from "@material-ui/core";
 
 export function UserSelector(props) {
@@ -16,7 +16,7 @@ export function UserSelector(props) {
   const [selected, setSelected] = useState("");
 
   useEffect(() => {
-    UserClient.findAllUsers("", 0, 100).then(res => setUsers(res.list));
+    UserClient.findAllUsers("", 0, 100).then((res) => setUsers(res.list));
     setSelected(selectedItem);
   }, []);
 
@@ -60,11 +60,11 @@ UserSelector.propTypes = {
   embedded: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string,
-  selectedItem: PropTypes.string
+  selectedItem: PropTypes.string,
 };
 
 UserSelector.defaultProps = {
   embedded: false,
   selectedItem: "",
-  label: "Select User"
+  label: "Select User",
 };

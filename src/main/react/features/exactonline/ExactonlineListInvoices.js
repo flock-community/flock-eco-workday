@@ -15,17 +15,17 @@ export function ExactonlineListInvoices() {
   const [list, setList] = useState([]);
 
   useEffect(() => {
-    InvoiceClient.all().then(accounts => {
+    InvoiceClient.all().then((accounts) => {
       setList(accounts);
     });
   }, []);
 
-  const handleClickInvoice = invoice => () =>
+  const handleClickInvoice = (invoice) => () =>
     InvoiceClient.uploadInvoice(invoice.id);
 
   return (
     <List>
-      {list.map(it => (
+      {list.map((it) => (
         <ListItem key={it.id}>
           <ListItemAvatar>
             <Avatar>

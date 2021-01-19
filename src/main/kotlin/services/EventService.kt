@@ -6,12 +6,12 @@ import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.repository.EventRatingRepository
 import community.flock.eco.workday.repository.EventRepository
-import java.time.LocalDate
-import java.util.UUID
-import javax.persistence.EntityManager
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.util.UUID
+import javax.persistence.EntityManager
 
 @Service
 class EventService(
@@ -23,8 +23,8 @@ class EventService(
     fun findAll(): Iterable<Event> = eventRepository.findAll()
     fun findAll(sort: Sort): Iterable<Event> = eventRepository.findAll(sort)
 
-    fun findAllByPersonCode(personCode: String) = eventRepository
-        .findAllByPersonsIsEmptyOrPersonsCode(personCode)
+    fun findAllByPersonUuid(personCode: UUID) = eventRepository
+        .findAllByPersonsIsEmptyOrPersonsUuid(personCode)
     fun findByCode(code: String) = eventRepository.findByCode(code).toNullable()
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Event> {
@@ -61,7 +61,7 @@ class EventService(
 
     private fun EventForm.consume(it: Event? = null): Event {
         val persons = personService
-            .findByPersonCodeIdIn(this.personCodes)
+            .findByPersonCodeIdIn(this.personIds)
 
         return Event(
             id = it?.id ?: 0L,

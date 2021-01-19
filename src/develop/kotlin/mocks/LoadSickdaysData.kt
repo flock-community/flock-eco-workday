@@ -4,9 +4,8 @@ import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.services.SickDayService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import java.time.LocalDate
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
@@ -28,7 +27,7 @@ class LoadSickdaysData(
                 to = now.plusDays(random + 5),
                 days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
                 hours = 48.0,
-                personCode = it.code
+                personId = it.uuid
             ).create()
 
             SickDayForm(
@@ -36,7 +35,7 @@ class LoadSickdaysData(
                 to = now.plusDays(random + 105),
                 days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
                 hours = 48.0,
-                personCode = it.code
+                personId = it.uuid
             ).run {
                 service.create(this)
             }

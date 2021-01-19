@@ -1,31 +1,28 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
-import { Container } from "@material-ui/core";
+import {
+  AppBar,
+  Button,
+  Card,
+  Container,
+  IconButton,
+  Toolbar,
+} from "@material-ui/core";
 import { HolidayDialog } from "./HolidayDialog";
 import { HolidayList } from "./HolidayList";
 import { PersonSelector } from "../../components/selector";
 import { AddActionFab } from "../../components/FabButtons";
-import { usePerson } from "../../hooks/PersonHook.ts";
+import { usePerson } from "../../hooks/PersonHook";
 import { HolidayClient } from "../../clients/HolidayClient";
+import AddIcon from "@material-ui/icons/Add";
 
-const useStyles = makeStyles({
-  root: {
-    padding: 20
-  }
-});
-
-/**
- * @return {null}
- */
 export function HolidayFeature() {
-  const classes = useStyles();
+  const [person, setPerson] = usePerson();
 
   const [refresh, setRefresh] = useState(false);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
-  const [person, setPerson] = usePerson();
+  const [value, setValue] = useState<any>();
 
   function handleCompleteDialog() {
     setRefresh(!refresh);
@@ -38,7 +35,7 @@ export function HolidayFeature() {
     setOpen(true);
   }
 
-  function handleClickRow(e, it) {
+  function handleClickRow(it) {
     setValue(it);
     setOpen(true);
   }
@@ -52,24 +49,25 @@ export function HolidayFeature() {
       ...it,
       status,
       from: it.from.format("YYYY-MM-DD"),
-      to: it.to.format("YYYY-MM-DD")
+      to: it.to.format("YYYY-MM-DD"),
     }).then(() => setRefresh(!refresh));
   }
 
   return (
-    <Container className={classes.root}>
-      <Grid container spacing={1}>
+    <Container>
+      <Grid container spacing={2}>
         <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
           <Grid item xs={12}>
             <PersonSelector
-              value={person && person.code}
+              value={person?.uuid}
               onChange={handlePersonChange}
+              fullWidth
             />
           </Grid>
         </UserAuthorityUtil>
         <Grid item xs={12}>
           <HolidayList
-            personCode={person && person.code}
+            personId={person?.uuid}
             refresh={refresh}
             onClickRow={handleClickRow}
             onClickStatus={handleStatusChange}
@@ -78,8 +76,8 @@ export function HolidayFeature() {
       </Grid>
       <HolidayDialog
         open={open}
-        code={value && value.code}
-        personCode={person && person.code}
+        code={value?.code}
+        personId={person?.uuid}
         onComplete={handleCompleteDialog}
       />
       <AddActionFab color="primary" onClick={handleClickAdd} />

@@ -1,39 +1,33 @@
 package community.flock.eco.workday.services
 
-import community.flock.eco.workday.Application
 import community.flock.eco.workday.ApplicationConfiguration
+import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 import javax.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(classes = [Application::class, DataHelper::class])
+@SpringBootTest(classes = [ApplicationConfiguration::class])
 @AutoConfigureTestDatabase
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@ActiveProfiles(profiles = ["test"])
+@AutoConfigureDataJpa
+@AutoConfigureWebClient
 @Transactional
-class ContractServiceTest {
-
-    @Autowired
-    lateinit var contractService: ContractService
-
-    @Autowired
-    lateinit var dataHelper: DataHelper
+@Import(CreateHelper::class, DataHelper::class)
+@ActiveProfiles(profiles = ["test"])
+class ContractServiceTest(
+    @Autowired private val contractService: ContractService,
+    @Autowired private val dataHelper: DataHelper
+) {
 
     @Test
     fun `find all active assignments`() {

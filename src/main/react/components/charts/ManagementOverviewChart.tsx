@@ -1,46 +1,59 @@
 import React, { useEffect, useState } from "react";
-import {LineChart, XAxis,
+import {
+  LineChart,
+  XAxis,
   YAxis,
   Legend,
   Tooltip,
   Line,
   ResponsiveContainer,
-  CartesianGrid} from "recharts";
+  CartesianGrid,
+} from "recharts";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { AggregationClient } from "../../clients/AggregationClient";
 
-export function ManagementOverviewChart({ year }) {
+type ManagementOverviewChartProps = {
+  year?: number;
+};
+
+export function ManagementOverviewChart({
+  year,
+}: ManagementOverviewChartProps) {
   const [state, setState] = useState<any | null>(null);
 
   useEffect(() => {
     const date = new Date();
-    AggregationClient.totalPerMonthByYear(year || date.getFullYear()).then(
-      res => setState(res)
-    );
-  }, []);
+    AggregationClient.totalPerMonthByYear(
+      year || date.getFullYear()
+    ).then((res) => setState(res));
+  }, [year]);
 
   if (!state) return <AlignedLoader />;
 
   const data =
     state &&
-    state
-      .map(it => ({
-        name: it.yearMonth,
-        countContractManagement: it.countContractManagement,
-        actualCostContractManagement: it.actualCostContractManagement,
-        actualRevenueManagement: it.actualRevenueManagement,
-      }));
+    state.map((it) => ({
+      name: it.yearMonth,
+      countContractManagement: it.countContractManagement,
+      actualCostContractManagement: it.actualCostContractManagement,
+      actualRevenueManagement: it.actualRevenueManagement,
+    }));
 
   return (
     <ResponsiveContainer>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
-        <YAxis yAxisId="left" type="number"  />
-        <YAxis yAxisId="right" type="number" orientation='right' domain={['dataMin ', 'dataMax ']} />
+        <YAxis yAxisId="left" type="number" />
+        <YAxis
+          yAxisId="right"
+          type="number"
+          orientation="right"
+          domain={["dataMin ", "dataMax "]}
+        />
 
         <Tooltip
-          formatter={value => new Intl.NumberFormat("en").format(value)}
+          formatter={(value) => new Intl.NumberFormat("en").format(value)}
         />
         <Legend />
 
@@ -63,7 +76,6 @@ export function ManagementOverviewChart({ year }) {
           stroke="#3f51b5"
           name="Cost"
         />
-
       </LineChart>
     </ResponsiveContainer>
   );

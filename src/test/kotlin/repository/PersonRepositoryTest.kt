@@ -1,26 +1,29 @@
 package community.flock.eco.workday.repository
 
-import community.flock.eco.workday.Application
+import community.flock.eco.workday.ApplicationConfiguration
+import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Person
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import javax.transaction.Transactional
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(classes = [Application::class])
+@SpringBootTest(classes = [ApplicationConfiguration::class])
 @AutoConfigureTestDatabase
-@ActiveProfiles(profiles = ["test"])
+@AutoConfigureDataJpa
+@AutoConfigureWebClient
 @Transactional
-class PersonRepositoryTest {
-
-    @Autowired
-    private lateinit var repository: PersonRepository
+@Import(CreateHelper::class)
+@ActiveProfiles(profiles = ["test"])
+class PersonRepositoryTest(
+    @Autowired private val repository: PersonRepository
+) {
 
     @Test
     fun `should create person without email`() {
@@ -59,5 +62,4 @@ class PersonRepositoryTest {
         assertThat(res.toSet().size).isEqualTo(1)
         assertThat(res.first()).isEqualTo(person)
     }
-
 }

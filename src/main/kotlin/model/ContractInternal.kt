@@ -21,7 +21,7 @@ data class ContractInternal(
     override val monthlySalary: Double,
     override val hoursPerWeek: Int,
 
-    val billable:Boolean = true
+    val billable: Boolean = true
 
 ) : Monthly, Contract(id, code, from, to, person, ContractType.INTERNAL) {
     override fun equals(obj: Any?) = super.equals(obj)

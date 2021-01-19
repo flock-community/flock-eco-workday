@@ -7,17 +7,17 @@ const path = "/api/clients";
 const resourceClient = ResourceClient(path);
 const pageableClient = PageableClient(path);
 
-export const findByCode = code => {
+export const findByCode = (code) => {
   const opts = {
-    method: "GET"
+    method: "GET",
   };
   return fetch(`${path}/${code}`, opts)
     .then(ExtractJSON)
-    .catch(e => addError(e.message));
+    .catch((e) => addError(e.message));
 };
 
 export const ClientClient = {
   ...resourceClient,
   ...pageableClient,
-  findByCode
+  findByCode,
 };

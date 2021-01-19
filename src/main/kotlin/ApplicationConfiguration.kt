@@ -10,22 +10,22 @@ import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.exactonline.ExactonlineConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.event.EventListener
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.web.context.request.RequestContextListener
 
 @Configuration
 @EnableJpaRepositories
 @EntityScan
-@ComponentScan(basePackages = [
-    "community.flock.eco.workday.services",
-    "community.flock.eco.workday.controllers",
-    "community.flock.eco.workday.mappers"
-])
+@ComponentScan(
+    basePackages = [
+        "community.flock.eco.workday.services",
+        "community.flock.eco.workday.controllers",
+        "community.flock.eco.workday.mappers"
+    ]
+)
 @Import(UserConfiguration::class, ExactonlineConfiguration::class, ApplicationConstants::class)
 class ApplicationConfiguration(
     private val userRepository: UserRepository,
@@ -50,7 +50,8 @@ class ApplicationConfiguration(
                 HolidayAuthority.READ,
                 HolidayAuthority.WRITE,
                 SickdayAuthority.READ,
-                SickdayAuthority.WRITE)
+                SickdayAuthority.WRITE
+            )
                 .map { it.toName() }
                 .toSet()
             userRepository.findByCode(ev.entity.code)

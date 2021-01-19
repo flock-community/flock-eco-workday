@@ -7,30 +7,37 @@ import Typography from "@material-ui/core/Typography";
 import { HolidayClient } from "../../clients/HolidayClient";
 import { DayListItem } from "../../components/DayListItem";
 
+type HolidayListProps = {
+  personId?: string;
+  refresh: boolean;
+  onClickRow: (item: any) => void;
+  onClickStatus: (status: string, item: any) => void;
+};
+
 export function HolidayList({
-  personCode,
+  personId,
   refresh,
   onClickRow,
-  onClickStatus
-}) {
+  onClickStatus,
+}: HolidayListProps) {
   const [list, setList] = useState([]);
   const [update] = useState(refresh);
 
   useEffect(() => {
-    if (personCode) {
-      HolidayClient.findAllByPersonCode(personCode).then(res => setList(res));
+    if (personId) {
+      HolidayClient.findAllByPersonId(personId).then((res) => setList(res));
     } else {
       setList([]);
     }
-  }, [personCode, refresh, update]);
+  }, [personId, refresh, update]);
 
   function renderItem(item, key) {
     return (
       <Grid item xs={12} key={`holiday-list-item-${key}`}>
         <DayListItem
           value={item}
-          onClick={e => onClickRow(e, item)}
-          onClickStatus={status => onClickStatus(status, item)}
+          onClick={() => onClickRow(item)}
+          onClickStatus={(status) => onClickStatus(status, item)}
           hasAuthority={"HolidayAuthority.ADMIN"}
         />
       </Grid>
@@ -53,10 +60,3 @@ export function HolidayList({
     </Grid>
   );
 }
-
-HolidayList.propTypes = {
-  personCode: PropTypes.string,
-  refresh: PropTypes.bool,
-  onClickRow: PropTypes.func,
-  onClickStatus: PropTypes.func
-};

@@ -3,7 +3,6 @@ package community.flock.eco.workday.mocks
 import community.flock.eco.workday.model.Client
 import community.flock.eco.workday.repository.ClientRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
@@ -21,13 +20,14 @@ class LoadClientData(
     }
 
     private final fun create(name: String) = Client(
-            code = name.toLowerCase().replace(" ", "_"),
-            name = name)
-            .save()
+        code = name.toLowerCase().replace(" ", "_"),
+        name = name
+    )
+        .save()
 
     fun Client.save(): Client = clientRepository
-            .save(this)
-            .also { data.add(it) }
+        .save(this)
+        .also { data.add(it) }
 
     fun findClientByCode(code: String): Client = data
         .find { it.code == code }

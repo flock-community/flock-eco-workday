@@ -2,49 +2,49 @@ import moment from "moment";
 import { ExtractJSON, ResourceClient } from "../utils/ResourceClient.ts";
 import { addError } from "../hooks/ErrorHook";
 
-const internalize = it => ({
+const internalize = (it) => ({
   ...it,
   from: moment(it.from),
-  to: moment(it.to)
+  to: moment(it.to),
 });
 
 const path = "/api/events";
 const resourceClient = ResourceClient(path, internalize);
 
-const getRatings = id => {
+const getRatings = (id) => {
   const opts = {
-    method: "GET"
+    method: "GET",
   };
   return fetch(`${path}/${id}/ratings`, opts)
     .then(ExtractJSON)
-    .catch(e => addError(e.message));
+    .catch((e) => addError(e.message));
 };
 
 const postRatings = (eventCode, item) => {
   const opts = {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(item)
+    body: JSON.stringify(item),
   };
   return fetch(`${path}/${eventCode}/ratings`, opts)
     .then(ExtractJSON)
-    .catch(e => addError(e.message));
+    .catch((e) => addError(e.message));
 };
 
-const deleteRatings = (eventCode, personCode) => {
+const deleteRatings = (eventCode, personId) => {
   const opts = {
-    method: "DELETE"
+    method: "DELETE",
   };
-  return fetch(`${path}/${eventCode}/ratings/${personCode}`, opts)
+  return fetch(`${path}/${eventCode}/ratings/${personId}`, opts)
     .then(ExtractJSON)
-    .catch(e => addError(e.message));
+    .catch((e) => addError(e.message));
 };
 
 export const EventClient = {
   ...resourceClient,
   getRatings,
   postRatings,
-  deleteRatings
+  deleteRatings,
 };

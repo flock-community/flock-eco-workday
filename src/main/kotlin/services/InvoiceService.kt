@@ -5,7 +5,6 @@ import ExpenseEvent
 import UpdateExpenseEvent
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.feature.exactonline.clients.ExactonlineDocumentClient
-import community.flock.eco.feature.exactonline.clients.ExactonlineUserClient
 import community.flock.eco.workday.exactonline.model.ExactonlineDocument
 import community.flock.eco.workday.exactonline.model.ExactonlineDocumentAttachment
 import community.flock.eco.workday.exactonline.model.ExactonlineDocumentType
@@ -25,7 +24,6 @@ import reactor.core.publisher.Flux
 import java.util.UUID
 import javax.servlet.http.HttpSession
 import javax.transaction.Transactional
-
 
 @Service
 class InvoiceService(
@@ -51,12 +49,13 @@ class InvoiceService(
                 }
                 .collectList()
                 .doOnNext {
-                    invoiceRepository.save(this.copy(
-                        status = InvoiceStatus.PROCESSED
-                    ))
+                    invoiceRepository.save(
+                        this.copy(
+                            status = InvoiceStatus.PROCESSED
+                        )
+                    )
                 }
         }
-
 
     private fun Invoice.toExactonlineDocument() = ExactonlineDocument(
         subject = description,

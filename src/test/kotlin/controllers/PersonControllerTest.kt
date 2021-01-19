@@ -8,16 +8,18 @@ import community.flock.eco.feature.user.services.UserSecurityService
 import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.forms.PersonForm
-import org.junit.Test
-import org.junit.runner.RunWith
+import community.flock.eco.workday.helpers.CreateHelper
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -28,10 +30,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.UUID
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(classes = [Application::class])
+@SpringBootTest(classes = [Application::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
+@AutoConfigureDataJpa
+@AutoConfigureWebClient
 @AutoConfigureMockMvc
+@Import(CreateHelper::class)
 @ActiveProfiles(profiles = ["test"])
 class PersonControllerTest {
     private val baseUrl: String = "/api/persons"
@@ -56,7 +60,8 @@ class PersonControllerTest {
             "PersonAuthority.READ",
             "PersonAuthority.WRITE"
         ),
-        password = "admin")
+        password = "admin"
+    )
         .run { userAccountService.createUserAccountPassword(this) }
         .run { UserSecurityService.UserSecurityPassword(this) }
         .run { user(this) }
@@ -74,16 +79,18 @@ class PersonControllerTest {
 
         val user = createUser()
 
-        mvc.perform(post(baseUrl)
-            .with(user)
-            .content(mapper.writeValueAsString(personForm))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            post(baseUrl)
+                .with(user)
+                .content(mapper.writeValueAsString(personForm))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
-            .andExpect(jsonPath("\$.code").exists())
-            .andExpect(jsonPath("\$.code").isString)
+            .andExpect(jsonPath("\$.uuid").exists())
+            .andExpect(jsonPath("\$.uuid").exists())
             .andExpect(jsonPath("\$.firstname").value(personForm.firstname))
             .andExpect(jsonPath("\$.lastname").value(personForm.lastname))
             .andExpect(jsonPath("\$.email").isEmpty)
@@ -106,10 +113,12 @@ class PersonControllerTest {
         // need this user to compare generated fields
         // create a person so one can query that person via the PersonCode
         var person: JsonNode? = null
-        mvc.perform(post(baseUrl).with(user)
-            .content(mapper.writeValueAsString(personForm))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            post(baseUrl).with(user)
+                .content(mapper.writeValueAsString(personForm))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+        )
             .andReturn()
             .response
             .contentAsString
@@ -118,14 +127,16 @@ class PersonControllerTest {
         fun person(key: String): String = person!!.get(key).textValue()
         /* DRY-Block */
 
-        mvc.perform(get("$baseUrl/${person("code")}")
-            .with(user)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            get("$baseUrl/${person("uuid")}")
+                .with(user)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
-            .andExpect(jsonPath("\$.code").exists())
-            .andExpect(jsonPath("\$.code").isString)
-            .andExpect(jsonPath("\$.code").value(person("code")))
+            .andExpect(jsonPath("\$.uuid").exists())
+            .andExpect(jsonPath("\$.uuid").isString)
+            .andExpect(jsonPath("\$.uuid").value(person("uuid")))
             .andExpect(jsonPath("\$.firstname").value(person("firstname")))
             .andExpect(jsonPath("\$.lastname").value(person("lastname")))
     }
@@ -145,10 +156,12 @@ class PersonControllerTest {
         // need this user to compare generated fields
         var person: JsonNode? = null
         val user = createUser()
-        mvc.perform(post(baseUrl).with(user)
-            .content(mapper.writeValueAsString(personForm))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            post(baseUrl).with(user)
+                .content(mapper.writeValueAsString(personForm))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+        )
             .andReturn()
             .response
             .contentAsString
@@ -166,16 +179,18 @@ class PersonControllerTest {
             userCode = null
         )
 
-        mvc.perform(put("$baseUrl/${person("code")}")
-            .with(user)
-            .content(mapper.writeValueAsString(personUpdate))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            put("$baseUrl/${person("uuid")}")
+                .with(user)
+                .content(mapper.writeValueAsString(personUpdate))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
-            .andExpect(jsonPath("\$.code").isNotEmpty)
-            .andExpect(jsonPath("\$.code").isString)
-            .andExpect(jsonPath("\$.code").value(person("code")))
+            .andExpect(jsonPath("\$.uuid").isNotEmpty)
+            .andExpect(jsonPath("\$.uuid").isString)
+            .andExpect(jsonPath("\$.uuid").value(person("uuid")))
             .andExpect(jsonPath("\$.firstname").value(personUpdate.firstname))
             .andExpect(jsonPath("\$.lastname").value(personUpdate.lastname))
             .andExpect(jsonPath("\$.email").isNotEmpty)
@@ -199,10 +214,12 @@ class PersonControllerTest {
         // create a person so one can query that person via the PersonCode
         var person: JsonNode? = null
         val user = createUser()
-        mvc.perform(post(baseUrl).with(user)
-            .content(mapper.writeValueAsString(personForm))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            post(baseUrl).with(user)
+                .content(mapper.writeValueAsString(personForm))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+        )
             .andReturn()
             .response
             .contentAsString
@@ -210,25 +227,29 @@ class PersonControllerTest {
 
         fun person(key: String): String = person!!.get(key).textValue()
 
-        mvc.perform(get("$baseUrl/${person("code")}")
-            .with(user)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            get("$baseUrl/${person("uuid")}")
+                .with(user)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
-            .andExpect(jsonPath("\$.code").exists())
-            .andExpect(jsonPath("\$.code").isString)
-            .andExpect(jsonPath("\$.code").value(person("code")))
+            .andExpect(jsonPath("\$.uuid").exists())
+            .andExpect(jsonPath("\$.uuid").isString)
+            .andExpect(jsonPath("\$.uuid").value(person("uuid")))
             .andExpect(jsonPath("\$.firstname").value(person("firstname")))
             .andExpect(jsonPath("\$.lastname").value(person("lastname")))
         /* DRY-Block */
 
-        mvc.perform(delete("$baseUrl/${person("code")}")
-            .with(user)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            delete("$baseUrl/${person("uuid")}")
+                .with(user)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isNoContent)
 
         /* DRY-Bock */
-        mvc.perform(get("$baseUrl/${person("code")}").with(user).accept(APPLICATION_JSON))
+        mvc.perform(get("$baseUrl/${person("uuid")}").with(user).accept(APPLICATION_JSON))
             .andExpect(status().isNotFound)
         /* DRY-Bock */
     }
@@ -237,9 +258,11 @@ class PersonControllerTest {
     fun `should return an error while trying to get a non-existing person via GET-request`() {
         val user = createUser()
         /* DRY-Bock */
-        mvc.perform(get("$baseUrl/3b7ab8e2-aeeb-4228-98d8-bd22fa141caa")
-            .with(user)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            get("$baseUrl/3b7ab8e2-aeeb-4228-98d8-bd22fa141caa")
+                .with(user)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isNotFound)
         /* DRY-Bock */
     }
@@ -269,7 +292,9 @@ class PersonControllerTest {
     }
 
     // *-- utility functions --*
-    private fun findUser(email: String) = user(userAccountService
-        .findUserAccountPasswordByUserEmail(email)
-        ?.let { UserSecurityService.UserSecurityPassword(it) })
+    private fun findUser(email: String) = user(
+        userAccountService
+            .findUserAccountPasswordByUserEmail(email)
+            ?.let { UserSecurityService.UserSecurityPassword(it) }
+    )
 }

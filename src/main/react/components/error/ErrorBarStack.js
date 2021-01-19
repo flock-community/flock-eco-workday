@@ -7,5 +7,5 @@ export function ErrorStack({ ErrorList }) {
 }
 
 ErrorBar.prototypes = {
-  ErrorList: PropTypes.array
+  ErrorList: PropTypes.array,
 };

@@ -17,31 +17,23 @@ import { usePerson } from "../../hooks/PersonHook";
 import { AssignmentSelectorField } from "../../components/fields/AssignmentSelectorField";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
-import { editDay, mutatePeriod } from "../period/Period";
+import { mutatePeriod } from "../period/Period";
 
 export const WORKDAY_FORM_ID = "work-day-form";
 
 const now = moment();
 
 export const schema = Yup.object().shape({
-  status: Yup.string()
-    .required("Field required")
-    .default("REQUESTED"),
+  status: Yup.string().required("Field required").default("REQUESTED"),
   assignmentCode: Yup.string()
     .required("Assignment is required")
     .nullable()
     .default(""),
-  from: Yup.date()
-    .required("From date is required")
-    .default(now),
-  to: Yup.date()
-    .required("To date is required")
-    .default(now),
-  days: Yup.array()
-    .default([8])
-    .nullable(),
+  from: Yup.date().required("From date is required").default(now),
+  to: Yup.date().required("To date is required").default(now),
+  days: Yup.array().default([8]).nullable(),
   hours: Yup.number().default("0"),
-  sheets: Yup.array().default([])
+  sheets: Yup.array().default([]),
 });
 
 /**
@@ -51,43 +43,25 @@ export function WorkDayForm({ value, onSubmit }) {
   const [person] = usePerson();
 
   const [daysSwitch, setDaysSwitch] = useState(!value.days);
-  const [period, setPeriod] = useState(
-    mutatePeriod({
-      from: value.from.clone(),
-      to: value.to.clone(),
-      days: value.days
-    })
-  );
 
   useEffect(() => {
-    if (value) {
-      if (value.days) {
-        setDaysSwitch(value.days.length === 0);
-      }
-      setPeriod(
-        mutatePeriod({
-          from: value.from.clone(),
-          to: value.to.clone(),
-          days: value.days
-        })
-      );
-    }
+    setDaysSwitch(!value.days);
   }, [value]);
 
-  const handleSubmit = data => {
+  const handleSubmit = (data) => {
     if (isDefined(onSubmit))
       onSubmit({
         assignmentCode: data.assignmentCode,
-        from: period.from,
-        to: period.to,
-        days: daysSwitch ? undefined : period.days,
+        from: data.from,
+        to: data.to,
+        days: daysSwitch ? undefined : data.days,
         hours: data.hours,
         status: data.status,
-        sheets: data.sheets
+        sheets: data.sheets,
       });
   };
 
-  const handleSwitchChange = ev => {
+  const handleSwitchChange = (ev) => {
     setDaysSwitch(ev.target.checked);
   };
 
@@ -102,27 +76,18 @@ export function WorkDayForm({ value, onSubmit }) {
     </Grid>
   );
 
-  const renderFormHours = () => (
+  const renderFormHours = ({ values }) => (
     <>
       <Grid item xs={6}>
         <DatePickerField
           name="from"
           label="From"
-          onChange={it =>
-            setPeriod(mutatePeriod(period, { from: it, to: period.to }))
-          }
+          maxDate={values.to}
           fullWidth
         />
       </Grid>
       <Grid item xs={6}>
-        <DatePickerField
-          name="to"
-          label="To"
-          onChange={it =>
-            setPeriod(mutatePeriod(period, { from: period.from, to: it }))
-          }
-          fullWidth
-        />
+        <DatePickerField name="to" label="To" minDate={values.from} fullWidth />
       </Grid>
       <Grid item xs={12}>
         {renderSwitch}
@@ -137,19 +102,13 @@ export function WorkDayForm({ value, onSubmit }) {
             component={TextField}
           />
         ) : (
-          <PeriodInputField
-            name="days"
-            from={period.from}
-            to={period.to}
-            days={period.days}
-            editDay={(date, day) => setPeriod(editDay(period, date, day))}
-          />
+          <PeriodInputField name="days" from={values.from} to={values.to} />
         )}
       </Grid>
     </>
   );
 
-  const renderForm = () => (
+  const renderForm = ({ values }) => (
     <Form id={WORKDAY_FORM_ID}>
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <Grid container spacing={1}>
@@ -158,34 +117,33 @@ export function WorkDayForm({ value, onSubmit }) {
               fullWidth
               name="assignmentCode"
               label="Assignment"
-              personCode={person && person.code}
-              from={value.from}
-              to={value.to}
+              personId={person?.uuid}
+              from={values.from}
+              to={values.to}
             />
           </Grid>
-          {value && (
-            <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
-              <Grid item xs={12}>
-                <Field
-                  fullWidth
-                  type="text"
-                  name="status"
-                  label="Status"
-                  select
-                  variant="standard"
-                  component={TextField}
-                >
-                  <MenuItem value="REQUESTED">REQUESTED</MenuItem>
-                  <MenuItem value="APPROVED">APPROVED</MenuItem>
-                  <MenuItem value="REJECTED">REJECTED</MenuItem>
-                </Field>
-              </Grid>
-            </UserAuthorityUtil>
-          )}
+
+          <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
+            <Grid item xs={12}>
+              <Field
+                fullWidth
+                type="text"
+                name="status"
+                label="Status"
+                select
+                variant="standard"
+                component={TextField}
+              >
+                <MenuItem value="REQUESTED">REQUESTED</MenuItem>
+                <MenuItem value="APPROVED">APPROVED</MenuItem>
+                <MenuItem value="REJECTED">REJECTED</MenuItem>
+              </Field>
+            </Grid>
+          </UserAuthorityUtil>
           <Grid item xs={12}>
             <hr />
           </Grid>
-          {renderFormHours()}
+          {renderFormHours({ values })}
           <Grid item xs={12}>
             <hr />
           </Grid>
@@ -200,11 +158,12 @@ export function WorkDayForm({ value, onSubmit }) {
   return value ? (
     <Formik
       enableReinitialize
-      initialValues={value || schema.default()}
+      initialValues={mutatePeriod(value) || schema.default()}
       onSubmit={handleSubmit}
       validationSchema={schema}
-      render={renderForm}
-    />
+    >
+      {renderForm}
+    </Formik>
   ) : null;
 }
 
@@ -213,5 +172,5 @@ WorkDayForm.propTypes = {
   onSubmit: PropTypes.func,
   onChange: PropTypes.func,
   onSwitchChange: PropTypes.func,
-  daysSwitch: PropTypes.func
+  daysSwitch: PropTypes.func,
 };

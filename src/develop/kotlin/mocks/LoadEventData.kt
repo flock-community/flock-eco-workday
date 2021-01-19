@@ -4,9 +4,8 @@ import community.flock.eco.workday.forms.EventForm
 import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.services.EventService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import java.time.LocalDate
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
@@ -26,7 +25,7 @@ class LoadEventData(
                 to = LocalDate.of(now.year, 1, 1),
                 days = listOf(8.0),
                 hours = 8.0,
-                personCodes = loadPersonData.data.map { it.code }
+                personIds = loadPersonData.data.map { it.uuid }
             ),
             EventForm(
                 description = "Flock. dag",
@@ -34,7 +33,7 @@ class LoadEventData(
                 to = LocalDate.of(now.year, 1, 3),
                 days = listOf(8.0),
                 hours = 8.0,
-                personCodes = loadPersonData.data.map { it.code }
+                personIds = loadPersonData.data.map { it.uuid }
             ),
             EventForm(
                 description = "Conference",
@@ -42,8 +41,9 @@ class LoadEventData(
                 to = LocalDate.of(now.year, 5, 29),
                 days = listOf(8.0, 8.0, 8.0),
                 hours = 24.0,
-                personCodes = loadPersonData.data.take(2).map { it.code }
-            ))
+                personIds = loadPersonData.data.take(2).map { it.uuid }
+            )
+        )
             .map { it.create() }
             .let { data.addAll(it) }
     }

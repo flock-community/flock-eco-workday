@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react"
+import React, { useContext, useEffect, useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -10,12 +10,12 @@ import { ApplicationContext } from "../../application/ApplicationContext";
 import { AddActionFab } from "../../components/FabButtons";
 import { usePerson } from "../../hooks/PersonHook";
 import { WorkDayClient } from "../../clients/WorkDayClient";
-import {addError} from "../../hooks/ErrorHook"
+import { addError } from "../../hooks/ErrorHook";
 
 const useStyles = makeStyles({
   root: {
-    marginTop: 20
-  }
+    marginTop: 20,
+  },
 });
 
 /**
@@ -28,7 +28,7 @@ export function WorkDayFeature() {
 
   const [refresh, setRefresh] = useState(false);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState();
   const { authorities } = useContext(ApplicationContext);
 
   function isSuperUser() {
@@ -38,25 +38,25 @@ export function WorkDayFeature() {
   function handleCompleteDialog() {
     setRefresh(!refresh);
     setOpen(false);
-    setValue(null);
+    setValue(undefined);
   }
 
   function handleClickAdd() {
-    if(person === null){
-      addError("No person selected")
-    }else{
-      setValue(null);
+    if (person === null) {
+      addError("No person selected");
+    } else {
+      setValue(undefined);
       setOpen(true);
     }
   }
 
-  function handleClickRow(e, item) {
+  function handleClickRow(item) {
     setValue(item);
     setOpen(true);
   }
 
   function handlePersonChange(it) {
-    setPerson(it ? it : null);
+    setPerson(it);
   }
 
   function handleStatusChange(status, it) {
@@ -66,7 +66,7 @@ export function WorkDayFeature() {
       to: it.to.format("YYYY-MM-DD"),
       status,
       assignmentCode: it.assignment.code,
-      days: it.days.length > 0 ? it.days : null
+      days: it.days.length > 0 ? it.days : null,
     }).then(() => setRefresh(!refresh));
   }
 
@@ -77,14 +77,15 @@ export function WorkDayFeature() {
           {isSuperUser() && (
             // @ts-ignore
             <PersonSelector
-              value={person && person.code}
+              value={person?.uuid}
               onChange={handlePersonChange}
+              fullWidth
             />
           )}
         </Grid>
         <Grid item xs={12}>
           <WorkDayList
-            personCode={person && person.code}
+            personId={person?.uuid}
             onClickRow={handleClickRow}
             refresh={refresh}
             onClickStatus={handleStatusChange}

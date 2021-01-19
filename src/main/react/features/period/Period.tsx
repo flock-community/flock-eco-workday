@@ -49,22 +49,24 @@ export function mutatePeriod(
 ): Period {
   let period: Period = {
     ...value,
-    days: initDays(value)
+    days: initDays(value),
   };
 
   const setPeriod = (period1: Period) => {
     period = period1;
   };
 
-  const newStartDate = from => {
+  const newStartDate = (from) => {
     if (!period.days) {
-      throw new Error(`Initialize period (${period.from} - ${period.to}) properly before editing.`);
+      throw new Error(
+        `Initialize period (${period.from} - ${period.to}) properly before editing.`
+      );
     }
     if (period.from.isAfter(from)) {
       const oldDays = period.days;
       const addedDays = initDays({
         from,
-        to: period.from.add(-1, "days")
+        to: period.from.add(-1, "days"),
       });
       const days = addedDays.concat(oldDays);
       setPeriod({ ...period, from, days });
@@ -82,16 +84,18 @@ export function mutatePeriod(
     }
   };
 
-  const newEndDate = to => {
+  const newEndDate = (to) => {
     if (!period.days) {
-      throw new Error(`Initialize period (${period.from} - ${period.to}) properly before editing.`);
+      throw new Error(
+        `Initialize period (${period.from} - ${period.to}) properly before editing.`
+      );
     }
     if (period.to.isBefore(to)) {
       const oldDays = period.days;
       const addedDays = initDays({
         from: period.to.add(1, "days"),
         to: to,
-        days: undefined
+        days: undefined,
       });
       const days = oldDays.concat(addedDays);
       setPeriod({ ...period, to: to, days: days });
@@ -101,7 +105,7 @@ export function mutatePeriod(
         addError(
           `Please pick a enddate (${to}) later than the startdate (${period.from}).`
         );
-      }  else {
+      } else {
         const diff = period.days.length - daysBefore(to, period.to);
         const days = period.days.slice(0, diff);
         setPeriod({ ...period, to: to, days: days });

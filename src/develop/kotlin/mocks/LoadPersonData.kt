@@ -1,19 +1,16 @@
 package community.flock.eco.workday.mocks
 
 import community.flock.eco.feature.user.model.User
-import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.repository.PersonRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadPersonData(
-    userData: LoadUserData,
-    private val repository: PersonRepository,
-    private val userRepo: UserRepository
+    private val userData: LoadUserData,
+    private val repository: PersonRepository
 ) {
     val data: MutableSet<Person> = mutableSetOf()
 
@@ -50,13 +47,13 @@ class LoadPersonData(
         position: String = "",
         user: User
     ) = Person(
-            firstname = firstname,
-            lastname = lastname,
-            email = user.email,
-            position = position,
-            number = null,
-            user = user
-        ).save()
+        firstname = firstname,
+        lastname = lastname,
+        email = user.email,
+        position = position,
+        number = null,
+        user = user
+    ).save()
 
     /**
      * Initialize the users by calling the createPerson() func

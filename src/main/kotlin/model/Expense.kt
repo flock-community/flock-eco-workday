@@ -33,6 +33,6 @@ abstract class Expense(
     override val status: Status = Status.REQUESTED,
 
     @Enumerated(EnumType.STRING)
-    val type: ExpenseType
+    open val type: ExpenseType
 
-): Approve
+) : Approve

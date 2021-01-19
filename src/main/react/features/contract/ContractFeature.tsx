@@ -1,25 +1,14 @@
 import React, { useState } from "react";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
 import { PersonSelector } from "../../components/selector";
 import { ContractList } from "./ContractList";
 import { AddActionFab } from "../../components/FabButtons";
 import { usePerson } from "../../hooks/PersonHook";
 import { ContractDialog } from "./ContractDialog";
+import { Box } from "@material-ui/core";
 
-const useStyles = makeStyles({
-  root: {
-    padding: 20
-  }
-});
-
-/**
- * @return {null}
- */
 export function ContractFeature() {
-  const classes = useStyles();
-
   const [reload, setReload] = useState(true);
   const [dialog, setDialog] = useState({ open: false, code: null });
   const [person, setPerson] = usePerson();
@@ -42,22 +31,23 @@ export function ContractFeature() {
   }
 
   return (
-    <div className={classes.root}>
+    <Box>
       <Grid container spacing={1}>
         <UserAuthorityUtil has={"AssignmentAuthority.ADMIN"}>
           <Grid item xs={12}>
             <PersonSelector
-              value={person && person.code}
+              value={person?.uuid}
               onChange={handleChangePerson}
               label="Select person"
               embedded={false}
               multiple={false}
+              fullWidth
             />
           </Grid>
         </UserAuthorityUtil>
         <Grid item xs={12}>
           <ContractList
-            personCode={person && person.code}
+            personId={person?.uuid}
             onItemClick={handleItemClick}
             reload={reload}
           />
@@ -69,6 +59,6 @@ export function ContractFeature() {
         onClose={handleClose}
       />
       <AddActionFab color="primary" onClick={handleClickAdd} />
-    </div>
+    </Box>
   );
 }

@@ -9,18 +9,18 @@ import { mixed, number, object } from "yup";
 import moment from "moment";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 
-// form id as a reference point for buttons outside of the <form></form> scope to be
-// able to submit this form
 export const INTERNAL_CONTRACT_FORM_ID = "internal-contract-form";
 
-/** ContractFormInternal
- *
- * @param {*} props
- */
-export const ContractFormInternal = props => {
-  const { value, onSubmit } = props;
+type ContractFormInternalProps = {
+  value: any;
+  onSubmit: (item: any) => void;
+};
 
-  const form = () => (
+export const ContractFormInternal = ({
+  value,
+  onSubmit,
+}: ContractFormInternalProps) => {
+  const form = ({ values }) => (
     <Form id={INTERNAL_CONTRACT_FORM_ID}>
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <Grid container spacing={1}>
@@ -43,10 +43,21 @@ export const ContractFormInternal = props => {
             />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="from" label="Start date" fullWidth />
+            <DatePickerField
+              name="from"
+              label="Start date"
+              fullWidth
+              maxDate={values.to ? values.to : undefined}
+            />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="to" label="End date" fullWidth clearable />
+            <DatePickerField
+              name="to"
+              label="End date"
+              fullWidth
+              minDate={values.from}
+              clearable
+            />
           </Grid>
         </Grid>
       </MuiPickersUtilsProvider>
@@ -57,20 +68,14 @@ export const ContractFormInternal = props => {
     monthlySalary: value.monthlySalary,
     hoursPerWeek: value.hoursPerWeek,
     from: value.from,
-    to: value.to
+    to: value.to,
   };
 
   const schema = object({
-    monthlySalary: number()
-      .required()
-      .default(4000),
-    hoursPerWeek: number()
-      .required()
-      .default(40),
-    from: mixed()
-      .required()
-      .default(moment()),
-    to: mixed().default(null)
+    monthlySalary: number().required().default(4000),
+    hoursPerWeek: number().required().default(40),
+    from: mixed().required().default(moment()),
+    to: mixed().default(null),
   });
 
   return (
@@ -79,19 +84,20 @@ export const ContractFormInternal = props => {
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize
-      render={form}
-    />
+    >
+      {form}
+    </Formik>
   );
 };
 
 ContractFormInternal.propTypes = {
   value: PropTypes.object,
-  onSubmit: PropTypes.func.isRequired
+  onSubmit: PropTypes.func.isRequired,
 };
 
 ContractFormInternal.defaultProps = {
   item: {
     client: null,
-    user: null
-  }
+    user: null,
+  },
 };

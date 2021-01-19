@@ -7,13 +7,13 @@ import community.flock.eco.workday.authorities.PersonAuthority
 import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.PersonService
-import java.security.Principal
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.security.Principal
+import java.util.*
 
 @RestController
 @RequestMapping("/api/persons")
@@ -32,8 +34,8 @@ class PersonController(
 ) {
 
     @GetMapping("/me")
-    fun findByMe(principal: Principal): ResponseEntity<Person> = service
-        .findByUserCode(principal.name)
+    fun findByMe(authentication: Authentication): ResponseEntity<Person> = service
+        .findByUserCode(authentication.name)
         .toResponse()
 
     @GetMapping
@@ -42,16 +44,16 @@ class PersonController(
         .findAll(pageable)
         .toResponse()
 
-    @GetMapping("/{code}")
+    @GetMapping("/{uuid}")
     @PreAuthorize("hasAuthority('PersonAuthority.READ')")
-    fun findByCode(@PathVariable code: String, principal: Principal): ResponseEntity<Person> = principal
+    fun findByUui(@PathVariable uuid: UUID, principal: Principal): ResponseEntity<Person> = principal
         .findUser()
         ?.let {
             when {
-                it.isAdmin() -> service.findByCode(code)?.toResponse()
+                it.isAdmin() -> service.findByUuid(uuid)?.toResponse()
                 else -> service.findByUserCode(it.code)?.toResponse()
             }
-                ?: throw ResponseStatusException(NOT_FOUND, "No Item found with this PersonCode")
+                ?: throw ResponseStatusException(NOT_FOUND, "No Item found with this PersonUui")
         }
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
@@ -60,11 +62,11 @@ class PersonController(
     fun post(@RequestBody form: PersonForm, principal: Principal) = principal
         .findUser()
         ?.let { user ->
-            val userCode = when {
+            val userUui = when {
                 user.isAdmin() -> null
                 else -> user.code
             }
-            form.copy(userCode = userCode)
+            form.copy(userCode = userUui)
                 .let { service.create(it) }
         }
         ?: throw ResponseStatusException(UNAUTHORIZED)
@@ -72,7 +74,7 @@ class PersonController(
     @PutMapping("/{code}")
     @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
     fun put(
-        @PathVariable code: String,
+        @PathVariable code: UUID,
         @RequestBody form: PersonForm,
         principal: Principal
     ) = principal
@@ -88,19 +90,19 @@ class PersonController(
                 }
                 ?.toResponse()
                 ?: throw ResponseStatusException(
-                    BAD_REQUEST, "Cannot perform PUT on given item. PersonCode cannot be found. Use POST Method"
+                    BAD_REQUEST, "Cannot perform PUT on given item. PersonUui cannot be found. Use POST Method"
                 )
         }
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
-    @DeleteMapping("/{code}")
+    @DeleteMapping("/{personId}")
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
-    fun delete(@PathVariable code: String, principal: Principal) =
+    fun delete(@PathVariable personId: UUID, principal: Principal) =
         principal
             .findUser()
             ?.let {
                 service
-                    .deleteByCode(code)
+                    .deleteByUuid(personId)
                     .toResponse()
             }
             ?: throw ResponseStatusException(UNAUTHORIZED)

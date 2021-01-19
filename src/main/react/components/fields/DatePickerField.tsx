@@ -1,24 +1,23 @@
 import { Field } from "formik";
 import React from "react";
-import {DatePicker, DatePickerProps} from "@material-ui/pickers"
-import {MaterialUiPickersDate} from "@material-ui/pickers/typings/date"
+import { DatePicker, DatePickerProps } from "@material-ui/pickers";
+import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 
-type Rest = Omit<DatePickerProps, 'value' | 'onChange'>
-type Props = Rest & {
-  name: string,
-  onChange?: (it:MaterialUiPickersDate) => void,
-}
+type DatePickerFieldProps = Omit<DatePickerProps, "value" | "onChange"> & {
+  name: string;
+  onChange?: (it: MaterialUiPickersDate) => void;
+};
 
-export function DatePickerField({ name, onChange, ...props }:Props) {
+export function DatePickerField({ name, ...props }: DatePickerFieldProps) {
   return (
     <Field id={name} name={name}>
-      {({ field: { value }, form: { setFieldValue } }) => (
+      {({ field: { value }, form: { setFieldValue, isSubmitting } }) => (
         <DatePicker
           value={value}
-          onChange={it => {
+          onChange={(it) => {
             setFieldValue(name, it);
-            if (onChange) onChange(it);
           }}
+          disabled={isSubmitting}
           {...props}
         />
       )}

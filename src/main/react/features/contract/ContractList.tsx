@@ -8,15 +8,26 @@ import { ContractClient } from "../../clients/ContractClient";
 import { isDefined } from "../../utils/validation";
 import { ContractType } from "./ContractType";
 
-export function ContractList({ reload, personCode, onItemClick }) {
+type ContractListProps = {
+  reload: boolean;
+  personId?: string;
+  onItemClick: (item: any) => void;
+};
+export function ContractList({
+  reload,
+  personId,
+  onItemClick,
+}: ContractListProps) {
   const [state, setState] = useState<any[]>([]);
 
   useEffect(() => {
-    ContractClient.findAllByPersonCode(personCode).then(res => setState(res));
-  }, [personCode, reload]);
+    if (personId) {
+      ContractClient.findAllByPersonId(personId).then((res) => setState(res));
+    }
+  }, [personId, reload]);
 
-  const handleClickItem = it => () => {
-    if (isDefined(onItemClick)) onItemClick(it);
+  const handleClickItem = (it) => () => {
+    if (onItemClick) onItemClick(it);
   };
 
   if (state.length === 0) {
@@ -31,7 +42,7 @@ export function ContractList({ reload, personCode, onItemClick }) {
 
   return (
     <Grid container spacing={1}>
-      {state.map(it => (
+      {state.map((it) => (
         <Grid item xs={12} key={it.code}>
           <Card onClick={handleClickItem(it)}>
             <CardContent>
@@ -63,16 +74,10 @@ export function ContractList({ reload, personCode, onItemClick }) {
   );
 }
 
-ContractList.propTypes = {
-  reload: PropTypes.bool,
-  personCode: PropTypes.string,
-  onItemClick: PropTypes.func
-};
-
 function FormatDate({ date }) {
   return date ? <>{date.format("DD-MM-YYYY")}</> : <i>now</i>;
 }
 
 FormatDate.propTypes = {
-  date: PropTypes.object
+  date: PropTypes.object,
 };

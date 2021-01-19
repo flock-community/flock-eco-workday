@@ -1,9 +1,8 @@
-package community.flock.eco.feature.exactonline.controllers;
+package community.flock.eco.feature.exactonline.controllers
 
 import community.flock.eco.feature.exactonline.clients.ExactonlineDivisionClient
 import community.flock.eco.feature.exactonline.clients.ExactonlineUserClient
 import community.flock.eco.workday.exactonline.services.ExactonlineAuthenticationService
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -40,9 +39,11 @@ class ExactonlineAuthenticationController(
                     )
                 }
         }
-        .defaultIfEmpty(mapOf<String, Any?>(
-            "active" to false
-        ))
+        .defaultIfEmpty(
+            mapOf<String, Any?>(
+                "active" to false
+            )
+        )
 
     @GetMapping("authorize")
     fun getAuthorize(
@@ -61,11 +62,14 @@ class ExactonlineAuthenticationController(
     @GetMapping("redirect")
     fun getRedirect(
         session: HttpSession,
-        @RequestParam code: String) = exactonlineAuthenticationService
+        @RequestParam code: String
+    ) = exactonlineAuthenticationService
         .authenticate(session, code)
         .map {
-            (exactonlineAuthenticationService.getRedirectUri(session)
-                ?: URI("/api/exactonline/status"))
+            (
+                exactonlineAuthenticationService.getRedirectUri(session)
+                    ?: URI("/api/exactonline/status")
+                )
                 .redirect()
         }
 
@@ -75,4 +79,3 @@ class ExactonlineAuthenticationController(
         return ResponseEntity(headers, HttpStatus.MOVED_PERMANENTLY)
     }
 }
-

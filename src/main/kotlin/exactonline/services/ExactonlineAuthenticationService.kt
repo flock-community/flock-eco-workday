@@ -56,7 +56,7 @@ class ExactonlineAuthenticationService(
         return Mono.empty()
     }
 
-    private fun storeObject(session: HttpSession, body: ObjectNode):Mono<StoreObject> {
+    private fun storeObject(session: HttpSession, body: ObjectNode): Mono<StoreObject> {
         val accessToken = body.get("access_token").asText()
         return userClient.getCurrentMe(accessToken)
             .map {
@@ -71,20 +71,16 @@ class ExactonlineAuthenticationService(
             .doOnNext {
                 session.setAttribute(sessionKeyToken, it)
             }
-
-
     }
 
     fun authenticate(session: HttpSession, code: String): Mono<StoreObject> = authenticationClient
         .token(code)
         .bodyToMono(ObjectNode::class.java)
-        .flatMap { storeObject (session, it) }
-
+        .flatMap { storeObject(session, it) }
 
     fun getRedirectUri(session: HttpSession) = session
         .getAttribute(sessionKeyRedirect) as URI?
 
     fun storeRedirectUri(session: HttpSession, uri: URI) = session
         .setAttribute(sessionKeyRedirect, uri)
-
 }

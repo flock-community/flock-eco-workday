@@ -9,14 +9,15 @@ import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
-import community.flock.eco.workday.model.ContractService as ContractServiceModel
 import community.flock.eco.workday.repository.ContractRepository
 import community.flock.eco.workday.repository.PersonRepository
-import java.time.LocalDate
-import javax.persistence.EntityManager
-import javax.transaction.Transactional
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.util.*
+import javax.persistence.EntityManager
+import javax.transaction.Transactional
+import community.flock.eco.workday.model.ContractService as ContractServiceModel
 
 @Service
 class ContractService(
@@ -32,8 +33,8 @@ class ContractService(
         .findByCode(code)
         .toNullable()
 
-    fun findAllByPersonCode(personCode: String) = contractRepository
-        .findAllByPersonCode(personCode)
+    fun findAllByPersonUuid(personUuid: UUID) = contractRepository
+        .findAllByPersonUuid(personUuid)
 
     fun findAllByPersonUserCode(userCode: String) = contractRepository
         .findAllByPersonUserCode(userCode)
@@ -107,7 +108,7 @@ class ContractService(
         hourlyRate = this.hourlyRate,
         hoursPerWeek = this.hoursPerWeek,
         person = it?.person
-            ?: this.personCode.let { personRepository.findByCode(it).toNullable() }
+            ?: this.personId.let { personRepository.findByUuid(it).toNullable() }
             ?: error("Cannot find Person")
     )
 
@@ -119,7 +120,7 @@ class ContractService(
         monthlySalary = this.monthlySalary,
         hoursPerWeek = this.hoursPerWeek,
         person = it?.person
-            ?: this.personCode.let { personRepository.findByCode(it).toNullable() }
+            ?: this.personId.let { personRepository.findByUuid(it).toNullable() }
             ?: error("Cannot find Person")
     )
 
@@ -129,7 +130,7 @@ class ContractService(
         to = this.to,
         monthlyFee = this.monthlyFee,
         person = it?.person
-            ?: this.personCode.let { personRepository.findByCode(it).toNullable() }
+            ?: this.personId.let { personRepository.findByUuid(it).toNullable() }
             ?: error("Cannot find Person")
     )
 

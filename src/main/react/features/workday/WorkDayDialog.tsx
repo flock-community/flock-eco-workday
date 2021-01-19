@@ -15,8 +15,8 @@ import { isDefined } from "../../utils/validation";
 const useStyles = makeStyles(() => ({
   dialogContent: {
     margin: "auto",
-    maxWidth: 768 // should be a decent medium-sized breakpoint
-  }
+    maxWidth: 768, // should be a decent medium-sized breakpoint
+  },
 }));
 
 export function WorkDayDialog({ open, code, onComplete }) {
@@ -28,7 +28,7 @@ export function WorkDayDialog({ open, code, onComplete }) {
   useEffect(() => {
     if (open) {
       if (code) {
-        WorkDayClient.get(code).then(res => {
+        WorkDayClient.get(code).then((res) => {
           setState({
             assignmentCode: res.assignment.code,
             from: res.from,
@@ -36,7 +36,7 @@ export function WorkDayDialog({ open, code, onComplete }) {
             days: res.days,
             hours: res.hours,
             status: res.status,
-            sheets: res.sheets
+            sheets: res.sheets,
           });
         });
       } else {
@@ -45,7 +45,7 @@ export function WorkDayDialog({ open, code, onComplete }) {
     }
   }, [open, code]);
 
-  const handleSubmit = it => {
+  const handleSubmit = (it) => {
     const body = {
       from: it.from.format(HTML5_FMT.DATE),
       to: it.to.format(HTML5_FMT.DATE),
@@ -55,15 +55,15 @@ export function WorkDayDialog({ open, code, onComplete }) {
         : it.hours,
       assignmentCode: it.assignmentCode,
       status: it.status,
-      sheets: it.sheets
+      sheets: it.sheets,
     };
     if (code) {
-      WorkDayClient.put(code, body).then(res => {
+      WorkDayClient.put(code, body).then((res) => {
         if (isDefined(onComplete)) onComplete(res);
         setState(null);
       });
     } else {
-      WorkDayClient.post(body).then(res => {
+      WorkDayClient.post(body).then((res) => {
         if (isDefined(onComplete)) onComplete(res);
         setState(null);
       });

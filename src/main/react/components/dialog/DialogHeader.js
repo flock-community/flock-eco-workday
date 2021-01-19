@@ -4,31 +4,31 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Button, DialogTitle } from "@material-ui/core";
 import Close from "@material-ui/icons/Close";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     margin: 0,
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
   },
   closeBtn: {
     alignSelf: "start",
     marginLeft: "auto",
-    minWidth: "unset" // override material button property
+    minWidth: "unset", // override material button property
   },
   dialogTitle: {
     alignItems: "center",
-    display: "flex"
+    display: "flex",
   },
   iconWrapper: {
     "& > svg": {
       height: 40,
-      width: 40
-    }
+      width: 40,
+    },
   },
   titleText: {
     display: "flex",
     flexDirection: "column",
-    marginLeft: "1rem"
-  }
+    marginLeft: "1rem",
+  },
 }));
 
 export function DialogHeader(props) {
@@ -56,5 +56,5 @@ DialogHeader.propTypes = {
   icon: PropTypes.any,
   headline: PropTypes.string,
   subheadline: PropTypes.string,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
 };

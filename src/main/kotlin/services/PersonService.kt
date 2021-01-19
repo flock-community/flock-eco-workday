@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 class PersonService(
@@ -23,7 +24,7 @@ class PersonService(
 
         return Person(
             id = this.id,
-            code = this.code,
+            uuid = this.uuid,
             firstname = it.firstname,
             lastname = it.lastname,
             email = it.email,
@@ -38,22 +39,23 @@ class PersonService(
     fun findAll(pageable: Pageable): Page<Person> = repository
         .findAll(pageable)
 
-    fun findByCode(code: String): Person? = repository
-        .findByCode(code)
+    fun findByUuid(code: UUID): Person? = repository
+        .findByUuid(code)
         .toNullable()
 
     fun findByUserCode(userCode: String) = repository
         .findByUserCode(userCode)
         .toNullable()
 
-    fun findByPersonCodeIdIn(personCodes: List<String>) = repository
-        .findByCodeIn(personCodes)
+    fun findByPersonCodeIdIn(personCodes: List<UUID>) = repository
+        .findByUuidIn(personCodes)
 
     fun create(form: PersonForm): Person? {
         val user = when (form.userCode) {
-            is String -> userRepository
-                .findByCode(form.userCode)
-                .toNullable()
+            is String ->
+                userRepository
+                    .findByCode(form.userCode)
+                    .toNullable()
             else -> null
         }
 
@@ -67,8 +69,8 @@ class PersonService(
         ).save()
     }
 
-    fun update(code: String, form: PersonForm): Person? {
-        val obj = this.findByCode(code)
+    fun update(code: UUID, form: PersonForm): Person? {
+        val obj = this.findByUuid(code)
 
         return when (obj) {
             is Person -> obj.render(form).save()
@@ -77,7 +79,7 @@ class PersonService(
     }
 
     @Transactional
-    fun deleteByCode(code: String) = repository.deleteByCode(code)
+    fun deleteByUuid(uuid: UUID) = repository.deleteByUuid(uuid)
 }
 
 fun Person.isUser(userCode: String?) = this.user?.code == userCode

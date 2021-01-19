@@ -4,10 +4,10 @@ import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.ClientForm
 import community.flock.eco.workday.model.Client
 import community.flock.eco.workday.repository.ClientRepository
-import javax.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import javax.transaction.Transactional
 
 @Service
 class ClientService(

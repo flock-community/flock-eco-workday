@@ -7,16 +7,17 @@ import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.HoliDayService
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -29,25 +30,20 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(classes = [Application::class])
+@SpringBootTest(classes = [Application::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
+@AutoConfigureDataJpa
+@AutoConfigureWebClient
 @AutoConfigureMockMvc
+@Import(CreateHelper::class)
 @ActiveProfiles(profiles = ["test"])
-class HoliDayControllerTest {
+class HoliDayControllerTest(
+    @Autowired private val mvc: MockMvc,
+    @Autowired private val mapper: ObjectMapper,
+    @Autowired private val createHelper: CreateHelper,
+    @Autowired private val holiDayService: HoliDayService
+) {
     private val baseUrl: String = "/api/holidays"
-
-    @Autowired
-    private lateinit var mvc: MockMvc
-
-    @Autowired
-    private lateinit var mapper: ObjectMapper
-
-    @Autowired
-    private lateinit var createHelper: CreateHelper
-
-    @Autowired
-    private lateinit var holiDayService: HoliDayService
 
     val adminAuthorities = setOf(HolidayAuthority.READ, HolidayAuthority.WRITE, HolidayAuthority.ADMIN)
     val userAuthorities = setOf(HolidayAuthority.READ, HolidayAuthority.WRITE)
@@ -69,16 +65,18 @@ class HoliDayControllerTest {
             to = to,
             days = days,
             hours = hours,
-            personCode = person.code,
+            personId = person.uuid,
             description = description,
             status = status
         )
 
         val created = holiDayService.create(createForm)
 
-        mvc.perform(get("$baseUrl/${created.code}")
-            .with(user(CreateHelper.UserSecurity(user)))
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            get("$baseUrl/${created.code}")
+                .with(user(CreateHelper.UserSecurity(user)))
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
@@ -87,7 +85,7 @@ class HoliDayControllerTest {
             .andExpect(jsonPath("\$.description").value(description))
             .andExpect(jsonPath("\$.status").value(status.toString()))
             .andExpect(jsonPath("\$.hours").value(hours))
-            .andExpect(jsonPath("\$.personCode").value(person.code))
+            .andExpect(jsonPath("\$.personId").value(person.uuid.toString()))
     }
 
     @Test
@@ -107,16 +105,18 @@ class HoliDayControllerTest {
             to = to,
             days = days,
             hours = hours,
-            personCode = person.code,
+            personId = person.uuid,
             description = description,
             status = status
         )
 
-        mvc.perform(post("$baseUrl")
-            .with(user(CreateHelper.UserSecurity(user)))
-            .content(mapper.writeValueAsString(createForm))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            post("$baseUrl")
+                .with(user(CreateHelper.UserSecurity(user)))
+                .content(mapper.writeValueAsString(createForm))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
@@ -125,8 +125,7 @@ class HoliDayControllerTest {
             .andExpect(jsonPath("\$.description").value(description))
             .andExpect(jsonPath("\$.status").value(status.toString()))
             .andExpect(jsonPath("\$.hours").value(hours))
-            .andExpect(jsonPath("\$.personCode").value(person.code))
-
+            .andExpect(jsonPath("\$.personId").value(person.uuid.toString()))
     }
 
     @Test
@@ -147,7 +146,7 @@ class HoliDayControllerTest {
             to = to,
             days = days,
             hours = hours,
-            personCode = person.code,
+            personId = person.uuid,
             description = description,
             status = status
         )
@@ -156,11 +155,13 @@ class HoliDayControllerTest {
 
         val updatedCreateForm = createForm.copy(description = updatedDescription)
 
-        mvc.perform(put("$baseUrl/${created.code}")
-            .with(user(CreateHelper.UserSecurity(user)))
-            .content(mapper.writeValueAsString(updatedCreateForm))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            put("$baseUrl/${created.code}")
+                .with(user(CreateHelper.UserSecurity(user)))
+                .content(mapper.writeValueAsString(updatedCreateForm))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
@@ -169,8 +170,7 @@ class HoliDayControllerTest {
             .andExpect(jsonPath("\$.description").value(updatedDescription))
             .andExpect(jsonPath("\$.status").value(status.toString()))
             .andExpect(jsonPath("\$.hours").value(hours))
-            .andExpect(jsonPath("\$.personCode").value(person.code))
-
+            .andExpect(jsonPath("\$.personId").value(person.uuid.toString()))
     }
 
     @Test
@@ -191,7 +191,7 @@ class HoliDayControllerTest {
             to = to,
             days = days,
             hours = hours,
-            personCode = person.code,
+            personId = person.uuid,
             description = description,
             status = status
         )
@@ -200,16 +200,17 @@ class HoliDayControllerTest {
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 
-        mvc.perform(put("$baseUrl/${created.code}")
-            .with(user(CreateHelper.UserSecurity(user)))
-            .content(mapper.writeValueAsString(updatedCreateForm))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            put("$baseUrl/${created.code}")
+                .with(user(CreateHelper.UserSecurity(user)))
+                .content(mapper.writeValueAsString(updatedCreateForm))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isForbidden)
 
         assertEquals(holiDayService.findByCode(created.code)?.status, status)
     }
-
 
     @Test
     fun `admin can update status field existing holiday via PUT-Method`() {
@@ -229,7 +230,7 @@ class HoliDayControllerTest {
             to = to,
             days = days,
             hours = hours,
-            personCode = person.code,
+            personId = person.uuid,
             description = description,
             status = status
         )
@@ -238,18 +239,19 @@ class HoliDayControllerTest {
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 
-        mvc.perform(put("$baseUrl/${created.code}")
-            .with(user(CreateHelper.UserSecurity(admin)))
-            .content(mapper.writeValueAsString(updatedCreateForm))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            put("$baseUrl/${created.code}")
+                .with(user(CreateHelper.UserSecurity(admin)))
+                .content(mapper.writeValueAsString(updatedCreateForm))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
             .andExpect(jsonPath("\$.status").value(updatedStatus.toString()))
     }
-
 
     @Test
     fun `should delete a holiday via DELETE-Method`() {
@@ -268,17 +270,19 @@ class HoliDayControllerTest {
             to = to,
             days = days,
             hours = hours,
-            personCode = person.code,
+            personId = person.uuid,
             description = description,
             status = status
         )
 
         val created = holiDayService.create(createForm)
 
-        mvc.perform(delete("$baseUrl/${created.code}")
-            .with(user(CreateHelper.UserSecurity(admin)))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
+        mvc.perform(
+            delete("$baseUrl/${created.code}")
+                .with(user(CreateHelper.UserSecurity(admin)))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+        )
             .andExpect(status().isNoContent)
 
         assertNull(holiDayService.findByCode(created.code))

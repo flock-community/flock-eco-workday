@@ -38,19 +38,19 @@ export function ContractDialog(props) {
     setState(null);
     setType("INTERNAL");
     if (code) {
-      ContractClient.get(code).then(res => {
+      ContractClient.get(code).then((res) => {
         setState(res);
         setType(res.type);
       });
     }
   }, [code, open]);
 
-  const handleSubmit = it => {
+  const handleSubmit = (it) => {
     const body = {
       ...it,
       from: it.from.format(HTML5_FMT.DATE),
       to: it.to && it.to.format(HTML5_FMT.DATE),
-      personCode: person && person.code
+      personId: person && person.uuid,
     };
     if (code) {
       ContractClient.put(code, type, body).then(() => onClose && onClose());
@@ -59,7 +59,7 @@ export function ContractDialog(props) {
     }
   };
 
-  const handleTypeChange = ev => {
+  const handleTypeChange = (ev) => {
     setType(ev.target.value);
   };
 
@@ -142,5 +142,5 @@ export function ContractDialog(props) {
 ContractDialog.propTypes = {
   open: PropTypes.bool,
   code: PropTypes.string,
-  onClose: PropTypes.func
+  onClose: PropTypes.func,
 };

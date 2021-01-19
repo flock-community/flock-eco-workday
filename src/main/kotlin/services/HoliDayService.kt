@@ -6,14 +6,15 @@ import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.HolidayType
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.HolidayRepository
 import org.springframework.data.domain.Pageable
-import java.time.LocalDate
-import java.util.UUID
-import javax.persistence.EntityManager
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.util.*
+import javax.persistence.EntityManager
 
 @Service
 class HoliDayService(
@@ -23,8 +24,8 @@ class HoliDayService(
 ) {
 
     fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
-    fun findAllByPersonCode(personCode: String) = holidayRepository.findAllByPersonCode(personCode)
-    fun findAllByPersonCode(personCode: String, pageable: Pageable) = holidayRepository.findAllByPersonCode(personCode, pageable)
+    fun findAllByPersonUuid(personCode: UUID) = holidayRepository.findAllByPersonUuid(personCode)
+    fun findAllByPersonUuid(personCode: UUID, pageable: Pageable) = holidayRepository.findAllByPersonUuid(personCode, pageable)
     fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = holidayRepository.findAllByPersonUserCode(userCode, pageable)
     fun findAllByStatus(status: Status) = holidayRepository.findAllByStatus(status)
 
@@ -38,8 +39,8 @@ class HoliDayService(
     }
 
     fun create(form: HoliDayForm): HoliDay = form.copy(status = Status.REQUESTED)
-        .validate()
         .consume()
+        .validate()
         .save()
 
     fun update(code: String, form: HoliDayForm): HoliDay? = holidayRepository
@@ -60,19 +61,20 @@ class HoliDayService(
 
     private fun HoliDayForm.consume(it: HoliDay? = null): HoliDay {
         val person = personService
-            .findByCode(this.personCode)
-            ?: throw error("Cannot find person: ${this.personCode}")
+            .findByUuid(this.personId)
+            ?: throw error("Cannot find person: ${this.personId}")
 
         return HoliDay(
             id = it?.id ?: 0L,
             code = it?.code ?: UUID.randomUUID().toString(),
-            description = this.description,
-            status = this.status,
-            from = this.from,
-            to = this.to,
+            description = description,
+            status = status,
+            from = from,
+            to = to,
             person = person,
-            hours = this.hours,
-            days = this.days
+            hours = hours,
+            days = days,
+            type = type
         )
     }
 }

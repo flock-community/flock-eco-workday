@@ -38,11 +38,12 @@ class TodoController(
     @PreAuthorize("hasAuthority('TodoAuthority.READ')")
     fun getTodoAll(
         authentication: Authentication
-    ) = mapOf<Authority,List<Todo>>(
+    ) = mapOf<Authority, List<Todo>>(
         HolidayAuthority.READ to findHolidayTodo(),
         SickdayAuthority.READ to findSickDayTodo(),
         WorkDayAuthority.READ to findWorkDayTodo(),
-        ExpenseAuthority.READ to findExpenseTodo())
+        ExpenseAuthority.READ to findExpenseTodo()
+    )
         .filter { authentication.hasAuthority(it.key) }
         .flatMap { it.value }
 
@@ -67,42 +68,41 @@ class TodoController(
     fun HoliDay.mapTodo() = Todo(
         id = UUID.fromString(code),
         type = TodoType.HOLIDAY,
-        personId = UUID.fromString(person.code),
+        personId = person.uuid,
         personName = person.fullName(),
-        description = "${from} - ${to}"
+        description = "$from - $to"
     )
 
     fun SickDay.mapTodo() = Todo(
         id = UUID.fromString(code),
         type = TodoType.SICKDAY,
-        personId = UUID.fromString(person.code),
+        personId = person.uuid,
         personName = person.fullName(),
-        description = "${from} - ${to}"
+        description = "$from - $to"
     )
 
     fun WorkDay.mapTodo() = Todo(
         id = UUID.fromString(code),
         type = TodoType.WORKDAY,
-        personId = UUID.fromString(assignment.person.code),
+        personId = assignment.person.uuid,
         personName = assignment.person.fullName(),
-        description = "${from} - ${to}"
+        description = "$from - $to"
     )
 
     fun Expense.mapTodo() = Todo(
         id = id,
         type = TodoType.EXPENSE,
-        personId = UUID.fromString(person.code),
+        personId = person.uuid,
         personName = person.fullName(),
-        description = "${description} : ${getAmount()}"
+        description = "$description : ${getAmount()}"
     )
 
-    fun Authentication.hasAuthority(authority:Authority) = this.authorities
+    fun Authentication.hasAuthority(authority: Authority) = this.authorities
         .map { it.authority }
         .contains(authority.toName())
-
 }
 
-private fun Expense.getAmount():String = when(this){
+private fun Expense.getAmount(): String = when (this) {
     is CostExpense -> amount.toString()
     is TravelExpense -> "$distance / $allowance"
     else -> "-"
