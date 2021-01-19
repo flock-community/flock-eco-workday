@@ -14,7 +14,7 @@ export const HOLIDAY_FORM_ID = "holiday-form-id";
 
 const now = moment();
 
-export const schemaHolidayForm = Yup.object().shape({
+export const schemaPlusDayForm = Yup.object().shape({
   description: Yup.string().required("Field required").default(""),
   status: Yup.string().required("Field required").default("REQUESTED"),
   from: Yup.date().required("From date is required").default(now),
@@ -102,17 +102,12 @@ export function PlusDayForm({ value, onSubmit }: PlusDayFormProps) {
     );
   };
 
-  const init = {
-    ...schemaHolidayForm.default(),
-    ...value,
-  };
-
   return (
     <Formik
       enableReinitialize
-      initialValues={init}
+      initialValues={value}
       onSubmit={handleSubmit}
-      validationSchema={schemaHolidayForm}
+      validationSchema={schemaPlusDayForm}
     >
       {renderForm}
     </Formik>

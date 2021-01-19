@@ -14,8 +14,8 @@ import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/co
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { HolidayClient } from "../../clients/HolidayClient";
-import { HOLIDAY_FORM_ID, HolidayForm, schemaHolidayForm } from "./HolidayForm";
-import { PlusDayForm } from "./PlusDayForm";
+import { HOLIDAY_FORM_ID, HolidayForm, schemaHoliDayForm } from "./HolidayForm";
+import {PlusDayForm, schemaPlusDayForm} from "./PlusDayForm";
 
 enum Types {
   HOLIDAY = "HOLIDAY",
@@ -76,6 +76,8 @@ export function HolidayDialog({
             hours: res.hours,
           });
         });
+      }else{
+        setState(type === Types.PLUSDAY ? schemaPlusDayForm.default() : schemaHoliDayForm.default())
       }
     }
   }, [code, open]);
@@ -133,14 +135,14 @@ export function HolidayDialog({
                 </Grid>
               </UserAuthorityUtil>
             )}
-            <Grid item xs={12}>
+            {state && <Grid item xs={12}>
               {type === Types.HOLIDAY && (
                 <HolidayForm value={state} onSubmit={handleSubmit} />
               )}
               {type === Types.PLUSDAY && (
                 <PlusDayForm value={state} onSubmit={handleSubmit} />
               )}
-            </Grid>
+            </Grid>}
           </Grid>
         </DialogContent>
         <DialogFooter
