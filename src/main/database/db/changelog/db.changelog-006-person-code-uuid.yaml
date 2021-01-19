@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-006-person-code-uuid-1
+      author: wveelenturf
+      changes:
+        - modifyDataType:
+            tableName: person
+            columnName: code
+            newDataType: UUID
