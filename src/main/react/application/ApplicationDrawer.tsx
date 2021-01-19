@@ -18,10 +18,10 @@ import WorkdayIcon from "@material-ui/icons/Work";
 import ExpensesIcon from "@material-ui/icons/Money";
 import ExactonlineIcon from "@material-ui/icons/AccountBalance";
 import TodoIcon from "@material-ui/icons/AssignmentTurnedIn";
+import HomeIcon from "@material-ui/icons/Home";
 
 import Drawer from "@material-ui/core/Drawer";
 import { makeStyles } from "@material-ui/core/styles";
-import PropTypes from "prop-types";
 import { useUserMe } from "../hooks/UserMeHook";
 
 const useStyles = makeStyles({
@@ -36,7 +36,13 @@ const useStyles = makeStyles({
   },
 });
 
-export function ApplicationDrawer({ open, onClose }) {
+type ApplicationDrawerProps = {
+  open: boolean,
+  onClose: () => void,
+};
+
+export function ApplicationDrawer({ open, onClose }:ApplicationDrawerProps) {
+
   const classes = useStyles();
   const history = useHistory();
   const user = useUserMe();
@@ -58,6 +64,11 @@ export function ApplicationDrawer({ open, onClose }) {
   };
 
   const items = [
+    {
+      name: "Home",
+      icon: HomeIcon,
+      url: "/",
+    },
     {
       name: "Dashboard",
       icon: DashboardIcon,
@@ -153,7 +164,7 @@ export function ApplicationDrawer({ open, onClose }) {
     >
       <List>
         {items
-          .filter((item) => user.authorities.includes(item.authority))
+          .filter((item) => item.authority === undefined || user.authorities.includes(item.authority))
           .map((item) => (
             <ListItem
               button
@@ -179,8 +190,3 @@ export function ApplicationDrawer({ open, onClose }) {
     </Drawer>
   );
 }
-
-ApplicationDrawer.propTypes = {
-  open: PropTypes.bool,
-  onClose: PropTypes.func,
-};

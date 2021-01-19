@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -24,8 +23,13 @@ const useStyles = makeStyles({
   },
 });
 
-export function ApplicationLayout(props) {
-  const { open, onDrawer } = props;
+type ApplicationLayoutProps = {
+  open: boolean,
+  onDrawer: () => void,
+};
+
+export function ApplicationLayout({ open, onDrawer }:ApplicationLayoutProps) {
+
   const classes = useStyles();
 
   const [state, setState] = useState({
@@ -98,7 +102,3 @@ export function ApplicationLayout(props) {
     </React.Fragment>
   );
 }
-ApplicationLayout.propTypes = {
-  open: PropTypes.func,
-  onDrawer: PropTypes.func,
-};

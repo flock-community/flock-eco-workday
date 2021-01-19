@@ -1,15 +1,14 @@
 import React from "react";
 import * as Yup from "yup";
-import { Field, Form, Formik } from "formik";
+import {Field, Form, Formik} from "formik";
 import moment from "moment";
 import Grid from "@material-ui/core/Grid";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import {MuiPickersUtilsProvider} from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
-import { TextField } from "formik-material-ui";
+import {TextField} from "formik-material-ui";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import MenuItem from "@material-ui/core/MenuItem";
-import { DatePickerField } from "../../components/fields/DatePickerField";
-import { PeriodInputField } from "../../components/fields/PeriodInputField";
+import {DatePickerField} from "../../components/fields/DatePickerField";
 
 export const HOLIDAY_FORM_ID = "holiday-form-id";
 
@@ -20,7 +19,7 @@ export const schemaHolidayForm = Yup.object().shape({
   status: Yup.string().required("Field required").default("REQUESTED"),
   from: Yup.date().required("From date is required").default(now),
   to: Yup.date().required("To date is required").default(now),
-  days: Yup.array().default([8]).nullable(),
+  hours: Yup.string().required("To date is required").default(""),
 });
 
 type PlusDayFormProps = {
@@ -28,16 +27,17 @@ type PlusDayFormProps = {
   onSubmit?: (item: any) => void;
 };
 
-export function PlusDayForm({ value, onSubmit }: PlusDayFormProps) {
+export function PlusDayForm({value, onSubmit}: PlusDayFormProps) {
 
   const handleSubmit = (data) => {
     onSubmit?.({
       ...value,
       ...data,
+      days:null
     });
   };
 
-  const renderForm = ({ values }) => {
+  const renderForm = ({values}) => {
     return (
       <Form id={HOLIDAY_FORM_ID}>
         <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -103,16 +103,17 @@ export function PlusDayForm({ value, onSubmit }: PlusDayFormProps) {
     );
   };
 
-  return (
-    value && (
-      <Formik
-        enableReinitialize
-        initialValues={value}
-        onSubmit={handleSubmit}
-        validationSchema={schemaHolidayForm}
-      >
-        {renderForm}
-      </Formik>
-    )
-  );
+  const init = {
+    ...schemaHolidayForm.default(),
+    ...value,
+  }
+
+  return (<Formik
+      enableReinitialize
+      initialValues={init}
+      onSubmit={handleSubmit}
+      validationSchema={schemaHolidayForm}
+    >
+      {renderForm}
+    </Formik>);
 }

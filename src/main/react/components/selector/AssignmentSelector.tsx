@@ -31,8 +31,6 @@ export function AssignmentSelector({
   to,
   ...props
 }: AssignmentSelectorProps) {
-  console.log("from", from.format("DD-MM-YYYY"));
-  console.log("to", to.format("DD-MM-YYYY"));
 
   const [items, setItems] = useState<any[]>();
   const [state, setState] = useState(value);

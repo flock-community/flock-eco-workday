@@ -17,7 +17,7 @@ export function RevenuePerClientChart({ year }: RevenuePerClientChartProps) {
     AggregationClient.totalPerClientByYear(
       year || date.getFullYear()
     ).then((res) => setState(res));
-  }, []);
+  }, [year]);
 
   if (!state) return <AlignedLoader />;
 

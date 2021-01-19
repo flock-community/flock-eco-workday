@@ -40,14 +40,7 @@ class HoliDayService(
 
     fun create(form: HoliDayForm): HoliDay = form.copy(status = Status.REQUESTED)
         .consume()
-        .apply { if (type == HolidayType.HOLIDAY) validate() }
-        .let {
-            if (it.type == HolidayType.PLUSDAY) {
-                it.copy(hours = (0 - it.hours))
-            } else {
-                it
-            }
-        }
+        .validate()
         .save()
 
     fun update(code: String, form: HoliDayForm): HoliDay? = holidayRepository

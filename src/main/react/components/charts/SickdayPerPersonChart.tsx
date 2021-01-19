@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import BarChart from "recharts/es6/chart/BarChart";
-import CartesianGrid from "recharts/es6/cartesian/CartesianGrid";
-import XAxis from "recharts/es6/cartesian/XAxis";
-import YAxis from "recharts/es6/cartesian/YAxis";
-import Legend from "recharts/es6/component/Legend";
-import Tooltip from "recharts/es6/component/Tooltip";
-import Bar from "recharts/es6/cartesian/Bar";
-import ResponsiveContainer from "recharts/es6/component/ResponsiveContainer";
+import {
+  XAxis,
+  YAxis,
+  Legend,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  BarChart,
+  Bar
+} from "recharts";
 import PropTypes from "prop-types";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { AggregationClient } from "../../clients/AggregationClient";
@@ -23,7 +25,7 @@ export function SickdayPerPersonChart({ year }:SickdayPerPersonChartProps) {
     AggregationClient.totalPerPersonByYear(
       year || date.getFullYear()
     ).then((res) => setState(res.filter((it) => it.sickDays > 0)));
-  }, []);
+  }, [year]);
 
   if (!state) return <AlignedLoader />;
 

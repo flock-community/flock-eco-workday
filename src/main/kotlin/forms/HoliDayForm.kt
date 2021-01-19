@@ -24,7 +24,7 @@ data class HoliDayForm(
     override val to: LocalDate,
 
     override val hours: Double,
-    override val days: List<Double>,
+    override val days: List<Double>?,
 
     override val status: Status = Status.REQUESTED,
 

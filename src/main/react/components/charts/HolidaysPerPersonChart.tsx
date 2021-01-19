@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import BarChart from "recharts/es6/chart/BarChart";
-import CartesianGrid from "recharts/es6/cartesian/CartesianGrid";
-import XAxis from "recharts/es6/cartesian/XAxis";
-import YAxis from "recharts/es6/cartesian/YAxis";
-import Legend from "recharts/es6/component/Legend";
-import Tooltip from "recharts/es6/component/Tooltip";
-import Bar from "recharts/es6/cartesian/Bar";
-import ResponsiveContainer from "recharts/es6/component/ResponsiveContainer";
-import PropTypes from "prop-types";
+import {
+  XAxis,
+  YAxis,
+  Legend,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  BarChart,
+  Bar
+} from "recharts";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { AggregationClient } from "../../clients/AggregationClient";
 
@@ -16,7 +17,7 @@ type HolidaysPerPersonChartProps = {
 };
 
 export function HolidaysPerPersonChart({ year }:HolidaysPerPersonChartProps) {
-  const [state, setState] = useState(null);
+  const [state, setState] = useState<any>(null);
 
   useEffect(() => {
     const date = new Date();
@@ -38,9 +39,10 @@ export function HolidaysPerPersonChart({ year }:HolidaysPerPersonChartProps) {
             }))
         )
     );
-  }, []);
+  }, [year]);
 
-  if (!state) return <AlignedLoader />;
+  if (!state)
+    return <AlignedLoader />;
 
   const height = 50 + state.length * 50;
 
@@ -71,8 +73,3 @@ export function HolidaysPerPersonChart({ year }:HolidaysPerPersonChartProps) {
     </ResponsiveContainer>
   );
 }
-
-HolidaysPerPersonChart.propTypes = {
-  year: PropTypes.number,
-  persons: PropTypes.object,
-};

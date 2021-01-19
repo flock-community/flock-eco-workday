@@ -105,6 +105,15 @@ class HolidayController(
         }
     }
 
+    private fun HoliDay.applyAllowedToCreate(form: HoliDayForm, authentication: Authentication): HoliDay = apply {
+        if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change workday")
+        }
+        if (form.status !== this.status && !authentication.isAdmin()) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
+        }
+    }
+
     private fun HoliDay.applyAllowedToUpdate(form: HoliDayForm, authentication: Authentication): HoliDay = apply {
         if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change workday")

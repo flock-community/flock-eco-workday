@@ -28,6 +28,15 @@ export const totalPerPersonByYearMonth = (year, month) => {
     .catch((e) => addError(e.message));
 };
 
+export const totalPerPersonMe = () => {
+  const opts = {
+    method: "GET",
+  };
+  return fetch(`${path}/total-per-person-me`, opts)
+    .then(ExtractJSON)
+    .catch((e) => addError(e.message));
+};
+
 export const totalPerMonthByYear = (year) => {
   const opts = {
     method: "GET",
@@ -42,4 +51,5 @@ export const AggregationClient = {
   totalPerPersonByYear,
   totalPerPersonByYearMonth,
   totalPerMonthByYear,
+  totalPerPersonMe,
 };

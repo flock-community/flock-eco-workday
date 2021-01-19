@@ -24,7 +24,7 @@ export function ExternalOverviewChart({ year }:ExternalOverviewChartProps) {
     AggregationClient.totalPerMonthByYear(
       year || date.getFullYear()
     ).then((res) => setState(res));
-  }, []);
+  }, [year]);
 
   if (!state) return <AlignedLoader />;
 

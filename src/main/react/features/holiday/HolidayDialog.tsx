@@ -11,7 +11,8 @@ import {HOLIDAY_FORM_ID, HolidayForm, schemaHolidayForm} from "./HolidayForm";
 import {PlusDayForm} from "./PlusDayForm";
 
 enum Types {
-  "HOLIDAY", "PLUSDAY"
+  HOLIDAY =  "HOLIDAY",
+  PLUSDAY =  "PLUSDAY",
 }
 
 type HolidayDialogProps = {
@@ -34,12 +35,11 @@ export function HolidayDialog({
 
   const handleSubmit = (it) => {
     const body = {
-      description: it.description,
-      status: it.status,
+      ...it,
       from: it.from.format(HTML5_FMT.DATE),
       to: it.to.format(HTML5_FMT.DATE),
-      days: it.days,
-      hours: it.days.reduce((acc, cur) => acc + parseFloat(cur), 0),
+      days: it.days ? it.days : null,
+      type,
       personId,
     };
     if (code) {
@@ -59,16 +59,16 @@ export function HolidayDialog({
     if (open) {
       if (code) {
         HolidayClient.get(code).then((res) => {
+          setType(res.type)
           setState({
             description: res.description,
             status: res.status,
             from: res.from,
             to: res.to,
             days: res.days,
+            hours: res.hours,
           });
         });
-      } else {
-        setState(schemaHolidayForm.default());
       }
     }
   }, [code, open]);
@@ -124,10 +124,10 @@ export function HolidayDialog({
                 </Select>
               </Grid>
             </UserAuthorityUtil>}
-            {state && <Grid item xs={12}>
+            <Grid item xs={12}>
               {(type === Types.HOLIDAY) && <HolidayForm value={state} onSubmit={handleSubmit}/>}
               {(type === Types.PLUSDAY) && <PlusDayForm value={state} onSubmit={handleSubmit}/>}
-            </Grid>}
+            </Grid>
           </Grid>
 
 

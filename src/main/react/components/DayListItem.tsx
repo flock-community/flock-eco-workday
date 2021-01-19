@@ -1,9 +1,8 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { Card, CardContent, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import {Card, CardContent, Typography} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
-import { StatusMenu } from "./StatusMenu";
+import {StatusMenu} from "./StatusMenu";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,7 +15,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function DayListItem({ value, onClick, onClickStatus, hasAuthority }) {
+type DayListItemProps = {
+  value: any,
+  onClick: () => void,
+  onClickStatus: (status: string) => void,
+  hasAuthority: string,
+};
+
+export function DayListItem({value, onClick, onClickStatus, hasAuthority}: DayListItemProps) {
+
   const classes = useStyles();
 
   return (
@@ -25,6 +32,7 @@ export function DayListItem({ value, onClick, onClickStatus, hasAuthority }) {
         <Typography variant="h6">
           {value.description ? value.description : "empty"}
         </Typography>
+        {value.type && <Typography>Type: {value.type}</Typography>}
         <Typography>
           Period: {value.from.format("DD-MM-YYYY")} -{" "}
           {value.to.format("DD-MM-YYYY")}
@@ -45,9 +53,3 @@ export function DayListItem({ value, onClick, onClickStatus, hasAuthority }) {
   );
 }
 
-DayListItem.propTypes = {
-  value: PropTypes.object,
-  onClick: PropTypes.func,
-  onClickStatus: PropTypes.func,
-  hasAuthority: PropTypes.string,
-};
