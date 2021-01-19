@@ -27,7 +27,6 @@ export const ExpenseFormTravel = ({
   onSubmit,
 }: ExpenseFormTravelProps) => {
   const form = ({ errors }) => {
-
     return (
       <Form id={EXPENSE_TRAVEL_FORM_ID}>
         <MuiPickersUtilsProvider utils={MomentUtils}>

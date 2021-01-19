@@ -1,15 +1,15 @@
 import React from "react";
 import * as Yup from "yup";
-import {Field, Form, Formik} from "formik";
+import { Field, Form, Formik } from "formik";
 import moment from "moment";
 import Grid from "@material-ui/core/Grid";
-import {MuiPickersUtilsProvider} from "@material-ui/pickers";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
-import {TextField} from "formik-material-ui";
+import { TextField } from "formik-material-ui";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import MenuItem from "@material-ui/core/MenuItem";
-import {DatePickerField} from "../../components/fields/DatePickerField";
-import {PeriodInputField} from "../../components/fields/PeriodInputField";
+import { DatePickerField } from "../../components/fields/DatePickerField";
+import { PeriodInputField } from "../../components/fields/PeriodInputField";
 
 export const HOLIDAY_FORM_ID = "holiday-form-id";
 
@@ -28,16 +28,16 @@ type HolidayFormProps = {
   onSubmit?: (item: any) => void;
 };
 
-export function HolidayForm({value, onSubmit}: HolidayFormProps) {
+export function HolidayForm({ value, onSubmit }: HolidayFormProps) {
   const handleSubmit = (data) => {
     onSubmit?.({
       ...value,
       ...data,
-      hours: data.days.reduce((acc, cur) => acc + parseFloat(cur), 0)
+      hours: data.days.reduce((acc, cur) => acc + parseFloat(cur), 0),
     });
   };
 
-  const renderForm = ({values}) => {
+  const renderForm = ({ values }) => {
     return (
       <Form id={HOLIDAY_FORM_ID}>
         <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -89,7 +89,7 @@ export function HolidayForm({value, onSubmit}: HolidayFormProps) {
               />
             </Grid>
             <Grid item xs={12}>
-              <PeriodInputField name="days" from={values.from} to={values.to}/>
+              <PeriodInputField name="days" from={values.from} to={values.to} />
             </Grid>
           </Grid>
         </MuiPickersUtilsProvider>
@@ -100,14 +100,16 @@ export function HolidayForm({value, onSubmit}: HolidayFormProps) {
   const init = {
     ...schemaHolidayForm.default(),
     ...value,
-  }
+  };
 
-  return (<Formik
-    enableReinitialize
-    initialValues={init}
-    onSubmit={handleSubmit}
-    validationSchema={schemaHolidayForm}
-  >
-    {renderForm}
-  </Formik>);
+  return (
+    <Formik
+      enableReinitialize
+      initialValues={init}
+      onSubmit={handleSubmit}
+      validationSchema={schemaHolidayForm}
+    >
+      {renderForm}
+    </Formik>
+  );
 }

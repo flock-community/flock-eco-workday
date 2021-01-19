@@ -7,16 +7,16 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   BarChart,
-  Bar
+  Bar,
 } from "recharts";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { AggregationClient } from "../../clients/AggregationClient";
 
 type HolidaysPerPersonChartProps = {
-  year?: number,
+  year?: number;
 };
 
-export function HolidaysPerPersonChart({ year }:HolidaysPerPersonChartProps) {
+export function HolidaysPerPersonChart({ year }: HolidaysPerPersonChartProps) {
   const [state, setState] = useState<any>(null);
 
   useEffect(() => {
@@ -41,8 +41,7 @@ export function HolidaysPerPersonChart({ year }:HolidaysPerPersonChartProps) {
     );
   }, [year]);
 
-  if (!state)
-    return <AlignedLoader />;
+  if (!state) return <AlignedLoader />;
 
   const height = 50 + state.length * 50;
 

@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
-import {AppBar, Button, Card, Container, IconButton, Toolbar} from "@material-ui/core";
+import {
+  AppBar,
+  Button,
+  Card,
+  Container,
+  IconButton,
+  Toolbar,
+} from "@material-ui/core";
 import { HolidayDialog } from "./HolidayDialog";
 import { HolidayList } from "./HolidayList";
 import { PersonSelector } from "../../components/selector";
@@ -48,7 +55,6 @@ export function HolidayFeature() {
 
   return (
     <Container>
-
       <Grid container spacing={2}>
         <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
           <Grid item xs={12}>

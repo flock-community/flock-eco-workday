@@ -1,8 +1,8 @@
 import React from "react";
-import {Card, CardContent, Typography} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
+import { Card, CardContent, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
-import {StatusMenu} from "./StatusMenu";
+import { StatusMenu } from "./StatusMenu";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,14 +16,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type DayListItemProps = {
-  value: any,
-  onClick: () => void,
-  onClickStatus: (status: string) => void,
-  hasAuthority: string,
+  value: any;
+  onClick: () => void;
+  onClickStatus: (status: string) => void;
+  hasAuthority: string;
 };
 
-export function DayListItem({value, onClick, onClickStatus, hasAuthority}: DayListItemProps) {
-
+export function DayListItem({
+  value,
+  onClick,
+  onClickStatus,
+  hasAuthority,
+}: DayListItemProps) {
   const classes = useStyles();
 
   return (
@@ -52,4 +56,3 @@ export function DayListItem({value, onClick, onClickStatus, hasAuthority}: DayLi
     </Card>
   );
 }
-

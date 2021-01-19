@@ -1,19 +1,18 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import {Card, Typography} from "@material-ui/core";
+import { Card, Typography } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
-import {EventClient} from "../../clients/EventClient";
-import {isDefined} from "../../utils/validation";
+import { EventClient } from "../../clients/EventClient";
+import { isDefined } from "../../utils/validation";
 
 type EventListProps = {
-  refresh: boolean,
-  personId: string,
-  onClickRow: (item: any) => void,
+  refresh: boolean;
+  personId: string;
+  onClickRow: (item: any) => void;
 };
 
-export function EventList({personId, refresh, onClickRow}: EventListProps) {
-
+export function EventList({ personId, refresh, onClickRow }: EventListProps) {
   const [state, setState] = useState([]);
 
   useEffect(() => {

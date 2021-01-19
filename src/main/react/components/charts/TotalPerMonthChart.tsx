@@ -7,17 +7,16 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   BarChart,
-  Bar
+  Bar,
 } from "recharts";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { AggregationClient } from "../../clients/AggregationClient";
 
 type TotalPerMonthChartProps = {
-  year?: number,
+  year?: number;
 };
 
-export function TotalPerMonthChart({ year }:TotalPerMonthChartProps) {
-
+export function TotalPerMonthChart({ year }: TotalPerMonthChartProps) {
   const [state, setState] = useState<any>();
 
   useEffect(() => {

@@ -1,11 +1,10 @@
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import {useUserMe} from "../../hooks/UserMeHook";
-import {DashboardHoursChart} from "../../components/charts/DashboardHoursChart";
-import {Container, Grid} from "@material-ui/core";
+import { useUserMe } from "../../hooks/UserMeHook";
+import { DashboardHoursChart } from "../../components/charts/DashboardHoursChart";
+import { Container, Grid } from "@material-ui/core";
 
 export function HomeFeature() {
-
   const user = useUserMe();
 
   return (
@@ -16,7 +15,7 @@ export function HomeFeature() {
           <Typography>You are logged in as {user && user.name}</Typography>
         </Grid>
         <Grid item xs={12}>
-          <DashboardHoursChart/>
+          <DashboardHoursChart />
         </Grid>
       </Grid>
     </Container>

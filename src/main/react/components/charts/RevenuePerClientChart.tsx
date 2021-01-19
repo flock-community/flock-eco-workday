@@ -4,9 +4,8 @@ import PropTypes from "prop-types";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { AggregationClient } from "../../clients/AggregationClient";
 
-
 type RevenuePerClientChartProps = {
-  year?: number,
+  year?: number;
 };
 
 export function RevenuePerClientChart({ year }: RevenuePerClientChartProps) {

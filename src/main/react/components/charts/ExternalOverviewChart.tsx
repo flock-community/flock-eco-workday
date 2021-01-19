@@ -13,10 +13,10 @@ import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/co
 import { AggregationClient } from "../../clients/AggregationClient";
 
 type ExternalOverviewChartProps = {
-  year?: number,
+  year?: number;
 };
 
-export function ExternalOverviewChart({ year }:ExternalOverviewChartProps) {
+export function ExternalOverviewChart({ year }: ExternalOverviewChartProps) {
   const [state, setState] = useState<any | null>(null);
 
   useEffect(() => {

@@ -31,7 +31,6 @@ export function AssignmentSelector({
   to,
   ...props
 }: AssignmentSelectorProps) {
-
   const [items, setItems] = useState<any[]>();
   const [state, setState] = useState(value);
 

@@ -22,9 +22,7 @@ export function WorkDayList({
 
   useEffect(() => {
     if (personId) {
-      WorkDayClient.findAllByPersonUuid(personId).then((res) =>
-        setState(res)
-      );
+      WorkDayClient.findAllByPersonUuid(personId).then((res) => setState(res));
     }
   }, [personId, refresh]);
 

@@ -13,10 +13,10 @@ import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/co
 import { AggregationClient } from "../../clients/AggregationClient";
 
 type InternalOverviewChartProps = {
-  year?: number,
+  year?: number;
 };
 
-export function InternalOverviewChart({ year }:InternalOverviewChartProps) {
+export function InternalOverviewChart({ year }: InternalOverviewChartProps) {
   const [state, setState] = useState<any | null>(null);
 
   useEffect(() => {

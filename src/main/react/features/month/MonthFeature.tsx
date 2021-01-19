@@ -1,23 +1,31 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Typography from "@material-ui/core/Typography";
-import {makeStyles} from "@material-ui/core/styles";
-import {CardContent} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { CardContent } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import moment from "moment";
 import IconButton from "@material-ui/core/IconButton";
 import BackIcon from "@material-ui/icons/ChevronLeft";
 import NextIcon from "@material-ui/icons/ChevronRight";
 import Grid from "@material-ui/core/Grid";
-import {Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import CardHeader from "@material-ui/core/CardHeader";
-import {AggregationClient} from "../../clients/AggregationClient";
-import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AggregationClient } from "../../clients/AggregationClient";
+import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 
 /**
  * @return {null}
  */
 export function MonthFeature() {
-
   const [date, setDate] = useState(moment().startOf("month"));
   const [state, setState] = useState<any>();
 
@@ -36,7 +44,7 @@ export function MonthFeature() {
     setDate(moment(date).add(amount, "month"));
   };
 
-  if (!state) return <AlignedLoader/>;
+  if (!state) return <AlignedLoader />;
 
   const data = state
     .filter((it) => it.assignment + it.revenue > 0)
@@ -56,13 +64,13 @@ export function MonthFeature() {
     return (
       <ResponsiveContainer height={height}>
         <BarChart data={x} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3"/>
-          <XAxis type="number"/>
-          <YAxis type="category" dataKey="name" width={150}/>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis type="number" />
+          <YAxis type="category" dataKey="name" width={150} />
           <Tooltip
             formatter={(value) => new Intl.NumberFormat().format(value)}
           />
-          <Legend/>
+          <Legend />
           <Bar
             stackId="days"
             dataKey="workDays"
@@ -116,10 +124,10 @@ export function MonthFeature() {
               </Grid>
               <Grid item>
                 <IconButton onClick={handleMonth(-1)}>
-                  <BackIcon/>
+                  <BackIcon />
                 </IconButton>
                 <IconButton onClick={handleMonth(1)}>
-                  <NextIcon/>
+                  <NextIcon />
                 </IconButton>
               </Grid>
             </Grid>
@@ -128,7 +136,7 @@ export function MonthFeature() {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title="Internal"/>
+          <CardHeader title="Internal" />
           <CardContent>
             {renderChart(
               data
@@ -144,7 +152,7 @@ export function MonthFeature() {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title="External"/>
+          <CardHeader title="External" />
           <CardContent>
             {renderChart(
               data

@@ -12,18 +12,17 @@ import { CLIENT_FORM_ID, ClientForm } from "./ClientForm";
 import { isDefined } from "../../utils/validation";
 
 type ClientDialogProps = {
-  open: boolean,
-  code?: string,
-  onClose?: () => void
+  open: boolean;
+  code?: string;
+  onClose?: () => void;
 };
 
-export function ClientDialog( { open, code, onClose }:ClientDialogProps) {
-
+export function ClientDialog({ open, code, onClose }: ClientDialogProps) {
   const [state, setState] = useState<any>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => {
-    if(code){
+    if (code) {
       ClientClient.get(code).then((res) => setState(res));
     }
   }, [code]);

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
   XAxis,
   YAxis,
@@ -7,13 +7,12 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   BarChart,
-  Bar
+  Bar,
 } from "recharts";
-import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
-import {AggregationClient} from "../../clients/AggregationClient";
+import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AggregationClient } from "../../clients/AggregationClient";
 
 export function DashboardHoursChart() {
-
   const [state, setState] = useState<any>();
 
   useEffect(() => {
@@ -21,10 +20,10 @@ export function DashboardHoursChart() {
     AggregationClient.totalPerPersonMe().then((res) => setState(res));
   }, []);
 
-  if (!state) return <AlignedLoader/>;
+  if (!state) return <AlignedLoader />;
 
   const data = Object.keys(state)
-    .map(monthYear => ({...state[monthYear], monthYear}))
+    .map((monthYear) => ({ ...state[monthYear], monthYear }))
     .filter((it) => it !== null)
     .filter((it) => it.assignment + it.revenue > 0)
     .map((it) => ({
@@ -40,13 +39,11 @@ export function DashboardHoursChart() {
   return (
     <ResponsiveContainer height={height}>
       <BarChart data={data} layout="vertical">
-        <CartesianGrid strokeDasharray="3 3"/>
-        <XAxis type="number"/>
-        <YAxis type="category" dataKey="monthYear"/>
-        <Tooltip
-          formatter={(value) => new Intl.NumberFormat().format(value)}
-        />
-        <Legend/>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis type="number" />
+        <YAxis type="category" dataKey="monthYear" />
+        <Tooltip formatter={(value) => new Intl.NumberFormat().format(value)} />
+        <Legend />
         <Bar
           stackId="days"
           dataKey="workDays"
@@ -65,12 +62,7 @@ export function DashboardHoursChart() {
           name="sick hours"
           fill="#ef5350"
         />
-        <Bar
-          stackId="days"
-          dataKey="event"
-          name="event hours"
-          fill="#fed766"
-        />
+        <Bar stackId="days" dataKey="event" name="event hours" fill="#fed766" />
         <Bar
           stackId="days"
           dataKey="missing"

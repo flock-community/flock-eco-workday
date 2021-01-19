@@ -7,17 +7,16 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   BarChart,
-  Bar
+  Bar,
 } from "recharts";
 import PropTypes from "prop-types";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { AggregationClient } from "../../clients/AggregationClient";
 
 type SickdayPerPersonChartProps = {
-  year?: number,
+  year?: number;
 };
-export function SickdayPerPersonChart({ year }:SickdayPerPersonChartProps) {
-
+export function SickdayPerPersonChart({ year }: SickdayPerPersonChartProps) {
   const [state, setState] = useState<any>();
 
   useEffect(() => {

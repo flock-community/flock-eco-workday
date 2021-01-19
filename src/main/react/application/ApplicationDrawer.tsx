@@ -37,12 +37,11 @@ const useStyles = makeStyles({
 });
 
 type ApplicationDrawerProps = {
-  open: boolean,
-  onClose: () => void,
+  open: boolean;
+  onClose: () => void;
 };
 
-export function ApplicationDrawer({ open, onClose }:ApplicationDrawerProps) {
-
+export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
   const classes = useStyles();
   const history = useHistory();
   const user = useUserMe();
@@ -164,7 +163,11 @@ export function ApplicationDrawer({ open, onClose }:ApplicationDrawerProps) {
     >
       <List>
         {items
-          .filter((item) => item.authority === undefined || user.authorities.includes(item.authority))
+          .filter(
+            (item) =>
+              item.authority === undefined ||
+              user.authorities.includes(item.authority)
+          )
           .map((item) => (
             <ListItem
               button

@@ -45,7 +45,6 @@ const theme = getTheme("light");
 const unauthorizedRoutes = [/^#\/event_rating\/.*/];
 
 export const Application = () => {
-
   const classes = useStyles();
 
   const status = useLoginStatus();
@@ -68,7 +67,11 @@ export const Application = () => {
   }
 
   if (!status) {
-    return (<Box className={classes.spinner}><CircularProgress /></Box>);
+    return (
+      <Box className={classes.spinner}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   const authorize = !unauthorizedRoutes.find((it) =>

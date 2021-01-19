@@ -20,7 +20,6 @@ export function HolidayList({
   onClickRow,
   onClickStatus,
 }: HolidayListProps) {
-
   const [list, setList] = useState([]);
   const [update] = useState(refresh);
 

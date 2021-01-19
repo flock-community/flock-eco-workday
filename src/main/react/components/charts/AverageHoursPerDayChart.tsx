@@ -7,17 +7,19 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   BarChart,
-  Bar
+  Bar,
 } from "recharts";
 import PropTypes from "prop-types";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { AggregationClient } from "../../clients/AggregationClient";
 
 type AverageHoursPerDayChartProps = {
-  year?: number,
+  year?: number;
 };
 
-export function AverageHoursPerDayChart({ year }:AverageHoursPerDayChartProps) {
+export function AverageHoursPerDayChart({
+  year,
+}: AverageHoursPerDayChartProps) {
   const [state, setState] = useState<any>(null);
 
   useEffect(() => {

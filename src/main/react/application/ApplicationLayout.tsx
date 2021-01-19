@@ -24,12 +24,11 @@ const useStyles = makeStyles({
 });
 
 type ApplicationLayoutProps = {
-  open: boolean,
-  onDrawer: () => void,
+  open: boolean;
+  onDrawer: () => void;
 };
 
-export function ApplicationLayout({ open, onDrawer }:ApplicationLayoutProps) {
-
+export function ApplicationLayout({ open, onDrawer }: ApplicationLayoutProps) {
   const classes = useStyles();
 
   const [state, setState] = useState({

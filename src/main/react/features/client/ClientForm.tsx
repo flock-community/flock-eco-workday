@@ -1,18 +1,17 @@
-import React, {useEffect, useState} from "react";
-import {Field, Form, Formik} from "formik";
+import React, { useEffect, useState } from "react";
+import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-import {TextField} from "formik-material-ui";
-import {ClientClient} from "../../clients/ClientClient";
+import { TextField } from "formik-material-ui";
+import { ClientClient } from "../../clients/ClientClient";
 
 export const CLIENT_FORM_ID = "client-form-id";
 type ClientFormProps = {
-  code: string,
-  value?: any,
-  onSubmit?: (item?: any) => void,
+  code: string;
+  value?: any;
+  onSubmit?: (item?: any) => void;
 };
 
-export function ClientForm({code, value, onSubmit}: ClientFormProps) {
-
+export function ClientForm({ code, value, onSubmit }: ClientFormProps) {
   const [state, setState] = useState<any>(null);
 
   useEffect(() => {
@@ -48,7 +47,7 @@ export function ClientForm({code, value, onSubmit}: ClientFormProps) {
 
   return (
     <Formik
-      initialValues={{...schema.cast(), ...state}}
+      initialValues={{ ...schema.cast(), ...state }}
       onSubmit={handleSubmit}
       validationSchema={schema}
       enableReinitialize

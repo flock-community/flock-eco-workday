@@ -5,7 +5,6 @@ import { ClientDialog } from "./ClientDialog";
 import { AddActionFab } from "../../components/FabButtons";
 
 export function ClientFeature() {
-
   const [reload, setReload] = useState(false);
 
   const [dialog, setDialog] = useState({
