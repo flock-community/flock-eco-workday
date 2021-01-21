@@ -25,7 +25,7 @@ export function DashboardHoursChart() {
   const data = Object.keys(state)
     .map((monthYear) => ({ ...state[monthYear], monthYear }))
     .filter((it) => it !== null)
-    .filter((it) => it.assignment + it.revenue > 0)
+    .filter((it) => it.assignment > 0)
     .map((it) => ({
       ...it,
       missing: Math.max(
