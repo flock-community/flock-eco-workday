@@ -47,7 +47,7 @@ export function MonthFeature() {
   if (!state) return <AlignedLoader />;
 
   const data = state
-    .filter((it) => it.assignment + it.revenue > 0)
+    .filter((it) => it.assignment > 0)
     .map((it) => ({
       ...it,
       missing: Math.max(
@@ -57,7 +57,6 @@ export function MonthFeature() {
     }));
 
   const totalHours = data.reduce((acc, cur) => acc + cur.workDays, 0);
-  const totalRevenue = data.reduce((acc, cur) => acc + cur.revenue, 0.0);
 
   const renderChart = (x) => {
     const height = 50 + x.length * 50;
@@ -118,9 +117,6 @@ export function MonthFeature() {
                 </Typography>
                 <Typography>Total persons: {data.length}</Typography>
                 <Typography>Total hours: {totalHours}</Typography>
-                <Typography>
-                  Total revenue: {Intl.NumberFormat().format(totalRevenue)}
-                </Typography>
               </Grid>
               <Grid item>
                 <IconButton onClick={handleMonth(-1)}>

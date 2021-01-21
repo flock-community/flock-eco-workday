@@ -92,9 +92,6 @@ class AggregationService(
                         .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                         .sum()
                         .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
-                    revenue = all.workDay
-                        .filter { it.assignment.person == person }
-                        .sumAmount()
                 )
             }
     }
