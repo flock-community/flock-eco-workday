@@ -37,11 +37,8 @@ class PersonRepositoryTest(
         )
 
         repository.save(person)
-
-        val res = repository.findAll()
-
-        assertThat(res.toSet().size).isEqualTo(1)
-        assertThat(res.first()).isEqualTo(person)
+        val res = repository.findByUuid(person.uuid)
+        assertThat(res).isNotEmpty
     }
 
     @Test
@@ -57,9 +54,7 @@ class PersonRepositoryTest(
 
         repository.save(person)
 
-        val res = repository.findAll()
-
-        assertThat(res.toSet().size).isEqualTo(1)
-        assertThat(res.first()).isEqualTo(person)
+        val res = repository.findByUuid(person.uuid)
+        assertThat(res).isNotEmpty
     }
 }
