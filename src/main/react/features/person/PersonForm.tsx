@@ -71,7 +71,7 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
       initialValues={{
         ...PERSON_FORM_SCHEMA.default(),
         ...item,
-        userCode: item.user,
+        userCode: item?.user,
       }}
       onSubmit={onSubmit}
       validationSchema={PERSON_FORM_SCHEMA}
