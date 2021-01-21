@@ -6,7 +6,6 @@ import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.HoliDay
-import community.flock.eco.workday.model.HolidayType
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.HolidayRepository
 import org.springframework.data.domain.Pageable
