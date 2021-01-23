@@ -26,6 +26,6 @@ class TaskController(
         return data
             .filter { it.workDays == BigDecimal.ZERO }
             .map { personService.findByUuid(it.id) }
-            .mapNotNull { it?.email?.substring(0, 3) }
+            .mapNotNull { it?.email }
     }
 }
