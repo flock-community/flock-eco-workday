@@ -36,6 +36,5 @@ class TaskController(
         personService.findAll(PageRequest.of(1, 100))
             .find { it.email == "willem.veelenturf@gmail.com" }
             ?.run { mailjetService.sendReminder(this, YearMonth.now()) }
-
     }
 }

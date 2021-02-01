@@ -14,7 +14,6 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Component
 import java.time.YearMonth
 import java.time.format.TextStyle
-import java.util.Locale
 
 @Component
 class MailjetService(
@@ -35,23 +34,36 @@ class MailjetService(
         log.debug("Send email ${person.email}")
         val request = MailjetRequest(Emailv31.resource)
             .property(
-                Emailv31.MESSAGES, JSONArray()
-                .put(JSONObject()
-                    .put(Emailv31.Message.FROM, JSONObject()
-                        .put("Email", "info@flock.community")
-                        .put("Name", "Flock. hours reminder"))
-                    .put(Emailv31.Message.TO, JSONArray()
-                        .put(JSONObject()
-                            .put("Email", person.email)
-                            .put("Name", person.getFullName())))
-                    .put(Emailv31.Message.TEMPLATEID, 2144556)
-                    .put(Emailv31.Message.TEMPLATELANGUAGE, true)
-                    .put(Emailv31.Message.SUBJECT, "Please submit your hours")
-                    .put(Emailv31.Message.VARIABLES, JSONObject()
-                        .put("month", yearMonth.month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale()))
-                        .put("name", person.getFullName()))))
+                Emailv31.MESSAGES,
+                JSONArray()
+                    .put(
+                        JSONObject()
+                            .put(
+                                Emailv31.Message.FROM,
+                                JSONObject()
+                                    .put("Email", "info@flock.community")
+                                    .put("Name", "Flock. hours reminder")
+                            )
+                            .put(
+                                Emailv31.Message.TO,
+                                JSONArray()
+                                    .put(
+                                        JSONObject()
+                                            .put("Email", person.email)
+                                            .put("Name", person.getFullName())
+                                    )
+                            )
+                            .put(Emailv31.Message.TEMPLATEID, 2144556)
+                            .put(Emailv31.Message.TEMPLATELANGUAGE, true)
+                            .put(Emailv31.Message.SUBJECT, "Please submit your hours")
+                            .put(
+                                Emailv31.Message.VARIABLES,
+                                JSONObject()
+                                    .put("month", yearMonth.month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale()))
+                                    .put("name", person.getFullName())
+                            )
+                    )
+            )
         client.post(request)
-
     }
 }
-
