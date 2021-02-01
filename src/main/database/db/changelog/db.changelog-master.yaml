@@ -19,3 +19,6 @@ databaseChangeLog:
   - include:
     - file: db.changelog-006-person-code-uuid.yaml
       relativeToChangelogFile: true
+  - include:
+      - file: db.changelog-007-person-reminders.yaml
+        relativeToChangelogFile: true

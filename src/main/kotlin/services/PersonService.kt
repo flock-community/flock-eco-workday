@@ -30,6 +30,7 @@ class PersonService(
             email = it.email,
             position = it.position,
             number = it.number,
+            reminders = it.reminders,
             user = user
         )
     }

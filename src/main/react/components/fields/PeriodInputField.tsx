@@ -12,7 +12,6 @@ type PeriodInputFieldProps = {
 };
 
 export function PeriodInputField({ name, from, to }: PeriodInputFieldProps) {
-
   const render = ({ field: { value }, form: { setFieldValue } }) => {
     const [period, setPeriod] = useState<Period>({
       from: from.clone(),

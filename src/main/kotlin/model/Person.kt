@@ -23,12 +23,18 @@ data class Person(
     val position: String,
     val number: String?,
 
+    val reminders: Boolean = false,
+
     @OneToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)
     val user: User?
 
 ) {
+
+    fun getFullName(): String {
+        return "$firstname $lastname"
+    }
 
     override fun hashCode(): Int {
         return Objects.hashCode(uuid)

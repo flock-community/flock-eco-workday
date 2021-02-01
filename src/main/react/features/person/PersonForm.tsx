@@ -1,7 +1,10 @@
 import React from "react";
 import { FormControl, Grid } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
-import { TextField as FormikTextField } from "formik-material-ui";
+import {
+  CheckboxWithLabel,
+  TextField as FormikTextField,
+} from "formik-material-ui";
 import { PERSON_FORM_SCHEMA } from "./schema";
 import { UserSelectorField } from "../../components/fields/UserSelectorField";
 
@@ -11,6 +14,7 @@ type PersonFormProps = {
   item: any;
   onSubmit: (item: any) => void;
 };
+
 export function PersonForm({ item, onSubmit }: PersonFormProps) {
   const form = () => (
     <Form id={PERSON_FORM_ID}>
@@ -50,6 +54,8 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
               component={FormikTextField}
             />
           </FormControl>
+        </Grid>
+        <Grid item xs={12}>
           <FormControl fullWidth>
             <Field
               id="number"
@@ -58,9 +64,20 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
               component={FormikTextField}
             />
           </FormControl>
+        </Grid>
+        <Grid item xs={12}>
           <FormControl fullWidth>
             <UserSelectorField name="userCode" />
           </FormControl>
+        </Grid>
+        <Grid item xs={12}>
+          <Field
+            name="reminders"
+            type="checkbox"
+            Label={{ label: "Reminders" }}
+            component={CheckboxWithLabel}
+            fullWidth
+          />
         </Grid>
       </Grid>
     </Form>
@@ -69,7 +86,7 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
   return (
     <Formik
       initialValues={{
-        ...PERSON_FORM_SCHEMA.default(),
+        ...PERSON_FORM_SCHEMA.cast(),
         ...item,
         userCode: item?.user,
       }}
