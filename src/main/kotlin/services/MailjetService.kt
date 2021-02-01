@@ -17,8 +17,8 @@ import java.time.format.TextStyle
 
 @Component
 class MailjetService(
-    @Value("\${mailjet.apikey}") private val apiKey: String,
-    @Value("\${mailjet.apiSecretKey}") private val apiSecretKey: String,
+    @Value("\${mailjet.apikey:}") private val apiKey: String,
+    @Value("\${mailjet.apiSecretKey:}") private val apiSecretKey: String,
 ) {
 
     private val log: Logger = LoggerFactory.getLogger(MailjetService::class.java)
