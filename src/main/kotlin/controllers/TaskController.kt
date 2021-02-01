@@ -18,8 +18,8 @@ class TaskController(
 ) {
 
     @GetMapping("/reminder")
-    fun reminder(@RequestParam("apiKey") apiKey: String): List<String> {
-        val yearMonth = YearMonth.now()
+    fun reminder(): List<String> {
+        val yearMonth = YearMonth.now().minusMonths(1)
         val from = yearMonth.atDay(1)
         val to = yearMonth.atEndOfMonth()
         val data = aggregationService.totalPerPerson(from, to)

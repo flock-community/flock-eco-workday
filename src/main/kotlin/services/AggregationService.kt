@@ -14,6 +14,7 @@ import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
 import community.flock.eco.workday.model.Day
+import community.flock.eco.workday.model.HolidayType
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.WorkDay
 import org.springframework.stereotype.Service
@@ -84,7 +85,10 @@ class AggregationService(
                         .map { it.totalHoursPerWeek() }
                         .sum()
                         .let { countWorkDaysInPeriod(from, to) * 8 * it / 40 },
-                    holiDayUsed = all.holiDay.filter { it.person == person }.totalHoursInPeriod(from, to),
+                    holiDayUsed = all.holiDay
+                        .filter { it.type == HolidayType.HOLIDAY }
+                        .filter { it.person == person }
+                        .totalHoursInPeriod(from, to),
                     holiDayBalance = all.contract
                         .filter { it.person == person }
                         .filterIsInstance(ContractInternal::class.java)
