@@ -1,4 +1,4 @@
-import { object, string } from "yup";
+import { object, string, boolean } from "yup";
 
 // eslint-disable-next-line no-underscore-dangle
 const _defaultObject = {
@@ -6,8 +6,9 @@ const _defaultObject = {
   firstname: string().required().default(""),
   lastname: string().required().default(""),
   email: string().email().default(""),
-  number: string().default(""),
+  number: string().default("").nullable(),
   position: string().default(""),
+  reminders: boolean().default(false),
 };
 
 const PERSON_SCHEMA = object(_defaultObject)

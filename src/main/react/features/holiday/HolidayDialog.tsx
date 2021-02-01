@@ -15,7 +15,7 @@ import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { HolidayClient } from "../../clients/HolidayClient";
 import { HOLIDAY_FORM_ID, HolidayForm, schemaHoliDayForm } from "./HolidayForm";
-import {PlusDayForm, schemaPlusDayForm} from "./PlusDayForm";
+import { PlusDayForm, schemaPlusDayForm } from "./PlusDayForm";
 
 enum Types {
   HOLIDAY = "HOLIDAY",
@@ -76,8 +76,12 @@ export function HolidayDialog({
             hours: res.hours,
           });
         });
-      }else{
-        setState(type === Types.PLUSDAY ? schemaPlusDayForm.default() : schemaHoliDayForm.default())
+      } else {
+        setState(
+          type === Types.PLUSDAY
+            ? schemaPlusDayForm.default()
+            : schemaHoliDayForm.default()
+        );
       }
     }
   }, [code, open]);
@@ -135,14 +139,16 @@ export function HolidayDialog({
                 </Grid>
               </UserAuthorityUtil>
             )}
-            {state && <Grid item xs={12}>
-              {type === Types.HOLIDAY && (
-                <HolidayForm value={state} onSubmit={handleSubmit} />
-              )}
-              {type === Types.PLUSDAY && (
-                <PlusDayForm value={state} onSubmit={handleSubmit} />
-              )}
-            </Grid>}
+            {state && (
+              <Grid item xs={12}>
+                {type === Types.HOLIDAY && (
+                  <HolidayForm value={state} onSubmit={handleSubmit} />
+                )}
+                {type === Types.PLUSDAY && (
+                  <PlusDayForm value={state} onSubmit={handleSubmit} />
+                )}
+              </Grid>
+            )}
           </Grid>
         </DialogContent>
         <DialogFooter

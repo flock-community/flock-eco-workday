@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-007-person-reminders-1
+      author: wveelenturf
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: reminders
+                  type: boolean
+                  defaultValue: false
