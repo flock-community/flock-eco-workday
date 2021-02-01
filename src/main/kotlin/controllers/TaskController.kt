@@ -4,7 +4,6 @@ import community.flock.eco.workday.services.AggregationService
 import community.flock.eco.workday.services.PersonService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.math.BigDecimal
 import java.time.YearMonth
