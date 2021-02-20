@@ -31,7 +31,7 @@ class MailjetService(
     private var client = MailjetClient(options)
 
     fun sendReminder(person: Person, yearMonth: YearMonth) {
-        log.debug("Send email ${person.email}")
+        log.info("Send email ${person.email}")
         val request = MailjetRequest(Emailv31.resource)
             .property(
                 Emailv31.MESSAGES,
