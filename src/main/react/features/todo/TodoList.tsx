@@ -31,6 +31,8 @@ const typeToPath = (type) => {
       return "workdays";
     case "SICKDAY":
       return "sickdays";
+    case "PLUSDAY":
+      return "holidays";
     case "HOLIDAY":
       return "holidays";
     case "EXPENSE":

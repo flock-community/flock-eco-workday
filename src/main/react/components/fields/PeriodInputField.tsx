@@ -1,6 +1,5 @@
 import { Field } from "formik";
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { PeriodInput } from "../inputs/PeriodInput";
 import { editDay, mutatePeriod, Period } from "../../features/period/Period";
 import moment from "moment";

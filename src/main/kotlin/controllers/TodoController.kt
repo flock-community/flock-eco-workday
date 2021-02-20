@@ -10,6 +10,7 @@ import community.flock.eco.workday.graphql.TodoType
 import community.flock.eco.workday.model.CostExpense
 import community.flock.eco.workday.model.Expense
 import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.HolidayType
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.Status
@@ -67,7 +68,10 @@ class TodoController(
 
     fun HoliDay.mapTodo() = Todo(
         id = UUID.fromString(code),
-        type = TodoType.HOLIDAY,
+        type = when (type) {
+            HolidayType.HOLIDAY -> TodoType.HOLIDAY
+            HolidayType.PLUSDAY ->TodoType.PLUSDAY
+        },
         personId = person.uuid,
         personName = person.fullName(),
         description = "$from - $to"
