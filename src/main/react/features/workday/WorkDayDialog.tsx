@@ -84,6 +84,7 @@ export function WorkDayDialog({ open, code, onComplete }) {
   };
   const handleClose = () => {
     if (isDefined(onComplete)) onComplete();
+    setState(null);
   };
 
   return (
