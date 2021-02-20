@@ -70,7 +70,7 @@ class TodoController(
         id = UUID.fromString(code),
         type = when (type) {
             HolidayType.HOLIDAY -> TodoType.HOLIDAY
-            HolidayType.PLUSDAY ->TodoType.PLUSDAY
+            HolidayType.PLUSDAY -> TodoType.PLUSDAY
         },
         personId = person.uuid,
         personName = person.fullName(),
