@@ -36,7 +36,7 @@ class TaskController(
             .filter { it.reminders }
             .forEach {
                 log.info("Send email ${it.email}")
-                mailjetService.sendReminder(it, YearMonth.now())
+                mailjetService.sendReminder(it, YearMonth.now().minusMonths(1))
             }
     }
 
@@ -48,7 +48,7 @@ class TaskController(
         list
             .forEach {
                 log.info("Send email ${it.email}")
-                mailjetService.sendReminder(it, YearMonth.now())
+                mailjetService.sendReminder(it, YearMonth.now().minusMonths(1))
             }
         return list
     }
