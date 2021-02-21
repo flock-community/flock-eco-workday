@@ -32,6 +32,7 @@ class MailjetService(
 
     fun sendReminder(person: Person, yearMonth: YearMonth) {
         log.info("Send email ${person.email}")
+        val month = yearMonth.month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
         val request = MailjetRequest(Emailv31.resource)
             .property(
                 Emailv31.MESSAGES,
@@ -55,12 +56,12 @@ class MailjetService(
                             )
                             .put(Emailv31.Message.TEMPLATEID, 2144556)
                             .put(Emailv31.Message.TEMPLATELANGUAGE, true)
-                            .put(Emailv31.Message.SUBJECT, "Please submit your hours")
+                            .put(Emailv31.Message.SUBJECT, "Please submit your hours for $month")
                             .put(
                                 Emailv31.Message.VARIABLES,
                                 JSONObject()
-                                    .put("month", yearMonth.month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale()))
-                                    .put("name", person.getFullName())
+                                    .put("month", month)
+                                    .put("name", person.firstname)
                             )
                     )
             )
