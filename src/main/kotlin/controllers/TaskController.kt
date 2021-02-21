@@ -25,16 +25,19 @@ class TaskController(
     private val log: Logger = LoggerFactory.getLogger(TaskController::class.java)
 
     @GetMapping("/reminder")
-    fun reminder(): List<String> {
+    fun reminder() {
         val yearMonth = YearMonth.now().minusMonths(1)
         val from = yearMonth.atDay(1)
         val to = yearMonth.atEndOfMonth()
         val data = aggregationService.totalPerPerson(from, to)
-        return data
+        data
             .filter { it.workDays == BigDecimal.ZERO }
             .mapNotNull { personService.findByUuid(it.id) }
             .filter { it.reminders }
-            .map { it.email }
+            .forEach {
+                log.info("Send email ${it.email}")
+                mailjetService.sendReminder(it, YearMonth.now())
+            }
     }
 
     @GetMapping("/test")
