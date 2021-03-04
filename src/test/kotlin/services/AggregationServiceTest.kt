@@ -3,7 +3,10 @@ package community.flock.eco.workday.services
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
+import community.flock.eco.workday.helpers.OrganisationHelper
 import community.flock.eco.workday.interfaces.Period
+import community.flock.eco.workday.model.Assignment
+import community.flock.eco.workday.model.ContractType
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -14,6 +17,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.YearMonth
 import javax.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -23,19 +27,25 @@ import kotlin.test.assertNotNull
 @AutoConfigureDataJpa
 @AutoConfigureWebClient
 @Transactional
-@Import(CreateHelper::class, DataHelper::class)
+@Import(CreateHelper::class, DataHelper::class, OrganisationHelper::class)
 @ActiveProfiles(profiles = ["test"])
 class AggregationServiceTest(
     @Autowired val dataHelper: DataHelper,
     @Autowired val createHelper: CreateHelper,
+    @Autowired val organisationHelper: OrganisationHelper,
     @Autowired val aggregationService: AggregationService
 ) {
+
+    private val firstDayOfYear = LocalDate.of(2020, 1, 1)
+    private val lastDayOfYear = LocalDate.of(2020, 12, 31)
+
+    private fun LocalDate.endOfMonth() = YearMonth.from(this).atEndOfMonth()
 
     @Test
     fun `days per person`() {
 
-        val from = LocalDate.of(2020, 1, 1)
-        val to = LocalDate.of(2020, 12, 31)
+        val from = firstDayOfYear
+        val to = lastDayOfYear
 
         dataHelper.createContractExternalData()
         dataHelper.createAssignmentData()
@@ -162,6 +172,44 @@ class AggregationServiceTest(
     }
 
     @Test
+    fun `one internal employee one full month`() {
+
+        val client = createHelper.createClient()
+        val internal = organisationHelper.createPersonsWithContract(ContractType.INTERNAL)
+        val assignment = createHelper.createAssignment(client, internal, firstDayOfYear, lastDayOfYear)
+
+        val days = listOf(1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0)
+        createHelper.createWorkDay(assignment, firstDayOfYear, firstDayOfYear.endOfMonth(), days)
+
+        val yearMonth = YearMonth.of(2020, 1)
+        val totalPerMonth = aggregationService.totalPerMonth(yearMonth)
+        val totalPerPerson = aggregationService.totalPerPerson(yearMonth)
+
+        assertEquals(1, totalPerMonth[0].countContractInternal)
+        assertEquals(days.map { it * 8.0 * 80.0 }.sum(), totalPerMonth[0].actualRevenue.toDouble())
+        assertEquals(days.map { it * 8.0 }.sum(), totalPerPerson[0].workDays.toDouble())
+    }
+
+    @Test
+    fun `one internal employee one broken month`() {
+
+        val client = createHelper.createClient()
+        val internal = organisationHelper.createPersonsWithContract(ContractType.INTERNAL)
+        val assignment = createHelper.createAssignment(client, internal, firstDayOfYear, lastDayOfYear)
+
+        val days = listOf(1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0)
+        createHelper.createWorkDay(assignment, LocalDate.of(2020, 1, 20), LocalDate.of(2020, 2, 20), days)
+
+        val yearMonth = YearMonth.of(2020, 1)
+        val totalPerMonth = aggregationService.totalPerMonth(yearMonth)
+        val totalPerPerson = aggregationService.totalPerPerson(yearMonth)
+
+        assertEquals(1, totalPerMonth[0].countContractInternal)
+        assertEquals(8 * 8.0 * 80.0, totalPerMonth[0].actualRevenue.toDouble())
+        assertEquals(8 * 8.0, totalPerPerson[0].workDays.toDouble())
+    }
+
+    @Test
     fun `find netto revenu factor`() {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
@@ -181,5 +229,15 @@ class AggregationServiceTest(
         val to = LocalDate.of(2020, 1, 10)
         val res = countWorkDaysInPeriod(from, to)
         assertEquals(5, res)
+    }
+
+    private fun CreateHelper.createWorkDay(
+        assignment: Assignment,
+        from: LocalDate,
+        to: LocalDate,
+        input: List<Int>) {
+        val days = input.map { it * 8.0 }
+        val hours = days.sum()
+        createHelper.createWorkDay(assignment, from, to, hours, days)
     }
 }
