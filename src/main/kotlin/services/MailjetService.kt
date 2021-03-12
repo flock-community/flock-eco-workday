@@ -19,6 +19,7 @@ import java.time.format.TextStyle
 class MailjetService(
     @Value("\${mailjet.apikey:}") private val apiKey: String,
     @Value("\${mailjet.apiSecretKey:}") private val apiSecretKey: String,
+    private val personService: PersonService,
 ) {
 
     private val log: Logger = LoggerFactory.getLogger(MailjetService::class.java)
@@ -30,9 +31,34 @@ class MailjetService(
 
     private var client = MailjetClient(options)
 
-    fun sendReminder(person: Person, yearMonth: YearMonth) {
-        log.info("Send email ${person.email}")
+    fun sendUpdate(person: Person, yearMonth: YearMonth) {
+        log.info("Send update ${person.email}")
         val month = yearMonth.month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
+        val subject = "Workday hours are updated by ${person.firstname} for $month"
+        personService.findByUpdatesTrue()
+            .forEach {
+                val variables = JSONObject()
+                    .put("name", it.firstname)
+                    .put("month", month)
+                    .put("person", person.firstname)
+                val request = createMailjetRequest(2626040, it, subject, variables)
+                client.post(request)
+            }
+
+    }
+
+    fun sendReminder(person: Person, yearMonth: YearMonth) {
+        log.info("Send reminder ${person.email}")
+        val month = yearMonth.month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
+        val subject = "Please submit your hours for $month"
+        val variables = JSONObject()
+            .put("month", month)
+            .put("name", person.firstname)
+        val request = createMailjetRequest(2144556, person, subject, variables)
+        client.post(request)
+    }
+
+    private fun createMailjetRequest(templateId: Int, person: Person, subject: String, variables: JSONObject): MailjetRequest? {
         val request = MailjetRequest(Emailv31.resource)
             .property(
                 Emailv31.MESSAGES,
@@ -54,17 +80,13 @@ class MailjetService(
                                             .put("Name", person.getFullName())
                                     )
                             )
-                            .put(Emailv31.Message.TEMPLATEID, 2144556)
+                            .put(Emailv31.Message.TEMPLATEID, templateId)
                             .put(Emailv31.Message.TEMPLATELANGUAGE, true)
-                            .put(Emailv31.Message.SUBJECT, "Please submit your hours for $month")
-                            .put(
-                                Emailv31.Message.VARIABLES,
-                                JSONObject()
-                                    .put("month", month)
-                                    .put("name", person.firstname)
-                            )
+                            .put(Emailv31.Message.SUBJECT, subject)
+                            .put(Emailv31.Message.VARIABLES, variables)
                     )
             )
-        client.post(request)
+        return request
     }
+
 }

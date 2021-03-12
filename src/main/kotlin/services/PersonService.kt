@@ -49,6 +49,9 @@ class PersonService(
         .findByUserCode(userCode)
         .toNullable()
 
+    fun findByUpdatesTrue() = repository
+        .findAllByUpdates(true)
+
     fun findByPersonCodeIdIn(personCodes: List<UUID>) = repository
         .findByUuidIn(personCodes)
 

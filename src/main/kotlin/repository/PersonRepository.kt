@@ -9,6 +9,7 @@ import java.util.*
 interface PersonRepository : PagingAndSortingRepository<Person, Long> {
     fun findByUuid(uuid: UUID): Optional<Person>
     fun findByUserCode(userCode: String): Optional<Person>
+    fun findAllByUpdates(updates: Boolean): List<Person>
     fun existsByUuid(uuid: UUID): Boolean
     fun deleteByUuid(uuid: UUID): Unit
     fun findByUuidIn(userUuid: List<UUID>): Iterable<Person>
