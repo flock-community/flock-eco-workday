@@ -31,6 +31,7 @@ class PersonService(
             position = it.position,
             number = it.number,
             reminders = it.reminders,
+            updates = it.updates,
             user = user
         )
     }

@@ -8,4 +8,5 @@ data class PersonForm(
     val number: String?,
     val userCode: String?,
     val reminders: Boolean = false,
+    val updates: Boolean = false,
 )

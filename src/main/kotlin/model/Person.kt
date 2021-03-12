@@ -24,6 +24,7 @@ data class Person(
     val number: String?,
 
     val reminders: Boolean = false,
+    val updates: Boolean = false,
 
     @OneToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
