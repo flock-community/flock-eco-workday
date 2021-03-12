@@ -79,6 +79,15 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
             fullWidth
           />
         </Grid>
+        <Grid item xs={12}>
+          <Field
+            name="updates"
+            type="checkbox"
+            Label={{ label: "Updates" }}
+            component={CheckboxWithLabel}
+            fullWidth
+          />
+        </Grid>
       </Grid>
     </Form>
   );

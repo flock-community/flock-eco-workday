@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 import javax.persistence.EntityManager
@@ -22,6 +23,7 @@ class WorkDayService(
     private val workDayRepository: WorkDayRepository,
     private val assignmentService: AssignmentService,
     private val entityManager: EntityManager,
+    private val mailjetService: MailjetService,
     @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String
 ) {
 
@@ -125,7 +127,9 @@ class WorkDayService(
         )
     }
 
-    private fun WorkDay.save() = workDayRepository.save(this)
+    private fun WorkDay.save() = workDayRepository
+        .save(this)
+        .also { mailjetService.sendUpdate(assignment.person, YearMonth.from(from)) }
 
     companion object {
         val storage = StorageOptions.getDefaultInstance().service

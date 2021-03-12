@@ -8,12 +8,15 @@ import community.flock.eco.workday.forms.AssignmentForm
 import community.flock.eco.workday.forms.ClientForm
 import community.flock.eco.workday.forms.ContractExternalForm
 import community.flock.eco.workday.forms.ContractInternalForm
+import community.flock.eco.workday.forms.ContractManagementForm
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.forms.WorkDayForm
+import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Client
+import community.flock.eco.workday.model.ContractManagement
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.AssignmentService
 import community.flock.eco.workday.services.ClientService
@@ -26,18 +29,19 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @Component
 class CreateHelper(
-    val assignmentService: AssignmentService,
-    val contractService: ContractService,
-    val clientService: ClientService,
-    val personService: PersonService,
-    val userService: UserService,
-    val sickDayService: SickDayService,
-    val holiDayService: HoliDayService,
-    val workDayService: WorkDayService
+    private val assignmentService: AssignmentService,
+    private val contractService: ContractService,
+    private val clientService: ClientService,
+    private val personService: PersonService,
+    private val userService: UserService,
+    private val sickDayService: SickDayService,
+    private val holiDayService: HoliDayService,
+    private val workDayService: WorkDayService
 ) {
 
     fun createUser(authorities: Set<Authority>) = createUser(UUID.randomUUID().toString(), authorities)
@@ -68,6 +72,7 @@ class CreateHelper(
         personService.create(this)
     } ?: error("Cannot create person")
 
+    fun createAssignment(client: Client, person: Person, period: Period) = createAssignment(client, person, period.from, period.to)
     fun createAssignment(client: Client, person: Person, from: LocalDate, to: LocalDate?) = AssignmentForm(
         clientCode = client.code,
         personId = person.uuid,
@@ -85,17 +90,33 @@ class CreateHelper(
         from: LocalDate,
         to: LocalDate?,
         monthlySalary: Double = 4000.0,
-        hoursPerWeek: Int = 40
+        hoursPerWeek: Int = 40,
+        billable: Boolean = true
     ) = ContractInternalForm(
         personId = person.uuid,
         monthlySalary = monthlySalary,
         hoursPerWeek = hoursPerWeek,
         from = from,
         to = to,
-        billable = true
+        billable = billable
     ).run {
         contractService.create(this)
     } ?: error("Cannot create internal contract")
+
+    fun createContractManagement(
+        person: Person,
+        from: LocalDate,
+        to: LocalDate?,
+        monthlyFee: Double = 10000.0,
+    ) = ContractManagementForm(
+        personId = person.uuid,
+        from = from,
+        to = to,
+        monthlyFee = monthlyFee
+    ).run {
+        contractService.create(this)
+    } ?: error("Cannot create internal contract")
+
 
     fun createContractExternal(person: Person, from: LocalDate, to: LocalDate?) = ContractExternalForm(
         personId = person.uuid,
@@ -122,14 +143,14 @@ class CreateHelper(
         assignment: Assignment,
         from: LocalDate,
         to: LocalDate,
-        hours: Double = 40.0,
+        hours: Double? = 40.0,
         days: List<Double>? = null
     ) = WorkDayForm(
         from = from,
         to = to,
         assignmentCode = assignment.code,
-        hours = hours,
-        days = days ?: listOf(8.0, 8.0, 8.0, 8.0, 8.0),
+        hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
+        days = days ?: (0L .. ChronoUnit.DAYS.between(from, to)).map { 8.0 },
         sheets = listOf()
     ).run {
         workDayService.create(this)

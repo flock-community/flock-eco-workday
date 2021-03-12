@@ -31,6 +31,7 @@ class PersonService(
             position = it.position,
             number = it.number,
             reminders = it.reminders,
+            updates = it.updates,
             user = user
         )
     }
@@ -47,6 +48,9 @@ class PersonService(
     fun findByUserCode(userCode: String) = repository
         .findByUserCode(userCode)
         .toNullable()
+
+    fun findByUpdatesTrue() = repository
+        .findAllByUpdates(true)
 
     fun findByPersonCodeIdIn(personCodes: List<UUID>) = repository
         .findByUuidIn(personCodes)

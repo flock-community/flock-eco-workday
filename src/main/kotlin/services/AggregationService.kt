@@ -52,7 +52,7 @@ class AggregationService(
             }
     }
 
-    @Transactional
+    fun totalPerPerson(yearMonth: YearMonth) = totalPerPerson(yearMonth.atDay(1), yearMonth.atEndOfMonth())
     fun totalPerPerson(from: LocalDate, to: LocalDate): List<AggregationPerson> {
         val all = dataService.findAllData(from, to)
         val totalWorkDays = countWorkDaysInPeriod(from, to)
@@ -69,12 +69,6 @@ class AggregationService(
                         .toSet(),
                     sickDays = all.sickDay.filter { it.person == person }.totalHoursInPeriod(from, to),
                     workDays = all.workDay.filter { it.assignment.person == person }.totalHoursInPeriod(from, to),
-                    assignment = all.assignment
-                        .filter { it.person == person }
-                        .toMapWorkingDay(from, to).values
-                        .flatten()
-                        .fold(0) { acc, cur -> acc + cur.hoursPerWeek }
-                        .div(5),
                     event = all.eventDay
                         .filter { it.persons.isEmpty() || it.persons.contains(person) }
                         .map { it.totalHoursInPeriod(period) }
@@ -100,7 +94,8 @@ class AggregationService(
             }
     }
 
-    @Transactional
+
+    fun totalPerMonth(yearMonth: YearMonth): List<AggregationMonth> =totalPerMonth(yearMonth.atDay(1), yearMonth.atEndOfMonth())
     fun totalPerMonth(from: LocalDate, to: LocalDate): List<AggregationMonth> {
 
         val all = dataService.findAllData(from, to)

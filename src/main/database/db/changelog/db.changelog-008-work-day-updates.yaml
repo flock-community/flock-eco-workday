@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-008-work-day-updates-1
+      author: wveelenturf
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: updates
+                  type: boolean
+                  defaultValue: false
