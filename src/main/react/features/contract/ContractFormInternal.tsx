@@ -5,7 +5,7 @@ import { Field, Form, Formik } from "formik";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 import {CheckboxWithLabel, TextField} from "formik-material-ui";
-import { mixed, number, object } from "yup";
+import { mixed, number, object, boolean } from "yup";
 import moment from "moment";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 
@@ -78,6 +78,7 @@ export const ContractFormInternal = ({
     hoursPerWeek: value.hoursPerWeek,
     from: value.from,
     to: value.to,
+    billable: value.billable,
   };
 
   const schema = object({
@@ -85,6 +86,7 @@ export const ContractFormInternal = ({
     hoursPerWeek: number().required().default(40),
     from: mixed().required().default(moment()),
     to: mixed().default(null),
+    billable: boolean().default(true),
   });
 
   return (
