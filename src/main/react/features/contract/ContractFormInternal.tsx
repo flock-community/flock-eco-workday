@@ -4,7 +4,7 @@ import { Grid } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
-import { TextField } from "formik-material-ui";
+import {CheckboxWithLabel, TextField} from "formik-material-ui";
 import { mixed, number, object } from "yup";
 import moment from "moment";
 import { DatePickerField } from "../../components/fields/DatePickerField";
@@ -57,6 +57,15 @@ export const ContractFormInternal = ({
               fullWidth
               minDate={values.from}
               clearable
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Field
+              name="billable"
+              type="checkbox"
+              Label={{ label: "Billable" }}
+              component={CheckboxWithLabel}
+              fullWidth
             />
           </Grid>
         </Grid>
