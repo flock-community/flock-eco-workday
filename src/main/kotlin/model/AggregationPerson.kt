@@ -9,6 +9,7 @@ data class AggregationPerson(
     val contractTypes: Set<String>,
     val sickDays: BigDecimal,
     val workDays: BigDecimal,
+    val assignment: Int,
     val event: Int,
     val total: Int,
     val holiDayUsed: BigDecimal,
