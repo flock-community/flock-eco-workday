@@ -69,6 +69,12 @@ class AggregationService(
                         .toSet(),
                     sickDays = all.sickDay.filter { it.person == person }.totalHoursInPeriod(from, to),
                     workDays = all.workDay.filter { it.assignment.person == person }.totalHoursInPeriod(from, to),
+                    assignment = all.assignment
+                        .filter { it.person == person }
+                        .toMapWorkingDay(from, to).values
+                        .flatten()
+                        .fold(0) { acc, cur -> acc + cur.hoursPerWeek }
+                        .div(5),
                     event = all.eventDay
                         .filter { it.persons.isEmpty() || it.persons.contains(person) }
                         .map { it.totalHoursInPeriod(period) }
