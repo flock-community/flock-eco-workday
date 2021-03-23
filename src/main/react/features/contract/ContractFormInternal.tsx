@@ -4,8 +4,8 @@ import { Grid } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
-import { TextField } from "formik-material-ui";
-import { mixed, number, object } from "yup";
+import {CheckboxWithLabel, TextField} from "formik-material-ui";
+import { mixed, number, object, boolean } from "yup";
 import moment from "moment";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 
@@ -59,6 +59,15 @@ export const ContractFormInternal = ({
               clearable
             />
           </Grid>
+          <Grid item xs={12}>
+            <Field
+              name="billable"
+              type="checkbox"
+              Label={{ label: "Billable" }}
+              component={CheckboxWithLabel}
+              fullWidth
+            />
+          </Grid>
         </Grid>
       </MuiPickersUtilsProvider>
     </Form>
@@ -69,6 +78,7 @@ export const ContractFormInternal = ({
     hoursPerWeek: value.hoursPerWeek,
     from: value.from,
     to: value.to,
+    billable: value.billable,
   };
 
   const schema = object({
@@ -76,6 +86,7 @@ export const ContractFormInternal = ({
     hoursPerWeek: number().required().default(40),
     from: mixed().required().default(moment()),
     to: mixed().default(null),
+    billable: boolean().default(true),
   });
 
   return (
