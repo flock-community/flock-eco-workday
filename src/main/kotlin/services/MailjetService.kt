@@ -69,7 +69,7 @@ class MailjetService(
                                 Emailv31.Message.FROM,
                                 JSONObject()
                                     .put("Email", "info@flock.community")
-                                    .put("Name", "Flock. hours reminder")
+                                    .put("Name", "Flock.")
                             )
                             .put(
                                 Emailv31.Message.TO,

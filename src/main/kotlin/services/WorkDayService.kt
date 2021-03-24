@@ -129,7 +129,11 @@ class WorkDayService(
 
     private fun WorkDay.save() = workDayRepository
         .save(this)
-        .also { mailjetService.sendUpdate(assignment.person, YearMonth.from(from)) }
+        .also {
+            if (status == Status.REQUESTED) {
+                mailjetService.sendUpdate(assignment.person, YearMonth.from(from))
+            }
+        }
 
     companion object {
         val storage = StorageOptions.getDefaultInstance().service
