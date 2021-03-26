@@ -40,18 +40,4 @@ class TaskController(
             }
     }
 
-    @GetMapping("/test")
-    fun test(): List<Person> {
-        val list = personService.findAll(PageRequest.of(0, 1000))
-            .toList()
-            .filter { it.reminders }
-        list
-            .forEach {
-                log.info("Send email ${it.email}")
-                mailjetService.sendReminder(it, YearMonth.now().minusMonths(1))
-            }
-        return list
-    }
-
-
 }
