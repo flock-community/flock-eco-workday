@@ -27,31 +27,14 @@ export const schemaSickDayForm = Yup.object().shape({
 });
 
 export function SickDayForm({ value, onSubmit }) {
-  const [period, setPeriod] = useState(
-    mutatePeriod({
-      from: moment(),
-      to: moment(),
-    })
-  );
 
   const handleSubmit = (data) => {
-    if (isDefined(onSubmit))
-      onSubmit({
-        ...value,
-        ...data,
-        ...period,
-      });
+    onSubmit?.({
+      ...value,
+      ...data,
+      hours: data.days.reduce((acc, cur) => acc + parseFloat(cur), 0),
+    });
   };
-
-  useEffect(() => {
-    setPeriod(
-      mutatePeriod({
-        from: value.from.clone(),
-        to: value.to.clone(),
-        days: value.days,
-      })
-    );
-  }, [value]);
 
   const renderForm = ({ values }) => (
     <Form id={SICKDAY_FORM_ID}>

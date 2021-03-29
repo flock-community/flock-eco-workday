@@ -96,6 +96,7 @@ export function HolidayDialog({
 
   function handleClose() {
     setState(undefined);
+    setType(Types.HOLIDAY);
     onComplete?.();
   }
 
