@@ -76,22 +76,28 @@ export function ExpenseDialog({
       setOpenDelete(false);
     });
   };
+
   const handleDeleteOpen = () => {
     setOpenDelete(true);
   };
+
   const handleDeleteClose = () => {
     setOpenDelete(false);
   };
+
   const handleClose = () => {
     onComplete?.();
   };
+
   return (
     <>
       <Dialog
         fullScreen
         open={open}
         onClose={handleClose}
+        // @ts-ignore
         TransitionComponent={TransitionSlider}
+        // @ts-ignore
         TransitionProps={{ direction: "right" }}
       >
         <DialogHeader

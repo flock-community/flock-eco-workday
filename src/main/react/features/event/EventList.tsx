@@ -8,16 +8,15 @@ import { isDefined } from "../../utils/validation";
 
 type EventListProps = {
   refresh: boolean;
-  personId: string;
   onClickRow: (item: any) => void;
 };
 
-export function EventList({ personId, refresh, onClickRow }: EventListProps) {
+export function EventList({ refresh, onClickRow }: EventListProps) {
   const [state, setState] = useState([]);
 
   useEffect(() => {
     EventClient.all().then((res) => setState(res));
-  }, [personId, refresh]);
+  }, [refresh]);
 
   function handleClickRow(item) {
     return () => {
