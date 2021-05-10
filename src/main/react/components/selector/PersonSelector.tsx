@@ -76,7 +76,7 @@ export function PersonSelector({
         value={state || ""}
         displayEmpty
         onChange={handleChange}
-        renderValue={renderValue}
+        renderValue={multiple ? renderValue : undefined}
         multiple={multiple}
       >
         {!multiple && (
