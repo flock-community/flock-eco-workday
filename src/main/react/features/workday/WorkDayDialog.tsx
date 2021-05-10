@@ -42,6 +42,8 @@ export function WorkDayDialog({ open, code, onComplete }) {
       } else {
         setState(schema.cast());
       }
+    } else {
+      setState(null);
     }
   }, [open, code]);
 

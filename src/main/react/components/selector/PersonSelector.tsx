@@ -26,8 +26,8 @@ export function PersonSelector({
   multiple,
   ...props
 }: PersonSelectorProps) {
-  const [items, setItems] = useState();
-  const [state, setState] = useState(value);
+  const [items, setItems] = useState<any>();
+  const [state, setState] = useState<any>(value);
 
   useEffect(() => {
     PersonService.findAllByPage({
@@ -47,10 +47,24 @@ export function PersonSelector({
     onChange(selected);
   }
 
+  function renderString (it: any){
+    return `${it.firstname} ${it.lastname}`
+  }
+
+  function renderValue (values:any) {
+    if(values.length <= 3){
+      return values
+        .map(uuid => items.find(it => it.uuid == uuid))
+        .map(renderString)
+        .join(", ")
+    } else {
+      return `${values.length} persons selected`
+    }
+  }
   function renderMenuItem(item, key) {
     return (
       <MenuItem key={`person-selector-menu-item-${key}`} value={item.uuid}>
-        {`${item.firstname} ${item.lastname}`}
+        {renderString(item)}
       </MenuItem>
     );
   }
@@ -62,6 +76,7 @@ export function PersonSelector({
         value={state || ""}
         displayEmpty
         onChange={handleChange}
+        renderValue={renderValue}
         multiple={multiple}
       >
         {!multiple && (

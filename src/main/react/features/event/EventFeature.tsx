@@ -25,7 +25,7 @@ export function EventFeature() {
 
   const [reload, setReload] = useState(false);
   const [open, setOpen] = useState(false);
-  const [state, setState] = useState(null);
+  const [state, setState] = useState<any>(null);
 
   function handleCompleteDialog() {
     setReload(!reload);
@@ -53,7 +53,6 @@ export function EventFeature() {
       <EventDialog
         open={open}
         code={state && state.code}
-        value={state}
         onComplete={handleCompleteDialog}
       />
 

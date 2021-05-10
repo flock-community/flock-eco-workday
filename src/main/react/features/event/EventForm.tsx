@@ -7,11 +7,10 @@ import Grid from "@material-ui/core/Grid";
 import MomentUtils from "@date-io/moment";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { TextField } from "formik-material-ui";
-import { isDefined } from "../../utils/validation";
-import { EventClient } from "../../clients/EventClient";
-import { DatePickerField } from "../../components/fields/DatePickerField.tsx";
+import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PersonSelectorField } from "../../components/fields/PersonSelectorField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
+import {mutatePeriod} from "../period/Period";
 
 export const EVENT_FORM_ID = "work-day-form";
 
@@ -28,36 +27,16 @@ const schema = Yup.object().shape({
 /**
  * @return {null}
  */
-export function EventForm({ code, onSubmit, open }) {
-  const [state, setState] = useState(null);
+export function EventForm({ value, onSubmit }) {
 
-  useEffect(() => {
-    if (code) {
-      EventClient.get(code).then((res) => {
-        const value = {
-          description: res.description,
-          from: res.from,
-          to: res.to,
-          days: res.days,
-          personIds: res.persons.map((it) => it.uuid),
-        };
-        setState(value);
-      });
-    } else {
-      setState(schema.default());
-    }
-  }, [code]);
-
-  const handleSubmit = (value) => {
-    if (isDefined(onSubmit))
-      onSubmit({
-        ...value,
-        ...state,
-      });
-  };
-
-  const handleChange = (it) => {
-    setState(it);
+  const handleSubmit = (data) => {
+    onSubmit?.({
+      description: data.description,
+      personIds: data.personIds,
+      from: data.from,
+      to: data.to,
+      days: data.days,
+    });
   };
 
   const renderForm = ({ values }) => (
@@ -77,10 +56,10 @@ export function EventForm({ code, onSubmit, open }) {
             <PersonSelectorField name="personIds" multiple fullWidth />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="from" label="From" fullWidth />
+            <DatePickerField name="from" label="From" maxDate={values.to} fullWidth />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="to" label="To" fullWidth />
+            <DatePickerField name="to" label="To" minDate={values.from} fullWidth />
           </Grid>
           <Grid item xs={12}>
             <PeriodInputField name="days" from={values.from} to={values.to} />
@@ -91,13 +70,12 @@ export function EventForm({ code, onSubmit, open }) {
   );
 
   return (
-    state && (
+    value && (
       <Formik
         enableReinitialize
-        initialValues={state}
+        initialValues={mutatePeriod(value) || schema.default()}
         onSubmit={handleSubmit}
         validationSchema={schema}
-        validate={handleChange}
       >
         {renderForm}
       </Formik>
