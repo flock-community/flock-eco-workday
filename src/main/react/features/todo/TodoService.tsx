@@ -2,6 +2,7 @@ import { WorkDayClient } from "../../clients/WorkDayClient";
 import { SickDayClient } from "../../clients/SickDayClient";
 import { HolidayClient } from "../../clients/HolidayClient";
 import { ExpenseClient } from "../../clients/ExpenseClient";
+import moment from "moment";
 
 const updateStatusWorkDay = async (id, status) => {
   const res = await WorkDayClient.get(id);
@@ -41,8 +42,7 @@ const updateStatusExpense = async (id, status) => {
     ...res,
     personId: res.person.uuid,
     status,
-    from: res.from.format("YYYY-MM-DD"),
-    to: res.to.format("YYYY-MM-DD"),
+    date: res.date.format(moment.HTML5_FMT.DATE),
   });
 };
 
