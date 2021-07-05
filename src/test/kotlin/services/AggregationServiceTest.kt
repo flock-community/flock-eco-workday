@@ -80,7 +80,7 @@ class AggregationServiceTest(
             .totalPerMonth(from, to)
 
         assertNotNull(res[0].actualRevenue)
-        assertEquals("8000.0000000000", res[0].actualCostContractInternal.toString())
+        assertEquals("12000.0000000000", res[0].actualCostContractInternal.toString())
         assertEquals("0", res[0].actualCostContractExternal.toString())
         assertEquals("11520.00", res[0].actualRevenue.toString())
         assertEquals("0", res[0].actualRevenueInternal.toString())
