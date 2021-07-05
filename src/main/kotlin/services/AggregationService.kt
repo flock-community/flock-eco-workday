@@ -6,6 +6,7 @@ import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
 import community.flock.eco.workday.interfaces.inRange
 import community.flock.eco.workday.model.AggregationClient
+import community.flock.eco.workday.model.AggregationHoliday
 import community.flock.eco.workday.model.AggregationMonth
 import community.flock.eco.workday.model.AggregationPerson
 import community.flock.eco.workday.model.Assignment
@@ -24,7 +25,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
-import javax.transaction.Transactional
 import community.flock.eco.workday.model.ContractService as ContractServiceModel
 
 @Service
@@ -36,6 +36,32 @@ class AggregationService(
     private val dataService: DataService,
     private val applicationConstants: ApplicationConstants
 ) {
+
+    fun holidayReport(year: Int): List<AggregationHoliday> {
+        val from = YearMonth.of(year, 1).atDay(1)
+        val to = YearMonth.of(year, 12).atEndOfMonth()
+        val period = FromToPeriod(from, to)
+        val all = dataService.findAllData(from, to)
+        return all.allPersons()
+            .map { person ->
+                AggregationHoliday(
+                    name = person.fullName(),
+                    contractHours = all.contract
+                        .filterIsInstance(ContractInternal::class.java)
+                        .filter { it.person == person }
+                        .map { it.totalHolidayHoursInPeriod(period) }
+                        .sum(),
+                    plusHours = all.holiDay
+                        .filter { it.type == HolidayType.PLUSDAY }
+                        .filter { it.person == person }
+                        .totalHoursInPeriod(from, to),
+                    holidayHours = all.holiDay
+                        .filter { it.type == HolidayType.HOLIDAY }
+                        .filter { it.person == person }
+                        .totalHoursInPeriod(from, to)
+                )
+            }
+    }
 
     fun totalPerClient(from: LocalDate, to: LocalDate): List<AggregationClient> {
         val allAssignments = assignmentService.findAllActive(from, to)
@@ -100,8 +126,7 @@ class AggregationService(
             }
     }
 
-
-    fun totalPerMonth(yearMonth: YearMonth): List<AggregationMonth> =totalPerMonth(yearMonth.atDay(1), yearMonth.atEndOfMonth())
+    fun totalPerMonth(yearMonth: YearMonth): List<AggregationMonth> = totalPerMonth(yearMonth.atDay(1), yearMonth.atEndOfMonth())
     fun totalPerMonth(from: LocalDate, to: LocalDate): List<AggregationMonth> {
 
         val all = dataService.findAllData(from, to)
@@ -252,6 +277,9 @@ private fun Period.toDateRangeInPeriod(yearMonth: YearMonth) = yearMonth
     .toDateRange()
     .filterInPeriod(this)
 
+private fun Period.toDateRangeInPeriod(period: Period) = period.toDateRange()
+    .filterInPeriod(this)
+
 private fun List<LocalDate>.filterInPeriod(period: Period) = this
     .filter { period.from <= it }
     .filter { period.to?.let { to -> to >= it } ?: true }
@@ -365,6 +393,12 @@ fun ContractInternal.totalCostInPeriod(yearMonth: YearMonth): BigDecimal = this
     .map { this.monthlySalary.toBigDecimal() }
     .sum()
     .divide(yearMonth.lengthOfMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
+
+fun ContractInternal.totalHolidayHoursInPeriod(period: Period): BigDecimal = this
+    .toDateRangeInPeriod(period)
+    .sumOf { this.holidayHours }
+    .toBigDecimal()
+    .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
 
 fun ContractManagement.totalCostInPeriod(yearMonth: YearMonth): BigDecimal = this
     .toDateRangeInPeriod(yearMonth)

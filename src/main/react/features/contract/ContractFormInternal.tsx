@@ -68,6 +68,15 @@ export const ContractFormInternal = ({
               fullWidth
             />
           </Grid>
+          <Grid item xs={12}>
+            <Field
+              name="holidayHours"
+              type="number"
+              label="Holiday hours"
+              fullWidth
+              component={TextField}
+            />
+          </Grid>
         </Grid>
       </MuiPickersUtilsProvider>
     </Form>
@@ -79,6 +88,7 @@ export const ContractFormInternal = ({
     from: value.from,
     to: value.to,
     billable: value.billable,
+    holidayHours: value.holidayHours,
   };
 
   const schema = object({
@@ -87,6 +97,7 @@ export const ContractFormInternal = ({
     from: mixed().required().default(moment()),
     to: mixed().default(null),
     billable: boolean().default(true),
+    holidayHours: number().required().default(192),
   });
 
   return (

@@ -231,11 +231,20 @@ class AggregationServiceTest(
         assertEquals(5, res)
     }
 
+    @Test
+    fun `holiday report`() {
+        dataHelper.createContractInternalData()
+        val res = aggregationService.holidayReport(2020)
+        assertEquals(res[0].contractHours, 192.toBigDecimal().setScale(10))
+        assertEquals(res[2].contractHours, 160.toBigDecimal().setScale(10))
+    }
+
     private fun CreateHelper.createWorkDay(
         assignment: Assignment,
         from: LocalDate,
         to: LocalDate,
-        input: List<Int>) {
+        input: List<Int>
+    ) {
         val days = input.map { it * 8.0 }
         val hours = days.sum()
         createHelper.createWorkDay(assignment, from, to, hours, days)

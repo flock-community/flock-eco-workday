@@ -34,6 +34,7 @@ class LoadContractData(
             person = loadPersonData.findPersonByUserEmail(email),
             hoursPerWeek = 36,
             monthlySalary = 6000.0,
+            holidayHours = 192,
             from = from,
             to = to
         )

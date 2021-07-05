@@ -36,7 +36,8 @@ class ContractRepositoryTest(
             person = person,
             from = LocalDate.of(2020, 1, 1),
             hoursPerWeek = 40,
-            monthlySalary = 500.0
+            monthlySalary = 500.0,
+            holidayHours = 192,
         )
         val saved = contractRepository.save(new)
         val update = saved.copy(

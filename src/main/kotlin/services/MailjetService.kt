@@ -44,7 +44,6 @@ class MailjetService(
                 val request = createMailjetRequest(2626040, it, subject, variables)
                 client.post(request)
             }
-
     }
 
     fun sendReminder(person: Person, yearMonth: YearMonth) {
@@ -88,5 +87,4 @@ class MailjetService(
             )
         return request
     }
-
 }

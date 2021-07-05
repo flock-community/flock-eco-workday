@@ -21,6 +21,7 @@ data class ContractInternal(
     override val monthlySalary: Double,
     override val hoursPerWeek: Int,
 
+    val holidayHours: Int,
     val billable: Boolean = true
 
 ) : Monthly, Contract(id, code, from, to, person, ContractType.INTERNAL) {

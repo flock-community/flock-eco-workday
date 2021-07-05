@@ -15,9 +15,9 @@ class OrganisationHelper(
     val from = LocalDate.of(2020, 1, 1)
     val to = LocalDate.of(2021, 12, 31)
 
-    fun createPersonsWithContract(contractType: ContractType):Person {
+    fun createPersonsWithContract(contractType: ContractType): Person {
         val person = createHelper.createPerson()
-        when(contractType){
+        when (contractType) {
             ContractType.INTERNAL -> createHelper.createContractInternal(person, from, to)
             ContractType.EXTERNAL -> createHelper.createContractExternal(person, from, to)
             ContractType.MANAGEMENT -> createHelper.createContractInternal(person, from, to)
