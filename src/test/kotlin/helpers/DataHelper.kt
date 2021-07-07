@@ -72,11 +72,15 @@ class DataHelper(
 
         val person1 = createHelper.createPerson()
         val person2 = createHelper.createPerson()
+        val person3 = createHelper.createPerson()
+        val person4 = createHelper.createPerson()
 
         val res = mutableMapOf<String, Contract>()
         // In range
         res["in1"] = createHelper.createContractInternal(person1, from, to)
         res["in2"] = createHelper.createContractInternal(person2, from, null)
+        res["in3"] = createHelper.createContractInternal(person3, from, to.minusMonths(14))
+        res["in4"] = createHelper.createContractInternal(person4, from.plusMonths(2), to)
 
         return res
     }

@@ -1,13 +1,10 @@
 package community.flock.eco.workday.controllers
 
-import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.AggregationService
 import community.flock.eco.workday.services.MailjetService
 import community.flock.eco.workday.services.PersonService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -39,5 +36,4 @@ class TaskController(
                 mailjetService.sendReminder(it, YearMonth.now().minusMonths(1))
             }
     }
-
 }

@@ -16,7 +16,6 @@ import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Client
-import community.flock.eco.workday.model.ContractManagement
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.AssignmentService
 import community.flock.eco.workday.services.ClientService
@@ -91,14 +90,16 @@ class CreateHelper(
         to: LocalDate?,
         monthlySalary: Double = 4000.0,
         hoursPerWeek: Int = 40,
-        billable: Boolean = true
+        billable: Boolean = true,
+        holidayHours: Int = 192
     ) = ContractInternalForm(
         personId = person.uuid,
         monthlySalary = monthlySalary,
         hoursPerWeek = hoursPerWeek,
         from = from,
         to = to,
-        billable = billable
+        billable = billable,
+        holidayHours = holidayHours,
     ).run {
         contractService.create(this)
     } ?: error("Cannot create internal contract")
@@ -116,7 +117,6 @@ class CreateHelper(
     ).run {
         contractService.create(this)
     } ?: error("Cannot create internal contract")
-
 
     fun createContractExternal(person: Person, from: LocalDate, to: LocalDate?) = ContractExternalForm(
         personId = person.uuid,
@@ -150,7 +150,7 @@ class CreateHelper(
         to = to,
         assignmentCode = assignment.code,
         hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
-        days = days ?: (0L .. ChronoUnit.DAYS.between(from, to)).map { 8.0 },
+        days = days ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 },
         sheets = listOf()
     ).run {
         workDayService.create(this)

@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-008-work-day-updates-1
+      author: wveelenturf
+      changes:
+        - addColumn:
+            tableName: contract_internal
+            columns:
+              - column:
+                  name: holiday_hours
+                  type: integer
+                  defaultValue: 192

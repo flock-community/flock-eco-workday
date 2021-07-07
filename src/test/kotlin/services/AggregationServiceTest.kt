@@ -80,7 +80,7 @@ class AggregationServiceTest(
             .totalPerMonth(from, to)
 
         assertNotNull(res[0].actualRevenue)
-        assertEquals("8000.0000000000", res[0].actualCostContractInternal.toString())
+        assertEquals("12000.0000000000", res[0].actualCostContractInternal.toString())
         assertEquals("0", res[0].actualCostContractExternal.toString())
         assertEquals("11520.00", res[0].actualRevenue.toString())
         assertEquals("0", res[0].actualRevenueInternal.toString())
@@ -231,11 +231,20 @@ class AggregationServiceTest(
         assertEquals(5, res)
     }
 
+    @Test
+    fun `holiday report`() {
+        dataHelper.createContractInternalData()
+        val res = aggregationService.holidayReport(2020)
+        assertEquals(res[0].contractHours, 192.toBigDecimal().setScale(10))
+        assertEquals(res[2].contractHours, 160.toBigDecimal().setScale(10))
+    }
+
     private fun CreateHelper.createWorkDay(
         assignment: Assignment,
         from: LocalDate,
         to: LocalDate,
-        input: List<Int>) {
+        input: List<Int>
+    ) {
         val days = input.map { it * 8.0 }
         val hours = days.sum()
         createHelper.createWorkDay(assignment, from, to, hours, days)

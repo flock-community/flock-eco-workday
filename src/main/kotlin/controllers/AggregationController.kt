@@ -1,6 +1,7 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.workday.model.AggregationClient
+import community.flock.eco.workday.model.AggregationHoliday
 import community.flock.eco.workday.model.AggregationMonth
 import community.flock.eco.workday.model.AggregationPerson
 import community.flock.eco.workday.services.AggregationService
@@ -67,5 +68,11 @@ class AggregationController(
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
         return aggregationService.totalPerMonth(from, to)
+    }
+
+    @GetMapping("/holiday-report", params = ["year"])
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    fun holidayReportByYear(@RequestParam year: Int): List<AggregationHoliday> {
+        return aggregationService.holidayReport(year)
     }
 }
