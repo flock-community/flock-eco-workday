@@ -1,0 +1,33 @@
+scalar Date
+
+enum OffReason {
+    Holiday
+    PublicHoliday
+    Sick
+    Study
+}
+
+type OffDay {
+    id: ID
+    day: Date
+    workHours: Int
+    reason: OffReason
+    user: User
+}
+
+type User {
+    id: ID
+    name: String
+    contractStartedAt: Date
+    holidayHoursPerYear: Int
+}
+
+type WorkSchedule {
+    id: ID
+    user: User
+    schedule: [Int]
+    scheduleStartedAt: Date
+    scheduleEndedAt: Date
+}
+
+[8,8,8,8,8,0,0]

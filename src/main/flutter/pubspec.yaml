@@ -28,6 +28,8 @@ dependencies:
   json_annotation: ^2.0.0
   intl: any
   provider: ^3.0.0
+  uuid: any
+  badges: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

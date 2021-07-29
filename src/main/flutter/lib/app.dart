@@ -12,3 +12,10 @@ class App {
   HolidayService holidayService = new HolidayService();
   GoogleSignIn googleSingIn = GoogleSignIn(scopes: ['email']);
 }
+
+class AppMock implements App {
+  UserService users = new UserServiceMock();
+  RequestService request = new RequestService();
+  HolidayService holidayService = new HolidayServiceMock();
+  GoogleSignIn googleSingIn = GoogleSignIn(scopes: ['email']);
+}

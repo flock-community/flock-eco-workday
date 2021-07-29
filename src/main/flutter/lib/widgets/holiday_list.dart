@@ -20,7 +20,7 @@ class HolidayList extends StatelessWidget {
               direction: DismissDirection.endToStart,
               key: Key(holidays.all.indexOf(holiday).toString()),
               child: ListTile(
-                title: Text(holiday.name),
+                title: Text(holiday.description),
                 leading: Icon(Icons.wb_sunny, color: Colors.orange[200]),
                 subtitle: Text(holiday.formatHoliday()),
               ),

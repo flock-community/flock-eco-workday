@@ -1,5 +1,6 @@
 import 'package:flock_eco_holidays/app.dart';
 import 'package:flock_eco_holidays/holiday/holiday.dart';
+import 'package:flock_eco_holidays/holiday/holiday_input.dart';
 import 'package:flutter/material.dart';
 
 class HolidayProvider with ChangeNotifier {
@@ -14,7 +15,7 @@ class HolidayProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> add(Holiday holiday) async {
+  Future<void> add(HolidayInput holiday) async {
     var dbHoliday = await app.holidayService.add(holiday);
     _holidays.add(dbHoliday);
     notifyListeners();
