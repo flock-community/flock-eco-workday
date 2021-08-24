@@ -52,17 +52,14 @@ export function PersonSelector({
   }
 
   function renderValue (values:any) {
-    if(values) {
-      if (values.length <= 3) {
-        return values
-          .map(uuid => items.find(it => it.uuid == uuid))
-          .map(renderString)
-          .join(", ")
-      } else {
-        return `${values.length} persons selected`
-      }
+    if (values.length <= 3) {
+      return values
+        .map(uuid => items.find(it => it.uuid == uuid))
+        .map(renderString)
+        .join(", ")
+    } else {
+      return `${values.length} persons selected`
     }
-    return []
   }
   function renderMenuItem(item, key) {
     return (
