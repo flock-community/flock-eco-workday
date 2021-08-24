@@ -17,7 +17,7 @@ export const EVENT_FORM_ID = "work-day-form";
 const now = moment();
 
 const schema = Yup.object().shape({
-  description: Yup.string().required("Assignment is required").default(""),
+  description: Yup.string().required("Description is required").default(""),
   from: Yup.date().required("From date is required").default(now),
   to: Yup.date().required("To date is required").default(now),
   days: Yup.array().default([8]).nullable(),
@@ -69,11 +69,12 @@ export function EventForm({ value, onSubmit }) {
     </Form>
   );
 
+  const init = {...schema.default(), ...mutatePeriod(value)}
   return (
     value && (
       <Formik
         enableReinitialize
-        initialValues={mutatePeriod(value) || schema.default()}
+        initialValues={init}
         onSubmit={handleSubmit}
         validationSchema={schema}
       >

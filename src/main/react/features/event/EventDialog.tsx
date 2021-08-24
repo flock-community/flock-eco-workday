@@ -116,7 +116,7 @@ export function EventDialog({open, code, onComplete}: EventDialogProps) {
             <Grid item>
               {state && <EventForm value={state} onSubmit={handleSubmit}/>}
             </Grid>
-            <Grid item>
+            {code && <Grid item>
               <Button
                 variant="contained"
                 color={"primary"}
@@ -125,7 +125,7 @@ export function EventDialog({open, code, onComplete}: EventDialogProps) {
               >
                 Event rating
               </Button>
-            </Grid>
+            </Grid>}
           </Grid>
         </DialogContent>
         <Divider/>
