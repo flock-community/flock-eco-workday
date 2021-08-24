@@ -1,14 +1,6 @@
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  FormControl,
-  FormControlProps,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@material-ui/core";
-import { PersonService } from "../../features/person/PersonService";
+import React, {useEffect, useState} from "react";
+import {Card, CardContent, FormControl, FormControlProps, InputLabel, MenuItem, Select,} from "@material-ui/core";
+import {PersonService} from "../../features/person/PersonService";
 
 type PersonSelectorProps = FormControlProps & {
   value?: string;
@@ -19,13 +11,13 @@ type PersonSelectorProps = FormControlProps & {
 };
 
 export function PersonSelector({
-  value,
-  onChange,
-  label,
-  embedded,
-  multiple,
-  ...props
-}: PersonSelectorProps) {
+                                 value,
+                                 onChange,
+                                 label,
+                                 embedded,
+                                 multiple,
+                                 ...props
+                               }: PersonSelectorProps) {
   const [items, setItems] = useState<any>();
   const [state, setState] = useState<any>(value);
 
@@ -47,11 +39,11 @@ export function PersonSelector({
     onChange(selected);
   }
 
-  function renderString (it: any){
+  function renderString(it: any) {
     return `${it.firstname} ${it.lastname}`
   }
 
-  function renderValue (values:any) {
+  function renderValue(values: any) {
     if (values.length <= 3) {
       return values
         .map(uuid => items.find(it => it.uuid == uuid))
@@ -61,6 +53,7 @@ export function PersonSelector({
       return `${values.length} persons selected`
     }
   }
+
   function renderMenuItem(item, key) {
     return (
       <MenuItem key={`person-selector-menu-item-${key}`} value={item.uuid}>
