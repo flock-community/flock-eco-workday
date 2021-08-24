@@ -1,17 +1,17 @@
-import React, {useEffect, useState} from "react";
-import {Dialog, DialogContent, Divider} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
+import React, { useEffect, useState } from "react";
+import { Dialog, DialogContent, Divider } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import EventIcon from "@material-ui/icons/CalendarToday";
-import moment, {HTML5_FMT} from "moment";
-import {ConfirmDialog} from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import moment, { HTML5_FMT } from "moment";
+import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import {EventClient} from "../../clients/EventClient";
-import {TransitionSlider} from "../../components/transitions/Slide";
-import {DialogFooter, DialogHeader} from "../../components/dialog";
-import {EVENT_FORM_ID, EventForm} from "./EventForm";
-import {schema} from "../workday/WorkDayForm";
+import { EventClient } from "../../clients/EventClient";
+import { TransitionSlider } from "../../components/transitions/Slide";
+import { DialogFooter, DialogHeader } from "../../components/dialog";
+import { EVENT_FORM_ID, EventForm } from "./EventForm";
+import { schema } from "../workday/WorkDayForm";
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
@@ -26,7 +26,7 @@ type EventDialogProps = {
   onComplete?: (item?: any) => void;
 };
 
-export function EventDialog({open, code, onComplete}: EventDialogProps) {
+export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const classes = useStyles();
 
   const [openDelete, setOpenDelete] = useState(false);
@@ -39,7 +39,7 @@ export function EventDialog({open, code, onComplete}: EventDialogProps) {
         EventClient.get(code).then((res) => {
           setState({
             description: res.description,
-            personIds: res.persons.map(it => it.uuid) ?? [],
+            personIds: res.persons.map((it) => it.uuid) ?? [],
             from: res.from,
             to: res.to,
             days: res.days,
@@ -48,7 +48,7 @@ export function EventDialog({open, code, onComplete}: EventDialogProps) {
       } else {
         setState(schema.cast());
       }
-    }else {
+    } else {
       setState(null);
     }
   }, [open, code]);
@@ -103,10 +103,10 @@ export function EventDialog({open, code, onComplete}: EventDialogProps) {
         // @ts-ignore
         TransitionComponent={TransitionSlider}
         // @ts-ignore
-        TransitionProps={{direction: "right"}}
+        TransitionProps={{ direction: "right" }}
       >
         <DialogHeader
-          icon={<EventIcon/>}
+          icon={<EventIcon />}
           headline="Create Event"
           subheadline="Have a fun time!"
           onClose={handleClose}
@@ -114,21 +114,23 @@ export function EventDialog({open, code, onComplete}: EventDialogProps) {
         <DialogContent className={classes.dialogContent}>
           <Grid container spacing={1}>
             <Grid item>
-              {state && <EventForm value={state} onSubmit={handleSubmit}/>}
+              {state && <EventForm value={state} onSubmit={handleSubmit} />}
             </Grid>
-            {code && <Grid item>
-              <Button
-                variant="contained"
-                color={"primary"}
-                component="a"
-                href={`/event_rating/${code}`}
-              >
-                Event rating
-              </Button>
-            </Grid>}
+            {code && (
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color={"primary"}
+                  component="a"
+                  href={`/event_rating/${code}`}
+                >
+                  Event rating
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </DialogContent>
-        <Divider/>
+        <Divider />
         <DialogFooter
           formId={EVENT_FORM_ID}
           onClose={handleClose}

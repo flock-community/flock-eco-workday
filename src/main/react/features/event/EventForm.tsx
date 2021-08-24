@@ -10,7 +10,7 @@ import { TextField } from "formik-material-ui";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PersonSelectorField } from "../../components/fields/PersonSelectorField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
-import {mutatePeriod} from "../period/Period";
+import { mutatePeriod } from "../period/Period";
 
 export const EVENT_FORM_ID = "work-day-form";
 
@@ -28,7 +28,6 @@ const schema = Yup.object().shape({
  * @return {null}
  */
 export function EventForm({ value, onSubmit }) {
-
   const handleSubmit = (data) => {
     onSubmit?.({
       description: data.description,
@@ -56,10 +55,20 @@ export function EventForm({ value, onSubmit }) {
             <PersonSelectorField name="personIds" multiple fullWidth />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="from" label="From" maxDate={values.to} fullWidth />
+            <DatePickerField
+              name="from"
+              label="From"
+              maxDate={values.to}
+              fullWidth
+            />
           </Grid>
           <Grid item xs={6}>
-            <DatePickerField name="to" label="To" minDate={values.from} fullWidth />
+            <DatePickerField
+              name="to"
+              label="To"
+              minDate={values.from}
+              fullWidth
+            />
           </Grid>
           <Grid item xs={12}>
             <PeriodInputField name="days" from={values.from} to={values.to} />
@@ -69,7 +78,7 @@ export function EventForm({ value, onSubmit }) {
     </Form>
   );
 
-  const init = {...schema.default(), ...mutatePeriod(value)}
+  const init = { ...schema.default(), ...mutatePeriod(value) };
   return (
     value && (
       <Formik

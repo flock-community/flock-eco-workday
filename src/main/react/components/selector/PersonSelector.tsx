@@ -1,6 +1,14 @@
-import React, {useEffect, useState} from "react";
-import {Card, CardContent, FormControl, FormControlProps, InputLabel, MenuItem, Select,} from "@material-ui/core";
-import {PersonService} from "../../features/person/PersonService";
+import React, { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  FormControl,
+  FormControlProps,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@material-ui/core";
+import { PersonService } from "../../features/person/PersonService";
 
 type PersonSelectorProps = FormControlProps & {
   value?: string;
@@ -11,13 +19,13 @@ type PersonSelectorProps = FormControlProps & {
 };
 
 export function PersonSelector({
-                                 value,
-                                 onChange,
-                                 label,
-                                 embedded,
-                                 multiple,
-                                 ...props
-                               }: PersonSelectorProps) {
+  value,
+  onChange,
+  label,
+  embedded,
+  multiple,
+  ...props
+}: PersonSelectorProps) {
   const [items, setItems] = useState<any>();
   const [state, setState] = useState<any>(value);
 
@@ -40,17 +48,17 @@ export function PersonSelector({
   }
 
   function renderString(it: any) {
-    return `${it.firstname} ${it.lastname}`
+    return `${it.firstname} ${it.lastname}`;
   }
 
   function renderValue(values: any) {
     if (values.length <= 3) {
       return values
-        .map(uuid => items.find(it => it.uuid == uuid))
+        .map((uuid) => items.find((it) => it.uuid == uuid))
         .map(renderString)
-        .join(", ")
+        .join(", ");
     } else {
-      return `${values.length} persons selected`
+      return `${values.length} persons selected`;
     }
   }
 
