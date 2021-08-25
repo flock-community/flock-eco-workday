@@ -50,7 +50,7 @@ export function HolidayFeature() {
       status,
       from: it.from.format("YYYY-MM-DD"),
       to: it.to.format("YYYY-MM-DD"),
-      days: it.days.length > 0 ? it.days : null
+      days: it.days.length > 0 ? it.days : null,
     }).then(() => setRefresh(!refresh));
   }
 

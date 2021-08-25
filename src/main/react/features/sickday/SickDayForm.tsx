@@ -27,7 +27,6 @@ export const schemaSickDayForm = Yup.object().shape({
 });
 
 export function SickDayForm({ value, onSubmit }) {
-
   const handleSubmit = (data) => {
     onSubmit?.({
       ...value,

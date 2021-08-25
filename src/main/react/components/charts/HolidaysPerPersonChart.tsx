@@ -10,7 +10,10 @@ import {
   Bar,
 } from "recharts";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
-import {AggregationClient, holidayReportByYear} from "../../clients/AggregationClient";
+import {
+  AggregationClient,
+  holidayReportByYear,
+} from "../../clients/AggregationClient";
 
 type HolidaysPerPersonChartProps = {
   year?: number;
@@ -25,10 +28,16 @@ export function HolidaysPerPersonChart({ year }: HolidaysPerPersonChartProps) {
       (res) =>
         setState(
           res
-            .filter((it) => it.contractHours > 0 || it.holidayHours > 0 || it.plusHours > 0)
-            .map(it =>  ({
+            .filter(
+              (it) =>
+                it.contractHours > 0 || it.holidayHours > 0 || it.plusHours > 0
+            )
+            .map((it) => ({
               ...it,
-              availableHours: Math.max(it.contractHours + it.plusHours - it.holidayHours, 0)
+              availableHours: Math.max(
+                it.contractHours + it.plusHours - it.holidayHours,
+                0
+              ),
             }))
         )
     );
@@ -60,12 +69,7 @@ export function HolidaysPerPersonChart({ year }: HolidaysPerPersonChartProps) {
           name="plus"
           fill="#6c6c6c"
         />
-        <Bar
-          stackId="used"
-          dataKey="holidayHours"
-          name="used"
-          fill="#42a5f5"
-        />
+        <Bar stackId="used" dataKey="holidayHours" name="used" fill="#42a5f5" />
         <Bar
           stackId="used"
           dataKey="availableHours"
