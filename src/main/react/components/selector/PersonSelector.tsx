@@ -47,20 +47,21 @@ export function PersonSelector({
     onChange(selected);
   }
 
-  function renderString (it: any){
-    return `${it.firstname} ${it.lastname}`
+  function renderString(it: any) {
+    return `${it.firstname} ${it.lastname}`;
   }
 
-  function renderValue (values:any) {
-    if(values.length <= 3){
+  function renderValue(values: any) {
+    if (values.length <= 3) {
       return values
-        .map(uuid => items.find(it => it.uuid == uuid))
+        .map((uuid) => items.find((it) => it.uuid == uuid))
         .map(renderString)
-        .join(", ")
+        .join(", ");
     } else {
-      return `${values.length} persons selected`
+      return `${values.length} persons selected`;
     }
   }
+
   function renderMenuItem(item, key) {
     return (
       <MenuItem key={`person-selector-menu-item-${key}`} value={item.uuid}>
@@ -73,7 +74,7 @@ export function PersonSelector({
     <FormControl {...props}>
       <InputLabel shrink>{label}</InputLabel>
       <Select
-        value={state || ""}
+        value={state || (multiple ? [] : "")}
         displayEmpty
         onChange={handleChange}
         renderValue={multiple ? renderValue : undefined}
