@@ -60,7 +60,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         from: it.from.format(HTML5_FMT.DATE),
         to: it.to.format(HTML5_FMT.DATE),
         days: it.days,
-        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur), 0),
+        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
         personIds: it.personIds,
       }).then((res) => {
         onComplete?.(res);
@@ -71,7 +71,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         from: it.from.format(moment.HTML5_FMT.DATE),
         to: it.to.format(moment.HTML5_FMT.DATE),
         days: it.days,
-        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur), 0),
+        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
         personIds: it.personIds,
       }).then((res) => {
         onComplete?.(res);
