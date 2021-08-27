@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
@@ -9,10 +9,8 @@ import MomentUtils from "@date-io/moment";
 import { TextField } from "formik-material-ui";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import MenuItem from "@material-ui/core/MenuItem";
-import { isDefined } from "../../utils/validation";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
-import { mutatePeriod } from "../period/Period";
 
 export const SICKDAY_FORM_ID = "sick-day-form";
 
@@ -31,7 +29,7 @@ export function SickDayForm({ value, onSubmit }) {
     onSubmit?.({
       ...value,
       ...data,
-      hours: data.days.reduce((acc, cur) => acc + parseFloat(cur), 0),
+      hours: data.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
     });
   };
 

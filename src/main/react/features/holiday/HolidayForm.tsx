@@ -33,7 +33,7 @@ export function HolidayForm({ value, onSubmit }: HolidayFormProps) {
     onSubmit?.({
       ...value,
       ...data,
-      hours: data.days.reduce((acc, cur) => acc + parseFloat(cur), 0),
+      hours: data.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
     });
   };
 

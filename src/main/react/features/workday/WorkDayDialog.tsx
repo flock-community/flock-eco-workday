@@ -53,7 +53,7 @@ export function WorkDayDialog({ open, code, onComplete }) {
       to: it.to.format(HTML5_FMT.DATE),
       days: it.days ? it.days : null,
       hours: it.days
-        ? it.days.reduce((acc, cur) => acc + parseFloat(cur), 0)
+        ? it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0)
         : it.hours,
       assignmentCode: it.assignmentCode,
       status: it.status,

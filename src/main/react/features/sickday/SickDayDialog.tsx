@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { Dialog, DialogContent, Divider } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import HealingIcon from "@material-ui/icons/Healing";
 import { HTML5_FMT } from "moment";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
@@ -10,8 +8,7 @@ import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/
 import { SickDayClient } from "../../clients/SickDayClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
-import { SICKDAY_FORM_ID, SickDayForm, schemaSickDayForm } from "./SickDayForm";
-import { isDefined } from "../../utils/validation";
+import { schemaSickDayForm, SICKDAY_FORM_ID, SickDayForm } from "./SickDayForm";
 
 type SickDayDialogProps = {
   open: boolean;

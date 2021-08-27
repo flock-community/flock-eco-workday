@@ -83,7 +83,7 @@ export function PeriodInput({ value, onChange }: PeriodInputProps) {
                     value={day.value}
                     disabled={day.disabled}
                     onChange={(ev) =>
-                      onChange(day.date, parseFloat(ev.target.value))
+                      onChange(day.date, parseFloat(ev.target.value || "0"))
                     }
                     type="number"
                     InputLabelProps={{
