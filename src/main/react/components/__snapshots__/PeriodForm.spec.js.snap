@@ -26,6 +26,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input"
             disabled={false}
             onAnimationStart={[Function]}
@@ -38,7 +39,7 @@ Array [
             value="January 1st"
           />
         </div>
-        
+
       </div>
     </div>
     <div
@@ -62,6 +63,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input"
             disabled={false}
             onAnimationStart={[Function]}
@@ -74,7 +76,7 @@ Array [
             value="January 10th"
           />
         </div>
-        
+
       </div>
     </div>
   </div>,
@@ -195,6 +197,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input Mui-disabled Mui-disabled"
             disabled={true}
             onAnimationStart={[Function]}
@@ -220,6 +223,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input Mui-disabled Mui-disabled"
             disabled={true}
             onAnimationStart={[Function]}
@@ -245,6 +249,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input Mui-disabled Mui-disabled"
             disabled={true}
             onAnimationStart={[Function]}
@@ -270,6 +275,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input"
             disabled={false}
             onAnimationStart={[Function]}
@@ -295,6 +301,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input"
             disabled={false}
             onAnimationStart={[Function]}
@@ -320,6 +327,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input"
             disabled={false}
             onAnimationStart={[Function]}
@@ -345,6 +353,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input"
             disabled={false}
             onAnimationStart={[Function]}
@@ -395,6 +404,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input"
             disabled={false}
             onAnimationStart={[Function]}
@@ -420,6 +430,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input"
             disabled={false}
             onAnimationStart={[Function]}
@@ -445,6 +456,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input"
             disabled={false}
             onAnimationStart={[Function]}
@@ -470,6 +482,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input"
             disabled={false}
             onAnimationStart={[Function]}
@@ -495,6 +508,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input"
             disabled={false}
             onAnimationStart={[Function]}
@@ -520,6 +534,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input"
             disabled={false}
             onAnimationStart={[Function]}
@@ -545,6 +560,7 @@ Array [
         >
           <input
             aria-invalid={false}
+            autoFocus={false}
             className="MuiInputBase-input MuiInput-input Mui-disabled Mui-disabled"
             disabled={true}
             onAnimationStart={[Function]}
