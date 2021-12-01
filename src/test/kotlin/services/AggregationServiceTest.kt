@@ -252,23 +252,30 @@ class AggregationServiceTest(
 
     @Test
     fun `hour overview per client per employee`() {
-        val from = LocalDate.of(2021, 12, 1)
-        val toEndDecember = LocalDate.of(2021, 12, 31)
-        val toEndJanuary = LocalDate.of(2022, 1, 31)
-        val client = createHelper.createClient("FLOCK")
-        val client2 = createHelper.createClient("Bol.com")
-        val person = createHelper.createPerson("Piotr", "zxc")
-        val person2 = createHelper.createPerson("Thomas", "zxc")
-        val person3 = createHelper.createPerson("Person", "zxc")
-        val assignment = createHelper.createAssignment(client, person, from, toEndDecember)
-        val assignment2 = createHelper.createAssignment(client, person2, from, toEndDecember)
-        val assignment3 = createHelper.createAssignment(client2, person3, from, toEndJanuary)
-        val hours = listOf(8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0)
-        val hoursJanuary = listOf(8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0,
-            8.0,8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0)
-        val workDay = createHelper.createWorkDay(assignment, from, toEndDecember, hours.sum(), hours)
-        val workDay2 = createHelper.createWorkDay(assignment2, from, toEndDecember, hours.sum(), hours)
-        val workDay3 = createHelper.createWorkDay(assignment3, from, toEndJanuary, hoursJanuary.sum(), hoursJanuary)
+        val startDate = LocalDate.of(2021, 12, 1)
+        val endDate = LocalDate.of(2021, 12, 31)
+        createMockDataForClientHourOverview(startDate, endDate)
+        aggregationService.hourClientEmployeeOverview(startDate, endDate)
+    }
+
+    private fun createMockDataForClientHourOverview(startDate: LocalDate, endDate: LocalDate) {
+
+        val flockClient = createHelper.createClient("Flock.community")
+        val firstPerson = createHelper.createPerson("Piotr", "zxc")
+        val secondPerson = createHelper.createPerson("Thomas", "abc")
+        val thirdPerson = createHelper.createPerson("Person", "qwe")
+
+        val firstAssignment = createHelper.createAssignment(flockClient, firstPerson, startDate, endDate)
+        val secondAssignment = createHelper.createAssignment(flockClient, secondPerson, startDate.plusDays(5), endDate)
+        val thirdAssignment = createHelper.createAssignment(flockClient, secondPerson, startDate.plusDays(10), endDate.minusDays(5))
+
+        val hoursFullMonth = listOf(8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0)
+        val hoursSecondAssignment = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0)
+        val hoursThirdAssignment = listOf(8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0)
+
+        val workDay = createHelper.createWorkDay(firstAssignment, startDate, endDate, hoursFullMonth.sum(), hoursFullMonth)
+        val workDay2 = createHelper.createWorkDay(secondAssignment, startDate.plusDays(5), endDate, hoursSecondAssignment.sum(), hoursSecondAssignment)
+        //val workDay3 = createHelper.createWorkDay(thirdAssignment, startDate.plusDays(10), endDate.minusDays(5), hoursThirdAssignment.sum(), hoursThirdAssignment)
 
     }
 }
