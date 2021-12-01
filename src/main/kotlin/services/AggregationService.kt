@@ -5,19 +5,7 @@ import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
 import community.flock.eco.workday.interfaces.inRange
-import community.flock.eco.workday.model.AggregationClient
-import community.flock.eco.workday.model.AggregationHoliday
-import community.flock.eco.workday.model.AggregationMonth
-import community.flock.eco.workday.model.AggregationPerson
-import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Contract
-import community.flock.eco.workday.model.ContractExternal
-import community.flock.eco.workday.model.ContractInternal
-import community.flock.eco.workday.model.ContractManagement
-import community.flock.eco.workday.model.Day
-import community.flock.eco.workday.model.HolidayType
-import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.model.*
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -34,7 +22,8 @@ class AggregationService(
     private val clientService: ClientService,
     private val assignmentService: AssignmentService,
     private val dataService: DataService,
-    private val applicationConstants: ApplicationConstants
+    private val applicationConstants: ApplicationConstants,
+    private val workDayService: WorkDayService
 ) {
 
     fun holidayReport(year: Int): List<AggregationHoliday> {
@@ -216,6 +205,41 @@ class AggregationService(
                 )
             }
     }
+
+    fun hourClientEmployeeOverview(from: LocalDate, to: LocalDate): HashMap<String, Overview> {
+        val clientOverview = hashMapOf<String, Overview>()
+        workDayService.findAllActive(from,to).map { workDay ->
+            val client = workDay.assignment.client.name
+            val employee = workDay.assignment.person.getFullName()
+            val filteredHours = workDay.hoursPerDay().filterKeys { day -> day.isAfter(from) && day.isBefore(to) }
+            val hoursOverviewPerDay = filteredHours.map { it.value.toDouble() }
+            val personOverview = Persons(employee, hoursOverviewPerDay, hoursOverviewPerDay.sum(),)
+            if(clientOverview.contains(client)) {
+                clientOverview[client]!!.persons.add(personOverview)
+            } else clientOverview.put(client, Overview(mutableListOf(personOverview), null))
+        }
+
+        return updateTotalHoursPerClientOverview(clientOverview)
+    }
+
+    private fun updateTotalHoursPerClientOverview(clientOverview: HashMap<String, Overview>): HashMap<String, Overview> {
+        clientOverview.keys.forEach { key ->
+            var totalHours = listOf<Double>()
+            clientOverview[key]!!.persons.forEach { person ->
+                totalHours = if(totalHours.isEmpty()) {
+                    person.hours
+                } else {
+                    totalHours.zip(person.hours){ xv, yv -> xv + yv }
+                }
+            }
+            clientOverview[key]!!.totals = totalHours
+        }
+        return clientOverview
+    }
+
+    data class Overview(val persons: MutableList<Persons>, var totals: List<Double>?)
+    data class Persons(val personName: String, val hours: List<Double>, val total: Double)
+
 
     private fun List<Day>.totalHoursInPeriod(from: LocalDate, to: LocalDate) = this
         .map { day ->

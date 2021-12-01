@@ -75,4 +75,12 @@ class AggregationController(
     fun holidayReportByYear(@RequestParam year: Int): List<AggregationHoliday> {
         return aggregationService.holidayReport(year)
     }
+
+    @GetMapping("/hour-client-overview", params = ["year", "month"])
+    fun hourClientOverviewEmployee(@RequestParam year: Int, @RequestParam month: Int): Map<String, AggregationService.Overview> {
+        val yearMonth = YearMonth.of(year, month)
+        val from = yearMonth.atDay(1)
+        val to = yearMonth.atEndOfMonth()
+        return aggregationService.hourClientEmployeeOverview(from, to)
+    }
 }
