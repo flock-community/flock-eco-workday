@@ -208,54 +208,36 @@ class AggregationService(
             }
     }
 
-    fun hourClientEmployeeOverview(from: LocalDate, to: LocalDate): List<AggregationClientPersonOverview> {
-        val clientOverview = hashMapOf<String, AggregationOverview>()
-        workDayService.findAllActive(from,to).map { workDay ->
-            val client = workDay.assignment.client.name
-            val personName = workDay.assignment.person.getFullName()
-            val workingHoursPerDay = workDay.hoursPerDay()
-                .filterKeys { date -> date.isWithinRange(from, to) }
-                .toHoursPerDayInDateRange(from, to)
-                .map { it.toFloat() }
-
-            val personOverview = AggregationClientPersonItem(
-                personName = personName,
-                hours = workingHoursPerDay,
-                total = workingHoursPerDay.sum()
-            )
-
-            if(clientOverview.contains(client)) {
-                clientOverview[client]!!.persons.add(personOverview)
-            } else clientOverview.put(
-                key = client,
-                value = AggregationOverview(mutableListOf(personOverview), null)
-            )
-        }
-
-        return updateTotalHoursPerClientOverview(clientOverview).map {
-            AggregationClientPersonOverview(
-                clientName = it.key,
-                aggregationPerson = it.value.persons,
-                totals = it.value.totals!!
-            )
-        }
-    }
-
-    private fun updateTotalHoursPerClientOverview(clientOverview: HashMap<String, AggregationOverview>): HashMap<String, AggregationOverview> {
-        clientOverview.keys.forEach { key ->
-            var totalHours = listOf<Float>()
-            clientOverview[key]!!.persons.forEach { person ->
-                totalHours = if(totalHours.isEmpty()) {
-                    person.hours
-                } else {
-                    totalHours.zip(person.hours){ xv, yv -> xv + yv }
-                }
+    fun clientPersonHourOverview(from: LocalDate, to: LocalDate): List<AggregationClientPersonOverview> {
+        return workDayService.findAllActive(from, to).groupBy {
+            it.assignment.client
+        }.mapValues { (client, workDays) ->
+            workDays.map { workDay ->
+                val personName = workDay.assignment.person.getFullName()
+                val workingHoursPerDay = workDay.hoursPerDay()
+                    .filterKeys { date -> date.isWithinRange(from, to) }
+                    .toHoursPerDayInDateRange(from, to)
+                    .map { it.toFloat() }
+                AggregationClientPersonItem(
+                    personName = personName,
+                    hours = workingHoursPerDay,
+                    total = workingHoursPerDay.sum()
+                )
             }
-            clientOverview[key]!!.totals = totalHours
+        }.map { (client, aggregationClientPersonItem) ->
+            AggregationClientPersonOverview(clientName = client.name,
+                aggregationPerson = aggregationClientPersonItem,
+                totals = aggregationClientPersonItem.sumWorkDayHoursWithSameIndexes()
+            )
         }
-        return clientOverview
     }
 
+    private fun List<AggregationClientPersonItem>.sumWorkDayHoursWithSameIndexes() = this
+        .map { it.hours }
+        .reduce { acc, list ->
+            acc.zip(list) { a, b -> a + b }
+        }
+    
     private fun List<Day>.totalHoursInPeriod(from: LocalDate, to: LocalDate) = this
         .map { day ->
             val hours = day.hoursPerDay()
