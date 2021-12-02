@@ -1,6 +1,8 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.ApplicationConstants
+import community.flock.eco.workday.graphql.AggregationClientPersonItem
+import community.flock.eco.workday.graphql.AggregationClientPersonOverview
 import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
@@ -206,25 +208,42 @@ class AggregationService(
             }
     }
 
-    fun hourClientEmployeeOverview(from: LocalDate, to: LocalDate): HashMap<String, Overview> {
-        val clientOverview = hashMapOf<String, Overview>()
+    fun hourClientEmployeeOverview(from: LocalDate, to: LocalDate): List<AggregationClientPersonOverview> {
+        val clientOverview = hashMapOf<String, AggregationOverview>()
         workDayService.findAllActive(from,to).map { workDay ->
             val client = workDay.assignment.client.name
-            val employee = workDay.assignment.person.getFullName()
-            val filteredHours = workDay.hoursPerDay().filterKeys { day -> day.isAfter(from) && day.isBefore(to) }
-            val hoursOverviewPerDay = filteredHours.map { it.value.toDouble() }
-            val personOverview = Persons(employee, hoursOverviewPerDay, hoursOverviewPerDay.sum(),)
+            val personName = workDay.assignment.person.getFullName()
+            val workingHoursPerDay = workDay.hoursPerDay()
+                .filterKeys { date -> date.isWithinRange(from, to) }
+                .toHoursPerDayInDateRange(from, to)
+                .map { it.toFloat() }
+
+            val personOverview = AggregationClientPersonItem(
+                personName = personName,
+                hours = workingHoursPerDay,
+                total = workingHoursPerDay.sum()
+            )
+
             if(clientOverview.contains(client)) {
                 clientOverview[client]!!.persons.add(personOverview)
-            } else clientOverview.put(client, Overview(mutableListOf(personOverview), null))
+            } else clientOverview.put(
+                key = client,
+                value = AggregationOverview(mutableListOf(personOverview), null)
+            )
         }
 
-        return updateTotalHoursPerClientOverview(clientOverview)
+        return updateTotalHoursPerClientOverview(clientOverview).map {
+            AggregationClientPersonOverview(
+                clientName = it.key,
+                aggregationPerson = it.value.persons,
+                totals = it.value.totals!!
+            )
+        }
     }
 
-    private fun updateTotalHoursPerClientOverview(clientOverview: HashMap<String, Overview>): HashMap<String, Overview> {
+    private fun updateTotalHoursPerClientOverview(clientOverview: HashMap<String, AggregationOverview>): HashMap<String, AggregationOverview> {
         clientOverview.keys.forEach { key ->
-            var totalHours = listOf<Double>()
+            var totalHours = listOf<Float>()
             clientOverview[key]!!.persons.forEach { person ->
                 totalHours = if(totalHours.isEmpty()) {
                     person.hours
@@ -236,10 +255,6 @@ class AggregationService(
         }
         return clientOverview
     }
-
-    data class Overview(val persons: MutableList<Persons>, var totals: List<Double>?)
-    data class Persons(val personName: String, val hours: List<Double>, val total: Double)
-
 
     private fun List<Day>.totalHoursInPeriod(from: LocalDate, to: LocalDate) = this
         .map { day ->
@@ -275,6 +290,14 @@ class AggregationService(
         val totalWorkDays = countWorkDaysInPeriod(from, to).toBigDecimal()
         return BigDecimal.ONE - totalOffDays.divide(totalWorkDays, 10, RoundingMode.HALF_UP)
     }
+
+    private fun Map<LocalDate, BigDecimal>.toHoursPerDayInDateRange(from: LocalDate, to: LocalDate) = dateRange(from, to)
+        .map { localDate ->
+            if (this.contains(localDate)) this[localDate]!!
+            else BigDecimal("0.0")
+        }
+
+    private data class AggregationOverview(val persons: MutableList<AggregationClientPersonItem>, var totals: List<Float>?)
 }
 
 private fun Person.fullName(): String = "$firstname $lastname"
@@ -442,3 +465,7 @@ fun Map.Entry<YearMonth, Iterable<Data>>.actualTotalHours(transform: Data.() -> 
     .sum()
 
 private fun <A, B> cartesianProducts(a_s: Iterable<A>, b_s: Iterable<B>) = a_s.flatMap { a -> b_s.map { b -> a to b } }
+
+private fun LocalDate.isWithinRange(from: LocalDate, to: LocalDate): Boolean {
+    return this.isAfter(from.minusDays(1)) && this.isBefore(to.plusDays(1))
+}
