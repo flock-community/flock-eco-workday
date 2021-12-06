@@ -1,6 +1,7 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.workday.graphql.AggregationClientPersonOverview
+import community.flock.eco.workday.graphql.AggregationPersonClientRevenueOverview
 import community.flock.eco.workday.model.AggregationClient
 import community.flock.eco.workday.model.AggregationHoliday
 import community.flock.eco.workday.model.AggregationMonth
@@ -84,5 +85,13 @@ class AggregationController(
         val from = yearMonth.atDay(1)
         val to = yearMonth.atEndOfMonth()
         return aggregationService.clientPersonHourOverview(from, to)
+    }
+
+    @GetMapping("/revenue-year-report", params = ["year"])
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    fun revenueYearOverview(@RequestParam year: Int): List<AggregationPersonClientRevenueOverview> {
+        val from = LocalDate.of(year, 1, 1)
+        val to = LocalDate.of(year, 12, 31)
+        return aggregationService.personClientRevenueOverview(from, to)
     }
 }

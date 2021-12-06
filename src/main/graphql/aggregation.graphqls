@@ -19,3 +19,14 @@ type AggregationClientPersonOverviewPerson {
     id: ID!
     name: String!
 }
+
+type AggregationPersonClientRevenueOverview {
+    person: AggregationClientPersonOverviewPerson
+    clients: [AggregationPersonClientRevenueItem!]!
+    total: Float!
+}
+
+type AggregationPersonClientRevenueItem {
+    client: AggregationClientPersonOverviewClient!
+    revenue: Float!
+}

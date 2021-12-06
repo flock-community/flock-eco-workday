@@ -1,10 +1,7 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.ApplicationConstants
-import community.flock.eco.workday.graphql.AggregationClientPersonItem
-import community.flock.eco.workday.graphql.AggregationClientPersonOverview
-import community.flock.eco.workday.graphql.AggregationClientPersonOverviewClient
-import community.flock.eco.workday.graphql.AggregationClientPersonOverviewPerson
+import community.flock.eco.workday.graphql.*
 import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
@@ -249,6 +246,39 @@ class AggregationService(
                 totals = aggregationClientPersonItem.sumWorkDayHoursWithSameIndexes()
             )
         }
+    }
+
+    fun personClientRevenueOverview(from: LocalDate, to: LocalDate): List<AggregationPersonClientRevenueOverview> {
+        val allAssignments = assignmentService.findAllActive(from, to)
+        return allAssignments.groupBy { it.person }
+            .map { (person, value) ->
+                val person = AggregationClientPersonOverviewPerson(
+                    id = person.id.toString(),
+                    name = person.fullName()
+                )
+                val companyOverview = value.groupBy {
+                    it.client
+                }.map { (client, assignments) ->
+                    val revenue = assignments.filter { it.client == client }
+                        .toMapWorkingDay(from, to).values
+                        .flatten()
+                        .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.revenuePerDay() }
+                    AggregationPersonClientRevenueItem(
+                        client = AggregationClientPersonOverviewClient(
+                            id = client.id.toString(),
+                            name = client.name
+                        ),
+                        revenue = revenue.toFloat()
+                    )
+                }
+                AggregationPersonClientRevenueOverview(
+                    person = person,
+                    clients = companyOverview,
+                    total = companyOverview
+                        .sumByDouble { it.revenue.toDouble() }
+                        .toFloat()
+                )
+            }
     }
 
     private fun List<AggregationClientPersonItem>.sumWorkDayHoursWithSameIndexes() = this

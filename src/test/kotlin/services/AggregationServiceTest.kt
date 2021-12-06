@@ -326,4 +326,21 @@ class AggregationServiceTest(
         createHelper.createWorkDayWithoutDays(fourthAssignment, startDate.minusDays(1), endDate, 192.0, null)
         createHelper.createWorkDayWithoutDays(fifthAssignment, startDate.minusDays(2), startDate.plusDays(2), 15.0, null)
     }
+
+    @Test
+    fun `test revenue report`() {
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 12, 31)
+        dataHelper.createContractExternalData()
+        dataHelper.createAssignmentData()
+        dataHelper.createSickDayData()
+        dataHelper.createHoliDayData()
+        dataHelper.createHoliDayData()
+        dataHelper.createContractExternalData()
+        dataHelper.createAssignmentData()
+        dataHelper.createSickDayData()
+        dataHelper.createHoliDayData()
+        dataHelper.createHoliDayData()
+        aggregationService.personClientRevenueOverview(from, to)
+    }
 }
