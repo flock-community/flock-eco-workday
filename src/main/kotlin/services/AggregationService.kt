@@ -1,23 +1,15 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.ApplicationConstants
+import community.flock.eco.workday.graphql.AggregationClientPersonItem
+import community.flock.eco.workday.graphql.AggregationClientPersonOverview
+import community.flock.eco.workday.graphql.AggregationClientPersonOverviewClient
+import community.flock.eco.workday.graphql.AggregationClientPersonOverviewPerson
 import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
 import community.flock.eco.workday.interfaces.inRange
-import community.flock.eco.workday.model.AggregationClient
-import community.flock.eco.workday.model.AggregationHoliday
-import community.flock.eco.workday.model.AggregationMonth
-import community.flock.eco.workday.model.AggregationPerson
-import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Contract
-import community.flock.eco.workday.model.ContractExternal
-import community.flock.eco.workday.model.ContractInternal
-import community.flock.eco.workday.model.ContractManagement
-import community.flock.eco.workday.model.Day
-import community.flock.eco.workday.model.HolidayType
-import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.model.* // ktlint-disable no-wildcard-imports
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -30,11 +22,11 @@ import community.flock.eco.workday.model.ContractService as ContractServiceModel
 @Service
 
 class AggregationService(
-    private val personService: PersonService,
     private val clientService: ClientService,
     private val assignmentService: AssignmentService,
     private val dataService: DataService,
-    private val applicationConstants: ApplicationConstants
+    private val applicationConstants: ApplicationConstants,
+    private val workDayService: WorkDayService
 ) {
 
     fun holidayReport(year: Int): List<AggregationHoliday> {
@@ -217,6 +209,54 @@ class AggregationService(
             }
     }
 
+    fun clientPersonHourOverview(from: LocalDate, to: LocalDate): List<AggregationClientPersonOverview> {
+        return workDayService.findAllActive(from, to).groupBy {
+            it.assignment.client
+        }.mapValues { (client, workDays) ->
+            workDays.map { workDay ->
+                val person = AggregationClientPersonOverviewPerson(
+                    id = workDay.assignment.person.id.toString(),
+                    name = workDay.assignment.person.getFullName()
+                )
+                val workingHoursPerDay = workDay.days?.let {
+                    workDay.hoursPerDay()
+                        .filterKeys { date -> date.isWithinRange(from, to) }
+                        .toHoursPerDayInDateRange(from, to)
+                        .map { it.toFloat() }
+                } ?: run {
+                    val totalWorkingDays = dateRange(workDay.from, workDay.to)
+                        .filterWorkingDay()
+                        .count()
+                    val hoursADay = BigDecimal(workDay.hours)
+                        .divide(BigDecimal(totalWorkingDays), 10, RoundingMode.HALF_UP)
+                    dateRange(from, to).map {
+                        when (it.isWorkingDay() && it.isWithinRange(workDay.from, workDay.to)) {
+                            true -> hoursADay
+                            false -> BigDecimal("0.0")
+                        }
+                    }.map { it.toFloat() }
+                }
+                AggregationClientPersonItem(
+                    person = person,
+                    hours = workingHoursPerDay,
+                    total = workingHoursPerDay.sum()
+                )
+            }
+        }.map { (client, aggregationClientPersonItem) ->
+            AggregationClientPersonOverview(
+                client = AggregationClientPersonOverviewClient(client.id.toString(), client.name),
+                aggregationPerson = aggregationClientPersonItem,
+                totals = aggregationClientPersonItem.sumWorkDayHoursWithSameIndexes()
+            )
+        }
+    }
+
+    private fun List<AggregationClientPersonItem>.sumWorkDayHoursWithSameIndexes() = this
+        .map { it.hours }
+        .reduce { acc, list ->
+            acc.zip(list) { a, b -> a + b }
+        }
+
     private fun List<Day>.totalHoursInPeriod(from: LocalDate, to: LocalDate) = this
         .map { day ->
             val hours = day.hoursPerDay()
@@ -251,6 +291,14 @@ class AggregationService(
         val totalWorkDays = countWorkDaysInPeriod(from, to).toBigDecimal()
         return BigDecimal.ONE - totalOffDays.divide(totalWorkDays, 10, RoundingMode.HALF_UP)
     }
+
+    private fun Map<LocalDate, BigDecimal>.toHoursPerDayInDateRange(from: LocalDate, to: LocalDate) = dateRange(from, to)
+        .map { localDate ->
+            when (this.contains(localDate)) {
+                true -> this[localDate]!!
+                false -> BigDecimal("0.0")
+            }
+        }
 }
 
 private fun Person.fullName(): String = "$firstname $lastname"
@@ -418,3 +466,7 @@ fun Map.Entry<YearMonth, Iterable<Data>>.actualTotalHours(transform: Data.() -> 
     .sum()
 
 private fun <A, B> cartesianProducts(a_s: Iterable<A>, b_s: Iterable<B>) = a_s.flatMap { a -> b_s.map { b -> a to b } }
+
+private fun LocalDate.isWithinRange(from: LocalDate, to: LocalDate): Boolean {
+    return this.isAfter(from.minusDays(1)) && this.isBefore(to.plusDays(1))
+}

@@ -1,42 +1,44 @@
 import { addError } from "../hooks/ErrorHook";
 
-export const ExtractJSON = (res) => {
+
+
+export function ExtractJSON<A>(res: Response):Promise<A | null> {
   if (res.ok) {
     if (res.status === 204) {
-      return null;
+      return Promise.resolve(null);
     }
     return res.json();
   }
   return res.text().then((message) => {
     throw new Error(message);
   });
-};
+}
 
 export function ResourceClient<ID, T>(
   path: string,
   internalize?: (input: T) => T
 ) {
-  const all: () => Promise<T[]> = () => {
+  const all: () => Promise<T[] | void> = () => {
     const opts = {
       method: "GET",
     };
     return fetch(`${path}`, opts)
-      .then(ExtractJSON)
-      .then((it) => (internalize ? it.map(internalize) : it))
+      .then(it => ExtractJSON<T[]>(it))
+      .then((it) => it != null ? (internalize ? it.map(internalize) : it) : [])
       .catch((e) => addError(e.message));
   };
 
-  const get: (id: ID) => Promise<T> = (id) => {
+  const get: (id: ID) => Promise<T | null | void> = (id) => {
     const opts = {
       method: "GET",
     };
     return fetch(`${path}/${id}`, opts)
-      .then(ExtractJSON)
-      .then((it) => (internalize ? internalize(it) : it))
+      .then(it => ExtractJSON<T>(it))
+      .then((it) => it != null ? (internalize ? internalize(it) : it) : null)
       .catch((e) => addError(e.message));
   };
 
-  const post: (item: T) => Promise<T> = (item) => {
+  const post: (item: T) => Promise<T | null | void> = (item) => {
     const opts = {
       method: "POST",
       headers: {
@@ -45,12 +47,12 @@ export function ResourceClient<ID, T>(
       body: JSON.stringify(item),
     };
     return fetch(path, opts)
-      .then(ExtractJSON)
-      .then((it) => (internalize ? internalize(it) : it))
+      .then(it => ExtractJSON<T>(it))
+      .then((it) => it != null ? (internalize ? internalize(it) : it) : null)
       .catch((e) => addError(e.message));
   };
 
-  const put: (id: ID, item: T) => Promise<T> = (id, item) => {
+  const put: (id: ID, item: T) => Promise<T | null | void> = (id, item) => {
     const opts = {
       method: "PUT",
       headers: {
@@ -59,17 +61,17 @@ export function ResourceClient<ID, T>(
       body: JSON.stringify(item),
     };
     return fetch(`${path}/${id}`, opts)
-      .then(ExtractJSON)
-      .then((it) => (internalize ? internalize(it) : it))
+      .then(it => ExtractJSON<T>(it))
+      .then((it) => it != null ? (internalize ? internalize(it) : it): null)
       .catch((e) => addError(e.message));
   };
 
-  const del: (id: ID) => Promise<void> = (id) => {
+  const del: (id: ID) => Promise<void | null> = (id) => {
     const opts = {
       method: "DELETE",
     };
     return fetch(`${path}/${id}`, opts)
-      .then(ExtractJSON)
+      .then(it => ExtractJSON<void>(it))
       .catch((e) => addError(e.message));
   };
 

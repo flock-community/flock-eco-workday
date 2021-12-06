@@ -1,0 +1,21 @@
+type AggregationClientPersonOverview {
+    client: AggregationClientPersonOverviewClient!
+    aggregationPerson: [AggregationClientPersonItem!]!
+    totals: [Float!]!
+}
+
+type AggregationClientPersonItem {
+    person: AggregationClientPersonOverviewPerson!
+    hours: [Float!]!
+    total: Float!
+}
+
+type AggregationClientPersonOverviewClient {
+    id: ID!
+    name: String!
+}
+
+type AggregationClientPersonOverviewPerson {
+    id: ID!
+    name: String!
+}
