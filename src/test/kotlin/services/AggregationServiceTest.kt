@@ -262,10 +262,10 @@ class AggregationServiceTest(
         val personHoursExpected = listOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 5.0, 6.0, 7.0, 0.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0,0.0, 0.0, 0.0, 0.0, 0.0)
         val totalHoursExpectedFlock = piotrHoursExpected.zip(thomasHoursExpected){ xv, yv -> xv + yv }
 
-        aggregationService.test(startDate, endDate)
+        val overview = aggregationService.clientPersonHourOverview(startDate, endDate)
 
-        val clientOverviewForFlock = aggregationService.hourClientEmployeeOverview(startDate, endDate).first { it.clientName == "Flock.community" }
-        val clientOverviewForOtherCompany = aggregationService.hourClientEmployeeOverview(startDate, endDate).first { it.clientName == "Other.client" }
+        val clientOverviewForFlock = overview.first { it.clientName == "Flock.community" }
+        val clientOverviewForOtherCompany = overview.first { it.clientName == "Other.client" }
 
         val thomas = clientOverviewForFlock.aggregationPerson.first { it.personName =="Thomas Creativelastname" }
         val piotr = clientOverviewForFlock.aggregationPerson.first { it.personName == "Piotr Verycreativelastname" }
@@ -288,23 +288,7 @@ class AggregationServiceTest(
         assertEquals(totalHoursExpectedFlock.toString(), clientOverviewForFlock.totals.toString())
         assertEquals(personHoursExpected.toString(), clientOverviewForOtherCompany.totals.toString())
     }
-
-   /* @Test
-    fun `test client person overview with no days defined`() {
-        const val FLOCK_COMPANY_NAME = "Flock.community"
-        val startDate = LocalDate.of(2021, 12, 1)
-        val endDate = LocalDate.of(2021, 12, 31)
-
-        val flockClient = createHelper.createClient("Flock.community")
-        val firstPerson = createHelper.createPerson("Piotr", "zxc")
-        val firstAssignment = createHelper.createAssignment(flockClient, firstPerson, startDate.minusDays(10), endDate)
-
-        val workDay = createHelper.createWorkDay(firstAssignment, startDate.minusDays(10), endDate, 328.0, null)
-
-        aggregationService.hourClientEmployeeOverview(startDate, endDate)
-
-    }*/
-
+    
     private fun createMockDataForClientHourOverview(startDate: LocalDate, endDate: LocalDate) {
 
         val flockClient = createHelper.createClient("Flock.community")

@@ -237,7 +237,7 @@ class AggregationService(
         .reduce { acc, list ->
             acc.zip(list) { a, b -> a + b }
         }
-    
+
     private fun List<Day>.totalHoursInPeriod(from: LocalDate, to: LocalDate) = this
         .map { day ->
             val hours = day.hoursPerDay()
@@ -278,8 +278,6 @@ class AggregationService(
             if (this.contains(localDate)) this[localDate]!!
             else BigDecimal("0.0")
         }
-
-    private data class AggregationOverview(val persons: MutableList<AggregationClientPersonItem>, var totals: List<Float>?)
 }
 
 private fun Person.fullName(): String = "$firstname $lastname"
