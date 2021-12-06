@@ -77,6 +77,27 @@ class AggregationService(
                 )
             }
     }
+    data class RevenuePerCompany(val companyName: String, val revenue: BigDecimal)
+    data class RevenueYearOverview(val personName: String, val companies: List<RevenuePerCompany>)
+
+    fun totalRevenuePerPersonPerClient(from: LocalDate, to: LocalDate): List<RevenueYearOverview> {
+        val allAssignments = assignmentService.findAllActive(from, to)
+        return allAssignments.groupBy { it.person }
+            .map { (person, value) ->
+                RevenueYearOverview(
+                    personName = person.getFullName(),
+                    companies = value.groupBy {
+                        it.client
+                    }.map { (client, assignments) ->
+                        val revenue = assignments.filter { it.client == client }
+                            .toMapWorkingDay(from, to).values
+                            .flatten()
+                            .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.revenuePerDay() }
+                        RevenuePerCompany(client.name, revenue)
+                    }
+                )
+            }
+    }
 
     fun totalPerPerson(yearMonth: YearMonth) = totalPerPerson(yearMonth.atDay(1), yearMonth.atEndOfMonth())
     fun totalPerPerson(from: LocalDate, to: LocalDate): List<AggregationPerson> {

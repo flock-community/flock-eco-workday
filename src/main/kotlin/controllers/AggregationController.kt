@@ -75,4 +75,12 @@ class AggregationController(
     fun holidayReportByYear(@RequestParam year: Int): List<AggregationHoliday> {
         return aggregationService.holidayReport(year)
     }
+
+    @GetMapping("/revenue-year-report", params = ["year"])
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    fun revenueYearOverview(@RequestParam year: Int): List<AggregationService.RevenueYearOverview> {
+        val from = LocalDate.of(year, 1, 1)
+        val to = LocalDate.of(year, 12, 31)
+        return aggregationService.totalRevenuePerPersonPerClient(from, to)
+    }
 }

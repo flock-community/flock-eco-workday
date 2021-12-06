@@ -239,6 +239,23 @@ class AggregationServiceTest(
         assertEquals(res[2].contractHours, 160.toBigDecimal().setScale(10))
     }
 
+    @Test
+    fun `test revenue report`() {
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 12, 31)
+        dataHelper.createContractExternalData()
+        dataHelper.createAssignmentData()
+        dataHelper.createSickDayData()
+        dataHelper.createHoliDayData()
+        dataHelper.createHoliDayData()
+        dataHelper.createContractExternalData()
+        dataHelper.createAssignmentData()
+        dataHelper.createSickDayData()
+        dataHelper.createHoliDayData()
+        dataHelper.createHoliDayData()
+        aggregationService.totalRevenuePerPersonPerClient(from, to)
+    }
+
     private fun CreateHelper.createWorkDay(
         assignment: Assignment,
         from: LocalDate,
