@@ -10,7 +10,8 @@
     "build": "webpack --mode production ./src/main/react",
     "storybook": "start-storybook",
     "test": "jest",
-    "test:tdd": "nodemon -w ./src -e js --exec npm test"
+    "test:tdd": "nodemon -w ./src -e js --exec npm test",
+    "generate": "graphql-simple-bindings './src/main/graphql/*' './src/main/react/graphql'"
   },
   "author": "",
   "license": "ISC",
