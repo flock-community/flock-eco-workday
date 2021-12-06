@@ -263,20 +263,23 @@ class AggregationServiceTest(
 
         val personHoursExpected = listOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 5.0, 6.0, 7.0, 0.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         val bojackHoursExpected = listOf(8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0)
+        val walterHoursExpected = listOf(3.0, 3.0, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         val otherClientHoursExpected = bojackHoursExpected.zip(personHoursExpected) { xv, yv -> xv + yv }
+            .zip(walterHoursExpected) { xv, yv -> xv + yv }
 
         val overview = aggregationService.clientPersonHourOverview(startDate, endDate)
 
-        val clientOverviewForFlock = overview.first { it.clientName == "Flock.community" }
-        val clientOverviewForOtherCompany = overview.first { it.clientName == "Other.client" }
+        val clientOverviewForFlock = overview.first { it.client.name == "Flock.community" }
+        val clientOverviewForOtherCompany = overview.first { it.client.name == "Other.client" }
 
-        val thomas = clientOverviewForFlock.aggregationPerson.first { it.personName == "Thomas Creativelastname" }
-        val piotr = clientOverviewForFlock.aggregationPerson.first { it.personName == "Piotr Verycreativelastname" }
-        val namelessPerson = clientOverviewForOtherCompany.aggregationPerson.first { it.personName == "Person Lastname" }
-        val bojack = clientOverviewForOtherCompany.aggregationPerson.first { it.personName == "Bojack Horseman" }
+        val thomas = clientOverviewForFlock.aggregationPerson.first { it.person.name == "Thomas Creativelastname" }
+        val piotr = clientOverviewForFlock.aggregationPerson.first { it.person.name == "Piotr Verycreativelastname" }
+        val namelessPerson = clientOverviewForOtherCompany.aggregationPerson.first { it.person.name == "Person Lastname" }
+        val bojack = clientOverviewForOtherCompany.aggregationPerson.first { it.person.name == "Bojack Horseman" }
+        val walter = clientOverviewForOtherCompany.aggregationPerson.first { it.person.name == "Walter White" }
 
-        assertEquals("Flock.community", clientOverviewForFlock.clientName)
-        assertEquals("Other.client", clientOverviewForOtherCompany.clientName)
+        assertEquals("Flock.community", clientOverviewForFlock.client.name)
+        assertEquals("Other.client", clientOverviewForOtherCompany.client.name)
 
         assertEquals(31, clientOverviewForFlock.totals.size)
         assertEquals(31, clientOverviewForOtherCompany.totals.size)
@@ -285,11 +288,13 @@ class AggregationServiceTest(
         assertEquals(136.0f, thomas.total)
         assertEquals(60.0f, namelessPerson.total)
         assertEquals(184.0f, bojack.total)
+        assertEquals(9.0f, walter.total)
 
         assertEquals(thomasHoursExpected.toString(), thomas.hours.toString())
         assertEquals(piotrHoursExpected.toString(), piotr.hours.toString())
         assertEquals(personHoursExpected.toString(), namelessPerson.hours.toString())
         assertEquals(bojackHoursExpected.toString(), bojack.hours.toString())
+        assertEquals(walterHoursExpected.toString(), walter.hours.toString())
 
         assertEquals(totalHoursExpectedFlock.toString(), clientOverviewForFlock.totals.toString())
         assertEquals(otherClientHoursExpected.toString(), clientOverviewForOtherCompany.totals.toString())
@@ -303,11 +308,13 @@ class AggregationServiceTest(
         val secondPerson = createHelper.createPerson("Thomas", "Creativelastname")
         val thirdPerson = createHelper.createPerson("Person", "Lastname")
         val fourthPersonWithoutDays = createHelper.createPerson("Bojack", "Horseman")
+        val fifthPersonWithoutDays = createHelper.createPerson("Walter", "White")
 
         val firstAssignment = createHelper.createAssignment(flockClient, firstPerson, startDate.minusDays(10), endDate)
         val secondAssignment = createHelper.createAssignment(flockClient, secondPerson, startDate.plusDays(5), endDate.plusDays(2))
         val thirdAssignment = createHelper.createAssignment(otherClient, thirdPerson, startDate.plusDays(10), endDate.minusDays(5))
         val fourthAssignment = createHelper.createAssignment(otherClient, fourthPersonWithoutDays, startDate.minusDays(1), endDate)
+        val fifthAssignment = createHelper.createAssignment(otherClient, fifthPersonWithoutDays, startDate.minusDays(2), startDate.plusDays(2), 15)
 
         val hoursFullMonth = listOf(8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0)
         val hoursSecondAssignment = listOf(1.0, 2.0, 3.0, 4.0, 5.0, 0.0, 0.0, 9.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 9.0, 9.0)
@@ -317,5 +324,6 @@ class AggregationServiceTest(
         createHelper.createWorkDay(secondAssignment, startDate.plusDays(5), endDate.plusDays(2), hoursSecondAssignment.sum(), hoursSecondAssignment)
         createHelper.createWorkDay(thirdAssignment, startDate.plusDays(10), endDate.minusDays(5), hoursThirdAssignment.sum(), hoursThirdAssignment)
         createHelper.createWorkDayWithoutDays(fourthAssignment, startDate.minusDays(1), endDate, 192.0, null)
+        createHelper.createWorkDayWithoutDays(fifthAssignment, startDate.minusDays(2), startDate.plusDays(2), 15.0, null)
     }
 }

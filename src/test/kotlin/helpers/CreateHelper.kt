@@ -72,11 +72,11 @@ class CreateHelper(
     } ?: error("Cannot create person")
 
     fun createAssignment(client: Client, person: Person, period: Period) = createAssignment(client, person, period.from, period.to)
-    fun createAssignment(client: Client, person: Person, from: LocalDate, to: LocalDate?) = AssignmentForm(
+    fun createAssignment(client: Client, person: Person, from: LocalDate, to: LocalDate?, hoursPerWeek: Int? = null) = AssignmentForm(
         clientCode = client.code,
         personId = person.uuid,
         hourlyRate = 80.0,
-        hoursPerWeek = 36,
+        hoursPerWeek = hoursPerWeek ?: 36,
         role = "Senior software engineer",
         from = from,
         to = to

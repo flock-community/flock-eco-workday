@@ -3,6 +3,8 @@ package community.flock.eco.workday.services
 import community.flock.eco.workday.ApplicationConstants
 import community.flock.eco.workday.graphql.AggregationClientPersonItem
 import community.flock.eco.workday.graphql.AggregationClientPersonOverview
+import community.flock.eco.workday.graphql.AggregationClientPersonOverviewClient
+import community.flock.eco.workday.graphql.AggregationClientPersonOverviewPerson
 import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
@@ -212,7 +214,10 @@ class AggregationService(
             it.assignment.client
         }.mapValues { (client, workDays) ->
             workDays.map { workDay ->
-                val personName = workDay.assignment.person.getFullName()
+                val person = AggregationClientPersonOverviewPerson(
+                    id = workDay.assignment.person.id.toString(),
+                    name = workDay.assignment.person.getFullName()
+                )
                 val workingHoursPerDay = workDay.days?.let {
                     workDay.hoursPerDay()
                         .filterKeys { date -> date.isWithinRange(from, to) }
@@ -225,21 +230,21 @@ class AggregationService(
                     val hoursADay = BigDecimal(workDay.hours)
                         .divide(BigDecimal(totalWorkingDays), 10, RoundingMode.HALF_UP)
                     dateRange(from, to).map {
-                        when (it.isWorkingDay()) {
+                        when (it.isWorkingDay() && it.isWithinRange(workDay.from, workDay.to)) {
                             true -> hoursADay
                             false -> BigDecimal("0.0")
                         }
                     }.map { it.toFloat() }
                 }
                 AggregationClientPersonItem(
-                    personName = personName,
+                    person = person,
                     hours = workingHoursPerDay,
                     total = workingHoursPerDay.sum()
                 )
             }
         }.map { (client, aggregationClientPersonItem) ->
             AggregationClientPersonOverview(
-                clientName = client.name,
+                client = AggregationClientPersonOverviewClient(client.id.toString(), client.name),
                 aggregationPerson = aggregationClientPersonItem,
                 totals = aggregationClientPersonItem.sumWorkDayHoursWithSameIndexes()
             )
