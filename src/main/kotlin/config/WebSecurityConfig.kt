@@ -31,6 +31,21 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     @Value("\${flock.eco.workday.login:TEST}")
     lateinit var loginType: String
 
+    private val WHITELIST = arrayOf(
+        "/swagger-ui/",
+        "/swagger-resources",
+        "/swagger-resources/**",
+        "/v2/api-docs",
+        "/favicon.ico",
+        "/",
+        "/*.js",
+        "/tasks/**",
+        "/actuator/**",
+        "/login/**",
+        "/h2/**",
+        "/api/events/**"
+    )
+
     override fun configure(http: HttpSecurity) {
 
         userAuthorityService.addAuthority(HolidayAuthority::class.java)
@@ -43,14 +58,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .csrf().disable()
         http
             .authorizeRequests()
-            .antMatchers("/favicon.ico").permitAll()
-            .antMatchers("/").permitAll()
-            .antMatchers("/*.js").permitAll()
-            .antMatchers("/tasks/**").permitAll()
-            .antMatchers("/actuator/**").permitAll()
-            .antMatchers("/login/**").permitAll()
-            .antMatchers("/h2/**").permitAll()
-            .antMatchers("/api/events/**").permitAll()
+            .antMatchers(*WHITELIST).permitAll()
             .anyRequest().authenticated()
         http
             .cors()
