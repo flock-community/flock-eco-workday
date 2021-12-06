@@ -7,7 +7,7 @@ import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
 import community.flock.eco.workday.interfaces.inRange
-import community.flock.eco.workday.model.*
+import community.flock.eco.workday.model.* // ktlint-disable no-wildcard-imports
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -20,7 +20,6 @@ import community.flock.eco.workday.model.ContractService as ContractServiceModel
 @Service
 
 class AggregationService(
-    private val personService: PersonService,
     private val clientService: ClientService,
     private val assignmentService: AssignmentService,
     private val dataService: DataService,
@@ -214,10 +213,24 @@ class AggregationService(
         }.mapValues { (client, workDays) ->
             workDays.map { workDay ->
                 val personName = workDay.assignment.person.getFullName()
-                val workingHoursPerDay = workDay.hoursPerDay()
-                    .filterKeys { date -> date.isWithinRange(from, to) }
-                    .toHoursPerDayInDateRange(from, to)
-                    .map { it.toFloat() }
+                val workingHoursPerDay = workDay.days?.let {
+                    workDay.hoursPerDay()
+                        .filterKeys { date -> date.isWithinRange(from, to) }
+                        .toHoursPerDayInDateRange(from, to)
+                        .map { it.toFloat() }
+                } ?: run {
+                    val totalWorkingDays = dateRange(workDay.from, workDay.to)
+                        .filterWorkingDay()
+                        .count()
+                    val hoursADay = BigDecimal(workDay.hours)
+                        .divide(BigDecimal(totalWorkingDays), 10, RoundingMode.HALF_UP)
+                    dateRange(from, to).map {
+                        when (it.isWorkingDay()) {
+                            true -> hoursADay
+                            false -> BigDecimal("0.0")
+                        }
+                    }.map { it.toFloat() }
+                }
                 AggregationClientPersonItem(
                     personName = personName,
                     hours = workingHoursPerDay,
@@ -225,7 +238,8 @@ class AggregationService(
                 )
             }
         }.map { (client, aggregationClientPersonItem) ->
-            AggregationClientPersonOverview(clientName = client.name,
+            AggregationClientPersonOverview(
+                clientName = client.name,
                 aggregationPerson = aggregationClientPersonItem,
                 totals = aggregationClientPersonItem.sumWorkDayHoursWithSameIndexes()
             )
@@ -275,8 +289,10 @@ class AggregationService(
 
     private fun Map<LocalDate, BigDecimal>.toHoursPerDayInDateRange(from: LocalDate, to: LocalDate) = dateRange(from, to)
         .map { localDate ->
-            if (this.contains(localDate)) this[localDate]!!
-            else BigDecimal("0.0")
+            when (this.contains(localDate)) {
+                true -> this[localDate]!!
+                false -> BigDecimal("0.0")
+            }
         }
 }
 

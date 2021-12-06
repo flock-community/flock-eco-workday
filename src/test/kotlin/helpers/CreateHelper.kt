@@ -156,6 +156,23 @@ class CreateHelper(
         workDayService.create(this)
     } ?: error("Cannot create sick day contract")
 
+    fun createWorkDayWithoutDays(
+        assignment: Assignment,
+        from: LocalDate,
+        to: LocalDate,
+        hours: Double? = 40.0,
+        days: List<Double>? = null
+    ) = WorkDayForm(
+        from = from,
+        to = to,
+        assignmentCode = assignment.code,
+        hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
+        days = days,
+        sheets = listOf()
+    ).run {
+        workDayService.create(this)
+    } ?: error("Cannot create sick day contract")
+
     fun createHoliDay(person: Person, from: LocalDate, to: LocalDate) = HoliDayForm(
         description = "description",
         from = from,
