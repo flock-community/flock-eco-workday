@@ -72,11 +72,11 @@ class CreateHelper(
     } ?: error("Cannot create person")
 
     fun createAssignment(client: Client, person: Person, period: Period) = createAssignment(client, person, period.from, period.to)
-    fun createAssignment(client: Client, person: Person, from: LocalDate, to: LocalDate?, hoursPerWeek: Int? = null) = AssignmentForm(
+    fun createAssignment(client: Client, person: Person, from: LocalDate, to: LocalDate?) = AssignmentForm(
         clientCode = client.code,
         personId = person.uuid,
         hourlyRate = 80.0,
-        hoursPerWeek = hoursPerWeek ?: 36,
+        hoursPerWeek = 36,
         role = "Senior software engineer",
         from = from,
         to = to
@@ -151,23 +151,6 @@ class CreateHelper(
         assignmentCode = assignment.code,
         hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
         days = days ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 },
-        sheets = listOf()
-    ).run {
-        workDayService.create(this)
-    } ?: error("Cannot create sick day contract")
-
-    fun createWorkDayWithoutDays(
-        assignment: Assignment,
-        from: LocalDate,
-        to: LocalDate,
-        hours: Double? = 40.0,
-        days: List<Double>? = null
-    ) = WorkDayForm(
-        from = from,
-        to = to,
-        assignmentCode = assignment.code,
-        hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
-        days = days,
         sheets = listOf()
     ).run {
         workDayService.create(this)

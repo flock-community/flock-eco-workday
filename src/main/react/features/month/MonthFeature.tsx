@@ -1,52 +1,40 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Typography from "@material-ui/core/Typography";
-import {CardContent} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { CardContent } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import moment from "moment";
 import IconButton from "@material-ui/core/IconButton";
 import BackIcon from "@material-ui/icons/ChevronLeft";
 import NextIcon from "@material-ui/icons/ChevronRight";
 import Grid from "@material-ui/core/Grid";
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import {Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis,} from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import CardHeader from "@material-ui/core/CardHeader";
-import {AggregationClient} from "../../clients/AggregationClient";
-import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AggregationClient } from "../../clients/AggregationClient";
+import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 
 /**
  * @return {null}
  */
 export function MonthFeature() {
   const [date, setDate] = useState(moment().startOf("month"));
-
-  const [dayRange, setDayRange] = useState<number[]>();
-  const [totalPerPersonState, setTotalPerPersonState] = useState<any>();
-  const [clientHourOverviewState, setClientHourOverviewState] = useState<any>();
-
-  useEffect(() => {
-    const daysInMonth = date.daysInMonth()
-    setDayRange(Array.from(Array(daysInMonth).keys()).map(n => n+1))
-  }, [date]);
+  const [state, setState] = useState<any>();
 
   useEffect(() => {
     let cancel = false;
     AggregationClient.totalPerPersonByYearMonth(
       date.year(),
       date.month() + 1
-    ).then((res) => !cancel && setTotalPerPersonState(res));
-    return () => {
-      cancel = true;
-    };
-  }, [date]);
-
-  useEffect(() => {
-    let cancel = false;
-    AggregationClient.clientHourOverviewByYearMonth(
-      date.year(),
-      date.month() + 1
-    ).then((res) => !cancel && setClientHourOverviewState(res));
+    ).then((res) => !cancel && setState(res));
     return () => {
       cancel = true;
     };
@@ -56,9 +44,9 @@ export function MonthFeature() {
     setDate(moment(date).add(amount, "month"));
   };
 
-  if (!totalPerPersonState || !clientHourOverviewState) return <AlignedLoader/>;
+  if (!state) return <AlignedLoader />;
 
-  const totalPerPersonData = totalPerPersonState
+  const data = state
     .filter((it) => it.assignment > 0)
     .map((it) => ({
       ...it,
@@ -68,20 +56,20 @@ export function MonthFeature() {
       ),
     }));
 
-  const totalHours = totalPerPersonData.reduce((acc, cur) => acc + cur.workDays, 0);
+  const totalHours = data.reduce((acc, cur) => acc + cur.workDays, 0);
 
   const renderChart = (x) => {
     const height = 50 + x.length * 50;
     return (
       <ResponsiveContainer height={height}>
         <BarChart data={x} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3"/>
-          <XAxis type="number"/>
-          <YAxis type="category" dataKey="name" width={150}/>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis type="number" />
+          <YAxis type="category" dataKey="name" width={150} />
           <Tooltip
             formatter={(value) => new Intl.NumberFormat().format(value)}
           />
-          <Legend/>
+          <Legend />
           <Bar
             stackId="days"
             dataKey="workDays"
@@ -117,25 +105,6 @@ export function MonthFeature() {
     );
   };
 
-  const renderOverview = () => clientHourOverviewState.map(client => <>
-        <Typography variant="h6">{client.clientName}</Typography>
-        <Table>
-          <TableRow>
-            <TableCell/>
-            {dayRange?.map(day => <TableCell><b>{day}</b></TableCell>)}
-          </TableRow>
-          {client.aggregationPerson.map(person => <TableRow>
-            <TableCell>{person.personName}</TableCell>
-            {person.hours.map(val => <TableCell>{val}</TableCell>)}
-          </TableRow>)}
-          <TableRow>
-            <TableCell>Totals</TableCell>
-            {client.totals.map(val => <TableCell>{val}</TableCell>)}
-          </TableRow>
-        </Table>
-      </>
-    )
-
   return (
     <Grid container spacing={1}>
       <Grid item xs={12}>
@@ -146,15 +115,15 @@ export function MonthFeature() {
                 <Typography variant="h6">
                   Month: {date.format("YYYY-MM")}
                 </Typography>
-                <Typography>Total persons: {totalPerPersonData.length}</Typography>
+                <Typography>Total persons: {data.length}</Typography>
                 <Typography>Total hours: {totalHours}</Typography>
               </Grid>
               <Grid item>
                 <IconButton onClick={handleMonth(-1)}>
-                  <BackIcon/>
+                  <BackIcon />
                 </IconButton>
                 <IconButton onClick={handleMonth(1)}>
-                  <NextIcon/>
+                  <NextIcon />
                 </IconButton>
               </Grid>
             </Grid>
@@ -163,10 +132,10 @@ export function MonthFeature() {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title="Internal"/>
+          <CardHeader title="Internal" />
           <CardContent>
             {renderChart(
-              totalPerPersonData
+              data
                 .filter((it) => it.contractTypes != null)
                 .filter(
                   (it) =>
@@ -177,13 +146,12 @@ export function MonthFeature() {
           </CardContent>
         </Card>
       </Grid>
-
       <Grid item xs={12}>
         <Card>
-          <CardHeader title="External"/>
+          <CardHeader title="External" />
           <CardContent>
             {renderChart(
-              totalPerPersonData
+              data
                 .filter((it) => it.contractTypes != null)
                 .filter(
                   (it) =>
@@ -191,17 +159,6 @@ export function MonthFeature() {
                     it.contractTypes.includes("ContractExternal")
                 )
             )}
-          </CardContent>
-        </Card>
-      </Grid>
-
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title="Hours per client per person"/>
-          <CardContent>
-
-            {renderOverview()}
-
           </CardContent>
         </Card>
       </Grid>
