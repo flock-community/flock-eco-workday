@@ -333,5 +333,6 @@ class AggregationServiceTest(
         val endDate = LocalDate.of(2021, 12, 31)
         createMockDataForClientHourOverview(startDate, endDate)
         val result = aggregationService.personClientRevenueOverview(startDate, startDate.plusDays(1))
+        val xd = result
     }
 }

@@ -166,15 +166,30 @@ class AggregationService(
                         .map { it.totalRevenueInPeriod(yearMonth) }
                         .sum(),
                     actualRevenueInternal = all.workDay
-                        .filter { contractTypes(it.assignment.person, yearMonth).contains(ContractInternal::class.java) }
+                        .filter {
+                            contractTypes(
+                                it.assignment.person,
+                                yearMonth
+                            ).contains(ContractInternal::class.java)
+                        }
                         .map { it.totalRevenueInPeriod(yearMonth) }
                         .sum(),
                     actualRevenueExternal = all.workDay
-                        .filter { contractTypes(it.assignment.person, yearMonth).contains(ContractExternal::class.java) }
+                        .filter {
+                            contractTypes(
+                                it.assignment.person,
+                                yearMonth
+                            ).contains(ContractExternal::class.java)
+                        }
                         .map { it.totalRevenueInPeriod(yearMonth) }
                         .sum(),
                     actualRevenueManagement = all.workDay
-                        .filter { contractTypes(it.assignment.person, yearMonth).contains(ContractManagement::class.java) }
+                        .filter {
+                            contractTypes(
+                                it.assignment.person,
+                                yearMonth
+                            ).contains(ContractManagement::class.java)
+                        }
                         .map { it.totalRevenueInPeriod(yearMonth) }
                         .sum(),
                     actualHours = all.workDay
@@ -191,7 +206,9 @@ class AggregationService(
                                 .filter { (contract, workDay) -> contract.billable }
                                 .filter { (contract, workDay) -> contract.person == workDay.assignment.person }
                                 .filter { (contract, workDay) -> contract.inRange(date) && workDay.inRange(date) }
-                                .map { (contract, workDay) -> contract.hourlyRate.toBigDecimal() * workDay.hoursPerDay().getValue(date) }
+                                .map { (contract, workDay) ->
+                                    contract.hourlyRate.toBigDecimal() * workDay.hoursPerDay().getValue(date)
+                                }
                         }
                         .sum(),
                     actualCostContractManagement = all.contract
@@ -215,24 +232,8 @@ class AggregationService(
                     id = workDay.assignment.person.id.toString(),
                     name = workDay.assignment.person.getFullName()
                 )
-                val workingHoursPerDay = workDay.days?.let {
-                    workDay.hoursPerDay()
-                        .filterKeys { date -> date.isWithinRange(from, to) }
-                        .toHoursPerDayInDateRange(from, to)
-                        .map { it.toFloat() }
-                } ?: run {
-                    val totalWorkingDays = dateRange(workDay.from, workDay.to)
-                        .filterWorkingDay()
-                        .count()
-                    val hoursADay = BigDecimal(workDay.hours)
-                        .divide(BigDecimal(totalWorkingDays), 10, RoundingMode.HALF_UP)
-                    dateRange(from, to).map {
-                        when (it.isWorkingDay() && it.isWithinRange(workDay.from, workDay.to)) {
-                            true -> hoursADay
-                            false -> BigDecimal("0.0")
-                        }
-                    }.map { it.toFloat() }
-                }
+                val workingHoursPerDay = workDay.hoursPerDay2(from, to).map { it.value.toFloat() }
+
                 AggregationClientPersonItem(
                     person = person,
                     hours = workingHoursPerDay,
@@ -261,50 +262,38 @@ class AggregationService(
                 id = person.id.toString(),
                 name = person.fullName()
             )
-            val overview = values.groupBy {
+            val companyOverviews = mutableListOf<AggregationPersonClientRevenueItem>()
+            values.groupBy {
                 it.assignment.client
             }.map { (client, workdays) ->
-                val companyOverview = workdays.map { workDay ->
-                    // TODO when ifelse
-                    // TODO gebruik bestaande wokringdays functie
-                    val revenue = workDay.days?.let {
-                        workDay.hoursPerDay()
-                            .filterKeys { date -> date.isWithinRange(from, to) }
-                            .map { BigDecimal("${it.value}").multiply(BigDecimal("${workDay.assignment.hourlyRate}")) }
-                            .map { it.toFloat() }
-                    } ?: run {
-                        val totalWorkingDays = dateRange(workDay.from, workDay.to)
-                            .filterWorkingDay()
-                            .count()
-                        val hoursADay = BigDecimal(workDay.hours)
-                            .divide(BigDecimal(totalWorkingDays), 10, RoundingMode.HALF_UP)
-                        val dates = dateRange(from, to).map {
-                            when (it.isWorkingDay() && it.isWithinRange(workDay.from, workDay.to)) {
-                                true -> hoursADay
-                                false -> BigDecimal("0.0")
-                            }
-                        }
-                        dates
-                            .map { it.multiply(BigDecimal("${workDay.assignment.hourlyRate}")) }
-                            .map { it.toFloat() }
-                    }
-                    AggregationPersonClientRevenueItem(
-                        client = AggregationIdentifier(
-                            id = client.id.toString(),
-                            name = client.name
-                        ),
-                        revenue = revenue.sum()
-                    )
+                val client = AggregationIdentifier(
+                    id = client.id.toString(),
+                    name = client.name
+                )
+                var revenueTotal = 0.0f
+                workdays.map { workDay ->
+                    val revenuePerWorkDay = workDay.hoursPerDay2(from, to)
+                        .map { BigDecimal("${it.value}").multiply(BigDecimal("${workDay.assignment.hourlyRate}")) }
+                        .map { it.toFloat() }
+                        .sum()
+                    revenueTotal += revenuePerWorkDay
                 }
+                companyOverviews.add(
+                    AggregationPersonClientRevenueItem(
+                        client = client,
+                        revenue = revenueTotal
+                    )
+                )
+            }
+            revenueOverview.add(
                 AggregationPersonClientRevenueOverview(
                     person = person,
-                    clients = companyOverview,
-                    total = companyOverview
+                    clients = companyOverviews,
+                    total = companyOverviews
                         .sumByDouble { it.revenue.toDouble() }
                         .toFloat()
                 )
-            }
-            revenueOverview.addAll(overview)
+            )
         }
         return revenueOverview
     }
@@ -548,4 +537,28 @@ private fun <A, B> cartesianProducts(a_s: Iterable<A>, b_s: Iterable<B>) = a_s.f
 
 private fun LocalDate.isWithinRange(from: LocalDate, to: LocalDate): Boolean {
     return this.isAfter(from.minusDays(1)) && this.isBefore(to.plusDays(1))
+}
+
+private fun WorkDay.hoursPerDay2(from: LocalDate, to: LocalDate): Map<LocalDate, BigDecimal> {
+    val days = when (this.days.isNullOrEmpty()) {
+        true -> {
+            val workingDaysCount = BigDecimal(countWorkDaysInPeriod(this.from, this.to))
+            val hoursADay = BigDecimal(this.hours)
+                .divide(workingDaysCount, 10, RoundingMode.HALF_UP)
+            this.toDateRange().associateWith {
+                when (it.isWorkingDay()) {
+                    true -> hoursADay
+                    false -> BigDecimal("0.0")
+                }
+            }
+        }
+        false -> {
+            this.toDateRange().mapIndexed { index, localDate ->
+                localDate to (this.days[index]).toBigDecimal()
+            }.toMap()
+        }
+    }
+    return dateRange(from, to).associateWith {
+        (days[it] ?: BigDecimal("0.0"))
+    }
 }
