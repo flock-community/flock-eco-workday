@@ -329,18 +329,9 @@ class AggregationServiceTest(
 
     @Test
     fun `test revenue report`() {
-        val from = LocalDate.of(2020, 1, 1)
-        val to = LocalDate.of(2020, 12, 31)
-        dataHelper.createContractExternalData()
-        dataHelper.createAssignmentData()
-        dataHelper.createSickDayData()
-        dataHelper.createHoliDayData()
-        dataHelper.createHoliDayData()
-        dataHelper.createContractExternalData()
-        dataHelper.createAssignmentData()
-        dataHelper.createSickDayData()
-        dataHelper.createHoliDayData()
-        dataHelper.createHoliDayData()
-        aggregationService.personClientRevenueOverview(from, to)
+        val startDate = LocalDate.of(2021, 12, 1)
+        val endDate = LocalDate.of(2021, 12, 31)
+        createMockDataForClientHourOverview(startDate, endDate)
+        val result = aggregationService.personClientRevenueOverview(startDate, startDate.plusDays(1))
     }
 }
