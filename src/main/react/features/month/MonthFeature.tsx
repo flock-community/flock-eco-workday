@@ -117,20 +117,20 @@ export function MonthFeature() {
     );
   };
 
-  const renderOverview = () => clientHourOverviewState.map(client => <>
-        <Typography variant="h6">{client.clientName}</Typography>
+  const renderOverview = () => clientHourOverviewState.map(it => <>
+        <Typography variant="h6">{it.client.name}</Typography>
         <Table>
           <TableRow>
             <TableCell/>
             {dayRange?.map(day => <TableCell><b>{day}</b></TableCell>)}
           </TableRow>
-          {client.aggregationPerson.map(person => <TableRow>
-            <TableCell>{person.personName}</TableCell>
+          {it.aggregationPerson.map(person => <TableRow>
+            <TableCell>{person.person.name}</TableCell>
             {person.hours.map(val => <TableCell>{val}</TableCell>)}
           </TableRow>)}
           <TableRow>
             <TableCell>Totals</TableCell>
-            {client.totals.map(val => <TableCell>{val}</TableCell>)}
+            {it.totals.map(val => <TableCell>{val}</TableCell>)}
           </TableRow>
         </Table>
       </>
