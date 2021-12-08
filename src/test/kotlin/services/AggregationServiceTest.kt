@@ -5,8 +5,11 @@ import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
 import community.flock.eco.workday.helpers.OrganisationHelper
 import community.flock.eco.workday.interfaces.Period
+import community.flock.eco.workday.interfaces.totalHoursInPeriod
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.ContractType
+import community.flock.eco.workday.utils.DateUtils.countWorkDaysInMonth
+import community.flock.eco.workday.utils.DateUtils.dateRange
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -139,7 +142,7 @@ class AggregationServiceTest(
         val res = aggregationService
             .totalPerPerson(from, to)
 
-        val holiDayBalance: BigDecimal = res.first().holiDayBalance as BigDecimal
+        val holiDayBalance: BigDecimal = res.first().holiDayBalance
         assertEquals(holiDayBalance.toString(), "192.0000000000")
     }
 
@@ -155,7 +158,7 @@ class AggregationServiceTest(
         val res = aggregationService
             .totalPerPerson(from, to)
 
-        val holiDayBalance: BigDecimal = res.first().holiDayBalance as BigDecimal
+        val holiDayBalance: BigDecimal = res.first().holiDayBalance
         assertEquals(holiDayBalance.toString(), "192.0000000000")
     }
 
@@ -167,7 +170,7 @@ class AggregationServiceTest(
         createHelper.createContractInternal(person, from, to, hoursPerWeek = 32)
         val res = aggregationService
             .totalPerPerson(from, to)
-        val holiDayBalance: BigDecimal = res.first().holiDayBalance as BigDecimal
+        val holiDayBalance: BigDecimal = res.first().holiDayBalance
         assertEquals(holiDayBalance.toString(), "153.6000000000")
     }
 
@@ -334,5 +337,44 @@ class AggregationServiceTest(
         createMockDataForClientHourOverview(startDate, endDate)
         val result = aggregationService.personClientRevenueOverview(startDate, startDate.plusDays(1))
         val xd = result
+    }
+
+    @Test
+    fun `xd`() {
+        val from = LocalDate.of(2020, 1, 1)
+        val to = LocalDate.of(2020, 12, 31)
+        val toActual = LocalDate.of(2020, 1, 2)
+
+        dataHelper.createContractExternalData()
+        dataHelper.createContractInternalData()
+        val assignments = dataHelper.createAssignmentData()
+        dataHelper.createSickDayData()
+        dataHelper.createHoliDayData()
+        dataHelper.createHoliDayData()
+        dataHelper.createWorkDayData()
+        // 12800.0
+        createHelper.createWorkDay(assignments["in1"]!!, from, from.plusDays(4))
+        createHelper.createWorkDay(assignments["in1"]!!, from.plusDays(28), from.plusDays(32))
+
+        val result = aggregationService.totalPerClient(from, to)
+        val xd = result
+    }
+
+    @Test
+    fun `should create a map of hours a day`() {
+        val startDate = LocalDate.of(2021, 12, 1)
+        val endDate = LocalDate.of(2021, 12, 7)
+        val flockClient = createHelper.createClient("Flock.community")
+        val firstPerson = createHelper.createPerson("Piotr", "Verycreativelastname")
+        val firstAssignment = createHelper.createAssignment(flockClient, firstPerson, startDate, endDate)
+        val hours = listOf(8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0)
+        val workDay = createHelper.createWorkDay(firstAssignment, startDate, endDate, hours.sum(), hours)
+
+        val expected = dateRange(startDate, endDate).mapIndexed { index, localDate ->
+            localDate to hours[index]
+        }
+
+        val result = workDay.hoursPerDayInPeriod(startDate, endDate)
+        val hm = "hmm"
     }
 }

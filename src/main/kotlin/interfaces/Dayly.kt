@@ -1,5 +1,11 @@
 package community.flock.eco.workday.interfaces
 
+import community.flock.eco.workday.utils.DateUtils.toPeriod
+import community.flock.eco.workday.utils.NumericUtils.sum
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.time.LocalDate
+import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 
 interface Dayly : Hours, Period
@@ -23,3 +29,29 @@ fun <T : Dayly> T.validate(): T = apply {
         }
     }
 }
+
+fun Dayly.totalHoursInPeriod(yearMonth: YearMonth): BigDecimal = this
+    .totalHoursInPeriod(yearMonth.toPeriod())
+
+fun Dayly.totalHoursInPeriod(period: Period): BigDecimal {
+    val hours = this.hoursPerDay()
+    return period
+        .toDateRange()
+        .mapNotNull { hours[it] }
+        .sum()
+}
+
+fun Dayly.hoursPerDay(): Map<LocalDate, BigDecimal> = this
+    .toDateRange()
+    .mapIndexed { index, localDate ->
+        localDate to if (this.days?.isNotEmpty()!!) {
+            this.days?.get(index)
+                ?.toBigDecimal()
+                ?: BigDecimal.ZERO
+        } else {
+            this.hours
+                .toBigDecimal()
+                .divide(this.countDays().toBigDecimal(), 100, RoundingMode.HALF_UP)
+        }
+    }
+    .toMap()

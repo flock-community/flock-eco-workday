@@ -1,7 +1,12 @@
 package community.flock.eco.workday.model
 
 import community.flock.eco.core.events.EventEntityListeners
+import community.flock.eco.workday.interfaces.toDateRangeInPeriod
+import community.flock.eco.workday.utils.NumericUtils.sum
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
+import java.time.YearMonth
 import java.util.UUID
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
@@ -22,4 +27,10 @@ data class ContractManagement(
 ) : Contract(id, code, from, to, person, ContractType.MANAGEMENT) {
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
+
+    fun totalCostInPeriod(yearMonth: YearMonth): BigDecimal = this
+        .toDateRangeInPeriod(yearMonth)
+        .map { this.monthlyFee.toBigDecimal() }
+        .sum()
+        .divide(yearMonth.lengthOfMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
 }

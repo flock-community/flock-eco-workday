@@ -3,6 +3,11 @@ package community.flock.eco.workday.model
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
 import community.flock.eco.workday.interfaces.Dayly
+import community.flock.eco.workday.services.* // ktlint-disable no-wildcard-imports
+import community.flock.eco.workday.utils.DateUtils
+import community.flock.eco.workday.utils.DateUtils.isWorkingDay
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.ElementCollection
@@ -29,4 +34,31 @@ abstract class Day(
     @ElementCollection
     override val days: List<Double>? = null
 
-) : Dayly, AbstractCodeEntity(id, code)
+) : Dayly, AbstractCodeEntity(id, code) {
+    private fun hoursPerDay(): Map<LocalDate, BigDecimal> =
+        when (this.days.isNullOrEmpty()) {
+            true -> {
+                val workingDaysCount = BigDecimal(countWorkDaysInPeriod(from, to))
+                val hoursADay = BigDecimal(hours)
+                    .divide(workingDaysCount, 10, RoundingMode.HALF_UP)
+                this.toDateRange().associateWith {
+                    when (it.isWorkingDay()) {
+                        true -> hoursADay
+                        false -> BigDecimal("0.0")
+                    }
+                }
+            }
+            false -> {
+                this.toDateRange().mapIndexed { index, localDate ->
+                    localDate to (days!![index]).toBigDecimal()
+                }.toMap()
+            }
+        }
+
+    fun hoursPerDayInPeriod(periodStart: LocalDate, periodEnd: LocalDate): Map<LocalDate, BigDecimal> {
+        val days = hoursPerDay()
+        return DateUtils.dateRange(periodStart, periodEnd).associateWith {
+            (days[it] ?: BigDecimal("0.0"))
+        }
+    }
+}
