@@ -18,14 +18,14 @@ class NumericUtilsTest {
         val days = listOf(1.0, 2.0, 3.5, 0.0, 0.0)
         val day = object : Day(id = 0L, hours = 6.5, from = startDate, to = endDate, days = days) {}
         val revenue = day.hoursPerDayInPeriod(startDate, endDate).calculateRevenue(421.12)
-        assertEquals(2737.280F, revenue)
+        assertEquals(2737.28F, revenue.toFloat())
     }
 
     @Test
     fun `calculate revenue with missing days`() {
         val day = object : Day(id = 0L, hours = 24.0, from = startDate, to = endDate) {}
         val revenue = day.hoursPerDayInPeriod(startDate, endDate).calculateRevenue(80.0)
-        assertEquals(1920.00000000000F, revenue)
+        assertEquals(1920.0F, revenue.toFloat())
     }
 
     @Test

@@ -302,6 +302,13 @@ class AggregationService(
         return revenueOverview
     }
 
+
+    fun Iterable<Iterable<Float>>.sumIndex() = this
+        .reduce { acc, cur ->
+            acc.zip(cur) { a, b -> a + b }
+        }
+
+
     private fun List<AggregationClientPersonItem>.sumWorkDayHoursWithSameIndexes() = this
         .map { it.hours }
         .reduce { acc, list ->
@@ -310,9 +317,8 @@ class AggregationService(
 
     private fun List<Day>.totalHoursInPeriod(from: LocalDate, to: LocalDate) = this
         .map { day ->
-            val hours = day.hoursPerDay()
-            dateRange(from, to)
-                .mapNotNull { hours[it] }
+            day.hoursPerDayInPeriod(from, to)
+                .map { it.value }
                 .sum()
         }
         .sum()
@@ -349,10 +355,6 @@ data class FromToPeriod(
     override val to: LocalDate = LocalDate.now()
 ) : Period
 
-private fun Pair<LocalDate, LocalDate>.toDateRange() = dateRange(this.first, this.second)
-
-private fun <T : Period> T.toDateMap() = this.toDateRange().associateWith { this }
-
 private fun <T : Period> List<T>.toMapWorkingDay(from: LocalDate, to: LocalDate) = dateRange(from, to)
     .filterWorkingDay()
     .map { date -> date to this.filter { it.inRange(date) } }
@@ -370,28 +372,6 @@ fun countWorkDaysInPeriod(from: LocalDate, to: LocalDate): Int {
         .map { from.plusDays(it) }
         .filterWorkingDay()
         .count()
-}
-
-private fun Period.amountPerWorkingDay(month: YearMonth) = when (this) {
-    is ContractInternal ->
-        this.monthlySalary.toBigDecimal()
-            .divide(month.countWorkDaysInMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
-    is ContractExternal ->
-        (this.hourlyRate * this.hoursPerWeek).toBigDecimal()
-            .divide(BigDecimal.valueOf(5), 10, RoundingMode.HALF_UP)
-    is ContractManagement ->
-        this.monthlyFee.toBigDecimal()
-            .divide(month.countWorkDaysInMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
-    is ContractServiceModel ->
-        this.monthlyCosts.toBigDecimal()
-            .divide(month.countWorkDaysInMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
-    is Assignment ->
-        (this.hourlyRate * this.hoursPerWeek).toBigDecimal()
-            .divide(BigDecimal.valueOf(5), 10, RoundingMode.HALF_UP)
-    is WorkDay ->
-        (this.assignment.hourlyRate * this.assignment.hoursPerWeek).toBigDecimal()
-            .divide(BigDecimal.valueOf(5), 10, RoundingMode.HALF_UP)
-    else -> error("Cannot get amount per working day")
 }
 
 private fun <T : Period> Iterable<T>.mapWorkingDay(from: LocalDate, to: LocalDate?) = dateRange(from, to)

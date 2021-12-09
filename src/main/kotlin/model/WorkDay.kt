@@ -6,6 +6,7 @@ import community.flock.eco.workday.interfaces.Approve
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.totalHoursInPeriod
 import community.flock.eco.workday.utils.DateUtils.toPeriod
+import community.flock.eco.workday.utils.NumericUtils.calculateRevenue
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
@@ -45,8 +46,8 @@ class WorkDay(
 ) : Day(id, code, from, to, hours, days), Approve {
 
     fun totalRevenueInPeriod(period: Period): BigDecimal = this
-        .totalHoursInPeriod(period)
-        .multiply(this.assignment.hourlyRate.toBigDecimal())
+        .hoursPerDayInPeriod(period.from, period.to!!)
+        .calculateRevenue(this.assignment.hourlyRate)
 
     fun totalRevenueInPeriod(yearMonth: YearMonth): BigDecimal = this
         .totalRevenueInPeriod(yearMonth.toPeriod())
