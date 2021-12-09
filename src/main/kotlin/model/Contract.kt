@@ -29,6 +29,7 @@ abstract class Contract(
 
 ) : Period, AbstractCodeEntity(id, code) {
 
+    //TODO Add fucntion signatures here of Internal/External
     fun totalHoursPerWeek() = when (this) {
         is ContractInternal -> this.hoursPerWeek
         is ContractExternal -> this.hoursPerWeek
