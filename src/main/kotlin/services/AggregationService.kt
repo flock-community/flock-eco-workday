@@ -277,7 +277,7 @@ class AggregationService(
                 workdays.map { workDay ->
                     val revenuePerWorkDay = workDay.hoursPerDayInPeriod(from, to)
                         .calculateRevenue(workDay.assignment.hourlyRate)
-                    revenueTotal.plus(revenuePerWorkDay)
+                    revenueTotal = revenueTotal.plus(revenuePerWorkDay)
                 }
                 companyOverviews.add(
                     AggregationPersonClientRevenueItem(
