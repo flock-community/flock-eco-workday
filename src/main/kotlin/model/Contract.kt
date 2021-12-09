@@ -27,4 +27,13 @@ abstract class Contract(
     @Enumerated(EnumType.STRING)
     open val type: ContractType
 
-) : Period, AbstractCodeEntity(id, code)
+) : Period, AbstractCodeEntity(id, code) {
+
+    //TODO Add fucntion signatures here of Internal/External
+    fun totalHoursPerWeek() = when (this) {
+        is ContractInternal -> this.hoursPerWeek
+        is ContractExternal -> this.hoursPerWeek
+        is ContractManagement -> 40
+        else -> error("Unknown contract type")
+    }
+}

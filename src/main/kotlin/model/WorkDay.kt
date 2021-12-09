@@ -3,7 +3,12 @@ package community.flock.eco.workday.model
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.workday.interfaces.Approve
+import community.flock.eco.workday.interfaces.Period
+import community.flock.eco.workday.utils.DateUtils.toPeriod
+import community.flock.eco.workday.utils.NumericUtils.calculateRevenue
+import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.YearMonth
 import java.util.UUID
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
@@ -37,4 +42,12 @@ class WorkDay(
     @ElementCollection
     val sheets: List<WorkDaySheet>
 
-) : Day(id, code, from, to, hours, days), Approve
+) : Day(id, code, from, to, hours, days), Approve {
+
+    fun totalRevenueInPeriod(period: Period): BigDecimal = this
+        .hoursPerDayInPeriod(period.from, period.to!!)
+        .calculateRevenue(this.assignment.hourlyRate)
+
+    fun totalRevenueInPeriod(yearMonth: YearMonth): BigDecimal = this
+        .totalRevenueInPeriod(yearMonth.toPeriod())
+}

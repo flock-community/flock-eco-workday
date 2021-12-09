@@ -1,21 +1,27 @@
+type AggregationIdentifier {
+    id: ID!
+    name: String!
+}
+
 type AggregationClientPersonOverview {
-    client: AggregationClientPersonOverviewClient!
+    client: AggregationIdentifier!
     aggregationPerson: [AggregationClientPersonItem!]!
     totals: [Float!]!
 }
 
 type AggregationClientPersonItem {
-    person: AggregationClientPersonOverviewPerson!
+    person: AggregationIdentifier!
     hours: [Float!]!
     total: Float!
 }
 
-type AggregationClientPersonOverviewClient {
-    id: ID!
-    name: String!
+type AggregationPersonClientRevenueOverview {
+    person: AggregationIdentifier!
+    clients: [AggregationPersonClientRevenueItem!]!
+    total: Float!
 }
 
-type AggregationClientPersonOverviewPerson {
-    id: ID!
-    name: String!
+type AggregationPersonClientRevenueItem {
+    client: AggregationIdentifier!
+    revenue: Float!
 }

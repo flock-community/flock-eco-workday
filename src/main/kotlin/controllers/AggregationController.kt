@@ -1,6 +1,7 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.workday.graphql.AggregationClientPersonOverview
+import community.flock.eco.workday.graphql.AggregationPersonClientRevenueOverview
 import community.flock.eco.workday.model.AggregationClient
 import community.flock.eco.workday.model.AggregationHoliday
 import community.flock.eco.workday.model.AggregationMonth
