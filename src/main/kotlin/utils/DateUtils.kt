@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit
 
 object DateUtils {
 
-    //TODO Dit gaat niet werken wanneer 'to' null is throw exception
+    // TODO Dit gaat niet werken wanneer 'to' null is throw exception
     fun dateRange(from: LocalDate, to: LocalDate?) = (0..ChronoUnit.DAYS.between(from, to))
         .map { from.plusDays(it) }
 

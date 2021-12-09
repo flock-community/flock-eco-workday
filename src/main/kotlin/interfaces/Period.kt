@@ -53,7 +53,6 @@ interface Period {
         .filterInPeriod(this)
 
     fun countDays() = ChronoUnit.DAYS.between(this.from, this.to) + 1
-
 }
 
 fun <T : Period> Iterable<T>.filterInRange(date: LocalDate) = this
