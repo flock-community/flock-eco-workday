@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.workday.interfaces.Approve
 import community.flock.eco.workday.interfaces.Period
-import community.flock.eco.workday.interfaces.totalHoursInPeriod
 import community.flock.eco.workday.utils.DateUtils.toPeriod
 import community.flock.eco.workday.utils.NumericUtils.calculateRevenue
 import java.math.BigDecimal

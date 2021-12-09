@@ -5,11 +5,9 @@ import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
 import community.flock.eco.workday.helpers.OrganisationHelper
 import community.flock.eco.workday.interfaces.Period
-import community.flock.eco.workday.interfaces.totalHoursInPeriod
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.ContractType
 import community.flock.eco.workday.utils.DateUtils.countWorkDaysInMonth
-import community.flock.eco.workday.utils.DateUtils.dateRange
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
