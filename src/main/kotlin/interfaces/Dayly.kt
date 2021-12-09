@@ -56,4 +56,3 @@ fun <T : Dayly> T.validate(): T = apply {
         }
     }
 }
-

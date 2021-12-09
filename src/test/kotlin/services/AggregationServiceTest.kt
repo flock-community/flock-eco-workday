@@ -251,30 +251,32 @@ class AggregationServiceTest(
         createHelper.createWorkDay(assignment, from, to, hours, days)
     }
 
-    //TODO FIX THE SERVICE AND THIS TEST
     @Test
     fun `hour overview per client per employee`() {
-       /* val startDate = LocalDate.of(2021, 12, 1)
+        val startDate = LocalDate.of(2021, 12, 1)
         val endDate = LocalDate.of(2021, 12, 31)
 
         createMockDataForClientHourOverview(startDate, endDate)
 
-        val thomasHoursExpected = listOf(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 0.0, 0.0, 9.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0)
+        val thomasHoursExpectedFlock = listOf(4.0, 4.0, 4.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 0.0, 0.0, 9.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0)
         val piotrHoursExpected = listOf(8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0)
-        val totalHoursExpectedFlock = piotrHoursExpected.zip(thomasHoursExpected) { xv, yv -> xv + yv }
+        val totalHoursExpectedFlock = piotrHoursExpected.zip(thomasHoursExpectedFlock) { xv, yv -> xv + yv }
 
         val personHoursExpected = listOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 5.0, 6.0, 7.0, 0.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         val bojackHoursExpected = listOf(8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0)
         val walterHoursExpected = listOf(3.0, 3.0, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+        val thomasHoursExpectedOther = listOf(4.0, 4.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         val otherClientHoursExpected = bojackHoursExpected.zip(personHoursExpected) { xv, yv -> xv + yv }
             .zip(walterHoursExpected) { xv, yv -> xv + yv }
+            .zip(thomasHoursExpectedOther) { xv, yv -> xv + yv }
 
         val overview = aggregationService.clientPersonHourOverview(startDate, endDate)
 
         val clientOverviewForFlock = overview.first { it.client.name == "Flock.community" }
         val clientOverviewForOtherCompany = overview.first { it.client.name == "Other.client" }
 
-        val thomas = clientOverviewForFlock.aggregationPerson.first { it.person.name == "Thomas Creativelastname" }
+        val thomasFlock = clientOverviewForFlock.aggregationPerson.first { it.person.name == "Thomas Creativelastname" }
+        val thomasOther = clientOverviewForOtherCompany.aggregationPerson.first { it.person.name == "Thomas Creativelastname" }
         val piotr = clientOverviewForFlock.aggregationPerson.first { it.person.name == "Jesse Pinkman" }
         val namelessPerson = clientOverviewForOtherCompany.aggregationPerson.first { it.person.name == "Person Lastname" }
         val bojack = clientOverviewForOtherCompany.aggregationPerson.first { it.person.name == "Bojack Horseman" }
@@ -287,20 +289,22 @@ class AggregationServiceTest(
         assertEquals(31, clientOverviewForOtherCompany.totals.size)
 
         assertEquals(184.0f, piotr.total)
-        assertEquals(136.0f, thomas.total)
+        assertEquals(12.0f, thomasOther.total)
+        assertEquals(148.0f, thomasFlock.total)
         assertEquals(60.0f, namelessPerson.total)
         assertEquals(184.0f, bojack.total)
         assertEquals(9.0f, walter.total)
 
-        assertEquals(thomasHoursExpected.toString(), thomas.hours.toString())
+        assertEquals(thomasHoursExpectedFlock.toString(), thomasFlock.hours.toString())
+        assertEquals(thomasHoursExpectedOther.toString(), thomasOther.hours.toString())
         assertEquals(piotrHoursExpected.toString(), piotr.hours.toString())
         assertEquals(personHoursExpected.toString(), namelessPerson.hours.toString())
         assertEquals(bojackHoursExpected.toString(), bojack.hours.toString())
         assertEquals(walterHoursExpected.toString(), walter.hours.toString())
 
         assertEquals(totalHoursExpectedFlock.toString(), clientOverviewForFlock.totals.toString())
-        assertEquals(otherClientHoursExpected.toString(), clientOverviewForOtherCompany.totals.toString())*/
-   }
+        assertEquals(otherClientHoursExpected.toString(), clientOverviewForOtherCompany.totals.toString())
+    }
 
     private fun createMockDataForClientHourOverview(startDate: LocalDate, endDate: LocalDate) {
 
@@ -343,7 +347,7 @@ class AggregationServiceTest(
         val thomas = result.first { it.person.name == "Thomas Creativelastname" }
         val thomasClientsFlock = thomas.clients.first { it.client.name == "Flock.community" }
         val thomasClientsOther = thomas.clients.first { it.client.name == "Other.client" }
-        val jesseTotal = result.first { it.person.name =="Jesse Pinkman" }.total
+        val jesseTotal = result.first { it.person.name == "Jesse Pinkman" }.total
 
         assertEquals(11840.0F, thomasClientsFlock.revenue)
         assertEquals(960.0F, thomasClientsOther.revenue)

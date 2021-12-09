@@ -233,7 +233,7 @@ class AggregationService(
         return workDayService.findAllActive(from, to).groupBy {
             it.assignment.client
         }.mapValues { (client, workDays) ->
-            workDays.map { workDay ->
+            val clientPersonItems = workDays.map { workDay ->
                 val person = AggregationIdentifier(
                     id = workDay.assignment.person.id.toString(),
                     name = workDay.assignment.person.getFullName()
@@ -248,14 +248,29 @@ class AggregationService(
                     total = workingHoursPerDay.sum()
                 )
             }
-        }.map { (client, aggregationClientPersonItem) ->
+            clientPersonItems.groupBy { it.person }
+                .mapValues { (person, values) ->
+                    val hours = values
+                        .map {
+                            it.hours
+                        }.sumAtIndex()
+                    val total = hours.sum()
+                    AggregationClientPersonItem(
+                        person = person,
+                        hours = hours,
+                        total = total
+                    )
+                }.map {
+                    it.value
+                }
+        }.map { (client, clientPersonItems) ->
             AggregationClientPersonOverview(
-                client = AggregationIdentifier(
-                    id = client.id.toString(),
-                    name = client.name
-                ),
-                aggregationPerson = aggregationClientPersonItem,
-                totals = aggregationClientPersonItem.sumWorkDayHoursWithSameIndexes()
+                client =
+                    AggregationIdentifier(id = client.id.toString(), name = client.name),
+                aggregationPerson = clientPersonItems,
+                totals = clientPersonItems
+                    .map { it.hours }
+                    .sumAtIndex()
             )
         }
     }
@@ -303,12 +318,11 @@ class AggregationService(
         return revenueOverview
     }
 
-
-    fun Iterable<Iterable<Float>>.sumIndex() = this
+    fun Iterable<Iterable<Float>>.sumAtIndex() = this
         .reduce { acc, cur ->
             acc.zip(cur) { a, b -> a + b }
         }
-
+        .toList()
 
     private fun List<AggregationClientPersonItem>.sumWorkDayHoursWithSameIndexes() = this
         .map { it.hours }
