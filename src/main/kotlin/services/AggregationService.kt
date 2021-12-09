@@ -286,7 +286,8 @@ class AggregationService(
                             id = client.id.toString(),
                             name = client.name
                         ),
-                        revenue = revenueTotal.setScale(2).toFloat()
+                        //TODO Change to bigdecimal
+                        revenue = revenueTotal.toFloat()
                     )
                 )
             }
