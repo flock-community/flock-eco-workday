@@ -1,5 +1,6 @@
 package community.flock.eco.workday.model
 
+import community.flock.eco.workday.graphql.AggregationPersonClientRevenueOverview
 import java.math.BigDecimal
 import java.util.*
 
@@ -14,4 +15,5 @@ data class AggregationPerson(
     val total: Int,
     val holiDayUsed: BigDecimal,
     val holiDayBalance: BigDecimal,
+    val totalRevenue: List<AggregationPersonClientRevenueOverview>
 )

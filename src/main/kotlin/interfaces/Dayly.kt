@@ -8,7 +8,34 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 
-interface Dayly : Hours, Period
+interface Dayly : Hours, Period {
+
+    fun totalHoursInPeriod(yearMonth: YearMonth): BigDecimal = this
+        .totalHoursInPeriod(yearMonth.toPeriod())
+
+    fun totalHoursInPeriod(period: Period): BigDecimal {
+        val hours = this.hoursPerDay()
+        return period
+            .toDateRange()
+            .mapNotNull { hours[it] }
+            .sum()
+    }
+
+    fun hoursPerDay(): Map<LocalDate, BigDecimal> = this
+        .toDateRange()
+        .mapIndexed { index, localDate ->
+            localDate to if (this.days?.isNotEmpty()!!) {
+                this.days?.get(index)
+                    ?.toBigDecimal()
+                    ?: BigDecimal.ZERO
+            } else {
+                this.hours
+                    .toBigDecimal()
+                    .divide(this.countDays().toBigDecimal(), 100, RoundingMode.HALF_UP)
+            }
+        }
+        .toMap()
+}
 
 fun <T : Dayly> T.validate(): T = apply {
 
@@ -30,28 +57,3 @@ fun <T : Dayly> T.validate(): T = apply {
     }
 }
 
-fun Dayly.totalHoursInPeriod(yearMonth: YearMonth): BigDecimal = this
-    .totalHoursInPeriod(yearMonth.toPeriod())
-
-fun Dayly.totalHoursInPeriod(period: Period): BigDecimal {
-    val hours = this.hoursPerDay()
-    return period
-        .toDateRange()
-        .mapNotNull { hours[it] }
-        .sum()
-}
-
-fun Dayly.hoursPerDay(): Map<LocalDate, BigDecimal> = this
-    .toDateRange()
-    .mapIndexed { index, localDate ->
-        localDate to if (this.days?.isNotEmpty()!!) {
-            this.days?.get(index)
-                ?.toBigDecimal()
-                ?: BigDecimal.ZERO
-        } else {
-            this.hours
-                .toBigDecimal()
-                .divide(this.countDays().toBigDecimal(), 100, RoundingMode.HALF_UP)
-        }
-    }
-    .toMap()

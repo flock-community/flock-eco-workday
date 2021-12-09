@@ -113,7 +113,8 @@ class AggregationService(
                         .mapWorkingDay(from, to)
                         .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                         .sum()
-                        .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP)
+                        .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
+                    totalRevenue = personClientRevenueOverview(from, to)
                 )
             }
     }

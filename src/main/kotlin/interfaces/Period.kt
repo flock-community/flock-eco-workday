@@ -15,7 +15,7 @@ interface Period {
     val from: LocalDate
     val to: LocalDate?
 
-    fun Period.toDateRange() = dateRange(this.from, this.to)
+    fun toDateRange() = dateRange(this.from, this.to)
 
     fun amountPerWorkingDay(month: YearMonth) = when (this) {
         is ContractInternal ->
@@ -41,8 +41,6 @@ interface Period {
 
     fun betweenRange(period: Period) = this
         .let { it.from <= period.to && it.to?.let { to -> to >= period.from } ?: true }
-
-    fun toDateRange() = dateRange(this.from, this.to)
 
     fun toDateRangeInPeriod(from: LocalDate, to: LocalDate) = dateRange(from, to)
         .filterInPeriod(this)
