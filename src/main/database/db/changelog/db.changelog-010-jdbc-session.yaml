@@ -79,5 +79,3 @@ databaseChangeLog:
               constraintName: spring_session_attributes_pk
               tableName: spring_session_attributes
               columnNames: session_primary_id, attribute_name
-
-
