@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 1234
+      id: db.changelog-010-jdbc-session-1
       author: piotrbryczkowski
       changes:
         - createTable:
