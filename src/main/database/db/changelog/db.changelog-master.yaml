@@ -28,3 +28,6 @@ databaseChangeLog:
   - include:
       - file: db.changelog-009-contract-internal-holidays.yaml
         relativeToChangelogFile: true
+  - include:
+      - file: db.changelog-010-jdbc-session.yaml
+        relativeToChangelogFile: true
