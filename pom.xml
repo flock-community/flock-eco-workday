@@ -153,6 +153,7 @@
                 <configuration>
                     <packageName>community.flock.eco.workday.graphql</packageName>
                     <scalarsKotlin>
+                        <BigDecimal>java.math.BigDecimal</BigDecimal>
                         <Date>java.time.LocalDate</Date>
                         <UUID>java.util.UUID</UUID>
                         <Status>community.flock.eco.workday.model.Status</Status>

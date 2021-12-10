@@ -114,7 +114,10 @@ class AggregationService(
                         .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                         .sum()
                         .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
-                    totalRevenue = personClientRevenueOverview(from, to)
+                    revenue = personClientRevenueOverview(all.workDay, from, to)
+                        .filter { it.key.id == person.id.toString() }
+                        .values
+                        .firstOrNull()
                 )
             }
     }
@@ -275,12 +278,12 @@ class AggregationService(
         }
     }
 
-    fun personClientRevenueOverview(from: LocalDate, to: LocalDate): List<AggregationPersonClientRevenueOverview> {
-        val allData = dataService.findAllData(from, to).workDay.groupBy {
+    fun personClientRevenueOverview(workDays: Iterable<WorkDay>, from: LocalDate, to: LocalDate): MutableMap<AggregationIdentifier, AggregationPersonClientRevenueOverview> {
+        val allWorkdays = workDays.groupBy {
             it.assignment.person
         }
-        val revenueOverview = mutableListOf<AggregationPersonClientRevenueOverview>()
-        allData.forEach { (person, values) ->
+        val revenueOverviewPerPerson = mutableMapOf<AggregationIdentifier, AggregationPersonClientRevenueOverview>()
+        allWorkdays.forEach { (person, values) ->
             val person = AggregationIdentifier(
                 id = person.id.toString(),
                 name = person.getFullName()
@@ -301,22 +304,19 @@ class AggregationService(
                             id = client.id.toString(),
                             name = client.name
                         ),
-                        //TODO Change to bigdecimal
-                        revenue = revenueTotal.toFloat()
+                        revenue = revenueTotal
                     )
                 )
             }
-            revenueOverview.add(
-                AggregationPersonClientRevenueOverview(
-                    person = person,
-                    clients = companyOverviews,
-                    total = companyOverviews
-                        .sumByDouble { it.revenue.toDouble() }
-                        .toFloat()
-                )
+            val aggregationClientOverview = AggregationPersonClientRevenueOverview(
+                clients = companyOverviews,
+                total = companyOverviews
+                    .map { it.revenue }
+                    .sum()
             )
+            revenueOverviewPerPerson[person] = aggregationClientOverview
         }
-        return revenueOverview
+        return revenueOverviewPerPerson
     }
 
     fun Iterable<Iterable<Float>>.sumAtIndex() = this

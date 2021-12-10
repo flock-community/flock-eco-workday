@@ -16,12 +16,14 @@ type AggregationClientPersonItem {
 }
 
 type AggregationPersonClientRevenueOverview {
-    person: AggregationIdentifier!
     clients: [AggregationPersonClientRevenueItem!]!
-    total: Float!
+    total: BigDecimal!
 }
 
 type AggregationPersonClientRevenueItem {
     client: AggregationIdentifier!
-    revenue: Float!
+    revenue: BigDecimal!
 }
+
+scalar BigDecimal
+
