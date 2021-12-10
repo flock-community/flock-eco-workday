@@ -311,11 +311,11 @@ class AggregationServiceTest(
 
         val flockClient = createHelper.createClient("Flock.community")
         val otherClient = createHelper.createClient("Other.client")
-        val firstPerson = createHelper.createPersonWithId("Jesse", "Pinkman", null, 158)
-        val secondPerson = createHelper.createPersonWithId("Thomas", "Creativelastname", null, 159)
-        val thirdPerson = createHelper.createPersonWithId("Person", "Lastname", null, 160)
-        val fourthPersonWithoutDays = createHelper.createPersonWithId("Bojack", "Horseman", null, 161)
-        val fifthPersonWithoutDays = createHelper.createPersonWithId("Walter", "White", null, 162)
+        val firstPerson = createHelper.createPerson("Jesse", "Pinkman")
+        val secondPerson = createHelper.createPerson("Thomas", "Creativelastname")
+        val thirdPerson = createHelper.createPerson("Person", "Lastname")
+        val fourthPersonWithoutDays = createHelper.createPerson("Bojack", "Horseman")
+        val fifthPersonWithoutDays = createHelper.createPerson("Walter", "White")
 
         val firstAssignment = createHelper.createAssignment(flockClient, firstPerson, startDate.minusDays(10), endDate)
         val secondAssignment = createHelper.createAssignment(flockClient, secondPerson, startDate.plusDays(5), endDate.plusDays(2))
