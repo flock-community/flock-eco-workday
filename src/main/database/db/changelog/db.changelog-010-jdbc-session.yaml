@@ -1,0 +1,81 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-010-jdbc-session-1
+      author: piotrbryczkowski
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true,
+                    primaryKeyName: spring_session_pk
+                  name: primary_id
+                  type: CHAR(36)
+              - column:
+                  constraints:
+                    nullable: false
+                    unique: true,
+                    uniqueConstraintName: spring_session_ix1
+                  name: session_id
+                  type: CHAR(36)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: creation_time
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: last_access_time
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: max_inactive_interval
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: expiry_time
+                  type: BIGINT
+              - column:
+                  name: principal_name
+                  type: VARCHAR(100)
+            tableName: spring_session
+        - createIndex:
+            indexName: spring_session_ix2
+            tableName: spring_session
+            columns:
+              - name: expiry_time
+        - createIndex:
+            indexName: spring_session_ix3
+            tableName: spring_session
+            columns:
+              - name: principal_name
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    foreignKeyName: spring_session_attributes_fk
+                    referencedTableName: spring_session
+                    referencedColumnNames: primary_id
+                    deleteCascade: true
+                    nullable: false
+                  name: session_primary_id
+                  type: CHAR(36)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: attribute_name
+                  type: VARCHAR(200)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: attribute_bytes
+                  type: BYTEA
+            tableName: spring_session_attributes
+        - addPrimaryKey:
+              constraintName: spring_session_attributes_pk
+              tableName: spring_session_attributes
+              columnNames: session_primary_id, attribute_name
