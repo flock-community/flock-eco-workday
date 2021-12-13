@@ -22,6 +22,10 @@ data class ContractService(
     val monthlyCosts: Double,
     val description: String
 ) : Contract(id, code, from, to, null, ContractType.SERVICE) {
+    override fun totalCostsInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
+        TODO("Not yet implemented")
+    }
+
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 
