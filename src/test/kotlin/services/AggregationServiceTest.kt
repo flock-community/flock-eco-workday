@@ -342,18 +342,20 @@ class AggregationServiceTest(
 
     @Test
     fun `test revenue report`() {
-       /* val startDate = LocalDate.of(2021, 12, 1)
+        val startDate = LocalDate.of(2021, 12, 1)
         val endDate = LocalDate.of(2021, 12, 31)
         val workdays = createMockDataForClientHourOverview(startDate, endDate)
 
         val result = aggregationService.personClientRevenueOverview(workdays, startDate, endDate)
-        val thomas = result.filter { it.key.name == "Thomas Creativelastname"}.values.fi
-        val thomasClientsFlock = thomas.first { it. }
+        val thomas = result.filter { it.key.name == "Thomas Creativelastname"}.values.flatMap { it.clients }
+        val jesse = result.filter { it.key.name == "Jesse Pinkman"}.values.flatMap { it.clients }
+
+        val thomasClientsFlock = thomas.first { it.client.name == "Flock.community" }
         val thomasClientsOther = thomas.first { it.client.name == "Other.client" }
-        val jesseTotal = result["160"]!!.total
+        val jesseTotal = jesse[0].revenue
 
         assertEquals(BigDecimal("11840.00000000000"), thomasClientsFlock.revenue)
         assertEquals(BigDecimal("960.00000000000"), thomasClientsOther.revenue)
-        assertEquals(BigDecimal("14720.00"), jesseTotal)*/
+        assertEquals(BigDecimal("14720.00"), jesseTotal)
     }
 }
