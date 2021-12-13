@@ -34,7 +34,7 @@ class ContractManagementTest {
 
         val cost = createContract(contractStart, contractEnd, 3000.0)
             .totalCostsInPeriod(periodStart, periodEnd)
-        assertEquals(BigDecimal("967.74193560000"), cost)
+        assertEquals(BigDecimal("967.7419354839"), cost)
     }
 
     @Test
@@ -48,7 +48,7 @@ class ContractManagementTest {
         val cost = createContract(contractStart, contractEnd, 1234.56)
             .totalCostsInPeriod(periodStart, periodEnd)
 
-        assertEquals(BigDecimal("677.016774225408"), cost)
+        assertEquals(BigDecimal("677.0167741935"), cost)
     }
 
     @Test
@@ -62,7 +62,7 @@ class ContractManagementTest {
         val cost = createContract(contractStart, contractEnd, 3000.0)
             .totalCostsInPeriod(periodStart, periodEnd)
 
-        assertEquals(BigDecimal("4451.61290310000"), cost)
+        assertEquals(BigDecimal("4451.6129032258"), cost)
     }
 
     @Test
@@ -76,7 +76,7 @@ class ContractManagementTest {
         val cost = createContract(contractStart, contractEnd, 3000.0)
             .totalCostsInPeriod(periodStart, periodEnd)
 
-        assertEquals(BigDecimal("4451.61290310000"), cost)
+        assertEquals(BigDecimal("4451.6129032258"), cost)
     }
 
     @Test
@@ -90,7 +90,7 @@ class ContractManagementTest {
         val cost = createContract(contractStart, contractEnd, 41985.58)
             .totalCostsInPeriod(periodStart, periodEnd)
 
-        assertEquals(BigDecimal("62301.183224045766"), cost)
+        assertEquals(BigDecimal("62301.1832258065"), cost)
     }
 
     @Test
@@ -104,7 +104,7 @@ class ContractManagementTest {
         val cost = createContract(contractStart, contractEnd, 41985.58)
             .totalCostsInPeriod(periodStart, periodEnd)
 
-        assertEquals(BigDecimal("0E-12"), cost)
+        assertEquals(BigDecimal("0"), cost)
     }
 
     @Test
@@ -118,10 +118,9 @@ class ContractManagementTest {
         val cost = createContract(contractStart, contractEnd, 41985.58)
             .totalCostsInPeriod(periodStart, periodEnd)
 
-        assertEquals(BigDecimal("41985.580000000000"), cost)
+        assertEquals(BigDecimal("41985.5800000000"), cost)
     }
 
-    //TODO goes wrong with rounding
     @Test
     fun `total cost of internal contract when the date range is between two days`() {
         val contractStart = LocalDate.of(2021, 12, 1)
@@ -133,7 +132,7 @@ class ContractManagementTest {
         val cost = createContract(contractStart, contractEnd, 3100.0)
             .totalCostsInPeriod(periodStart, periodEnd)
 
-        assertEquals(BigDecimal("200.00000000000"), cost)
+        assertEquals(BigDecimal("200.0000000000"), cost)
     }
     private fun createContract(startDate: LocalDate, endDate: LocalDate? = null, salary: Double): ContractManagement {
         return  ContractManagement(id = 1L,
