@@ -2,6 +2,7 @@ package community.flock.eco.workday.model
 
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.workday.interfaces.Hourly
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Entity
@@ -24,6 +25,10 @@ data class ContractExternal(
     val billable: Boolean = true
 
 ) : Hourly, Contract(id, code, from, to, person, ContractType.EXTERNAL) {
+    override fun totalCostPerPeriod(from: LocalDate, to: LocalDate): BigDecimal {
+        TODO("Not yet implemented")
+    }
+
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 }

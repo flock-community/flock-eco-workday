@@ -2,6 +2,8 @@ package community.flock.eco.workday.model
 
 import community.flock.eco.core.model.AbstractCodeEntity
 import community.flock.eco.workday.interfaces.Period
+import org.apache.tomcat.jni.Local
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Entity
@@ -29,7 +31,8 @@ abstract class Contract(
 
 ) : Period, AbstractCodeEntity(id, code) {
 
-    // TODO Add fucntion signatures here of Internal/External
+    abstract fun totalCostPerPeriod(from: LocalDate, to: LocalDate): BigDecimal
+
     fun totalHoursPerWeek() = when (this) {
         is ContractInternal -> this.hoursPerWeek
         is ContractExternal -> this.hoursPerWeek

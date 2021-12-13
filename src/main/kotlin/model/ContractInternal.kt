@@ -3,6 +3,7 @@ package community.flock.eco.workday.model
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.workday.interfaces.Monthly
 import community.flock.eco.workday.interfaces.Period
+import community.flock.eco.workday.utils.DateUtils
 import community.flock.eco.workday.utils.NumericUtils.sum
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -30,6 +31,17 @@ data class ContractInternal(
     val billable: Boolean = true
 
 ) : Monthly, Contract(id, code, from, to, person, ContractType.INTERNAL) {
+    override fun totalCostPerPeriod(from: LocalDate, to: LocalDate): BigDecimal {
+        val dateRange = toDateRangeInPeriod(from, to)
+        val monthsInRange = dateRange.map { it.month }.distinct()
+        monthsInRange.map { month ->
+            val daysInMonth = dateRange.count { it.month == month }.toBigDecimal()
+            val monthLength = month.length(from.isLeapYear).toBigDecimal()
+            val monthlySalary = monthlySalary.toBigDecimal()
+            daysInMonth.divide(monthLength, 10, RoundingMode.HALF_UP)
+                .times(monthlySalary)
+        }.sum()
+    }
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 
