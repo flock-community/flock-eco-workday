@@ -8,14 +8,14 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                    primaryKey: true,
+                    primaryKey: true
                     primaryKeyName: spring_session_pk
                   name: primary_id
                   type: CHAR(36)
               - column:
                   constraints:
                     nullable: false
-                    unique: true,
+                    unique: true
                     uniqueConstraintName: spring_session_ix1
                   name: session_id
                   type: CHAR(36)
