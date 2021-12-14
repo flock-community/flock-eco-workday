@@ -8,7 +8,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.YearMonth
-import java.util.UUID
+import java.util.*
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
 
@@ -30,6 +30,10 @@ data class ContractInternal(
     val billable: Boolean = true
 
 ) : Monthly, Contract(id, code, from, to, person, ContractType.INTERNAL) {
+    override fun totalCostsInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
+      return totalCostInPeriodWithMonthlySalary(from, to, monthlySalary)
+    }
+
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 

@@ -24,6 +24,10 @@ data class ContractManagement(
     val monthlyFee: Double
 
 ) : Contract(id, code, from, to, person, ContractType.MANAGEMENT) {
+    override fun totalCostsInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
+       return totalCostInPeriodWithMonthlySalary(from, to, monthlyFee)
+    }
+
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 
