@@ -4,26 +4,12 @@ import community.flock.eco.core.authorities.Authority
 import community.flock.eco.feature.user.forms.UserForm
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserService
-import community.flock.eco.workday.forms.AssignmentForm
-import community.flock.eco.workday.forms.ClientForm
-import community.flock.eco.workday.forms.ContractExternalForm
-import community.flock.eco.workday.forms.ContractInternalForm
-import community.flock.eco.workday.forms.ContractManagementForm
-import community.flock.eco.workday.forms.HoliDayForm
-import community.flock.eco.workday.forms.PersonForm
-import community.flock.eco.workday.forms.SickDayForm
-import community.flock.eco.workday.forms.WorkDayForm
+import community.flock.eco.workday.forms.*
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Client
 import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.services.AssignmentService
-import community.flock.eco.workday.services.ClientService
-import community.flock.eco.workday.services.ContractService
-import community.flock.eco.workday.services.HoliDayService
-import community.flock.eco.workday.services.PersonService
-import community.flock.eco.workday.services.SickDayService
-import community.flock.eco.workday.services.WorkDayService
+import community.flock.eco.workday.services.*
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
@@ -40,7 +26,8 @@ class CreateHelper(
     private val userService: UserService,
     private val sickDayService: SickDayService,
     private val holiDayService: HoliDayService,
-    private val workDayService: WorkDayService
+    private val workDayService: WorkDayService,
+    private val eventService: EventService
 ) {
 
     fun createUser(authorities: Set<Authority>) = createUser(UUID.randomUUID().toString(), authorities)
@@ -183,6 +170,21 @@ class CreateHelper(
     ).run {
         holiDayService.create(this)
     } ?: error("Cannot create sick day contract")
+
+    fun createEvent(from: LocalDate,
+                    to: LocalDate,
+                    hours: Double? = null,
+                    days: List<Double>? = null,
+                    persons: List<UUID>) = EventForm(
+        description = "Very description",
+        from = from,
+        to = to,
+        hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
+        days = days ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 },
+        personIds = persons
+    ).run {
+        eventService.create(this)
+    }
 
     class UserSecurity(val user: User) : UserDetails {
         override fun getAuthorities() = user.authorities.map { SimpleGrantedAuthority(it) }

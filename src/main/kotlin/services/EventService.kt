@@ -35,6 +35,15 @@ class EventService(
             .setParameter("to", to)
             .resultList
     }
+    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<Event> {
+        val query = "SELECT e FROM Event e INNER JOIN e.persons p WHERE  e.from <= :to AND (e.to is null OR e.to >= :from) AND p.uuid = :personCode"
+        return entityManager
+            .createQuery(query, Event::class.java)
+            .setParameter("from", from)
+            .setParameter("to", to)
+            .setParameter("personCode", personCode)
+            .resultList
+    }
 
     fun create(form: EventForm): Event = form
         .validate()

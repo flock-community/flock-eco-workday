@@ -3,6 +3,7 @@ package community.flock.eco.workday.services
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.AssignmentForm
 import community.flock.eco.workday.model.Assignment
+import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.repository.AssignmentRepository
 import community.flock.eco.workday.repository.ClientRepository
 import community.flock.eco.workday.repository.PersonRepository
@@ -41,6 +42,16 @@ class AssignmentService(
             .createQuery(query, Assignment::class.java)
             .setParameter("from", from)
             .setParameter("to", to)
+            .resultList
+    }
+
+    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<Assignment> {
+        val query = "SELECT a FROM Assignment a WHERE a.from <= :to AND (a.to is null OR a.to >= :from) AND a.person.uuid = :personCode"
+        return entityManager
+            .createQuery(query, Assignment::class.java)
+            .setParameter("from", from)
+            .setParameter("to", to)
+            .setParameter("personCode", personCode)
             .resultList
     }
 

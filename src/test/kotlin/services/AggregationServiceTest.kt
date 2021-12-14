@@ -9,6 +9,7 @@ import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.ContractType
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.utils.DateUtils.countWorkDaysInMonth
+import org.apache.tomcat.jni.Local
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -357,5 +358,27 @@ class AggregationServiceTest(
         assertEquals(BigDecimal("11840.00000000000"), thomasClientsFlock.revenue)
         assertEquals(BigDecimal("960.00000000000"), thomasClientsOther.revenue)
         assertEquals(BigDecimal("14720.00"), jesseTotal)
+    }
+
+    @Test
+    fun `test test`() {
+        val person1 = createHelper.createPerson("Jesse", "Pinkman")
+        val person2 = createHelper.createPerson("Walter", "White")
+        val from = LocalDate.of(2021, 12, 1)
+        val to = LocalDate.of(2021, 12, 5)
+
+        /**
+         * from: LocalDate,
+        to: LocalDate,
+        hours: Double? = null,
+        days: List<Double>? = null,
+        persons: List<UUID>) = EventForm
+         */
+
+        val event = createHelper.createEvent(from,to, 40.0, listOf(8.0,8.0,8.0,8.0,8.0), listOf(person1.uuid, person2.uuid))
+        val event2 = createHelper.createEvent(from,to, 40.0, listOf(8.0,8.0,8.0,8.0,8.0), listOf(person2.uuid))
+        //val person = createHelper.createSickDay(person1, from, to)
+      /*  val xd = aggregationService.test(person1.uuid, from, to)
+        val xd2 = xd*/
     }
 }

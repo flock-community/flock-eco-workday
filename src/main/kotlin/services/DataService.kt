@@ -47,6 +47,15 @@ class DataService(
         assignmentService.findAllByPersonUuid(personId),
         contractService.findAllByPersonUuid(personId)
     )
+
+    fun findAllData(from: LocalDate, to: LocalDate, personId: UUID) = Data(
+            sickDayService.findAllActiveByPerson(from, to, personId),
+            holiDayService.findAllActiveByPerson(from, to, personId),
+            workDayService.findAllActiveByPerson(from, to, personId),
+            eventService.findAllActiveByPerson(from, to, personId),
+            assignmentService.findAllActiveByPerson(from, to, personId),
+            contractService.findAllActiveByPerson(from, to, personId),
+        )
 }
 
 fun Data.filterInRange(date: LocalDate): Data = Data(

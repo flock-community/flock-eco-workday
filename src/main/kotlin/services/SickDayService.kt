@@ -6,6 +6,7 @@ import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.SickdayRepository
+import org.apache.tomcat.jni.Local
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -30,6 +31,9 @@ class SickDayService(
     fun findAllByPersonUuid(personCode: UUID) = repository
         .findAllByPersonUuid(personCode)
 
+    fun findAllByPersonUuidAndFromAfterAndToBefore(personCode: UUID, from: LocalDate, to: LocalDate) = repository
+        .findAllByPersonUuidAndFromAfterAndToBefore(personCode, from, to)
+
     fun findAllByPersonUuid(personCode: UUID, pageable: Pageable) = repository
         .findAllByPersonUuid(personCode, pageable)
 
@@ -37,6 +41,16 @@ class SickDayService(
         .findAllByPersonUserCode(userCode, pageable)
 
     fun findAllByStatus(status: Status) = repository.findAllByStatus(status)
+
+    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<SickDay> {
+        val query = "SELECT s FROM SickDay s WHERE s.from <= :to AND (s.to is null OR s.to >= :from) AND s.person.uuid = :personCode"
+        return entityManager
+            .createQuery(query, SickDay::class.java)
+            .setParameter("from", from)
+            .setParameter("to", to)
+            .setParameter("personCode", personCode )
+            .resultList
+    }
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<SickDay> {
         val query = "SELECT s FROM SickDay s WHERE s.from <= :to AND (s.to is null OR s.to >= :from)"
