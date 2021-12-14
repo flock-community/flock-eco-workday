@@ -117,7 +117,11 @@ class AggregationService(
                     revenue = personClientRevenueOverview(all.workDay, from, to)
                         .filter { it.key.id == person.id.toString() }
                         .values
-                        .firstOrNull()
+                        .firstOrNull(),
+                    cost = all.contract
+                        .filter { it.person == person }
+                        .map { it.totalCostsInPeriod(from, to) }
+                        .sum()
                 )
             }
     }
