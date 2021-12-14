@@ -3,10 +3,8 @@ package community.flock.eco.workday.model
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.workday.interfaces.Monthly
 import community.flock.eco.workday.interfaces.Period
-import community.flock.eco.workday.utils.DateUtils
 import community.flock.eco.workday.utils.NumericUtils.sum
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.YearMonth
@@ -33,30 +31,7 @@ data class ContractInternal(
 
 ) : Monthly, Contract(id, code, from, to, person, ContractType.INTERNAL) {
     override fun totalCostsInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
-        var monthLengthSum = 0
-        val dateRangeContract = DateUtils.dateRange(this.from, this.to ?:
-        LocalDate.of(to.year, to.month, to.month.length(to.isLeapYear)))
-
-        val unionDateRange = DateUtils.dateRange(from, to)
-            .intersect(dateRangeContract.toSet())
-
-        val yearMonthsInRange = unionDateRange.map { YearMonth.of(it.year, it.month) }.distinct()
-        val daysInMonth = yearMonthsInRange.sumOf { yearMonth ->
-            monthLengthSum += yearMonth.month.length(yearMonth.isLeapYear)
-            unionDateRange
-                .count { it.year == yearMonth.year && it.month == yearMonth.month }
-                .toBigDecimal()
-        }
-
-        return if(daysInMonth.toDouble() == 0.0) {
-            BigDecimal(BigInteger.ZERO)
-        } else {
-            val averageDaysInMonths = monthLengthSum.toBigDecimal()
-                .divide(yearMonthsInRange.count().toBigDecimal(), 10, RoundingMode.HALF_UP)
-            daysInMonth
-                .times(this.monthlySalary.toBigDecimal())
-                .divide(averageDaysInMonths, 10, RoundingMode.HALF_UP)
-        }
+      return totalCostInPeriodWithMonthlySalary(from, to, monthlySalary)
     }
 
     override fun equals(obj: Any?) = super.equals(obj)
