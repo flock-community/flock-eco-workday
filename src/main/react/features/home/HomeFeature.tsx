@@ -1,8 +1,9 @@
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import { useUserMe } from "../../hooks/UserMeHook";
-import { DashboardHoursChart } from "../../components/charts/DashboardHoursChart";
-import { Container, Grid } from "@material-ui/core";
+import {useUserMe} from "../../hooks/UserMeHook";
+import {DashboardHoursChart} from "../../components/charts/DashboardHoursChart";
+import {Card, CardContent, CardHeader, Container, Grid} from "@material-ui/core";
+import {DashboardHolidayChart} from "../../components/charts/DashboardHolidayChart";
 
 export function HomeFeature() {
   const user = useUserMe();
@@ -15,7 +16,20 @@ export function HomeFeature() {
           <Typography>You are logged in as {user && user.name}</Typography>
         </Grid>
         <Grid item xs={12}>
-          <DashboardHoursChart />
+          <Card>
+            <CardHeader title={"Workdays"}/>
+            <CardContent>
+              <DashboardHoursChart/>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CardHeader title={"Holidays"}/>
+            <CardContent>
+              <DashboardHolidayChart/>
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
     </Container>
