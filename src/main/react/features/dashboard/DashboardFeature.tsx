@@ -13,6 +13,7 @@ import { InternalOverviewChart } from "../../components/charts/InternalOverviewC
 import { ExternalOverviewChart } from "../../components/charts/ExternalOverviewChart";
 import { ManagementOverviewChart } from "../../components/charts/ManagementOverviewChart";
 import moment from "moment";
+import {GrossMarginTable} from "../../components/tables/GrossMarginTable";
 
 const useStyles = makeStyles({
   root: {
@@ -129,6 +130,14 @@ export function DashboardFeature() {
             <CardHeader title="Sickday" />
             <CardContent>
               <SickdayPerPersonChart year={year} />
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CardHeader title="Gross margin" />
+            <CardContent>
+              <GrossMarginTable year={year} />
             </CardContent>
           </Card>
         </Grid>
