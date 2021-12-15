@@ -3,6 +3,8 @@ package community.flock.eco.workday.model
 import community.flock.eco.core.model.AbstractCodeEntity
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.utils.DateUtils
+import community.flock.eco.workday.utils.DateUtils.isWorkingDay
+import community.flock.eco.workday.utils.NumericUtils.sum
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
@@ -43,7 +45,10 @@ abstract class Contract(
         else -> error("Unknown contract type")
     }
 
-    fun totalCostInPeriodWithMonthlySalary(from: LocalDate, to: LocalDate, salary: Double): BigDecimal {
+    abstract fun totalDaysInPeriod(from: LocalDate, to: LocalDate): BigDecimal
+
+
+    fun totalCostInPeriod(from: LocalDate, to: LocalDate, salary: Double): BigDecimal {
         var monthLengthSum = 0
         val dateRangeContract = DateUtils.dateRange(this.from, this.to ?:
         LocalDate.of(to.year, to.month, to.month.length(to.isLeapYear)))
@@ -63,9 +68,23 @@ abstract class Contract(
             BigDecimal(BigInteger.ZERO)
         } else {
             daysInMonth
-                .times(salary.toBigDecimal())
                 .times(yearMonthsInRange.count().toBigDecimal())
+                .times(salary.toBigDecimal())
                 .divide(monthLengthSum.toBigDecimal(), 10, RoundingMode.HALF_UP)
         }
+    }
+
+    fun totalDaysInPeriod(from: LocalDate, to: LocalDate, hoursPerWeek: Int): BigDecimal {
+        val dateRange = DateUtils.dateRange(from, to)
+        val dateRangeContract = DateUtils.dateRange(this.from, this.to
+            ?: LocalDate.of(to.year, to.month, to.month.length(to.isLeapYear)))
+
+        val hoursPerDay = hoursPerWeek.toBigDecimal().divide(BigDecimal("5.0"), 10, RoundingMode.HALF_UP)
+        return dateRange.intersect(dateRangeContract.toSet()).map {
+            when (it.isWorkingDay()) {
+                true -> hoursPerDay
+                false -> BigDecimal("0.0")
+            }
+        }.sum()
     }
 }

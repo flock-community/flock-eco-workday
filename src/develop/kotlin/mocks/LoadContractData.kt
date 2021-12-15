@@ -26,13 +26,16 @@ class LoadContractData(
         create("ieniemienie@sesam.straat", ContractType.INTERNAL, now.minusMonths(8), now.plusMonths(8))
         create("pino@sesam.straat", ContractType.INTERNAL, now.minusMonths(12), now.plusMonths(4))
         create("bert@sesam.straat", ContractType.EXTERNAL, now.minusMonths(6), now.plusMonths(12))
-        create("ernie@sesam.straat", ContractType.INTERNAL, now.minusMonths(4))
+        create("ernie@sesam.straat", ContractType.EXTERNAL,LocalDate.of(2020,10, 27), LocalDate.of(2021, 10, 26))
+        create("ernie@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2021,10, 27), LocalDate.of(2021, 12, 31))
+
+
     }
 
     private final fun create(email: String, type: ContractType, from: LocalDate, to: LocalDate? = null) = when (type) {
         ContractType.INTERNAL -> ContractInternal(
             person = loadPersonData.findPersonByUserEmail(email),
-            hoursPerWeek = 36,
+            hoursPerWeek = 32,
             monthlySalary = 6000.0,
             holidayHours = 192,
             from = from,

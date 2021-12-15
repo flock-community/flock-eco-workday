@@ -142,9 +142,9 @@ class AggregationService(
                         .toInt(),
                     total = all.contract
                         .filter { it.person == person }
-                        .map { it.totalHoursPerWeek() }
-                        .sum()
-                        .let { countWorkDaysInPeriod(from, to) * 8 * it / 40 },
+                        .map {
+                             it.totalDaysInPeriod(from, to)
+                        }.sum().toInt(),
                     holiDayUsed = all.holiDay
                         .filter { it.type == HolidayType.HOLIDAY }
                         .filter { it.person == person }

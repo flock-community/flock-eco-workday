@@ -23,16 +23,20 @@ class LoadAssignmentData(
         create("ieniemienie@sesam.straat", "client_a", "Test engineer", 100.0, now.minusMonths(8), now.plusMonths(8))
         create("pino@sesam.straat", "client_b", "Senior software engineer", 135.0, now.minusMonths(0), now.plusMonths(12))
         create("bert@sesam.straat", "client_c", "Medior software engineer", 90.0, now.minusMonths(4), now.plusMonths(8))
-        create("ernie@sesam.straat", "client_d", "Junior software engineer", 85.0, now.minusMonths(1))
+            //create("ernie@sesam.straat", "client_d", "Junior software engineer", 85.0, now.minusMonths(1))
+        //create("ernie@sesam.straat", "client_d", "Junior software engineer", 85.0, now.minusMonths(1), now.plusMonths(1))
+
+        create("ernie@sesam.straat", "client_d", "Junior software engineer", 85.0, LocalDate.of(2020,10, 27), LocalDate.of(2021, 10, 26), 32)
+        create("ernie@sesam.straat", "client_d", "Junior software engineer", 85.0, LocalDate.of(2021,10, 27), LocalDate.of(2021, 12, 31), 32)
     }
 
-    private final fun create(email: String, client: String, role: String, hourlyRate: Double, from: LocalDate, to: LocalDate? = null) = Assignment(
+    private final fun create(email: String, client: String, role: String, hourlyRate: Double, from: LocalDate, to: LocalDate? = null, hoursPerWeek: Int ?= null) = Assignment(
         from = from,
         to = to,
         person = loadPersonData.findPersonByUserEmail(email),
         client = loadClientData.findClientByCode(client),
         hourlyRate = hourlyRate,
-        hoursPerWeek = 36,
+        hoursPerWeek = hoursPerWeek?: 36,
         role = role
     )
         .save()
