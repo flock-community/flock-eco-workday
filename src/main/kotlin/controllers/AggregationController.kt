@@ -88,7 +88,7 @@ class AggregationController(
     }
 
     @GetMapping("/client-hour-overview", params = ["year", "month"])
-    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    @PreAuthorize("isAuthenticated()")
     fun hourClientOverviewEmployee(@RequestParam year: Int, @RequestParam month: Int): List<AggregationClientPersonOverview> {
         val yearMonth = YearMonth.of(year, month)
         val from = yearMonth.atDay(1)
