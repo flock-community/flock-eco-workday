@@ -70,6 +70,48 @@ class AggregationService(
             }
     }
 
+    fun totalPerPerson(from: LocalDate, to: LocalDate, person: Person): AggregationPerson {
+        val allData = dataService.findAllData(from, to, person.uuid)
+        val totalWorkDays = countWorkDaysInPeriod(from, to)
+        val period = FromToPeriod(from, to)
+        return AggregationPerson(
+            id = person.uuid,
+            name = person.getFullName(),
+            contractTypes = allData.contract
+                .mapNotNull { it::class.simpleName }
+                .toSet(),
+            sickDays = allData.sickDay
+                .toList()
+                .totalHoursInPeriod(from, to),
+            workDays = allData.workDay
+                .toList()
+                .totalHoursInPeriod(from, to),
+            assignment = allData.assignment
+                .toList()
+                .toMapWorkingDay(from, to).values
+                .flatten()
+                .fold(0) { acc, cur -> acc + cur.hoursPerWeek }
+                .div(5),
+            event = allData.eventDay
+                .map { it.totalHoursInPeriod(period) }
+                .sum()
+                .toInt(),
+            total = allData.contract
+                .map { it.totalHoursPerWeek() }
+                .sum()
+                .let { countWorkDaysInPeriod(from, to) * 8 * it / 40 },
+            holiDayUsed = allData.holiDay
+                .filter { it.type == HolidayType.HOLIDAY }
+                .totalHoursInPeriod(from, to),
+            holiDayBalance = allData.contract
+                .filterIsInstance(ContractInternal::class.java)
+                .mapWorkingDay(from, to)
+                .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
+                .sum()
+                .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
+        )
+    }
+
     fun totalPerPerson(yearMonth: YearMonth) = totalPerPerson(yearMonth.atDay(1), yearMonth.atEndOfMonth())
     fun totalPerPerson(from: LocalDate, to: LocalDate): List<AggregationPerson> {
         val all = dataService.findAllData(from, to)

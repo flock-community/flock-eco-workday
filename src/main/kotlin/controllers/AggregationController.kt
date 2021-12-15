@@ -7,12 +7,15 @@ import community.flock.eco.workday.model.AggregationMonth
 import community.flock.eco.workday.model.AggregationPerson
 import community.flock.eco.workday.services.AggregationService
 import community.flock.eco.workday.services.PersonService
+import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -36,12 +39,12 @@ class AggregationController(
     fun totalsPerPersonMeByYearMonth(authentication: Authentication): Map<YearMonth, AggregationPerson?> {
         val now = LocalDate.now()
         val person = personService.findByUserCode(authentication.name)
+            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
         return (0..12)
             .map {
                 val month = YearMonth.from(now.minusMonths(it.toLong()))
                 month to aggregationService
-                    .totalPerPerson(month.atDay(1), month.atEndOfMonth())
-                    .find { it.id == person?.uuid }
+                    .totalPerPerson(month.atDay(1), month.atEndOfMonth(), person)
             }
             .toMap()
     }

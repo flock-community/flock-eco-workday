@@ -49,6 +49,16 @@ class WorkDayService(
             .resultList
     }
 
+    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<WorkDay> {
+        val query = "SELECT it FROM WorkDay it WHERE it.from <= :to AND (it.to is null OR it.to >= :from) AND it.assignment.person.uuid = :personCode"
+        return entityManager
+            .createQuery(query, WorkDay::class.java)
+            .setParameter("from", from)
+            .setParameter("to", to)
+            .setParameter("personCode", personCode)
+            .resultList
+    }
+
     fun findAllByStatus(status: Status) = workDayRepository.findAllByStatus(status)
 
     fun create(form: WorkDayForm): WorkDay = form.copy(status = Status.REQUESTED)

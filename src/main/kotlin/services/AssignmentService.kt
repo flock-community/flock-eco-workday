@@ -44,6 +44,16 @@ class AssignmentService(
             .resultList
     }
 
+    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<Assignment> {
+        val query = "SELECT a FROM Assignment a WHERE a.from <= :to AND (a.to is null OR a.to >= :from) AND a.person.uuid = :personCode"
+        return entityManager
+            .createQuery(query, Assignment::class.java)
+            .setParameter("from", from)
+            .setParameter("to", to)
+            .setParameter("personCode", personCode)
+            .resultList
+    }
+
     @Transactional
     fun create(form: AssignmentForm): Assignment? = form
         .internalize()

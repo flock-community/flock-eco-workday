@@ -37,6 +37,16 @@ class HoliDayService(
             .resultList
     }
 
+    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<HoliDay> {
+        val query = "SELECT h FROM HoliDay h WHERE h.from <= :to AND (h.to is null OR h.to >= :from) AND h.person.uuid = :personCode"
+        return entityManager
+            .createQuery(query, HoliDay::class.java)
+            .setParameter("from", from)
+            .setParameter("to", to)
+            .setParameter("personCode", personCode)
+            .resultList
+    }
+
     fun create(form: HoliDayForm): HoliDay = form.copy(status = Status.REQUESTED)
         .consume()
         .validate()

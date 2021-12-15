@@ -5,10 +5,7 @@ import community.flock.eco.workday.forms.ContractExternalForm
 import community.flock.eco.workday.forms.ContractInternalForm
 import community.flock.eco.workday.forms.ContractManagementForm
 import community.flock.eco.workday.forms.ContractServiceForm
-import community.flock.eco.workday.model.Contract
-import community.flock.eco.workday.model.ContractExternal
-import community.flock.eco.workday.model.ContractInternal
-import community.flock.eco.workday.model.ContractManagement
+import community.flock.eco.workday.model.*
 import community.flock.eco.workday.repository.ContractRepository
 import community.flock.eco.workday.repository.PersonRepository
 import org.springframework.data.domain.Pageable
@@ -45,6 +42,16 @@ class ContractService(
             .createQuery(query, Contract::class.java)
             .setParameter("from", from)
             .setParameter("to", to)
+            .resultList
+    }
+
+    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<Contract> {
+        val query = "SELECT c FROM Contract c WHERE c.from <= :to AND (c.to is null OR c.to >= :from) AND c.person.uuid = :personCode"
+        return entityManager
+            .createQuery(query, Contract::class.java)
+            .setParameter("from", from)
+            .setParameter("to", to)
+            .setParameter("personCode", personCode)
             .resultList
     }
 

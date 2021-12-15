@@ -38,6 +38,16 @@ class SickDayService(
 
     fun findAllByStatus(status: Status) = repository.findAllByStatus(status)
 
+    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<SickDay> {
+        val query = "SELECT s FROM SickDay s WHERE s.from <= :to AND (s.to is null OR s.to >= :from) AND s.person.uuid = :personCode"
+        return entityManager
+            .createQuery(query, SickDay::class.java)
+            .setParameter("from", from)
+            .setParameter("to", to)
+            .setParameter("personCode", personCode )
+            .resultList
+    }
+
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<SickDay> {
         val query = "SELECT s FROM SickDay s WHERE s.from <= :to AND (s.to is null OR s.to >= :from)"
         return entityManager
