@@ -47,15 +47,12 @@ abstract class Contract(
 
     abstract fun totalDaysInPeriod(from: LocalDate, to: LocalDate): BigDecimal
 
-
     fun totalCostInPeriod(from: LocalDate, to: LocalDate, salary: Double): BigDecimal {
         var monthLengthSum = 0
         val dateRangeContract = DateUtils.dateRange(this.from, this.to ?:
         LocalDate.of(to.year, to.month, to.month.length(to.isLeapYear)))
-
         val unionDateRange = DateUtils.dateRange(from, to)
             .intersect(dateRangeContract.toSet())
-
         val yearMonthsInRange = unionDateRange.map { YearMonth.of(it.year, it.month) }.distinct()
         val daysInMonth = yearMonthsInRange.sumOf { yearMonth ->
             monthLengthSum += yearMonth.lengthOfMonth()
@@ -63,7 +60,6 @@ abstract class Contract(
                 .count { it.year == yearMonth.year && it.month == yearMonth.month }
                 .toBigDecimal()
         }
-
         return if(daysInMonth.toDouble() == 0.0) {
             BigDecimal(BigInteger.ZERO)
         } else {
@@ -78,7 +74,6 @@ abstract class Contract(
         val dateRange = DateUtils.dateRange(from, to)
         val dateRangeContract = DateUtils.dateRange(this.from, this.to
             ?: LocalDate.of(to.year, to.month, to.month.length(to.isLeapYear)))
-
         val hoursPerDay = hoursPerWeek.toBigDecimal().divide(BigDecimal("5.0"), 10, RoundingMode.HALF_UP)
         return dateRange.intersect(dateRangeContract.toSet()).map {
             when (it.isWorkingDay()) {

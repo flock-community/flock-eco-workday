@@ -32,7 +32,7 @@ class LoadWorkDayData(
      * and one Sickday with status SickdayStatus.HEALTHY (to indicate a past Sickday)
      */
     init {
-       /* val now = LocalDate.now()
+        val now = LocalDate.now()
         loadAssignmentData.data
             .map { assignment ->
                 (1..12)
@@ -57,6 +57,6 @@ class LoadWorkDayData(
                     }
             }
             .flatten()
-            .forEach { it.create() }*/
+            .forEach { it.create() }
     }
 }

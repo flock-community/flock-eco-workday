@@ -2,11 +2,7 @@ package community.flock.eco.workday.model
 
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.workday.interfaces.Hourly
-import community.flock.eco.workday.utils.DateUtils
-import community.flock.eco.workday.utils.DateUtils.isWorkingDay
-import community.flock.eco.workday.utils.NumericUtils.sum
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Entity
