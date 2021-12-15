@@ -10,7 +10,6 @@ import community.flock.eco.workday.services.PersonService
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -78,6 +77,14 @@ class AggregationController(
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
     fun holidayReportByYear(@RequestParam year: Int): List<AggregationHoliday> {
         return aggregationService.holidayReport(year)
+    }
+
+    @GetMapping("/holiday-report-me", params = ["year"])
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    fun holidayReportMeByYear(authentication: Authentication, @RequestParam year: Int): AggregationHoliday {
+        val person = personService.findByUserCode(authentication.name)
+            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        return aggregationService.holidayReportMe(year, person)
     }
 
     @GetMapping("/client-hour-overview", params = ["year", "month"])
