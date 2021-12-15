@@ -10,7 +10,6 @@ import community.flock.eco.workday.utils.DateUtils.isWorkingDay
 import community.flock.eco.workday.utils.DateUtils.toDateRange
 import community.flock.eco.workday.utils.NumericUtils.calculateRevenue
 import community.flock.eco.workday.utils.NumericUtils.sum
-import org.apache.tomcat.jni.Local
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -18,8 +17,6 @@ import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
-import java.util.Date
-import java.util.UUID
 import community.flock.eco.workday.model.ContractService as ContractServiceModel
 
 @Service

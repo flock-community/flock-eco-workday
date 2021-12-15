@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
-import java.time.LocalDate
 import java.util.*
 
 @Repository
@@ -17,5 +16,4 @@ interface SickdayRepository : PagingAndSortingRepository<SickDay, Long> {
     fun findAllByPersonUuid(personCode: UUID, pageable: Pageable): Page<SickDay>
     fun findAllByPersonUserCode(userCode: String, pageable: Pageable): Page<SickDay>
     fun findAllByStatus(status: Status): Iterable<SickDay>
-    fun findAllByPersonUuidAndFromAfterAndToBefore(personCode: UUID, from: LocalDate, to: LocalDate): Iterable<SickDay>
 }

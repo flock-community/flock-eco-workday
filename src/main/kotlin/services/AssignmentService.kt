@@ -3,7 +3,6 @@ package community.flock.eco.workday.services
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.AssignmentForm
 import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.repository.AssignmentRepository
 import community.flock.eco.workday.repository.ClientRepository
 import community.flock.eco.workday.repository.PersonRepository
