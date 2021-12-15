@@ -80,7 +80,7 @@ class AggregationController(
     }
 
     @GetMapping("/holiday-report-me", params = ["year"])
-    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    @PreAuthorize("isAuthenticated()")
     fun holidayReportMeByYear(authentication: Authentication, @RequestParam year: Int): AggregationHoliday {
         val person = personService.findByUserCode(authentication.name)
             ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
