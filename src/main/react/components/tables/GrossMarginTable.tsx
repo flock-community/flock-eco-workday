@@ -32,13 +32,15 @@ export function GrossMarginTable({year}: GrossMarginTableProps) {
         </TableRow>
       </TableHead>
       <TableBody>
-        {state.map(it => (<TableRow key={`row-${it.id}`}>
-          <TableCell>{it.name}</TableCell>
-          <TableCell>{it.revenue.total}</TableCell>
-          <TableCell>{it.cost}</TableCell>
-          <TableCell>{it.revenue.total - it.cost}</TableCell>
-          <TableCell>{((it.revenue.total - it.cost) / it.revenue.total * 100).toFixed(1)} %</TableCell>
-        </TableRow>))}
+        {state
+          .filter(it => it.revenue && it.revenue.total)
+          .map(it => (<TableRow key={`row-${it.id}`}>
+            <TableCell>{it.name}</TableCell>
+            <TableCell>{it.revenue.total}</TableCell>
+            <TableCell>{it.cost}</TableCell>
+            <TableCell>{it.revenue.total - it.cost}</TableCell>
+            <TableCell>{((it.revenue.total - it.cost) / it.revenue.total * 100).toFixed(1)} %</TableCell>
+          </TableRow>))}
       </TableBody>
     </Table>
   );
