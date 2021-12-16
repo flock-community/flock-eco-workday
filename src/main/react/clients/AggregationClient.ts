@@ -45,6 +45,14 @@ export const totalPerPersonMe = () => {
     .then(it => ExtractJSON(it))
     .catch((e) => addError(e.message));
 };
+export const holidayReportMe = (year) => {
+  const opts = {
+    method: "GET",
+  };
+  return fetch(`${path}/holiday-report-me?year=${year}`, opts)
+    .then(it => ExtractJSON(it))
+    .catch((e) => addError(e.message));
+};
 
 export const totalPerMonthByYear = (year) => {
   const opts = {
@@ -71,5 +79,6 @@ export const AggregationClient = {
   clientHourOverviewByYearMonth,
   totalPerMonthByYear,
   totalPerPersonMe,
+  holidayReportMe,
   holidayReportByYear,
 };
