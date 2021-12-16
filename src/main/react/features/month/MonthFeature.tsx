@@ -126,11 +126,11 @@ export function MonthFeature() {
           </TableRow>
           {it.aggregationPerson.map(person => <TableRow>
             <TableCell>{person.person.name}</TableCell>
-            {person.hours.map(val => <TableCell>{val}</TableCell>)}
+            {person.hours.map(val => <TableCell width={10}>{val > 0 ? val.toFixed(1) : "-"}</TableCell>)}
           </TableRow>)}
           <TableRow>
             <TableCell>Totals</TableCell>
-            {it.totals.map(val => <TableCell>{val}</TableCell>)}
+            {it.totals.map(val => <TableCell><b>{val.toFixed(1)}</b></TableCell>)}
           </TableRow>
         </Table>
       </>
