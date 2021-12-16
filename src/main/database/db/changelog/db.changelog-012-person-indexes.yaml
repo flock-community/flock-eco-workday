@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1591290799799-4
+      author: piotrbryczkowski
+      changes:
+        - createIndex:
+            indexName: person_id_assignment_index
+            tableName: assignment
+            columns:
+              - column:
+                  name: person_id
+        - createIndex:
+            indexName: person_id_contract_index
+            tableName: contract
+            columns:
+              - column:
+                  name: person_id
+        - createIndex:
+            indexName: person_id_sick_day_index
+            tableName: sick_day
+            columns:
+              - column:
+                  name: person_id
+        - createIndex:
+            indexName: person_id_holi_day_index
+            tableName: holi_day
+            columns:
+              - column:
+                  name: person_id

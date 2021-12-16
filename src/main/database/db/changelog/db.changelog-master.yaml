@@ -34,3 +34,6 @@ databaseChangeLog:
   - include:
       - file: db.changelog-011-from-to-indexes.yaml
         relativeToChangelogFile: true
+  - include:
+      - file: db.changelog-012-person-indexes.yaml
+        relativeToChangelogFile: true
