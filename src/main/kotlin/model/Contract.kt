@@ -83,3 +83,8 @@ abstract class Contract(
         }.sum()
     }
 }
+
+fun Iterable<Contract>.sumHoursWithinAPeriod(from: LocalDate, to: LocalDate) = this
+    .map { it.totalDaysInPeriod(from, to) }
+    .sum()
+    .toInt()
