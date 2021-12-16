@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1591290799799-3
+      author: piotrbryczkowski
+      changes:
+        - createIndex:
+            indexName: day_from_to_index
+            tableName: day
+            columns:
+              - column:
+                  name: from
+              - column:
+                  name: to
+        - createIndex:
+            indexName: event_from_to_index
+            tableName: event
+            columns:
+              - column:
+                  name: from
+              - column:
+                  name: to
+        - createIndex:
+            indexName: assignment_from_to_index
+            tableName: assignment
+            columns:
+              - column:
+                  name: from
+              - column:
+                  name: to
+        - createIndex:
+            indexName: contract_from_to_index
+            tableName: contract
+            columns:
+              - column:
+                  name: from
+              - column:
+                  name: to
