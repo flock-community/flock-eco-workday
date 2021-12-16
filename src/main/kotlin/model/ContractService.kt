@@ -26,6 +26,10 @@ data class ContractService(
         TODO("Not yet implemented")
     }
 
+    override fun totalDaysInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
+        TODO("Not yet implemented")
+    }
+
     override fun equals(obj: Any?) = super.equals(obj)
     override fun hashCode(): Int = super.hashCode()
 

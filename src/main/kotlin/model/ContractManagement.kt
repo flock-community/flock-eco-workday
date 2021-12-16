@@ -3,6 +3,7 @@ package community.flock.eco.workday.model
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.workday.utils.NumericUtils.sum
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.YearMonth
@@ -25,7 +26,11 @@ data class ContractManagement(
 
 ) : Contract(id, code, from, to, person, ContractType.MANAGEMENT) {
     override fun totalCostsInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
-       return totalCostInPeriodWithMonthlySalary(from, to, monthlyFee)
+       return totalCostInPeriod(from, to, monthlyFee)
+    }
+
+    override fun totalDaysInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
+        return BigDecimal(BigInteger.ZERO)
     }
 
     override fun equals(obj: Any?) = super.equals(obj)
