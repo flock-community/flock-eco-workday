@@ -7,29 +7,31 @@ databaseChangeLog:
             indexName: day_from_to_index
             tableName: day
             columns:
-              - name: from
-              - name: to
-        - createIndex:
-            indexName: day_from_to_index
-            tableName: day
-            columns:
-              - name: from
-              - name: to
+              - column:
+                  name: from
+              - column:
+                  name: to
         - createIndex:
             indexName: event_from_to_index
             tableName: event
             columns:
-              - name: from
-              - name: to
+              - column:
+                  name: from
+              - column:
+                  name: to
         - createIndex:
             indexName: assignment_from_to_index
             tableName: assignment
             columns:
-              - name: from
-              - name: to
+              - column:
+                  name: from
+              - column:
+                  name: to
         - createIndex:
-            indexName: assignment_from_to_index
+            indexName: contract_from_to_index
             tableName: contract
             columns:
-              - name: from
-              - name: to
+              - column:
+                  name: from
+              - column:
+                  name: to
