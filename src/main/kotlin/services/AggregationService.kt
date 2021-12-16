@@ -274,7 +274,7 @@ class AggregationService(
                     actualCostContractExternal = yearMonth.toDateRange()
                         .flatMap { date ->
                             cartesianProducts(all.contract.filterIsInstance(ContractExternal::class.java), all.workDay)
-                                .filter { (contract, workDay) -> contract.billable }
+                                .filter { (contract) -> contract.billable }
                                 .filter { (contract, workDay) -> contract.person == workDay.assignment.person }
                                 .filter { (contract, workDay) -> contract.inRange(date) && workDay.inRange(date) }
                                 .map { (contract, workDay) ->
