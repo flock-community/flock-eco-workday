@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 1591290799799-3
+      id: 1591290799799-4
       author: piotrbryczkowski
       changes:
         - createIndex:
