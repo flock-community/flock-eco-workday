@@ -107,6 +107,7 @@ export const Application = () => {
             <Route path="/users" exact component={UserFeature} />
             <Route path="/person" component={PersonFeature} />
             <Route path="/event" component={EventFeature} />
+            <Route component={HomeFeature}/>
             <Route
               path="/event_rating/:eventCode"
               component={EventRatingFeature}
