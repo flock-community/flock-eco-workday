@@ -29,7 +29,7 @@ class HoliDayService(
     fun findAllByStatus(status: Status) = holidayRepository.findAllByStatus(status)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<HoliDay> {
-        val query = "SELECT h FROM HoliDay h WHERE h.from <= :to AND (h.to is null OR h.to >= :from)"
+        val query = "SELECT h FROM HoliDay h JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from)"
         return entityManager
             .createQuery(query, HoliDay::class.java)
             .setParameter("from", from)
@@ -38,7 +38,7 @@ class HoliDayService(
     }
 
     fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<HoliDay> {
-        val query = "SELECT h FROM HoliDay h WHERE h.from <= :to AND (h.to is null OR h.to >= :from) AND h.person.uuid = :personCode"
+        val query = "SELECT h FROM HoliDay h JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from) AND h.person.uuid = :personCode"
         return entityManager
             .createQuery(query, HoliDay::class.java)
             .setParameter("from", from)

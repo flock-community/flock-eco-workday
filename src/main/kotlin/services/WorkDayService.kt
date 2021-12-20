@@ -41,7 +41,7 @@ class WorkDayService(
         .findAllByAssignmentPersonUserCode(userCode, pageable)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<WorkDay> {
-        val query = "SELECT it FROM WorkDay it WHERE it.from <= :to AND (it.to is null OR it.to >= :from)"
+        val query = "SELECT it FROM WorkDay it JOIN FETCH it.days WHERE it.from <= :to AND (it.to is null OR it.to >= :from)"
         return entityManager
             .createQuery(query, WorkDay::class.java)
             .setParameter("from", from)
@@ -50,7 +50,7 @@ class WorkDayService(
     }
 
     fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<WorkDay> {
-        val query = "SELECT it FROM WorkDay it WHERE it.from <= :to AND (it.to is null OR it.to >= :from) AND it.assignment.person.uuid = :personCode"
+        val query = "SELECT it FROM WorkDay it JOIN FETCH it.days WHERE it.from <= :to AND (it.to is null OR it.to >= :from) AND it.assignment.person.uuid = :personCode"
         return entityManager
             .createQuery(query, WorkDay::class.java)
             .setParameter("from", from)
