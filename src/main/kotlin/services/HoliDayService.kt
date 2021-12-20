@@ -28,23 +28,25 @@ class HoliDayService(
     fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = holidayRepository.findAllByPersonUserCode(userCode, pageable)
     fun findAllByStatus(status: Status) = holidayRepository.findAllByStatus(status)
 
-    fun findAllActive(from: LocalDate, to: LocalDate): MutableList<HoliDay> {
-        val query = "SELECT DISTINCT h FROM HoliDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from)"
+    fun findAllActive(from: LocalDate, to: LocalDate): Iterable<HoliDay> {
+        val query = "SELECT h FROM HoliDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from)"
         return entityManager
             .createQuery(query, HoliDay::class.java)
             .setParameter("from", from)
             .setParameter("to", to)
             .resultList
+            .toSet()
     }
 
-    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<HoliDay> {
-        val query = "SELECT DISTINCT h FROM HoliDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from) AND h.person.uuid = :personCode"
+    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): Iterable<HoliDay> {
+        val query = "SELECT h FROM HoliDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from) AND h.person.uuid = :personCode"
         return entityManager
             .createQuery(query, HoliDay::class.java)
             .setParameter("from", from)
             .setParameter("to", to)
             .setParameter("personCode", personCode)
             .resultList
+            .toSet()
     }
 
     fun create(form: HoliDayForm): HoliDay = form.copy(status = Status.REQUESTED)

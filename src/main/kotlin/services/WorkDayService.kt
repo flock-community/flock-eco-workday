@@ -40,23 +40,25 @@ class WorkDayService(
     fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = workDayRepository
         .findAllByAssignmentPersonUserCode(userCode, pageable)
 
-    fun findAllActive(from: LocalDate, to: LocalDate): MutableList<WorkDay> {
-        val query = "SELECT DISTINCT it FROM WorkDay it LEFT JOIN FETCH it.days WHERE it.from <= :to AND (it.to is null OR it.to >= :from)"
+    fun findAllActive(from: LocalDate, to: LocalDate): Iterable<WorkDay> {
+        val query = "SELECT it FROM WorkDay it LEFT JOIN FETCH it.days WHERE it.from <= :to AND (it.to is null OR it.to >= :from)"
         return entityManager
             .createQuery(query, WorkDay::class.java)
             .setParameter("from", from)
             .setParameter("to", to)
             .resultList
+            .toSet()
     }
 
-    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<WorkDay> {
-        val query = "SELECT DISTINCT it FROM WorkDay it LEFT JOIN FETCH it.days WHERE it.from <= :to AND (it.to is null OR it.to >= :from) AND it.assignment.person.uuid = :personCode"
+    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): Iterable<WorkDay> {
+        val query = "SELECT it FROM WorkDay it LEFT JOIN FETCH it.days WHERE it.from <= :to AND (it.to is null OR it.to >= :from) AND it.assignment.person.uuid = :personCode"
         return entityManager
             .createQuery(query, WorkDay::class.java)
             .setParameter("from", from)
             .setParameter("to", to)
             .setParameter("personCode", personCode)
             .resultList
+            .toSet()
     }
 
     fun findAllByStatus(status: Status) = workDayRepository.findAllByStatus(status)

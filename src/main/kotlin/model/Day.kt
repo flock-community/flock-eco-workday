@@ -36,7 +36,7 @@ abstract class Day(
 
 ) : Dayly, AbstractCodeEntity(id, code) {
     private fun getHoursPerDay(): Map<LocalDate, BigDecimal> =
-        when (this.days.isNullOrEmpty()) {
+        when (days.isNullOrEmpty()) {
             true -> {
                 val workingDaysCount = BigDecimal(countWorkDaysInPeriod(from, to))
                 val hoursADay = BigDecimal(hours)
