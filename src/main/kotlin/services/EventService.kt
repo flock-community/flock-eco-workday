@@ -34,6 +34,7 @@ class EventService(
             .setParameter("from", from)
             .setParameter("to", to)
             .resultList
+            .toSet()
     }
     fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): Iterable<Event> {
         val query = "SELECT e FROM Event e LEFT JOIN FETCH e.days INNER JOIN e.persons p WHERE  e.from <= :to AND (e.to is null OR e.to >= :from) AND p.uuid = :personCode"
