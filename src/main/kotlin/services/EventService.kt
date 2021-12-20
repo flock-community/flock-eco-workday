@@ -28,7 +28,7 @@ class EventService(
     fun findByCode(code: String) = eventRepository.findByCode(code).toNullable()
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Event> {
-        val query = "SELECT e FROM Event e WHERE e.from <= :to AND (e.to is null OR e.to >= :from)"
+        val query = "SELECT DISTINCT e FROM Event e LEFT JOIN FETCH e.days WHERE e.from <= :to AND (e.to is null OR e.to >= :from)"
         return entityManager
             .createQuery(query, Event::class.java)
             .setParameter("from", from)
@@ -36,7 +36,7 @@ class EventService(
             .resultList
     }
     fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<Event> {
-        val query = "SELECT e FROM Event e INNER JOIN e.persons p WHERE  e.from <= :to AND (e.to is null OR e.to >= :from) AND p.uuid = :personCode"
+        val query = "SELECT DISTINCT e FROM Event e LEFT JOIN FETCH e.days INNER JOIN e.persons p WHERE  e.from <= :to AND (e.to is null OR e.to >= :from) AND p.uuid = :personCode"
         return entityManager
             .createQuery(query, Event::class.java)
             .setParameter("from", from)
