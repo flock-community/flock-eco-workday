@@ -16,7 +16,7 @@ export function HomeFeature() {
           <Typography>You are logged in as {user && user.name}</Typography>
         </Grid>
         <Grid item xs={12}>
-          <Card>
+          <Card style={{overflow:"visible"}}>
             <CardHeader title={"Workdays"}/>
             <CardContent>
               <DashboardHoursChart/>
