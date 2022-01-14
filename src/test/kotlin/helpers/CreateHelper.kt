@@ -171,11 +171,13 @@ class CreateHelper(
         holiDayService.create(this)
     } ?: error("Cannot create sick day contract")
 
-    fun createEvent(from: LocalDate,
-                    to: LocalDate,
-                    hours: Double? = null,
-                    days: List<Double>? = null,
-                    persons: List<UUID>) = EventForm(
+    fun createEvent(
+        from: LocalDate,
+        to: LocalDate,
+        hours: Double? = null,
+        days: List<Double>? = null,
+        persons: List<UUID>
+    ) = EventForm(
         description = "Very description",
         from = from,
         to = to,

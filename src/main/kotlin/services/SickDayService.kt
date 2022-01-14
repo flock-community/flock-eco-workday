@@ -44,7 +44,7 @@ class SickDayService(
             .createQuery(query, SickDay::class.java)
             .setParameter("from", from)
             .setParameter("to", to)
-            .setParameter("personCode", personCode )
+            .setParameter("personCode", personCode)
             .resultList
             .toSet()
     }

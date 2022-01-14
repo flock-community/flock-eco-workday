@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import kotlin.test.assertEquals
 
-class ContractManagementTest: ContractAbstract() {
+class ContractManagementTest : ContractAbstract() {
 
     @Test
     fun `total cost for internal contract when it is within request date range `() {
@@ -13,7 +13,7 @@ class ContractManagementTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = LocalDate.of(2021, 12, 15)
 
-        val periodStart = LocalDate.of(2021, 12,1)
+        val periodStart = LocalDate.of(2021, 12, 1)
         val periodEnd = LocalDate.of(2021, 12, 10)
 
         val cost = createContractManagement(contractStart, contractEnd, 3000.0)
@@ -26,7 +26,7 @@ class ContractManagementTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 15)
         val contractEnd = LocalDate.of(2021, 12, 31)
 
-        val periodStart = LocalDate.of(2021, 12,1)
+        val periodStart = LocalDate.of(2021, 12, 1)
         val periodEnd = LocalDate.of(2021, 12, 31)
 
         val cost = createContractManagement(contractStart, contractEnd, 1234.56)
@@ -40,7 +40,7 @@ class ContractManagementTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = LocalDate.of(2022, 1, 31)
 
-        val periodStart = LocalDate.of(2021, 11,1)
+        val periodStart = LocalDate.of(2021, 11, 1)
         val periodEnd = LocalDate.of(2022, 1, 15)
 
         val cost = createContractManagement(contractStart, contractEnd, 3000.0)
@@ -54,7 +54,7 @@ class ContractManagementTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = null
 
-        val periodStart = LocalDate.of(2021, 11,1)
+        val periodStart = LocalDate.of(2021, 11, 1)
         val periodEnd = LocalDate.of(2022, 1, 15)
 
         val cost = createContractManagement(contractStart, contractEnd, 3000.0)
@@ -68,7 +68,7 @@ class ContractManagementTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = null
 
-        val periodStart = LocalDate.of(2021, 1,1)
+        val periodStart = LocalDate.of(2021, 1, 1)
         val periodEnd = LocalDate.of(2022, 1, 15)
 
         val cost = createContractManagement(contractStart, contractEnd, 41985.58)
@@ -82,7 +82,7 @@ class ContractManagementTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = LocalDate.of(2021, 12, 15)
 
-        val periodStart = LocalDate.of(2021, 12,16)
+        val periodStart = LocalDate.of(2021, 12, 16)
         val periodEnd = LocalDate.of(2022, 12, 31)
 
         val cost = createContractManagement(contractStart, contractEnd, 41985.58)
@@ -96,7 +96,7 @@ class ContractManagementTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = null
 
-        val periodStart = LocalDate.of(2021, 12,1)
+        val periodStart = LocalDate.of(2021, 12, 1)
         val periodEnd = LocalDate.of(2021, 12, 31)
 
         val cost = createContractManagement(contractStart, contractEnd, 41985.58)
@@ -110,7 +110,7 @@ class ContractManagementTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = null
 
-        val periodStart = LocalDate.of(2021, 12,1)
+        val periodStart = LocalDate.of(2021, 12, 1)
         val periodEnd = LocalDate.of(2021, 12, 2)
 
         val cost = createContractManagement(contractStart, contractEnd, 3100.0)

@@ -26,7 +26,7 @@ data class ContractManagement(
 
 ) : Contract(id, code, from, to, person, ContractType.MANAGEMENT) {
     override fun totalCostsInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
-       return totalCostInPeriod(from, to, monthlyFee)
+        return totalCostInPeriod(from, to, monthlyFee)
     }
 
     override fun totalDaysInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
