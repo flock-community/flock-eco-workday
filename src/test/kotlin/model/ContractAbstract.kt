@@ -22,7 +22,8 @@ abstract class ContractAbstract {
     )
 
     fun createContractExternal(startDate: LocalDate, endDate: LocalDate? = null, hourlyRate: Double, hoursPerWeek: Int): ContractExternal {
-        return  ContractExternal(id = 1L,
+        return ContractExternal(
+            id = 1L,
             code = UUID.randomUUID().toString(),
             person = testPerson,
             from = startDate,
@@ -34,7 +35,8 @@ abstract class ContractAbstract {
     }
 
     fun createContractManagement(startDate: LocalDate, endDate: LocalDate? = null, salary: Double): ContractManagement {
-        return  ContractManagement(id = 1L,
+        return ContractManagement(
+            id = 1L,
             code = UUID.randomUUID().toString(),
             person = testPerson,
             from = startDate,
@@ -44,7 +46,8 @@ abstract class ContractAbstract {
     }
 
     fun createContractInternal(startDate: LocalDate, endDate: LocalDate? = null, salary: Double): ContractInternal {
-        return  ContractInternal(id = 1L,
+        return ContractInternal(
+            id = 1L,
             code = UUID.randomUUID().toString(),
             person = testPerson,
             from = startDate,

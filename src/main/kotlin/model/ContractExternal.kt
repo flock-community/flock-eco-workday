@@ -26,8 +26,8 @@ data class ContractExternal(
 
 ) : Hourly, Contract(id, code, from, to, person, ContractType.EXTERNAL) {
     override fun totalCostsInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
-       return totalDaysInPeriod(from, to, hoursPerWeek)
-           .times(hourlyRate.toBigDecimal())
+        return totalDaysInPeriod(from, to, hoursPerWeek)
+            .times(hourlyRate.toBigDecimal())
     }
 
     override fun totalDaysInPeriod(from: LocalDate, to: LocalDate): BigDecimal {

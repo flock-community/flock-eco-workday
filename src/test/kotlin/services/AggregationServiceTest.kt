@@ -329,7 +329,6 @@ class AggregationServiceTest(
         val hoursSecondAssignment = listOf(1.0, 2.0, 3.0, 4.0, 5.0, 0.0, 0.0, 9.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 9.0, 9.0)
         val hoursThirdAssignment = listOf(1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 5.0, 6.0, 7.0, 0.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0)
 
-
         val workday1 = createHelper.createWorkDay(firstAssignment, startDate.minusDays(10), endDate, hoursFullMonth.sum(), hoursFullMonth)
         val workday2 = createHelper.createWorkDay(secondAssignment, startDate.plusDays(5), endDate.plusDays(2), hoursSecondAssignment.sum(), hoursSecondAssignment)
         val workday3 = createHelper.createWorkDayWithoutDays(secondAssignmentFlock, startDate, startDate.plusDays(2), 12.0, null)
@@ -337,7 +336,7 @@ class AggregationServiceTest(
         val workday5 = createHelper.createWorkDay(thirdAssignment, startDate.plusDays(10), endDate.minusDays(5), hoursThirdAssignment.sum(), hoursThirdAssignment)
         val workday6 = createHelper.createWorkDayWithoutDays(fourthAssignment, startDate.minusDays(1), endDate, 192.0, null)
         val workday7 = createHelper.createWorkDayWithoutDays(fifthAssignment, startDate.minusDays(2), startDate.plusDays(2), 15.0, null)
-        return listOf(workday1,workday2, workday3, workday4, workday5, workday6, workday7)
+        return listOf(workday1, workday2, workday3, workday4, workday5, workday6, workday7)
     }
 
     @Test
@@ -347,8 +346,8 @@ class AggregationServiceTest(
         val workdays = createMockDataForClientHourOverview(startDate, endDate)
 
         val result = aggregationService.personClientRevenueOverview(workdays, startDate, endDate)
-        val thomas = result.filter { it.key.name == "Thomas Creativelastname"}.values.flatMap { it.clients }
-        val jesse = result.filter { it.key.name == "Jesse Pinkman"}.values.flatMap { it.clients }
+        val thomas = result.filter { it.key.name == "Thomas Creativelastname" }.values.flatMap { it.clients }
+        val jesse = result.filter { it.key.name == "Jesse Pinkman" }.values.flatMap { it.clients }
 
         val thomasClientsFlock = thomas.first { it.client.name == "Flock.community" }
         val thomasClientsOther = thomas.first { it.client.name == "Other.client" }
@@ -372,8 +371,8 @@ class AggregationServiceTest(
         val assignment = createHelper.createAssignment(client, person2, from, to)
         createHelper.createHoliDay(person2, from, to)
         createHelper.createWorkDay(assignment, from, to, null, null)
-        createHelper.createEvent(from,to, 40.0, listOf(8.0,8.0,8.0,8.0,8.0), listOf(person1.uuid, person2.uuid))
-        createHelper.createEvent(from,to, 40.0, listOf(8.0,8.0,8.0,8.0,8.0), listOf(person2.uuid))
+        createHelper.createEvent(from, to, 40.0, listOf(8.0, 8.0, 8.0, 8.0, 8.0), listOf(person1.uuid, person2.uuid))
+        createHelper.createEvent(from, to, 40.0, listOf(8.0, 8.0, 8.0, 8.0, 8.0), listOf(person2.uuid))
         createHelper.createSickDay(person1, from, to)
         val result = aggregationService.totalPerPerson(from, to, person2)
         assertEquals(2, result.contractTypes.size)

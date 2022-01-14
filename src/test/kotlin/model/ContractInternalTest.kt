@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import kotlin.test.assertEquals
 
-class ContractInternalTest: ContractAbstract() {
+class ContractInternalTest : ContractAbstract() {
 
     @Test
     fun `total cost for internal contract when it is within request date range `() {
@@ -13,7 +13,7 @@ class ContractInternalTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = LocalDate.of(2021, 12, 15)
 
-        val periodStart = LocalDate.of(2021, 12,1)
+        val periodStart = LocalDate.of(2021, 12, 1)
         val periodEnd = LocalDate.of(2021, 12, 10)
 
         val cost = createContractInternal(contractStart, contractEnd, 3000.0)
@@ -26,7 +26,7 @@ class ContractInternalTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 15)
         val contractEnd = LocalDate.of(2021, 12, 31)
 
-        val periodStart = LocalDate.of(2021, 12,1)
+        val periodStart = LocalDate.of(2021, 12, 1)
         val periodEnd = LocalDate.of(2021, 12, 31)
 
         val cost = createContractInternal(contractStart, contractEnd, 1234.56)
@@ -40,7 +40,7 @@ class ContractInternalTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = LocalDate.of(2022, 1, 31)
 
-        val periodStart = LocalDate.of(2021, 11,1)
+        val periodStart = LocalDate.of(2021, 11, 1)
         val periodEnd = LocalDate.of(2022, 1, 15)
 
         val cost = createContractInternal(contractStart, contractEnd, 3000.0)
@@ -54,7 +54,7 @@ class ContractInternalTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = null
 
-        val periodStart = LocalDate.of(2021, 11,1)
+        val periodStart = LocalDate.of(2021, 11, 1)
         val periodEnd = LocalDate.of(2022, 1, 15)
 
         val cost = createContractInternal(contractStart, contractEnd, 3000.0)
@@ -63,13 +63,13 @@ class ContractInternalTest: ContractAbstract() {
         assertEquals(BigDecimal("4451.6129032258"), cost)
     }
 
-    //CASE 1
+    // CASE 1
     @Test
     fun `total cost of internal contract when contract has no end date`() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = null
 
-        val periodStart = LocalDate.of(2021, 1,1)
+        val periodStart = LocalDate.of(2021, 1, 1)
         val periodEnd = LocalDate.of(2022, 1, 15)
 
         val cost = createContractInternal(contractStart, contractEnd, 41985.58)
@@ -83,7 +83,7 @@ class ContractInternalTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = LocalDate.of(2021, 12, 15)
 
-        val periodStart = LocalDate.of(2021, 12,16)
+        val periodStart = LocalDate.of(2021, 12, 16)
         val periodEnd = LocalDate.of(2022, 12, 31)
 
         val cost = createContractInternal(contractStart, contractEnd, 41985.58)
@@ -97,7 +97,7 @@ class ContractInternalTest: ContractAbstract() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = null
 
-        val periodStart = LocalDate.of(2021, 12,1)
+        val periodStart = LocalDate.of(2021, 12, 1)
         val periodEnd = LocalDate.of(2021, 12, 31)
 
         val cost = createContractInternal(contractStart, contractEnd, 41985.58)
@@ -106,13 +106,13 @@ class ContractInternalTest: ContractAbstract() {
         assertEquals(BigDecimal("41985.5800000000"), cost)
     }
 
-    //TODO goes wrong with rounding
+    // TODO goes wrong with rounding
     @Test
     fun `total cost of internal contract when the date range is between two days`() {
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = null
 
-        val periodStart = LocalDate.of(2021, 12,1)
+        val periodStart = LocalDate.of(2021, 12, 1)
         val periodEnd = LocalDate.of(2021, 12, 2)
 
         val cost = createContractInternal(contractStart, contractEnd, 3100.0)

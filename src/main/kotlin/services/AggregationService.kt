@@ -29,26 +29,25 @@ class AggregationService(
     private val workDayService: WorkDayService
 ) {
 
-
-   fun holidayReportMe(year: Int, person: Person): AggregationHoliday {
-       val from = YearMonth.of(year, 1).atDay(1)
-       val to = YearMonth.of(year, 12).atEndOfMonth()
-       val period = FromToPeriod(from, to)
-       val data = dataService.findAllData(from, to, person.uuid)
-       return AggregationHoliday(
-           name = person.getFullName(),
-           contractHours = data.contract
-               .filterIsInstance(ContractInternal::class.java)
-               .map { it.totalHolidayHoursInPeriod(period) }
-               .sum(),
-           plusHours = data.holiDay
-               .filter { it.type == HolidayType.PLUSDAY }
-               .totalHoursInPeriod(from, to),
-           holidayHours = data.holiDay
-               .filter { it.type == HolidayType.HOLIDAY }
-               .totalHoursInPeriod(from, to)
-       )
-   }
+    fun holidayReportMe(year: Int, person: Person): AggregationHoliday {
+        val from = YearMonth.of(year, 1).atDay(1)
+        val to = YearMonth.of(year, 12).atEndOfMonth()
+        val period = FromToPeriod(from, to)
+        val data = dataService.findAllData(from, to, person.uuid)
+        return AggregationHoliday(
+            name = person.getFullName(),
+            contractHours = data.contract
+                .filterIsInstance(ContractInternal::class.java)
+                .map { it.totalHolidayHoursInPeriod(period) }
+                .sum(),
+            plusHours = data.holiDay
+                .filter { it.type == HolidayType.PLUSDAY }
+                .totalHoursInPeriod(from, to),
+            holidayHours = data.holiDay
+                .filter { it.type == HolidayType.HOLIDAY }
+                .totalHoursInPeriod(from, to)
+        )
+    }
     fun holidayReport(year: Int): List<AggregationHoliday> {
         val from = YearMonth.of(year, 1).atDay(1)
         val to = YearMonth.of(year, 12).atEndOfMonth()
