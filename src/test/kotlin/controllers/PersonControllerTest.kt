@@ -11,6 +11,7 @@ import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.services.PersonService
 import org.hamcrest.Matchers
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,6 +41,7 @@ import java.util.UUID
 @AutoConfigureMockMvc
 @Import(CreateHelper::class)
 @ActiveProfiles(profiles = ["test"])
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PersonControllerTest {
     private val baseUrl: String = "/api/persons"
 
@@ -57,6 +59,37 @@ class PersonControllerTest {
 
     @Autowired
     private lateinit var personService: PersonService
+
+    @BeforeAll
+    fun setUp() {
+        createActiveAndInactivePerson()
+    }
+    
+    private fun createActiveAndInactivePerson() {
+        val activeUserForm = PersonForm(
+            firstname = "Morris",
+            lastname = "Moss",
+            email = "morris@moss.com",
+            position = "",
+            number = null,
+            userCode = null,
+            active = true
+        )
+
+        personService.create(activeUserForm)
+
+        val inactiveUserForm = PersonForm(
+            firstname = "Pieter",
+            lastname = "Post",
+            email = "pieter@post.nl",
+            position = "",
+            number = null,
+            userCode = null,
+            active = false
+        )
+
+        personService.create(inactiveUserForm)
+    }
 
     fun createUser() = UserAccountPasswordForm(
         email = UUID.randomUUID().toString(),
@@ -311,8 +344,6 @@ class PersonControllerTest {
 
     @Test
     fun `expect to retrieve both active and inactive users without query params`() {
-        createActiveAndInactivePerson()
-
         val user = createUser()
 
         mvc.perform(
@@ -328,8 +359,6 @@ class PersonControllerTest {
 
     @Test
     fun `expect to retrieve only active users with active=true query param`() {
-        createActiveAndInactivePerson()
-
         val user = createUser()
 
         mvc.perform(
@@ -340,31 +369,5 @@ class PersonControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.*.active",
                 Matchers.everyItem(Matchers.`is`(true))))
-    }
-
-    private fun createActiveAndInactivePerson() {
-        val activeUserForm = PersonForm(
-            firstname = "Morris",
-            lastname = "Moss",
-            email = "morris@moss.com",
-            position = "",
-            number = null,
-            userCode = null,
-            active = true
-        )
-
-        personService.create(activeUserForm)
-
-        val inactiveUserForm = PersonForm(
-            firstname = "Pieter",
-            lastname = "Post",
-            email = "pieter@post.nl",
-            position = "",
-            number = null,
-            userCode = null,
-            active = false
-        )
-
-        personService.create(inactiveUserForm)
     }
 }
