@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouteMatch } from "react-router-dom";
-import {Grid, Card, TableContainer, Table, TableBody, TableCell, TableRow} from "@material-ui/core";
+import { Grid, Card, TableContainer, Table, TableBody, TableCell, TableRow } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import { PersonService } from "./PersonService";
