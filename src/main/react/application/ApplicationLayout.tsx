@@ -9,6 +9,8 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import Typography from "@material-ui/core/Typography";
 import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles } from "@material-ui/core/styles";
+import { Link as RouterLink } from "react-router-dom";
+import {Link} from "@material-ui/core";
 
 const useStyles = makeStyles({
   root: {
@@ -65,9 +67,16 @@ export function ApplicationLayout({ open, onDrawer }: ApplicationLayoutProps) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" color="inherit" className={classes.grow}>
+          <Link
+            variant="h6"
+            color="inherit"
+            className={classes.grow}
+            underline="none"
+            component={RouterLink}
+            to="/"
+          >
             Flock.
-          </Typography>
+          </Link>
 
           <div>
             <IconButton
