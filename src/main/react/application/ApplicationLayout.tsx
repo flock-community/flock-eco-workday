@@ -10,7 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link as RouterLink } from "react-router-dom";
-import {Link} from "@material-ui/core";
+import { Link } from "@material-ui/core";
 
 const useStyles = makeStyles({
   root: {
