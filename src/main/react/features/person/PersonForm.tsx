@@ -105,9 +105,9 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
     <Formik
       initialValues={{
         ...PERSON_FORM_SCHEMA.cast(),
+        active: true,
         ...item,
-        userCode: item?.user,
-        active: true
+        userCode: item?.user
       }}
       onSubmit={onSubmit}
       validationSchema={PERSON_FORM_SCHEMA}
