@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.security.Principal
@@ -40,9 +41,10 @@ class PersonController(
 
     @GetMapping
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
-    fun findAll(pageable: Pageable, principal: Principal) = service
-        .findAll(pageable)
-        .toResponse()
+    fun findAll(pageable: Pageable, principal: Principal, @RequestParam active: Boolean?): ResponseEntity<List<Person>> {
+        val page = if (active == null) service.findAll(pageable) else service.findAll(pageable, active)
+        return page.toResponse()
+    }
 
     @GetMapping("/{uuid}")
     @PreAuthorize("hasAuthority('PersonAuthority.READ')")

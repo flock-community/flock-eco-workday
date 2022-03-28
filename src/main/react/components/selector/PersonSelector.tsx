@@ -31,6 +31,9 @@ export function PersonSelector({
 
   useEffect(() => {
     PersonService.findAllByPage({
+      query: {
+        active: true,
+      },
       page: 0,
       size: 100,
       sort: "lastname",

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZonedDateTime
 import java.util.*
 
 @Service
@@ -22,6 +23,16 @@ class PersonService(
             else -> null
         }
 
+        val lastActiveAt = when {
+            it.active -> null
+            // Form entity is inactive, but saved entity is active, which means the
+            // entity is made inactive in this request
+            this.active -> ZonedDateTime.now()
+            // Saved entity was already inactive, don't update last active at
+            !this.active -> this.lastActiveAt
+            else -> throw IllegalStateException("Booleans broke, the saved entity is neither active nor inactive")
+        }
+
         return Person(
             id = this.id,
             uuid = this.uuid,
@@ -30,6 +41,8 @@ class PersonService(
             email = it.email,
             position = it.position,
             number = it.number,
+            active = it.active,
+            lastActiveAt = lastActiveAt,
             reminders = it.reminders,
             updates = it.updates,
             user = user
@@ -40,6 +53,9 @@ class PersonService(
 
     fun findAll(pageable: Pageable): Page<Person> = repository
         .findAll(pageable)
+
+    fun findAll(pageable: Pageable, active: Boolean): Page<Person> = repository
+        .findAllByActive(pageable, active)
 
     fun findByUuid(code: UUID): Person? = repository
         .findByUuid(code)
@@ -70,7 +86,9 @@ class PersonService(
             email = form.email,
             position = form.position,
             number = form.number,
-            user = user
+            user = user,
+            active = form.active,
+            lastActiveAt = if (form.active) null else ZonedDateTime.now()
         ).save()
     }
 

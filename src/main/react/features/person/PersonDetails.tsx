@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouteMatch } from "react-router-dom";
-import { Grid, Card } from "@material-ui/core";
+import {Grid, Card, TableContainer, Table, TableBody, TableCell, TableRow} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import { PersonService } from "./PersonService";
@@ -70,11 +70,35 @@ export const PersonDetails = (props) => {
               onEdit={handleEditDialog}
               onDelete={handleDelDialog}
             />
-            <ul>
-              <li>firstname: {person.firstname}</li>
-              <li>lastname: {person.lastname}</li>
-              <li>email: {person.email}</li>
-            </ul>
+            <TableContainer>
+              <Table>
+                <TableBody>
+                  <TableRow>
+                    <TableCell component="th">First name</TableCell>
+                    <TableCell>{ person.firstname }</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th">Last name</TableCell>
+                    <TableCell>{ person.lastname }</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th">Email address</TableCell>
+                    <TableCell>{ person.email }</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th">Active</TableCell>
+                    <TableCell>{ person.active ? 'Yes' : 'No' }</TableCell>
+                  </TableRow>
+                  { person.active ||
+                    <TableRow>
+                      <TableCell component="th">Last active at</TableCell>
+                      <TableCell>{ new Date(person.lastActiveAt).toLocaleString() }</TableCell>
+                    </TableRow>
+                  }
+                </TableBody>
+              </Table>
+            </TableContainer>
+
           </Card>
         </Grid>
       </Grid>

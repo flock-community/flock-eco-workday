@@ -10,6 +10,7 @@ export type Person = {
   number: string;
   position: string;
   user: string;
+  active: boolean;
 };
 
 const path = "/api/persons";

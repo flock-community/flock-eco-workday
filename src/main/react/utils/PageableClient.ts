@@ -7,6 +7,7 @@ type PageInput = {
   page: number;
   size: number;
   sort: string;
+  query: object;
 };
 
 export function PageableClient<T>(path: string, internalize?: (input: T) => T) {
@@ -14,16 +15,19 @@ export function PageableClient<T>(path: string, internalize?: (input: T) => T) {
     page,
     size,
     sort,
+    query
   }) => {
     const opts = {
       method: "GET",
     };
-    const params = { page, size, sort };
-    const query = Object.keys(params)
+
+    const params = Object.assign({ page, size, sort}, query)
+
+    const queryString = Object.keys(params)
       .filter((key) => params[key])
       .map((key) => `${key}=${params[key]}`)
       .join("&");
-    return fetch(`${path}?${query}`, opts).then((res) =>
+    return fetch(`${path}?${queryString}`, opts).then((res) =>
       res
         .json()
         .then((json) => {

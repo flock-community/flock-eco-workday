@@ -88,6 +88,15 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
             fullWidth
           />
         </Grid>
+        <Grid item xs={12}>
+          <Field
+            name="active"
+            type="checkbox"
+            Label={{ label: "Active" }}
+            component={CheckboxWithLabel}
+            fullWidth
+          />
+        </Grid>
       </Grid>
     </Form>
   );
@@ -98,6 +107,7 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
         ...PERSON_FORM_SCHEMA.cast(),
         ...item,
         userCode: item?.user,
+        active: true
       }}
       onSubmit={onSubmit}
       validationSchema={PERSON_FORM_SCHEMA}
