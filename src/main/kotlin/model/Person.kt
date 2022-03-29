@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonIdentityReference
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.feature.user.model.User
+import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.*
 import javax.persistence.*
@@ -25,7 +26,7 @@ data class Person(
     val number: String?,
 
     val active: Boolean = true,
-    val lastActiveAt: ZonedDateTime? = null,
+    val lastActiveAt: Instant? = null,
 
     val reminders: Boolean = false,
     val updates: Boolean = false,

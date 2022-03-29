@@ -6,6 +6,8 @@ import community.flock.eco.workday.repository.PersonRepository
 import mocks.users
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
+import java.time.Instant
+import java.time.Period
 import java.time.ZonedDateTime
 
 @Component
@@ -57,7 +59,7 @@ class LoadPersonData(
         number = null,
         user = user,
         active = active,
-        lastActiveAt = if (!active) ZonedDateTime.now().minusMonths(6) else null
+        lastActiveAt = if (!active) Instant.now().minus(Period.ofDays(180)) else null
     ).save()
 
     /**
