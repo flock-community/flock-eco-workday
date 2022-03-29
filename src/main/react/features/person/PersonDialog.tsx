@@ -2,7 +2,7 @@ import React from "react";
 import { Dialog, Divider, DialogContent } from "@material-ui/core";
 import PersonAdd from "@material-ui/icons/PersonAdd";
 import { PersonForm, PERSON_FORM_ID } from "./PersonForm";
-import { PersonService } from "./PersonService";
+import { PersonClient } from "../../clients/PersonClient";
 import { isEmptyObject } from "../../utils/validation";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogHeader, DialogFooter } from "../../components/dialog";
@@ -19,9 +19,9 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
 
   const handleSubmit = (values) => {
     if (item) {
-      PersonService.put(item.uuid, values).then(() => successfulSubmit());
+      PersonClient.put(item.uuid, values).then(() => successfulSubmit());
     } else {
-      PersonService.post(values).then(() => successfulSubmit());
+      PersonClient.post(values).then(() => successfulSubmit());
     }
   };
 

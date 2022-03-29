@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { PersonTableHead } from "./PersonTableHead";
-import { PersonService } from "../PersonService";
+import { PersonClient } from "../../../clients/PersonClient";
 import { AddActionFab } from "../../../components/FabButtons";
 import { PersonDialog } from "../PersonDialog";
 import { CheckBox } from "@material-ui/icons";
@@ -43,7 +43,7 @@ export const PersonTable = () => {
 
   useEffect(() => {
     // eslint-disable-next-line no-shadow
-    PersonService.findAllByPage({ page, size, sort: "lastname" }).then(
+    PersonClient.findAllByPage({ page, size, sort: "lastname" }).then(
       (res) => {
         setPersonList(res.list);
         setCount(res.total);

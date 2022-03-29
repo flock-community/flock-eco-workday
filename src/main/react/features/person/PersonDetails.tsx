@@ -3,7 +3,7 @@ import { useRouteMatch } from "react-router-dom";
 import { Grid, Card, TableContainer, Table, TableBody, TableCell, TableRow } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
-import { PersonService } from "./PersonService";
+import { PersonClient } from "../../clients/PersonClient";
 import { PersonWidget } from "../../components/person-widget/PersonWidget";
 import { useHistory } from "react-router-dom";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
@@ -29,7 +29,7 @@ export const PersonDetails = (props) => {
   const classes = useStyle();
 
   useEffect(() => {
-    PersonService.get(params.personId).then((person) => {
+    PersonClient.get(params.personId).then((person) => {
       setPerson(person);
     });
   }, [reload]);
@@ -46,7 +46,7 @@ export const PersonDetails = (props) => {
   };
 
   const handleDelete = () => {
-    PersonService.delete(person?.uuid).then(() => {
+    PersonClient.delete(person?.uuid).then(() => {
       handleDelDialog();
       history.push("/person");
     });
@@ -92,7 +92,7 @@ export const PersonDetails = (props) => {
                   { person.active ||
                     <TableRow>
                       <TableCell component="th">Last active at</TableCell>
-                      <TableCell>{ new Date(person.lastActiveAt).toLocaleString() }</TableCell>
+                      <TableCell>{ person.lastActiveAt.toLocaleString() }</TableCell>
                     </TableRow>
                   }
                 </TableBody>
