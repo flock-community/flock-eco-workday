@@ -42,7 +42,9 @@ class PersonController(
     @GetMapping
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
     fun findAll(pageable: Pageable, principal: Principal, @RequestParam active: Boolean?): ResponseEntity<List<Person>> {
-        val page = if (active == null) service.findAll(pageable) else service.findAll(pageable, active)
+        val page = active
+            ?.let { service.findAllByActive(pageable, active) }
+            ?: service.findAll(pageable)
         return page.toResponse()
     }
 
@@ -71,6 +73,7 @@ class PersonController(
             form.copy(userCode = userUui)
                 .let { service.create(it) }
         }
+
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @PutMapping("/{code}")
