@@ -23,16 +23,6 @@ class PersonService(
             else -> null
         }
 
-        val lastActiveAt = when {
-            it.active -> null
-            // Form entity is inactive, but saved entity is active, which means the
-            // entity is made inactive in this request
-            this.active -> ZonedDateTime.now()
-            // Saved entity was already inactive, don't update last active at
-            !this.active -> this.lastActiveAt
-            else -> throw IllegalStateException("Booleans broke, the saved entity is neither active nor inactive")
-        }
-
         return Person(
             id = this.id,
             uuid = this.uuid,
@@ -42,19 +32,37 @@ class PersonService(
             position = it.position,
             number = it.number,
             active = it.active,
-            lastActiveAt = lastActiveAt,
+            lastActiveAt = lastActiveAt(it),
             reminders = it.reminders,
             updates = it.updates,
             user = user
         )
     }
 
+    /**
+     * Last active at is the point at which the person makes the transition from
+     * active to inactive.
+     */
+    private fun Person.lastActiveAt(form: PersonForm): ZonedDateTime? =
+        when {
+            // When the entity is active, last active at is not relevant
+            form.active -> null
+            // Form entity is inactive, but saved entity is active, which means the
+            // entity is made inactive in this request
+            this.active -> ZonedDateTime.now()
+            // Saved entity was already inactive, don't update last active at
+            // Other properties could be updated, but as long as the person stays
+            // inactive, we should keep the last active at
+            !this.active -> this.lastActiveAt
+            else -> throw IllegalStateException("Booleans broke, the saved entity is neither active nor inactive")
+        }
+
     private fun Person.save(): Person = repository.save(this)
 
     fun findAll(pageable: Pageable): Page<Person> = repository
         .findAll(pageable)
 
-    fun findAll(pageable: Pageable, active: Boolean): Page<Person> = repository
+    fun findAllByActive(pageable: Pageable, active: Boolean): Page<Person> = repository
         .findAllByActive(pageable, active)
 
     fun findByUuid(code: UUID): Person? = repository
