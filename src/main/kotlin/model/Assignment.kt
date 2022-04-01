@@ -1,5 +1,6 @@
 package community.flock.eco.workday.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
 import community.flock.eco.workday.interfaces.Hourly
@@ -29,7 +30,11 @@ data class Assignment(
     val client: Client,
 
     @ManyToOne
-    val person: Person
+    val person: Person,
+
+    @ManyToOne
+    @JsonIgnoreProperties("assignments")
+    val project: Project? = null
 
 ) : Hourly, Period, AbstractCodeEntity(id, code) {
     override fun equals(obj: Any?) = super.equals(obj)

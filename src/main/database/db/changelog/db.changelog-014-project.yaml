@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-014-project-1
+      author: timsmelik
+      changes:
+        - createTable:
+            tableName: project
+            columns:
+              - column:
+                  name: id
+                  autoIncrement: true
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: projectPK
+              - column:
+                  name: code
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+        - addColumn:
+            tableName: assignment
+            columns:
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    references: project(id)
+                    foreignKeyName: assignmentProjectFK
+                    nullable: true
+

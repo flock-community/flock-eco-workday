@@ -30,9 +30,17 @@ function findAllByPersonId(personId) {
     .catch((e) => addError(e.message));
 }
 
+function findAllByProject(project) {
+  return fetch(`${path}?projectCode=${project.code}`)
+    .then(ExtractJSON)
+    .then((data) => data.map(internalize))
+    .catch((e) => addError(e.message));
+}
+
 export const AssignmentClient = {
   ...resourceClient,
   ...pageableClient,
   findByCode,
   findAllByPersonId,
+  findAllByProject,
 };

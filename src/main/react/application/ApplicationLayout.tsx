@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -6,11 +6,10 @@ import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import Typography from "@material-ui/core/Typography";
 import MenuItem from "@material-ui/core/MenuItem";
-import { makeStyles } from "@material-ui/core/styles";
-import { Link as RouterLink } from "react-router-dom";
-import { Link } from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
+import {Link as RouterLink} from "react-router-dom";
+import {Link} from "@material-ui/core";
 
 const useStyles = makeStyles({
   root: {
@@ -26,11 +25,10 @@ const useStyles = makeStyles({
 });
 
 type ApplicationLayoutProps = {
-  open: boolean;
   onDrawer: () => void;
 };
 
-export function ApplicationLayout({ open, onDrawer }: ApplicationLayoutProps) {
+export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
   const classes = useStyles();
 
   const [state, setState] = useState({
@@ -80,7 +78,7 @@ export function ApplicationLayout({ open, onDrawer }: ApplicationLayoutProps) {
 
           <div>
             <IconButton
-              aria-owns={open ? "menu-appbar" : undefined}
+              aria-owns={state.anchorEl != null ? "menu-appbar" : undefined}
               aria-haspopup="true"
               onClick={handleMenu}
               color="inherit"
