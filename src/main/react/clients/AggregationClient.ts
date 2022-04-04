@@ -1,16 +1,24 @@
-import { addError } from "../hooks/ErrorHook";
-import { ExtractJSON } from "../utils/ResourceClient";
+import {addError} from "../hooks/ErrorHook";
+import {ExtractJSON} from "../utils/ResourceClient";
 import {AggregationClientPersonOverview} from "../graphql/aggregation";
 
 const path = "/api/aggregations";
+
+export type ClientGrossRevenue = {
+  name: string;
+  revenueGross: number;
+}
 
 export const totalPerClientByYear = (year) => {
   const opts = {
     method: "GET",
   };
   return fetch(`${path}/total-per-client?year=${year}`, opts)
-    .then(ExtractJSON)
-    .catch((e) => addError(e.message));
+    .then(json => ExtractJSON<ClientGrossRevenue[]>(json))
+    .catch((e) => {
+      addError(e.message);
+      return e;
+    });
 };
 export const totalPerPersonByYear = (year) => {
   const opts = {
