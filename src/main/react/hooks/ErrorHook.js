@@ -4,6 +4,7 @@ let errorStore = [];
 const listeners = [];
 const ErrorOpenTimeMilliSeconds = 5000;
 
+// FIXME: Accept the error (instead of the message) as argument and return it
 export function addError(error) {
   const errorObject = {
     message: error,
