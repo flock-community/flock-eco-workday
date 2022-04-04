@@ -11,14 +11,15 @@ import {ProjectSelectorField} from "../../components/fields/ProjectSelectorField
 import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
 import ProjectDialog from "../project/ProjectDialog";
+import {Assignment, AssignmentFormDto} from "../../clients/AssignmentClient";
 
 // form id as a reference point for buttons outside of the <form></form> scope to be
 // able to submit this form
 export const ASSIGNMENT_FORM_ID = "assignment-form";
 
 type AssignmentFormProps = {
-  value: any;
-  onSubmit: (item: any) => void;
+  value: Assignment
+  onSubmit: (item: AssignmentFormDto) => void;
 };
 export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
   const [projectDialogOpen, setProjectDialogOpen] = useState(false)
@@ -122,7 +123,7 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
     to: value.to,
     clientCode: value.client.code,
     personId: value.person.uuid,
-    projectCode: value.project.code
+    projectCode: value.project?.code
   };
   return (
     <>

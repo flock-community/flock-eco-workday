@@ -1,16 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import PropTypes from "prop-types";
-import {
-  Card,
-  CardContent,
-  FormControl,
-  FormControlProps,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@material-ui/core";
+import {Card, CardContent, FormControl, FormControlProps, InputLabel, MenuItem, Select,} from "@material-ui/core";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import { ClientClient } from "../../clients/ClientClient";
+import {Client, ClientClient} from "../../clients/ClientClient";
 
 type ClientSelectorProps = FormControlProps & {
   value?: string;
@@ -29,7 +21,7 @@ export function ClientSelector({
   error,
   ...props
 }: ClientSelectorProps) {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<Client[]>([]);
   const [state, setState] = useState(value);
 
   useEffect(() => {

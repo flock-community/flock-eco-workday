@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
-import { Dialog, DialogTitle } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import React, {useEffect, useState} from "react";
+import {Dialog, DialogTitle} from "@material-ui/core";
 import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
-import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import {ConfirmDialog} from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
-import { ClientClient } from "../../clients/ClientClient";
-import { CLIENT_FORM_ID, ClientForm } from "./ClientForm";
-import { isDefined } from "../../utils/validation";
+import {ClientClient} from "../../clients/ClientClient";
+import {CLIENT_FORM_ID, ClientForm} from "./ClientForm";
 
 type ClientDialogProps = {
   open: boolean;
@@ -39,7 +36,7 @@ export function ClientDialog({ open, code, onClose }: ClientDialogProps) {
   const handelDeleteClose = () => setDeleteOpen(false);
 
   const handleDelete = () => {
-    ClientClient.delete(code).then(() => {
+    ClientClient.delete(code!).then(() => {
       handelDeleteClose();
       onClose?.();
     });

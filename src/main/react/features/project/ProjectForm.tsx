@@ -1,6 +1,6 @@
 import {Field, Form, Formik, FormikProps} from "formik";
 import React, {useEffect, useState} from "react";
-import {Project, ProjectClient} from "../../clients/ProjectClient";
+import {Project, ProjectClient, ProjectFormDto} from "../../clients/ProjectClient";
 import {TextField} from "formik-material-ui";
 import * as yup from "yup";
 
@@ -13,8 +13,7 @@ type ProjectFormProps = {
 
 export default function ProjectForm({ projectCode, onSubmit } : ProjectFormProps) {
 
-  // FIXME: Don't use the entity here, but a form instead
-  const [project, setProject] = useState<Project>({name: "", id: 0, code: ""})
+  const [project, setProject] = useState<ProjectFormDto>({name: ""})
 
   useEffect(() => {
     if (!projectCode) return

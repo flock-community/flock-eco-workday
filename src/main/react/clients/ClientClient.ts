@@ -10,8 +10,8 @@ export type Client = {
 
 const path = "/api/clients";
 
-const resourceClient = ResourceClient<string, Client>(path);
-const pageableClient = PageableClient<Client>(path);
+const resourceClient = ResourceClient<string, Client, Client, Client>(path);
+const pageableClient = PageableClient<Client, Client>(path);
 
 export const findByCode = (code: string) => {
   const opts = {

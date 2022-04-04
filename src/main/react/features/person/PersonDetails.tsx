@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useRouteMatch } from "react-router-dom";
-import { Grid, Card, TableContainer, Table, TableBody, TableCell, TableRow } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
-import { PersonClient } from "../../clients/PersonClient";
-import { PersonWidget } from "../../components/person-widget/PersonWidget";
-import { useHistory } from "react-router-dom";
-import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
-import { Feed } from "./widgets/Feed";
-import { PersonDialog } from "./PersonDialog";
+import React, {useEffect, useState} from "react";
+import {useHistory, useRouteMatch} from "react-router-dom";
+import {Card, Grid, Table, TableBody, TableCell, TableContainer, TableRow} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
+import {ConfirmDialog} from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import {Person, PersonClient} from "../../clients/PersonClient";
+import {PersonWidget} from "../../components/person-widget/PersonWidget";
+import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import {Feed} from "./widgets/Feed";
+import {PersonDialog} from "./PersonDialog";
 
 const useStyle = makeStyles(() => ({
   root: { margin: "-8px" },
@@ -24,7 +23,7 @@ export const PersonDetails = (props) => {
   const { history } = useHistory();
   const { params } = useRouteMatch();
   const [reload, setReload] = useState(false);
-  const [person, setPerson] = useState();
+  const [person, setPerson] = useState<Person>();
   const [dialog, setDialog] = useState({ edit: false, del: false });
   const classes = useStyle();
 

@@ -8,10 +8,17 @@ export type Project = {
   name: string;
 };
 
+// TODO: Naming
+export type ProjectFormDto = {
+  id?: number;
+  code?: string;
+  name: string;
+}
+
 const path = "/api/projects";
 
-const resourceClient = ResourceClient<string, Project>(path);
-const pageableClient = PageableClient<Project>(path);
+const resourceClient = ResourceClient<string, ProjectFormDto, Project, Project>(path);
+const pageableClient = PageableClient<Project, Project>(path);
 
 const findByCode = (code: string) => fetch(`${path}/${code}`)
   .then(json => ExtractJSON<Project>(json))
