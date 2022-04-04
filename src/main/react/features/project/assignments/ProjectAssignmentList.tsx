@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from "react";
 import ProjectAssignmentListItem from "./ProjectAssignmentListItem";
 import {AssignmentClient} from "../../../clients/AssignmentClient";
-import {Box} from "@material-ui/core";
+import {TableBody, TableCell, TableHead} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
+import Table from "@material-ui/core/Table";
+import TableRow from "@material-ui/core/TableRow";
 
 export default function ProjectAssignmentList({ project }) {
   const [assignments, setAssignments] = useState([])
@@ -26,8 +28,20 @@ export default function ProjectAssignmentList({ project }) {
   }
 
   return (
-    <Box>
-      {assignments.map(renderAssignment)}
-    </Box>
+    <Table size="small">
+      <TableHead>
+        <TableRow>
+          <TableCell>Name</TableCell>
+          <TableCell>Role</TableCell>
+          <TableCell>Hours / week</TableCell>
+          <TableCell>Hourly rate</TableCell>
+          <TableCell>From</TableCell>
+          <TableCell>To</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {assignments.map(renderAssignment)}
+      </TableBody>
+    </Table>
   )
 }

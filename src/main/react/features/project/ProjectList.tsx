@@ -1,13 +1,16 @@
 import React, {useEffect, useState} from "react";
 import ProjectListItem from "./ProjectListItem";
 import {ProjectClient} from "../../clients/ProjectClient";
+import {Paper, TableBody, TableCell, TableContainer, TableHead} from "@material-ui/core";
+import Table from "@material-ui/core/Table";
+import TableRow from "@material-ui/core/TableRow";
 
 export default function ProjectList({ editProject, refresh }) {
-  const [projectList, setProjectList] = useState([])
+  const [projects, setProjects] = useState([])
 
   useEffect(() => {
     // @ts-ignore
-    ProjectClient.all().then(res => setProjectList(res))
+    ProjectClient.all().then(res => setProjects(res))
   }, [refresh])
 
   function renderItem(item, key) {
@@ -16,8 +19,20 @@ export default function ProjectList({ editProject, refresh }) {
     )
   }
   return (
-    <>
-      {projectList.map(renderItem)}
-    </>
+    <TableContainer component={Paper}>
+      <Table aria-label="collapsible table">
+        <TableHead>
+          <TableRow>
+            <TableCell />
+            <TableCell>
+              Project name
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {projects.map(renderItem)}
+        </TableBody>
+      </Table>
+    </TableContainer>
   )
 }

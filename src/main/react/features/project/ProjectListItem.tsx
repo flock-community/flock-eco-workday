@@ -1,49 +1,46 @@
 import React, {useState} from "react";
-import {Card, CardContent, CardHeader} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import ProjectAssignmentList from "./assignments/ProjectAssignmentList";
-import IconButton from "@material-ui/core/IconButton";
+import {TableCell} from "@material-ui/core";
+import TableRow from "@material-ui/core/TableRow";
 import CreateIcon from "@material-ui/icons/Create";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    position: "relative",
-  },
-  status: {
-    position: "absolute",
-    top: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-}));
+import IconButton from "@material-ui/core/IconButton";
+import {KeyboardArrowDown as KeyboardArrowDownIcon, KeyboardArrowUp as KeyboardArrowUpIcon} from "@material-ui/icons";
+import ProjectAssignmentList from "./assignments/ProjectAssignmentList";
 
 export default function ProjectListItem({ project, editProject }) {
-  const classes = useStyles()
   const [showAssignments, setShowAssignments] = useState(false)
 
   const toggleShowAssignments = () => setShowAssignments(!showAssignments)
 
   const handleEdit = () => editProject(project)
 
+  const projectHeader = (
+    <TableRow>
+      <TableCell>
+        <IconButton onClick={toggleShowAssignments}>
+          {showAssignments ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon/>}
+        </IconButton>
+      </TableCell>
+      <TableCell>{project.name}</TableCell>
+      <TableCell align="right">
+        <IconButton onClick={handleEdit}>
+          <CreateIcon />
+        </IconButton>
+      </TableCell>
+    </TableRow>
+  )
+
+  const projectAssignments = (
+    <TableRow>
+      <TableCell colSpan={3}>
+        <ProjectAssignmentList project={project}/>
+      </TableCell>
+    </TableRow>
+  )
+
   return (
-    <Card>
-      <CardHeader
-        title={project.name}
-        subheader={project.code}
-        action={
-          <IconButton onClick={handleEdit}>
-            <CreateIcon/>
-          </IconButton>
-        }
-      />
-      <CardContent className={classes.root}>
-        <Button variant="contained" onClick={() => toggleShowAssignments()}>
-          { showAssignments ? 'Hide current assignments' : 'Show current assignments' }
-        </Button>
-        { showAssignments &&
-          <ProjectAssignmentList project={project}/>
-        }
-      </CardContent>
-    </Card>
+    <>
+      {projectHeader}
+      {showAssignments && projectAssignments}
+    </>
   )
 }
