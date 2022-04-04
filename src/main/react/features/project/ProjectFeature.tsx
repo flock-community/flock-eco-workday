@@ -4,6 +4,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import ProjectList from "./ProjectList";
 import ProjectDialog from "./ProjectDialog";
 import {AddActionFab} from "../../components/FabButtons";
+import {Project} from "../../clients/ProjectClient";
 
 const useStyles = makeStyles({
   root: {
@@ -11,12 +12,17 @@ const useStyles = makeStyles({
   },
 });
 
+type DialogState = {
+  open: boolean;
+  project?: Project;
+}
+
 export function ProjectFeature() {
   const classes = useStyles()
-  const [dialog, setDialog] = useState({ open: false, project: undefined })
+  const [dialog, setDialog] = useState<DialogState>({ open: false, project: undefined })
   const [refresh, setRefresh] = useState(false)
 
-  const openEditDialog = project => setDialog({ open: true, project: project })
+  const openEditDialog = (project: Project) => setDialog({ open: true, project: project })
 
   const closeDialog = () => {
     setDialog({ open: false, project: undefined })

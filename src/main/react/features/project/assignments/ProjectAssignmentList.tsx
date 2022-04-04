@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from "react";
 import ProjectAssignmentListItem from "./ProjectAssignmentListItem";
-import {AssignmentClient} from "../../../clients/AssignmentClient";
+import {Assignment, AssignmentClient} from "../../../clients/AssignmentClient";
 import {TableBody, TableCell, TableHead} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
 
 export default function ProjectAssignmentList({ project }) {
-  const [assignments, setAssignments] = useState([])
+  const [assignments, setAssignments] = useState<Assignment[]>([])
 
   useEffect(() => {
     AssignmentClient.findAllByProject(project).then(res => setAssignments(res))

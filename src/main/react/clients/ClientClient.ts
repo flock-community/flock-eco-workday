@@ -13,7 +13,7 @@ const path = "/api/clients";
 const resourceClient = ResourceClient<string, Client>(path);
 const pageableClient = PageableClient<Client>(path);
 
-export const findByCode = (code) => {
+export const findByCode = (code: string) => {
   const opts = {
     method: "GET",
   };

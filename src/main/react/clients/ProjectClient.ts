@@ -13,9 +13,9 @@ const path = "/api/projects";
 const resourceClient = ResourceClient<string, Project>(path);
 const pageableClient = PageableClient<Project>(path);
 
-const findByCode = code => fetch(`${path}/${code}`)
-  .then(ExtractJSON)
-  .catch(e => addError(e))
+const findByCode = (code: string) => fetch(`${path}/${code}`)
+  .then(json => ExtractJSON<Project>(json))
+  .catch(e => addError(e));
 
 export const ProjectClient = {
   ...resourceClient,

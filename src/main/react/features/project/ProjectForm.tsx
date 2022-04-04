@@ -13,13 +13,14 @@ type ProjectFormProps = {
 
 export default function ProjectForm({ projectCode, onSubmit } : ProjectFormProps) {
 
-  const [project, setProject] = useState({name: ""})
+  // FIXME: Don't use the entity here, but a form instead
+  const [project, setProject] = useState<Project>({name: "", id: 0, code: ""})
 
   useEffect(() => {
     if (!projectCode) return
 
     ProjectClient.findByCode(projectCode)
-      .then(res => setProject(res)) // FIXME: types
+      .then(res => setProject(res))
   }, [projectCode])
 
   const handleSubmit = (values, { setSubmitting }) => {
@@ -27,7 +28,7 @@ export default function ProjectForm({ projectCode, onSubmit } : ProjectFormProps
     setSubmitting(false)
   }
 
-  const schema = yup.object().shape({
+  const schema: unknown = yup.object().shape({
     name: yup.string().required()
   })
 
