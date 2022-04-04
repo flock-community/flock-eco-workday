@@ -59,7 +59,7 @@ export function DashboardFeature() {
         </Grid>
         <Grid item xs={12} md={12}>
           <Card>
-            <CardHeader title="Actual cost revenu" />
+            <CardHeader title="Actual cost revenue" />
             <CardContent>
               <div style={{ height: CHART_HEIGHT * 2 }}>
                 <TotalPerMonthChart year={year} />
