@@ -10,7 +10,7 @@ export default function ProjectAssignmentList({ project }) {
   const [assignments, setAssignments] = useState<Assignment[]>([])
 
   useEffect(() => {
-    AssignmentClient.findAllByProject(project).then(res => setAssignments(res))
+    AssignmentClient.findAllByProject(project).then(res => setAssignments(res ? res : []))
   }, [])
 
   function renderAssignment(assignment) {
@@ -37,6 +37,8 @@ export default function ProjectAssignmentList({ project }) {
           <TableCell>Hourly rate</TableCell>
           <TableCell>From</TableCell>
           <TableCell>To</TableCell>
+          <TableCell>Total hours</TableCell>
+          <TableCell>Total costs</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

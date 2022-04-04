@@ -16,6 +16,9 @@ export type Assignment = {
   hourlyRate: number;
   hoursPerWeek: number;
 
+  totalHours?: number;
+  totalCosts?: number;
+
   client: Client;
   person: Person;
   project?: Project
@@ -30,6 +33,9 @@ type AssignmentDto = {
   to?: string;
   hourlyRate: number;
   hoursPerWeek: number;
+
+  totalHours?: number;
+  totalCosts?: number;
 
   client: Client;
   person: Person;

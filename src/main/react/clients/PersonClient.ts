@@ -2,11 +2,12 @@ import {ResourceClient} from "../utils/ResourceClient";
 import {PageableClient} from "../utils/PageableClient";
 
 export type Person = {
+  id: number;
   uuid: string;
   email: string;
   firstname: string;
-  id: number;
   lastname: string;
+  fullName: string;
   number: string;
   position: string;
   user: string;
