@@ -5,13 +5,16 @@ import community.flock.eco.workday.forms.ContractExternalForm
 import community.flock.eco.workday.forms.ContractInternalForm
 import community.flock.eco.workday.forms.ContractManagementForm
 import community.flock.eco.workday.forms.ContractServiceForm
-import community.flock.eco.workday.model.*
+import community.flock.eco.workday.model.Contract
+import community.flock.eco.workday.model.ContractExternal
+import community.flock.eco.workday.model.ContractInternal
+import community.flock.eco.workday.model.ContractManagement
 import community.flock.eco.workday.repository.ContractRepository
 import community.flock.eco.workday.repository.PersonRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 import javax.persistence.EntityManager
 import javax.transaction.Transactional
 import community.flock.eco.workday.model.ContractService as ContractServiceModel
@@ -54,6 +57,8 @@ class ContractService(
             .setParameter("personCode", personCode)
             .resultList
     }
+
+    fun findAllByToBetween(start: LocalDate?, end: LocalDate?) = contractRepository.findAllByToBetween(start, end)
 
     @Transactional
     fun create(form: ContractExternalForm): ContractExternal? = form

@@ -11,11 +11,21 @@ import community.flock.eco.workday.forms.ContractServiceForm
 import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.services.ContractService
 import org.springframework.data.domain.Pageable
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
-import java.util.*
+import java.time.LocalDate
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api")
@@ -26,7 +36,20 @@ class ContractController(
 
     @GetMapping("/contracts")
     @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
-    fun findAll(page: Pageable): ResponseEntity<List<Contract>> = contractService.findAll(page)
+    fun findAll(page: Pageable): ResponseEntity<List<Contract>> = contractService
+        .findAll(page)
+        .sortedBy { it.to }
+        .toResponse()
+
+    @GetMapping("/contracts", params = ["start", "end"])
+    @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
+    fun findAllByToBetween(
+        page: Pageable,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) start: LocalDate?,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) end: LocalDate?
+    ): ResponseEntity<List<Contract>> = contractService
+        .findAllByToBetween(start, end)
+        .sortedByDescending { it.to }
         .toResponse()
 
     @GetMapping("/contracts", params = ["personId"])
