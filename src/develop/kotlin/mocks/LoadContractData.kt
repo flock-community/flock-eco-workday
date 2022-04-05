@@ -25,9 +25,9 @@ class LoadContractData(
         create("tommy@sesam.straat", ContractType.EXTERNAL, now.minusMonths(2))
         create("ieniemienie@sesam.straat", ContractType.INTERNAL, now.minusMonths(8), now.plusMonths(8))
         create("pino@sesam.straat", ContractType.INTERNAL, now.minusMonths(12), now.plusMonths(4))
-        create("bert@sesam.straat", ContractType.EXTERNAL, now.minusMonths(6), now.plusMonths(12))
-        create("ernie@sesam.straat", ContractType.EXTERNAL,LocalDate.of(2020,10, 27), LocalDate.of(2021, 10, 26))
-        create("ernie@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2021,10, 27), LocalDate.of(2021, 12, 31))
+        create("bert@sesam.straat", ContractType.EXTERNAL, now.minusWeeks(50), now.plusWeeks(2))
+        create("ernie@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2020, 10, 27), LocalDate.of(2021, 10, 26))
+        create("ernie@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2021, 10, 27), LocalDate.of(2021, 12, 31))
     }
 
     private fun create(email: String, type: ContractType, from: LocalDate, to: LocalDate? = null) = when (type) {
