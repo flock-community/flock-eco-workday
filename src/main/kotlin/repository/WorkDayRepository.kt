@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.PagingAndSortingRepository
+import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import java.util.Optional
 import java.util.UUID
@@ -20,7 +21,6 @@ interface WorkDayRepository : PagingAndSortingRepository<WorkDay, Long> {
     fun findAllByAssignmentPersonUserCode(userCode: String, pageable: Pageable): Page<WorkDay>
     fun findAllByStatus(status: Status): Iterable<WorkDay>
 
-    // TODO: Add query
-    @Query(value = "SELECT 1", nativeQuery = true)
-    fun getTotalHoursByAssignment(assignment: Assignment): Int
+    @Query(value = "SELECT SUM(w.hours) FROM WorkDay w WHERE w.assignment = :assignment ")
+    fun getTotalHoursByAssignment(@Param("assignment") assignment: Assignment): Int
 }
