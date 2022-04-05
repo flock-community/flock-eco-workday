@@ -53,7 +53,7 @@ export default function ContractsEnding({withinNWeeks}: ContractsEndingProps) {
 
   return (
     <Card>
-      <CardHeader title="Contracts ending within 6 weeks" />
+      <CardHeader title={`Contracts ending within ${withinNWeeks} weeks`} />
       <CardContent>
         {contracts.length > 0 ? table : noContent}
       </CardContent>
