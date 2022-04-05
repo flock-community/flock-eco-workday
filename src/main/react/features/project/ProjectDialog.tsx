@@ -32,9 +32,6 @@ export default function ProjectDialog({ open, closeDialog, project } : ProjectDi
     }
   }
 
-  // TODO: Maybe just call this directly
-  const handleClose = closeDialog
-
   useEffect(() => {
     if (!project) {
       setDisableDelete(true)
@@ -43,7 +40,7 @@ export default function ProjectDialog({ open, closeDialog, project } : ProjectDi
     }
 
     AssignmentClient.findAllByProject(project).then(res => {
-      const hasAssignments = res.length > 0
+      const hasAssignments = !!res && res.length > 0
       setDisableDelete(hasAssignments)
       setDisableDeleteReason(hasAssignments ? 'This project cannot be deleted because it contains assignments' : '')
     })
@@ -75,7 +72,7 @@ export default function ProjectDialog({ open, closeDialog, project } : ProjectDi
       <DialogFooter
         formId={PROJECT_FORM_ID}
         // onSubmit is handled by the ProjectForm
-        onClose={handleClose}
+        onClose={closeDialog}
         onDelete={handleDelete}
         disableDelete={disableDelete}
       />
