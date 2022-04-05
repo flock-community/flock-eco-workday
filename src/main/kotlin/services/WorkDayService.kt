@@ -4,6 +4,7 @@ import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.WorkDayForm
+import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.model.WorkDaySheet
@@ -97,6 +98,9 @@ class WorkDayService(
 
     @Transactional
     fun deleteByCode(code: String) = workDayRepository.deleteByCode(code)
+
+    fun getTotalHoursByAssignment(assignment: Assignment) =
+        workDayRepository.getTotalHoursByAssignment(assignment)
 
     private fun WorkDayForm.validate() = apply {
         val daysBetween = ChronoUnit.DAYS.between(this.from, this.to) + 1

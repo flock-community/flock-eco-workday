@@ -2,12 +2,13 @@ package community.flock.eco.workday.forms
 
 import community.flock.eco.workday.interfaces.Period
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 data class AssignmentForm(
 
     val personId: UUID,
     val clientCode: String,
+    val projectCode: String? = null,
 
     val hourlyRate: Double,
     val hoursPerWeek: Int,

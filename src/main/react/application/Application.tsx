@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 
-import {BrowserRouter as Router, Route, Redirect, Switch} from "react-router-dom";
+import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
 import {UserFeature} from "@flock-community/flock-eco-feature-user/src/main/react/user/UserFeature";
 import {Box, CircularProgress} from "@material-ui/core";
 
@@ -30,6 +30,7 @@ import {ExactonlineFeature} from "../features/exactonline/ExactonlineFeature";
 import {TodoFeature} from "../features/todo/TodoFeature";
 import {useError} from "../hooks/ErrorHook";
 import {ErrorStack} from "../components/error/ErrorBarStack";
+import {ProjectFeature} from "../features/project/ProjectFeature";
 
 const useStyles = makeStyles(() => ({
   spinner: {
@@ -99,6 +100,7 @@ export const Application = () => {
               <Route path="/todo" exact component={TodoFeature}/>
               <Route path="/clients" exact component={ClientFeature}/>
               <Route path="/contracts" exact component={ContractFeature}/>
+              <Route path="/projects" exact component={ProjectFeature}/>
               <Route path="/assignments" exact component={AssignmentFeature}/>
               <Route path="/workdays" exact component={WorkDayFeature}/>
               <Route path="/holidays" exact component={HolidayFeature}/>

@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, Divider } from "@material-ui/core";
+import React, {useEffect, useState} from "react";
+import {Dialog, DialogContent, Divider} from "@material-ui/core";
 import HealingIcon from "@material-ui/icons/Healing";
-import { HTML5_FMT } from "moment";
-import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import {HTML5_FMT} from "moment";
+import {ConfirmDialog} from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
-import { SickDayClient } from "../../clients/SickDayClient";
-import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogFooter, DialogHeader } from "../../components/dialog";
-import { schemaSickDayForm, SICKDAY_FORM_ID, SickDayForm } from "./SickDayForm";
+import {SickDayClient} from "../../clients/SickDayClient";
+import {TransitionSlider} from "../../components/transitions/Slide";
+import {DialogFooter, DialogHeader} from "../../components/dialog";
+import {schemaSickDayForm, SICKDAY_FORM_ID, SickDayForm} from "./SickDayForm";
 
 type SickDayDialogProps = {
   open: boolean;
@@ -16,6 +16,14 @@ type SickDayDialogProps = {
   personId?: string;
   onComplete?: (item?: any) => void;
 };
+
+type SickDayDialogForm = {
+  description: string;
+  status: string;
+  from: string;
+  to: string;
+  days: number;
+}
 
 export function SickDayDialog({
   open,
@@ -25,7 +33,7 @@ export function SickDayDialog({
 }: SickDayDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
 
-  const [state, setState] = useState();
+  const [state, setState] = useState<SickDayDialogForm>();
 
   const handleSubmit = (it) => {
     const body = {

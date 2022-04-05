@@ -102,14 +102,8 @@ class PersonService(
         ).save()
     }
 
-    fun update(code: UUID, form: PersonForm): Person? {
-        val obj = this.findByUuid(code)
-
-        return when (obj) {
-            is Person -> obj.render(form).save()
-            else -> null
-        }
-    }
+    fun update(code: UUID, form: PersonForm): Person? =
+        findByUuid(code)?.render(form)?.save()
 
     @Transactional
     fun deleteByUuid(uuid: UUID) = repository.deleteByUuid(uuid)

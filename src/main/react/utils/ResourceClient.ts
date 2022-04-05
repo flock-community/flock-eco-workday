@@ -1,5 +1,4 @@
-import { addError } from "../hooks/ErrorHook";
-
+import {addError} from "../hooks/ErrorHook";
 
 
 export function ExtractJSON<A>(res: Response):Promise<A | null> {
@@ -14,32 +13,31 @@ export function ExtractJSON<A>(res: Response):Promise<A | null> {
   });
 }
 
-export function ResourceClient<ID, T>(
+export function ResourceClient<ID, In, Out, OutRaw>(
   path: string,
-  internalize?: (input: T) => T
+  internalize?: (input: OutRaw) => Out
 ) {
-  const all: () => Promise<T[] | void> = () => {
+  const all: () => Promise<Out[]> = () => {
     const opts = {
       method: "GET",
     };
     return fetch(`${path}`, opts)
-      .then(it => ExtractJSON<T[]>(it))
+      .then(it => ExtractJSON<OutRaw[]>(it))
       .then((it) => it != null ? (internalize ? it.map(internalize) : it) : [])
       .catch((e) => addError(e.message));
   };
 
-  const get: (id: ID) => Promise<T | null | void> = (id) => {
-    debugger;
+  const get: (id: ID) => Promise<Out | null | void> = (id) => {
     const opts = {
       method: "GET",
     };
     return fetch(`${path}/${id}`, opts)
-      .then(it => ExtractJSON<T>(it))
+      .then(it => ExtractJSON<OutRaw>(it))
       .then((it) => it != null ? (internalize ? internalize(it) : it) : null)
       .catch((e) => addError(e.message));
   };
 
-  const post: (item: T) => Promise<T | null | void> = (item) => {
+  const post: (item: In) => Promise<Out | null | void> = (item) => {
     const opts = {
       method: "POST",
       headers: {
@@ -48,12 +46,12 @@ export function ResourceClient<ID, T>(
       body: JSON.stringify(item),
     };
     return fetch(path, opts)
-      .then(it => ExtractJSON<T>(it))
+      .then(it => ExtractJSON<OutRaw>(it))
       .then((it) => it != null ? (internalize ? internalize(it) : it) : null)
       .catch((e) => addError(e.message));
   };
 
-  const put: (id: ID, item: T) => Promise<T | null | void> = (id, item) => {
+  const put: (id: ID, item: In) => Promise<Out | null | void> = (id, item) => {
     const opts = {
       method: "PUT",
       headers: {
@@ -62,7 +60,7 @@ export function ResourceClient<ID, T>(
       body: JSON.stringify(item),
     };
     return fetch(`${path}/${id}`, opts)
-      .then(it => ExtractJSON<T>(it))
+      .then(it => ExtractJSON<OutRaw>(it))
       .then((it) => it != null ? (internalize ? internalize(it) : it): null)
       .catch((e) => addError(e.message));
   };

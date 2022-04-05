@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Field, Form, Formik } from "formik";
+import React, {useEffect, useState} from "react";
+import {Field, Form, Formik} from "formik";
 import * as Yup from "yup";
-import { TextField } from "formik-material-ui";
-import { ClientClient } from "../../clients/ClientClient";
+import {TextField} from "formik-material-ui";
+import {ClientClient} from "../../clients/ClientClient";
 
 export const CLIENT_FORM_ID = "client-form-id";
 type ClientFormProps = {
-  code: string;
+  code?: string;
   value?: any;
   onSubmit?: (item?: any) => void;
 };

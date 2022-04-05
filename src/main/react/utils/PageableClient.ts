@@ -7,11 +7,11 @@ type PageInput = {
   page: number;
   size: number;
   sort: string;
-  query: object;
+  query?: object;
 };
 
-export function PageableClient<T>(path: string, internalize?: (input: T) => T) {
-  const findAllByPage: (input: PageInput) => Promise<Page<T>> = ({
+export function PageableClient<Out, OutRaw>(path: string, internalize?: (input: OutRaw) => Out) {
+  const findAllByPage: (input: PageInput) => Promise<Page<Out>> = ({
     page,
     size,
     sort,
@@ -36,12 +36,13 @@ export function PageableClient<T>(path: string, internalize?: (input: T) => T) {
           }
           return {
             total: parseInt(res.headers.get("x-total") || "0", 10),
-            list: json as T[],
+            list: json as OutRaw[]
           };
         })
-        .then((it) =>
-          internalize ? { ...it, list: it.list.map(internalize) } : it
-        )
+        .then((it) => {
+            const list = internalize ? it.list.map(internalize) : (it.list as unknown as Out[]);
+            return {...it, list: list};
+        })
     );
   };
 

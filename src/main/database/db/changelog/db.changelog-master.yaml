@@ -40,3 +40,6 @@ databaseChangeLog:
   - include:
       - file: db.changelog-013-person-deleted.yaml
         relativeToChangelogFile: true
+  - include:
+      - file: db.changelog-014-project.yaml
+        relativeToChangelogFile: true

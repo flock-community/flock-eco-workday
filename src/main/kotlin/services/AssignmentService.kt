@@ -3,14 +3,16 @@ package community.flock.eco.workday.services
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.AssignmentForm
 import community.flock.eco.workday.model.Assignment
+import community.flock.eco.workday.model.Project
 import community.flock.eco.workday.repository.AssignmentRepository
 import community.flock.eco.workday.repository.ClientRepository
 import community.flock.eco.workday.repository.PersonRepository
+import community.flock.eco.workday.repository.ProjectRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
@@ -19,6 +21,7 @@ class AssignmentService(
     private val clientRepository: ClientRepository,
     private val personRepository: PersonRepository,
     private val assignmentRepository: AssignmentRepository,
+    private val projectRepository: ProjectRepository,
     private val entityManager: EntityManager
 ) {
 
@@ -54,6 +57,14 @@ class AssignmentService(
             .resultList
     }
 
+    fun findByProject(project: Project): List<Assignment> {
+        val query = "SELECT a FROM Assignment a WHERE a.project = :project"
+        return entityManager
+            .createQuery(query, Assignment::class.java)
+            .setParameter("project", project)
+            .resultList
+    }
+
     @Transactional
     fun create(form: AssignmentForm): Assignment? = form
         .internalize()
@@ -80,7 +91,9 @@ class AssignmentService(
             ?: error("Cannot find Client"),
         person = it?.person
             ?: this.personId.let { personRepository.findByUuid(it).toNullable() }
-            ?: error("Cannot find Person")
+            ?: error("Cannot find Person"),
+        project = this.projectCode
+            ?.let { projectRepository.findByCode(it) }
     )
 
     private fun Assignment.save() = assignmentRepository.save(this)

@@ -1,20 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Link as RouterLink, useRouteMatch } from "react-router-dom";
-import {
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
-  Link,
-  TablePagination,
-  Paper,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { PersonTableHead } from "./PersonTableHead";
-import { PersonClient } from "../../../clients/PersonClient";
-import { AddActionFab } from "../../../components/FabButtons";
-import { PersonDialog } from "../PersonDialog";
-import { CheckBox } from "@material-ui/icons";
+import React, {useEffect, useState} from "react";
+import {Link as RouterLink, useRouteMatch} from "react-router-dom";
+import {Link, Paper, Table, TableBody, TableCell, TablePagination, TableRow,} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
+import {PersonTableHead} from "./PersonTableHead";
+import {Person, PersonClient} from "../../../clients/PersonClient";
+import {AddActionFab} from "../../../components/FabButtons";
+import {PersonDialog} from "../PersonDialog";
+import {CheckBox} from "@material-ui/icons";
 
 const useStyles = makeStyles({
   root: {
@@ -36,7 +28,7 @@ export const PersonTable = () => {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [count, setCount] = useState(10);
-  const [personList, setPersonList] = useState([]);
+  const [personList, setPersonList] = useState<Person[]>([]);
   const [dialog, setDialog] = useState({ open: false });
   const [reload, setReload] = useState(false);
   const classes = useStyles();

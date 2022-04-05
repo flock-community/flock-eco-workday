@@ -2,31 +2,38 @@ import React, {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import {Card, CardContent, FormControl, FormControlProps, InputLabel, MenuItem, Select,} from "@material-ui/core";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import {Client, ClientClient} from "../../clients/ClientClient";
+import {Project, ProjectClient} from "../../clients/ProjectClient";
 
-type ClientSelectorProps = FormControlProps & {
+type ProjectSelectorProps = FormControlProps & {
   value?: string;
   onChange: (selected: any) => void;
   label?: string;
   embedded?: boolean;
   multiple?: boolean;
   error?: string;
+  refresh?: boolean;
+  onRefresh: (Promise) => void
 };
 
-export function ClientSelector({
+export function ProjectSelector({
   value,
   onChange,
   embedded,
   label,
   error,
+  refresh,
+  onRefresh,
   ...props
-}: ClientSelectorProps) {
-  const [items, setItems] = useState<Client[]>([]);
+}: ProjectSelectorProps) {
+  const [items, setItems] = useState<Project[]>([]);
   const [state, setState] = useState(value);
 
   useEffect(() => {
-    ClientClient.all().then((res) => setItems(res));
-  }, []);
+    const itemPromise = ProjectClient.all().then((res) => {
+      setItems(res)
+    });
+    onRefresh(itemPromise)
+  }, [refresh]);
 
   useEffect(() => {
     setState(value);
@@ -41,7 +48,7 @@ export function ClientSelector({
 
   function renderMenuItem(item, key) {
     return (
-      <MenuItem key={`person-selector-menu-item-${key}`} value={item.code}>
+      <MenuItem key={`project-selector-menu-item-${key}`} value={item.code}>
         {item.name}
       </MenuItem>
     );
@@ -69,7 +76,7 @@ export function ClientSelector({
   );
 }
 
-ClientSelector.propTypes = {
+ProjectSelector.propTypes = {
   error: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
@@ -77,7 +84,7 @@ ClientSelector.propTypes = {
   embedded: PropTypes.bool,
 };
 
-ClientSelector.defaultProps = {
+ProjectSelector.defaultProps = {
   value: "",
-  label: "Select Client",
+  label: "Select Project",
 };

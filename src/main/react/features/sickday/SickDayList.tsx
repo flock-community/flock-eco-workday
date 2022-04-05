@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
-import { Card, Typography } from "@material-ui/core";
+import React, {useEffect, useState} from "react";
+import {Card, Typography} from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
-import { SickDayClient } from "../../clients/SickDayClient";
-import { DayListItem } from "../../components/DayListItem";
+import {SickDayClient} from "../../clients/SickDayClient";
+import {DayListItem} from "../../components/DayListItem";
 
 type SickDayListProps = {
   refresh: boolean;
-  personId: string;
+  personId?: string;
   onClickRow: (item: any) => void;
   onClickStatus: (status: string, item: any) => void;
 };
