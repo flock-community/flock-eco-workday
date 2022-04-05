@@ -9,7 +9,11 @@ import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.helpers.CreateHelper
+import community.flock.eco.workday.services.PersonService
+import org.hamcrest.Matchers
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
@@ -37,6 +41,7 @@ import java.util.UUID
 @AutoConfigureMockMvc
 @Import(CreateHelper::class)
 @ActiveProfiles(profiles = ["test"])
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PersonControllerTest {
     private val baseUrl: String = "/api/persons"
 
@@ -51,6 +56,40 @@ class PersonControllerTest {
 
     @Autowired
     private lateinit var userService: UserService
+
+    @Autowired
+    private lateinit var personService: PersonService
+
+    @BeforeAll
+    fun setUp() {
+        createActiveAndInactivePerson()
+    }
+    
+    private fun createActiveAndInactivePerson() {
+        val activeUserForm = PersonForm(
+            firstname = "Morris",
+            lastname = "Moss",
+            email = "morris@moss.com",
+            position = "",
+            number = null,
+            userCode = null,
+            active = true
+        )
+
+        personService.create(activeUserForm)
+
+        val inactiveUserForm = PersonForm(
+            firstname = "Pieter",
+            lastname = "Post",
+            email = "pieter@post.nl",
+            position = "",
+            number = null,
+            userCode = null,
+            active = false
+        )
+
+        personService.create(inactiveUserForm)
+    }
 
     fun createUser() = UserAccountPasswordForm(
         email = UUID.randomUUID().toString(),
@@ -74,7 +113,8 @@ class PersonControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            active = true
         )
 
         val user = createUser()
@@ -105,7 +145,8 @@ class PersonControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            active = true
         )
 
         val user = createUser()
@@ -150,7 +191,8 @@ class PersonControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            active = true
         )
 
         // need this user to compare generated fields
@@ -176,7 +218,8 @@ class PersonControllerTest {
             email = "morris@reynholm-industires.co.uk",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            active = true
         )
 
         mvc.perform(
@@ -207,7 +250,8 @@ class PersonControllerTest {
             email = "",
             position = "",
             number = null,
-            userCode = null
+            userCode = null,
+            active = true
         )
 
         // need this user to compare generated fields
@@ -297,4 +341,33 @@ class PersonControllerTest {
             .findUserAccountPasswordByUserEmail(email)
             ?.let { UserSecurityService.UserSecurityPassword(it) }
     )
+
+    @Test
+    fun `expect to retrieve both active and inactive users without query params`() {
+        val user = createUser()
+
+        mvc.perform(
+            get("$baseUrl")
+                .with(user)
+                .accept("application/json")
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.*.active",
+                Matchers.hasItems(
+                    Matchers.`is`(false), Matchers.`is`(true))))
+    }
+
+    @Test
+    fun `expect to retrieve only active users with active=true query param`() {
+        val user = createUser()
+
+        mvc.perform(
+            get("$baseUrl?active=true")
+                .with(user)
+                .accept("application/json")
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.*.active",
+                Matchers.everyItem(Matchers.`is`(true))))
+    }
 }

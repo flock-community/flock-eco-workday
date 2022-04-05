@@ -37,3 +37,6 @@ databaseChangeLog:
   - include:
       - file: db.changelog-012-person-indexes.yaml
         relativeToChangelogFile: true
+  - include:
+      - file: db.changelog-013-person-deleted.yaml
+        relativeToChangelogFile: true

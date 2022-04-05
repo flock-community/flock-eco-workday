@@ -10,11 +10,15 @@ export type Person = {
   number: string;
   position: string;
   user: string;
+  active: boolean;
+  lastActiveAt: Date;
 };
 
 const path = "/api/persons";
 
-const resourceClient = ResourceClient<string, Person>(path);
+const resourceClient = ResourceClient<string, Person>(path, (json) => ({
+  ...json, lastActiveAt: new Date(json.lastActiveAt)
+}));
 const pageableClient = PageableClient<Person>(path);
 
 export const PersonClient = {

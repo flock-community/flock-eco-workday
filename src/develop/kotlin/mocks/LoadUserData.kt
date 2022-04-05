@@ -9,6 +9,8 @@ import community.flock.eco.workday.authorities.ExpenseAuthority
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.authorities.WorkDayAuthority
+import mocks.Role
+import mocks.users
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 
@@ -35,22 +37,27 @@ class LoadUserData(
     private val workerAuthorities = userAuthorityService.allAuthorities().filter { workerRoles.contains(it) }
 
     init {
-        create("Tommy", workerAuthorities)
-        create("Ieniemienie", workerAuthorities)
-        create("Pino", workerAuthorities)
-        create("Bert", allAuthorities)
-        create("Ernie", workerAuthorities)
+        users.forEach { create(it) }
     }
 
-    private final fun create(name: String, authorities: List<Authority>) = UserAccountPasswordForm(
-        name = name,
-        email = "${name.toLowerCase()}@sesam.straat",
-        password = name.toLowerCase(),
-        authorities = authorities.map { it.toName() }.toSet()
+    private final fun create(user: mocks.User) = UserAccountPasswordForm(
+        name = user.firstName,
+        email = "${user.firstName.toLowerCase()}@sesam.straat",
+        password = user.firstName.toLowerCase(),
+        authorities = user.authorities.map { it.toName() }.toSet()
     )
         .save()
 
-    private fun UserAccountPasswordForm.save(): User = userAccountService.createUserAccountPassword(this)
-        .let { it.user }
-        .also { data.add(it) }
+    val mocks.User.authorities: List<Authority>
+        get() {
+            return when (role) {
+                Role.ADMIN -> allAuthorities
+                Role.USER -> workerAuthorities
+            }
+        }
+
+    private fun UserAccountPasswordForm.save(): User =
+        userAccountService.createUserAccountPassword(this)
+            .user
+            .also { data.add(it) }
 }

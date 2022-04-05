@@ -8,7 +8,7 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
-import { PersonService } from "../../features/person/PersonService";
+import { PersonClient } from "../../clients/PersonClient";
 
 type PersonSelectorProps = FormControlProps & {
   value?: string;
@@ -30,7 +30,10 @@ export function PersonSelector({
   const [state, setState] = useState<any>(value);
 
   useEffect(() => {
-    PersonService.findAllByPage({
+    PersonClient.findAllByPage({
+      query: {
+        active: true,
+      },
       page: 0,
       size: 100,
       sort: "lastname",

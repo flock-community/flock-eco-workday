@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-013-person-active-1
+      author: tsmelik
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValue: true
+                  constraints:
+                    - nullable: false
+              - column:
+                  name: last_active_at
+                  type: datetime
+        - createIndex:
+            indexName: person_active_index
+            tableName: person
+            columns:
+              - column:
+                  name: active
+              - column:
+                  name: id

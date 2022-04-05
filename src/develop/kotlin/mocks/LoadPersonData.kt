@@ -3,13 +3,17 @@ package community.flock.eco.workday.mocks
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.repository.PersonRepository
+import mocks.users
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
+import java.time.Instant
+import java.time.Period
+import java.time.ZonedDateTime
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadPersonData(
-    private val userData: LoadUserData,
+    userData: LoadUserData,
     private val repository: PersonRepository
 ) {
     val data: MutableSet<Person> = mutableSetOf()
@@ -45,14 +49,17 @@ class LoadPersonData(
         firstname: String,
         lastname: String,
         position: String = "",
-        user: User
+        user: User,
+        active: Boolean = true
     ) = Person(
         firstname = firstname,
         lastname = lastname,
         email = user.email,
         position = position,
         number = null,
-        user = user
+        user = user,
+        active = active,
+        lastActiveAt = if (!active) Instant.now().minus(Period.ofDays(180)) else null
     ).save()
 
     /**
@@ -60,9 +67,15 @@ class LoadPersonData(
      * iterate over userData and create a person for every user in userData
      */
     init {
-        val lastnames = arrayOf("Dog", "Mouse", "Woodpecker", "Muppets", "Muppets")
-        userData.data.forEachIndexed { idx, user ->
-            createPerson(firstname = user.name!!, lastname = lastnames[idx], user = user)
+        val userMap = userData.data.associateBy { it.name }
+
+        users.forEach {
+            createPerson(
+                firstname = it.firstName,
+                lastname = it.lastName,
+                user = userMap[it.firstName] ?: throw IllegalStateException("User not found with name ${it.firstName}"),
+                active = it.active
+            )
         }
     }
 }

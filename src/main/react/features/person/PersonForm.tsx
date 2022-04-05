@@ -88,6 +88,15 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
             fullWidth
           />
         </Grid>
+        <Grid item xs={12}>
+          <Field
+            name="active"
+            type="checkbox"
+            Label={{ label: "Active" }}
+            component={CheckboxWithLabel}
+            fullWidth
+          />
+        </Grid>
       </Grid>
     </Form>
   );
@@ -96,8 +105,9 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
     <Formik
       initialValues={{
         ...PERSON_FORM_SCHEMA.cast(),
+        active: true,
         ...item,
-        userCode: item?.user,
+        userCode: item?.user
       }}
       onSubmit={onSubmit}
       validationSchema={PERSON_FORM_SCHEMA}

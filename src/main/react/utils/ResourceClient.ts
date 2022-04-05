@@ -29,6 +29,7 @@ export function ResourceClient<ID, T>(
   };
 
   const get: (id: ID) => Promise<T | null | void> = (id) => {
+    debugger;
     const opts = {
       method: "GET",
     };
