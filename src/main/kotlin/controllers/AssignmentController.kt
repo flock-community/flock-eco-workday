@@ -56,7 +56,7 @@ class AssignmentController(
 
     @GetMapping(params = ["projectCode"])
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
-    fun findAll(@RequestParam projectCode: String, principal: Principal): List<AssignmentDto> =
+    fun findAll(@RequestParam projectCode: String, principal: Principal): List<AssignmentWithHours> =
         principal.findUser()
             ?.takeIf { it.isAdmin() }
             // TODO: Maybe return 403 here if not admin?
@@ -119,7 +119,7 @@ class AssignmentController(
         .authorities
         .contains(AssignmentAuthority.ADMIN.toName())
 
-    class AssignmentDto(
+    class AssignmentWithHours(
         val id: Long = 0,
         val code: String,
 
@@ -139,11 +139,11 @@ class AssignmentController(
         val totalCosts: Double
     )
 
-    fun Assignment.toDto(): AssignmentDto {
+    fun Assignment.toDto(): AssignmentWithHours {
         val totalHours = workDayService.getTotalHoursByAssignment(this)
         val totalCosts = (BigDecimal(totalHours) * BigDecimal(hourlyRate)).toDouble()
 
-        return AssignmentDto(
+        return AssignmentWithHours(
             id = id,
             code = code,
             role = role,
