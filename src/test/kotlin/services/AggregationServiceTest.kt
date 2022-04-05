@@ -212,7 +212,7 @@ class AggregationServiceTest(
     }
 
     @Test
-    fun `find netto revenu factor`() {
+    fun `find netto revenue factor`() {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
         aggregationService.netRevenueFactor(from, to)

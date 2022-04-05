@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
-import { CardContent, MenuItem, Select } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import {CardContent, MenuItem, Select} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
 import CardHeader from "@material-ui/core/CardHeader";
-import { HolidaysPerPersonChart } from "../../components/charts/HolidaysPerPersonChart";
-import { SickdayPerPersonChart } from "../../components/charts/SickdayPerPersonChart";
-import { RevenuePerClientChart } from "../../components/charts/RevenuePerClientChart";
-import { TotalPerMonthChart } from "../../components/charts/TotalPerMonthChart";
-import { AverageHoursPerDayChart } from "../../components/charts/AverageHoursPerDayChart";
-import { InternalOverviewChart } from "../../components/charts/InternalOverviewChart";
-import { ExternalOverviewChart } from "../../components/charts/ExternalOverviewChart";
-import { ManagementOverviewChart } from "../../components/charts/ManagementOverviewChart";
+import {HolidaysPerPersonChart} from "../../components/charts/HolidaysPerPersonChart";
+import {SickdayPerPersonChart} from "../../components/charts/SickdayPerPersonChart";
+import {RevenuePerClientTable} from "../../components/charts/RevenuePerClientTable";
+import {TotalPerMonthChart} from "../../components/charts/TotalPerMonthChart";
+import {AverageHoursPerDayChart} from "../../components/charts/AverageHoursPerDayChart";
+import {InternalOverviewChart} from "../../components/charts/InternalOverviewChart";
+import {ExternalOverviewChart} from "../../components/charts/ExternalOverviewChart";
+import {ManagementOverviewChart} from "../../components/charts/ManagementOverviewChart";
 import moment from "moment";
 import {GrossMarginTable} from "../../components/tables/GrossMarginTable";
 
@@ -59,7 +59,7 @@ export function DashboardFeature() {
         </Grid>
         <Grid item xs={12} md={12}>
           <Card>
-            <CardHeader title="Actual cost revenu" />
+            <CardHeader title="Actual cost revenue" />
             <CardContent>
               <div style={{ height: CHART_HEIGHT * 2 }}>
                 <TotalPerMonthChart year={year} />
@@ -111,9 +111,7 @@ export function DashboardFeature() {
           <Card>
             <CardHeader title="Gross revenue per client" />
             <CardContent>
-              <div style={{ height: CHART_HEIGHT }}>
-                <RevenuePerClientChart year={year} />
-              </div>
+              <RevenuePerClientTable year={year} />
             </CardContent>
           </Card>
         </Grid>
