@@ -21,6 +21,6 @@ interface WorkDayRepository : PagingAndSortingRepository<WorkDay, Long> {
     fun findAllByAssignmentPersonUserCode(userCode: String, pageable: Pageable): Page<WorkDay>
     fun findAllByStatus(status: Status): Iterable<WorkDay>
 
-    @Query(value = "SELECT SUM(w.hours) FROM WorkDay w WHERE w.assignment = :assignment ")
+    @Query(value = "SELECT COALESCE(SUM(w.hours), 0) FROM WorkDay w WHERE w.assignment = :assignment ")
     fun getTotalHoursByAssignment(@Param("assignment") assignment: Assignment): Int
 }
