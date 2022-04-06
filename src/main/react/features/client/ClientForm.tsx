@@ -20,7 +20,7 @@ export function ClientForm({ code, value, onSubmit }: ClientFormProps) {
 
   useEffect(() => {
     if (!value && code) {
-      ClientClient.findByCode(code).then((res) => setState(res));
+      ClientClient.get(code).then((res) => setState(res));
     }
   }, [code]);
 
