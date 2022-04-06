@@ -13,7 +13,7 @@ export type Assignment = {
 
   role?: string;
   from: moment.Moment;
-  to?: moment.Moment;
+  to: moment.Moment | null;
   hourlyRate: number;
   hoursPerWeek: number;
 
@@ -62,7 +62,7 @@ const path = "/api/assignments";
 const internalize = (it: AssignmentRaw): Assignment => ({
   ...it,
   from: moment(it.from, "YYYY-MM-DD"),
-  to: it.to ? moment(it.to, "YYYY-MM-DD"): undefined,
+  to: it.to ? moment(it.to, "YYYY-MM-DD"): null,
 });
 
 const resourceClient = ResourceClient<string, AssignmentRequest, Assignment, AssignmentRaw>(path, internalize);
