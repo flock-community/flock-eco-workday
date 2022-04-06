@@ -1,14 +1,6 @@
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  FormControl,
-  FormControlProps,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@material-ui/core";
-import { PersonClient } from "../../clients/PersonClient";
+import React, {useEffect, useState} from "react";
+import {Card, CardContent, FormControl, FormControlProps, InputLabel, MenuItem, Select,} from "@material-ui/core";
+import {PersonClient} from "../../clients/PersonClient";
 
 type PersonSelectorProps = FormControlProps & {
   value?: string;
@@ -30,13 +22,12 @@ export function PersonSelector({
   const [state, setState] = useState<any>(value);
 
   useEffect(() => {
-    PersonClient.findAllByPage({
-      query: {
-        active: true,
-      },
+    PersonClient.queryByPage({
       page: 0,
       size: 100,
       sort: "lastname",
+    }, {
+      active: true,
     }).then((res) => setItems(res.list));
   }, []);
 

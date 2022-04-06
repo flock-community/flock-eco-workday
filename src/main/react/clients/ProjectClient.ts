@@ -1,6 +1,4 @@
-import {ExtractJSON, ResourceClient} from "../utils/ResourceClient";
-import {PageableClient} from "../utils/PageableClient";
-import {addError} from "../hooks/ErrorHook";
+import NonInternalizingClient from "../utils/NonInternalizingClient";
 
 export type Project = {
   id: number;
@@ -8,8 +6,7 @@ export type Project = {
   name: string;
 };
 
-// TODO: Naming
-export type ProjectFormDto = {
+export type ProjectRequest = {
   id?: number;
   code?: string;
   name: string;
@@ -17,15 +14,8 @@ export type ProjectFormDto = {
 
 const path = "/api/projects";
 
-const resourceClient = ResourceClient<string, ProjectFormDto, Project, Project>(path);
-const pageableClient = PageableClient<Project, Project>(path);
-
-const findByCode = (code: string) => fetch(`${path}/${code}`)
-  .then(json => ExtractJSON<Project>(json))
-  .catch(e => addError(e));
+const nonInternalizingClient = NonInternalizingClient<ProjectRequest, Project>(path)
 
 export const ProjectClient = {
-  ...resourceClient,
-  ...pageableClient,
-  findByCode
+  ...nonInternalizingClient,
 };
