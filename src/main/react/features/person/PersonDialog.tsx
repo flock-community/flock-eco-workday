@@ -1,11 +1,10 @@
 import React from "react";
-import { Dialog, Divider, DialogContent } from "@material-ui/core";
+import {Dialog, DialogContent, Divider} from "@material-ui/core";
 import PersonAdd from "@material-ui/icons/PersonAdd";
-import { PersonForm, PERSON_FORM_ID } from "./PersonForm";
-import { PersonClient } from "../../clients/PersonClient";
-import { isEmptyObject } from "../../utils/validation";
-import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogHeader, DialogFooter } from "../../components/dialog";
+import {PERSON_FORM_ID, PersonForm} from "./PersonForm";
+import {PersonClient, PersonRequest} from "../../clients/PersonClient";
+import {TransitionSlider} from "../../components/transitions/Slide";
+import {DialogFooter, DialogHeader} from "../../components/dialog";
 
 type PersonDialogProps = {
   open: boolean;
@@ -17,7 +16,7 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
     onClose();
   };
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (values: PersonRequest) => {
     if (item) {
       PersonClient.put(item.uuid, values).then(() => successfulSubmit());
     } else {
