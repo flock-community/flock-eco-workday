@@ -1,10 +1,10 @@
 import moment from "moment";
-import {ExtractJSON, ResourceClient} from "../utils/ResourceClient";
-import {PageableClient} from "../utils/PageableClient";
+import {ExtractJSON} from "../utils/ResourceClient";
 import {addError} from "../hooks/ErrorHook";
 import {Client} from "./ClientClient";
 import {Person} from "./PersonClient";
 import {Project} from "./ProjectClient";
+import InternalizingClient from "../utils/InternalizingClient";
 
 // The type we use in the frontend
 export type Assignment = {
@@ -65,8 +65,7 @@ const internalize = (it: AssignmentRaw): Assignment => ({
   to: it.to ? moment(it.to, "YYYY-MM-DD"): null,
 });
 
-const resourceClient = ResourceClient<string, AssignmentRequest, Assignment, AssignmentRaw>(path, internalize);
-const pageableClient = PageableClient<Assignment, AssignmentRaw>(path, internalize);
+const internalizingClient = InternalizingClient<AssignmentRequest, AssignmentRaw, Assignment>(path, internalize)
 
 export const findByCode = (code: string) => {
   const opts = {
@@ -99,8 +98,7 @@ function findAllByProject(project) {
 }
 
 export const AssignmentClient = {
-  ...resourceClient,
-  ...pageableClient,
+  ...internalizingClient,
   findByCode,
   findAllByPersonId,
   findAllByProject,
