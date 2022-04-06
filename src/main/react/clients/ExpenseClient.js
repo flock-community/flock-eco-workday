@@ -1,6 +1,5 @@
 import moment from "moment";
-import { ExtractJSON, ResourceClient } from "../utils/ResourceClient.ts";
-import { addError } from "../hooks/ErrorHook";
+import InternalizingClient from "../utils/InternalizingClient.ts";
 
 const internalize = (it) => ({
   ...it,
@@ -8,41 +7,39 @@ const internalize = (it) => ({
 });
 
 const path = "/api/expenses";
-const resourceClient = ResourceClient(path, internalize);
+const travelPath = "/api/expenses-travel";
+const costPath = "/api/expenses-cost";
 
-const findAllByPersonId = (personId) => {
-  return fetch(`${path}?personId=${personId}&sort=date,desc`)
-    .then(ExtractJSON)
-    .then((data) => data.map(internalize))
-    .catch((e) => addError(e.message));
-};
+const resourceClient = InternalizingClient(path, internalize);
+const travelExpenseClient = InternalizingClient(travelPath, internalize);
+const costExpenseClient = InternalizingClient(costPath, internalize);
+
+const findAllByPersonId = (personId) =>
+  resourceClient.query({
+    personId,
+    sort: "date,desc",
+  });
 
 const post = (type, item) => {
-  const opts = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(item),
-  };
-  return fetch(`/api/expenses-${type.toLowerCase()}`, opts)
-    .then(ExtractJSON)
-    .then(internalize)
-    .catch((e) => addError(e.message));
+  if (type === "COST") {
+    return costExpenseClient.post(item);
+  }
+  if (type === "TRAVEL") {
+    return travelExpenseClient.post(item);
+  }
+
+  throw Error(`Unknown expense type: ${type}`);
 };
 
 const put = (id, type, item) => {
-  const opts = {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(item),
-  };
-  return fetch(`/api/expenses-${type.toLowerCase()}/${id}`, opts)
-    .then(ExtractJSON)
-    .then(internalize)
-    .catch((e) => addError(e.message));
+  if (type === "COST") {
+    return costExpenseClient.put(id, item);
+  }
+  if (type === "TRAVEL") {
+    return travelExpenseClient.put(id, item);
+  }
+
+  throw Error(`Unknown expense type: ${type}`);
 };
 
 export const ExpenseClient = {

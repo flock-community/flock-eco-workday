@@ -1,5 +1,5 @@
-import { addError } from "../hooks/ErrorHook";
-import { ExtractJSON } from "../utils/ResourceClient.ts";
+import { validateResponse } from "../utils/new/utils.ts";
+import { checkResponse } from "../utils/new/ResourceClient.ts";
 
 const path = "/login/status";
 
@@ -9,8 +9,9 @@ const get = () => {
   };
 
   return fetch(path, opts)
-    .then(ExtractJSON)
-    .catch((e) => addError(e.message));
+    .then(validateResponse)
+    .then(checkResponse)
+    .then((res) => res.body);
 };
 
 export const UserStatusClient = {

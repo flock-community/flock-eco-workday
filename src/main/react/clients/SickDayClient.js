@@ -1,6 +1,5 @@
 import moment from "moment";
-import { ExtractJSON, ResourceClient } from "../utils/ResourceClient.ts";
-import { addError } from "../hooks/ErrorHook";
+import InternalizingClient from "../utils/InternalizingClient.ts";
 
 const internalize = (it) => ({
   ...it,
@@ -9,14 +8,13 @@ const internalize = (it) => ({
 });
 
 const path = "/api/sickdays";
-const resourceClient = ResourceClient(path, internalize);
+const resourceClient = InternalizingClient(path, internalize);
 
-const findAllByPersonId = (personId) => {
-  return fetch(`${path}?personId=${personId}&sort=from,desc`)
-    .then(ExtractJSON)
-    .then((data) => data.map(internalize))
-    .catch((e) => addError(e.message));
-};
+const findAllByPersonId = (personId) =>
+  resourceClient.query({
+    personId,
+    sort: "from,desc",
+  });
 
 export const SickDayClient = {
   ...resourceClient,

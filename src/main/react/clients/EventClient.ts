@@ -1,8 +1,8 @@
 import moment from "moment";
-import {ExtractJSON} from "../utils/ResourceClient";
-import {addError} from "../hooks/ErrorHook";
 import {Person} from "./PersonClient";
 import InternalizingClient from "../utils/InternalizingClient";
+import {validateResponse} from "../utils/new/utils";
+import {checkResponse} from "../utils/new/ResourceClient";
 
 const path = "/api/events";
 
@@ -42,13 +42,14 @@ const internalize = (it) => ({
 
 const internalizingClient = InternalizingClient<FlockEventRequest, FlockEventRaw, FlockEvent>(path, internalize)
 
+// TODO: Rating type
 const getRatings = (id) => {
   const opts = {
     method: "GET",
   };
   return fetch(`${path}/${id}/ratings`, opts)
-    .then(ExtractJSON)
-    .catch((e) => addError(e.message));
+    .then(validateResponse)
+    .then(checkResponse)
 };
 
 const postRatings = (eventCode, item) => {
@@ -60,8 +61,8 @@ const postRatings = (eventCode, item) => {
     body: JSON.stringify(item),
   };
   return fetch(`${path}/${eventCode}/ratings`, opts)
-    .then(ExtractJSON)
-    .catch((e) => addError(e.message));
+    .then(validateResponse)
+    .catch(checkResponse);
 };
 
 const deleteRatings = (eventCode, personId) => {
@@ -69,8 +70,8 @@ const deleteRatings = (eventCode, personId) => {
     method: "DELETE",
   };
   return fetch(`${path}/${eventCode}/ratings/${personId}`, opts)
-    .then(ExtractJSON)
-    .catch((e) => addError(e.message));
+    .then(validateResponse)
+    .catch(checkResponse);
 };
 
 export const EventClient = {
