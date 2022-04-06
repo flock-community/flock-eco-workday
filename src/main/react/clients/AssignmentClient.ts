@@ -1,6 +1,4 @@
 import moment from "moment";
-import {ExtractJSON} from "../utils/ResourceClient";
-import {addError} from "../hooks/ErrorHook";
 import {Client} from "./ClientClient";
 import {Person} from "./PersonClient";
 import {Project} from "./ProjectClient";
@@ -67,39 +65,14 @@ const internalize = (it: AssignmentRaw): Assignment => ({
 
 const internalizingClient = InternalizingClient<AssignmentRequest, AssignmentRaw, Assignment>(path, internalize)
 
-export const findByCode = (code: string) => {
-  const opts = {
-    method: "GET",
-  };
-  return fetch(`${path}/${code}`, opts)
-    .then(json => ExtractJSON<AssignmentRaw>(json))
-    .then(data => {
-      if (data != null) {
-        return data
-      } else {
-        throw Error("Could not find project")
-      }})
-    .then(data => internalize(data))
-    .catch((e) => addError(e.message));
-};
+const findAllByPersonId = (personId: string) => internalizingClient
+  .query({ personId: personId })
 
-function findAllByPersonId(personId) {
-  return fetch(`${path}?personId=${personId}`)
-    .then(json => ExtractJSON<AssignmentRaw[]>(json))
-    .then((data) => data ? data.map(internalize) : null)
-    .catch((e) => addError(e.message));
-}
-
-function findAllByProject(project) {
-  return fetch(`${path}?projectCode=${project.code}`)
-    .then(json => ExtractJSON<AssignmentRaw[]>(json))
-    .then((data) => data ? data.map(internalize): null)
-    .catch((e) => addError(e.message));
-}
+const findAllByProject = (project: Project) => internalizingClient
+  .query({ projectCode: project.code })
 
 export const AssignmentClient = {
   ...internalizingClient,
-  findByCode,
   findAllByPersonId,
   findAllByProject,
 };
