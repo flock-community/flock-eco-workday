@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, Divider } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import React, {useEffect, useState} from "react";
+import {Dialog, DialogContent, Divider} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
 import EventIcon from "@material-ui/icons/CalendarToday";
-import moment, { HTML5_FMT } from "moment";
-import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import moment, {HTML5_FMT} from "moment";
+import {ConfirmDialog} from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import { EventClient } from "../../clients/EventClient";
-import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogFooter, DialogHeader } from "../../components/dialog";
-import { EVENT_FORM_ID, EventForm } from "./EventForm";
-import { schema } from "../workday/WorkDayForm";
+import {EventClient} from "../../clients/EventClient";
+import {TransitionSlider} from "../../components/transitions/Slide";
+import {DialogFooter, DialogHeader} from "../../components/dialog";
+import {EVENT_FORM_ID, EventForm} from "./EventForm";
+import {schema} from "../workday/WorkDayForm";
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
@@ -80,7 +80,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   };
 
   const handleDelete = () => {
-    EventClient.delete(code).then(() => {
+    EventClient.delete(code!).then(() => {
       onComplete?.();
       setOpenDelete(false);
     });

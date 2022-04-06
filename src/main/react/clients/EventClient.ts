@@ -1,6 +1,38 @@
 import moment from "moment";
-import { ExtractJSON, ResourceClient } from "../utils/ResourceClient.ts";
-import { addError } from "../hooks/ErrorHook";
+import {ExtractJSON} from "../utils/ResourceClient";
+import {addError} from "../hooks/ErrorHook";
+import {Person} from "./PersonClient";
+import InternalizingClient from "../utils/InternalizingClient";
+
+const path = "/api/events";
+
+// Type name is prefixed to prevent conflicts with
+// the react Event
+export type FlockEvent = {
+  description: string;
+  id: number;
+  code: string;
+  from: moment.Moment;
+  to: moment.Moment;
+  hours: number;
+  days: number[];
+  persons: Person[]
+}
+
+type FlockEventRaw = {
+  description: string;
+  id: number;
+  code: string;
+  from: string;
+  to: string;
+  hours: number;
+  days: number[];
+  persons: Person[]
+}
+
+export type FlockEventRequest = {
+  // TODO
+}
 
 const internalize = (it) => ({
   ...it,
@@ -8,8 +40,7 @@ const internalize = (it) => ({
   to: moment(it.to),
 });
 
-const path = "/api/events";
-const resourceClient = ResourceClient(path, internalize);
+const internalizingClient = InternalizingClient<FlockEventRequest, FlockEventRaw, FlockEvent>(path, internalize)
 
 const getRatings = (id) => {
   const opts = {
@@ -43,7 +74,7 @@ const deleteRatings = (eventCode, personId) => {
 };
 
 export const EventClient = {
-  ...resourceClient,
+  ...internalizingClient,
   getRatings,
   postRatings,
   deleteRatings,
