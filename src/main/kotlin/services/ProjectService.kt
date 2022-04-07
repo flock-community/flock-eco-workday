@@ -19,12 +19,11 @@ class ProjectService(private val projectRepository: ProjectRepository) {
     fun deleteByCode(code: String) = projectRepository.deleteByCode(code)
 
     @Transactional
-    fun update(code: String, form: ProjectForm) {
+    fun update(code: String, form: ProjectForm): Project =
         projectRepository
             .findByCode(code)
             .let { form.internalize(it) }
             .save()
-    }
 
     @Transactional
     fun create(form: ProjectForm): Project =
