@@ -50,6 +50,7 @@ const getRatings = (id) => {
   return fetch(`${path}/${id}/ratings`, opts)
     .then(validateResponse)
     .then(checkResponse)
+    .then(res => res.body)
 };
 
 const postRatings = (eventCode, item) => {
@@ -62,7 +63,8 @@ const postRatings = (eventCode, item) => {
   };
   return fetch(`${path}/${eventCode}/ratings`, opts)
     .then(validateResponse)
-    .catch(checkResponse);
+    .catch(checkResponse)
+    .then(res => res?.body);
 };
 
 const deleteRatings = (eventCode, personId) => {
@@ -71,10 +73,11 @@ const deleteRatings = (eventCode, personId) => {
   };
   return fetch(`${path}/${eventCode}/ratings/${personId}`, opts)
     .then(validateResponse)
-    .catch(checkResponse);
-};
+    .catch(checkResponse)
+    .then(res => res?.body);
+}
 
-export const EventClient = {
+  export const EventClient = {
   ...internalizingClient,
   getRatings,
   postRatings,
