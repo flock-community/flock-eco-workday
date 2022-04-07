@@ -20,7 +20,7 @@ const useStyle = makeStyles(() => ({
 }));
 
 export const PersonDetails = (props) => {
-  const { history } = useHistory();
+  const history = useHistory();
   const { params } = useRouteMatch();
   const [reload, setReload] = useState(false);
   const [person, setPerson] = useState<Person>();
@@ -45,7 +45,7 @@ export const PersonDetails = (props) => {
   };
 
   const handleDelete = () => {
-    PersonClient.delete(person?.uuid).then(() => {
+    PersonClient.delete(person!!.uuid).then(() => {
       handleDelDialog();
       history.push("/person");
     });
