@@ -1,5 +1,7 @@
-import { validateResponse } from "../utils/new/utils.ts";
-import { checkResponse } from "../utils/new/ResourceClient.ts";
+import {
+  checkResponse,
+  validateResponse,
+} from "@flock-community/flock-eco-core/src/main/react/clients/utils.ts";
 
 const path = "/login/status";
 

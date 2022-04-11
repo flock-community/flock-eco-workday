@@ -79,7 +79,7 @@ export const Application = () => {
     it.exec(window.location.hash)
   );
 
-  if (authorize && !status.loggedIn) {
+  if (authorize && !status.isLoggedIn) {
     window.location.href = "/login";
     return null;
   }

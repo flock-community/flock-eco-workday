@@ -1,8 +1,7 @@
 import moment from "moment";
 import {Person} from "./PersonClient";
 import InternalizingClient from "../utils/InternalizingClient";
-import {validateResponse} from "../utils/new/utils";
-import {checkResponse} from "../utils/new/ResourceClient";
+import {checkResponse, validateResponse} from "@flock-community/flock-eco-core/src/main/react/clients";
 
 const path = "/api/events";
 

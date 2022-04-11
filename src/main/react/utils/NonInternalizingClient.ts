@@ -1,6 +1,9 @@
-import {QueryParameters, ValidResponse} from "./new/utils";
-import {PageableClient} from "./new/PageableClient";
-import {ResourceClient} from "./new/ResourceClient";
+import {
+  PageableClient,
+  QueryParameters,
+  ResourceClient,
+  ValidResponse
+} from "@flock-community/flock-eco-core/src/main/react/clients";
 
 // FIXME: Use the one in PageableClient
 interface Pageable {

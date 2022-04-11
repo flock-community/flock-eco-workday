@@ -1,6 +1,5 @@
 import {AggregationClientPersonOverview} from "../graphql/aggregation";
-import {validateResponse} from "../utils/new/utils";
-import {checkResponse} from "../utils/new/ResourceClient";
+import {checkResponse, validateResponse} from "@flock-community/flock-eco-core/src/main/react/clients";
 
 const path = "/api/aggregations";
 
