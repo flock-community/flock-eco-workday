@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.feature.user.model.User
 import java.time.Instant
-import java.time.ZonedDateTime
 import java.util.*
 import javax.persistence.*
 
