@@ -2,7 +2,7 @@ import { AggregationClientPersonOverview } from "../graphql/aggregation";
 import {
   checkResponse,
   validateResponse,
-} from "@flock-community/flock-eco-core/src/main/react/clients";
+} from "@flock-community/flock-eco-core";
 
 const path = "/api/aggregations";
 

@@ -3,7 +3,7 @@ import {
   QueryParameters,
   ResourceClient,
   ValidResponse,
-} from "@flock-community/flock-eco-core/src/main/react/clients";
+} from "@flock-community/flock-eco-core";
 
 // FIXME: Use the one in PageableClient
 interface Pageable {

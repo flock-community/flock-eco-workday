@@ -4,7 +4,7 @@ import InternalizingClient from "../utils/InternalizingClient";
 import {
   checkResponse,
   validateResponse,
-} from "@flock-community/flock-eco-core/src/main/react/clients";
+} from "@flock-community/flock-eco-core";
 
 const path = "/api/events";
 
