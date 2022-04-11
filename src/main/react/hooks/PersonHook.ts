@@ -20,7 +20,7 @@ export function usePerson(): [Person | null, (personId: string) => void] {
   useEffect(() => {
     const listener = (it) => setState(it);
     if (store === null && listeners.length === 0) {
-      if (status && status.loggedIn) {
+      if (status && status.isLoggedIn) {
         PersonClient.me().then(update);
       }
     }
