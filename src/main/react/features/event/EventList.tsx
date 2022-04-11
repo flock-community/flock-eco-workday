@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from "react";
-import {Card, Typography} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { Card, Typography } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
-import {EventClient, FlockEvent} from "../../clients/EventClient";
-import {isDefined} from "../../utils/validation";
+import { EventClient, FlockEvent } from "../../clients/EventClient";
+import { isDefined } from "../../utils/validation";
 
 type EventListProps = {
   refresh: boolean;

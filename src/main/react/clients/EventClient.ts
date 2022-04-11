@@ -1,7 +1,10 @@
 import moment from "moment";
-import {Person} from "./PersonClient";
+import { Person } from "./PersonClient";
 import InternalizingClient from "../utils/InternalizingClient";
-import {checkResponse, validateResponse} from "@flock-community/flock-eco-core/src/main/react/clients";
+import {
+  checkResponse,
+  validateResponse,
+} from "@flock-community/flock-eco-core/src/main/react/clients";
 
 const path = "/api/events";
 
@@ -15,8 +18,8 @@ export type FlockEvent = {
   to: moment.Moment;
   hours: number;
   days: number[];
-  persons: Person[]
-}
+  persons: Person[];
+};
 
 type FlockEventRaw = {
   description: string;
@@ -26,12 +29,12 @@ type FlockEventRaw = {
   to: string;
   hours: number;
   days: number[];
-  persons: Person[]
-}
+  persons: Person[];
+};
 
 export type FlockEventRequest = {
   // TODO
-}
+};
 
 const internalize = (it) => ({
   ...it,
@@ -39,7 +42,11 @@ const internalize = (it) => ({
   to: moment(it.to),
 });
 
-const internalizingClient = InternalizingClient<FlockEventRequest, FlockEventRaw, FlockEvent>(path, internalize)
+const internalizingClient = InternalizingClient<
+  FlockEventRequest,
+  FlockEventRaw,
+  FlockEvent
+>(path, internalize);
 
 // TODO: Rating type
 const getRatings = (id) => {
@@ -49,7 +56,7 @@ const getRatings = (id) => {
   return fetch(`${path}/${id}/ratings`, opts)
     .then(validateResponse)
     .then(checkResponse)
-    .then(res => res.body)
+    .then((res) => res.body);
 };
 
 const postRatings = (eventCode, item) => {
@@ -63,7 +70,7 @@ const postRatings = (eventCode, item) => {
   return fetch(`${path}/${eventCode}/ratings`, opts)
     .then(validateResponse)
     .catch(checkResponse)
-    .then(res => res?.body);
+    .then((res) => res?.body);
 };
 
 const deleteRatings = (eventCode, personId) => {
@@ -73,10 +80,10 @@ const deleteRatings = (eventCode, personId) => {
   return fetch(`${path}/${eventCode}/ratings/${personId}`, opts)
     .then(validateResponse)
     .catch(checkResponse)
-    .then(res => res?.body);
-}
+    .then((res) => res?.body);
+};
 
-  export const EventClient = {
+export const EventClient = {
   ...internalizingClient,
   getRatings,
   postRatings,

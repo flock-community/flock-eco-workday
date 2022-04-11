@@ -10,11 +10,13 @@ export type ProjectRequest = {
   id?: number;
   code?: string;
   name: string;
-}
+};
 
 const path = "/api/projects";
 
-const nonInternalizingClient = NonInternalizingClient<ProjectRequest, Project>(path)
+const nonInternalizingClient = NonInternalizingClient<ProjectRequest, Project>(
+  path
+);
 
 export const ProjectClient = {
   ...nonInternalizingClient,

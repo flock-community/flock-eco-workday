@@ -1,14 +1,24 @@
-import React, {useEffect, useState} from "react";
-import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
-import {AggregationClient, ClientGrossRevenue} from "../../clients/AggregationClient";
-import {makeStyles, Table, TableBody, TableCell, TableContainer, TableHead} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import {
+  AggregationClient,
+  ClientGrossRevenue,
+} from "../../clients/AggregationClient";
+import {
+  makeStyles,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+} from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
-import {currencyFormatter} from "../../utils/Currency";
+import { currencyFormatter } from "../../utils/Currency";
 
 const useStyles = makeStyles({
   table: {
-    maxWidth: 500
-  }
+    maxWidth: 500,
+  },
 });
 
 type RevenuePerClientChartProps = {
@@ -17,23 +27,22 @@ type RevenuePerClientChartProps = {
 
 export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
   const [items, setItems] = useState<ClientGrossRevenue[]>();
-  const [totalGrossRevenue, setTotalGrossRevenue] = useState<number>()
+  const [totalGrossRevenue, setTotalGrossRevenue] = useState<number>();
 
-  const classes = useStyles()
+  const classes = useStyles();
 
   useEffect(() => {
     const date = new Date();
 
     const validateResponse = (res: ClientGrossRevenue[] | null) => {
       if (!res) {
-        throw Error("Could not fetch total gross revenue per client")
+        throw Error("Could not fetch total gross revenue per client");
       }
       return res;
-    }
+    };
 
-    AggregationClient.totalPerClientByYear(
-      year || date.getFullYear())
-      .then(res => validateResponse(res))
+    AggregationClient.totalPerClientByYear(year || date.getFullYear())
+      .then((res) => validateResponse(res))
       .then((res) => setItems(res));
   }, [year]);
 
@@ -41,10 +50,10 @@ export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
     if (!items) return;
 
     const totalGrossRevenue = items
-      .map(item => item.revenueGross)
-      .reduce(((previousValue, currentValue) => previousValue + currentValue));
+      .map((item) => item.revenueGross)
+      .reduce((previousValue, currentValue) => previousValue + currentValue);
 
-    setTotalGrossRevenue(totalGrossRevenue)
+    setTotalGrossRevenue(totalGrossRevenue);
   }, [items]);
 
   if (!items) return <AlignedLoader />;
@@ -54,14 +63,18 @@ export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
       <TableCell>{item.name}</TableCell>
       <TableCell>{currencyFormatter.format(item.revenueGross)}</TableCell>
     </TableRow>
-  )
+  );
 
   const totals = (
     <TableRow>
       <TableCell>Total</TableCell>
-      <TableCell>{totalGrossRevenue ? currencyFormatter.format(totalGrossRevenue) : "..."}</TableCell>
+      <TableCell>
+        {totalGrossRevenue
+          ? currencyFormatter.format(totalGrossRevenue)
+          : "..."}
+      </TableCell>
     </TableRow>
-  )
+  );
 
   return (
     <TableContainer>

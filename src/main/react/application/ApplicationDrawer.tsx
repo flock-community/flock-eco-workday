@@ -4,7 +4,7 @@ import React from "react";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import ProjectIcon from "@material-ui/icons/AccountTree";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import ContractIcon from "@material-ui/icons/Description";
@@ -22,8 +22,8 @@ import TodoIcon from "@material-ui/icons/AssignmentTurnedIn";
 import HomeIcon from "@material-ui/icons/Home";
 
 import Drawer from "@material-ui/core/Drawer";
-import {makeStyles} from "@material-ui/core/styles";
-import {useUserMe} from "../hooks/UserMeHook";
+import { makeStyles } from "@material-ui/core/styles";
+import { useUserMe } from "../hooks/UserMeHook";
 
 const useStyles = makeStyles({
   head: {
@@ -97,7 +97,7 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
       name: "Projects",
       icon: ProjectIcon,
       url: "/projects",
-      authority: "ProjectAuthority.READ"
+      authority: "ProjectAuthority.READ",
     },
     {
       name: "Assignments",

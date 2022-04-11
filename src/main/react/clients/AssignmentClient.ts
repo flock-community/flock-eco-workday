@@ -1,7 +1,7 @@
 import moment from "moment";
-import {Client} from "./ClientClient";
-import {Person} from "./PersonClient";
-import {Project} from "./ProjectClient";
+import { Client } from "./ClientClient";
+import { Person } from "./PersonClient";
+import { Project } from "./ProjectClient";
 import InternalizingClient from "../utils/InternalizingClient";
 
 // The type we use in the frontend
@@ -20,8 +20,8 @@ export type Assignment = {
 
   client: Client;
   person: Person;
-  project?: Project
-}
+  project?: Project;
+};
 
 // The type we receive from the backend
 type AssignmentRaw = {
@@ -39,37 +39,41 @@ type AssignmentRaw = {
 
   client: Client;
   person: Person;
-  project?: Project
-}
+  project?: Project;
+};
 
 // The type we send to the backend
 export type AssignmentRequest = {
   role?: string;
   from: string;
-  to?: string
+  to?: string;
   hourlyRate: number;
   hoursPerWeek: number;
 
   clientCode: string;
   personId: string;
   projectCode?: string;
-}
+};
 
 const path = "/api/assignments";
 
 const internalize = (it: AssignmentRaw): Assignment => ({
   ...it,
   from: moment(it.from, "YYYY-MM-DD"),
-  to: it.to ? moment(it.to, "YYYY-MM-DD"): null,
+  to: it.to ? moment(it.to, "YYYY-MM-DD") : null,
 });
 
-const internalizingClient = InternalizingClient<AssignmentRequest, AssignmentRaw, Assignment>(path, internalize)
+const internalizingClient = InternalizingClient<
+  AssignmentRequest,
+  AssignmentRaw,
+  Assignment
+>(path, internalize);
 
-const findAllByPersonId = (personId: string) => internalizingClient
-  .query({ personId: personId })
+const findAllByPersonId = (personId: string) =>
+  internalizingClient.query({ personId: personId });
 
-const findAllByProject = (project: Project) => internalizingClient
-  .query({ projectCode: project.code })
+const findAllByProject = (project: Project) =>
+  internalizingClient.query({ projectCode: project.code });
 
 export const AssignmentClient = {
   ...internalizingClient,

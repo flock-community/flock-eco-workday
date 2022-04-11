@@ -1,13 +1,21 @@
-import React, {useEffect, useState} from "react";
-import {useHistory, useRouteMatch} from "react-router-dom";
-import {Card, Grid, Table, TableBody, TableCell, TableContainer, TableRow} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
-import {ConfirmDialog} from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
-import {Person, PersonClient} from "../../clients/PersonClient";
-import {PersonWidget} from "../../components/person-widget/PersonWidget";
-import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
-import {Feed} from "./widgets/Feed";
-import {PersonDialog} from "./PersonDialog";
+import React, { useEffect, useState } from "react";
+import { useHistory, useRouteMatch } from "react-router-dom";
+import {
+  Card,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import { Person, PersonClient } from "../../clients/PersonClient";
+import { PersonWidget } from "../../components/person-widget/PersonWidget";
+import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { Feed } from "./widgets/Feed";
+import { PersonDialog } from "./PersonDialog";
 
 const useStyle = makeStyles(() => ({
   root: { margin: "-8px" },
@@ -74,30 +82,31 @@ export const PersonDetails = (props) => {
                 <TableBody>
                   <TableRow>
                     <TableCell component="th">First name</TableCell>
-                    <TableCell>{ person.firstname }</TableCell>
+                    <TableCell>{person.firstname}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell component="th">Last name</TableCell>
-                    <TableCell>{ person.lastname }</TableCell>
+                    <TableCell>{person.lastname}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell component="th">Email address</TableCell>
-                    <TableCell>{ person.email }</TableCell>
+                    <TableCell>{person.email}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell component="th">Active</TableCell>
-                    <TableCell>{ person.active ? 'Yes' : 'No' }</TableCell>
+                    <TableCell>{person.active ? "Yes" : "No"}</TableCell>
                   </TableRow>
-                  { person.active ||
+                  {person.active || (
                     <TableRow>
                       <TableCell component="th">Last active at</TableCell>
-                      <TableCell>{ person.lastActiveAt.toLocaleString() }</TableCell>
+                      <TableCell>
+                        {person.lastActiveAt.toLocaleString()}
+                      </TableCell>
                     </TableRow>
-                  }
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
-
           </Card>
         </Grid>
       </Grid>

@@ -1,8 +1,16 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import {Card, CardContent, FormControl, FormControlProps, InputLabel, MenuItem, Select,} from "@material-ui/core";
+import {
+  Card,
+  CardContent,
+  FormControl,
+  FormControlProps,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@material-ui/core";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import {Project, ProjectClient} from "../../clients/ProjectClient";
+import { Project, ProjectClient } from "../../clients/ProjectClient";
 
 type ProjectSelectorProps = FormControlProps & {
   value?: string;
@@ -12,7 +20,7 @@ type ProjectSelectorProps = FormControlProps & {
   multiple?: boolean;
   error?: string;
   refresh?: boolean;
-  onRefresh: (Promise) => void
+  onRefresh: (Promise) => void;
 };
 
 export function ProjectSelector({
@@ -30,9 +38,9 @@ export function ProjectSelector({
 
   useEffect(() => {
     const itemPromise = ProjectClient.all().then((res) => {
-      setItems(res)
+      setItems(res);
     });
-    onRefresh(itemPromise)
+    onRefresh(itemPromise);
   }, [refresh]);
 
   useEffect(() => {

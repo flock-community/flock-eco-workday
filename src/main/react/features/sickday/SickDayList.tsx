@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from "react";
-import {Card, Typography} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { Card, Typography } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
-import {SickDayClient} from "../../clients/SickDayClient";
-import {DayListItem} from "../../components/DayListItem";
+import { SickDayClient } from "../../clients/SickDayClient";
+import { DayListItem } from "../../components/DayListItem";
 
 type SickDayListProps = {
   refresh: boolean;

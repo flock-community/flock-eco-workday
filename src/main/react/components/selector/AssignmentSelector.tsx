@@ -1,7 +1,13 @@
-import React, {useEffect, useState} from "react";
-import {FormControl, FormControlProps, InputLabel, MenuItem, Select,} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import {
+  FormControl,
+  FormControlProps,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@material-ui/core";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import {AssignmentClient} from "../../clients/AssignmentClient";
+import { AssignmentClient } from "../../clients/AssignmentClient";
 import moment from "moment";
 
 export type AssignmentSelectorProps = FormControlProps & {
@@ -28,7 +34,7 @@ export function AssignmentSelector({
   const [state, setState] = useState(value);
 
   useEffect(() => {
-    if (!personId) return
+    if (!personId) return;
 
     AssignmentClient.findAllByPersonId(personId).then((res) => setItems(res));
   }, []);

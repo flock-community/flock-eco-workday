@@ -1,47 +1,47 @@
-import React, {useState} from "react";
-import {Grid} from "@material-ui/core";
-import {Field, Form, Formik} from "formik";
-import {MuiPickersUtilsProvider} from "@material-ui/pickers";
+import React, { useState } from "react";
+import { Grid } from "@material-ui/core";
+import { Field, Form, Formik } from "formik";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
-import {TextField} from "formik-material-ui";
-import {DatePickerField} from "../../components/fields/DatePickerField";
-import {ClientSelectorField} from "../../components/fields/ClientSelectorField";
-import {ASSIGNMENT_FORM_SCHEMA} from "./AssignmentSchema";
-import {ProjectSelectorField} from "../../components/fields/ProjectSelectorField";
+import { TextField } from "formik-material-ui";
+import { DatePickerField } from "../../components/fields/DatePickerField";
+import { ClientSelectorField } from "../../components/fields/ClientSelectorField";
+import { ASSIGNMENT_FORM_SCHEMA } from "./AssignmentSchema";
+import { ProjectSelectorField } from "../../components/fields/ProjectSelectorField";
 import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
 import ProjectDialog from "../project/ProjectDialog";
-import {Assignment, AssignmentRequest} from "../../clients/AssignmentClient";
+import { Assignment, AssignmentRequest } from "../../clients/AssignmentClient";
 
 // form id as a reference point for buttons outside of the <form></form> scope to be
 // able to submit this form
 export const ASSIGNMENT_FORM_ID = "assignment-form";
 
 type AssignmentFormProps = {
-  value: Assignment
+  value: Assignment;
   onSubmit: (item: AssignmentRequest) => void;
 };
 export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
-  const [projectDialogOpen, setProjectDialogOpen] = useState(false)
-  const [refresh, setRefresh] = useState(false)
+  const [projectDialogOpen, setProjectDialogOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
-  const doRefresh = () => setRefresh(!refresh)
+  const doRefresh = () => setRefresh(!refresh);
 
   const createProject = () => {
-    setProjectDialogOpen(true)
-  }
+    setProjectDialogOpen(true);
+  };
 
   const closeProjectDialog = () => {
-    doRefresh()
-    setProjectDialogOpen(false)
-  }
+    doRefresh();
+    setProjectDialogOpen(false);
+  };
 
   const form = ({ values, setFieldValue }) => {
     const handleRefresh = (promise) => {
-      promise.then(res => {
-        console.log(`Items in project selector updated`)
-      })
-    }
+      promise.then((res) => {
+        console.log(`Items in project selector updated`);
+      });
+    };
 
     return (
       <Form id={ASSIGNMENT_FORM_ID}>
@@ -95,7 +95,12 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
               <ClientSelectorField name="clientCode" fullWidth />
             </Grid>
             <Grid item xs={12}>
-              <ProjectSelectorField onRefresh={handleRefresh} refresh={doRefresh} name="projectCode" fullWidth />
+              <ProjectSelectorField
+                onRefresh={handleRefresh}
+                refresh={doRefresh}
+                name="projectCode"
+                fullWidth
+              />
             </Grid>
             <Grid>
               <Button onClick={createProject}>
@@ -106,14 +111,11 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
         </MuiPickersUtilsProvider>
       </Form>
     );
-  }
+  };
 
   const projectDialog = (
-    <ProjectDialog
-      open={projectDialogOpen}
-      closeDialog={closeProjectDialog}
-    />
-  )
+    <ProjectDialog open={projectDialogOpen} closeDialog={closeProjectDialog} />
+  );
 
   const init = value && {
     hourlyRate: value.hourlyRate,
@@ -123,7 +125,7 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
     to: value.to,
     clientCode: value.client.code,
     personId: value.person.uuid,
-    projectCode: value.project?.code
+    projectCode: value.project?.code,
   };
   return (
     <>

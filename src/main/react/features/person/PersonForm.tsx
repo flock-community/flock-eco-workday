@@ -107,7 +107,7 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
         ...PERSON_FORM_SCHEMA.cast(),
         active: true,
         ...item,
-        userCode: item?.user
+        userCode: item?.user,
       }}
       onSubmit={onSubmit}
       validationSchema={PERSON_FORM_SCHEMA}

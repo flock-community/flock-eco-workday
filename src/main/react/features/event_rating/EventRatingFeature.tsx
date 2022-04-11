@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 
 import Fab from "@material-ui/core/Fab";
 import Grid from "@material-ui/core/Grid";
-import {Typography} from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
-import {useParams} from "react-router-dom";
-import {EventClient, FlockEvent} from "../../clients/EventClient";
+import { useParams } from "react-router-dom";
+import { EventClient, FlockEvent } from "../../clients/EventClient";
 
 /**
  * @return {null}

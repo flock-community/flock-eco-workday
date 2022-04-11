@@ -2,57 +2,55 @@ import {
   PageableClient,
   QueryParameters,
   ResourceClient,
-  ValidResponse
+  ValidResponse,
 } from "@flock-community/flock-eco-core/src/main/react/clients";
 
 // FIXME: Use the one in PageableClient
 interface Pageable {
-  page: number
-  size: number
-  sort: string
+  page: number;
+  size: number;
+  sort: string;
 }
 
-export default function InternalizingClient<In, OutRaw, Out>(path: string, internalize: (raw: OutRaw) => Out) {
-
+export default function InternalizingClient<In, OutRaw, Out>(
+  path: string,
+  internalize: (raw: OutRaw) => Out
+) {
   const resourceClient = ResourceClient<OutRaw, In>(path);
   const pageableClient = PageableClient<OutRaw>(path);
 
-  const internalizeSingleItemResponse = (response: ValidResponse<OutRaw>): Out => internalize(response.body)
-  const internalizeItemArrayResponse = (response: ValidResponse<OutRaw[]>): Out[] => response.body.map(internalize)
+  const internalizeSingleItemResponse = (
+    response: ValidResponse<OutRaw>
+  ): Out => internalize(response.body);
+  const internalizeItemArrayResponse = (
+    response: ValidResponse<OutRaw[]>
+  ): Out[] => response.body.map(internalize);
 
-  const all = () => resourceClient
-    .all()
-    .then(internalizeItemArrayResponse)
+  const all = () => resourceClient.all().then(internalizeItemArrayResponse);
 
-  const query = (queryParameters: QueryParameters) => resourceClient
-    .query(queryParameters)
-    .then(internalizeItemArrayResponse)
+  const query = (queryParameters: QueryParameters) =>
+    resourceClient.query(queryParameters).then(internalizeItemArrayResponse);
 
-  const get = (id: string) => resourceClient
-    .get(id)
-    .then(internalizeSingleItemResponse)
+  const get = (id: string) =>
+    resourceClient.get(id).then(internalizeSingleItemResponse);
 
-  const post = (input: In) => resourceClient
-    .post(input)
-    .then(internalizeSingleItemResponse)
+  const post = (input: In) =>
+    resourceClient.post(input).then(internalizeSingleItemResponse);
 
-  const put = (id: string, input: In) => resourceClient
-    .put(id, input)
-    .then(internalizeSingleItemResponse)
+  const put = (id: string, input: In) =>
+    resourceClient.put(id, input).then(internalizeSingleItemResponse);
 
-  const findAllByPage = (pageable: Pageable) => pageableClient
-    .findAllByPage(pageable)
-    .then((response) => ({
+  const findAllByPage = (pageable: Pageable) =>
+    pageableClient.findAllByPage(pageable).then((response) => ({
       list: response.list.map(internalize),
-      count: response.count
-    }))
+      count: response.count,
+    }));
 
-  const queryByPage = (pageable: Pageable, queryParameters: QueryParameters) => pageableClient
-    .queryByPage(pageable, queryParameters)
-    .then((response) => ({
+  const queryByPage = (pageable: Pageable, queryParameters: QueryParameters) =>
+    pageableClient.queryByPage(pageable, queryParameters).then((response) => ({
       list: response.list.map(internalize),
-      count: response.count
-    }))
+      count: response.count,
+    }));
 
   return {
     all,
@@ -62,7 +60,6 @@ export default function InternalizingClient<In, OutRaw, Out>(path: string, inter
     put,
     delete: resourceClient.delete,
     findAllByPage,
-    queryByPage
-  }
+    queryByPage,
+  };
 }
-

@@ -1,20 +1,20 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 let errorStore: ErrorMessage[] = [];
 const listeners: Listener[] = [];
 const ErrorOpenTimeMilliSeconds = 5000;
 
-type Listener = (errorStore: ErrorMessage[]) => void
+type Listener = (errorStore: ErrorMessage[]) => void;
 
 type Error = {
   message: string;
-}
+};
 
 type ErrorMessage = {
   message: string;
   time: number;
   open: boolean;
-}
+};
 
 export function addError(error: Error | string): void {
   const errorLogObject = {

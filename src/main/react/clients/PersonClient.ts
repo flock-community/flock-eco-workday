@@ -35,20 +35,25 @@ export type PersonRequest = {
   email: string;
   position: string;
   number?: number;
-  active: boolean
-  lastActiveAt?: string // FIXME
+  active: boolean;
+  lastActiveAt?: string; // FIXME
   reminders: boolean;
   updates: boolean;
   user: any; // FIXME
-}
+};
 
 const path = "/api/persons";
 
 const internalize = (json: PersonRaw): Person => ({
-  ...json, lastActiveAt: new Date(json.lastActiveAt)
-})
+  ...json,
+  lastActiveAt: new Date(json.lastActiveAt),
+});
 
-const internalizingClient = InternalizingClient<PersonRequest, PersonRaw, Person>(path, internalize)
+const internalizingClient = InternalizingClient<
+  PersonRequest,
+  PersonRaw,
+  Person
+>(path, internalize);
 
 export const PersonClient = {
   ...internalizingClient,

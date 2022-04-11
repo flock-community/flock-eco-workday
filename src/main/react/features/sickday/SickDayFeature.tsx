@@ -1,15 +1,15 @@
-import React, {useContext, useState} from "react";
+import React, { useContext, useState } from "react";
 
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import {Container} from "@material-ui/core";
-import {SickDayDialog} from "./SickDayDialog";
-import {SickDayList} from "./SickDayList";
-import {PersonSelector} from "../../components/selector";
-import {ApplicationContext} from "../../application/ApplicationContext";
-import {AddActionFab} from "../../components/FabButtons";
-import {usePerson} from "../../hooks/PersonHook";
-import {SickDayClient} from "../../clients/SickDayClient";
+import { Container } from "@material-ui/core";
+import { SickDayDialog } from "./SickDayDialog";
+import { SickDayList } from "./SickDayList";
+import { PersonSelector } from "../../components/selector";
+import { ApplicationContext } from "../../application/ApplicationContext";
+import { AddActionFab } from "../../components/FabButtons";
+import { usePerson } from "../../hooks/PersonHook";
+import { SickDayClient } from "../../clients/SickDayClient";
 
 const useStyles = makeStyles({
   root: {
