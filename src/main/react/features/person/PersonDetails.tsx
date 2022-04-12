@@ -17,7 +17,7 @@ import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/co
 import { Feed } from "./widgets/Feed";
 import { PersonDialog } from "./PersonDialog";
 
-const useStyle = makeStyles(() => ({
+const useStyles = makeStyles(() => ({
   root: { margin: "-8px" },
   marginLeft: {
     marginLeft: "1rem",
@@ -33,7 +33,7 @@ export const PersonDetails = (props) => {
   const [reload, setReload] = useState(false);
   const [person, setPerson] = useState<Person>();
   const [dialog, setDialog] = useState({ edit: false, del: false });
-  const classes = useStyle();
+  const classes = useStyles();
 
   useEffect(() => {
     PersonClient.get(params.personId).then((person) => {

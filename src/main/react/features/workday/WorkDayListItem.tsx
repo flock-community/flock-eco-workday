@@ -1,9 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Card, CardContent, Typography } from "@material-ui/core";
+import { TableCell } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import TableRow from "@material-ui/core/TableRow";
 import { StatusMenu } from "../../components/StatusMenu";
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import CreateIcon from "@material-ui/icons/Create";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,28 +28,28 @@ export function WorkDayListItem({
   const classes = useStyles();
 
   return (
-    <Card onClick={onClick}>
-      <CardContent className={classes.root}>
-        <Typography variant="h6">
-          {value.assignment.client.name} - {value.assignment.role}
-        </Typography>
-        <Typography>
-          Period: {value.from.format("DD-MM-YYYY")} -{" "}
-          {value.to.format("DD-MM-YYYY")}
-        </Typography>
-        <Typography>
-          Aantal dagen: {value.to.diff(value.from, "days") + 1}
-        </Typography>
-        <Typography>Aantal uren: {value.hours}</Typography>
-        <div className={classes.status}>
-          <StatusMenu
-            onChange={onClickStatus}
-            disabled={!UserAuthorityUtil.hasAuthority(hasAuthority)}
-            value={value.status}
-          />
-        </div>
-      </CardContent>
-    </Card>
+    <TableRow>
+      <TableCell>{value.assignment.client.name}</TableCell>
+      <TableCell>{value.assignment.role}</TableCell>
+      <TableCell>{value.from.format("DD-MM-YYYY")}</TableCell>
+      <TableCell>{value.to.format("DD-MM-YYYY")}</TableCell>
+      <TableCell align="right">
+        {value.to.diff(value.from, "days") + 1}
+      </TableCell>
+      <TableCell align="right">{value.hours}</TableCell>
+      <TableCell>
+        <StatusMenu
+          onChange={onClickStatus}
+          disabled={!UserAuthorityUtil.hasAuthority(hasAuthority)}
+          value={value.status}
+        />
+      </TableCell>
+      <TableCell>
+        <IconButton onClick={onClick}>
+          <CreateIcon />
+        </IconButton>
+      </TableCell>
+    </TableRow>
   );
 }
 

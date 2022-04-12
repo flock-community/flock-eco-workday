@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, TextField } from "@material-ui/core";
+import { Grid, makeStyles, TextField } from "@material-ui/core";
 import moment from "moment";
 import Typography from "@material-ui/core/Typography";
 import { dateInPeriod, getDay, Period } from "../../features/period/Period";
@@ -9,6 +9,12 @@ const daysOfWeek = ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"];
 const stringifyDate = (date) => {
   return date.format("YYYYMMDD");
 };
+
+const useStyles = makeStyles({
+  totals: {
+    marginTop: "10px",
+  },
+});
 
 const calcGrid = (period) => {
   const diff =
@@ -41,12 +47,18 @@ const calcGrid = (period) => {
 };
 
 export type PeriodInputProps = {
-  value: Period;
+  period: Period;
   onChange: (day: moment.Moment, hours: number) => void;
 };
 
-export function PeriodInput({ value, onChange }: PeriodInputProps) {
-  const grid = calcGrid(value);
+export function PeriodInput({ period, onChange }: PeriodInputProps) {
+  const grid = calcGrid(period);
+
+  const classes = useStyles();
+
+  const totalHoursForPeriod = period.days?.reduce(
+    (previous, current) => previous + current
+  );
 
   return (
     <>
@@ -98,6 +110,20 @@ export function PeriodInput({ value, onChange }: PeriodInputProps) {
           </Grid>
         );
       })}
+
+      <Grid
+        container
+        spacing={1}
+        alignItems="center"
+        className={classes.totals}
+      >
+        <Grid item xs={10}>
+          <Typography align="right">Period total</Typography>
+        </Grid>
+        <Grid item xs={2}>
+          <Typography align="right">{totalHoursForPeriod}</Typography>
+        </Grid>
+      </Grid>
     </>
   );
 }

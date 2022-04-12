@@ -6,7 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import MomentUtils from "@date-io/moment";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Switch from "@material-ui/core/Switch";
-import { Typography } from "@material-ui/core";
+import { ButtonGroup, Typography } from "@material-ui/core";
 import { TextField } from "formik-material-ui";
 import * as PropTypes from "prop-types";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
@@ -18,6 +18,8 @@ import { AssignmentSelectorField } from "../../components/fields/AssignmentSelec
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
 import { mutatePeriod } from "../period/Period";
+import Button from "@material-ui/core/Button";
+import { DatePreset, datePresets } from "../../utils/DatePreset";
 
 export const WORKDAY_FORM_ID = "work-day-form";
 
@@ -76,7 +78,28 @@ export function WorkDayForm({ value, onSubmit }) {
     </Grid>
   );
 
-  const renderFormHours = ({ values }) => (
+  const renderDatePresetButtons = (setFieldValue: any) => {
+    const setPeriod = (datePreset: DatePreset) => {
+      setFieldValue("to", datePreset.to.clone());
+      setFieldValue("from", datePreset.from.clone());
+    };
+
+    return (
+      <ButtonGroup size="small" fullWidth>
+        {datePresets.map((datePreset, index) => (
+          <Button
+            key={index}
+            variant="outlined"
+            onClick={() => setPeriod(datePreset)}
+          >
+            {datePreset.title}
+          </Button>
+        ))}
+      </ButtonGroup>
+    );
+  };
+
+  const renderFormHours = ({ values, setFieldValue }) => (
     <>
       <Grid item xs={6}>
         <DatePickerField
@@ -90,8 +113,13 @@ export function WorkDayForm({ value, onSubmit }) {
         <DatePickerField name="to" label="To" minDate={values.from} fullWidth />
       </Grid>
       <Grid item xs={12}>
-        {renderSwitch}
+        {renderDatePresetButtons(setFieldValue)}
       </Grid>
+      <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
+        <Grid item xs={12}>
+          {renderSwitch}
+        </Grid>
+      </UserAuthorityUtil>
       <Grid item xs={12}>
         {daysSwitch ? (
           <Field
@@ -108,7 +136,7 @@ export function WorkDayForm({ value, onSubmit }) {
     </>
   );
 
-  const renderForm = ({ values }) => (
+  const renderForm = ({ values, setFieldValue }) => (
     <Form id={WORKDAY_FORM_ID}>
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <Grid container spacing={1}>
@@ -143,7 +171,7 @@ export function WorkDayForm({ value, onSubmit }) {
           <Grid item xs={12}>
             <hr />
           </Grid>
-          {renderFormHours({ values })}
+          {renderFormHours({ values, setFieldValue })}
           <Grid item xs={12}>
             <hr />
           </Grid>
