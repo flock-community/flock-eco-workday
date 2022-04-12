@@ -56,8 +56,6 @@ export const PersonDetails = (props) => {
     });
   };
 
-  const handleNothing = () => {};
-
   if (person === undefined) {
     return <AlignedLoader />;
   }
@@ -93,7 +91,7 @@ export const PersonDetails = (props) => {
   );
 
   const expenses = (
-    <Grid item xs={12} sm={12}>
+    <Grid item xs={12} sm={6}>
       <ExpenseFeature person={person} />
     </Grid>
   );
@@ -102,19 +100,19 @@ export const PersonDetails = (props) => {
     // <Grid container> wrapper is defined @PersonFeature
     <div>
       <Grid container item xs={12} spacing={2} className={classes.root}>
-        <Grid item xs={12} sm={12}>
+        <Grid item xs={12} sm={6}>
           <PersonWidget
             person={person}
             handleEditDialog={handleEditDialog}
             handleDelDialog={handleDelDialog}
           />
         </Grid>
+        {expenses}
         {workDays}
         {contracts}
         {assignments}
         {holidays}
         {sickdays}
-        {expenses}
       </Grid>
 
       <PersonDialog
