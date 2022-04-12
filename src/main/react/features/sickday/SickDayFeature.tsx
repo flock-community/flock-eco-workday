@@ -1,38 +1,19 @@
-import React, { useContext, useState } from "react";
-
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import { Container } from "@material-ui/core";
+import React, { useState } from "react";
+import { Button, Card, CardContent, CardHeader } from "@material-ui/core";
 import { SickDayDialog } from "./SickDayDialog";
 import { SickDayList } from "./SickDayList";
-import { PersonSelector } from "../../components/selector";
-import { ApplicationContext } from "../../application/ApplicationContext";
-import { AddActionFab } from "../../components/FabButtons";
-import { usePerson } from "../../hooks/PersonHook";
 import { SickDayClient } from "../../clients/SickDayClient";
+import { Person } from "../../clients/PersonClient";
+import AddIcon from "@material-ui/icons/Add";
 
-const useStyles = makeStyles({
-  root: {
-    padding: 20,
-  },
-});
+type SickDayFeatureProps = {
+  person: Person;
+};
 
-/**
- * @return {null}
- */
-export function SickDayFeature() {
-  const classes = useStyles();
-
-  const [person, setPerson] = usePerson();
-
+export function SickDayFeature({ person }: SickDayFeatureProps) {
   const [refresh, setRefresh] = useState(false);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
-  const { authorities } = useContext(ApplicationContext);
-
-  function isSuperUser() {
-    return authorities && authorities.includes("SickdayAuthority.ADMIN");
-  }
+  const [value, setValue] = useState<any>(null);
 
   function handleCompleteDialog() {
     setRefresh(!refresh);
@@ -50,10 +31,6 @@ export function SickDayFeature() {
     setOpen(true);
   }
 
-  function handlePersonChange(it) {
-    setPerson(it);
-  }
-
   function handleStatusChange(status, it) {
     SickDayClient.put(it.code, {
       ...it,
@@ -64,37 +41,31 @@ export function SickDayFeature() {
   }
 
   return (
-    <Container className={classes.root}>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          {isSuperUser() && (
-            <PersonSelector
-              value={person?.uuid}
-              onChange={handlePersonChange}
-              fullWidth
-            />
-          )}
-        </Grid>
-        <Grid item xs={12}>
+    <>
+      <Card>
+        <CardHeader
+          title="Sick days"
+          action={
+            <Button variant="outlined" onClick={handleClickAdd}>
+              <AddIcon /> Add
+            </Button>
+          }
+        />
+        <CardContent>
           <SickDayList
             personId={person?.uuid}
             onClickRow={handleClickRow}
             refresh={refresh}
             onClickStatus={handleStatusChange}
           />
-        </Grid>
-      </Grid>
+        </CardContent>
+      </Card>
       <SickDayDialog
         open={open}
         code={value?.code}
         personId={person?.uuid}
-        value={value}
         onComplete={handleCompleteDialog}
       />
-
-      <AddActionFab color="primary" onClick={handleClickAdd} />
-    </Container>
+    </>
   );
 }
-
-SickDayFeature.propTypes = {};

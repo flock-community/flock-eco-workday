@@ -21,10 +21,10 @@ const findAllByPersonId = (personId) =>
   });
 
 const post = (type, item) => {
-  if (type === "COST") {
+  if (type.toUpperCase() === "COST") {
     return costExpenseClient.post(item);
   }
-  if (type === "TRAVEL") {
+  if (type.toUpperCase() === "TRAVEL") {
     return travelExpenseClient.post(item);
   }
 
@@ -32,10 +32,10 @@ const post = (type, item) => {
 };
 
 const put = (id, type, item) => {
-  if (type === "COST") {
+  if (type.toUpperCase() === "COST") {
     return costExpenseClient.put(id, item);
   }
-  if (type === "TRAVEL") {
+  if (type.toUpperCase() === "TRAVEL") {
     return travelExpenseClient.put(id, item);
   }
 

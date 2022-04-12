@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
-import Grid from "@material-ui/core/Grid";
-import { PersonSelector } from "../../components/selector";
 import { AssignmentList } from "./AssignmentList";
-import { AddActionFab } from "../../components/FabButtons";
 import { AssignmentDialog } from "./AssignmentDialog";
-import { usePerson } from "../../hooks/PersonHook";
-import { Box } from "@material-ui/core";
+import { Card, CardContent, CardHeader } from "@material-ui/core";
+import { Person } from "../../clients/PersonClient";
+import Button from "@material-ui/core/Button";
+import AddIcon from "@material-ui/icons/Add";
 
-export function AssignmentFeature() {
-  const [person, setPerson] = usePerson();
+type AssignmentFeatureProps = {
+  person: Person;
+};
 
+export function AssignmentFeature({ person }: AssignmentFeatureProps) {
   const [reload, setReload] = useState(true);
   const [dialog, setDialog] = useState({ open: false, code: null });
 
@@ -23,41 +23,34 @@ export function AssignmentFeature() {
     setReload(!reload);
   }
 
-  function handleChangePerson(it) {
-    setPerson(it);
-  }
-
   function handleItemClick(it) {
     setDialog({ open: true, code: it.code });
   }
 
   return (
-    <Box m={2}>
-      <Grid container spacing={1}>
-        <UserAuthorityUtil has={"AssignmentAuthority.ADMIN"}>
-          <Grid item xs={12}>
-            <PersonSelector
-              value={person?.uuid}
-              onChange={handleChangePerson}
-              fullWidth
-            />
-          </Grid>
-        </UserAuthorityUtil>
-        <Grid item xs={12}>
-          <AssignmentList
-            personId={person?.uuid}
-            onItemClick={handleItemClick}
-            reload={reload}
-          />
-        </Grid>
-      </Grid>
+    <>
+      <Card>
+        <CardHeader
+          title="Assignments"
+          action={
+            <Button variant="outlined" onClick={handleClickAdd}>
+              <AddIcon /> Add
+            </Button>
+          }
+        />
+        <CardContent></CardContent>
+        <AssignmentList
+          personId={person?.uuid}
+          onItemClick={handleItemClick}
+          reload={reload}
+        />
+      </Card>
       <AssignmentDialog
         code={dialog.code}
         open={dialog.open}
         onClose={handleClose}
       />
-      <AddActionFab color="primary" onClick={handleClickAdd} />
-    </Box>
+    </>
   );
 }
 

@@ -1,65 +1,69 @@
 import React from "react";
-import PropTypes from "prop-types";
-import clsx from "clsx";
 import {
-  Card,
-  CardHeader,
   Avatar,
-  CardActions,
-  Typography,
-  IconButton,
-  Divider,
-  Chip,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { blue } from "@material-ui/core/colors";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import InboxIcon from "@material-ui/icons/Inbox";
-import DraftsIcon from "@material-ui/icons/Drafts";
-import FaceIcon from "@material-ui/icons/Face";
+import { Feed } from "../../features/person/widgets/Feed";
 
 type PersonWidgetProps = {
   person: any;
+  handleEditDialog: any;
+  handleDelDialog: any;
 };
-export function PersonWidget({ person }: PersonWidgetProps) {
+export function PersonWidget({
+  person,
+  handleEditDialog,
+  handleDelDialog,
+}: PersonWidgetProps) {
   return (
     <Card>
-      <Box p={2} textAlign={"right"}>
-        <Chip
-          icon={<FaceIcon />}
-          color="primary"
-          label="Full-Stack Developer"
-          variant="outlined"
-          size="small"
-        />
-      </Box>
+      <Feed
+        title="User Information"
+        onEdit={handleEditDialog}
+        onDelete={handleDelDialog}
+      />
       <CardHeader
         avatar={<Avatar aria-label="recipe">WF</Avatar>}
         title={`${person.firstname} ${person.lastname}`}
         subheader={person.email}
       />
-      <Divider />
-      <Box p={2}>
-        <Box>
-          <Typography variant="caption">Organization</Typography>
-          <Typography variant="body2">Flock.community</Typography>
-        </Box>
-        <Box>
-          <Typography variant="caption">Status</Typography>
-          <Chip
-            color="default"
-            disabled
-            label="disabled"
-            variant="default"
-            size="small"
-          />
-        </Box>
-      </Box>
+      <CardContent>
+        <TableContainer>
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableCell component="th">First name</TableCell>
+                <TableCell>{person.firstname}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th">Last name</TableCell>
+                <TableCell>{person.lastname}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th">Email address</TableCell>
+                <TableCell>{person.email}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th">Active</TableCell>
+                <TableCell>{person.active ? "Yes" : "No"}</TableCell>
+              </TableRow>
+              {person.active ? null : (
+                <TableRow>
+                  <TableCell component="th">Last active at</TableCell>
+                  <TableCell>{person.lastActiveAt.toLocaleString()}</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </CardContent>
     </Card>
   );
 }

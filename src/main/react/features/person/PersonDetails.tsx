@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import {
-  Card,
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-} from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import { Person, PersonClient } from "../../clients/PersonClient";
 import { PersonWidget } from "../../components/person-widget/PersonWidget";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
-import { Feed } from "./widgets/Feed";
 import { PersonDialog } from "./PersonDialog";
+import { ContractFeature } from "../contract/ContractFeature";
+import { WorkDayFeature } from "../workday/WorkDayFeature";
+import { AssignmentFeature } from "../assignments/AssignmentFeature";
+import { HolidayFeature } from "../holiday/HolidayFeature";
+import { SickDayFeature } from "../sickday/SickDayFeature";
+import { ExpenseFeature } from "../expense/ExpenseFeature";
 
 const useStyles = makeStyles(() => ({
   root: { margin: "-8px" },
@@ -59,56 +56,65 @@ export const PersonDetails = (props) => {
     });
   };
 
+  const handleNothing = () => {};
+
   if (person === undefined) {
     return <AlignedLoader />;
   }
+
+  const contracts = (
+    <Grid item xs={6} sm={6}>
+      <ContractFeature person={person} />
+    </Grid>
+  );
+
+  const workDays = (
+    <Grid item xs={12} sm={12}>
+      <WorkDayFeature person={person} />
+    </Grid>
+  );
+
+  const assignments = (
+    <Grid item xs={12} sm={6}>
+      <AssignmentFeature person={person} />
+    </Grid>
+  );
+
+  const holidays = (
+    <Grid item xs={12} sm={6}>
+      <HolidayFeature person={person} />
+    </Grid>
+  );
+
+  const sickdays = (
+    <Grid item xs={12} sm={6}>
+      <SickDayFeature person={person} />
+    </Grid>
+  );
+
+  const expenses = (
+    <Grid item xs={12} sm={12}>
+      <ExpenseFeature person={person} />
+    </Grid>
+  );
 
   return (
     // <Grid container> wrapper is defined @PersonFeature
     <div>
       <Grid container item xs={12} spacing={2} className={classes.root}>
-        <Grid item xs={12} sm={4}>
-          <PersonWidget person={person} />
+        <Grid item xs={12} sm={12}>
+          <PersonWidget
+            person={person}
+            handleEditDialog={handleEditDialog}
+            handleDelDialog={handleDelDialog}
+          />
         </Grid>
-        <Grid item xs={12} sm={8}>
-          <Card>
-            <Feed
-              title="User Information"
-              onEdit={handleEditDialog}
-              onDelete={handleDelDialog}
-            />
-            <TableContainer>
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell component="th">First name</TableCell>
-                    <TableCell>{person.firstname}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th">Last name</TableCell>
-                    <TableCell>{person.lastname}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th">Email address</TableCell>
-                    <TableCell>{person.email}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component="th">Active</TableCell>
-                    <TableCell>{person.active ? "Yes" : "No"}</TableCell>
-                  </TableRow>
-                  {person.active || (
-                    <TableRow>
-                      <TableCell component="th">Last active at</TableCell>
-                      <TableCell>
-                        {person.lastActiveAt.toLocaleString()}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Card>
-        </Grid>
+        {workDays}
+        {contracts}
+        {assignments}
+        {holidays}
+        {sickdays}
+        {expenses}
       </Grid>
 
       <PersonDialog

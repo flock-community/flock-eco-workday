@@ -1,39 +1,23 @@
-import React, { useContext, useEffect, useState } from "react";
-
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import { Container } from "@material-ui/core";
+import React, { useContext, useState } from "react";
+import { Card, CardContent, CardHeader } from "@material-ui/core";
 import { WorkDayDialog } from "./WorkDayDialog";
 import { WorkDayList } from "./WorkDayList";
-import { PersonSelector } from "../../components/selector";
 import { ApplicationContext } from "../../application/ApplicationContext";
-import { AddActionFab } from "../../components/FabButtons";
-import { usePerson } from "../../hooks/PersonHook";
 import { WorkDayClient } from "../../clients/WorkDayClient";
 import { addError } from "../../hooks/ErrorHook";
+import Button from "@material-ui/core/Button";
+import AddIcon from "@material-ui/icons/Add";
+import { Person } from "../../clients/PersonClient";
 
-const useStyles = makeStyles({
-  root: {
-    marginTop: 20,
-  },
-});
+type WorkDayFeatureProps = {
+  person: Person;
+};
 
-/**
- * @return {null}
- */
-export function WorkDayFeature() {
-  const classes = useStyles();
-
-  const [person, setPerson] = usePerson();
-
+export function WorkDayFeature({ person }: WorkDayFeatureProps) {
   const [refresh, setRefresh] = useState(false);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState();
+  const [value, setValue] = useState<any>();
   const { authorities } = useContext(ApplicationContext);
-
-  function isSuperUser() {
-    return authorities && authorities.includes("WorkDayAuthority.ADMIN");
-  }
 
   function handleCompleteDialog() {
     setRefresh(!refresh);
@@ -55,10 +39,6 @@ export function WorkDayFeature() {
     setOpen(true);
   }
 
-  function handlePersonChange(it) {
-    setPerson(it);
-  }
-
   function handleStatusChange(status, it) {
     WorkDayClient.put(it.code, {
       ...it,
@@ -71,37 +51,30 @@ export function WorkDayFeature() {
   }
 
   return (
-    <Container className={classes.root}>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          {isSuperUser() && (
-            // @ts-ignore
-            <PersonSelector
-              value={person?.uuid}
-              onChange={handlePersonChange}
-              fullWidth
-            />
-          )}
-        </Grid>
-        <Grid item xs={12}>
+    <>
+      <Card>
+        <CardHeader
+          title="Work days"
+          action={
+            <Button variant="outlined" onClick={handleClickAdd}>
+              <AddIcon /> Add
+            </Button>
+          }
+        />
+        <CardContent>
           <WorkDayList
             personId={person?.uuid}
             onClickRow={handleClickRow}
             refresh={refresh}
             onClickStatus={handleStatusChange}
           />
-        </Grid>
-      </Grid>
+        </CardContent>
+      </Card>
       <WorkDayDialog
         open={open}
-        // @ts-ignore
-        code={value && value.code}
+        code={value?.code}
         onComplete={handleCompleteDialog}
       />
-      {
-        //@ts-ignore
-        <AddActionFab color="primary" onClick={handleClickAdd} />
-      }
-    </Container>
+    </>
   );
 }
