@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Avatar,
   Card,
   CardContent,
   CardHeader,
@@ -10,7 +9,9 @@ import {
   TableContainer,
   TableRow,
 } from "@material-ui/core";
-import { Feed } from "../../features/person/widgets/Feed";
+import IconButton from "@material-ui/core/IconButton";
+import CreateIcon from "@material-ui/icons/Create";
+import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 
 type PersonWidgetProps = {
   person: any;
@@ -24,15 +25,18 @@ export function PersonWidget({
 }: PersonWidgetProps) {
   return (
     <Card>
-      <Feed
-        title="User Information"
-        onEdit={handleEditDialog}
-        onDelete={handleDelDialog}
-      />
       <CardHeader
-        avatar={<Avatar aria-label="recipe">WF</Avatar>}
-        title={`${person.firstname} ${person.lastname}`}
-        subheader={person.email}
+        title={person.fullName}
+        action={
+          <>
+            <IconButton onClick={handleEditDialog}>
+              <CreateIcon />
+            </IconButton>
+            <IconButton onClick={handleDelDialog}>
+              <DeleteRoundedIcon />
+            </IconButton>
+          </>
+        }
       />
       <CardContent>
         <TableContainer>
