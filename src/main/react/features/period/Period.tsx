@@ -17,14 +17,18 @@ function correctDaysLength(period: Period): boolean {
     : false;
 }
 
-function initDay(date: Moment): number {
+function initDay(date: Moment, hoursPerDay: number): number {
   const day = date.day();
   if (day === 0 || day === 6) return 0;
-  return 8;
+  return hoursPerDay;
 }
 
-function initDays(period: Period): number[] {
-  if (period.days) {
+export function initDays(
+  period: Period,
+  overwrite: boolean = false,
+  hoursPerDay: number = 8
+): number[] {
+  if (period.days && !overwrite) {
     if (correctDaysLength(period)) {
       return period.days;
     }
@@ -35,7 +39,7 @@ function initDays(period: Period): number[] {
   const length = daysBefore(period.from, period.to) + 1;
   const array = Array(length).fill(0);
   return array.map((_, index) =>
-    initDay(period.from.clone().add(index, "days"))
+    initDay(period.from.clone().add(index, "days"), hoursPerDay)
   );
 }
 
@@ -113,11 +117,29 @@ export function mutatePeriod(
     }
   };
 
-  if (mutation && mutation.from !== period.from) {
-    newStartDate(mutation.from);
+  if (!mutation) {
+    return period;
   }
-  if (mutation && mutation.to !== period.to) {
+
+  if (mutation.from !== period.from && mutation.to !== period.to) {
+    if (mutation.from.isAfter(period.to)) {
+      newEndDate(mutation.to);
+      newStartDate(mutation.from);
+    } else {
+      newStartDate(mutation.from);
+      newEndDate(mutation.to);
+    }
+    return period;
+  }
+
+  if (mutation.from !== period.from) {
+    newStartDate(mutation.from);
+    return period;
+  }
+
+  if (mutation.to !== period.to) {
     newEndDate(mutation.to);
+    return period;
   }
 
   return period;

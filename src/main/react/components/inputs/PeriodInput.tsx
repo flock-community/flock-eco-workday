@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, TextField } from "@material-ui/core";
+import { Box, Grid, TextField } from "@material-ui/core";
 import moment from "moment";
 import Typography from "@material-ui/core/Typography";
 import { dateInPeriod, getDay, Period } from "../../features/period/Period";
@@ -41,12 +41,16 @@ const calcGrid = (period) => {
 };
 
 export type PeriodInputProps = {
-  value: Period;
+  period: Period;
   onChange: (day: moment.Moment, hours: number) => void;
 };
 
-export function PeriodInput({ value, onChange }: PeriodInputProps) {
-  const grid = calcGrid(value);
+export function PeriodInput({ period, onChange }: PeriodInputProps) {
+  const grid = calcGrid(period);
+
+  const totalHoursForPeriod = period.days?.reduce(
+    (previous, current) => previous + current
+  );
 
   return (
     <>
@@ -98,6 +102,17 @@ export function PeriodInput({ value, onChange }: PeriodInputProps) {
           </Grid>
         );
       })}
+
+      <Box mt={1}>
+        <Grid container spacing={1} alignItems="center">
+          <Grid item xs={10}>
+            <Typography align="right">Period total</Typography>
+          </Grid>
+          <Grid item xs={2}>
+            <Typography align="right">{totalHoursForPeriod}</Typography>
+          </Grid>
+        </Grid>
+      </Box>
     </>
   );
 }
