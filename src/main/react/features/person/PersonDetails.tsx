@@ -13,6 +13,7 @@ import { AssignmentFeature } from "../assignments/AssignmentFeature";
 import { HolidayFeature } from "../holiday/HolidayFeature";
 import { SickDayFeature } from "../sickday/SickDayFeature";
 import { ExpenseFeature } from "../expense/ExpenseFeature";
+import { usePerson } from "../../hooks/PersonHook";
 
 const useStyles = makeStyles(() => ({
   root: { margin: "-8px" },
@@ -28,6 +29,7 @@ export const PersonDetails = (props) => {
   const history = useHistory();
   const { params } = useRouteMatch();
   const [reload, setReload] = useState(false);
+  const [personContext, setPersonContext] = usePerson();
   const [person, setPerson] = useState<Person>();
   const [dialog, setDialog] = useState({ edit: false, del: false });
   const classes = useStyles();
@@ -35,6 +37,7 @@ export const PersonDetails = (props) => {
   useEffect(() => {
     PersonClient.get(params.personId).then((person) => {
       setPerson(person);
+      setPersonContext(person.uuid);
     });
   }, [reload]);
 
