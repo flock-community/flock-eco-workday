@@ -1,7 +1,7 @@
-import { createMuiTheme } from "@material-ui/core/styles";
 import { blueGrey, green, red } from "@material-ui/core/colors";
+import { createTheme } from "@material-ui/core";
 
-export const themeLight = createMuiTheme({
+export const themeLight = createTheme({
   palette: {
     primary: {
       main: "#fcde00",
