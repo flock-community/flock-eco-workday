@@ -7,9 +7,7 @@ import {
   Switch,
 } from "react-router-dom";
 import { UserFeature } from "@flock-community/flock-eco-feature-user/src/main/react/user/UserFeature";
-import { Box, CircularProgress } from "@material-ui/core";
-
-import { makeStyles } from "@material-ui/core/styles";
+import { Box } from "@material-ui/core";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import { ApplicationLayout } from "./ApplicationLayout";
@@ -36,23 +34,13 @@ import HolidayPage from "../features/holiday/HolidayPage";
 import ExpensePage from "../features/expense/ExpensePage";
 import WorkDayPage from "../features/workday/WorkDayPage";
 import SickDayPage from "../features/sickday/SickDayPage";
-
-const useStyles = makeStyles(() => ({
-  spinner: {
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-}));
+import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 
 const theme = getTheme("light");
 
 const unauthorizedRoutes = [/^#\/event_rating\/.*/];
 
 export const Application = () => {
-  const classes = useStyles();
-
   const status = useLoginStatus();
   const user = useUserMe();
   const errors = useError();
@@ -73,11 +61,7 @@ export const Application = () => {
   }
 
   if (!status) {
-    return (
-      <Box className={classes.spinner}>
-        <CircularProgress />
-      </Box>
-    );
+    return <AlignedLoader />;
   }
 
   const authorize = !unauthorizedRoutes.find((it) =>
