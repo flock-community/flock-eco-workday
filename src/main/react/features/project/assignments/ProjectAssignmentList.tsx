@@ -1,30 +1,34 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import ProjectAssignmentListItem from "./ProjectAssignmentListItem";
-import {Assignment, AssignmentClient} from "../../../clients/AssignmentClient";
-import {TableBody, TableCell, TableHead} from "@material-ui/core";
+import {
+  Assignment,
+  AssignmentClient,
+} from "../../../clients/AssignmentClient";
+import { TableBody, TableCell, TableHead } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
 
 export default function ProjectAssignmentList({ project }) {
-  const [assignments, setAssignments] = useState<Assignment[]>([])
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
 
   useEffect(() => {
-    AssignmentClient.findAllByProject(project).then(res => setAssignments(res ? res : []))
-  }, [])
+    AssignmentClient.findAllByProject(project).then((res) =>
+      setAssignments(res ? res : [])
+    );
+  }, []);
 
   function renderAssignment(assignment) {
     return (
-      <ProjectAssignmentListItem key={assignment.code} assignment={assignment}/>
-    )
+      <ProjectAssignmentListItem
+        key={assignment.code}
+        assignment={assignment}
+      />
+    );
   }
 
   if (assignments.length == 0) {
-    return (
-      <Typography>
-        No assignments for this project
-      </Typography>
-    )
+    return <Typography>No assignments for this project</Typography>;
   }
 
   return (
@@ -41,9 +45,7 @@ export default function ProjectAssignmentList({ project }) {
           <TableCell>Total costs</TableCell>
         </TableRow>
       </TableHead>
-      <TableBody>
-        {assignments.map(renderAssignment)}
-      </TableBody>
+      <TableBody>{assignments.map(renderAssignment)}</TableBody>
     </Table>
-  )
+  );
 }

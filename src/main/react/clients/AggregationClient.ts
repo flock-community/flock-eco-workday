@@ -1,65 +1,74 @@
-import {addError} from "../hooks/ErrorHook";
-import {ExtractJSON} from "../utils/ResourceClient";
-import {AggregationClientPersonOverview} from "../graphql/aggregation";
+import { AggregationClientPersonOverview } from "../graphql/aggregation";
+import {
+  checkResponse,
+  validateResponse,
+} from "@flock-community/flock-eco-core";
 
 const path = "/api/aggregations";
 
 export type ClientGrossRevenue = {
   name: string;
   revenueGross: number;
-}
+};
 
-export const totalPerClientByYear = (year) => {
+export const totalPerClientByYear = (
+  year: number
+): Promise<ClientGrossRevenue[]> => {
   const opts = {
     method: "GET",
   };
   return fetch(`${path}/total-per-client?year=${year}`, opts)
-    .then(json => ExtractJSON<ClientGrossRevenue[]>(json))
-    .catch((e) => {
-      addError(e.message);
-      return e;
-    });
+    .then((res) => validateResponse<ClientGrossRevenue[]>(res))
+    .then((res) => checkResponse(res))
+    .then((res) => res.body);
 };
 export const totalPerPersonByYear = (year) => {
   const opts = {
     method: "GET",
   };
   return fetch(`${path}/total-per-person?year=${year}`, opts)
-    .then(ExtractJSON)
-    .catch((e) => addError(e.message));
+    .then(validateResponse)
+    .then(checkResponse)
+    .then((res) => res.body);
 };
 export const totalPerPersonByYearMonth = (year, month) => {
   const opts = {
     method: "GET",
   };
   return fetch(`${path}/total-per-person?year=${year}&month=${month}`, opts)
-    .then(it => ExtractJSON(it))
-    .catch((e) => addError(e.message));
+    .then(validateResponse)
+    .then(checkResponse)
+    .then((res) => res.body);
 };
-export const clientHourOverviewByYearMonth: (year:number, month:number) => Promise<void | AggregationClientPersonOverview[]> = (year, month) => {
+export const clientHourOverviewByYearMonth: (
+  year: number,
+  month: number
+) => Promise<void | AggregationClientPersonOverview[]> = (year, month) => {
   const opts = {
     method: "GET",
   };
   return fetch(`${path}/client-hour-overview?year=${year}&month=${month}`, opts)
-      .then(it => ExtractJSON(it))
-      .then(it => it as AggregationClientPersonOverview[])
-      .catch((e) => addError(e.message));
+    .then((res) => validateResponse<AggregationClientPersonOverview[]>(res))
+    .then(checkResponse)
+    .then((res) => res.body);
 };
 export const totalPerPersonMe = () => {
   const opts = {
     method: "GET",
   };
   return fetch(`${path}/total-per-person-me`, opts)
-    .then(it => ExtractJSON(it))
-    .catch((e) => addError(e.message));
+    .then(validateResponse)
+    .then(checkResponse)
+    .then((res) => res.body);
 };
 export const holidayReportMe = (year) => {
   const opts = {
     method: "GET",
   };
   return fetch(`${path}/holiday-report-me?year=${year}`, opts)
-    .then(it => ExtractJSON(it))
-    .catch((e) => addError(e.message));
+    .then(validateResponse)
+    .then(checkResponse)
+    .then((res) => res.body);
 };
 
 export const totalPerMonthByYear = (year) => {
@@ -67,8 +76,9 @@ export const totalPerMonthByYear = (year) => {
     method: "GET",
   };
   return fetch(`${path}/total-per-month?year=${year}`, opts)
-    .then(ExtractJSON)
-    .catch((e) => addError(e.message));
+    .then(validateResponse)
+    .then(checkResponse)
+    .then((res) => res.body);
 };
 
 export const holidayReportByYear = (year) => {
@@ -76,8 +86,9 @@ export const holidayReportByYear = (year) => {
     method: "GET",
   };
   return fetch(`${path}/holiday-report?year=${year}`, opts)
-    .then(ExtractJSON)
-    .catch((e) => addError(e.message));
+    .then(validateResponse)
+    .then(checkResponse)
+    .then((res) => res.body);
 };
 
 export const AggregationClient = {

@@ -1,6 +1,6 @@
 import moment from "moment";
-import { ExtractJSON, ResourceClient } from "../utils/ResourceClient.ts";
-import { addError } from "../hooks/ErrorHook";
+import InternalizingClient from "../utils/InternalizingClient.ts";
+import NonInternalizingClient from "../utils/NonInternalizingClient.ts";
 
 const internalize = (it) => ({
   ...it,
@@ -8,20 +8,12 @@ const internalize = (it) => ({
 });
 
 const path = "/api/invoices";
-const resourceClient = ResourceClient(path, internalize);
+const uploadInvoicePath = `${path}/upload_invoice`;
 
-const uploadInvoice = (id) => {
-  const opts = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ id }),
-  };
-  return fetch(`${path}/upload_invoice`, opts)
-    .then(ExtractJSON)
-    .catch((e) => addError(e.message));
-};
+const resourceClient = InternalizingClient(path, internalize);
+const uploadInvoiceClient = NonInternalizingClient(uploadInvoicePath);
+
+const uploadInvoice = (id) => uploadInvoiceClient.post({ id });
 
 export const InvoiceClient = {
   uploadInvoice,

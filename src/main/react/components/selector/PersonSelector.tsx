@@ -30,14 +30,16 @@ export function PersonSelector({
   const [state, setState] = useState<any>(value);
 
   useEffect(() => {
-    PersonClient.findAllByPage({
-      query: {
-        active: true,
+    PersonClient.queryByPage(
+      {
+        page: 0,
+        size: 100,
+        sort: "lastname",
       },
-      page: 0,
-      size: 100,
-      sort: "lastname",
-    }).then((res) => setItems(res.list));
+      {
+        active: true,
+      }
+    ).then((res) => setItems(res.list));
   }, []);
 
   useEffect(() => {

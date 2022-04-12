@@ -80,7 +80,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   };
 
   const handleDelete = () => {
-    EventClient.delete(code).then(() => {
+    EventClient.delete(code!).then(() => {
       onComplete?.();
       setOpenDelete(false);
     });

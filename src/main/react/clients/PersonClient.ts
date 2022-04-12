@@ -1,5 +1,4 @@
-import {ResourceClient} from "../utils/ResourceClient";
-import {PageableClient} from "../utils/PageableClient";
+import InternalizingClient from "../utils/InternalizingClient";
 
 export type Person = {
   id: number;
@@ -21,6 +20,7 @@ export type PersonRaw = {
   firstname: string;
   id: number;
   lastname: string;
+  fullName: string;
   number: string;
   position: string;
   user: string;
@@ -28,17 +28,34 @@ export type PersonRaw = {
   lastActiveAt: string;
 };
 
+export type PersonRequest = {
+  id?: number;
+  uuid?: string;
+  lastName: string;
+  email: string;
+  position: string;
+  number?: number;
+  active: boolean;
+  lastActiveAt?: string; // FIXME
+  reminders: boolean;
+  updates: boolean;
+  user: any; // FIXME
+};
+
 const path = "/api/persons";
 
 const internalize = (json: PersonRaw): Person => ({
-  ...json, lastActiveAt: new Date(json.lastActiveAt)
-})
+  ...json,
+  lastActiveAt: new Date(json.lastActiveAt),
+});
 
-const resourceClient = ResourceClient<string, Person, Person, PersonRaw>(path, internalize);
-const pageableClient = PageableClient<Person, Person>(path);
+const internalizingClient = InternalizingClient<
+  PersonRequest,
+  PersonRaw,
+  Person
+>(path, internalize);
 
 export const PersonClient = {
-  ...resourceClient,
-  ...pageableClient,
-  me: () => resourceClient.get("me"),
+  ...internalizingClient,
+  me: () => internalizingClient.get("me"),
 };

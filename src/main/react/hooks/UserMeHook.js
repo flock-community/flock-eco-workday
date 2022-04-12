@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient";
+import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient.ts";
 import { useLoginStatus } from "./StatusHook";
 
 let loading = false;
@@ -19,7 +19,7 @@ export function useUserMe() {
 
   useEffect(() => {
     if (store === null && !loading) {
-      if (status && status.loggedIn) {
+      if (status && status.isLoggedIn) {
         loading = true;
         UserClient.findUsersMe().then(update);
       }

@@ -1,4 +1,4 @@
-import { ResourceClient } from "@flock-community/flock-eco-core/src/main/react/clients";
+import { ResourceClient } from "@flock-community/flock-eco-core";
 
 const path = "/api/todos";
 

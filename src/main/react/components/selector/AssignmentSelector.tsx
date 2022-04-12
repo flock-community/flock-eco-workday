@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import {
   FormControl,
   FormControlProps,
@@ -35,6 +34,8 @@ export function AssignmentSelector({
   const [state, setState] = useState(value);
 
   useEffect(() => {
+    if (!personId) return;
+
     AssignmentClient.findAllByPersonId(personId).then((res) => setItems(res));
   }, []);
 

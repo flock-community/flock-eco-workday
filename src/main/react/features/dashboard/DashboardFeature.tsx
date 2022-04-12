@@ -1,19 +1,19 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
-import {CardContent, MenuItem, Select} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
+import { CardContent, MenuItem, Select } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import CardHeader from "@material-ui/core/CardHeader";
-import {HolidaysPerPersonChart} from "../../components/charts/HolidaysPerPersonChart";
-import {SickdayPerPersonChart} from "../../components/charts/SickdayPerPersonChart";
-import {RevenuePerClientTable} from "../../components/charts/RevenuePerClientTable";
-import {TotalPerMonthChart} from "../../components/charts/TotalPerMonthChart";
-import {AverageHoursPerDayChart} from "../../components/charts/AverageHoursPerDayChart";
-import {InternalOverviewChart} from "../../components/charts/InternalOverviewChart";
-import {ExternalOverviewChart} from "../../components/charts/ExternalOverviewChart";
-import {ManagementOverviewChart} from "../../components/charts/ManagementOverviewChart";
+import { HolidaysPerPersonChart } from "../../components/charts/HolidaysPerPersonChart";
+import { SickdayPerPersonChart } from "../../components/charts/SickdayPerPersonChart";
+import { RevenuePerClientTable } from "../../components/charts/RevenuePerClientTable";
+import { TotalPerMonthChart } from "../../components/charts/TotalPerMonthChart";
+import { AverageHoursPerDayChart } from "../../components/charts/AverageHoursPerDayChart";
+import { InternalOverviewChart } from "../../components/charts/InternalOverviewChart";
+import { ExternalOverviewChart } from "../../components/charts/ExternalOverviewChart";
+import { ManagementOverviewChart } from "../../components/charts/ManagementOverviewChart";
 import moment from "moment";
-import {GrossMarginTable} from "../../components/tables/GrossMarginTable";
+import { GrossMarginTable } from "../../components/tables/GrossMarginTable";
 
 const useStyles = makeStyles({
   root: {

@@ -62,11 +62,9 @@ export function AssignmentList({
               <Typography>
                 Hours per week: {assignment.hoursPerWeek}{" "}
               </Typography>
-              {assignment.project &&
-                <Typography>
-                  Project: {assignment.project.name}
-                </Typography>
-              }
+              {assignment.project && (
+                <Typography>Project: {assignment.project.name}</Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>

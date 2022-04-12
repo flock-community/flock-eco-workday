@@ -1,12 +1,20 @@
-import React, {useEffect, useState} from "react";
-import {Link as RouterLink, useRouteMatch} from "react-router-dom";
-import {Link, Paper, Table, TableBody, TableCell, TablePagination, TableRow,} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
-import {PersonTableHead} from "./PersonTableHead";
-import {Person, PersonClient} from "../../../clients/PersonClient";
-import {AddActionFab} from "../../../components/FabButtons";
-import {PersonDialog} from "../PersonDialog";
-import {CheckBox} from "@material-ui/icons";
+import React, { useEffect, useState } from "react";
+import { Link as RouterLink, useRouteMatch } from "react-router-dom";
+import {
+  Link,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TablePagination,
+  TableRow,
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { PersonTableHead } from "./PersonTableHead";
+import { Person, PersonClient } from "../../../clients/PersonClient";
+import { AddActionFab } from "../../../components/FabButtons";
+import { PersonDialog } from "../PersonDialog";
+import { CheckBox } from "@material-ui/icons";
 
 const useStyles = makeStyles({
   root: {
@@ -35,12 +43,10 @@ export const PersonTable = () => {
 
   useEffect(() => {
     // eslint-disable-next-line no-shadow
-    PersonClient.findAllByPage({ page, size, sort: "lastname" }).then(
-      (res) => {
-        setPersonList(res.list);
-        setCount(res.total);
-      }
-    );
+    PersonClient.findAllByPage({ page, size, sort: "lastname" }).then((res) => {
+      setPersonList(res.list);
+      setCount(res.total);
+    });
   }, [reload, page, size]);
 
   const handleDialogOpen = () => {

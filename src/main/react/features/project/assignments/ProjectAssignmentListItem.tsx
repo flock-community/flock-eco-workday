@@ -1,9 +1,13 @@
 import React from "react";
-import {TableCell} from "@material-ui/core";
+import { TableCell } from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
-import {Assignment} from "../../../clients/AssignmentClient";
+import { Assignment } from "../../../clients/AssignmentClient";
 
-export default function ProjectAssignmentListItem({ assignment } : { assignment: Assignment}) {
+export default function ProjectAssignmentListItem({
+  assignment,
+}: {
+  assignment: Assignment;
+}) {
   return (
     <TableRow>
       <TableCell>{assignment.person.fullName}</TableCell>
@@ -15,5 +19,5 @@ export default function ProjectAssignmentListItem({ assignment } : { assignment:
       <TableCell>{assignment.totalHours}</TableCell>
       <TableCell>{assignment.totalCosts}</TableCell>
     </TableRow>
-  )
+  );
 }

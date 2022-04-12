@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { Card, Typography } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
-import { EventClient } from "../../clients/EventClient";
+import { EventClient, FlockEvent } from "../../clients/EventClient";
 import { isDefined } from "../../utils/validation";
 
 type EventListProps = {
@@ -12,7 +11,7 @@ type EventListProps = {
 };
 
 export function EventList({ refresh, onClickRow }: EventListProps) {
-  const [state, setState] = useState([]);
+  const [state, setState] = useState<FlockEvent[]>([]);
 
   useEffect(() => {
     EventClient.all().then((res) => setState(res));

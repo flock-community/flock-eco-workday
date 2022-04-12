@@ -1,7 +1,7 @@
-import { ResourceClient } from "../utils/ResourceClient.ts";
+import NonInternalizingClient from "../utils/NonInternalizingClient.ts";
 
 const path = "/api/exactonline";
-const resourceClient = ResourceClient(path);
+const resourceClient = NonInternalizingClient(path);
 
 const authorizeUrl = `${path}/authorize?redirect_url=/exactonline`;
 const status = () => resourceClient.get("status");

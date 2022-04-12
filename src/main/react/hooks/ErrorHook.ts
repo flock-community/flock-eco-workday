@@ -1,22 +1,33 @@
 import { useEffect, useState } from "react";
 
-let errorStore = [];
-const listeners = [];
+let errorStore: ErrorMessage[] = [];
+const listeners: Listener[] = [];
 const ErrorOpenTimeMilliSeconds = 5000;
 
-// FIXME: Accept the error (instead of the message) as argument and return it
-export function addError(error) {
-  const errorObject = {
-    message: error,
+type Listener = (errorStore: ErrorMessage[]) => void;
+
+type Error = {
+  message: string;
+};
+
+type ErrorMessage = {
+  message: string;
+  time: number;
+  open: boolean;
+};
+
+export function addError(error: Error | string): void {
+  const errorLogObject = {
+    message: typeof error == "string" ? error : error.message,
     time: Date.now(),
     open: true,
   };
-  errorStore = [...errorStore, errorObject];
+  errorStore = [...errorStore, errorLogObject];
   listeners.forEach((func) => func(errorStore));
   setTimeout(() => {
-    errorObject.open = false;
+    errorLogObject.open = false;
     errorStore = errorStore.map((it) =>
-      it === errorObject ? errorObject : it
+      it === errorLogObject ? errorLogObject : it
     );
     listeners.forEach((func) => func(errorStore));
   }, ErrorOpenTimeMilliSeconds);

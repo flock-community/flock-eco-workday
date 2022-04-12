@@ -1,5 +1,7 @@
-import { addError } from "../hooks/ErrorHook";
-import { ExtractJSON } from "../utils/ResourceClient.ts";
+import {
+  checkResponse,
+  validateResponse,
+} from "@flock-community/flock-eco-core/src/main/react/clients/utils.ts";
 
 const path = "/login/status";
 
@@ -9,8 +11,9 @@ const get = () => {
   };
 
   return fetch(path, opts)
-    .then(ExtractJSON)
-    .catch((e) => addError(e.message));
+    .then(validateResponse)
+    .then(checkResponse)
+    .then((res) => res.body);
 };
 
 export const UserStatusClient = {

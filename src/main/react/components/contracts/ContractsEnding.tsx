@@ -1,28 +1,40 @@
 import Typography from "@material-ui/core/Typography";
-import React, {useEffect, useState} from "react";
-import {ContractClient} from "../../clients/ContractClient";
+import React, { useEffect, useState } from "react";
+import { ContractClient } from "../../clients/ContractClient";
 import moment from "moment";
-import {Card, CardContent, CardHeader, TableBody, TableCell, TableContainer, TableHead} from "@material-ui/core";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+} from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
 
 type ContractsEndingProps = {
   withinNWeeks: number;
-}
+};
 
-export default function ContractsEnding({withinNWeeks}: ContractsEndingProps) {
-  const [contracts, setContracts] = useState<any[]>([])
+export default function ContractsEnding({
+  withinNWeeks,
+}: ContractsEndingProps) {
+  const [contracts, setContracts] = useState<any[]>([]);
 
   useEffect(() => {
-    ContractClient.findAllByToBetween(new Date(), moment().add(withinNWeeks, "weeks").toDate())
-      .then((res) => setContracts(res))
-  }, [withinNWeeks])
+    ContractClient.findAllByToBetween(
+      new Date(),
+      moment().add(withinNWeeks, "weeks").toDate()
+    ).then((res) => setContracts(res));
+  }, [withinNWeeks]);
 
   const noContent = (
     <Typography variant="caption">
       No contracts ending within {withinNWeeks} weeks
     </Typography>
-  )
+  );
 
   const renderContract = (contract, index) => (
     <TableRow key={index}>
@@ -31,7 +43,7 @@ export default function ContractsEnding({withinNWeeks}: ContractsEndingProps) {
       <TableCell>{contract.to.format("DD-MM-YYYY")}</TableCell>
       <TableCell>{contract.type}</TableCell>
     </TableRow>
-  )
+  );
 
   const table = (
     <TableContainer>
@@ -44,19 +56,15 @@ export default function ContractsEnding({withinNWeeks}: ContractsEndingProps) {
             <TableCell>Type</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
-          {contracts.map(renderContract)}
-        </TableBody>
+        <TableBody>{contracts.map(renderContract)}</TableBody>
       </Table>
     </TableContainer>
-  )
+  );
 
   return (
     <Card>
       <CardHeader title={`Contracts ending within ${withinNWeeks} weeks`} />
-      <CardContent>
-        {contracts.length > 0 ? table : noContent}
-      </CardContent>
+      <CardContent>{contracts.length > 0 ? table : noContent}</CardContent>
     </Card>
-  )
+  );
 }
