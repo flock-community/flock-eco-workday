@@ -1,36 +1,18 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import { Container } from "@material-ui/core";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import { Card, CardContent, CardHeader } from "@material-ui/core";
 import { ExpenseList } from "./ExpenseList";
-import { AddActionFab } from "../../components/FabButtons";
-import { PersonSelector } from "../../components/selector";
-import { usePerson } from "../../hooks/PersonHook";
 import { ExpenseDialog } from "./ExpenseDialog";
+import Button from "@material-ui/core/Button";
+import AddIcon from "@material-ui/icons/Add";
+import { Person } from "../../clients/PersonClient";
 
-const useStyles = makeStyles({
-  root: {
-    padding: 20,
-  },
-  fab: {
-    position: "absolute",
-    bottom: "25px",
-    right: "25px",
-  },
-});
+type ExpenseFeatureProps = {
+  person: Person;
+};
 
-/**
- * @return {null}
- */
-export function ExpenseFeature() {
-  const classes = useStyles();
-
+export function ExpenseFeature({ person }: ExpenseFeatureProps) {
   const [reload, setReload] = useState(false);
-
   const [{ id, open }, setDialog] = useState({ id: null, open: false });
-
-  const [person, setPerson] = usePerson();
 
   const handleCompleteDialog = () => {
     setReload(!reload);
@@ -54,37 +36,31 @@ export function ExpenseFeature() {
     });
   };
 
-  function handlePersonChange(it) {
-    setPerson(it);
-  }
-
   return (
-    <Container className={classes.root}>
-      <Grid container spacing={1}>
-        <UserAuthorityUtil has={"ExpenseAuthority.ADMIN"}>
-          <Grid item xs={12}>
-            <PersonSelector
-              value={person?.uuid}
-              onChange={handlePersonChange}
-              fullWidth
-            />
-          </Grid>
-        </UserAuthorityUtil>
-        <Grid item xs={12}>
+    <>
+      <Card>
+        <CardHeader
+          title="Expenses"
+          action={
+            <Button variant="outlined" onClick={handleClickAdd}>
+              <AddIcon /> Add
+            </Button>
+          }
+        />
+        <CardContent>
           <ExpenseList
             personId={person?.uuid}
             onClickRow={handleClickRow}
             refresh={reload}
           />
-        </Grid>
-      </Grid>
+        </CardContent>
+      </Card>
       <ExpenseDialog
-        id={id}
+        id={id!!}
         open={open}
         personId={person?.uuid}
         onComplete={handleCompleteDialog}
       />
-      <AddActionFab color="primary" onClick={handleClickAdd} />
-    </Container>
+    </>
   );
 }

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link as RouterLink, useRouteMatch } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import {
-  Link,
   Paper,
   Table,
   TableBody,
@@ -39,6 +38,7 @@ export const PersonTable = () => {
   const [personList, setPersonList] = useState<Person[]>([]);
   const [dialog, setDialog] = useState({ open: false });
   const [reload, setReload] = useState(false);
+  const history = useHistory();
   const classes = useStyles();
 
   useEffect(() => {
@@ -68,6 +68,10 @@ export const PersonTable = () => {
     setPage(0);
   };
 
+  const handleClick = (person: Person) => {
+    history.push(`${url}/code/${person.uuid}`);
+  };
+
   return (
     <div>
       <Paper className={classes.root}>
@@ -77,19 +81,13 @@ export const PersonTable = () => {
             <TableBody>
               {personList.map((person, idx) => {
                 return (
-                  <TableRow key={idx} hover>
+                  <TableRow key={idx} hover onClick={() => handleClick(person)}>
                     <TableCell
                       className={classes.tblName}
                       component="th"
                       scope="row"
                     >
-                      <Link
-                        component={RouterLink}
-                        to={`${url}/code/${person.uuid}`}
-                        underline="none"
-                      >
-                        {person.firstname} {person.lastname}
-                      </Link>
+                      {person.fullName}
                     </TableCell>
                     <TableCell className={classes.tblEmail} align="left">
                       {person.email}

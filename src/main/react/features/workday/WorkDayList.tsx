@@ -70,7 +70,7 @@ export function WorkDayList({
     <Card className={classes.card}>
       <CardContent>
         <TableContainer>
-          <Table>
+          <Table size="small">
             <TableHead>
               <TableRow>
                 <TableCell>Client</TableCell>
