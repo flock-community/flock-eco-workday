@@ -1,11 +1,11 @@
 import React from "react";
 import { ExpenseFeature } from "./ExpenseFeature";
-import PersonPage from "../base/PersonPage";
+import PersonLayout from "../../components/layouts/PersonLayout";
 
 export default function ExpensePage() {
   return (
-    <PersonPage requireAuthority={"ExpenseAuthority.ADMIN"}>
+    <PersonLayout requireAuthority={"ExpenseAuthority.ADMIN"}>
       {(person) => <ExpenseFeature person={person} />}
-    </PersonPage>
+    </PersonLayout>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
-import { PersonSelector } from "../../components/selector";
+import { PersonSelector } from "../selector";
 import { Box } from "@material-ui/core";
 import { usePerson } from "../../hooks/PersonHook";
 import Typography from "@material-ui/core/Typography";
@@ -11,7 +11,10 @@ type PageProps = {
   children: any;
 };
 
-export default function PersonPage({ requireAuthority, children }: PageProps) {
+export default function PersonLayout({
+  requireAuthority,
+  children,
+}: PageProps) {
   const [person, setPerson] = usePerson();
 
   const handleChangePerson = (personId) => {
