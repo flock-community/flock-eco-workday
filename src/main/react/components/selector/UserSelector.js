@@ -16,8 +16,10 @@ export function UserSelector(props) {
   const [selected, setSelected] = useState("");
 
   useEffect(() => {
-    UserClient.findAllUsers("", 0, 100).then((res) => setUsers(res.list));
-    setSelected(selectedItem);
+    UserClient.findAllUsers("", 0, 100).then((res) => {
+      setUsers(res.list);
+      setSelected(selectedItem);
+    });
   }, []);
 
   function handleChange(event) {
@@ -27,13 +29,11 @@ export function UserSelector(props) {
     onChange(selected);
   }
 
-  function renderMenuItem(user, key) {
-    return (
-      <MenuItem key={`user-selector-menu-item-${key}`} value={user.code}>
-        {user.name} &lt;{user.email}&gt;
-      </MenuItem>
-    );
-  }
+  const renderMenuItem = (user, key) => (
+    <MenuItem key={`user-selector-menu-item-${key}`} value={user.id}>
+      {user.name} &lt;{user.email}&gt;
+    </MenuItem>
+  );
 
   const selectInput = (
     <FormControl fullWidth>
