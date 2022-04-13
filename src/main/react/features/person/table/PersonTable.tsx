@@ -34,7 +34,7 @@ export const PersonTable = () => {
   const { url } = useRouteMatch();
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
-  const [count, setCount] = useState(10);
+  const [count, setCount] = useState(-1);
   const [personList, setPersonList] = useState<Person[]>([]);
   const [dialog, setDialog] = useState({ open: false });
   const [reload, setReload] = useState(false);
@@ -45,7 +45,8 @@ export const PersonTable = () => {
     // eslint-disable-next-line no-shadow
     PersonClient.findAllByPage({ page, size, sort: "lastname" }).then((res) => {
       setPersonList(res.list);
-      setCount(res.total);
+      // FIXME: No total count in response
+      // setCount(res.total);
     });
   }, [reload, page, size]);
 
@@ -58,11 +59,11 @@ export const PersonTable = () => {
     setDialog({ open: false });
   };
 
-  const handleChangePage = (_, newPage) => {
+  const handlePageChange = (_, newPage) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleRowsPerPageChange = (event) => {
     const rowsPerPage = event.target.value;
     setSize(+rowsPerPage);
     setPage(0);
@@ -95,9 +96,9 @@ export const PersonTable = () => {
                     <TableCell align="left">
                       {person.active && <CheckBox />}
                     </TableCell>
-                    <TableCell align="left">{person.holidays}</TableCell>
-                    <TableCell align="left">{person.clients}</TableCell>
-                    <TableCell align="left">{person.hours}</TableCell>
+                    <TableCell />
+                    <TableCell />
+                    <TableCell />
                   </TableRow>
                 );
               })}
@@ -109,11 +110,11 @@ export const PersonTable = () => {
           component="div"
           count={count}
           // remove labelDisplayRows by replacing it with an empty return
-          labelDisplayedRows={() => {}}
+          labelDisplayedRows={() => null}
           rowsPerPage={size}
           page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleRowsPerPageChange}
         />
       </Paper>
       <PersonDialog open={dialog.open} onClose={handleDialogClose} />
