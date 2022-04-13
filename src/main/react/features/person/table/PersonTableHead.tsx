@@ -1,5 +1,5 @@
 import React from "react";
-import { TableHead, TableRow, TableCell } from "@material-ui/core";
+import { TableCell, TableHead, TableRow } from "@material-ui/core";
 
 const headCells = [
   {
@@ -43,7 +43,7 @@ export const PersonTableHead = () => {
           <TableCell
             key={cell.id}
             align={cell.algin ? "right" : "left"}
-            padding={cell.disablePadding ? "none" : "default"}
+            padding={cell.disablePadding ? "none" : "normal"}
           >
             {cell.label}
           </TableCell>

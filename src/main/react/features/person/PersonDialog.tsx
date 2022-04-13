@@ -9,7 +9,7 @@ import { DialogFooter, DialogHeader } from "../../components/dialog";
 type PersonDialogProps = {
   open: boolean;
   onClose: () => void;
-  item: any;
+  item?: any;
 };
 export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
   const successfulSubmit = () => {

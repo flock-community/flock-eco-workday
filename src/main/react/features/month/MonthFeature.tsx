@@ -1,6 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Typography from "@material-ui/core/Typography";
-import { CardContent } from "@material-ui/core";
+import {
+  CardContent,
+  TableBody,
+  TableContainer,
+  TableHead,
+} from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import moment from "moment";
 import IconButton from "@material-ui/core/IconButton";
@@ -131,38 +136,44 @@ export function MonthFeature() {
   };
 
   const renderOverview = () =>
-    clientHourOverviewState.map((it) => (
-      <>
+    clientHourOverviewState.map((it, clientIndex) => (
+      <Fragment key={clientIndex}>
         <Typography variant="h6">{it.client.name}</Typography>
-        <Table>
-          <TableRow>
-            <TableCell />
-            {dayRange?.map((day) => (
-              <TableCell>
-                <b>{day}</b>
-              </TableCell>
-            ))}
-          </TableRow>
-          {it.aggregationPerson.map((person) => (
-            <TableRow>
-              <TableCell>{person.person.name}</TableCell>
-              {person.hours.map((val) => (
-                <TableCell width={10}>
-                  {val > 0 ? val.toFixed(1) : "-"}
-                </TableCell>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell />
+                {dayRange?.map((day, dayIndex) => (
+                  <TableCell key={dayIndex}>
+                    <b>{day}</b>
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {it.aggregationPerson.map((person, personIndex) => (
+                <TableRow key={personIndex}>
+                  <TableCell>{person.person.name}</TableCell>
+                  {person.hours.map((val, personHoursIndex) => (
+                    <TableCell width={10} key={personHoursIndex}>
+                      {val > 0 ? val.toFixed(1) : "-"}
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))}
-            </TableRow>
-          ))}
-          <TableRow>
-            <TableCell>Totals</TableCell>
-            {it.totals.map((val) => (
-              <TableCell>
-                <b>{val.toFixed(1)}</b>
-              </TableCell>
-            ))}
-          </TableRow>
-        </Table>
-      </>
+              <TableRow>
+                <TableCell>Totals</TableCell>
+                {it.totals.map((val, dayTotalIndex) => (
+                  <TableCell key={dayTotalIndex}>
+                    <b>{val.toFixed(1)}</b>
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Fragment>
     ));
 
   return (

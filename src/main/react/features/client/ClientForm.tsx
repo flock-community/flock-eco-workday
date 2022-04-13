@@ -51,7 +51,8 @@ export function ClientForm({ code, value, onSubmit }: ClientFormProps) {
       onSubmit={handleSubmit}
       validationSchema={schema}
       enableReinitialize
-      render={form}
-    />
+    >
+      {form}
+    </Formik>
   );
 }
