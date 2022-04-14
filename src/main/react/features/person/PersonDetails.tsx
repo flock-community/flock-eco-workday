@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
-import { Grid } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
-import { Person, PersonClient } from "../../clients/PersonClient";
-import { PersonWidget } from "../../components/person-widget/PersonWidget";
-import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
-import { PersonDialog } from "./PersonDialog";
-import { ContractFeature } from "../contract/ContractFeature";
-import { WorkDayFeature } from "../workday/WorkDayFeature";
-import { AssignmentFeature } from "../assignments/AssignmentFeature";
-import { HolidayFeature } from "../holiday/HolidayFeature";
-import { SickDayFeature } from "../sickday/SickDayFeature";
-import { ExpenseFeature } from "../expense/ExpenseFeature";
-import { usePerson } from "../../hooks/PersonHook";
+import React, {useEffect, useState} from "react";
+import {useHistory, useRouteMatch} from "react-router-dom";
+import {Grid} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
+import {ConfirmDialog} from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import {Person, PersonClient} from "../../clients/PersonClient";
+import {PersonWidget} from "../../components/person-widget/PersonWidget";
+import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import {PersonDialog} from "./PersonDialog";
+import {ContractFeature} from "../contract/ContractFeature";
+import {WorkDayFeature} from "../workday/WorkDayFeature";
+import {AssignmentFeature} from "../assignments/AssignmentFeature";
+import {HolidayFeature} from "../holiday/HolidayFeature";
+import {SickDayFeature} from "../sickday/SickDayFeature";
+import {ExpenseFeature} from "../expense/ExpenseFeature";
+import {usePerson} from "../../hooks/PersonHook";
 
 const useStyles = makeStyles(() => ({
   root: { margin: "-8px" },
@@ -64,7 +64,7 @@ export const PersonDetails = (props) => {
   }
 
   const contracts = (
-    <Grid item xs={6} sm={6}>
+    <Grid item xs={12} sm={6}>
       <ContractFeature person={person} />
     </Grid>
   );
