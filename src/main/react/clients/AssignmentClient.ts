@@ -1,7 +1,7 @@
 import moment from "moment";
-import { Client } from "./ClientClient";
-import { Person } from "./PersonClient";
-import { Project } from "./ProjectClient";
+import {Client} from "./ClientClient";
+import {Person} from "./PersonClient";
+import {Project} from "./ProjectClient";
 import InternalizingClient from "../utils/InternalizingClient";
 
 // The type we use in the frontend
@@ -69,8 +69,17 @@ const internalizingClient = InternalizingClient<
   Assignment
 >(path, internalize);
 
-const findAllByPersonId = (personId: string) =>
-  internalizingClient.query({ personId: personId });
+export const ASSIGNMENT_PAGE_SIZE = 5
+
+const findAllByPersonId = (personId: string, page: number) =>
+  internalizingClient.queryByPage({
+      page,
+      size: ASSIGNMENT_PAGE_SIZE,
+      sort: "from,desc"
+    },
+    {
+      personId: personId
+    });
 
 const findAllByProject = (project: Project) =>
   internalizingClient.query({ projectCode: project.code });

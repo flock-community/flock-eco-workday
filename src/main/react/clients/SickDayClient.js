@@ -10,11 +10,19 @@ const internalize = (it) => ({
 const path = "/api/sickdays";
 const resourceClient = InternalizingClient(path, internalize);
 
-const findAllByPersonId = (personId) =>
-  resourceClient.query({
-    personId,
-    sort: "from,desc",
-  });
+export const SICKDAY_PAGE_SIZE = 5;
+
+const findAllByPersonId = (personId, page) =>
+  resourceClient.queryByPage(
+    {
+      page,
+      size: SICKDAY_PAGE_SIZE,
+      sort: "from,desc",
+    },
+    {
+      personId,
+    }
+  );
 
 export const SickDayClient = {
   ...resourceClient,
