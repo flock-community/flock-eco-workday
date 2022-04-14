@@ -1,27 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import {
-  Paper,
+  Card,
+  CardContent,
+  CardHeader,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TablePagination,
   TableRow,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { PersonTableHead } from "./PersonTableHead";
 import { Person, PersonClient } from "../../../clients/PersonClient";
-import { AddActionFab } from "../../../components/FabButtons";
 import { PersonDialog } from "../PersonDialog";
 import { CheckBox } from "@material-ui/icons";
+import AddIcon from "@material-ui/icons/Add";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles({
-  root: {
-    maxWidth: 1200, // should represent a @screen break-point
-  },
-  tableWrapper: {
-    overflow: "auto",
-  },
   tblEmail: {
     minWidth: 200,
   },
@@ -74,51 +72,64 @@ export const PersonTable = () => {
   };
 
   return (
-    <div>
-      <Paper className={classes.root}>
-        <div className={classes.tableWrapper}>
-          <Table>
-            <PersonTableHead></PersonTableHead>
-            <TableBody>
-              {personList.map((person, idx) => {
-                return (
-                  <TableRow key={idx} hover onClick={() => handleClick(person)}>
-                    <TableCell
-                      className={classes.tblName}
-                      component="th"
-                      scope="row"
-                    >
-                      {person.fullName}
-                    </TableCell>
-                    <TableCell className={classes.tblEmail} align="left">
-                      {person.email}
-                    </TableCell>
-                    <TableCell align="left">
-                      {person.active && <CheckBox />}
-                    </TableCell>
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
-        <TablePagination
-          rowsPerPageOptions={[]}
-          component="div"
-          count={count}
-          // remove labelDisplayRows by replacing it with an empty return
-          labelDisplayedRows={() => null}
-          rowsPerPage={size}
-          page={page}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleRowsPerPageChange}
+    <>
+      <Card>
+        <CardHeader
+          title="Persons"
+          action={
+            <Button onClick={handleDialogOpen}>
+              <AddIcon /> Add
+            </Button>
+          }
         />
-      </Paper>
+        <CardContent>
+          <TableContainer>
+            <Table>
+              <PersonTableHead />
+              <TableBody>
+                {personList.map((person, idx) => {
+                  return (
+                    <TableRow
+                      key={idx}
+                      hover
+                      onClick={() => handleClick(person)}
+                    >
+                      <TableCell
+                        className={classes.tblName}
+                        component="th"
+                        scope="row"
+                      >
+                        {person.fullName}
+                      </TableCell>
+                      <TableCell className={classes.tblEmail} align="left">
+                        {person.email}
+                      </TableCell>
+                      <TableCell align="left">
+                        {person.active && <CheckBox />}
+                      </TableCell>
+                      <TableCell />
+                      <TableCell />
+                      <TableCell />
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[]}
+              component="div"
+              count={count}
+              // remove labelDisplayRows by replacing it with an empty return
+              labelDisplayedRows={() => null}
+              rowsPerPage={size}
+              page={page}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleRowsPerPageChange}
+            />
+          </TableContainer>
+        </CardContent>
+      </Card>
       <PersonDialog open={dialog.open} onClose={handleDialogClose} />
-      <AddActionFab color="primary" onClick={handleDialogOpen} />
-    </div>
+    </>
   );
 };
