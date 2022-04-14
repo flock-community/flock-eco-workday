@@ -12,6 +12,7 @@ import community.flock.eco.workday.model.Project
 import community.flock.eco.workday.services.AssignmentService
 import community.flock.eco.workday.services.ProjectService
 import community.flock.eco.workday.services.WorkDayService
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -41,16 +42,17 @@ class AssignmentController(
 
     @GetMapping(params = ["personId"])
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
-    fun findAll(@RequestParam(required = false) personId: UUID?, principal: Principal): ResponseEntity<Iterable<Assignment>> =
+    fun findAll(
+        @RequestParam(required = false) personId: UUID?,
+        page: Pageable,
+        principal: Principal
+    ): ResponseEntity<List<Assignment>> =
         principal.findUser()
             ?.let { user ->
-                if (user.isAdmin() && personId != null) {
-                    assignmentService.findAllByPersonUuid(personId)
-                } else {
-                    assignmentService.findAllByPersonUserCode(user.code)
+                when {
+                    user.isAdmin() && personId != null -> assignmentService.findAllByPersonUuid(personId, page)
+                    else -> assignmentService.findAllByPersonUserCode(user.code, page)
                 }
-                    .sortedBy { it.from }
-                    .reversed()
             }
             .toResponse()
 
