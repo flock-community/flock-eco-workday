@@ -74,6 +74,56 @@ class LoadAssignmentData(
             32,
             projectName = "Project D"
         )
+        create(
+            "ernie@sesam.straat",
+            "client_d",
+            "Junior software engineer",
+            85.0,
+            LocalDate.of(2022, 1, 1),
+            LocalDate.of(2022, 12, 31),
+            32,
+            projectName = "Project D"
+        )
+        create(
+            "ernie@sesam.straat",
+            "client_d",
+            "Junior software engineer",
+            85.0,
+            LocalDate.of(2023, 1, 1),
+            LocalDate.of(2023, 12, 31),
+            32,
+            projectName = "Project D"
+        )
+        create(
+            "ernie@sesam.straat",
+        "client_d",
+        "Junior software engineer",
+        85.0,
+        LocalDate.of(2024, 1, 1),
+        LocalDate.of(2024, 12, 31),
+        32,
+        projectName = "Project D"
+        )
+        create(
+            "ernie@sesam.straat",
+            "client_d",
+            "Junior software engineer",
+            85.0,
+            LocalDate.of(2025, 1, 1),
+            LocalDate.of(2025, 12, 31),
+            32,
+            projectName = "Project D"
+        )
+        create(
+            "ernie@sesam.straat",
+            "client_d",
+            "Junior software engineer",
+            85.0,
+            LocalDate.of(2026, 1, 1),
+            LocalDate.of(2026, 12, 31),
+            32,
+            projectName = "Project D"
+        )
     }
 
     private fun create(
