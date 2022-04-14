@@ -15,4 +15,10 @@ export const themeLight = createTheme({
       root: { backgroundColor: "#fcde00" },
     },
   },
+  props: {
+    MuiButton: {
+      variant: "contained",
+      color: "primary",
+    },
+  },
 });

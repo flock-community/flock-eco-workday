@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Button, Card, CardContent, CardHeader } from "@material-ui/core";
-import { SickDayDialog } from "./SickDayDialog";
-import { SickDayList } from "./SickDayList";
-import { SickDayClient } from "../../clients/SickDayClient";
-import { Person } from "../../clients/PersonClient";
+import React, {useState} from "react";
+import {Button, Card, CardContent, CardHeader} from "@material-ui/core";
+import {SickDayDialog} from "./SickDayDialog";
+import {SickDayList} from "./SickDayList";
+import {SickDayClient} from "../../clients/SickDayClient";
+import {Person} from "../../clients/PersonClient";
 import AddIcon from "@material-ui/icons/Add";
 
 type SickDayFeatureProps = {
@@ -46,7 +46,7 @@ export function SickDayFeature({ person }: SickDayFeatureProps) {
         <CardHeader
           title="Sick days"
           action={
-            <Button variant="outlined" onClick={handleClickAdd}>
+            <Button onClick={handleClickAdd}>
               <AddIcon /> Add
             </Button>
           }

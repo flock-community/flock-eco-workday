@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { ContractList } from "./ContractList";
-import { ContractDialog } from "./ContractDialog";
-import { Card, CardContent, CardHeader } from "@material-ui/core";
-import { Person } from "../../clients/PersonClient";
+import React, {useState} from "react";
+import {ContractList} from "./ContractList";
+import {ContractDialog} from "./ContractDialog";
+import {Card, CardContent, CardHeader} from "@material-ui/core";
+import {Person} from "../../clients/PersonClient";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 
@@ -33,7 +33,7 @@ export function ContractFeature({ person }: ContractFeatureProps) {
         <CardHeader
           title="Contracts"
           action={
-            <Button variant="outlined" onClick={handleClickAdd}>
+            <Button color="primary" onClick={handleClickAdd}>
               <AddIcon /> Add
             </Button>
           }

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader } from "@material-ui/core";
-import { ExpenseList } from "./ExpenseList";
-import { ExpenseDialog } from "./ExpenseDialog";
+import React, {useState} from "react";
+import {Card, CardContent, CardHeader} from "@material-ui/core";
+import {ExpenseList} from "./ExpenseList";
+import {ExpenseDialog} from "./ExpenseDialog";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
-import { Person } from "../../clients/PersonClient";
+import {Person} from "../../clients/PersonClient";
 
 type ExpenseFeatureProps = {
   person: Person;
@@ -42,7 +42,7 @@ export function ExpenseFeature({ person }: ExpenseFeatureProps) {
         <CardHeader
           title="Expenses"
           action={
-            <Button variant="outlined" onClick={handleClickAdd}>
+            <Button onClick={handleClickAdd}>
               <AddIcon /> Add
             </Button>
           }

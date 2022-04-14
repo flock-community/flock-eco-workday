@@ -56,7 +56,7 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
         <CardHeader
           title="Work days"
           action={
-            <Button variant="outlined" onClick={handleClickAdd}>
+            <Button onClick={handleClickAdd}>
               <AddIcon /> Add
             </Button>
           }
