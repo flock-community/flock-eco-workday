@@ -1,5 +1,5 @@
 import moment from "moment";
-import {Person} from "./PersonClient";
+import { Person } from "./PersonClient";
 import InternalizingClient from "../utils/InternalizingClient";
 
 const path = "/api/contracts";
@@ -8,7 +8,7 @@ const externalPath = `${path}-external`;
 const managementPath = `${path}-management`;
 const servicePath = `${path}-service`;
 
-export const CONTRACT_PAGE_SIZE = 5
+export const CONTRACT_PAGE_SIZE = 5;
 
 export type Contract = {
   id: number;
@@ -76,7 +76,7 @@ const findAllByPersonId = (personId: string, page: number) =>
     {
       page,
       size: CONTRACT_PAGE_SIZE,
-      sort: "from,desc"
+      sort: "from,desc",
     },
     { personId: personId }
   );

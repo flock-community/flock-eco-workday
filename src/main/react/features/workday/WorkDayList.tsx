@@ -1,11 +1,19 @@
-import React, {useEffect, useState} from "react";
-import {Box, Card, makeStyles, TableBody, TableCell, TableContainer, TableHead,} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Card,
+  makeStyles,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+} from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
-import {WORK_DAY_PAGE_SIZE, WorkDayClient} from "../../clients/WorkDayClient";
+import { WORK_DAY_PAGE_SIZE, WorkDayClient } from "../../clients/WorkDayClient";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
-import {WorkDayListItem} from "./WorkDayListItem";
-import {Pagination} from "@material-ui/lab";
+import { WorkDayListItem } from "./WorkDayListItem";
+import { Pagination } from "@material-ui/lab";
 
 type WorkDayListProps = {
   personId: string;
@@ -17,13 +25,13 @@ type WorkDayListProps = {
 const useStyles = makeStyles({
   card: (loading) => ({
     marginTop: "10px",
-    opacity: loading ? 0.5 : 1
+    opacity: loading ? 0.5 : 1,
   }),
   pagination: {
     "& .MuiPagination-ul": {
-      justifyContent: "right"
+      justifyContent: "right",
     },
-  }
+  },
 });
 
 export function WorkDayList({
@@ -33,22 +41,22 @@ export function WorkDayList({
   onClickStatus,
 }: WorkDayListProps) {
   const [state, setState] = useState([]);
-  const [page, setPage] = useState(0)
-  const [pageCount, setPageCount] = useState(-1)
-  const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState(-1);
+  const [loading, setLoading] = useState(true);
 
   const classes = useStyles(loading);
 
   const handleChangePage = (event: object, paginationComponentPage: number) =>
     // Client page is 0-based, pagination component is 1-based
-    setPage(paginationComponentPage - 1)
+    setPage(paginationComponentPage - 1);
 
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     WorkDayClient.findAllByPersonUuid(personId, page).then((res) => {
-      setPageCount(Math.ceil(res.count / WORK_DAY_PAGE_SIZE))
-      setState(res.list)
-      setLoading(false)
+      setPageCount(Math.ceil(res.count / WORK_DAY_PAGE_SIZE));
+      setState(res.list);
+      setLoading(false);
     });
   }, [personId, refresh, page]);
 

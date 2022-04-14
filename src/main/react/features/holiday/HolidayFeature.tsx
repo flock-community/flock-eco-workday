@@ -1,10 +1,10 @@
-import React, {useState} from "react";
-import {Button, Card, CardContent, CardHeader} from "@material-ui/core";
-import {HolidayDialog} from "./HolidayDialog";
-import {HolidayList} from "./HolidayList";
-import {HolidayClient} from "../../clients/HolidayClient";
+import React, { useState } from "react";
+import { Button, Card, CardContent, CardHeader } from "@material-ui/core";
+import { HolidayDialog } from "./HolidayDialog";
+import { HolidayList } from "./HolidayList";
+import { HolidayClient } from "../../clients/HolidayClient";
 import AddIcon from "@material-ui/icons/Add";
-import {Person} from "../../clients/PersonClient";
+import { Person } from "../../clients/PersonClient";
 
 type HolidayFeatureProps = {
   person: Person;

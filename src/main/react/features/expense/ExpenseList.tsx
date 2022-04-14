@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {Box, Card, Typography} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { Box, Card, Typography } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
@@ -7,21 +7,21 @@ import CardHeader from "@material-ui/core/CardHeader";
 import List from "@material-ui/core/List";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItem from "@material-ui/core/ListItem";
-import {StatusMenu} from "../../components/StatusMenu";
-import {EXPENSE_PAGE_SIZE, ExpenseClient} from "../../clients/ExpenseClient";
-import {Pagination} from "@material-ui/lab";
-import {makeStyles} from "@material-ui/core/styles";
+import { StatusMenu } from "../../components/StatusMenu";
+import { EXPENSE_PAGE_SIZE, ExpenseClient } from "../../clients/ExpenseClient";
+import { Pagination } from "@material-ui/lab";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
   list: (loading) => ({
-    opacity: loading ? 0.5 : 1
+    opacity: loading ? 0.5 : 1,
   }),
   pagination: {
     "& .MuiPagination-ul": {
-      justifyContent: "right"
+      justifyContent: "right",
     },
   },
-})
+});
 
 type ExpenseListProps = {
   refresh: boolean;
@@ -35,23 +35,23 @@ export function ExpenseList({
   onClickRow,
 }: ExpenseListProps) {
   const [items, setItems] = useState([]);
-  const [page, setPage] = useState(0)
-  const [pageCount, setPageCount] = useState(-1)
-  const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState(-1);
+  const [loading, setLoading] = useState(true);
 
-  const classes = useStyles(loading)
+  const classes = useStyles(loading);
 
   const handleChangePage = (event: object, paginationComponentPage: number) =>
     // Client page is 0-based, pagination component is 1-based
-    setPage(paginationComponentPage - 1)
+    setPage(paginationComponentPage - 1);
 
   const loadState = () => {
-    setLoading(true)
+    setLoading(true);
 
     ExpenseClient.findAllByPersonId(personId, page).then((res) => {
-      setPageCount(Math.ceil(res.count / EXPENSE_PAGE_SIZE))
-      setItems(res.list)
-      setLoading(false)
+      setPageCount(Math.ceil(res.count / EXPENSE_PAGE_SIZE));
+      setItems(res.list);
+      setLoading(false);
     });
   };
 
@@ -126,7 +126,7 @@ export function ExpenseList({
   return (
     <>
       <Grid container spacing={1} className={classes.list}>
-        { items.map(renderItem) }
+        {items.map(renderItem)}
       </Grid>
       <Box mt={2}>
         <Pagination

@@ -1,23 +1,26 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Card from "@material-ui/core/Card";
-import {Box, CardContent} from "@material-ui/core";
+import { Box, CardContent } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import {ASSIGNMENT_PAGE_SIZE, AssignmentClient} from "../../clients/AssignmentClient";
-import {isDefined} from "../../utils/validation";
-import {Pagination} from "@material-ui/lab";
-import {makeStyles} from "@material-ui/core/styles";
+import {
+  ASSIGNMENT_PAGE_SIZE,
+  AssignmentClient,
+} from "../../clients/AssignmentClient";
+import { isDefined } from "../../utils/validation";
+import { Pagination } from "@material-ui/lab";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
   list: (loading) => ({
-    opacity: loading ? 0.5 : 1
+    opacity: loading ? 0.5 : 1,
   }),
   pagination: {
     "& .MuiPagination-ul": {
-      justifyContent: "right"
+      justifyContent: "right",
     },
-  }
-})
+  },
+});
 
 type AssignmentListProps = {
   reload: boolean;
@@ -31,23 +34,23 @@ export function AssignmentList({
   onItemClick,
 }: AssignmentListProps) {
   const [items, setItems] = useState<any[]>([]);
-  const [page, setPage] = useState(0)
-  const [pageCount, setPageCount] = useState(-1)
-  const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState(-1);
+  const [loading, setLoading] = useState(true);
 
-  const classes = useStyles(loading)
+  const classes = useStyles(loading);
 
   const handleChangePage = (event: object, paginationComponentPage: number) =>
     // Client page is 0-based, pagination component is 1-based
-    setPage(paginationComponentPage - 1)
+    setPage(paginationComponentPage - 1);
 
   useEffect(() => {
     if (personId) {
-      setLoading(true)
+      setLoading(true);
       AssignmentClient.findAllByPersonId(personId, page).then((res) => {
-        setItems(res.list)
-        setPageCount(Math.ceil(res.count / ASSIGNMENT_PAGE_SIZE))
-        setLoading(false)
+        setItems(res.list);
+        setPageCount(Math.ceil(res.count / ASSIGNMENT_PAGE_SIZE));
+        setLoading(false);
       });
     } else {
       setItems([]);
