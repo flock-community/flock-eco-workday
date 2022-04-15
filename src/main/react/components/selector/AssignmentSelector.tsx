@@ -36,7 +36,9 @@ export function AssignmentSelector({
   useEffect(() => {
     if (!personId) return;
 
-    AssignmentClient.findAllByPersonId(personId).then((res) => setItems(res));
+    AssignmentClient.findAllByPersonId(personId, "all").then((res) =>
+      setItems(res)
+    );
   }, []);
 
   useEffect(() => {

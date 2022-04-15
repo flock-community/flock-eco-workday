@@ -35,6 +35,7 @@ import ExpensePage from "../features/expense/ExpensePage";
 import WorkDayPage from "../features/workday/WorkDayPage";
 import SickDayPage from "../features/sickday/SickDayPage";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import AssignmentReport from "../features/report/AssignmentReport";
 
 const theme = getTheme("light");
 
@@ -103,6 +104,7 @@ export const Application = () => {
                 path="/event_rating/:eventCode"
                 component={EventRatingFeature}
               />
+              <Route path="/reports/assignment" component={AssignmentReport} />
               <Redirect to="/" />
             </Switch>
           </Box>

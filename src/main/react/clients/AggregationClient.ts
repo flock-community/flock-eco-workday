@@ -3,6 +3,7 @@ import {
   checkResponse,
   validateResponse,
 } from "@flock-community/flock-eco-core";
+import moment from "moment";
 
 const path = "/api/aggregations";
 
@@ -91,11 +92,30 @@ export const holidayReportByYear = (year) => {
     .then((res) => res.body);
 };
 
+const clientAssignmentPersonBetween = (
+  from: moment.Moment,
+  to: moment.Moment
+) => {
+  const opts = {
+    method: "GET",
+  };
+  return fetch(
+    `${path}/client-assignment-hour-overview?from=${from.format(
+      "YYYY-MM-DD"
+    )}&to=${to.format("YYYY-MM-DD")}`,
+    opts
+  )
+    .then(validateResponse)
+    .then(checkResponse)
+    .then((res) => res.body);
+};
+
 export const AggregationClient = {
   totalPerClientByYear,
   totalPerPersonByYear,
   totalPerPersonByYearMonth,
   clientHourOverviewByYearMonth,
+  clientAssignmentPersonBetween,
   totalPerMonthByYear,
   totalPerPersonMe,
   holidayReportMe,
