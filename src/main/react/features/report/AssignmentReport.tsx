@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 import AssignmentReportTable from "./AssignmentReportTable";
 import moment from "moment";
-import { Card, CardContent, CardHeader, Grid } from "@material-ui/core";
+import { Box, Card, CardContent, CardHeader, Grid } from "@material-ui/core";
 import {
   DateRange,
   DateRangePicker,
   DefinedRange,
 } from "materialui-daterange-picker";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
 
 export default function AssignmentReport() {
   const [from, setFrom] = useState(moment().startOf("month"));
   const [to, setTo] = useState(moment().endOf("month"));
-  const [open, setOpen] = useState(true);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
 
   const handleRangeChange = (dateRange: DateRange) => {
     setFrom(moment(dateRange.startDate));
     setTo(moment(dateRange.endDate));
+    setDatePickerOpen(false);
   };
 
   const definedRanges: DefinedRange[] = [
@@ -51,22 +54,42 @@ export default function AssignmentReport() {
     },
   ];
 
+  const renderDatePicker = () => (
+    <DateRangePicker
+      initialDateRange={{
+        startDate: from.toDate(),
+        endDate: to.toDate(),
+      }}
+      open={datePickerOpen}
+      toggle={() => {
+        setDatePickerOpen(!datePickerOpen);
+      }}
+      onChange={handleRangeChange}
+      definedRanges={definedRanges}
+    />
+  );
+
+  const renderDateRange = () => (
+    <>
+      <Typography variant="caption">
+        Showing data from {from.format("DD-MM-YYYY")} to{" "}
+        {to.format("DD-MM-YYYY")}
+      </Typography>
+      <Box mt={3}>
+        <Button onClick={() => setDatePickerOpen(true)}>
+          Change date range
+        </Button>
+      </Box>
+    </>
+  );
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <Card>
           <CardHeader title="Assignment Report" />
           <CardContent>
-            <DateRangePicker
-              initialDateRange={{
-                startDate: from.toDate(),
-                endDate: to.toDate(),
-              }}
-              open={open}
-              toggle={() => {}}
-              onChange={handleRangeChange}
-              definedRanges={definedRanges}
-            />
+            {datePickerOpen ? renderDatePicker() : renderDateRange()}
           </CardContent>
         </Card>
       </Grid>
