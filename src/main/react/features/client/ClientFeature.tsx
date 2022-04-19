@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { ClientList } from "./ClientList";
 import { ClientDialog } from "./ClientDialog";
-import { AddActionFab } from "../../components/FabButtons";
+import { Card, CardContent, CardHeader } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
+import Button from "@material-ui/core/Button";
 
 export function ClientFeature() {
   const [reload, setReload] = useState(false);
@@ -36,13 +37,24 @@ export function ClientFeature() {
 
   return (
     <>
-      <ClientList reload={reload} onItemClick={handleItem} />
+      <Card>
+        <CardHeader
+          title="Clients"
+          action={
+            <Button onClick={handleAdd}>
+              <AddIcon /> Add
+            </Button>
+          }
+        />
+        <CardContent>
+          <ClientList reload={reload} onItemClick={handleItem} />
+        </CardContent>
+      </Card>
       <ClientDialog
         code={dialog.code}
         open={dialog.open}
         onClose={handleClose}
       />
-      <AddActionFab color="primary" onClick={handleAdd} />
     </>
   );
 }

@@ -1,10 +1,11 @@
-import { Container, Grid } from "@material-ui/core";
+import { Card, CardContent, CardHeader } from "@material-ui/core";
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import ProjectList from "./ProjectList";
 import ProjectDialog from "./ProjectDialog";
-import { AddActionFab } from "../../components/FabButtons";
 import { Project } from "../../clients/ProjectClient";
+import AddIcon from "@material-ui/icons/Add";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles({
   root: {
@@ -38,18 +39,25 @@ export function ProjectFeature() {
   };
 
   return (
-    <Container className={classes.root}>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
+    <>
+      <Card>
+        <CardHeader
+          title="Projects"
+          action={
+            <Button onClick={newProject}>
+              <AddIcon /> Add
+            </Button>
+          }
+        />
+        <CardContent>
           <ProjectList editProject={openEditDialog} refresh={refresh} />
-          <ProjectDialog
-            open={dialog.open}
-            project={dialog.project}
-            closeDialog={closeDialog}
-          />
-          <AddActionFab color="primary" onClick={newProject} />
-        </Grid>
-      </Grid>
-    </Container>
+        </CardContent>
+      </Card>
+      <ProjectDialog
+        open={dialog.open}
+        project={dialog.project}
+        closeDialog={closeDialog}
+      />
+    </>
   );
 }

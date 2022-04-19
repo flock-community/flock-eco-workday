@@ -1,28 +1,11 @@
 import React, { useState } from "react";
-
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
 import { EventDialog } from "./EventDialog";
 import { EventList } from "./EventList";
-import { AddActionFab } from "../../components/FabButtons";
+import { Card, CardContent, CardHeader } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
+import Button from "@material-ui/core/Button";
 
-const useStyles = makeStyles({
-  root: {
-    padding: 20,
-  },
-  fab: {
-    position: "absolute",
-    bottom: "25px",
-    right: "25px",
-  },
-});
-
-/**
- * @return {null}
- */
 export function EventFeature() {
-  const classes = useStyles();
-
   const [reload, setReload] = useState(false);
   const [open, setOpen] = useState(false);
   const [state, setState] = useState<any>(null);
@@ -44,20 +27,26 @@ export function EventFeature() {
   }
 
   return (
-    <div className={classes.root}>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
+    <>
+      <Card>
+        <CardHeader
+          title="Events"
+          action={
+            <Button onClick={handleClickAdd}>
+              <AddIcon /> Add
+            </Button>
+          }
+        />
+        <CardContent>
           <EventList onClickRow={handleClickRow} refresh={reload} />
-        </Grid>
-      </Grid>
+        </CardContent>
+      </Card>
       <EventDialog
         open={open}
         code={state && state.code}
         onComplete={handleCompleteDialog}
       />
-
-      <AddActionFab color="primary" onClick={handleClickAdd} />
-    </div>
+    </>
   );
 }
 
