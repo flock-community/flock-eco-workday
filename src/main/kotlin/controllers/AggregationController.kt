@@ -117,12 +117,8 @@ class AggregationController(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate
     ): ResponseEntity<List<AggregationService.NonProductiveHours>> =
-        (
-            personService.findByUuid(UUID.fromString(personId))
-                ?.let { person ->
-                    aggregationService.personNonProductiveHoursPerDay(person, from, to)
-                }
-                ?: throw RuntimeException("Person not found for uuid $personId")
-            )
-            .toResponse()
+        personService.findByUuid(UUID.fromString(personId))
+            ?.let { person ->
+                aggregationService.personNonProductiveHoursPerDay(person, from, to)
+            }.toResponse()
 }
