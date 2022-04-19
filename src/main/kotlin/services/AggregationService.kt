@@ -352,8 +352,7 @@ class AggregationService(
                 }
         }.map { (client, clientPersonItems) ->
             AggregationClientPersonOverview(
-                client =
-                    AggregationIdentifier(id = client.id.toString(), name = client.name),
+                client = AggregationIdentifier(id = client.id.toString(), name = client.name),
                 aggregationPerson = clientPersonItems,
                 totals = clientPersonItems
                     .map { it.hours }
