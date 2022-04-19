@@ -470,7 +470,10 @@ class AggregationService(
             )
         }
 
-        return map.entries.sortedBy { it.key }.map { it.value }.toList()
+        return map.entries
+            .sortedBy { it.key }
+            .map { it.value }
+            .toList()
     }
 
     fun Map<LocalDate, BigDecimal>.merge(other: Map<LocalDate, BigDecimal>): Map<LocalDate, BigDecimal> =
