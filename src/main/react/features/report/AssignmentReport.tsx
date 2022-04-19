@@ -1,46 +1,55 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useState } from "react";
 import AssignmentReportTable from "./AssignmentReportTable";
 import moment from "moment";
+import { Card, CardContent, CardHeader, Grid } from "@material-ui/core";
 import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Grid,
-  MenuItem,
-  Select,
-} from "@material-ui/core";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
-import MomentUtils from "@date-io/moment";
-import Typography from "@material-ui/core/Typography";
-
-type Range = "week" | "month";
+  DateRange,
+  DateRangePicker,
+  DefinedRange,
+} from "materialui-daterange-picker";
 
 export default function AssignmentReport() {
-  const [range, setRange] = useState<Range>("week");
-  const [date, setDate] = useState<moment.Moment>(moment());
-  const [from, setFrom] = useState(moment().startOf(range));
-  const [to, setTo] = useState(moment().endOf(range));
+  const [from, setFrom] = useState(moment().startOf("month"));
+  const [to, setTo] = useState(moment().endOf("month"));
+  const [open, setOpen] = useState(true);
 
-  const handleDateChange = (selectedDate: MaterialUiPickersDate) => {
-    if (selectedDate != null) {
-      setDate(selectedDate);
-    }
+  const handleRangeChange = (dateRange: DateRange) => {
+    setFrom(moment(dateRange.startDate));
+    setTo(moment(dateRange.endDate));
   };
 
-  useEffect(() => {
-    setFrom(date.clone().startOf(range));
-    setTo(date.clone().endOf(range));
-  }, [range, date]);
-
-  const handleRangeChange = (event: ChangeEvent<{ value: unknown }>) =>
-    setRange(event.target.value as Range);
-
-  const renderDatePickerLabel = (
-    date: MaterialUiPickersDate,
-    invalidLabel?: string
-  ) => invalidLabel ?? date!!.clone().format("DD-MM");
+  const definedRanges: DefinedRange[] = [
+    {
+      label: "2 weeks ago",
+      startDate: moment().subtract(2, "weeks").startOf("week").toDate(),
+      endDate: moment().subtract(2, "weeks").endOf("week").toDate(),
+    },
+    {
+      label: "1 week ago",
+      startDate: moment().subtract(1, "weeks").startOf("week").toDate(),
+      endDate: moment().subtract(1, "weeks").endOf("week").toDate(),
+    },
+    {
+      label: "Current week",
+      startDate: moment().startOf("week").toDate(),
+      endDate: moment().endOf("week").toDate(),
+    },
+    {
+      label: "2 months ago",
+      startDate: moment().subtract(2, "months").startOf("month").toDate(),
+      endDate: moment().subtract(2, "months").endOf("month").toDate(),
+    },
+    {
+      label: "1 month ago",
+      startDate: moment().subtract(1, "months").startOf("month").toDate(),
+      endDate: moment().subtract(1, "months").endOf("month").toDate(),
+    },
+    {
+      label: "Current month",
+      startDate: moment().startOf("month").toDate(),
+      endDate: moment().endOf("month").toDate(),
+    },
+  ];
 
   return (
     <Grid container spacing={1}>
@@ -48,23 +57,16 @@ export default function AssignmentReport() {
         <Card>
           <CardHeader title="Assignment Report" />
           <CardContent>
-            <Select value={range} onChange={handleRangeChange}>
-              <MenuItem value="week">Week of</MenuItem>
-              <MenuItem value="month">Month of</MenuItem>
-            </Select>
-            <MuiPickersUtilsProvider utils={MomentUtils}>
-              <DatePicker
-                value={date}
-                onChange={handleDateChange}
-                labelFunc={renderDatePickerLabel}
-              />
-            </MuiPickersUtilsProvider>
-            <Box mt={1}>
-              <Typography>
-                Showing data for the week from {from.format("DD-MM-YYYY")} to{" "}
-                {to.format("DD-MM-YYYY")}
-              </Typography>
-            </Box>
+            <DateRangePicker
+              initialDateRange={{
+                startDate: from.toDate(),
+                endDate: to.toDate(),
+              }}
+              open={open}
+              toggle={() => {}}
+              onChange={handleRangeChange}
+              definedRanges={definedRanges}
+            />
           </CardContent>
         </Card>
       </Grid>
