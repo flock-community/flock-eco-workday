@@ -39,11 +39,10 @@ class WorkdayController(
         @RequestParam personId: UUID,
         authentication: Authentication,
         pageable: Pageable
-    ): ResponseEntity<Iterable<WorkDay>> = when {
+    ): ResponseEntity<List<WorkDay>> = when {
         authentication.isAdmin() -> service.findAllByPersonUuid(personId, pageable)
         else -> service.findAllByPersonUserCode(authentication.name, pageable)
     }
-        .sortedByDescending { it.from }
         .toResponse()
 
     @GetMapping("/{code}")

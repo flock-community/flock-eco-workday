@@ -32,11 +32,11 @@ class AssignmentService(
         .findByCode(code)
         .toNullable()
 
-    fun findAllByPersonUuid(personUuid: UUID) = assignmentRepository
-        .findAllByPersonUuid(personUuid)
+    fun findAllByPersonUuid(personUuid: UUID, page: Pageable = Pageable.unpaged()) = assignmentRepository
+        .findAllByPersonUuid(personUuid, page)
 
-    fun findAllByPersonUserCode(userCode: String) = assignmentRepository
-        .findAllByPersonUserCode(userCode)
+    fun findAllByPersonUserCode(userCode: String, page: Pageable = Pageable.unpaged()) = assignmentRepository
+        .findAllByPersonUserCode(userCode, page)
 
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Assignment> {
         val query = "SELECT a FROM Assignment a WHERE a.from <= :to AND (a.to is null OR a.to >= :from)"

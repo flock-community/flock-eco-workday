@@ -19,11 +19,19 @@ const resourceClient = InternalizingClient(path, internalize);
 const travelExpenseClient = InternalizingClient(travelPath, internalize);
 const costExpenseClient = InternalizingClient(costPath, internalize);
 
-const findAllByPersonId = (personId) =>
-  resourceClient.query({
-    personId,
-    sort: "date,desc",
-  });
+export const EXPENSE_PAGE_SIZE = 5;
+
+const findAllByPersonId = (personId, page) =>
+  resourceClient.queryByPage(
+    {
+      page,
+      size: EXPENSE_PAGE_SIZE,
+      sort: "date,desc",
+    },
+    {
+      personId,
+    }
+  );
 
 const post = (type, item) => {
   const serialized = serialize(item);

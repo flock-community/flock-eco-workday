@@ -1,6 +1,8 @@
 import moment from "moment";
 import InternalizingClient from "../utils/InternalizingClient.ts";
 
+export const WORK_DAY_PAGE_SIZE = 5;
+
 const internalize = (it) => ({
   ...it,
   from: moment(it.from),
@@ -11,11 +13,17 @@ const internalize = (it) => ({
 const path = "/api/workdays";
 const resourceClient = InternalizingClient(path, internalize);
 
-const findAllByPersonUuid = (personId) =>
-  resourceClient.query({
-    personId,
-    sort: "from,desc",
-  });
+const findAllByPersonUuid = (personId, page) =>
+  resourceClient.queryByPage(
+    {
+      page,
+      size: WORK_DAY_PAGE_SIZE,
+      sort: "from,desc",
+    },
+    {
+      personId,
+    }
+  );
 
 export const WorkDayClient = {
   ...resourceClient,

@@ -1,10 +1,26 @@
 import React, { useEffect, useState } from "react";
 import Card from "@material-ui/core/Card";
-import { CardContent } from "@material-ui/core";
+import { Box, CardContent } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import { AssignmentClient } from "../../clients/AssignmentClient";
+import {
+  ASSIGNMENT_PAGE_SIZE,
+  AssignmentClient,
+} from "../../clients/AssignmentClient";
 import { isDefined } from "../../utils/validation";
+import { Pagination } from "@material-ui/lab";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles({
+  list: (loading) => ({
+    opacity: loading ? 0.5 : 1,
+  }),
+  pagination: {
+    "& .MuiPagination-ul": {
+      justifyContent: "right",
+    },
+  },
+});
 
 type AssignmentListProps = {
   reload: boolean;
@@ -17,21 +33,35 @@ export function AssignmentList({
   personId,
   onItemClick,
 }: AssignmentListProps) {
-  const [list, setList] = useState<any[]>([]);
+  const [items, setItems] = useState<any[]>([]);
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState(-1);
+  const [loading, setLoading] = useState(true);
+
+  const classes = useStyles(loading);
+
+  const handleChangePage = (event: object, paginationComponentPage: number) =>
+    // Client page is 0-based, pagination component is 1-based
+    setPage(paginationComponentPage - 1);
 
   useEffect(() => {
     if (personId) {
-      AssignmentClient.findAllByPersonId(personId).then((res) => setList(res));
+      setLoading(true);
+      AssignmentClient.findAllByPersonId(personId, page).then((res) => {
+        setItems(res.list);
+        setPageCount(Math.ceil(res.count / ASSIGNMENT_PAGE_SIZE));
+        setLoading(false);
+      });
     } else {
-      setList([]);
+      setItems([]);
     }
-  }, [personId, reload]);
+  }, [personId, reload, page]);
 
   const handleClickItem = (it) => () => {
     if (isDefined(onItemClick)) onItemClick(it);
   };
 
-  if (list.length === 0) {
+  if (items.length === 0) {
     return (
       <Card>
         <CardContent>
@@ -42,33 +72,46 @@ export function AssignmentList({
   }
 
   return (
-    <Grid container spacing={1}>
-      {list.map((assignment) => (
-        <Grid item xs={12} key={`assignment-${assignment.code}`}>
-          <Card onClick={handleClickItem(assignment)}>
-            <CardContent>
-              <Typography variant="h6">
-                {assignment.client.name} - {assignment.role}
-              </Typography>
-              <Typography>
-                Period: {assignment.from.format("DD-MM-YYYY")} -{" "}
-                {assignment.to ? (
-                  assignment.to.format("DD-MM-YYYY")
-                ) : (
-                  <i>now</i>
+    <>
+      <Grid container spacing={1} className={classes.list}>
+        {items.map((assignment) => (
+          <Grid item xs={12} key={`assignment-${assignment.code}`}>
+            <Card onClick={handleClickItem(assignment)}>
+              <CardContent>
+                <Typography variant="h6">
+                  {assignment.client.name} - {assignment.role}
+                </Typography>
+                <Typography>
+                  Period: {assignment.from.format("DD-MM-YYYY")} -{" "}
+                  {assignment.to ? (
+                    assignment.to.format("DD-MM-YYYY")
+                  ) : (
+                    <i>now</i>
+                  )}
+                </Typography>
+                <Typography>Hourly rate: {assignment.hourlyRate} </Typography>
+                <Typography>
+                  Hours per week: {assignment.hoursPerWeek}{" "}
+                </Typography>
+                {assignment.project && (
+                  <Typography>Project: {assignment.project.name}</Typography>
                 )}
-              </Typography>
-              <Typography>Hourly rate: {assignment.hourlyRate} </Typography>
-              <Typography>
-                Hours per week: {assignment.hoursPerWeek}{" "}
-              </Typography>
-              {assignment.project && (
-                <Typography>Project: {assignment.project.name}</Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+      <Box mt={2}>
+        <Pagination
+          className={classes.pagination}
+          count={pageCount}
+          // Client page is 0-based, pagination component is 1-based
+          page={page + 1}
+          onChange={handleChangePage}
+          shape="rounded"
+          size="small"
+        />
+      </Box>
+    </>
   );
 }

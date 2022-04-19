@@ -47,7 +47,7 @@ export function HolidayFeature({ person }: HolidayFeatureProps) {
         <CardHeader
           title="Holidays"
           action={
-            <Button variant="outlined" onClick={handleClickAdd}>
+            <Button onClick={handleClickAdd}>
               <AddIcon /> Add
             </Button>
           }

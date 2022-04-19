@@ -1,11 +1,23 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
-import { CardContent } from "@material-ui/core";
+import { Box, CardContent } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import { HolidayClient } from "../../clients/HolidayClient";
+import { HOLIDAY_PAGE_SIZE, HolidayClient } from "../../clients/HolidayClient";
 import { DayListItem } from "../../components/DayListItem";
+import { makeStyles } from "@material-ui/core/styles";
+import { Pagination } from "@material-ui/lab";
+
+const useStyles = makeStyles({
+  list: (loading) => ({
+    opacity: loading ? 0.5 : 1,
+  }),
+  pagination: {
+    "& .MuiPagination-ul": {
+      justifyContent: "right",
+    },
+  },
+});
 
 type HolidayListProps = {
   personId?: string;
@@ -22,14 +34,28 @@ export function HolidayList({
 }: HolidayListProps) {
   const [list, setList] = useState([]);
   const [update] = useState(refresh);
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState(-1);
+  const [loading, setLoading] = useState(true);
+
+  const classes = useStyles(loading);
+
+  const handleChangePage = (event: object, paginationComponentPage: number) =>
+    // Client page is 0-based, pagination component is 1-based
+    setPage(paginationComponentPage - 1);
 
   useEffect(() => {
     if (personId) {
-      HolidayClient.findAllByPersonId(personId).then((res) => setList(res));
+      setLoading(true);
+      HolidayClient.findAllByPersonId(personId, page).then((res) => {
+        setList(res.list);
+        setPageCount(Math.ceil(res.count / HOLIDAY_PAGE_SIZE));
+        setLoading(false);
+      });
     } else {
       setList([]);
     }
-  }, [personId, refresh, update]);
+  }, [personId, refresh, update, page]);
 
   function renderItem(item, key) {
     return (
@@ -55,8 +81,21 @@ export function HolidayList({
   }
 
   return (
-    <Grid container spacing={1}>
-      {list.map(renderItem)}
-    </Grid>
+    <>
+      <Grid container spacing={1} className={classes.list}>
+        {list.map(renderItem)}
+      </Grid>
+      <Box mt={2}>
+        <Pagination
+          className={classes.pagination}
+          count={pageCount}
+          // Client page is 0-based, pagination component is 1-based
+          page={page + 1}
+          onChange={handleChangePage}
+          shape="rounded"
+          size="small"
+        />
+      </Box>
+    </>
   );
 }

@@ -54,17 +54,16 @@ class ContractController(
 
     @GetMapping("/contracts", params = ["personId"])
     @PreAuthorize("hasAuthority('ContractAuthority.READ')")
-    fun findAllByPersonCode(@RequestParam(required = false) personId: UUID?, principal: Principal): ResponseEntity<Iterable<Contract>> =
+    fun findAllByPersonCode(
+        @RequestParam(required = false) personId: UUID?,
+        page: Pageable,
+        principal: Principal
+    ): ResponseEntity<List<Contract>> =
         principal.findUser()
             ?.let { user ->
-                if (user.isAdmin() && personId != null) {
-                    contractService.findAllByPersonUuid(personId)
-                        .sortedBy { it.from }
-                        .reversed()
-                } else {
-                    contractService.findAllByPersonUserCode(user.code)
-                        .sortedBy { it.from }
-                        .reversed()
+                when {
+                    user.isAdmin() && personId != null -> contractService.findAllByPersonUuid(personId, page)
+                    else -> contractService.findAllByPersonUserCode(user.code, page)
                 }
             }
             .toResponse()

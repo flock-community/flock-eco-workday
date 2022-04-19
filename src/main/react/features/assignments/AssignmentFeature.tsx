@@ -33,7 +33,7 @@ export function AssignmentFeature({ person }: AssignmentFeatureProps) {
         <CardHeader
           title="Assignments"
           action={
-            <Button variant="outlined" onClick={handleClickAdd}>
+            <Button onClick={handleClickAdd}>
               <AddIcon /> Add
             </Button>
           }

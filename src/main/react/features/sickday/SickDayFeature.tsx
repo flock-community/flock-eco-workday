@@ -46,7 +46,7 @@ export function SickDayFeature({ person }: SickDayFeatureProps) {
         <CardHeader
           title="Sick days"
           action={
-            <Button variant="outlined" onClick={handleClickAdd}>
+            <Button onClick={handleClickAdd}>
               <AddIcon /> Add
             </Button>
           }

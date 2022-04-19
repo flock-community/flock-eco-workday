@@ -8,6 +8,8 @@ const externalPath = `${path}-external`;
 const managementPath = `${path}-management`;
 const servicePath = `${path}-service`;
 
+export const CONTRACT_PAGE_SIZE = 5;
+
 export type Contract = {
   id: number;
   code: string;
@@ -34,7 +36,8 @@ const internalize = (it) => ({
   to: it.to && moment(it.to, "YYYY-MM-DD"),
 });
 
-const clients = new Map();
+const clients = new Map<string, any>();
+
 clients.set(
   "general",
   InternalizingClient<ContactRequest, Contract, ContractRaw>(path, internalize)
@@ -68,8 +71,15 @@ clients.set(
   )
 );
 
-const findAllByPersonId = (personId: string) =>
-  clients.get("general").query({ personId: personId });
+const findAllByPersonId = (personId: string, page: number) =>
+  clients.get("general")!!.queryByPage(
+    {
+      page,
+      size: CONTRACT_PAGE_SIZE,
+      sort: "from,desc",
+    },
+    { personId: personId }
+  );
 
 const findAllByToBetween = (start: Date, end: Date) => {
   const startString = start.toISOString().substring(0, 10);

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
-import { Card, Typography } from "@material-ui/core";
+import { Box, Card, Typography } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
@@ -9,29 +8,58 @@ import List from "@material-ui/core/List";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItem from "@material-ui/core/ListItem";
 import { StatusMenu } from "../../components/StatusMenu";
-import { ExpenseClient } from "../../clients/ExpenseClient";
+import { EXPENSE_PAGE_SIZE, ExpenseClient } from "../../clients/ExpenseClient";
+import { Pagination } from "@material-ui/lab";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles({
+  list: (loading) => ({
+    opacity: loading ? 0.5 : 1,
+  }),
+  pagination: {
+    "& .MuiPagination-ul": {
+      justifyContent: "right",
+    },
+  },
+});
 
 type ExpenseListProps = {
   refresh: boolean;
   personId?: string;
   onClickRow: (item: any) => void;
 };
+
 export function ExpenseList({
   personId,
   refresh,
   onClickRow,
 }: ExpenseListProps) {
-  const [state, setState] = useState([]);
+  const [items, setItems] = useState([]);
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState(-1);
+  const [loading, setLoading] = useState(true);
+
+  const classes = useStyles(loading);
+
+  const handleChangePage = (event: object, paginationComponentPage: number) =>
+    // Client page is 0-based, pagination component is 1-based
+    setPage(paginationComponentPage - 1);
 
   const loadState = () => {
-    ExpenseClient.findAllByPersonId(personId).then((res) => setState(res));
+    setLoading(true);
+
+    ExpenseClient.findAllByPersonId(personId, page).then((res) => {
+      setPageCount(Math.ceil(res.count / EXPENSE_PAGE_SIZE));
+      setItems(res.list);
+      setLoading(false);
+    });
   };
 
   useEffect(() => {
     if (personId) {
       loadState();
     }
-  }, [personId, refresh]);
+  }, [personId, refresh, page]);
 
   const isAdmin = () =>
     !UserAuthorityUtil.hasAuthority("ExpenseAuthority.ADMIN");
@@ -85,7 +113,7 @@ export function ExpenseList({
     );
   }
 
-  if (state.length === 0) {
+  if (items.length === 0) {
     return (
       <Card>
         <CardContent>
@@ -96,8 +124,21 @@ export function ExpenseList({
   }
 
   return (
-    <Grid container spacing={1}>
-      {state.map(renderItem)}
-    </Grid>
+    <>
+      <Grid container spacing={1} className={classes.list}>
+        {items.map(renderItem)}
+      </Grid>
+      <Box mt={2}>
+        <Pagination
+          className={classes.pagination}
+          count={pageCount}
+          // Client page is 0-based, pagination component is 1-based
+          page={page + 1}
+          onChange={handleChangePage}
+          shape="rounded"
+          size="small"
+        />
+      </Box>
+    </>
   );
 }

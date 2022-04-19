@@ -56,14 +56,14 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
         <CardHeader
           title="Work days"
           action={
-            <Button variant="outlined" onClick={handleClickAdd}>
+            <Button onClick={handleClickAdd}>
               <AddIcon /> Add
             </Button>
           }
         />
         <CardContent>
           <WorkDayList
-            personId={person?.uuid}
+            personId={person.uuid}
             onClickRow={handleClickRow}
             refresh={refresh}
             onClickStatus={handleStatusChange}

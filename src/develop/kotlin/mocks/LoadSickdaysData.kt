@@ -1,6 +1,7 @@
 package community.flock.eco.workday.mocks
 
 import community.flock.eco.workday.forms.SickDayForm
+import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.services.SickDayService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -21,18 +22,25 @@ class LoadSickdaysData(
     init {
 
         loadPersonData.data.forEach {
+            createSickdays(it)
+        }
+    }
+
+    private fun createSickdays(it: Person) {
+        for (i in 1..10) {
+            val plusYears = i.toLong()
             val random = (0..100).shuffled().first().toLong()
             SickDayForm(
-                from = now.plusDays(random),
-                to = now.plusDays(random + 5),
+                from = now.plusYears(plusYears).plusDays(random),
+                to = now.plusYears(plusYears).plusDays(random + 5),
                 days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
                 hours = 48.0,
                 personId = it.uuid
             ).create()
 
             SickDayForm(
-                from = now.plusDays(random + 100),
-                to = now.plusDays(random + 105),
+                from = now.plusYears(plusYears).plusDays(random + 100),
+                to = now.plusYears(plusYears).plusDays(random + 105),
                 days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
                 hours = 48.0,
                 personId = it.uuid

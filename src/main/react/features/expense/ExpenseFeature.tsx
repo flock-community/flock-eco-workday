@@ -42,7 +42,7 @@ export function ExpenseFeature({ person }: ExpenseFeatureProps) {
         <CardHeader
           title="Expenses"
           action={
-            <Button variant="outlined" onClick={handleClickAdd}>
+            <Button onClick={handleClickAdd}>
               <AddIcon /> Add
             </Button>
           }
