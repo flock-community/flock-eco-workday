@@ -5,6 +5,7 @@ export const themeLight = createTheme({
   palette: {
     primary: {
       main: "#fcde00",
+      dark: "#fcde00", // only in use for DateRangePicker
     },
     secondary: blueGrey,
     success: green,

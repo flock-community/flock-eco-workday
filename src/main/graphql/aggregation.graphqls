@@ -9,8 +9,21 @@ type AggregationClientPersonOverview {
     totals: [Float!]!
 }
 
+type AggregationClientPersonAssignmentOverview {
+    client: AggregationIdentifier!
+    aggregationPersonAssignment: [AggregationClientPersonAssignmentItem!]!
+    totals: [Float!]!
+}
+
 type AggregationClientPersonItem {
     person: AggregationIdentifier!
+    hours: [Float!]!
+    total: Float!
+}
+
+type AggregationClientPersonAssignmentItem {
+    person: AggregationIdentifier!
+    assignment: AggregationIdentifier!
     hours: [Float!]!
     total: Float!
 }

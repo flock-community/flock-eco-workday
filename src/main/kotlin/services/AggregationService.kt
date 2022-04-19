@@ -1,9 +1,30 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.ApplicationConstants
-import community.flock.eco.workday.graphql.* // ktlint-disable no-wildcard-imports
-import community.flock.eco.workday.interfaces.* // ktlint-disable no-wildcard-imports
-import community.flock.eco.workday.model.* // ktlint-disable no-wildcard-imports
+import community.flock.eco.workday.graphql.AggregationClientPersonAssignmentItem
+import community.flock.eco.workday.graphql.AggregationClientPersonAssignmentOverview
+import community.flock.eco.workday.graphql.AggregationClientPersonItem
+import community.flock.eco.workday.graphql.AggregationClientPersonOverview
+import community.flock.eco.workday.graphql.AggregationIdentifier
+import community.flock.eco.workday.graphql.AggregationPersonClientRevenueItem
+import community.flock.eco.workday.graphql.AggregationPersonClientRevenueOverview
+import community.flock.eco.workday.interfaces.Dayly
+import community.flock.eco.workday.interfaces.Period
+import community.flock.eco.workday.interfaces.filterInRange
+import community.flock.eco.workday.interfaces.inRange
+import community.flock.eco.workday.model.AggregationClient
+import community.flock.eco.workday.model.AggregationHoliday
+import community.flock.eco.workday.model.AggregationMonth
+import community.flock.eco.workday.model.AggregationPerson
+import community.flock.eco.workday.model.Assignment
+import community.flock.eco.workday.model.ContractExternal
+import community.flock.eco.workday.model.ContractInternal
+import community.flock.eco.workday.model.ContractManagement
+import community.flock.eco.workday.model.Day
+import community.flock.eco.workday.model.HolidayType
+import community.flock.eco.workday.model.Person
+import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.model.sumHoursWithinAPeriod
 import community.flock.eco.workday.utils.DateUtils.countWorkDaysInMonth
 import community.flock.eco.workday.utils.DateUtils.dateRange
 import community.flock.eco.workday.utils.DateUtils.isWorkingDay
@@ -330,13 +351,65 @@ class AggregationService(
         }.map { (client, clientPersonItems) ->
             AggregationClientPersonOverview(
                 client =
-                    AggregationIdentifier(id = client.id.toString(), name = client.name),
+                AggregationIdentifier(id = client.id.toString(), name = client.name),
                 aggregationPerson = clientPersonItems,
                 totals = clientPersonItems
                     .map { it.hours }
                     .sumAtIndex()
             )
         }
+    }
+
+    fun clientPersonAssignmentHourOverview(from: LocalDate, to: LocalDate): List<AggregationClientPersonAssignmentOverview> {
+        return workDayService.findAllActive(from, to).groupBy {
+            it.assignment.client
+        }.mapValues { (client, workDays) ->
+            val clientPersonItems = workDays.map { workDay ->
+                val person = AggregationIdentifier(
+                    id = workDay.assignment.person.id.toString(),
+                    name = workDay.assignment.person.getFullName()
+                )
+                val workingHoursPerDay = workDay
+                    .hoursPerDayInPeriod(from, to)
+                    .map { it.value.toFloat() }
+
+                val assignment = AggregationIdentifier(
+                    id = workDay.assignment.id.toString(),
+                    name = workDay.assignment.role ?: "Unknown"
+                )
+
+                AggregationClientPersonAssignmentItem(
+                    person = person,
+                    assignment = assignment,
+                    hours = workingHoursPerDay,
+                    total = workingHoursPerDay.sum()
+                )
+            }
+            clientPersonItems.groupBy { it.personAssignmentKey() }
+                .mapValues { (key, values) ->
+                    val person = key.person
+                    val assignment = key.assignment
+                    val hours = values
+                        .map {
+                            it.hours
+                        }.sumAtIndex()
+                    val total = hours.sum()
+                    AggregationClientPersonAssignmentItem(
+                        person = person,
+                        assignment = assignment,
+                        hours = hours,
+                        total = total
+                    )
+                }.values.sortedBy { it.person.name }
+        }.map { (client, clientPersonAssignmentItems) ->
+            AggregationClientPersonAssignmentOverview(
+                client = AggregationIdentifier(id = client.id.toString(), name = client.name),
+                aggregationPersonAssignment = clientPersonAssignmentItems,
+                totals = clientPersonAssignmentItems
+                    .map { it.hours }
+                    .sumAtIndex()
+            )
+        }.sortedBy { it.client.name }
     }
 
     fun personClientRevenueOverview(workDays: Iterable<WorkDay>, from: LocalDate, to: LocalDate): MutableMap<AggregationIdentifier, AggregationPersonClientRevenueOverview> {
@@ -475,3 +548,6 @@ fun Map.Entry<YearMonth, Iterable<Data>>.actualTotalHours(transform: Data.() -> 
     .sum()
 
 private fun <A, B> cartesianProducts(a_s: Iterable<A>, b_s: Iterable<B>) = a_s.flatMap { a -> b_s.map { b -> a to b } }
+
+data class PersonAssignmentCompositeIdentifier(val person: AggregationIdentifier, val assignment: AggregationIdentifier)
+private fun AggregationClientPersonAssignmentItem.personAssignmentKey() = PersonAssignmentCompositeIdentifier(person, assignment)

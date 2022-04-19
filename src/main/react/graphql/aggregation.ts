@@ -1,6 +1,6 @@
 export interface AggregationClientPersonOverview {
   client: AggregationClientPersonOverviewClient;
-  aggregationPerson: AggregationClientPersonItem[];
+  aggregationPersonAssignment: AggregationClientPersonItem[];
   totals: number[];
 }
 
