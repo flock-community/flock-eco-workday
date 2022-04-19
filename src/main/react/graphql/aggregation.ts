@@ -1,21 +1,39 @@
+export interface AggregationIdentifier {
+  id: string;
+  name: string;
+}
+
 export interface AggregationClientPersonOverview {
-  client: AggregationClientPersonOverviewClient;
-  aggregationPersonAssignment: AggregationClientPersonItem[];
+  client: AggregationIdentifier;
+  aggregationPerson: AggregationClientPersonItem[];
+  totals: number[];
+}
+
+export interface AggregationClientPersonAssignmentOverview {
+  client: AggregationIdentifier;
+  aggregationPersonAssignment: AggregationClientPersonAssignmentItem[];
   totals: number[];
 }
 
 export interface AggregationClientPersonItem {
-  person: AggregationClientPersonOverviewPerson;
+  person: AggregationIdentifier;
   hours: number[];
   total: number;
 }
 
-export interface AggregationClientPersonOverviewClient {
-  id: string;
-  name: string;
+export interface AggregationClientPersonAssignmentItem {
+  person: AggregationIdentifier;
+  assignment: AggregationIdentifier;
+  hours: number[];
+  total: number;
 }
 
-export interface AggregationClientPersonOverviewPerson {
-  id: string;
-  name: string;
+export interface AggregationPersonClientRevenueOverview {
+  clients: AggregationPersonClientRevenueItem[];
+  total: BigDecimal;
+}
+
+export interface AggregationPersonClientRevenueItem {
+  client: AggregationIdentifier;
+  revenue: BigDecimal;
 }

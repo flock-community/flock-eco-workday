@@ -2,12 +2,14 @@ import Typography from "@material-ui/core/Typography";
 import React, { Fragment, useEffect, useState } from "react";
 import { AggregationClient } from "../../clients/AggregationClient";
 import moment from "moment";
-import { TableBody, TableContainer } from "@material-ui/core";
+import { Box, TableBody, TableContainer } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { makeStyles } from "@material-ui/core/styles";
+import AssignmentReportTableRow from "./AssignmentReportTableRow";
+import { AggregationClientPersonAssignmentOverview } from "../../graphql/aggregation";
 
 const useStyles = makeStyles({
   tableContainer: {
@@ -21,7 +23,9 @@ type ReportINGProps = {
 };
 
 export default function AssignmentReportTable({ from, to }: ReportINGProps) {
-  const [clientHourOverviewState, setClientHourOverviewState] = useState<any>();
+  const [clientHourOverviewState, setClientHourOverviewState] = useState<
+    AggregationClientPersonAssignmentOverview[]
+  >();
   const [dayRange, setDayRange] = useState<string[]>();
 
   const classes = useStyles();
@@ -56,12 +60,15 @@ export default function AssignmentReportTable({ from, to }: ReportINGProps) {
           {clientHourOverviewState.map((it, clientIndex) => (
             <Fragment key={clientIndex}>
               <TableRow>
-                <TableCell colSpan={dayRange?.length}>
-                  <Typography variant="h6">{it.client.name}</Typography>
+                <TableCell colSpan={(dayRange?.length ?? 0) + 2}>
+                  <Box mt={5}>
+                    <Typography variant="h6">{it.client.name}</Typography>
+                  </Box>
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell />
+                {/*Icon and person name cells*/}
+                <TableCell colSpan={2} />
                 {dayRange?.map((day, dayIndex) => (
                   <TableCell key={dayIndex}>
                     <b>{day}</b>
@@ -69,18 +76,15 @@ export default function AssignmentReportTable({ from, to }: ReportINGProps) {
                 ))}
               </TableRow>
               {it.aggregationPersonAssignment.map((person, personIndex) => (
-                <TableRow key={personIndex}>
-                  <TableCell>
-                    {person.person.name} ({person.assignment.name})
-                  </TableCell>
-                  {person.hours.map((val, personHoursIndex) => (
-                    <TableCell width={10} key={personHoursIndex}>
-                      {val > 0 ? val.toFixed(1) : "-"}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <AssignmentReportTableRow
+                  key={personIndex}
+                  item={person}
+                  from={from}
+                  to={to}
+                />
               ))}
               <TableRow>
+                <TableCell />
                 <TableCell>Totals</TableCell>
                 {it.totals.map((val, dayTotalIndex) => (
                   <TableCell key={dayTotalIndex}>

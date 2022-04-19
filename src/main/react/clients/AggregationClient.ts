@@ -1,4 +1,7 @@
-import { AggregationClientPersonOverview } from "../graphql/aggregation";
+import {
+  AggregationClientPersonAssignmentOverview,
+  AggregationClientPersonOverview,
+} from "../graphql/aggregation";
 import {
   checkResponse,
   validateResponse,
@@ -95,7 +98,7 @@ export const holidayReportByYear = (year) => {
 const clientAssignmentPersonBetween = (
   from: moment.Moment,
   to: moment.Moment
-) => {
+): Promise<AggregationClientPersonAssignmentOverview[]> => {
   const opts = {
     method: "GET",
   };
@@ -105,7 +108,9 @@ const clientAssignmentPersonBetween = (
     )}&to=${to.format("YYYY-MM-DD")}`,
     opts
   )
-    .then(validateResponse)
+    .then((res) =>
+      validateResponse<AggregationClientPersonAssignmentOverview[]>(res)
+    )
     .then(checkResponse)
     .then((res) => res.body);
 };

@@ -47,7 +47,9 @@ class AggregationService(
     private val assignmentService: AssignmentService,
     private val dataService: DataService,
     private val applicationConstants: ApplicationConstants,
-    private val workDayService: WorkDayService
+    private val workDayService: WorkDayService,
+    private val holiDayService: HoliDayService,
+    private val sickDayService: SickDayService
 ) {
 
     fun holidayReportMe(year: Int, person: Person): AggregationHoliday {
@@ -351,7 +353,7 @@ class AggregationService(
         }.map { (client, clientPersonItems) ->
             AggregationClientPersonOverview(
                 client =
-                AggregationIdentifier(id = client.id.toString(), name = client.name),
+                    AggregationIdentifier(id = client.id.toString(), name = client.name),
                 aggregationPerson = clientPersonItems,
                 totals = clientPersonItems
                     .map { it.hours }
@@ -366,7 +368,7 @@ class AggregationService(
         }.mapValues { (client, workDays) ->
             val clientPersonItems = workDays.map { workDay ->
                 val person = AggregationIdentifier(
-                    id = workDay.assignment.person.id.toString(),
+                    id = workDay.assignment.person.uuid.toString(),
                     name = workDay.assignment.person.getFullName()
                 )
                 val workingHoursPerDay = workDay
@@ -452,6 +454,32 @@ class AggregationService(
         }
         return revenueOverviewPerPerson
     }
+
+    fun personNonProductiveHoursPerDay(person: Person, from: LocalDate, to: LocalDate): List<NonProductiveHours> {
+        val holidays = holiDayService.findAllActiveByPerson(from, to, person.uuid)
+            .map { it.hoursPerDayInPeriod(from, to) }
+            .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
+        val sickdays = sickDayService.findAllActiveByPerson(from, to, person.uuid)
+            .map { it.hoursPerDayInPeriod(from, to) }
+            .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
+
+        val map = from.datesUntil(to.plusDays(1)).toList().associateWith { date ->
+            NonProductiveHours(
+                sickHours = sickdays[date]?.toDouble() ?: 0.0,
+                holidayHours = holidays[date]?.toDouble() ?: 0.0
+            )
+        }
+
+        return map.entries.sortedBy { it.key }.map { it.value }.toList()
+    }
+
+    fun Map<LocalDate, BigDecimal>.merge(other: Map<LocalDate, BigDecimal>): Map<LocalDate, BigDecimal> =
+        (this.keys + other.keys).associateWith { date ->
+            this.getOrDefault(date, BigDecimal.ZERO) + other.getOrDefault(date, BigDecimal.ZERO)
+        }
+
+    // TODO: Move this?
+    data class NonProductiveHours(val sickHours: Double, val holidayHours: Double)
 
     fun Iterable<Iterable<Float>>.sumAtIndex() = this
         .reduce { acc, cur ->
