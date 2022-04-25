@@ -5,7 +5,7 @@ import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
 import community.flock.eco.workday.model.Person
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 abstract class ContractAbstract {
     private val testPerson = Person(
@@ -17,7 +17,6 @@ abstract class ContractAbstract {
         position = "Hm",
         number = null,
         reminders = false,
-        updates = false,
         user = null
     )
 

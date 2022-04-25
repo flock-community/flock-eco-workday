@@ -5,8 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.feature.user.model.User
 import java.time.Instant
-import java.util.*
-import javax.persistence.*
+import java.util.Objects
+import java.util.UUID
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.OneToOne
 
 @Entity
 data class Person(
@@ -28,7 +34,6 @@ data class Person(
     val lastActiveAt: Instant? = null,
 
     val reminders: Boolean = false,
-    val updates: Boolean = false,
 
     @OneToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")

@@ -38,7 +38,6 @@ export type PersonRequest = {
   active: boolean;
   lastActiveAt?: string; // FIXME
   reminders: boolean;
-  updates: boolean;
   user: any; // FIXME
 };
 

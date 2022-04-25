@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-015-project-1
+      author: timsmelik
+      changes:
+        - dropColumn:
+            tableName: person
+            columnName: updates

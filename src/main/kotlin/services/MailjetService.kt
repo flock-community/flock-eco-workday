@@ -11,6 +11,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
 import java.time.YearMonth
 import java.time.format.TextStyle
@@ -35,15 +36,15 @@ class MailjetService(
         log.info("Send update ${person.email}")
         val month = yearMonth.month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
         val subject = "Workday hours are updated by ${person.firstname} for $month"
-        personService.findByUpdatesTrue()
-            .forEach {
-                val variables = JSONObject()
-                    .put("name", it.firstname)
-                    .put("month", month)
-                    .put("person", person.firstname)
-                val request = createMailjetRequest(2626040, it, subject, variables)
-                client.post(request)
-            }
+        personService.findAll(Pageable.unpaged())
+            // .forEach {
+            //     val variables = JSONObject()
+            //         .put("name", it.firstname)
+            //         .put("month", month)
+            //         .put("person", person.firstname)
+            //     val request = createMailjetRequest(2626040, it, subject, variables)
+            //     client.post(request)
+            // }
     }
 
     fun sendReminder(person: Person, yearMonth: YearMonth) {

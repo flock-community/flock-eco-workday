@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 @Service
 class PersonService(
@@ -34,7 +34,6 @@ class PersonService(
             active = form.active,
             lastActiveAt = lastActiveAt(form),
             reminders = form.reminders,
-            updates = form.updates,
             user = user
         )
     }
@@ -74,9 +73,6 @@ class PersonService(
     fun findByUserCode(userCode: String) = repository
         .findByUserCode(userCode)
         .toNullable()
-
-    fun findByUpdatesTrue() = repository
-        .findAllByUpdates(true)
 
     fun findByPersonCodeIdIn(personCodes: List<UUID>) = repository
         .findByUuidIn(personCodes)
