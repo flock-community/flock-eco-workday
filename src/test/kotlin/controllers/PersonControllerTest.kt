@@ -64,7 +64,7 @@ class PersonControllerTest {
     fun setUp() {
         createActiveAndInactivePerson()
     }
-    
+
     private fun createActiveAndInactivePerson() {
         val activeUserForm = PersonForm(
             firstname = "Morris",
@@ -352,9 +352,14 @@ class PersonControllerTest {
                 .accept("application/json")
         )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.*.active",
-                Matchers.hasItems(
-                    Matchers.`is`(false), Matchers.`is`(true))))
+            .andExpect(
+                jsonPath(
+                    "$.*.active",
+                    Matchers.hasItems(
+                        Matchers.`is`(false), Matchers.`is`(true)
+                    )
+                )
+            )
     }
 
     @Test
@@ -367,7 +372,11 @@ class PersonControllerTest {
                 .accept("application/json")
         )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.*.active",
-                Matchers.everyItem(Matchers.`is`(true))))
+            .andExpect(
+                jsonPath(
+                    "$.*.active",
+                    Matchers.everyItem(Matchers.`is`(true))
+                )
+            )
     }
 }

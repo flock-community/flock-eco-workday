@@ -1,10 +1,5 @@
 import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
 import React from "react";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-
-import { useHistory } from "react-router-dom";
 import ProjectIcon from "@material-ui/icons/AccountTree";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import ContractIcon from "@material-ui/icons/Description";
@@ -20,10 +15,12 @@ import ExpensesIcon from "@material-ui/icons/Money";
 import ExactonlineIcon from "@material-ui/icons/AccountBalance";
 import TodoIcon from "@material-ui/icons/AssignmentTurnedIn";
 import HomeIcon from "@material-ui/icons/Home";
+import ReportIcon from "@material-ui/icons/Assessment";
 
 import Drawer from "@material-ui/core/Drawer";
 import { makeStyles } from "@material-ui/core/styles";
 import { useUserMe } from "../hooks/UserMeHook";
+import ApplicationMenuItem from "./ApplicationMenuItem";
 
 const useStyles = makeStyles({
   head: {
@@ -44,24 +41,9 @@ type ApplicationDrawerProps = {
 
 export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
   const classes = useStyles();
-  const history = useHistory();
   const user = useUserMe();
 
-  const handleClose = (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    if (onClose) {
-      onClose();
-    }
-  };
-
-  const handleClickItem = (item) => () => {
-    history.push(item.url);
-  };
+  const handleClose = () => onClose?.();
 
   const items = [
     {
@@ -159,15 +141,22 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
       url: "/person",
       authority: "PersonAuthority.READ",
     },
+    {
+      name: "Reports",
+      icon: ReportIcon,
+      authority: "AggregationAuthority.READ",
+      items: [
+        {
+          name: "Assignment hours",
+          icon: AssignmentIcon,
+          url: "/reports/assignment",
+        },
+      ],
+    },
   ];
 
   const sideList = () => (
-    <div
-      className={classes.list}
-      role="presentation"
-      onClick={handleClose}
-      onKeyDown={handleClose}
-    >
+    <div className={classes.list} role="presentation" onKeyDown={handleClose}>
       <List>
         {items
           .filter(
@@ -176,14 +165,11 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
               user.authorities.includes(item.authority)
           )
           .map((item) => (
-            <ListItem
-              button
-              key={`menu-item-${item.name}`}
-              onClick={handleClickItem(item)}
-            >
-              <ListItemIcon>{React.createElement(item.icon)}</ListItemIcon>
-              <ListItemText primary={item.name} />
-            </ListItem>
+            <ApplicationMenuItem
+              key={item.name}
+              item={item}
+              handleClose={handleClose}
+            />
           ))}
       </List>
     </div>

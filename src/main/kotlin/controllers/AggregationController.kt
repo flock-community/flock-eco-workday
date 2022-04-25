@@ -1,5 +1,6 @@
 package community.flock.eco.workday.controllers
 
+import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.graphql.AggregationClientPersonAssignmentOverview
 import community.flock.eco.workday.graphql.AggregationClientPersonOverview
 import community.flock.eco.workday.model.AggregationClient
@@ -10,6 +11,7 @@ import community.flock.eco.workday.services.AggregationService
 import community.flock.eco.workday.services.PersonService
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 import java.time.YearMonth
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/aggregations")
@@ -106,4 +109,16 @@ class AggregationController(
     ): List<AggregationClientPersonAssignmentOverview> {
         return aggregationService.clientPersonAssignmentHourOverview(from, to)
     }
+
+    @GetMapping("/person-nonproductive-hours-per-day")
+    @PreAuthorize("isAuthenticated()")
+    fun personNonProductiveHoursPerDay(
+        @RequestParam personId: String,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate
+    ): ResponseEntity<List<AggregationService.NonProductiveHours>> =
+        personService.findByUuid(UUID.fromString(personId))
+            ?.let { person ->
+                aggregationService.personNonProductiveHoursPerDay(person, from, to)
+            }.toResponse()
 }

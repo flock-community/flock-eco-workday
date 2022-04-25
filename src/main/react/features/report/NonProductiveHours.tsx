@@ -1,0 +1,82 @@
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { TableCell } from "@material-ui/core";
+import TableRow from "@material-ui/core/TableRow";
+import { makeStyles } from "@material-ui/core/styles";
+import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+
+const useStyles = makeStyles({
+  row: {
+    fontStyle: "italic",
+    backgroundColor: "#EFEFEF",
+  },
+});
+
+type NonProductiveHoursProps = {
+  personId: string;
+  from: moment.Moment;
+  to: moment.Moment;
+};
+
+type NonProductiveHoursPerDay = {
+  sickHours: number;
+  holidayHours: number;
+};
+
+export default function NonProductiveHours({
+  personId,
+  from,
+  to,
+}: NonProductiveHoursProps) {
+  const [days, setDays] = useState<NonProductiveHoursPerDay[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const classes = useStyles();
+
+  useEffect(() => {
+    setLoading(true);
+
+    fetch(
+      `/api/aggregations/person-nonproductive-hours-per-day?personId=${personId}&from=${from.format(
+        "YYYY-MM-DD"
+      )}&to=${to.format("YYYY-MM-DD")}`
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        setDays(res);
+        setLoading(false);
+      });
+  }, [personId, from, to]);
+
+  if (loading) {
+    return (
+      <TableRow>
+        <TableCell colSpan={30}>
+          <AlignedLoader />
+        </TableCell>
+      </TableRow>
+    );
+  }
+  return (
+    <>
+      <TableRow className={classes.row}>
+        <TableCell />
+        <TableCell>Sickdays</TableCell>
+        {days.map((day, index) => (
+          <TableCell key={index}>
+            {day.sickHours > 0.0 ? day.sickHours : ""}
+          </TableCell>
+        ))}
+      </TableRow>
+      <TableRow className={classes.row}>
+        <TableCell />
+        <TableCell>Holidays</TableCell>
+        {days.map((day, index) => (
+          <TableCell key={index}>
+            {day.holidayHours > 0.0 ? day.holidayHours : ""}
+          </TableCell>
+        ))}
+      </TableRow>
+    </>
+  );
+}

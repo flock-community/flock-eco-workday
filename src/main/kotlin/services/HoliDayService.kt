@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 import javax.persistence.EntityManager
 
 @Service
@@ -38,6 +38,12 @@ class HoliDayService(
             .toSet()
     }
 
+    /**
+     * Return all holidays that have at least one day in the date range specified by "from" and "to".
+     *
+     * The result could include holidays that also contain days that do not fall within that range.
+     * You can filter these out using [community.flock.eco.workday.model.Day.hoursPerDayInPeriod].
+     */
     fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): Iterable<HoliDay> {
         val query = "SELECT h FROM HoliDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from) AND h.person.uuid = :personCode"
         return entityManager

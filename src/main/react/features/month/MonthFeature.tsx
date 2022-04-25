@@ -1,15 +1,12 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Typography from "@material-ui/core/Typography";
-import { CardContent, TableBody, TableContainer } from "@material-ui/core";
+import { Box, CardContent } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import moment from "moment";
 import IconButton from "@material-ui/core/IconButton";
 import BackIcon from "@material-ui/icons/ChevronLeft";
 import NextIcon from "@material-ui/icons/ChevronRight";
 import Grid from "@material-ui/core/Grid";
-import Table from "@material-ui/core/Table";
-import TableCell from "@material-ui/core/TableCell";
-import TableRow from "@material-ui/core/TableRow";
 import {
   Bar,
   BarChart,
@@ -23,21 +20,18 @@ import {
 import CardHeader from "@material-ui/core/CardHeader";
 import { AggregationClient } from "../../clients/AggregationClient";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import Button from "@material-ui/core/Button";
+import { useHistory } from "react-router-dom";
 
 /**
  * @return {null}
  */
 export function MonthFeature() {
   const [date, setDate] = useState(moment().startOf("month"));
-
-  const [dayRange, setDayRange] = useState<number[]>();
   const [totalPerPersonState, setTotalPerPersonState] = useState<any>();
   const [clientHourOverviewState, setClientHourOverviewState] = useState<any>();
 
-  useEffect(() => {
-    const daysInMonth = date.daysInMonth();
-    setDayRange(Array.from(Array(daysInMonth).keys()).map((n) => n + 1));
-  }, [date]);
+  const history = useHistory();
 
   useEffect(() => {
     let cancel = false;
@@ -130,50 +124,6 @@ export function MonthFeature() {
     );
   };
 
-  const renderOverview = () => (
-    <TableContainer>
-      <Table size="small">
-        <TableBody>
-          {clientHourOverviewState.map((it, clientIndex) => (
-            <Fragment key={clientIndex}>
-              <TableRow>
-                <TableCell colSpan={dayRange?.length}>
-                  <Typography variant="h6">{it.client.name}</Typography>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell />
-                {dayRange?.map((day, dayIndex) => (
-                  <TableCell key={dayIndex}>
-                    <b>{day}</b>
-                  </TableCell>
-                ))}
-              </TableRow>
-              {it.aggregationPerson.map((person, personIndex) => (
-                <TableRow key={personIndex}>
-                  <TableCell>{person.person.name}</TableCell>
-                  {person.hours.map((val, personHoursIndex) => (
-                    <TableCell width={10} key={personHoursIndex}>
-                      {val > 0 ? val.toFixed(1) : "-"}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-              <TableRow>
-                <TableCell>Totals</TableCell>
-                {it.totals.map((val, dayTotalIndex) => (
-                  <TableCell key={dayTotalIndex}>
-                    <b>{val.toFixed(1)}</b>
-                  </TableCell>
-                ))}
-              </TableRow>
-            </Fragment>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-
   return (
     <Grid container spacing={1}>
       <Grid item xs={12}>
@@ -238,7 +188,17 @@ export function MonthFeature() {
       <Grid item xs={12}>
         <Card>
           <CardHeader title="Hours per client per person" />
-          <CardContent>{renderOverview()}</CardContent>
+          <CardContent>
+            <Typography>
+              This report has been improved and can now be found under the
+              "Reports" menu item.
+            </Typography>
+            <Box mt={2}>
+              <Button onClick={() => history.push("/reports/assignment")}>
+                Open report
+              </Button>
+            </Box>
+          </CardContent>
         </Card>
       </Grid>
     </Grid>
