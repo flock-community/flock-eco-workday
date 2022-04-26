@@ -1,15 +1,20 @@
 package community.flock.eco.workday.config.properties
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.context.annotation.Profile
 
-@ConfigurationProperties(prefix = "mailjet")
-@ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"], matchIfMissing = true)
+@ConfigurationProperties(prefix = "mailjet.client")
+@Profile("!test & !develop")
 @ConstructorBinding
-data class MailjetProperties(
+data class MailjetClientProperties(
     val apiKey: String,
     val apiSecretKey: String,
+)
+
+@ConfigurationProperties(prefix = "mailjet.templates")
+@ConstructorBinding
+data class MailjetTemplateProperties(
     val reminderTemplateId: Int,
     val updateTemplateId: Int
 )

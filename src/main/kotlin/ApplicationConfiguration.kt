@@ -8,6 +8,8 @@ import community.flock.eco.feature.user.repositories.UserRepository
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
+import community.flock.eco.workday.config.MailjetClientConfig
+import community.flock.eco.workday.config.properties.PropertyConfig
 import community.flock.eco.workday.exactonline.ExactonlineConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.ComponentScan
@@ -26,7 +28,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         "community.flock.eco.workday.mappers"
     ]
 )
-@Import(UserConfiguration::class, ExactonlineConfiguration::class, ApplicationConstants::class)
+@Import(
+    UserConfiguration::class,
+    ExactonlineConfiguration::class,
+    ApplicationConstants::class,
+    PropertyConfig::class,
+    MailjetClientConfig::class
+)
 class ApplicationConfiguration(
     private val userRepository: UserRepository,
     private val userAuthorityService: UserAuthorityService

@@ -1,8 +1,9 @@
 package community.flock.eco.workday.services
 
+import com.mailjet.client.MailjetClient
 import com.mailjet.client.MailjetRequest
 import com.mailjet.client.resource.Emailv31
-import community.flock.eco.workday.config.properties.MailjetProperties
+import community.flock.eco.workday.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.config.properties.NotificationProperties
 import community.flock.eco.workday.model.Person
 import org.json.JSONArray
@@ -16,13 +17,11 @@ import java.time.format.TextStyle
 
 @Component
 class MailjetService(
-    mailjetClientProvider: IMailjetClientProvider,
     private val notificationProperties: NotificationProperties,
-    private val mailjetProperties: MailjetProperties
+    private val mailjetTemplateProperties: MailjetTemplateProperties,
+    private val client: MailjetClient
 ) {
     private val log: Logger = LoggerFactory.getLogger(MailjetService::class.java)
-
-    private var client = mailjetClientProvider.client
 
     fun sendUpdate(person: Person, yearMonth: YearMonth) {
         log.info("Send update ${person.email}")
@@ -34,7 +33,7 @@ class MailjetService(
             .put("person", person.firstname)
 
         val request = createMailjetRequest(
-            templateId = mailjetProperties.updateTemplateId,
+            templateId = mailjetTemplateProperties.updateTemplateId,
             subject = subject,
             variables = variables,
             recipientEmailAddress = notificationProperties.recipient
@@ -50,7 +49,7 @@ class MailjetService(
             .put("month", month)
             .put("name", person.firstname)
         val request = createMailjetRequest(
-            templateId = mailjetProperties.reminderTemplateId,
+            templateId = mailjetTemplateProperties.reminderTemplateId,
             subject = subject,
             variables = variables,
             recipientName = person.getFullName(),

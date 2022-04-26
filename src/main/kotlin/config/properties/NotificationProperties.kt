@@ -8,4 +8,3 @@ import org.springframework.boot.context.properties.ConstructorBinding
 data class NotificationProperties(
     val recipient: String
 )
-

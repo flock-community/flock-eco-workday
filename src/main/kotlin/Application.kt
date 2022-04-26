@@ -3,7 +3,6 @@ package community.flock.eco.workday
 import community.flock.eco.cloud.stub.StubCloudConfiguration
 import community.flock.eco.workday.config.WebMvcConfig
 import community.flock.eco.workday.config.WebSecurityConfig
-import community.flock.eco.workday.config.properties.PropertyConfig
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration
@@ -22,7 +21,6 @@ import org.springframework.context.annotation.Import
     WebMvcConfig::class,
     WebSecurityConfig::class,
     StubCloudConfiguration::class,
-    PropertyConfig::class
 )
 class Application : SpringBootServletInitializer()
 

@@ -2,14 +2,14 @@ package services
 
 import com.mailjet.client.MailjetClient
 import com.mailjet.client.MailjetRequest
-import community.flock.eco.workday.config.properties.MailjetProperties
+import community.flock.eco.workday.config.DummyMailjetClient
+import community.flock.eco.workday.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.config.properties.NotificationProperties
 import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.services.IMailjetClientProvider
 import community.flock.eco.workday.services.MailjetService
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.spyk
 import org.json.JSONObject
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -24,7 +24,7 @@ internal class MailjetServiceTest {
     private lateinit var service: MailjetService
     private lateinit var client: MailjetClient
     private lateinit var notificationProperties: NotificationProperties
-    private lateinit var mailjetProperties: MailjetProperties
+    private lateinit var mailjetTemplateProperties: MailjetTemplateProperties
 
     private val person = Person(
         firstname = "First",
@@ -37,18 +37,14 @@ internal class MailjetServiceTest {
 
     @BeforeAll
     fun beforeAll() {
-        client = mockk()
-
-        mailjetProperties =
-            MailjetProperties(apiKey = "", apiSecretKey = "", reminderTemplateId = 2, updateTemplateId = 3)
+        mailjetTemplateProperties =
+            MailjetTemplateProperties(reminderTemplateId = 2, updateTemplateId = 3)
 
         notificationProperties = NotificationProperties("recipient@test.com")
 
-        val clientProvider = object : IMailjetClientProvider {
-            override val client = this@MailjetServiceTest.client
-        }
+        client = spyk(DummyMailjetClient())
 
-        service = MailjetService(clientProvider, notificationProperties, mailjetProperties)
+        service = MailjetService(notificationProperties, mailjetTemplateProperties, client)
     }
 
     @Test
@@ -81,7 +77,7 @@ internal class MailjetServiceTest {
         service.sendUpdate(person, YearMonth.now())
 
         val templateId = requestSlot.captured.getSingleTemplateId()
-        assertEquals(mailjetProperties.updateTemplateId, templateId)
+        assertEquals(mailjetTemplateProperties.updateTemplateId, templateId)
     }
 
     @Test
@@ -93,7 +89,7 @@ internal class MailjetServiceTest {
 
         val templateId = requestSlot.captured.getSingleTemplateId()
 
-        assertEquals(mailjetProperties.reminderTemplateId, templateId)
+        assertEquals(mailjetTemplateProperties.reminderTemplateId, templateId)
     }
 
     private fun MailjetRequest.getSingleTemplateId() = getSingleMessage()
