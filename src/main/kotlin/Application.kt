@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Import
     ApplicationConfiguration::class,
     WebMvcConfig::class,
     WebSecurityConfig::class,
-    StubCloudConfiguration::class,
+    StubCloudConfiguration::class
 )
 class Application : SpringBootServletInitializer()
 
