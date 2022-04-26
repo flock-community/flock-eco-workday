@@ -12,8 +12,4 @@ data class MailjetProperties(
     val apiSecretKey: String,
     val reminderTemplateId: Int,
     val updateTemplateId: Int
-) {
-    init {
-        println(this)
-    }
-}
+)

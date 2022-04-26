@@ -7,9 +7,5 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConstructorBinding
 data class NotificationProperties(
     val recipient: String
-) {
-    init {
-        println(this)
-    }
-}
+)
 
