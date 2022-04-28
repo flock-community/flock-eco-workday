@@ -1,29 +1,30 @@
 import React from "react";
 import { Box, Grid, TextField } from "@material-ui/core";
-import moment from "moment";
 import Typography from "@material-ui/core/Typography";
 import { dateInPeriod, getDay, Period } from "../../features/period/Period";
+import dayjs, { Dayjs } from "dayjs";
+
+let weekOfYearPlugin = require("dayjs/plugin/weekOfYear");
+dayjs.extend(weekOfYearPlugin);
 
 const daysOfWeek = ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"];
-
 const stringifyDate = (date) => {
   return date.format("YYYYMMDD");
 };
 
-const calcGrid = (period) => {
+const calcGrid = (period: Period) => {
   const diff =
     Math.ceil(
-      moment(period.to)
-        .startOf("week")
-        .diff(moment(period.from).startOf("week"), "days") / 7
+      period.to.startOf("week").diff(period.from.startOf("week"), "days") / 7
     ) + 1;
   const weeks = Array.from(Array(diff > 0 ? diff : 1).keys());
   return weeks.map((week) => {
-    const day = moment(period.from).startOf("week").add(week, "weeks");
+    const day = period.from.startOf("week").add(week, "weeks");
+    // @ts-ignore (week is added by the plugin configured above)
     const weekNumber = day.week();
     const year = day.year();
     const res = Array.from(Array(7).keys()).map((dayDiff) => {
-      const date = moment(day).add(dayDiff, "days");
+      const date = day.add(dayDiff, "days");
       const enabled = dateInPeriod(period, date);
       const key = stringifyDate(date);
       return {
@@ -42,7 +43,7 @@ const calcGrid = (period) => {
 
 export type PeriodInputProps = {
   period: Period;
-  onChange: (day: moment.Moment, hours: number) => void;
+  onChange: (day: Dayjs, hours: number) => void;
 };
 
 export function PeriodInput({ period, onChange }: PeriodInputProps) {

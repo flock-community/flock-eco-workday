@@ -1,13 +1,13 @@
-import { Moment } from "moment";
 import { addError } from "../../hooks/ErrorHook";
+import { Dayjs } from "dayjs";
 
 export type Period = {
-  from: Moment;
-  to: Moment;
+  from: Dayjs;
+  to: Dayjs;
   days?: number[];
 };
 
-function daysBefore(before: Moment, after: Moment): number {
+function daysBefore(before: Dayjs, after: Dayjs): number {
   return after.startOf("days").diff(before.startOf("days"), "days");
 }
 
@@ -17,7 +17,7 @@ function correctDaysLength(period: Period): boolean {
     : false;
 }
 
-function initDay(date: Moment, hoursPerDay: number): number {
+function initDay(date: Dayjs, hoursPerDay: number): number {
   const day = date.day();
   if (day === 0 || day === 6) return 0;
   return hoursPerDay;
@@ -39,11 +39,11 @@ export function initDays(
   const length = daysBefore(period.from, period.to) + 1;
   const array = Array(length).fill(0);
   return array.map((_, index) =>
-    initDay(period.from.clone().add(index, "days"), hoursPerDay)
+    initDay(period.from.add(index, "days"), hoursPerDay)
   );
 }
 
-export function dateInPeriod(period: Period, date: Moment): boolean {
+export function dateInPeriod(period: Period, date: Dayjs): boolean {
   return daysBefore(period.from, date) >= 0 && daysBefore(date, period.to) >= 0;
 }
 
@@ -145,7 +145,7 @@ export function mutatePeriod(
   return period;
 }
 
-export function getDay(period: Period, date: Moment): number {
+export function getDay(period: Period, date: Dayjs): number {
   if (!dateInPeriod(period, date)) {
     throw new Error(`${date} not in period (${period.from} - ${period.to})`);
   }
@@ -156,7 +156,7 @@ export function getDay(period: Period, date: Moment): number {
   return period.days[index];
 }
 
-export function editDay(period: Period, date: Moment, day: number): Period {
+export function editDay(period: Period, date: Dayjs, day: number): Period {
   if (!dateInPeriod(period, date) || !period.days) {
     throw new Error(
       `Please edit a date (${date}) within the period (${period.from} - ${period.to})`

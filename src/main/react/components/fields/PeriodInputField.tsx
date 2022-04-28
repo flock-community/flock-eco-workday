@@ -7,14 +7,14 @@ import {
   mutatePeriod,
   Period,
 } from "../../features/period/Period";
-import moment from "moment";
 import { ButtonGroup, makeStyles } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
+import dayjs from "dayjs";
 
 type PeriodInputFieldProps = {
   name: string;
-  from: moment.Moment;
-  to: moment.Moment;
+  from: dayjs.Dayjs;
+  to: dayjs.Dayjs;
 };
 
 const useStyles = makeStyles({
@@ -28,8 +28,8 @@ export function PeriodInputField({ name, from, to }: PeriodInputFieldProps) {
 
   const render = ({ field: { value }, form: { setFieldValue } }) => {
     const [period, setPeriod] = useState<Period>({
-      from: from.clone(),
-      to: to.clone(),
+      from: from,
+      to: to,
       days: value,
     });
 

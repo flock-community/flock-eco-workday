@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import moment from "moment";
 import Grid from "@material-ui/core/Grid";
-import MomentUtils from "@date-io/moment";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Switch from "@material-ui/core/Switch";
 import { ButtonGroup, Typography } from "@material-ui/core";
@@ -20,10 +18,12 @@ import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
 import { mutatePeriod } from "../period/Period";
 import Button from "@material-ui/core/Button";
 import { DatePreset, datePresets } from "../../utils/DatePreset";
+import dayjs from "dayjs";
+import DayjsUtils from "@date-io/dayjs";
 
 export const WORKDAY_FORM_ID = "work-day-form";
 
-const now = moment();
+const now = dayjs();
 
 export const schema = Yup.object().shape({
   status: Yup.string().required("Field required").default("REQUESTED"),
@@ -138,7 +138,7 @@ export function WorkDayForm({ value, onSubmit }) {
 
   const renderForm = ({ values, setFieldValue }) => (
     <Form id={WORKDAY_FORM_ID}>
-      <MuiPickersUtilsProvider utils={MomentUtils}>
+      <MuiPickersUtilsProvider utils={DayjsUtils}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
             <AssignmentSelectorField
