@@ -3,8 +3,8 @@ import { Box, Grid, TextField } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import { dateInPeriod, getDay, Period } from "../../features/period/Period";
 import dayjs, { Dayjs } from "dayjs";
+import weekOfYearPlugin from "dayjs/plugin/weekOfYear";
 
-let weekOfYearPlugin = require("dayjs/plugin/weekOfYear");
 dayjs.extend(weekOfYearPlugin);
 
 const daysOfWeek = ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"];
@@ -20,7 +20,6 @@ const calcGrid = (period: Period) => {
   const weeks = Array.from(Array(diff > 0 ? diff : 1).keys());
   return weeks.map((week) => {
     const day = period.from.startOf("week").add(week, "weeks");
-    // @ts-ignore (week is added by the plugin configured above)
     const weekNumber = day.week();
     const year = day.year();
     const res = Array.from(Array(7).keys()).map((dayDiff) => {
