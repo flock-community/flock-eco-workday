@@ -1,10 +1,10 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import InternalizingClient from "../utils/InternalizingClient.ts";
 import NonInternalizingClient from "../utils/NonInternalizingClient.ts";
 
 const internalize = (it) => ({
   ...it,
-  date: moment(it.date),
+  date: dayjs(it.date),
 });
 
 const path = "/api/invoices";
