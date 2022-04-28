@@ -1,12 +1,12 @@
 // import * as Yup from "yup"
-import { mixed, object, string, number } from "yup";
-import moment from "moment";
+import { mixed, number, object, string } from "yup";
+import dayjs from "dayjs";
 
 const schema = {
   hourlyRate: number().required().default(80),
   hoursPerWeek: number().required().default(36),
   role: string().default(""),
-  from: mixed().required().default(moment()),
+  from: mixed().required().default(dayjs()),
   to: mixed().default(null),
   clientCode: mixed().required(),
 };

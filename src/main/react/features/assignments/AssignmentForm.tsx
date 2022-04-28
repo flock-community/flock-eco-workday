@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Grid } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
 import { TextField } from "formik-material-ui";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { ClientSelectorField } from "../../components/fields/ClientSelectorField";
@@ -12,6 +11,7 @@ import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
 import ProjectDialog from "../project/ProjectDialog";
 import { Assignment, AssignmentRequest } from "../../clients/AssignmentClient";
+import DayjsUtils from "@date-io/dayjs";
 
 // form id as a reference point for buttons outside of the <form></form> scope to be
 // able to submit this form
@@ -45,7 +45,7 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
 
     return (
       <Form id={ASSIGNMENT_FORM_ID}>
-        <MuiPickersUtilsProvider utils={MomentUtils}>
+        <MuiPickersUtilsProvider utils={DayjsUtils}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <Field
