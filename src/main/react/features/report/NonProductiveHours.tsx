@@ -1,9 +1,9 @@
-import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { TableCell } from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { Dayjs } from "dayjs";
 
 const useStyles = makeStyles({
   row: {
@@ -14,8 +14,8 @@ const useStyles = makeStyles({
 
 type NonProductiveHoursProps = {
   personId: string;
-  from: moment.Moment;
-  to: moment.Moment;
+  from: Dayjs;
+  to: Dayjs;
 };
 
 type NonProductiveHoursPerDay = {

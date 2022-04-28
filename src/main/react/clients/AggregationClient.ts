@@ -6,7 +6,7 @@ import {
   checkResponse,
   validateResponse,
 } from "@flock-community/flock-eco-core";
-import moment from "moment";
+import { Dayjs } from "dayjs";
 
 const path = "/api/aggregations";
 
@@ -96,8 +96,8 @@ export const holidayReportByYear = (year) => {
 };
 
 const clientAssignmentPersonBetween = (
-  from: moment.Moment,
-  to: moment.Moment
+  from: Dayjs,
+  to: Dayjs
 ): Promise<AggregationClientPersonAssignmentOverview[]> => {
   const opts = {
     method: "GET",
