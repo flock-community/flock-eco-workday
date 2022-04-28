@@ -80,8 +80,8 @@ export function WorkDayForm({ value, onSubmit }) {
 
   const renderDatePresetButtons = (setFieldValue: any) => {
     const setPeriod = (datePreset: DatePreset) => {
-      setFieldValue("to", datePreset.to.clone());
-      setFieldValue("from", datePreset.from.clone());
+      setFieldValue("to", datePreset.to);
+      setFieldValue("from", datePreset.from);
     };
 
     return (

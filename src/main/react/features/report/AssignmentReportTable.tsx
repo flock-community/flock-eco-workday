@@ -37,7 +37,7 @@ export default function AssignmentReportTable({
     const daysInMonth = to.diff(from, "days", false) + 1;
     setDayRange(
       Array.from(Array(daysInMonth).keys()).map((n) => {
-        return from.clone().add(n, "day").format("dd DD");
+        return from.add(n, "day").format("dd DD");
       })
     );
   }, [from, to]);
