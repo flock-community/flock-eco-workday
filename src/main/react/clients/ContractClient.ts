@@ -1,6 +1,7 @@
 import { Person } from "./PersonClient";
 import InternalizingClient from "../utils/InternalizingClient";
 import dayjs, { Dayjs } from "dayjs";
+import { ISO_8601_DATE } from "./util/DateFormats";
 
 const path = "/api/contracts";
 const internalPath = `${path}-internal`;
@@ -32,8 +33,8 @@ export type ContactRequest = {};
 
 const internalize = (it) => ({
   ...it,
-  from: it.from && dayjs(it.from, "YYYY-MM-DD"),
-  to: it.to && dayjs(it.to, "YYYY-MM-DD"),
+  from: it.from && dayjs(it.from, ISO_8601_DATE),
+  to: it.to && dayjs(it.to, ISO_8601_DATE),
 });
 
 const clients = new Map<string, any>();

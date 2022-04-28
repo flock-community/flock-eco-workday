@@ -8,6 +8,7 @@ import { addError } from "../../hooks/ErrorHook";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import { Person } from "../../clients/PersonClient";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 type WorkDayFeatureProps = {
   person: Person;
@@ -42,8 +43,8 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
   function handleStatusChange(status, it) {
     WorkDayClient.put(it.code, {
       ...it,
-      from: it.from.format("YYYY-MM-DD"),
-      to: it.to.format("YYYY-MM-DD"),
+      from: it.from.format(ISO_8601_DATE),
+      to: it.to.format(ISO_8601_DATE),
       status,
       assignmentCode: it.assignment.code,
       days: it.days.length > 0 ? it.days : null,

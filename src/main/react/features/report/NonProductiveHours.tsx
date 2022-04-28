@@ -4,6 +4,7 @@ import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { Dayjs } from "dayjs";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 const useStyles = makeStyles({
   row: {
@@ -38,8 +39,8 @@ export default function NonProductiveHours({
 
     fetch(
       `/api/aggregations/person-nonproductive-hours-per-day?personId=${personId}&from=${from.format(
-        "YYYY-MM-DD"
-      )}&to=${to.format("YYYY-MM-DD")}`
+        ISO_8601_DATE
+      )}&to=${to.format(ISO_8601_DATE)}`
     )
       .then((res) => res.json())
       .then((res) => {

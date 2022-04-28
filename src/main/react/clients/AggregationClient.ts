@@ -7,6 +7,7 @@ import {
   validateResponse,
 } from "@flock-community/flock-eco-core";
 import { Dayjs } from "dayjs";
+import { ISO_8601_DATE } from "./util/DateFormats";
 
 const path = "/api/aggregations";
 
@@ -104,8 +105,8 @@ const clientAssignmentPersonBetween = (
   };
   return fetch(
     `${path}/client-assignment-hour-overview?from=${from.format(
-      "YYYY-MM-DD"
-    )}&to=${to.format("YYYY-MM-DD")}`,
+      ISO_8601_DATE
+    )}&to=${to.format(ISO_8601_DATE)}`,
     opts
   )
     .then((res) =>
