@@ -5,7 +5,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 @Repository
 interface PersonRepository : PagingAndSortingRepository<Person, Long> {
@@ -16,4 +17,5 @@ interface PersonRepository : PagingAndSortingRepository<Person, Long> {
     fun deleteByUuid(uuid: UUID): Unit
     fun findByUuidIn(userUuid: List<UUID>): Iterable<Person>
     fun findAllByActive(pageable: Pageable, active: Boolean): Page<Person>
+    fun findAllByFirstnameContainingIgnoreCase(pageable: Pageable, firstname: String): Page<Person>
 }

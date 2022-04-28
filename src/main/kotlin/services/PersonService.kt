@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 @Service
 class PersonService(
@@ -80,6 +80,9 @@ class PersonService(
 
     fun findByPersonCodeIdIn(personCodes: List<UUID>) = repository
         .findByUuidIn(personCodes)
+
+    fun findAllByFirstname(pageable: Pageable, firstname: String) = repository
+        .findAllByFirstnameContainingIgnoreCase(pageable, firstname)
 
     fun create(form: PersonForm): Person? {
         val user = when (form.userCode) {

@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.security.Principal
-import java.util.*
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/persons")
@@ -60,6 +60,13 @@ class PersonController(
                 ?: throw ResponseStatusException(NOT_FOUND, "No Item found with this PersonUui")
         }
         ?: throw ResponseStatusException(UNAUTHORIZED)
+
+    @GetMapping(params = ["firstname"])
+    @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
+    fun findAllByFirstname(pageable: Pageable, @RequestParam firstname: String) =
+        service
+            .findAllByFirstname(pageable, firstname)
+            .toResponse()
 
     @PostMapping
     @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")

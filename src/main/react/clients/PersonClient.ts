@@ -55,7 +55,11 @@ const internalizingClient = InternalizingClient<
   Person
 >(path, internalize);
 
+const findAllByFirstname = (pageable, firstname: string | null) =>
+  internalizingClient.queryByPage(pageable, { firstname });
+
 export const PersonClient = {
   ...internalizingClient,
   me: () => internalizingClient.get("me"),
+  findAllByFirstname,
 };

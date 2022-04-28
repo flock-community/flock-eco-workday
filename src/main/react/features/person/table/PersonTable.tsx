@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import {
+  Box,
   Card,
   CardContent,
   CardHeader,
@@ -10,6 +11,7 @@ import {
   TableContainer,
   TablePagination,
   TableRow,
+  TextField,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { PersonTableHead } from "./PersonTableHead";
@@ -36,17 +38,22 @@ export const PersonTable = () => {
   const [personList, setPersonList] = useState<Person[]>([]);
   const [dialog, setDialog] = useState({ open: false });
   const [reload, setReload] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const history = useHistory();
   const classes = useStyles();
 
+  useEffect(() => searchInputRef?.current?.focus(), [searchInputRef]);
+
   useEffect(() => {
-    // eslint-disable-next-line no-shadow
-    PersonClient.findAllByPage({ page, size, sort: "lastname" }).then((res) => {
+    PersonClient.findAllByFirstname(
+      { page, size, sort: "firstname" },
+      searchTerm
+    ).then((res) => {
       setPersonList(res.list);
-      // FIXME: No total count in response
-      // setCount(res.total);
+      setCount(res.count);
     });
-  }, [reload, page, size]);
+  }, [reload, page, size, searchTerm]);
 
   const handleDialogOpen = () => {
     setDialog({ open: true });
@@ -83,6 +90,14 @@ export const PersonTable = () => {
           }
         />
         <CardContent>
+          <Box m={2}>
+            <TextField
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Search by first name"
+              inputRef={searchInputRef}
+            />
+          </Box>
           <TableContainer>
             <Table>
               <PersonTableHead />
