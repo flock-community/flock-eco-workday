@@ -2,17 +2,17 @@ import React from "react";
 import { Grid } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
+import DayjsUtils from "@date-io/dayjs";
 import { TextField } from "formik-material-ui";
 import * as Yup from "yup";
 import { DatePickerField } from "../../components/fields/DatePickerField";
-import moment from "moment";
+import dayjs from "dayjs";
 
 export const EXPENSE_TRAVEL_FORM_ID = "travel-expense-form";
 
 const schema = Yup.object({
   description: Yup.string().required().default(""),
-  date: Yup.mixed().required().default(moment()),
+  date: Yup.mixed().required().default(dayjs()),
   distance: Yup.number().required().default(""),
   allowance: Yup.number().required().default(""),
 });
@@ -29,7 +29,7 @@ export const ExpenseFormTravel = ({
   const form = ({ errors }) => {
     return (
       <Form id={EXPENSE_TRAVEL_FORM_ID}>
-        <MuiPickersUtilsProvider utils={MomentUtils}>
+        <MuiPickersUtilsProvider utils={DayjsUtils}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <Field

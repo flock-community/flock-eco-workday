@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { Dialog, DialogContent, Divider } from "@material-ui/core";
 import WorkIcon from "@material-ui/icons/Work";
-import moment from "moment";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -15,6 +13,7 @@ import { ExpenseClient } from "../../clients/ExpenseClient";
 import { ExpenseFormTravel } from "./ExpenseFormTravel";
 import { ExpenseFormCost } from "./ExpenseFormCost";
 import { ExpenseType } from "./ExpenseType";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 type ExpenseDialogProps = {
   open: boolean;
@@ -53,7 +52,7 @@ export function ExpenseDialog({
       ExpenseClient.put(id, type, {
         ...it,
         status: "REQUESTED",
-        date: it.date.format(moment.HTML5_FMT.DATE),
+        date: it.date.format(ISO_8601_DATE),
         personId,
       }).then((res) => {
         onComplete?.(res);
@@ -62,7 +61,7 @@ export function ExpenseDialog({
       ExpenseClient.post(type, {
         ...it,
         status: "REQUESTED",
-        date: it.date.format(moment.HTML5_FMT.DATE),
+        date: it.date.format(ISO_8601_DATE),
         personId,
       }).then((res) => {
         onComplete?.(res);

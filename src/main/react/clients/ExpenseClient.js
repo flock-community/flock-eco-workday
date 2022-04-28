@@ -1,14 +1,15 @@
-import moment, { HTML5_FMT } from "moment";
+import dayjs from "dayjs";
 import InternalizingClient from "../utils/InternalizingClient.ts";
+import { ISO_8601_DATE } from "./util/DateFormats.ts";
 
 const internalize = (it) => ({
   ...it,
-  date: moment(it.date),
+  date: dayjs(it.date, ISO_8601_DATE),
 });
 
 const serialize = (it) => ({
   ...it,
-  date: typeof it.date === "string" ? it.date : it.date.format(HTML5_FMT.DATE),
+  date: typeof it.date === "string" ? it.date : it.date.format(ISO_8601_DATE),
 });
 
 const path = "/api/expenses";
