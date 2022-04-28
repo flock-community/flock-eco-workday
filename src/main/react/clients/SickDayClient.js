@@ -1,10 +1,10 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import InternalizingClient from "../utils/InternalizingClient.ts";
 
 const internalize = (it) => ({
   ...it,
-  from: moment(it.from),
-  to: moment(it.to),
+  from: dayjs(it.from),
+  to: dayjs(it.to),
 });
 
 const path = "/api/sickdays";
