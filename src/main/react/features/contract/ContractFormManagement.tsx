@@ -3,11 +3,11 @@ import PropTypes from "prop-types";
 import { Grid } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
 import { TextField } from "formik-material-ui";
 import { mixed, number, object } from "yup";
-import moment from "moment";
 import { DatePickerField } from "../../components/fields/DatePickerField";
+import DayjsUtils from "@date-io/dayjs";
+import dayjs from "dayjs";
 
 // form id as a reference point for buttons outside of the <form></form> scope to be
 // able to submit this form
@@ -24,7 +24,7 @@ export const ContractFormManagement = ({
 }: ContractFormManagementProps) => {
   const form = ({ values }) => (
     <Form id={MANAGEMENT_CONTRACT_FORM_ID}>
-      <MuiPickersUtilsProvider utils={MomentUtils}>
+      <MuiPickersUtilsProvider utils={DayjsUtils}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
             <Field
@@ -66,7 +66,7 @@ export const ContractFormManagement = ({
 
   const schema = object({
     monthlyFee: number().required().default(4000),
-    from: mixed().required().default(moment()),
+    from: mixed().required().default(dayjs()),
     to: mixed().default(null),
   });
 

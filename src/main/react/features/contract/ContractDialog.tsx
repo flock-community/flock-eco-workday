@@ -11,7 +11,6 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Grid from "@material-ui/core/Grid";
-import { HTML5_FMT } from "moment";
 import { ContractClient } from "../../clients/ContractClient";
 import { isDefined } from "../../utils/validation";
 import { ContractFormInternal } from "./ContractFormInternal";
@@ -20,6 +19,7 @@ import { usePerson } from "../../hooks/PersonHook";
 import { ContractFormManagement } from "./ContractFormManagement";
 import { ContractFormService } from "./ContractFormService";
 import { ContractType } from "./ContractType";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 const useStyles = makeStyles({});
 
@@ -48,8 +48,8 @@ export function ContractDialog(props) {
   const handleSubmit = (it) => {
     const body = {
       ...it,
-      from: it.from.format(HTML5_FMT.DATE),
-      to: it.to && it.to.format(HTML5_FMT.DATE),
+      from: it.from.format(ISO_8601_DATE),
+      to: it.to && it.to.format(ISO_8601_DATE),
       personId: person && person.uuid,
     };
     if (code) {

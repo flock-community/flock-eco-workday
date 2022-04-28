@@ -1,6 +1,6 @@
-import moment from "moment";
 import { Person } from "./PersonClient";
 import InternalizingClient from "../utils/InternalizingClient";
+import dayjs, { Dayjs } from "dayjs";
 
 const path = "/api/contracts";
 const internalPath = `${path}-internal`;
@@ -13,8 +13,8 @@ export const CONTRACT_PAGE_SIZE = 5;
 export type Contract = {
   id: number;
   code: string;
-  from: moment.Moment;
-  to?: moment.Moment;
+  from: Dayjs;
+  to?: Dayjs;
   person: Person;
   type: "INTERNAL" | "EXTERNAL" | "MANAGEMENT" | "SERVICE";
 };
@@ -32,8 +32,8 @@ export type ContactRequest = {};
 
 const internalize = (it) => ({
   ...it,
-  from: it.from && moment(it.from, "YYYY-MM-DD"),
-  to: it.to && moment(it.to, "YYYY-MM-DD"),
+  from: it.from && dayjs(it.from, "YYYY-MM-DD"),
+  to: it.to && dayjs(it.to, "YYYY-MM-DD"),
 });
 
 const clients = new Map<string, any>();
