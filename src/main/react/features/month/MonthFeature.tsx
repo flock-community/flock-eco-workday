@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import { Box, CardContent } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
-import moment from "moment";
 import IconButton from "@material-ui/core/IconButton";
 import BackIcon from "@material-ui/icons/ChevronLeft";
 import NextIcon from "@material-ui/icons/ChevronRight";
@@ -22,12 +21,13 @@ import { AggregationClient } from "../../clients/AggregationClient";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import Button from "@material-ui/core/Button";
 import { useHistory } from "react-router-dom";
+import dayjs from "dayjs";
 
 /**
  * @return {null}
  */
 export function MonthFeature() {
-  const [date, setDate] = useState(moment().startOf("month"));
+  const [date, setDate] = useState(dayjs().startOf("month"));
   const [totalPerPersonState, setTotalPerPersonState] = useState<any>();
   const [clientHourOverviewState, setClientHourOverviewState] = useState<any>();
 
@@ -56,7 +56,7 @@ export function MonthFeature() {
   }, [date]);
 
   const handleMonth = (amount) => () => {
-    setDate(moment(date).add(amount, "month"));
+    setDate(date.add(amount, "month"));
   };
 
   if (!totalPerPersonState || !clientHourOverviewState)
