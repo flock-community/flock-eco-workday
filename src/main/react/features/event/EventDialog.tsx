@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import EventIcon from "@material-ui/icons/CalendarToday";
-import moment, { HTML5_FMT } from "moment";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
@@ -12,6 +11,7 @@ import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { EVENT_FORM_ID, EventForm } from "./EventForm";
 import { schema } from "../workday/WorkDayForm";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
@@ -57,8 +57,8 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     if (code) {
       EventClient.put(code, {
         description: it.description,
-        from: it.from.format(HTML5_FMT.DATE),
-        to: it.to.format(HTML5_FMT.DATE),
+        from: it.from.format(ISO_8601_DATE),
+        to: it.to.format(ISO_8601_DATE),
         days: it.days,
         hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
         personIds: it.personIds,
@@ -68,8 +68,8 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     } else {
       EventClient.post({
         description: it.description,
-        from: it.from.format(moment.HTML5_FMT.DATE),
-        to: it.to.format(moment.HTML5_FMT.DATE),
+        from: it.from.format(ISO_8601_DATE),
+        to: it.to.format(ISO_8601_DATE),
         days: it.days,
         hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
         personIds: it.personIds,

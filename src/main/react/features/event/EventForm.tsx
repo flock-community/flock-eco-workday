@@ -2,19 +2,19 @@ import React from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import moment from "moment";
 import Grid from "@material-ui/core/Grid";
-import MomentUtils from "@date-io/moment";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { TextField } from "formik-material-ui";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PersonSelectorField } from "../../components/fields/PersonSelectorField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
 import { mutatePeriod } from "../period/Period";
+import dayjs from "dayjs";
+import DayjsUtils from "@date-io/dayjs";
 
 export const EVENT_FORM_ID = "work-day-form";
 
-const now = moment();
+const now = dayjs();
 
 const schema = Yup.object().shape({
   description: Yup.string().required("Description is required").default(""),
@@ -40,7 +40,7 @@ export function EventForm({ value, onSubmit }) {
 
   const renderForm = ({ values }) => (
     <Form id={EVENT_FORM_ID}>
-      <MuiPickersUtilsProvider utils={MomentUtils}>
+      <MuiPickersUtilsProvider utils={DayjsUtils}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
             <Field

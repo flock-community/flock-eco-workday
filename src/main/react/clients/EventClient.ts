@@ -1,10 +1,10 @@
-import moment from "moment";
 import { Person } from "./PersonClient";
 import InternalizingClient from "../utils/InternalizingClient";
 import {
   checkResponse,
   validateResponse,
 } from "@flock-community/flock-eco-core";
+import dayjs, { Dayjs } from "dayjs";
 
 const path = "/api/events";
 
@@ -14,8 +14,8 @@ export type FlockEvent = {
   description: string;
   id: number;
   code: string;
-  from: moment.Moment;
-  to: moment.Moment;
+  from: Dayjs;
+  to: Dayjs;
   hours: number;
   days: number[];
   persons: Person[];
@@ -38,8 +38,8 @@ export type FlockEventRequest = {
 
 const internalize = (it) => ({
   ...it,
-  from: moment(it.from),
-  to: moment(it.to),
+  from: dayjs(it.from),
+  to: dayjs(it.to),
 });
 
 const internalizingClient = InternalizingClient<
