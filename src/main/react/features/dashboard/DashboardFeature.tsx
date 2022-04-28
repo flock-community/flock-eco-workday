@@ -12,8 +12,8 @@ import { AverageHoursPerDayChart } from "../../components/charts/AverageHoursPer
 import { InternalOverviewChart } from "../../components/charts/InternalOverviewChart";
 import { ExternalOverviewChart } from "../../components/charts/ExternalOverviewChart";
 import { ManagementOverviewChart } from "../../components/charts/ManagementOverviewChart";
-import moment from "moment";
 import { GrossMarginTable } from "../../components/tables/GrossMarginTable";
+import dayjs from "dayjs";
 
 const useStyles = makeStyles({
   root: {
@@ -32,7 +32,7 @@ export function DashboardFeature() {
   const classes = useStyles();
 
   const startYear = 2019;
-  const now = moment();
+  const now = dayjs();
   const [year, setYear] = useState<number>(now.year());
 
   return (
@@ -44,7 +44,9 @@ export function DashboardFeature() {
             <CardContent>
               <Select
                 value={year.toString()}
-                onChange={(e) => setYear(parseInt(e.target.value, 10))}
+                onChange={(e) =>
+                  setYear(parseInt(e.target.value as string, 10))
+                }
               >
                 {Array.from(Array(now.year() - startYear + 1).keys())
                   .map((i) => String(startYear + i))
