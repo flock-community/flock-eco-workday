@@ -19,6 +19,9 @@ export function HomeFeature() {
   const showContractsEnding =
     user?.authorities?.includes("ContractAuthority.ADMIN") ?? false;
 
+  const showPersonEvents =
+    user?.authorities?.includes("PersonAuthority.READ") ?? false;
+
   return (
     <Container>
       <Grid container spacing={2}>
@@ -31,9 +34,11 @@ export function HomeFeature() {
             <ContractsEnding withinNWeeks={6} />
           </Grid>
         )}
-        <Grid item xs={12}>
-          <PersonEvents withinNWeeks={6} />
-        </Grid>
+        {showPersonEvents && (
+          <Grid item xs={12}>
+            <PersonEvents withinNWeeks={6} />
+          </Grid>
+        )}
         <Grid item xs={12}>
           <Card style={{ overflow: "visible" }}>
             <CardHeader title={"Workdays"} />
