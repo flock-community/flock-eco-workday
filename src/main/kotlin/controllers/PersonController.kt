@@ -8,6 +8,7 @@ import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.PersonService
 import org.springframework.data.domain.Pageable
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.UNAUTHORIZED
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.security.Principal
+import java.time.LocalDate
 import java.util.UUID
 
 @RestController
@@ -118,6 +120,13 @@ class PersonController(
                     .toResponse()
             }
             ?: throw ResponseStatusException(UNAUTHORIZED)
+
+    @GetMapping("/specialDates")
+    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
+    fun specialDates(
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate
+    ) = service.findAllPersonEvents(from, to)
 
     // *-- utility functions --*
     /**

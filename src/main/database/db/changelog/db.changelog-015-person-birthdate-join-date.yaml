@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-015-person-birthdate-join-date-1
+      author: tsmelik
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: birthdate
+                  type: date
+                  constraints:
+                    - nullable: true
+              - column:
+                  name: join_date
+                  type: date
+                  constraints:
+                    - nullable: true

@@ -7,8 +7,8 @@ import mocks.users
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.Instant
+import java.time.LocalDate
 import java.time.Period
-import java.time.ZonedDateTime
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
@@ -49,6 +49,8 @@ class LoadPersonData(
         firstname: String,
         lastname: String,
         position: String = "",
+        birthdate: LocalDate? = null,
+        joinDate: LocalDate? = null,
         user: User,
         active: Boolean = true
     ) = Person(
@@ -57,6 +59,8 @@ class LoadPersonData(
         email = user.email,
         position = position,
         number = null,
+        birthdate = birthdate,
+        joinDate = joinDate,
         user = user,
         active = active,
         lastActiveAt = if (!active) Instant.now().minus(Period.ofDays(180)) else null
@@ -73,6 +77,8 @@ class LoadPersonData(
             createPerson(
                 firstname = it.firstName,
                 lastname = it.lastName,
+                birthdate = it.birthdate,
+                joinDate = it.joinDate,
                 user = userMap[it.firstName] ?: throw IllegalStateException("User not found with name ${it.firstName}"),
                 active = it.active
             )
