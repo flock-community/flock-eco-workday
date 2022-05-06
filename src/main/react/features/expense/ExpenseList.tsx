@@ -79,6 +79,9 @@ export function ExpenseList({
   };
 
   function renderItem(item, key) {
+    const totalAmount: number =
+      "amount" in item ? item.amount : item.distance * item.allowance;
+
     return (
       <Grid key={`workday-list-item-${key}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
@@ -91,7 +94,15 @@ export function ExpenseList({
               />
             }
             title={item.description ? item.description : "empty"}
-            subheader={`Date: ${item.date.format("DD-MM-YYYY")}`}
+            subheader={
+              <Typography>
+                Date: {item.date.format("DD-MM-YYYY")} | Total:{" "}
+                {totalAmount.toLocaleString("nl-NL", {
+                  style: "currency",
+                  currency: "EUR",
+                })}
+              </Typography>
+            }
           />
           <List>
             {item.files &&
