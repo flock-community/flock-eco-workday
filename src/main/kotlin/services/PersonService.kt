@@ -32,6 +32,8 @@ class PersonService(
             email = form.email,
             position = form.position,
             number = form.number,
+            birthdate = form.birthdate,
+            joinDate = form.joinDate,
             active = form.active,
             lastActiveAt = lastActiveAt(form),
             reminders = form.reminders,
@@ -108,6 +110,8 @@ class PersonService(
             email = form.email,
             position = form.position,
             number = form.number,
+            birthdate = form.birthdate,
+            joinDate = form.joinDate,
             user = user,
             active = form.active,
             lastActiveAt = if (form.active) null else Instant.now()
