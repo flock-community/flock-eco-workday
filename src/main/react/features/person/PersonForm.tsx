@@ -71,31 +71,24 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <Field
-            name="reminders"
-            type="checkbox"
-            Label={{ label: "Reminders" }}
-            component={CheckboxWithLabel}
-            fullWidth
-          />
+          <FormControl fullWidth>
+            <Field
+              name="reminders"
+              type="checkbox"
+              Label={{ label: "Reminders" }}
+              component={CheckboxWithLabel}
+            />
+          </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <Field
-            name="updates"
-            type="checkbox"
-            Label={{ label: "Updates" }}
-            component={CheckboxWithLabel}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Field
-            name="active"
-            type="checkbox"
-            Label={{ label: "Active" }}
-            component={CheckboxWithLabel}
-            fullWidth
-          />
+          <FormControl fullWidth>
+            <Field
+              name="active"
+              type="checkbox"
+              Label={{ label: "Active" }}
+              component={CheckboxWithLabel}
+            />
+          </FormControl>
         </Grid>
       </Grid>
     </Form>
