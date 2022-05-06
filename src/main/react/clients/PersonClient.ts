@@ -43,7 +43,7 @@ export type PersonRequest = {
 
 const path = "/api/persons";
 
-const internalize = (json: PersonRaw): Person => ({
+export const internalize = (json: PersonRaw): Person => ({
   ...json,
   lastActiveAt: new Date(json.lastActiveAt),
 });

@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import { DashboardHolidayChart } from "../../components/charts/DashboardHolidayChart";
 import ContractsEnding from "../../components/contracts/ContractsEnding";
+import PersonEvents from "../../components/person/PersonEvents";
 
 export function HomeFeature() {
   const user = useUserMe();
@@ -30,6 +31,9 @@ export function HomeFeature() {
             <ContractsEnding withinNWeeks={6} />
           </Grid>
         )}
+        <Grid item xs={12}>
+          <PersonEvents withinNWeeks={6} />
+        </Grid>
         <Grid item xs={12}>
           <Card style={{ overflow: "visible" }}>
             <CardHeader title={"Workdays"} />
