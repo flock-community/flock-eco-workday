@@ -81,13 +81,13 @@ class PersonService(
     fun findAllByFirstname(pageable: Pageable, firstname: String) = repository
         .findAllByFirstnameContainingIgnoreCase(pageable, firstname)
 
-    fun findAllPersonEvents(from: LocalDate, to: LocalDate): List<PersonEvent> =
+    fun findAllPersonEvents(start: LocalDate, end: LocalDate): List<PersonEvent> =
         with(repository.findAllByActive(Pageable.unpaged(), active = true)) {
             val birthdays = this
-                .filter { it.birthdate?.isBetweenIgnoreYear(from, to) ?: false }
+                .filter { it.birthdate?.isBetweenIgnoreYear(start, end) ?: false }
                 .map { PersonEvent(it, PersonEvent.EventType.BIRTHDAY, it.birthdate!!) }
             val joinDays = this
-                .filter { it.joinDate?.isBetweenIgnoreYear(from, to) ?: false }
+                .filter { it.joinDate?.isBetweenIgnoreYear(start, end) ?: false }
                 .map { PersonEvent(it, PersonEvent.EventType.JOIN_DAY, it.joinDate!!) }
 
             birthdays.plus(joinDays).sortedBy { it.eventDate.withYear(1970) }
@@ -123,8 +123,8 @@ class PersonService(
 
 fun Person.isUser(userCode: String?) = this.user?.code == userCode
 
-fun LocalDate.isBetweenIgnoreYear(from: LocalDate, to: LocalDate): Boolean =
-    this.withYear(from.year).isAfter(from) && this.withYear(to.year).isBefore(to)
+fun LocalDate.isBetweenIgnoreYear(start: LocalDate, end: LocalDate): Boolean =
+    this.withYear(start.year).isAfter(start) && this.withYear(end.year).isBefore(end)
 
 data class PersonEvent(
     val person: Person,

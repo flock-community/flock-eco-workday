@@ -124,9 +124,9 @@ class PersonController(
     @GetMapping("/specialDates")
     @PreAuthorize("hasAuthority('PersonAuthority.READ')")
     fun specialDates(
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate
-    ) = service.findAllPersonEvents(from, to)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) start: LocalDate,
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) end: LocalDate
+    ) = service.findAllPersonEvents(start, end)
 
     // *-- utility functions --*
     /**
