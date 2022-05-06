@@ -16,4 +16,5 @@ interface PersonRepository : PagingAndSortingRepository<Person, Long> {
     fun deleteByUuid(uuid: UUID): Unit
     fun findByUuidIn(userUuid: List<UUID>): Iterable<Person>
     fun findAllByActive(pageable: Pageable, active: Boolean): Page<Person>
+    fun findAllByFirstnameContainingIgnoreCase(pageable: Pageable, firstname: String): Page<Person>
 }

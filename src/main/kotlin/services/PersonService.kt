@@ -77,6 +77,9 @@ class PersonService(
     fun findByPersonCodeIdIn(personCodes: List<UUID>) = repository
         .findByUuidIn(personCodes)
 
+    fun findAllByFirstname(pageable: Pageable, firstname: String) = repository
+        .findAllByFirstnameContainingIgnoreCase(pageable, firstname)
+
     fun create(form: PersonForm): Person? {
         val user = when (form.userCode) {
             is String ->
