@@ -6,7 +6,8 @@ import {
   checkResponse,
   validateResponse,
 } from "@flock-community/flock-eco-core";
-import moment from "moment";
+import { Dayjs } from "dayjs";
+import { ISO_8601_DATE } from "./util/DateFormats";
 
 const path = "/api/aggregations";
 
@@ -96,16 +97,16 @@ export const holidayReportByYear = (year) => {
 };
 
 const clientAssignmentPersonBetween = (
-  from: moment.Moment,
-  to: moment.Moment
+  from: Dayjs,
+  to: Dayjs
 ): Promise<AggregationClientPersonAssignmentOverview[]> => {
   const opts = {
     method: "GET",
   };
   return fetch(
     `${path}/client-assignment-hour-overview?from=${from.format(
-      "YYYY-MM-DD"
-    )}&to=${to.format("YYYY-MM-DD")}`,
+      ISO_8601_DATE
+    )}&to=${to.format(ISO_8601_DATE)}`,
     opts
   )
     .then((res) =>

@@ -7,8 +7,13 @@ import {
   Select,
 } from "@material-ui/core";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import { AssignmentClient } from "../../clients/AssignmentClient";
-import moment from "moment";
+import { Assignment, AssignmentClient } from "../../clients/AssignmentClient";
+import dayjs, { Dayjs } from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 export type AssignmentSelectorProps = FormControlProps & {
   personId?: string;
@@ -16,8 +21,8 @@ export type AssignmentSelectorProps = FormControlProps & {
   onChange?: (selected: string) => void;
   label?: string;
   error?: string;
-  from: moment.Moment;
-  to: moment.Moment;
+  from: Dayjs;
+  to: Dayjs;
 };
 
 export function AssignmentSelector({
@@ -30,7 +35,7 @@ export function AssignmentSelector({
   to,
   ...props
 }: AssignmentSelectorProps) {
-  const [items, setItems] = useState<any[]>();
+  const [items, setItems] = useState<Assignment[]>();
   const [state, setState] = useState(value);
 
   useEffect(() => {
@@ -45,10 +50,10 @@ export function AssignmentSelector({
     setState(value);
   }, [value]);
 
-  const assignmentInPeriod = (assignment) =>
+  const assignmentInPeriod = (assignment: Assignment) =>
     assignment.code === value ||
-    (moment(assignment.from).isSameOrBefore(from) &&
-      (!assignment.to || moment(assignment.to).isSameOrAfter(to)));
+    (assignment.from.isSameOrBefore(from) &&
+      (!assignment.to || assignment.to.isSameOrAfter(to)));
 
   function handleChange(event) {
     const selected = event.target.value;
@@ -62,9 +67,8 @@ export function AssignmentSelector({
         key={`${AssignmentSelector.name}-selector-menu-item-${key}`}
         value={item.code}
       >
-        {item.client.name} | {item.role} |{" "}
-        {moment(item.from).format("DD-MM-YYYY")} -{" "}
-        {item.to ? moment(item.to).format("DD-MM-YYYY") : "now"}
+        {item.client.name} | {item.role} | {item.from.format("DD-MM-YYYY")} -{" "}
+        {item.to ? item.to.format("DD-MM-YYYY") : "now"}
       </MenuItem>
     );
   }

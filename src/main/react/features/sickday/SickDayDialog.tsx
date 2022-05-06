@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, Divider } from "@material-ui/core";
 import HealingIcon from "@material-ui/icons/Healing";
-import { HTML5_FMT } from "moment";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
@@ -9,6 +8,7 @@ import { SickDayClient } from "../../clients/SickDayClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { schemaSickDayForm, SICKDAY_FORM_ID, SickDayForm } from "./SickDayForm";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 type SickDayDialogProps = {
   open: boolean;
@@ -39,8 +39,8 @@ export function SickDayDialog({
     const body = {
       description: it.description,
       status: it.status,
-      from: it.from.format(HTML5_FMT.DATE),
-      to: it.to.format(HTML5_FMT.DATE),
+      from: it.from.format(ISO_8601_DATE),
+      to: it.to.format(ISO_8601_DATE),
       days: it.days,
       hours: it.days.reduce((acc, cur) => acc + parseFloat(cur), 0),
       personId,

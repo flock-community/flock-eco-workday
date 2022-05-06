@@ -3,11 +3,11 @@ import PropTypes from "prop-types";
 import { Grid } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
 import { CheckboxWithLabel, TextField } from "formik-material-ui";
 import { boolean, mixed, number, object } from "yup";
-import moment from "moment";
 import { DatePickerField } from "../../components/fields/DatePickerField";
+import DayjsUtils from "@date-io/dayjs";
+import dayjs from "dayjs";
 
 export const INTERNAL_CONTRACT_FORM_ID = "internal-contract-form";
 
@@ -22,7 +22,7 @@ export const ContractFormInternal = ({
 }: ContractFormInternalProps) => {
   const form = ({ values }) => (
     <Form id={INTERNAL_CONTRACT_FORM_ID}>
-      <MuiPickersUtilsProvider utils={MomentUtils}>
+      <MuiPickersUtilsProvider utils={DayjsUtils}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
             <Field
@@ -93,7 +93,7 @@ export const ContractFormInternal = ({
   const schema = object({
     monthlySalary: number().required().default(4000),
     hoursPerWeek: number().required().default(40),
-    from: mixed().required().default(moment()),
+    from: mixed().required().default(dayjs()),
     to: mixed().default(null),
     billable: boolean().default(true),
     holidayHours: number().required().default(192),

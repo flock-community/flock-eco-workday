@@ -7,7 +7,6 @@ import {
   Select,
   Slide,
 } from "@material-ui/core";
-import { HTML5_FMT } from "moment";
 import HolidayIcon from "@material-ui/icons/WbSunny";
 import Typography from "@material-ui/core/Typography";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
@@ -16,6 +15,7 @@ import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { HolidayClient } from "../../clients/HolidayClient";
 import { HOLIDAY_FORM_ID, HolidayForm, schemaHoliDayForm } from "./HolidayForm";
 import { PlusDayForm, schemaPlusDayForm } from "./PlusDayForm";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 enum Types {
   HOLIDAY = "HOLIDAY",
@@ -43,8 +43,8 @@ export function HolidayDialog({
   const handleSubmit = (it) => {
     const body = {
       ...it,
-      from: it.from.format(HTML5_FMT.DATE),
-      to: it.to.format(HTML5_FMT.DATE),
+      from: it.from.format(ISO_8601_DATE),
+      to: it.to.format(ISO_8601_DATE),
       days: it.days ? it.days : null,
       type,
       personId,
@@ -119,7 +119,7 @@ export function HolidayDialog({
         <DialogHeader
           icon={<HolidayIcon />}
           headline="Holidays"
-          subheadline="Have the best time of your life, beside working for flock"
+          subheadline="Have the best time of your life, beside working for Flock."
           onClose={handleClose}
         />
         <DialogContent>

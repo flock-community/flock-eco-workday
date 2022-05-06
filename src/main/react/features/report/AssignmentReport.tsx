@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import AssignmentReportTable from "./AssignmentReportTable";
-import moment from "moment";
 import { Box, Card, CardContent, CardHeader, Grid } from "@material-ui/core";
 import {
   DateRange,
@@ -9,48 +8,49 @@ import {
 } from "materialui-daterange-picker";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
+import dayjs from "dayjs";
 
 export default function AssignmentReport() {
-  const [from, setFrom] = useState(moment().startOf("month"));
-  const [to, setTo] = useState(moment().endOf("month"));
+  const [from, setFrom] = useState(dayjs().startOf("month"));
+  const [to, setTo] = useState(dayjs().endOf("month"));
   const [datePickerOpen, setDatePickerOpen] = useState(false);
 
   const handleRangeChange = (dateRange: DateRange) => {
-    setFrom(moment(dateRange.startDate));
-    setTo(moment(dateRange.endDate));
+    setFrom(dayjs(dateRange.startDate));
+    setTo(dayjs(dateRange.endDate));
     setDatePickerOpen(false);
   };
 
   const definedRanges: DefinedRange[] = [
     {
       label: "2 weeks ago",
-      startDate: moment().subtract(2, "weeks").startOf("week").toDate(),
-      endDate: moment().subtract(2, "weeks").endOf("week").toDate(),
+      startDate: dayjs().subtract(2, "weeks").startOf("week").toDate(),
+      endDate: dayjs().subtract(2, "weeks").endOf("week").toDate(),
     },
     {
       label: "1 week ago",
-      startDate: moment().subtract(1, "weeks").startOf("week").toDate(),
-      endDate: moment().subtract(1, "weeks").endOf("week").toDate(),
+      startDate: dayjs().subtract(1, "weeks").startOf("week").toDate(),
+      endDate: dayjs().subtract(1, "weeks").endOf("week").toDate(),
     },
     {
       label: "Current week",
-      startDate: moment().startOf("week").toDate(),
-      endDate: moment().endOf("week").toDate(),
+      startDate: dayjs().startOf("week").toDate(),
+      endDate: dayjs().endOf("week").toDate(),
     },
     {
       label: "2 months ago",
-      startDate: moment().subtract(2, "months").startOf("month").toDate(),
-      endDate: moment().subtract(2, "months").endOf("month").toDate(),
+      startDate: dayjs().subtract(2, "months").startOf("month").toDate(),
+      endDate: dayjs().subtract(2, "months").endOf("month").toDate(),
     },
     {
       label: "1 month ago",
-      startDate: moment().subtract(1, "months").startOf("month").toDate(),
-      endDate: moment().subtract(1, "months").endOf("month").toDate(),
+      startDate: dayjs().subtract(1, "months").startOf("month").toDate(),
+      endDate: dayjs().subtract(1, "months").endOf("month").toDate(),
     },
     {
       label: "Current month",
-      startDate: moment().startOf("month").toDate(),
-      endDate: moment().endOf("month").toDate(),
+      startDate: dayjs().startOf("month").toDate(),
+      endDate: dayjs().endOf("month").toDate(),
     },
   ];
 

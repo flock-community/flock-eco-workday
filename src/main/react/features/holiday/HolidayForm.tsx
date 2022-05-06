@@ -1,19 +1,19 @@
 import React from "react";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import moment from "moment";
 import Grid from "@material-ui/core/Grid";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
 import { TextField } from "formik-material-ui";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import MenuItem from "@material-ui/core/MenuItem";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
+import dayjs from "dayjs";
+import DayjsUtils from "@date-io/dayjs";
 
 export const HOLIDAY_FORM_ID = "holiday-form-id";
 
-const now = moment();
+const now = dayjs();
 
 export const schemaHoliDayForm = Yup.object().shape({
   description: Yup.string().required("Field required").default(""),
@@ -40,7 +40,7 @@ export function HolidayForm({ value, onSubmit }: HolidayFormProps) {
   const renderForm = ({ values }) => {
     return (
       <Form id={HOLIDAY_FORM_ID}>
-        <MuiPickersUtilsProvider utils={MomentUtils}>
+        <MuiPickersUtilsProvider utils={DayjsUtils}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <Field

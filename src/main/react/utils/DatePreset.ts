@@ -1,30 +1,30 @@
-import moment from "moment";
+import dayjs, { Dayjs } from "dayjs";
 
 export type DatePreset = {
   title: string;
-  from: moment.Moment;
-  to: moment.Moment;
+  from: Dayjs;
+  to: Dayjs;
 };
 
 export const datePresets: DatePreset[] = [
   {
     title: "Previous week",
-    from: moment().subtract(1, "week").startOf("week"),
-    to: moment().subtract(1, "week").endOf("week"),
+    from: dayjs().subtract(1, "week").startOf("week"),
+    to: dayjs().subtract(1, "week").endOf("week"),
   },
   {
     title: "Current week",
-    from: moment().startOf("week"),
-    to: moment().endOf("week"),
+    from: dayjs().startOf("week"),
+    to: dayjs().endOf("week"),
   },
   {
     title: "Previous month",
-    from: moment().subtract(1, "month").startOf("month"),
-    to: moment().subtract(1, "month").endOf("month"),
+    from: dayjs().subtract(1, "month").startOf("month"),
+    to: dayjs().subtract(1, "month").endOf("month"),
   },
   {
     title: "Current month",
-    from: moment().startOf("month"),
-    to: moment().endOf("month"),
+    from: dayjs().startOf("month"),
+    to: dayjs().endOf("month"),
   },
 ];

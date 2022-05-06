@@ -1,8 +1,9 @@
-import moment from "moment";
 import { Client } from "./ClientClient";
 import { Person } from "./PersonClient";
 import { Project } from "./ProjectClient";
 import InternalizingClient from "../utils/InternalizingClient";
+import dayjs, { Dayjs } from "dayjs";
+import { ISO_8601_DATE } from "./util/DateFormats";
 
 // The type we use in the frontend
 export type Assignment = {
@@ -10,8 +11,8 @@ export type Assignment = {
   code: string;
 
   role?: string;
-  from: moment.Moment;
-  to: moment.Moment | null;
+  from: Dayjs;
+  to: Dayjs | null;
   hourlyRate: number;
   hoursPerWeek: number;
 
@@ -59,8 +60,8 @@ const path = "/api/assignments";
 
 const internalize = (it: AssignmentRaw): Assignment => ({
   ...it,
-  from: moment(it.from, "YYYY-MM-DD"),
-  to: it.to ? moment(it.to, "YYYY-MM-DD") : null,
+  from: dayjs(it.from, ISO_8601_DATE),
+  to: it.to ? dayjs(it.to, ISO_8601_DATE) : null,
 });
 
 const internalizingClient = InternalizingClient<

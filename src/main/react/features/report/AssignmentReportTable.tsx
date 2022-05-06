@@ -1,7 +1,6 @@
 import Typography from "@material-ui/core/Typography";
 import React, { Fragment, useEffect, useState } from "react";
 import { AggregationClient } from "../../clients/AggregationClient";
-import moment from "moment";
 import { Box, TableBody, TableContainer } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
@@ -10,6 +9,7 @@ import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/co
 import { makeStyles } from "@material-ui/core/styles";
 import AssignmentReportTableRow from "./AssignmentReportTableRow";
 import { AggregationClientPersonAssignmentOverview } from "../../graphql/aggregation";
+import { Dayjs } from "dayjs";
 
 const useStyles = makeStyles({
   tableContainer: {
@@ -17,12 +17,15 @@ const useStyles = makeStyles({
   },
 });
 
-type ReportINGProps = {
-  from: moment.Moment;
-  to: moment.Moment;
+type AssignmentReportTableProps = {
+  from: Dayjs;
+  to: Dayjs;
 };
 
-export default function AssignmentReportTable({ from, to }: ReportINGProps) {
+export default function AssignmentReportTable({
+  from,
+  to,
+}: AssignmentReportTableProps) {
   const [clientHourOverviewState, setClientHourOverviewState] = useState<
     AggregationClientPersonAssignmentOverview[]
   >();
@@ -34,7 +37,7 @@ export default function AssignmentReportTable({ from, to }: ReportINGProps) {
     const daysInMonth = to.diff(from, "days", false) + 1;
     setDayRange(
       Array.from(Array(daysInMonth).keys()).map((n) => {
-        return from.clone().add(n, "day").format("dd DD");
+        return from.add(n, "day").format("dd DD");
       })
     );
   }, [from, to]);

@@ -7,9 +7,9 @@ import {
 } from "@material-ui/icons";
 import NonProductiveHours from "./NonProductiveHours";
 import React, { useState } from "react";
-import moment from "moment";
 import { AggregationClientPersonAssignmentItem } from "../../graphql/aggregation";
 import { makeStyles } from "@material-ui/core/styles";
+import { Dayjs } from "dayjs";
 
 const useStyles = makeStyles({
   noWrap: {
@@ -19,8 +19,8 @@ const useStyles = makeStyles({
 
 type AssignmentReportTableRowProps = {
   item: AggregationClientPersonAssignmentItem;
-  from: moment.Moment;
-  to: moment.Moment;
+  from: Dayjs;
+  to: Dayjs;
 };
 
 export default function AssignmentReportTableRow({

@@ -1,12 +1,12 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import InternalizingClient from "../utils/InternalizingClient.ts";
 
 export const WORK_DAY_PAGE_SIZE = 5;
 
 const internalize = (it) => ({
   ...it,
-  from: moment(it.from),
-  to: moment(it.to),
+  from: dayjs(it.from),
+  to: dayjs(it.to),
   days: it.days && it.days.length === 0 ? null : it.days,
 });
 

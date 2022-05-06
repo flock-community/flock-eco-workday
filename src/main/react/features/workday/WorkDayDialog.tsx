@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import WorkIcon from "@material-ui/icons/Work";
-import { HTML5_FMT } from "moment";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
@@ -11,6 +10,7 @@ import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { schema, WORKDAY_FORM_ID, WorkDayForm } from "./WorkDayForm";
 import { isDefined } from "../../utils/validation";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
@@ -49,8 +49,8 @@ export function WorkDayDialog({ open, code, onComplete }) {
 
   const handleSubmit = (it) => {
     const body = {
-      from: it.from.format(HTML5_FMT.DATE),
-      to: it.to.format(HTML5_FMT.DATE),
+      from: it.from.format(ISO_8601_DATE),
+      to: it.to.format(ISO_8601_DATE),
       days: it.days ? it.days : null,
       hours: it.days
         ? it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0)

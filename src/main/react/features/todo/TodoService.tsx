@@ -2,7 +2,7 @@ import { WorkDayClient } from "../../clients/WorkDayClient";
 import { SickDayClient } from "../../clients/SickDayClient";
 import { HolidayClient } from "../../clients/HolidayClient";
 import { ExpenseClient } from "../../clients/ExpenseClient";
-import moment from "moment";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 const updateStatusWorkDay = async (id, status) => {
   const res = await WorkDayClient.get(id);
@@ -10,8 +10,8 @@ const updateStatusWorkDay = async (id, status) => {
     ...res,
     assignmentCode: res.assignment.code,
     status,
-    from: res.from.format("YYYY-MM-DD"),
-    to: res.to.format("YYYY-MM-DD"),
+    from: res.from.format(ISO_8601_DATE),
+    to: res.to.format(ISO_8601_DATE),
   });
 };
 
@@ -20,8 +20,8 @@ const updateStatusSickDay = async (id, status) => {
   await SickDayClient.put(id, {
     ...res,
     status,
-    from: res.from.format("YYYY-MM-DD"),
-    to: res.to.format("YYYY-MM-DD"),
+    from: res.from.format(ISO_8601_DATE),
+    to: res.to.format(ISO_8601_DATE),
   });
 };
 
@@ -30,8 +30,8 @@ const updateStatusHoliDay = async (id, status) => {
   await HolidayClient.put(id, {
     ...res,
     status,
-    from: res.from.format("YYYY-MM-DD"),
-    to: res.to.format("YYYY-MM-DD"),
+    from: res.from.format(ISO_8601_DATE),
+    to: res.to.format(ISO_8601_DATE),
     days: res.type === "HOLIDAY" ? res.days : undefined,
   });
 };
@@ -42,7 +42,7 @@ const updateStatusExpense = async (id, status) => {
     ...res,
     personId: res.person.uuid,
     status,
-    date: res.date.format(moment.HTML5_FMT.DATE),
+    date: res.date.format(ISO_8601_DATE),
   });
 };
 

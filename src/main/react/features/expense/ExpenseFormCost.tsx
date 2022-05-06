@@ -3,12 +3,12 @@ import PropTypes from "prop-types";
 import { Grid } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
+import DayjsUtils from "@date-io/dayjs";
 import { TextField } from "formik-material-ui";
-import moment from "moment";
 import * as Yup from "yup";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
+import dayjs from "dayjs";
 
 export const EXPENSE_COST_FORM_ID = "cost-expense-form";
 
@@ -21,13 +21,13 @@ export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
   const schema = Yup.object({
     description: Yup.string().required().default(""),
     amount: Yup.number().required().default(0),
-    date: Yup.mixed().required().default(moment()),
+    date: Yup.mixed().required().default(dayjs()),
     files: Yup.array().default([]),
   });
 
   const form = () => (
     <Form id={EXPENSE_COST_FORM_ID}>
-      <MuiPickersUtilsProvider utils={MomentUtils}>
+      <MuiPickersUtilsProvider utils={DayjsUtils}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
             <Field

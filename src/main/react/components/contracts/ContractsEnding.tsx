@@ -1,7 +1,6 @@
 import Typography from "@material-ui/core/Typography";
 import React, { useEffect, useState } from "react";
 import { ContractClient } from "../../clients/ContractClient";
-import moment from "moment";
 import {
   Card,
   CardContent,
@@ -13,6 +12,7 @@ import {
 } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
+import dayjs from "dayjs";
 
 type ContractsEndingProps = {
   withinNWeeks: number;
@@ -26,7 +26,7 @@ export default function ContractsEnding({
   useEffect(() => {
     ContractClient.findAllByToBetween(
       new Date(),
-      moment().add(withinNWeeks, "weeks").toDate()
+      dayjs().add(withinNWeeks, "weeks").toDate()
     ).then((res) => setContracts(res));
   }, [withinNWeeks]);
 

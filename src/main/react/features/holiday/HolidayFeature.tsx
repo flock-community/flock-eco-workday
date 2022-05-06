@@ -5,6 +5,7 @@ import { HolidayList } from "./HolidayList";
 import { HolidayClient } from "../../clients/HolidayClient";
 import AddIcon from "@material-ui/icons/Add";
 import { Person } from "../../clients/PersonClient";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 type HolidayFeatureProps = {
   person: Person;
@@ -35,8 +36,8 @@ export function HolidayFeature({ person }: HolidayFeatureProps) {
     HolidayClient.put(it.code, {
       ...it,
       status,
-      from: it.from.format("YYYY-MM-DD"),
-      to: it.to.format("YYYY-MM-DD"),
+      from: it.from.format(ISO_8601_DATE),
+      to: it.to.format(ISO_8601_DATE),
       days: it.days.length > 0 ? it.days : null,
     }).then(() => setRefresh(!refresh));
   }

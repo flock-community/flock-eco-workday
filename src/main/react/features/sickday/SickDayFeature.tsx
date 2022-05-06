@@ -5,6 +5,7 @@ import { SickDayList } from "./SickDayList";
 import { SickDayClient } from "../../clients/SickDayClient";
 import { Person } from "../../clients/PersonClient";
 import AddIcon from "@material-ui/icons/Add";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 type SickDayFeatureProps = {
   person: Person;
@@ -35,8 +36,8 @@ export function SickDayFeature({ person }: SickDayFeatureProps) {
     SickDayClient.put(it.code, {
       ...it,
       status,
-      from: it.from.format("YYYY-MM-DD"),
-      to: it.to.format("YYYY-MM-DD"),
+      from: it.from.format(ISO_8601_DATE),
+      to: it.to.format(ISO_8601_DATE),
     }).then(() => setRefresh(!refresh));
   }
 

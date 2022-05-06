@@ -6,11 +6,11 @@ import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
-import { HTML5_FMT } from "moment";
 import { AssignmentClient } from "../../clients/AssignmentClient";
 import { isDefined } from "../../utils/validation";
 import { ASSIGNMENT_FORM_ID, AssignmentForm } from "./AssignmentForm";
 import { usePerson } from "../../hooks/PersonHook";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 export function AssignmentDialog(props) {
   const { open, code, onClose } = props;
@@ -31,8 +31,8 @@ export function AssignmentDialog(props) {
   const handleSubmit = (it) => {
     const body = {
       ...it,
-      from: it.from.format(HTML5_FMT.DATE),
-      to: it.to && it.to.format(HTML5_FMT.DATE),
+      from: it.from.format(ISO_8601_DATE),
+      to: it.to && it.to.format(ISO_8601_DATE),
       personId: person?.uuid,
     };
     if (code) {
