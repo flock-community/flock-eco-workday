@@ -43,3 +43,4 @@ secrets.yml
 .sts4-cache
 node_modules
 coverage
+.env

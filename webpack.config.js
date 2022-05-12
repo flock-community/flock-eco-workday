@@ -10,6 +10,7 @@ const config = {
       '/bootstrap': 'http://localhost:8080',
       '/logout': 'http://localhost:8080',
       '/tasks/*': 'http://localhost:8080',
+      '/oauth2/*': 'http://localhost:8080',
     },
   },
 }
