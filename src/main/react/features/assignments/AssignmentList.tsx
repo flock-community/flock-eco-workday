@@ -10,6 +10,7 @@ import {
 import { isDefined } from "../../utils/validation";
 import { Pagination } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 
 const useStyles = makeStyles({
   list: (loading) => ({
@@ -89,7 +90,9 @@ export function AssignmentList({
                     <i>now</i>
                   )}
                 </Typography>
-                <Typography>Hourly rate: {assignment.hourlyRate} </Typography>
+                <UserAuthorityUtil has={"AssignmentAuthority.ADMIN"}>
+                  <Typography>Hourly rate: {assignment.hourlyRate} </Typography>
+                </UserAuthorityUtil>
                 <Typography>
                   Hours per week: {assignment.hoursPerWeek}{" "}
                 </Typography>
