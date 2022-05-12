@@ -23,9 +23,9 @@ export function EventList({ refresh, onClickRow }: EventListProps) {
     };
   }
 
-  function renderItem(item, key) {
+  function renderItem(item) {
     return (
-      <Grid key={`workday-list-item-${key}`} item xs={12}>
+      <Grid key={`workday-list-item-${item.id}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
           <CardContent>
             <Typography variant="h6">{item.description}</Typography>

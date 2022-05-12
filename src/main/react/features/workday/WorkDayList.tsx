@@ -60,10 +60,10 @@ export function WorkDayList({
     });
   }, [personId, refresh, page]);
 
-  function renderItem(item, key) {
+  function renderItem(item) {
     return (
       <WorkDayListItem
-        key={key}
+        key={item.id}
         value={item}
         onClick={() => onClickRow(item)}
         onClickStatus={(status) => onClickStatus(status, item)}
