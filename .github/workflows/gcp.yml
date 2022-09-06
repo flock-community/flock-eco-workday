@@ -47,4 +47,4 @@ jobs:
           restore-keys: ${{ runner.os }}-node-
 
       - name: Build and Deploy
-        run: mvn -B compile -P frontend jib:build --file pom.xml
+        run: ./mvnw -B compile -P frontend jib:build --file pom.xml

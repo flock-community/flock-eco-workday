@@ -3,7 +3,7 @@
 ## Run
 
 ```bash
-mvn clean spring-boot:run -Pdevelop -Dspring-boot.run.profiles=local
+./mvnw clean spring-boot:run -Pdevelop -Dspring-boot.run.profiles=develop
 ```
 
 Mark `src/develop/kotlin` as source directory.
@@ -11,11 +11,11 @@ Mark `src/develop/kotlin` as source directory.
 Add `develop` to the springboot `application` run configuration active profiles.
 
 ```bash
-mvn clean install
+./mvnw clean install
 npm install
 ```
 
-Run `application` and `run:local`.
+Run `application` and `npm start`.
 
 ## Users
 
@@ -35,7 +35,7 @@ Use `ktlint` to lint kotlin files or `eslint` for javascript files
 
 - Generate diff file with liquibase
   ```
-  mvn clean compile liquibase:update liquibase:diff
+  ./mvnw clean compile liquibase:update liquibase:diff
   ```
 - Rename `db.changelog-diff.yaml` to `db.changelog-#.yaml`
 - Add the new changelog file to the `db.changelog-master.yaml`
@@ -50,11 +50,11 @@ Use `ktlint` to lint kotlin files or `eslint` for javascript files
 
 ```bash
 # check code style (it's also bound to "mvn verify")
-$ mvn antrun:run@ktlint
+$ ./mvnw antrun:run@ktlint
   src/main/kotlin/Main.kt:10:10: Unused import
 
 # fix code style deviations (runs built-in formatter)
-$ mvn antrun:run@ktlint-format
+$ ./mvnw antrun:run@ktlint-format
 
 # fix code styles for js files with eslint
 $ npm run lint
