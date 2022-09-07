@@ -1,19 +1,10 @@
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-} from "@material-ui/core";
+import {Card, CardContent, CardHeader, Table, TableBody, TableCell, TableContainer, TableRow,} from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import CreateIcon from "@material-ui/icons/Create";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import { Person } from "../../clients/PersonClient";
-import { DMY_DATE } from "../../clients/util/DateFormats";
+import {Person} from "../../clients/PersonClient";
+import {DMY_DATE} from "../../clients/util/DateFormats";
 
 type PersonWidgetProps = {
   person: Person;
@@ -57,7 +48,7 @@ export function PersonWidget({
                 <TableCell>{person.email}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell component="th">Birthdate</TableCell>
+                <TableCell component="th">Date of birth</TableCell>
                 <TableCell>
                   {person.birthdate?.format(DMY_DATE) ?? "Unknown"}
                 </TableCell>

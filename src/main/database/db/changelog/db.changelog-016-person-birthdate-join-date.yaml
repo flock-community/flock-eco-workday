@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: db.changelog-015-person-birthdate-join-date-1
+      id: db.changelog-016-person-birthdate-join-date-1
       author: tsmelik
       changes:
         - addColumn:

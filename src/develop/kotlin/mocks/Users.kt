@@ -25,7 +25,7 @@ val users = listOf(
     User(
         "Ieniemienie",
         "Mouse",
-        birthdate = LocalDate.of(1985, 3, 5)
+        birthdate = LocalDate.now()
     ),
     User(
         "Pino",
