@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.Instant
 import java.time.Period
-import java.time.ZonedDateTime
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])

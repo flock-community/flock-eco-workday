@@ -44,7 +44,7 @@ class WorkdayController(
     ): ResponseEntity<List<WorkDay>> {
         val sort = Sort.by("from").descending().and(Sort.by("id"))
         val page = PageRequest.of(pageable.pageNumber, pageable.pageSize, sort)
-       return when {
+        return when {
             authentication.isAdmin() -> service.findAllByPersonUuid(personId, page)
             else -> service.findAllByPersonUserCode(authentication.name, page)
         }
