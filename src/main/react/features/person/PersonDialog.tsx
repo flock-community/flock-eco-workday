@@ -5,6 +5,8 @@ import { PERSON_FORM_ID, PersonForm } from "./PersonForm";
 import { PersonClient, PersonRequest } from "../../clients/PersonClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
+import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import { Dayjs } from "dayjs";
 
 type PersonDialogProps = {
   open: boolean;
@@ -16,11 +18,22 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
     onClose();
   };
 
-  const handleSubmit = (values: PersonRequest) => {
+  type PersonRequestRaw = PersonRequest & {
+    birthdate: Dayjs;
+    joinDate: Dayjs;
+  };
+
+  const handleSubmit = (values: PersonRequestRaw) => {
+    const body = {
+      ...values,
+      birthdate: values.birthdate && values.birthdate.format(ISO_8601_DATE),
+      joinDate: values.joinDate && values.joinDate.format(ISO_8601_DATE),
+    };
+
     if (item) {
-      PersonClient.put(item.uuid, values).then(() => successfulSubmit());
+      PersonClient.put(item.uuid, body).then(() => successfulSubmit());
     } else {
-      PersonClient.post(values).then(() => successfulSubmit());
+      PersonClient.post(body).then(() => successfulSubmit());
     }
   };
 

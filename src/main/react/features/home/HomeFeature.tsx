@@ -11,12 +11,16 @@ import {
 } from "@material-ui/core";
 import { DashboardHolidayChart } from "../../components/charts/DashboardHolidayChart";
 import ContractsEnding from "../../components/contracts/ContractsEnding";
+import PersonEvents from "../../components/person/PersonEvents";
 
 export function HomeFeature() {
   const user = useUserMe();
 
   const showContractsEnding =
     user?.authorities?.includes("ContractAuthority.ADMIN") ?? false;
+
+  const showPersonEvents =
+    user?.authorities?.includes("PersonAuthority.READ") ?? false;
 
   return (
     <Container>
@@ -28,6 +32,11 @@ export function HomeFeature() {
         {showContractsEnding && (
           <Grid item xs={12}>
             <ContractsEnding withinNWeeks={6} />
+          </Grid>
+        )}
+        {showPersonEvents && (
+          <Grid item xs={12}>
+            <PersonEvents withinNWeeks={6} />
           </Grid>
         )}
         <Grid item xs={12}>

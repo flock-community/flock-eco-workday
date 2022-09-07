@@ -7,6 +7,9 @@ import {
 } from "formik-material-ui";
 import { PERSON_FORM_SCHEMA } from "./schema";
 import { UserSelectorField } from "../../components/fields/UserSelectorField";
+import { DatePickerField } from "../../components/fields/DatePickerField";
+import DayjsUtils from "@date-io/dayjs";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 
 export const PERSON_FORM_ID = "person-form";
 
@@ -18,79 +21,99 @@ type PersonFormProps = {
 export function PersonForm({ item, onSubmit }: PersonFormProps) {
   const form = () => (
     <Form id={PERSON_FORM_ID}>
-      <Grid container item xs={12} spacing={2}>
-        <Grid item xs={12} sm={6}>
-          <FormControl fullWidth>
-            <Field
-              id="firstname"
-              type="text"
-              label="firstname"
-              name="firstname"
-              required
-              autoFocus
-              component={FormikTextField}
+      <MuiPickersUtilsProvider utils={DayjsUtils}>
+        <Grid container item xs={12} spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <Field
+                id="firstname"
+                type="text"
+                label="firstname"
+                name="firstname"
+                required
+                autoFocus
+                component={FormikTextField}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <Field
+                id="lastname"
+                type="text"
+                label="lastname"
+                name="lastname"
+                required
+                component={FormikTextField}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <Field
+                id="email"
+                type="email"
+                label="email"
+                name="email"
+                component={FormikTextField}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <Field
+                id="number"
+                label="number"
+                name="number"
+                component={FormikTextField}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <DatePickerField
+              name="birthdate"
+              label="Birthdate"
+              format="DD/MM/YYYY"
+              fullWidth
+              clearable
             />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <FormControl fullWidth>
-            <Field
-              id="lastname"
-              type="text"
-              label="lastname"
-              name="lastname"
-              required
-              component={FormikTextField}
+          </Grid>
+          <Grid item xs={12}>
+            <DatePickerField
+              name="joinDate"
+              label="Join date"
+              format="DD/MM/YYYY"
+              fullWidth
+              clearable
             />
-          </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <UserSelectorField name="userCode" />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <Field
+                name="reminders"
+                type="checkbox"
+                Label={{ label: "Reminders" }}
+                component={CheckboxWithLabel}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <Field
+                name="active"
+                type="checkbox"
+                Label={{ label: "Active" }}
+                component={CheckboxWithLabel}
+              />
+            </FormControl>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <Field
-              id="email"
-              type="email"
-              label="email"
-              name="email"
-              component={FormikTextField}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <Field
-              id="number"
-              label="number"
-              name="number"
-              component={FormikTextField}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <UserSelectorField name="userCode" />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <Field
-              name="reminders"
-              type="checkbox"
-              Label={{ label: "Reminders" }}
-              component={CheckboxWithLabel}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <Field
-              name="active"
-              type="checkbox"
-              Label={{ label: "Active" }}
-              component={CheckboxWithLabel}
-            />
-          </FormControl>
-        </Grid>
-      </Grid>
+      </MuiPickersUtilsProvider>
     </Form>
   );
 
