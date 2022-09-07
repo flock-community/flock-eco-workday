@@ -44,5 +44,8 @@ databaseChangeLog:
       - file: db.changelog-014-project.yaml
         relativeToChangelogFile: true
   - include:
+      - file: db.changelog-015-rm-person-updates.yaml
+        relativeToChangelogFile: true
+  - include:
       - file: db.changelog-015-person-birthdate-join-date.yaml
         relativeToChangelogFile: true
