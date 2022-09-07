@@ -8,7 +8,9 @@ import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.WorkDayService
 import community.flock.eco.workday.services.isUser
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -39,11 +41,15 @@ class WorkdayController(
         @RequestParam personId: UUID,
         authentication: Authentication,
         pageable: Pageable
-    ): ResponseEntity<List<WorkDay>> = when {
-        authentication.isAdmin() -> service.findAllByPersonUuid(personId, pageable)
-        else -> service.findAllByPersonUserCode(authentication.name, pageable)
+    ): ResponseEntity<List<WorkDay>> {
+        val sort = Sort.by("from").descending().and(Sort.by("id"))
+        val page = PageRequest.of(pageable.pageNumber, pageable.pageSize, sort)
+        return when {
+            authentication.isAdmin() -> service.findAllByPersonUuid(personId, page)
+            else -> service.findAllByPersonUserCode(authentication.name, page)
+        }
+            .toResponse()
     }
-        .toResponse()
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")
