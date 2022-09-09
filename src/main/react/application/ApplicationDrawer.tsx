@@ -136,7 +136,7 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
       authority: "UserAuthority.READ",
     },
     {
-      name: "Person",
+      name: "Persons",
       icon: UserIcon,
       url: "/person",
       authority: "PersonAuthority.READ",
