@@ -16,12 +16,20 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.math.BigDecimal
 import java.security.Principal
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/assignments")
@@ -45,7 +53,7 @@ class AssignmentController(
                     user.isAdmin() && personId != null -> assignmentService.findAllByPersonUuid(personId, page)
                     else -> assignmentService.findAllByPersonUserCode(user.code, page)
                 }.let {
-                    it.map { assignment -> if (user.isAdmin()) assignment.copy(hourlyRate = 0.0) else assignment }
+                    it.map { assignment -> if (user.isAdmin()) assignment else assignment.copy(hourlyRate = 0.0) }
                 }
             }
             .toResponse()
@@ -65,9 +73,13 @@ class AssignmentController(
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
-    fun findByCode(@PathVariable code: String): ResponseEntity<Assignment> = assignmentService
-        .findByCode(code)
-        .toResponse()
+    fun findByCode(@PathVariable code: String, principal: Principal): ResponseEntity<Assignment> =
+        principal.findUser()
+            ?.let { user ->
+                val assignment = assignmentService.findByCode(code)
+                if (user.isAllowedToEdit()) assignment
+                else assignment?.copy(hourlyRate = 0.0)
+            }.toResponse()
 
     @PostMapping
     @PreAuthorize("hasAuthority('AssignmentAuthority.WRITE')")
@@ -114,6 +126,10 @@ class AssignmentController(
     private fun User.isAdmin(): Boolean = this
         .authorities
         .contains(AssignmentAuthority.ADMIN.toName())
+
+    private fun User.isAllowedToEdit(): Boolean = this
+        .authorities
+        .contains(AssignmentAuthority.WRITE.toName())
 
     class AssignmentWithHours(
         val id: Long = 0,

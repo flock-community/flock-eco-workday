@@ -1,16 +1,17 @@
-import React, { useState } from "react";
-import { AssignmentList } from "./AssignmentList";
-import { AssignmentDialog } from "./AssignmentDialog";
-import { Card, CardContent, CardHeader } from "@material-ui/core";
-import { Person } from "../../clients/PersonClient";
+import React, {useState} from "react";
+import {AssignmentList} from "./AssignmentList";
+import {AssignmentDialog} from "./AssignmentDialog";
+import {Card, CardContent, CardHeader} from "@material-ui/core";
+import {Person} from "../../clients/PersonClient";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 
 type AssignmentFeatureProps = {
-  person: Person;
+  person: Person,
+  disableEdit: boolean
 };
 
-export function AssignmentFeature({ person }: AssignmentFeatureProps) {
+export function AssignmentFeature({ person, disableEdit = false }: AssignmentFeatureProps) {
   const [reload, setReload] = useState(true);
   const [dialog, setDialog] = useState({ open: false, code: null });
 
@@ -32,7 +33,7 @@ export function AssignmentFeature({ person }: AssignmentFeatureProps) {
       <Card>
         <CardHeader
           title="Assignments"
-          action={
+          action={!disableEdit &&
             <Button onClick={handleClickAdd}>
               <AddIcon /> Add
             </Button>
@@ -43,6 +44,7 @@ export function AssignmentFeature({ person }: AssignmentFeatureProps) {
             personId={person?.uuid}
             onItemClick={handleItemClick}
             reload={reload}
+            disableEdit={disableEdit}
           />
         </CardContent>
       </Card>
