@@ -12,6 +12,7 @@ import Button from "@material-ui/core/Button";
 import ProjectDialog from "../project/ProjectDialog";
 import { Assignment, AssignmentRequest } from "../../clients/AssignmentClient";
 import DayjsUtils from "@date-io/dayjs";
+import { DMY_DATE } from "../../clients/util/DateFormats";
 
 // form id as a reference point for buttons outside of the <form></form> scope to be
 // able to submit this form
@@ -78,6 +79,7 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
               <DatePickerField
                 name="from"
                 label="Start date"
+                format={DMY_DATE}
                 fullWidth
                 maxDate={values.to ? values.to : undefined}
               />
@@ -86,6 +88,7 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
               <DatePickerField
                 name="to"
                 label="End date"
+                format={DMY_DATE}
                 fullWidth
                 clearable
                 minDate={values.from}
