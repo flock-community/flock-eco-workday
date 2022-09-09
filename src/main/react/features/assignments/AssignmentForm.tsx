@@ -1,18 +1,18 @@
-import React, {useState} from "react";
-import {Grid} from "@material-ui/core";
-import {Field, Form, Formik} from "formik";
-import {MuiPickersUtilsProvider} from "@material-ui/pickers";
-import {TextField} from "formik-material-ui";
-import {DatePickerField} from "../../components/fields/DatePickerField";
-import {ClientSelectorField} from "../../components/fields/ClientSelectorField";
-import {ASSIGNMENT_FORM_SCHEMA} from "./AssignmentSchema";
-import {ProjectSelectorField} from "../../components/fields/ProjectSelectorField";
+import React, { useState } from "react";
+import { Grid } from "@material-ui/core";
+import { Field, Form, Formik } from "formik";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { TextField } from "formik-material-ui";
+import { DatePickerField } from "../../components/fields/DatePickerField";
+import { ClientSelectorField } from "../../components/fields/ClientSelectorField";
+import { ASSIGNMENT_FORM_SCHEMA } from "./AssignmentSchema";
+import { ProjectSelectorField } from "../../components/fields/ProjectSelectorField";
 import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
 import ProjectDialog from "../project/ProjectDialog";
-import {Assignment, AssignmentRequest} from "../../clients/AssignmentClient";
+import { Assignment, AssignmentRequest } from "../../clients/AssignmentClient";
 import DayjsUtils from "@date-io/dayjs";
-import {DMY_DATE} from "../../clients/util/DateFormats";
+import { DMY_DATE } from "../../clients/util/DateFormats";
 
 // form id as a reference point for buttons outside of the <form></form> scope to be
 // able to submit this form

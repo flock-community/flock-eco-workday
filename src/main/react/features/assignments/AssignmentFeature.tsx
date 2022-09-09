@@ -1,8 +1,8 @@
-import React, {useState} from "react";
-import {AssignmentList} from "./AssignmentList";
-import {AssignmentDialog} from "./AssignmentDialog";
-import {Card, CardContent, CardHeader} from "@material-ui/core";
-import {Person} from "../../clients/PersonClient";
+import React, { useState } from "react";
+import { AssignmentList } from "./AssignmentList";
+import { AssignmentDialog } from "./AssignmentDialog";
+import { Card, CardContent, CardHeader } from "@material-ui/core";
+import { Person } from "../../clients/PersonClient";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 
