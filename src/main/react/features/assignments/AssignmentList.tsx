@@ -3,10 +3,7 @@ import Card from "@material-ui/core/Card";
 import { Box, CardContent } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import {
-  ASSIGNMENT_PAGE_SIZE,
-  AssignmentClient,
-} from "../../clients/AssignmentClient";
+import { ASSIGNMENT_PAGE_SIZE, AssignmentClient, } from "../../clients/AssignmentClient";
 import { isDefined } from "../../utils/validation";
 import { Pagination } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
@@ -27,12 +24,14 @@ type AssignmentListProps = {
   reload: boolean;
   personId?: string;
   onItemClick: (item: any) => void;
+  disableEdit: boolean;
 };
 
 export function AssignmentList({
   reload,
   personId,
   onItemClick,
+  disableEdit
 }: AssignmentListProps) {
   const [items, setItems] = useState<any[]>([]);
   const [page, setPage] = useState(0);
@@ -59,7 +58,7 @@ export function AssignmentList({
   }, [personId, reload, page]);
 
   const handleClickItem = (it) => () => {
-    if (isDefined(onItemClick)) onItemClick(it);
+    if (!disableEdit && isDefined(onItemClick)) onItemClick(it);
   };
 
   if (items.length === 0) {
