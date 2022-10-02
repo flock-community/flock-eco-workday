@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.time.LocalDate
-import java.time.MonthDay
 import java.util.UUID
 
 @Service
@@ -129,7 +128,7 @@ class PersonService(
 fun Person.isUser(userCode: String?) = this.user?.code == userCode
 
 fun LocalDate.isBetweenIgnoreYear(start: LocalDate, end: LocalDate): Boolean {
-    var nextDate = MonthDay.from(this).atYear(start.year)
+    var nextDate = this.withYear(start.year)
     if (nextDate.isBefore(start)) nextDate = nextDate.plusYears(1)
     return (nextDate.isAfter(start) || nextDate.isEqual(start)) && nextDate.isBefore(end)
 }
