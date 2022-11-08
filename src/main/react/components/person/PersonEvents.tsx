@@ -29,7 +29,7 @@ export default function PersonEvents({ withinNWeeks }: PersonEventsProps) {
   const renderEventType = (eventType: PersonEventType) => {
     switch (eventType) {
       case "BIRTHDAY":
-        return "Date of birth";
+        return "Birthday";
       case "JOIN_DAY":
         return "Join day";
       default:

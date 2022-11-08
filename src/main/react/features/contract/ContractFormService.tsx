@@ -8,6 +8,7 @@ import { mixed, number, object } from "yup";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import DayjsUtils from "@date-io/dayjs";
 import dayjs from "dayjs";
+import { DMY_DATE } from "../../clients/util/DateFormats";
 
 // form id as a reference point for buttons outside of the <form></form> scope to be
 // able to submit this form
@@ -47,6 +48,7 @@ export const ContractFormService = ({
             <DatePickerField
               name="from"
               label="Start date"
+              format={DMY_DATE}
               fullWidth
               maxDate={values.to ? values.to : undefined}
             />
@@ -55,6 +57,7 @@ export const ContractFormService = ({
             <DatePickerField
               name="to"
               label="End date"
+              format={DMY_DATE}
               fullWidth
               clearable
               minDate={values?.from}

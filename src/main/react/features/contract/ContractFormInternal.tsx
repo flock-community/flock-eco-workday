@@ -8,6 +8,7 @@ import { boolean, mixed, number, object } from "yup";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import DayjsUtils from "@date-io/dayjs";
 import dayjs from "dayjs";
+import { DMY_DATE } from "../../clients/util/DateFormats";
 
 export const INTERNAL_CONTRACT_FORM_ID = "internal-contract-form";
 
@@ -46,6 +47,7 @@ export const ContractFormInternal = ({
             <DatePickerField
               name="from"
               label="Start date"
+              format={DMY_DATE}
               fullWidth
               maxDate={values.to ? values.to : undefined}
             />
@@ -54,6 +56,7 @@ export const ContractFormInternal = ({
             <DatePickerField
               name="to"
               label="End date"
+              format={DMY_DATE}
               fullWidth
               minDate={values.from}
               clearable

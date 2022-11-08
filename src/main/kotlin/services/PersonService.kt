@@ -127,8 +127,11 @@ class PersonService(
 
 fun Person.isUser(userCode: String?) = this.user?.code == userCode
 
-fun LocalDate.isBetweenIgnoreYear(start: LocalDate, end: LocalDate): Boolean =
-    (this.withYear(start.year).isEqual(start) || this.withYear(start.year).isAfter(start)) && this.withYear(end.year).isBefore(end)
+fun LocalDate.isBetweenIgnoreYear(start: LocalDate, end: LocalDate): Boolean {
+    var nextDate = this.withYear(start.year)
+    if (nextDate.isBefore(start)) nextDate = nextDate.plusYears(1)
+    return (nextDate.isAfter(start) || nextDate.isEqual(start)) && nextDate.isBefore(end)
+}
 
 data class PersonEvent(
     val person: Person,
