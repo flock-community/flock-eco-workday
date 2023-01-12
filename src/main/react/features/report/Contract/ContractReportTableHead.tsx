@@ -3,12 +3,6 @@ import React from "react";
 
 const headCells = [
   {
-    id: "id",
-    align: false,
-    disablePadding: false,
-    label: "ContractId".toUpperCase(),
-  },
-  {
     id: "person",
     align: false,
     disablePadding: false,

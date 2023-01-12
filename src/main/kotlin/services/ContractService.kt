@@ -39,7 +39,7 @@ class ContractService(
     fun findAllByPersonUserCode(userCode: String, page: Pageable = Pageable.unpaged()) = contractRepository
         .findAllByPersonUserCode(userCode, page)
 
-    fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Contract> {
+    fun findAllActive(from: LocalDate?, to: LocalDate?): MutableList<Contract> {
         val query = "SELECT c FROM Contract c WHERE c.from <= :to AND (c.to is null OR c.to >= :from)"
         return entityManager
             .createQuery(query, Contract::class.java)
@@ -59,6 +59,8 @@ class ContractService(
     }
 
     fun findAllByToBetween(start: LocalDate?, end: LocalDate?) = contractRepository.findAllByToBetween(start, end)
+
+    fun findAllByToAfterOrToNull(to: LocalDate?, page: Pageable) = contractRepository.findAllByToAfterOrToNull(to, page)
 
     @Transactional
     fun create(form: ContractExternalForm): ContractExternal? = form

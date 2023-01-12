@@ -17,6 +17,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import {Contract, ContractClient} from "../../../clients/ContractClient";
 import {ContractReportTableHead} from "./ContractReportTableHead";
 import {DMY_DATE} from "../../../clients/util/DateFormats";
+import dayjs from "dayjs";
 
 const useStyles = makeStyles({
   tblEmail: {
@@ -40,9 +41,9 @@ export default function ContractReportTable() {
   const history = useHistory();
 
   useEffect(() => {
-    ContractClient.findAll({page: page, size: size, sort:['person.firstname','from,desc']}).then((res) => {
+    ContractClient.findAllByToAfterOrToNull(dayjs().toDate(), {page: page, size: size, sort:['person.firstname','from,desc']}).then((res) => {
       setContractList(res.list);
-      setPageCount(res.count);
+      setPageCount(res.count / size);
     });
   }, [reload, page, size, searchTerm]);
 
@@ -67,14 +68,14 @@ export default function ContractReportTable() {
           title="Contracts"
         />
         <CardContent>
-          <Box m={2}>
-            <TextField
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search by first name"
-              inputRef={searchInputRef}
-            />
-          </Box>
+          {/*<Box m={2}>*/}
+          {/*  <TextField*/}
+          {/*    value={searchTerm}*/}
+          {/*    onChange={(event) => setSearchTerm(event.target.value)}*/}
+          {/*    placeholder="Search by first name"*/}
+          {/*    inputRef={searchInputRef}*/}
+          {/*  />*/}
+          {/*</Box>*/}
           <TableContainer>
             <Table>
               <ContractReportTableHead/>
@@ -86,9 +87,6 @@ export default function ContractReportTable() {
                       hover
                       onClick={() => handleClick(contract)}
                     >
-                      <TableCell component="th" scope="row">
-                        {contract.id}
-                      </TableCell>
                       <TableCell>
                         {contract.person.fullName}
                       </TableCell>

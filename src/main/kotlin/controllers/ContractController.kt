@@ -40,6 +40,15 @@ class ContractController(
         .findAll(page)
         .toResponse()
 
+    @GetMapping("/contracts", params = ["to"])
+    @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
+    fun findAllByToAfterOrToNull(
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate?,
+        page: Pageable,
+    ): ResponseEntity<List<Contract>> =
+        contractService.findAllByToAfterOrToNull(to, page)
+            .toResponse()
+
     @GetMapping("/contracts", params = ["start", "end"])
     @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
     fun findAllByToBetween(
