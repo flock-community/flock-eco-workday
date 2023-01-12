@@ -1,41 +1,30 @@
+import {TableCell, TableHead, TableRow} from "@material-ui/core";
 import React from "react";
-import { TableCell, TableHead, TableRow } from "@material-ui/core";
 
 const headCells = [
   {
-    id: "name",
+    id: "id",
     align: false,
     disablePadding: false,
-    label: "name".toUpperCase(),
+    label: "ContractId".toUpperCase(),
   },
   {
-    id: "email",
+    id: "person",
     align: false,
     disablePadding: false,
-    label: "email".toUpperCase(),
+    label: "person".toUpperCase(),
   },
   {
-    id: "active",
+    id: "from",
     align: false,
     disablePadding: false,
-    label: "active".toUpperCase(),
+    label: "from".toUpperCase(),
   },
-  { id: "holidays", label: "holidays".toUpperCase() },
-  {
-    id: "clients",
-    align: false,
-    disablePadding: false,
-    label: "clients".toUpperCase(),
-  },
-  {
-    id: "hours",
-    align: false,
-    disablePadding: false,
-    label: "hours".toUpperCase(),
-  },
+  { id: "to",
+    label: "to".toUpperCase() },
 ];
 
-export const PersonTableHead = () => {
+export const ContractReportTableHead = () => {
   return (
     <TableHead>
       <TableRow>
@@ -52,5 +41,3 @@ export const PersonTableHead = () => {
     </TableHead>
   );
 };
-
-PersonTableHead.propTypes = {};

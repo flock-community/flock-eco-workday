@@ -91,7 +91,7 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
       name: "Contracts",
       icon: ContractIcon,
       url: "/contracts",
-      authority: "AssignmentAuthority.READ",
+      authority: "ContractAuthority.READ",
     },
     {
       name: "Workdays",
@@ -150,6 +150,11 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
           name: "Assignment hours",
           icon: AssignmentIcon,
           url: "/reports/assignment",
+        },
+        {
+          name: "Active Contracts",
+          icon: ContractIcon,
+          url: "/reports/contract",
         },
       ],
     },
