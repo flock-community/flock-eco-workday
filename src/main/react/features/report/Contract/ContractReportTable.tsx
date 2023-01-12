@@ -40,7 +40,7 @@ export default function ContractReportTable() {
   const history = useHistory();
 
   useEffect(() => {
-    ContractClient.findAll({page: page, size: size, sort:["person.firstname","from"]}).then((res) => {
+    ContractClient.findAll({page: page, size: size, sort:['person.firstname','from,desc']}).then((res) => {
       setContractList(res.list);
       setPageCount(res.count);
     });
