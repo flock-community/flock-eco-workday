@@ -35,7 +35,7 @@ export default function ContractReportTable() {
     ContractClient.findAllByToAfterOrToNull(dayjs().toDate(), {
       page: page,
       size: size,
-      sort: ['person.lastname', 'from']
+      sort: ['person.firstname', 'from']
     }).then((res) => {
       setContractList(res.list);
       setRowCount(res.count);
