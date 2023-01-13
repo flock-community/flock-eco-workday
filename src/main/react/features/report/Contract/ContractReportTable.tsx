@@ -1,15 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {useHistory, useRouteMatch} from "react-router-dom";
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  TableBody,
-  TableContainer,
-  TablePagination,
-  TextField
-} from "@material-ui/core";
+import {CardHeader, TableBody, TableContainer, TablePagination} from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
@@ -31,8 +22,8 @@ const useStyles = makeStyles({
 export default function ContractReportTable() {
   const {url} = useRouteMatch();
   const [page, setPage] = useState(0);
-  const [size, setSize] = useState(5);
-  const [pageCount, setPageCount] = useState(-1);
+  const [size, setSize] = useState(-1);
+  const [rowCount, setRowCount] = useState(-1);
   const [contractList, setContractList] = useState<Contract[]>([]);
   const [reload, setReload] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -41,9 +32,13 @@ export default function ContractReportTable() {
   const history = useHistory();
 
   useEffect(() => {
-    ContractClient.findAllByToAfterOrToNull(dayjs().toDate(), {page: page, size: size, sort:['person.firstname','from,desc']}).then((res) => {
+    ContractClient.findAllByToAfterOrToNull(dayjs().toDate(), {
+      page: page,
+      size: size,
+      sort: ['person.lastname', 'from']
+    }).then((res) => {
       setContractList(res.list);
-      setPageCount(res.count / size);
+      setRowCount(res.count);
     });
   }, [reload, page, size, searchTerm]);
 
@@ -63,58 +58,46 @@ export default function ContractReportTable() {
 
   return (
     <>
-      <Card>
-        <CardHeader
-          title="Contracts"
+      <CardHeader
+        title="Contracts"
+      />
+      <TableContainer>
+        <Table>
+          <ContractReportTableHead/>
+          <TableBody>
+            {contractList.map((contract, idx) => {
+              return (
+                <TableRow
+                  key={idx}
+                  hover
+                  onClick={() => handleClick(contract)}
+                >
+                  <TableCell>
+                    {contract.person.fullName}
+                  </TableCell>
+                  <TableCell>
+                    {contract.from.format(DMY_DATE)}
+                  </TableCell>
+                  <TableCell>
+                    {contract.to?.format(DMY_DATE)}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+        <TablePagination
+          rowsPerPageOptions={[10, 20, 50, {value: -1, label: 'All'}]}
+          component="div"
+          count={rowCount}
+          // remove labelDisplayRows by replacing it with an empty return
+          // labelDisplayedRows={() => null}
+          rowsPerPage={size}
+          page={page}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleRowsPerPageChange}
         />
-        <CardContent>
-          {/*<Box m={2}>*/}
-          {/*  <TextField*/}
-          {/*    value={searchTerm}*/}
-          {/*    onChange={(event) => setSearchTerm(event.target.value)}*/}
-          {/*    placeholder="Search by first name"*/}
-          {/*    inputRef={searchInputRef}*/}
-          {/*  />*/}
-          {/*</Box>*/}
-          <TableContainer>
-            <Table>
-              <ContractReportTableHead/>
-              <TableBody>
-                {contractList.map((contract, idx) => {
-                  return (
-                    <TableRow
-                      key={idx}
-                      hover
-                      onClick={() => handleClick(contract)}
-                    >
-                      <TableCell>
-                        {contract.person.fullName}
-                      </TableCell>
-                      <TableCell>
-                        {contract.from.format(DMY_DATE)}
-                      </TableCell>
-                      <TableCell>
-                      {contract.to?.format(DMY_DATE)}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5,10,20,50]}
-              component="div"
-              count={-1}
-              // remove labelDisplayRows by replacing it with an empty return
-              // labelDisplayedRows={() => null}
-              rowsPerPage={size}
-              page={page}
-              onPageChange= {handlePageChange}
-              onRowsPerPageChange= {handleRowsPerPageChange}
-            />
-          </TableContainer>
-        </CardContent>
-      </Card>
+      </TableContainer>
     </>
   );
 };

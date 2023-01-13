@@ -19,5 +19,4 @@ interface ContractRepository : PagingAndSortingRepository<Contract, Long> {
     fun findAllByType(internal: ContractType): Iterable<Contract>
     fun findAllByToBetween(start: LocalDate?, end: LocalDate?): Iterable<Contract>
     fun findAllByToAfterOrToNull(to: LocalDate?, page: Pageable): Page<Contract>
-
 }

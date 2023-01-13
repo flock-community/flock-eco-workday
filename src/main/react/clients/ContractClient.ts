@@ -95,7 +95,7 @@ const findAllByToBetween = (start: Date, end: Date) => {
   return clients.get("general").query({start: startString, end: endString});
 };
 
-const findAllByToAfterOrToNull = (to: Date, pageable: { page: Number, size: number, sort: string }) => {
+const findAllByToAfterOrToNull = (to: Date, pageable: { size: number; page: number; sort: string[] }) => {
   const toString = to.toISOString().substring(0, 10);
   console.log(toString)
 
