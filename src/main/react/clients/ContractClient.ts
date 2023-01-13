@@ -1,7 +1,7 @@
-import {Person} from "./PersonClient";
+import { Person } from "./PersonClient";
 import InternalizingClient from "../utils/InternalizingClient";
-import dayjs, {Dayjs} from "dayjs";
-import {ISO_8601_DATE} from "./util/DateFormats";
+import dayjs, { Dayjs } from "dayjs";
+import { ISO_8601_DATE } from "./util/DateFormats";
 
 const path = "/api/contracts";
 const internalPath = `${path}-internal`;
@@ -72,12 +72,6 @@ clients.set(
   )
 );
 
-const findAll = (pageable) => {
-  return clients.get("general").findAllByPage(
-    pageable
-  );
-};
-
 const findAllByPersonId = (personId: string, page: number) =>
   clients.get("general")!!.queryByPage(
     {
@@ -97,7 +91,6 @@ const findAllByToBetween = (start: Date, end: Date) => {
 
 const findAllByToAfterOrToNull = (to: Date, pageable: { size: number; page: number; sort: string[] }) => {
   const toString = to.toISOString().substring(0, 10);
-  console.log(toString)
 
   return clients.get("general").queryByPage(pageable, {"to": toString})
 };
@@ -111,7 +104,6 @@ export const ContractClient = {
   ...clients.get("general"),
   post,
   put,
-  findAll,
   findAllByToAfterOrToNull,
   findAllByPersonId,
   findAllByToBetween

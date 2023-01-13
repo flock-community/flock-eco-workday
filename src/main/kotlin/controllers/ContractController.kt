@@ -38,6 +38,7 @@ class ContractController(
     @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
     fun findAll(page: Pageable): ResponseEntity<List<Contract>> = contractService
         .findAll(page)
+        .sortedBy { it.to }
         .toResponse()
 
     @GetMapping("/contracts", params = ["to"])
