@@ -15,7 +15,11 @@ const headCells = [
     label: "from".toUpperCase(),
   },
   { id: "to",
-    label: "to".toUpperCase() },
+    label: "to".toUpperCase()
+  },
+  { id: "type",
+    label: "type".toUpperCase()
+  },
 ];
 
 export const ContractReportTableHead = () => {

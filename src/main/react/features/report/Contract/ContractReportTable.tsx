@@ -81,6 +81,9 @@ export default function ContractReportTable() {
                   <TableCell>
                     {contract.to?.format(DMY_DATE)}
                   </TableCell>
+                  <TableCell>
+                    {contract.type}
+                  </TableCell>
                 </TableRow>
               );
             })}
