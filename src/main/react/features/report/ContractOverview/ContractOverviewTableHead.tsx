@@ -20,7 +20,7 @@ const headCells = [
   },
 ];
 
-export const ContractReportTableHead = () => {
+export const ContractOverviewTableHead = () => {
   return (
     <TableHead>
       <TableRow>
