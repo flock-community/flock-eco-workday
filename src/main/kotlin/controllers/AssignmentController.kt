@@ -76,7 +76,8 @@ class AssignmentController(
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
     fun findAllByToAfterOrToNull(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate?,
-        page: Pageable): ResponseEntity<List<Assignment>> =
+        page: Pageable
+    ): ResponseEntity<List<Assignment>> =
         assignmentService.findAllByToAfterOrToNull(to, page).toResponse()
 
     @GetMapping("/{code}")
