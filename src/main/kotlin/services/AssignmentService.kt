@@ -38,6 +38,9 @@ class AssignmentService(
     fun findAllByPersonUserCode(userCode: String, page: Pageable = Pageable.unpaged()) = assignmentRepository
         .findAllByPersonUserCode(userCode, page)
 
+    fun findAllByToAfterOrToNull(to: LocalDate?, page: Pageable): Page<Assignment>  =
+        assignmentRepository.findAllByToAfterOrToNull(to, page)
+
     fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Assignment> {
         val query = "SELECT a FROM Assignment a WHERE a.from <= :to AND (a.to is null OR a.to >= :from)"
         return entityManager

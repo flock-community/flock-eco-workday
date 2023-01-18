@@ -97,8 +97,22 @@ const findAllByPersonIdUnpaged = (personId: string) =>
 const findAllByProject = (project: Project) =>
   internalizingClient.query({ projectCode: project.code });
 
+const findAllByToAfterOrToNull = (to: Date, pageable: {size: number, page: number, sort: string}) => {
+  const toString = to.toISOString().substring(0,10);
+  console.log(toString)
+  return internalizingClient.queryByPage(
+    {
+      page: pageable.page,
+      size: pageable.size,
+      sort: pageable.sort,
+    },
+    {to: toString}
+  )
+};
+
 export const AssignmentClient = {
   ...internalizingClient,
   findAllByPersonId,
   findAllByProject,
+  findAllByToAfterOrToNull,
 };
