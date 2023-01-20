@@ -70,8 +70,6 @@ export default function AssignmentOverviewTable() {
           rowsPerPageOptions={[10, 20, 50, {value: -1, label: 'All'}]}
           component="div"
           count={rowCount}
-          // remove labelDisplayRows by replacing it with an empty return
-          // labelDisplayedRows={() => null}
           rowsPerPage={size}
           page={page}
           onPageChange={handlePageChange}
