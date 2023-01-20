@@ -29,7 +29,10 @@ export type ContractRaw = {
   type: "INTERNAL" | "EXTERNAL" | "MANAGEMENT" | "SERVICE";
 };
 
-export type ContractRequest = {};
+export type ContractRequest = {
+  from: string,
+  to?: string
+};
 
 const internalize = (it) => ({
   ...it,
@@ -41,7 +44,10 @@ const clients = new Map<string, any>();
 
 clients.set(
   "general",
-  InternalizingClient<ContractRequest, Contract, ContractRaw>(path, internalize)
+  InternalizingClient<ContractRequest, Contract, ContractRaw>(
+    path,
+    internalize
+  )
 );
 clients.set(
   "INTERNAL",

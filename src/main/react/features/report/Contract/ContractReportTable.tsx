@@ -10,15 +10,6 @@ import {ContractReportTableHead} from "./ContractReportTableHead";
 import {DMY_DATE} from "../../../clients/util/DateFormats";
 import dayjs from "dayjs";
 
-const useStyles = makeStyles({
-  tblEmail: {
-    minWidth: 200
-  },
-  tblName: {
-    minWidth: 170
-  }
-});
-
 export default function ContractReportTable() {
   const {url} = useRouteMatch();
   const [page, setPage] = useState(0);
@@ -28,7 +19,6 @@ export default function ContractReportTable() {
   const [reload, setReload] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const classes = useStyles();
   const history = useHistory();
 
   useEffect(() => {
@@ -93,8 +83,6 @@ export default function ContractReportTable() {
           rowsPerPageOptions={[10, 20, 50, {value: -1, label: 'All'}]}
           component="div"
           count={rowCount}
-          // remove labelDisplayRows by replacing it with an empty return
-          // labelDisplayedRows={() => null}
           rowsPerPage={size}
           page={page}
           onPageChange={handlePageChange}

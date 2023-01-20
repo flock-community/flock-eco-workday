@@ -4,13 +4,11 @@ import React from "react";
 const headCells = [
   {
     id: "person",
-    align: false,
     disablePadding: false,
     label: "person".toUpperCase(),
   },
   {
     id: "from",
-    align: false,
     disablePadding: false,
     label: "from".toUpperCase(),
   },
@@ -29,7 +27,6 @@ export const ContractReportTableHead = () => {
         {headCells.map((cell) => (
           <TableCell
             key={cell.id}
-            align={cell.align ? "right" : "left"}
             padding={cell.disablePadding ? "none" : "normal"}
           >
             {cell.label}
