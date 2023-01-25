@@ -6,7 +6,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import {makeStyles} from "@material-ui/core/styles";
 import {Contract, ContractClient} from "../../../clients/ContractClient";
-import {ContractReportTableHead} from "./ContractReportTableHead";
+import {ContractOverviewTableHead} from "./ContractOverviewTableHead";
 import {DMY_DATE} from "../../../clients/util/DateFormats";
 import dayjs from "dayjs";
 
@@ -49,7 +49,7 @@ export default function ContractReportTable() {
   return (
       <TableContainer>
         <Table>
-          <ContractReportTableHead/>
+          <ContractOverviewTableHead/>
           <TableBody>
             {contractList.map((contract, idx) => {
               return (
