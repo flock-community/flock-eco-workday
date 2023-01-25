@@ -47,10 +47,6 @@ export default function ContractReportTable() {
   };
 
   return (
-    <>
-      <CardHeader
-        title="Contracts"
-      />
       <TableContainer>
         <Table>
           <ContractReportTableHead/>
@@ -89,6 +85,5 @@ export default function ContractReportTable() {
           onRowsPerPageChange={handleRowsPerPageChange}
         />
       </TableContainer>
-    </>
   );
 };
