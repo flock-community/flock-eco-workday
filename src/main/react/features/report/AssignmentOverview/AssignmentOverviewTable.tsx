@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {useHistory, useRouteMatch} from "react-router-dom"
-import {CardHeader, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow} from "@material-ui/core";
+import {Table, TableBody, TableCell, TableContainer, TablePagination, TableRow} from "@material-ui/core";
 import {Assignment, AssignmentClient} from "../../../clients/AssignmentClient";
 import dayjs from "dayjs";
 import {AssignmentOverviewTableHead} from "./AssignmentOverviewTableHead";
@@ -40,42 +40,37 @@ export default function AssignmentOverviewTable() {
   };
 
   return (
-    <>
-      <CardHeader title="Assignments"/>
-      <TableContainer>
-        <Table>
-          <AssignmentOverviewTableHead/>
-          <TableBody>
-            {assignmentList.map((assignment, idx) => {
-              return (
-                <TableRow key={idx} >
-                  <TableCell>
-                    {assignment.person.fullName}
-                  </TableCell>
-                  <TableCell>
-                    {assignment.client.name}
-                  </TableCell>
-                  <TableCell>
-                    {assignment.from.format(DMY_DATE)}
-                  </TableCell>
-                  <TableCell>
-                    {assignment.to?.format(DMY_DATE)}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-        <TablePagination
-          rowsPerPageOptions={[10, 20, 50, {value: -1, label: 'All'}]}
-          component="div"
-          count={rowCount}
-          rowsPerPage={size}
-          page={page}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleRowsPerPageChange}
-        />
-      </TableContainer>
-    </>
+    <TableContainer>
+      <Table>
+        <AssignmentOverviewTableHead/>
+        <TableBody>
+          {assignmentList.map((assignment, idx) =>
+              <TableRow key={idx}>
+                <TableCell>
+                  {assignment.person.fullName}
+                </TableCell>
+                <TableCell>
+                  {assignment.client.name}
+                </TableCell>
+                <TableCell>
+                  {assignment.from.format(DMY_DATE)}
+                </TableCell>
+                <TableCell>
+                  {assignment.to?.format(DMY_DATE)}
+                </TableCell>
+              </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <TablePagination
+        rowsPerPageOptions={[10, 20, 50, {value: -1, label: 'All'}]}
+        component="div"
+        count={rowCount}
+        rowsPerPage={size}
+        page={page}
+        onPageChange={handlePageChange}
+        onRowsPerPageChange={handleRowsPerPageChange}
+      />
+    </TableContainer>
   )
 }
