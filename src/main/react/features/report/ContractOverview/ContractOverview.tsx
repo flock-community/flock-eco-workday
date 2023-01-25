@@ -1,8 +1,8 @@
 import React from "react";
 import {Card, CardContent, CardHeader, Grid} from "@material-ui/core";
-import ContractReportTable from "./ContractReportTable";
+import ContractOverviewTable from "./ContractOverviewTable";
 
-export default function ContractReport() {
+export default function ContractOverview() {
   return (
     <Grid item xs={12}>
     <Card>
@@ -10,7 +10,7 @@ export default function ContractReport() {
         title="Contracts"
       />
       <CardContent>
-        <ContractReportTable />
+        <ContractOverviewTable />
       </CardContent>
     </Card>
   </Grid>

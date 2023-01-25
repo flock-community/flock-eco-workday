@@ -13,6 +13,7 @@ import community.flock.eco.workday.services.AssignmentService
 import community.flock.eco.workday.services.ProjectService
 import community.flock.eco.workday.services.WorkDayService
 import org.springframework.data.domain.Pageable
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -70,6 +71,14 @@ class AssignmentController(
                     .map { assignment -> assignment.toDto() }
             }
             ?: emptyList()
+
+    @GetMapping(params = ["to"])
+    @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
+    fun findAllByToAfterOrToNull(
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate,
+        page: Pageable
+    ): ResponseEntity<List<Assignment>> =
+        assignmentService.findAllByToAfterOrToNull(to, page).toResponse()
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")

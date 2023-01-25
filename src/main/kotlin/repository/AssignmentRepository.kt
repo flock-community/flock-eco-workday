@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
 
@@ -14,4 +15,5 @@ interface AssignmentRepository : PagingAndSortingRepository<Assignment, Long> {
     fun findAllByPersonUuid(personUuid: UUID, page: Pageable): Page<Assignment>
     fun findAllByPersonUserCode(userCode: String, page: Pageable): Page<Assignment>
     fun deleteByCode(code: String)
+    fun findAllByToAfterOrToNull(to: LocalDate, page: Pageable): Page<Assignment>
 }

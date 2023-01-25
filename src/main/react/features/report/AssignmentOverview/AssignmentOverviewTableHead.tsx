@@ -1,33 +1,32 @@
 import {TableCell, TableHead, TableRow} from "@material-ui/core";
 import React from "react";
 
-const headCells = [
+const headcells = [
   {
     id: "person",
-    disablePadding: false,
-    label: "person".toUpperCase(),
+    label: "person".toUpperCase()
+  },
+  {
+    id: "client",
+    label: "client".toUpperCase()
   },
   {
     id: "from",
-    disablePadding: false,
-    label: "from".toUpperCase(),
+    label: "from".toUpperCase()
   },
-  { id: "to",
+  {
+    id: "to",
     label: "to".toUpperCase()
-  },
-  { id: "type",
-    label: "type".toUpperCase()
-  },
+  }
 ];
 
-export const ContractReportTableHead = () => {
+export const AssignmentOverviewTableHead = () => {
   return (
     <TableHead>
       <TableRow>
-        {headCells.map((cell) => (
+        {headcells.map((cell) => (
           <TableCell
             key={cell.id}
-            padding={cell.disablePadding ? "none" : "normal"}
           >
             {cell.label}
           </TableCell>

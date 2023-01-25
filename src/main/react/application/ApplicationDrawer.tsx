@@ -2,6 +2,7 @@ import List from "@material-ui/core/List";
 import React from "react";
 import ProjectIcon from "@material-ui/icons/AccountTree";
 import AssignmentIcon from "@material-ui/icons/Assignment";
+import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined';
 import ContractIcon from "@material-ui/icons/Description";
 import HolidayIcon from "@material-ui/icons/WbSunny";
 import HealingIcon from "@material-ui/icons/Healing";
@@ -147,14 +148,19 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
       authority: "AggregationAuthority.READ",
       items: [
         {
-          name: "Assignment hours",
-          icon: AssignmentIcon,
-          url: "/reports/assignment",
-        },
-        {
           name: "Active Contracts",
           icon: ContractIcon,
-          url: "/reports/contract",
+          url: "/reports/contract-overview",
+        },
+        {
+          name: "Active Assignments",
+          icon: AssignmentIcon,
+          url: "/reports/assignment-overview",
+        },
+        {
+          name: "Assignment hours",
+          icon: AssignmentOutlinedIcon,
+          url: "/reports/assignment",
         },
       ],
     },
