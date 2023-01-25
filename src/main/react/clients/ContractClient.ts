@@ -29,44 +29,50 @@ export type ContractRaw = {
   type: "INTERNAL" | "EXTERNAL" | "MANAGEMENT" | "SERVICE";
 };
 
-export type ContactRequest = {};
+export type ContractRequest = {
+  from: string,
+  to?: string
+};
 
 const internalize = (it) => ({
   ...it,
   from: it.from && dayjs(it.from, ISO_8601_DATE),
-  to: it.to && dayjs(it.to, ISO_8601_DATE),
+  to: it.to && dayjs(it.to, ISO_8601_DATE)
 });
 
 const clients = new Map<string, any>();
 
 clients.set(
   "general",
-  InternalizingClient<ContactRequest, Contract, ContractRaw>(path, internalize)
+  InternalizingClient<ContractRequest, Contract, ContractRaw>(
+    path,
+    internalize
+  )
 );
 clients.set(
   "INTERNAL",
-  InternalizingClient<ContactRequest, Contract, ContractRaw>(
+  InternalizingClient<ContractRequest, Contract, ContractRaw>(
     internalPath,
     internalize
   )
 );
 clients.set(
   "EXTERNAL",
-  InternalizingClient<ContactRequest, Contract, ContractRaw>(
+  InternalizingClient<ContractRequest, Contract, ContractRaw>(
     externalPath,
     internalize
   )
 );
 clients.set(
   "MANAGEMENT",
-  InternalizingClient<ContactRequest, Contract, ContractRaw>(
+  InternalizingClient<ContractRequest, Contract, ContractRaw>(
     managementPath,
     internalize
   )
 );
 clients.set(
   "SERVICE",
-  InternalizingClient<ContactRequest, Contract, ContractRaw>(
+  InternalizingClient<ContractRequest, Contract, ContractRaw>(
     servicePath,
     internalize
   )
@@ -77,26 +83,34 @@ const findAllByPersonId = (personId: string, page: number) =>
     {
       page,
       size: CONTRACT_PAGE_SIZE,
-      sort: "from,desc",
+      sort: "from,desc"
     },
-    { personId: personId }
+    {personId: personId}
   );
 
 const findAllByToBetween = (start: Date, end: Date) => {
   const startString = start.toISOString().substring(0, 10);
   const endString = end.toISOString().substring(0, 10);
 
-  return clients.get("general").query({ start: startString, end: endString });
+  return clients.get("general").query({start: startString, end: endString});
+};
+
+const findAllByToAfterOrToNull = (to: Date, pageable: { size: number; page: number; sort: string[] }) => {
+  const toString = to.toISOString().substring(0, 10);
+
+  return clients.get("general").queryByPage(pageable, {"to": toString})
 };
 
 const put = (id, type, item) => clients.get(type).put(id, item);
 
 const post = (type, item) => clients.get(type).post(item);
 
+
 export const ContractClient = {
   ...clients.get("general"),
   post,
   put,
+  findAllByToAfterOrToNull,
   findAllByPersonId,
-  findAllByToBetween,
+  findAllByToBetween
 };

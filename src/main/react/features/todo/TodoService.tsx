@@ -52,6 +52,5 @@ export const updateStatus = (status, item) => {
   if (item.type === "HOLIDAY") return updateStatusHoliDay(item.id, status);
   if (item.type === "PLUSDAY") return updateStatusHoliDay(item.id, status);
   if (item.type === "EXPENSE") return updateStatusExpense(item.id, status);
-  if (item.type === "EXPENSE") return updateStatusExpense(item.id, status);
-  return null;
+  return Promise.reject("Invalid item type");
 };

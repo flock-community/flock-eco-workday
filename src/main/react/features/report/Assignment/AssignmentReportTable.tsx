@@ -1,6 +1,6 @@
 import Typography from "@material-ui/core/Typography";
 import React, { Fragment, useEffect, useState } from "react";
-import { AggregationClient } from "../../clients/AggregationClient";
+import { AggregationClient } from "../../../clients/AggregationClient";
 import { Box, TableBody, TableContainer } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
@@ -8,7 +8,7 @@ import TableCell from "@material-ui/core/TableCell";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { makeStyles } from "@material-ui/core/styles";
 import AssignmentReportTableRow from "./AssignmentReportTableRow";
-import { AggregationClientPersonAssignmentOverview } from "../../graphql/aggregation";
+import { AggregationClientPersonAssignmentOverview } from "../../../graphql/aggregation";
 import { Dayjs } from "dayjs";
 
 const useStyles = makeStyles({

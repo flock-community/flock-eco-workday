@@ -13,6 +13,7 @@ import {
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
 import dayjs from "dayjs";
+import {DMY_DATE} from "../../clients/util/DateFormats";
 
 type ContractsEndingProps = {
   withinNWeeks: number;
@@ -37,13 +38,13 @@ export default function ContractsEnding({
   );
 
   const renderContract = (contract, index) => (
-    <TableRow key={index}>
-      <TableCell>{contract.person.fullName}</TableCell>
-      <TableCell>{contract.from.format("DD-MM-YYYY")}</TableCell>
-      <TableCell>{contract.to.format("DD-MM-YYYY")}</TableCell>
-      <TableCell>{contract.type}</TableCell>
-    </TableRow>
-  );
+      <TableRow key={index}>
+        <TableCell>{contract.person?.fullName ?? "NVT"}</TableCell>
+        <TableCell>{contract.from.format(DMY_DATE)}</TableCell>
+        <TableCell>{contract.to.format(DMY_DATE)}</TableCell>
+        <TableCell>{contract.type}</TableCell>
+      </TableRow>
+    );
 
   const table = (
     <TableContainer>

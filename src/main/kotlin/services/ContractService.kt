@@ -60,6 +60,8 @@ class ContractService(
 
     fun findAllByToBetween(start: LocalDate?, end: LocalDate?) = contractRepository.findAllByToBetween(start, end)
 
+    fun findAllByToAfterOrToNull(to: LocalDate?, page: Pageable) = contractRepository.findAllByToAfterOrToNull(to, page)
+
     @Transactional
     fun create(form: ContractExternalForm): ContractExternal? = form
         .internalize()

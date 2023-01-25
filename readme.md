@@ -15,7 +15,8 @@ Add `develop` to the springboot `application` run configuration active profiles.
 npm install
 ```
 
-Run `application` and `npm start`.
+Run `application` and `npm start`. Make sure you're using the correct node version. If you have nvm installed,
+run `nvm use` to set node to the version defined in .nvmrc
 
 ## Users
 
