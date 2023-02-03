@@ -50,10 +50,11 @@ export function AssignmentSelector({
     setState(value);
   }, [value]);
 
-  const assignmentInPeriod = (assignment: Assignment) =>
-    assignment.code === value ||
-    (assignment.from.isSameOrBefore(from) &&
-      (!assignment.to || assignment.to.isSameOrAfter(to)));
+  const assignmentInPeriod = (assignment: Assignment) => {
+    return assignment.code === value ||
+      (assignment.from.isSameOrBefore(from) &&
+        (!assignment.to || assignment.to.isSameOrAfter(to, 'day')));
+  };
 
   function handleChange(event) {
     const selected = event.target.value;

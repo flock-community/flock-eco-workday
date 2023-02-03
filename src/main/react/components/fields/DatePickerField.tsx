@@ -15,7 +15,7 @@ export function DatePickerField({ name, ...props }: DatePickerFieldProps) {
         <DatePicker
           value={value}
           onChange={(it) => {
-            setFieldValue(name, it);
+            setFieldValue(name, it?.startOf('day'));
           }}
           disabled={isSubmitting}
           {...props}
