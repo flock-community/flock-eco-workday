@@ -38,7 +38,11 @@ class MailjetService(
             variables = variables,
             recipientEmailAddress = notificationProperties.recipient
         )
-        client.post(request)
+        try {
+            client.post(request)
+        } catch(ex: Exception) {
+            log.error("Cannot send mail to mailjet", ex)
+        }
     }
 
     fun sendReminder(person: Person, yearMonth: YearMonth) {
@@ -55,7 +59,11 @@ class MailjetService(
             recipientName = person.getFullName(),
             recipientEmailAddress = person.email
         )
-        client.post(request)
+        try {
+            client.post(request)
+        } catch(ex: Exception) {
+            log.error("Cannot send mail to mailjet", ex)
+        }
     }
 
     private fun createMailjetRequest(
