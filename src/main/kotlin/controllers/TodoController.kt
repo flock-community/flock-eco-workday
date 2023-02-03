@@ -47,6 +47,7 @@ class TodoController(
     )
         .filter { authentication.hasAuthority(it.key) }
         .flatMap { it.value }
+        .sortedWith( compareBy( {it.personName},{it.type}))
 
     fun findHolidayTodo() = holiDayService
         .findAllByStatus(Status.REQUESTED)
