@@ -54,18 +54,10 @@ class ApplicationConfiguration(
                     userRepository.save(it.copy(authorities = authorities))
                 }
         } else {
-            val authorities = listOf<Authority>(
-                HolidayAuthority.READ,
-                HolidayAuthority.WRITE,
-                SickdayAuthority.READ,
-                SickdayAuthority.WRITE
-            )
-                .map { it.toName() }
-                .toSet()
             userRepository.findByCode(ev.entity.code)
                 .toNullable()
                 ?.let { user ->
-                    userRepository.save(user.copy(authorities = authorities))
+                    userRepository.save(user.copy(authorities = emptySet()))
                 }
         }
     }
