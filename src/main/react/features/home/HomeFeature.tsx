@@ -52,11 +52,11 @@ export function HomeFeature() {
           <Card>
             <CardHeader title={"Holidays"} />
             <CardContent>
-              <Grid container>
-                <Grid item xs={6}>
+              <Grid container spacing={4}>
+                <Grid item xs={12} md={6}>
                   <DashboardHolidayTable />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                   <DashboardHolidayChart />
                 </Grid>
               </Grid>
