@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Legend,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  BarChart,
-  Bar,
 } from "recharts";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import {
   AggregationClient,
-  holidayReportByYear,
+  AggregationHoliday,
 } from "../../clients/AggregationClient";
 
 type HolidaysPerPersonChartProps = {
@@ -20,7 +20,7 @@ type HolidaysPerPersonChartProps = {
 };
 
 export function HolidaysPerPersonChart({ year }: HolidaysPerPersonChartProps) {
-  const [state, setState] = useState<any>(null);
+  const [state, setState] = useState<AggregationHoliday[] | null>(null);
 
   useEffect(() => {
     const date = new Date();

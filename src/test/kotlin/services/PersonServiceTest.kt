@@ -48,7 +48,6 @@ class PersonServiceTest {
         assertEquals(1, result.size)
     }
 
-
     @Test
     fun `find person events same year`() {
         val start = LocalDate.of(2022, Month.DECEMBER, 1)
@@ -70,4 +69,3 @@ class PersonServiceTest {
         assertEquals(1, result.size)
     }
 }
-
