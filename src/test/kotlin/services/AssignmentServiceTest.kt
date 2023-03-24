@@ -60,7 +60,7 @@ class AssignmentServiceTest(
 
         val res = assignmentService.findAllByToAfterOrToNull(to, Pageable.ofSize(10))
 
-        assertEquals(5, res.content.size )
+        assertEquals(5, res.content.size)
         assertTrue(res.contains(data["in3"]))
         assertTrue(res.contains(data["in4"]))
         assertTrue(res.contains(data["in5"]))
