@@ -50,4 +50,4 @@ jobs:
         run: ./mvnw -B compile -P frontend jib:build -Djib.to.image=gcr.io/flock-eco/flock-eco-workday --file pom.xml
 
       - name: Build and Deploy Development version
-        run: ./mvnw -B compile -P develop -P frontend -P h2 jib:build -Djib.to.image=gcr.io/flock-eco/flock-eco-workday-develop --file pom.xml
+        run: ./mvnw -B compile -P develop -P frontend jib:build -Djib.to.image=gcr.io/flock-eco/flock-eco-workday-develop --file pom.xml
