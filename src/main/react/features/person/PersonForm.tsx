@@ -73,7 +73,6 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
             <DatePickerField
               name="birthdate"
               label="Birthdate"
-              format="DD/MM/YYYY"
               fullWidth
               clearable
             />
@@ -82,7 +81,6 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
             <DatePickerField
               name="joinDate"
               label="Join date"
-              format="DD/MM/YYYY"
               fullWidth
               clearable
             />

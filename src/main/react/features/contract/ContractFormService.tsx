@@ -48,7 +48,6 @@ export const ContractFormService = ({
             <DatePickerField
               name="from"
               label="Start date"
-              format={DMY_DATE}
               fullWidth
               maxDate={values.to ? values.to : undefined}
             />
@@ -57,7 +56,6 @@ export const ContractFormService = ({
             <DatePickerField
               name="to"
               label="End date"
-              format={DMY_DATE}
               fullWidth
               clearable
               minDate={values?.from}
