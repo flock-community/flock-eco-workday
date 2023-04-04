@@ -204,9 +204,6 @@
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>2.7.1</version>
                 <configuration>
-                    <to>
-                        <image>gcr.io/flock-eco/flock-eco-workday</image>
-                    </to>
                     <container>
                         <mainClass>community.flock.eco.workday.ApplicationKt</mainClass>
                     </container>
@@ -241,6 +238,16 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>h2</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                    <scope>compile</scope>
+                </dependency>
+            </dependencies>
+        </profile>
         <profile>
             <id>frontend</id>
             <build>
