@@ -47,4 +47,7 @@ jobs:
           restore-keys: ${{ runner.os }}-node-
 
       - name: Build and Deploy
-        run: ./mvnw -B compile -P frontend jib:build --file pom.xml
+        run: ./mvnw -B compile -P frontend jib:build -Djib.to.image=gcr.io/flock-eco/flock-eco-workday --file pom.xml
+
+      - name: Build and Deploy Development version
+        run: ./mvnw -B compile -P develop -P frontend -P h2 jib:build -Djib.to.image=gcr.io/flock-eco/flock-eco-workday-develop --file pom.xml
