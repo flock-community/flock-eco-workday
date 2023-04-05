@@ -77,7 +77,7 @@ export const PersonDetails = (props) => {
 
   const assignments = (
     <Grid item xs={12} sm={6}>
-      <AssignmentFeature person={person}  disableEdit/>
+      <AssignmentFeature person={person} />
     </Grid>
   );
 
