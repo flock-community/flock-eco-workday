@@ -34,7 +34,7 @@ export function PersonSelector({
       {
         page: 0,
         size: 100,
-        sort: "lastname",
+        sort: "firstname",
       },
       {
         active: true,
