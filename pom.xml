@@ -6,7 +6,7 @@
     <parent>
         <artifactId>flock-eco-application-parent</artifactId>
         <groupId>com.github.flock-community.flock-eco</groupId>
-        <version>2.7.5</version>
+        <version>2.7.7</version>
     </parent>
 
     <groupId>flock.community.eco.workday</groupId>
@@ -238,16 +238,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>h2</id>
-            <dependencies>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                    <scope>compile</scope>
-                </dependency>
-            </dependencies>
-        </profile>
         <profile>
             <id>frontend</id>
             <build>

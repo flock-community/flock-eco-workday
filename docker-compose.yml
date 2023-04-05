@@ -2,7 +2,5 @@ version: "3.9"
 services:
   workday:
     image: gcr.io/flock-eco/flock-eco-workday-develop:latest
-    environment:
-      - SPRING_PROFILES_ACTIVE=develop
     ports:
       - "8080:8080"
