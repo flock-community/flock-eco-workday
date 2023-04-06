@@ -63,11 +63,11 @@ class PersonController(
         }
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
-    @GetMapping(params = ["firstname"])
+    @GetMapping(params = ["search"])
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
-    fun findAllByFirstname(pageable: Pageable, @RequestParam firstname: String) =
+    fun findAllByFullName(pageable: Pageable, @RequestParam search: String) =
         service
-            .findAllByFirstname(pageable, firstname)
+            .findAllByFullName(pageable, search)
             .toResponse()
 
     @PostMapping

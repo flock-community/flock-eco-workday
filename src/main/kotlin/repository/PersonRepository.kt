@@ -3,6 +3,7 @@ package community.flock.eco.workday.repository
 import community.flock.eco.workday.model.Person
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 import java.util.Optional
@@ -16,5 +17,6 @@ interface PersonRepository : PagingAndSortingRepository<Person, Long> {
     fun deleteByUuid(uuid: UUID): Unit
     fun findByUuidIn(userUuid: List<UUID>): Iterable<Person>
     fun findAllByActive(pageable: Pageable, active: Boolean): Page<Person>
-    fun findAllByFirstnameContainingIgnoreCase(pageable: Pageable, firstname: String): Page<Person>
+    @Query("SELECT p FROM Person p WHERE LOWER(CONCAT(p.firstname, ' ', p.lastname)) LIKE LOWER(CONCAT('%', ?1, '%'))")
+    fun findAllByFullName(pageable: Pageable, search: String): Page<Person>
 }
