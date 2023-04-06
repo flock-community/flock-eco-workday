@@ -17,17 +17,6 @@ const headCells = [
     disablePadding: false,
     label: "active".toUpperCase(),
   },
-  { id: "holidays", label: "holidays".toUpperCase() },
-  {
-    id: "clients",
-    disablePadding: false,
-    label: "clients".toUpperCase(),
-  },
-  {
-    id: "hours",
-    disablePadding: false,
-    label: "hours".toUpperCase(),
-  },
 ];
 
 export const PersonTableHead = () => {

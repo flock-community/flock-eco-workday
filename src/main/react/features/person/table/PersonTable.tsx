@@ -122,9 +122,6 @@ export const PersonTable = () => {
                       <TableCell align="left">
                         {person.active && <CheckBox />}
                       </TableCell>
-                      <TableCell />
-                      <TableCell />
-                      <TableCell />
                     </TableRow>
                   );
                 })}
