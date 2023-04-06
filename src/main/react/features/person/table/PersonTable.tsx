@@ -94,7 +94,7 @@ export const PersonTable = () => {
             <TextField
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search by first name"
+              placeholder="Search name"
               inputRef={searchInputRef}
             />
           </Box>
