@@ -1,45 +1,16 @@
 import React from "react";
 import { Box, Grid, TextField } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import { dateInPeriod, getDay, Period } from "../../features/period/Period";
+import { Period } from "../../features/period/Period";
 import dayjs, { Dayjs } from "dayjs";
 import weekOfYearPlugin from "dayjs/plugin/weekOfYear";
+
+// utils
+import { calcGrid } from "../../utils/calcGrid";
 
 dayjs.extend(weekOfYearPlugin);
 
 const daysOfWeek = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
-const stringifyDate = (date) => {
-  return date.format("YYYYMMDD");
-};
-
-const calcGrid = (period: Period) => {
-  const diff =
-    Math.ceil(
-      period.to.startOf("week").diff(period.from.startOf("week"), "days") / 7
-    ) + 1;
-  const weeks = Array.from(Array(diff > 0 ? diff : 1).keys());
-  return weeks.map((week) => {
-    const day = period.from.startOf("week").add(week, "weeks").add(1, "day");
-
-    const weekNumber = day.week();
-    const year = day.year();
-    const res = Array.from(Array(7).keys()).map((dayDiff) => {
-      const date = day.add(dayDiff, "days");
-      const enabled = dateInPeriod(period, date);
-      const key = stringifyDate(date);
-      return {
-        key,
-        date,
-        disabled: !enabled,
-        value: enabled ? String(getDay(period, date)) : "",
-      };
-    });
-    const total = res
-      .filter((it) => !it.disabled)
-      .reduce((acc, cur) => acc + getDay(period, cur.date) || acc, 0);
-    return { year, weekNumber, days: res, total };
-  });
-};
 
 export type PeriodInputProps = {
   period: Period;
