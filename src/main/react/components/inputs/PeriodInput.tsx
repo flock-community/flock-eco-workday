@@ -7,7 +7,7 @@ import weekOfYearPlugin from "dayjs/plugin/weekOfYear";
 
 dayjs.extend(weekOfYearPlugin);
 
-const daysOfWeek = ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"];
+const daysOfWeek = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
 const stringifyDate = (date) => {
   return date.format("YYYYMMDD");
 };
@@ -19,7 +19,8 @@ const calcGrid = (period: Period) => {
     ) + 1;
   const weeks = Array.from(Array(diff > 0 ? diff : 1).keys());
   return weeks.map((week) => {
-    const day = period.from.startOf("week").add(week, "weeks");
+    const day = period.from.startOf("week").add(week, "weeks").add(1, "day");
+
     const weekNumber = day.week();
     const year = day.year();
     const res = Array.from(Array(7).keys()).map((dayDiff) => {
@@ -55,6 +56,7 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
   return (
     <>
       <Grid container spacing={1} alignItems="center">
+        {/* The header of the table with the days as caption */}
         <Grid item xs={2}>
           <Typography>Week</Typography>
         </Grid>
@@ -67,6 +69,7 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
           <Typography align="right">Total</Typography>
         </Grid>
       </Grid>
+      {/* End header */}
 
       {grid.map((week) => {
         return (
@@ -103,6 +106,7 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
         );
       })}
 
+      {/* Bottom */}
       <Box mt={1}>
         <Grid container spacing={1} alignItems="center">
           <Grid item xs={10}>
@@ -113,6 +117,7 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
           </Grid>
         </Grid>
       </Box>
+      {/* Endbottom */}
     </>
   );
 }
