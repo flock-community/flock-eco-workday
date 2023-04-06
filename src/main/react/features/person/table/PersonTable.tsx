@@ -55,7 +55,7 @@ export const PersonTable = () => {
   useEffect(() => searchInputRef?.current?.focus(), [searchInputRef]);
 
   useEffect(() => {
-    PersonClient.findAllByFirstname(
+    PersonClient.findAllByFullName(
       { page, size, sort: "firstname" },
       searchTerm
     ).then((res) => {
