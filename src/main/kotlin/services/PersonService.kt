@@ -80,8 +80,8 @@ class PersonService(
     fun findByPersonCodeIdIn(personCodes: List<UUID>) = repository
         .findByUuidIn(personCodes)
 
-    fun findAllByFirstname(pageable: Pageable, firstname: String) = repository
-        .findAllByFirstnameContainingIgnoreCase(pageable, firstname)
+    fun findAllByFullName(pageable: Pageable, search: String) = repository
+        .findAllByFullName(pageable, search)
 
     fun findAllPersonEvents(start: LocalDate, end: LocalDate): List<PersonEvent> =
         with(repository.findAllByActive(Pageable.unpaged(), active = true)) {
