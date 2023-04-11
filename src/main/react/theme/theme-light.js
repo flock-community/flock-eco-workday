@@ -21,5 +21,15 @@ export const themeLight = createTheme({
       variant: "contained",
       color: "primary",
     },
+    link: {
+      "&::after": {
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+      },
+    },
   },
 });

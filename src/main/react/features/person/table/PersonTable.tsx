@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { useRouteMatch, Link } from "react-router-dom";
 import {
   Box,
   Card,
@@ -12,8 +12,10 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+
 import { PersonTableHead } from "./PersonTableHead";
 import { Person, PersonClient } from "../../../clients/PersonClient";
 import { PersonDialog } from "../PersonDialog";
@@ -21,14 +23,22 @@ import { CheckBox } from "@material-ui/icons";
 import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: any) => ({
   tblEmail: {
     minWidth: 200,
   },
   tblName: {
     minWidth: 170,
   },
-});
+  tblRow: {
+    position: "relative",
+  },
+  link: {
+    color: "black",
+    textDecoration: "none",
+    ...theme?.props?.link,
+  },
+}));
 
 export const PersonTable = () => {
   const { url } = useRouteMatch();
@@ -40,7 +50,6 @@ export const PersonTable = () => {
   const [reload, setReload] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const history = useHistory();
   const classes = useStyles();
 
   useEffect(() => searchInputRef?.current?.focus(), [searchInputRef]);
@@ -74,10 +83,6 @@ export const PersonTable = () => {
     setPage(0);
   };
 
-  const handleClick = (person: Person) => {
-    history.push(`${url}/code/${person.uuid}`);
-  };
-
   return (
     <>
       <Card>
@@ -104,20 +109,24 @@ export const PersonTable = () => {
               <TableBody>
                 {personList.map((person, idx) => {
                   return (
-                    <TableRow
-                      key={idx}
-                      hover
-                      onClick={() => handleClick(person)}
-                    >
+                    <TableRow key={idx} hover className={classes.tblRow}>
                       <TableCell
                         className={classes.tblName}
                         component="th"
                         scope="row"
                       >
-                        {person.fullName}
+                        <Link
+                          key={person.uuid}
+                          to={`${url}/code/${person.uuid}`}
+                          className={classes.link}
+                        >
+                          {person.fullName}
+                        </Link>
                       </TableCell>
                       <TableCell className={classes.tblEmail} align="left">
-                        {person.email}
+                        <Typography className={classes.tblRow}>
+                          {person.email}
+                        </Typography>
                       </TableCell>
                       <TableCell align="left">
                         {person.active && <CheckBox />}
