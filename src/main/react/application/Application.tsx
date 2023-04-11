@@ -38,6 +38,7 @@ import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/co
 import AssignmentReport from "../features/report/Assignment/AssignmentReport";
 import ContractOverview from "../features/report/ContractOverview/ContractOverview";
 import AssignmentOverview from "../features/report/AssignmentOverview/AssignmentOverview";
+import {LoginFeature} from "../features/login/LoginFeature";
 
 const theme = getTheme("light");
 
@@ -71,48 +72,49 @@ export const Application = () => {
     it.exec(window.location.hash)
   );
 
-  if (authorize && !status.isLoggedIn) {
-    window.location.href = "/login";
-    return null;
-  }
+  const loginNeeded = authorize && !status.isLoggedIn;
 
   return (
     <ThemeProvider theme={theme}>
       <ApplicationContext.Provider
         value={{ authorities: status.authorities, user }}
       >
-        <Router>
-          <ApplicationDrawer open={openDrawer} onClose={handleDrawerClose} />
-          <ApplicationLayout onDrawer={handleDrawerOpen} />
-          <Box m={2}>
-            <Switch>
-              <Route path="/" exact component={HomeFeature} />
-              <Route path="/dashboard" exact component={DashboardFeature} />
-              <Route path="/month" exact component={MonthFeature} />
-              <Route path="/todo" exact component={TodoFeature} />
-              <Route path="/clients" exact component={ClientFeature} />
-              <Route path="/contracts" exact component={ContractPage} />
-              <Route path="/projects" exact component={ProjectFeature} />
-              <Route path="/assignments" exact component={AssignmentPage} />
-              <Route path="/workdays" exact component={WorkDayPage} />
-              <Route path="/holidays" exact component={HolidayPage} />
-              <Route path="/sickdays" component={SickDayPage} />
-              <Route path="/expenses" component={ExpensePage} />
-              <Route path="/exactonline" component={ExactonlineFeature} />
-              <Route path="/users" exact component={UserFeature} />
-              <Route path="/person" component={PersonFeature} />
-              <Route path="/event" component={EventFeature} />
-              <Route
-                path="/event_rating/:eventCode"
-                component={EventRatingFeature}
-              />
-              <Route path="/reports/assignment" component={AssignmentReport} />
-              <Route path="/reports/contract-overview" component={ContractOverview} />
-              <Route path="/reports/assignment-overview" component={AssignmentOverview} />
-              <Redirect to="/" />
-            </Switch>
-          </Box>
-        </Router>
+        {
+          loginNeeded ?
+          <LoginFeature></LoginFeature>  :
+          <Router>
+            <ApplicationDrawer open={openDrawer} onClose={handleDrawerClose} />
+            <ApplicationLayout onDrawer={handleDrawerOpen} />
+            <Box m={2}>
+              <Switch>
+                <Route path="/" exact component={HomeFeature} />
+                <Route path="/dashboard" exact component={DashboardFeature} />
+                <Route path="/month" exact component={MonthFeature} />
+                <Route path="/todo" exact component={TodoFeature} />
+                <Route path="/clients" exact component={ClientFeature} />
+                <Route path="/contracts" exact component={ContractPage} />
+                <Route path="/projects" exact component={ProjectFeature} />
+                <Route path="/assignments" exact component={AssignmentPage} />
+                <Route path="/workdays" exact component={WorkDayPage} />
+                <Route path="/holidays" exact component={HolidayPage} />
+                <Route path="/sickdays" component={SickDayPage} />
+                <Route path="/expenses" component={ExpensePage} />
+                <Route path="/exactonline" component={ExactonlineFeature} />
+                <Route path="/users" exact component={UserFeature} />
+                <Route path="/person" component={PersonFeature} />
+                <Route path="/event" component={EventFeature} />
+                <Route
+                  path="/event_rating/:eventCode"
+                  component={EventRatingFeature}
+                />
+                <Route path="/reports/assignment" component={AssignmentReport} />
+                <Route path="/reports/contract-overview" component={ContractOverview} />
+                <Route path="/reports/assignment-overview" component={AssignmentOverview} />
+                <Redirect to="/" />
+              </Switch>
+            </Box>
+          </Router>
+        }
         <ErrorStack ErrorList={errors} />
       </ApplicationContext.Provider>
     </ThemeProvider>
