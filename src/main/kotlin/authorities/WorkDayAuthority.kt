@@ -5,5 +5,6 @@ import community.flock.eco.core.authorities.Authority
 enum class WorkDayAuthority : Authority {
     READ,
     WRITE,
-    ADMIN
+    ADMIN,
+    TOTAL_HOURS
 }
