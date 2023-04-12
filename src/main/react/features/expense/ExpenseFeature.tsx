@@ -59,6 +59,7 @@ export function ExpenseFeature({ person }: ExpenseFeatureProps) {
         id={id!!}
         open={open}
         personId={person?.uuid}
+        personFullName={person.fullName}
         onComplete={handleCompleteDialog}
       />
     </>

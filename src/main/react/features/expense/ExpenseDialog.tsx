@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, Divider } from "@material-ui/core";
+import { Box, Dialog, DialogContent, Divider } from "@material-ui/core";
 import WorkIcon from "@material-ui/icons/Work";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
@@ -14,11 +14,13 @@ import { ExpenseFormTravel } from "./ExpenseFormTravel";
 import { ExpenseFormCost } from "./ExpenseFormCost";
 import { ExpenseType } from "./ExpenseType";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 
 type ExpenseDialogProps = {
   open: boolean;
   id?: string;
   personId?: string;
+  personFullName: string;
   onComplete?: (item?: any) => void;
 };
 
@@ -26,6 +28,7 @@ export function ExpenseDialog({
   open,
   id,
   personId,
+  personFullName,
   onComplete,
 }: ExpenseDialogProps) {
   const [type, setType] = useState(ExpenseType.COST);
@@ -88,6 +91,10 @@ export function ExpenseDialog({
     onComplete?.();
   };
 
+  const headline = UserAuthorityUtil.hasAuthority("ExpenseAuthority.ADMIN")
+    ? `Create expense | ${personFullName}`
+    : "Create expense";
+
   return (
     <>
       <Dialog
@@ -101,11 +108,18 @@ export function ExpenseDialog({
       >
         <DialogHeader
           icon={<WorkIcon />}
-          headline="Create expense"
+          headline={headline}
           subheadline="Add your expense."
           onClose={handleClose}
         />
         <DialogContent>
+          <UserAuthorityUtil has={"ExpenseAuthority.ADMIN"}>
+            <Box my="1rem">
+              <Typography variant={"h5"} component={"h2"}>
+                {personFullName}
+              </Typography>
+            </Box>
+          </UserAuthorityUtil>
           <Grid container spacing={1}>
             {!id && (
               <Grid item xs={12}>

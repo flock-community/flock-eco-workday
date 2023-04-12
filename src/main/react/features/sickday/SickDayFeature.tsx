@@ -62,6 +62,7 @@ export function SickDayFeature({ person }: SickDayFeatureProps) {
         </CardContent>
       </Card>
       <SickDayDialog
+        personFullName={person.fullName}
         open={open}
         code={value?.code}
         personId={person?.uuid}
