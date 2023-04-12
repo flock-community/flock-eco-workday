@@ -70,8 +70,8 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 userSecurityService.googleLogin(http)
                     .and()
                     .defaultSuccessUrl("/", true)
-            "DATABASE" -> userSecurityService.databaseLogin(http)
-            else -> userSecurityService.testLogin(http)
+            "DATABASE" -> userSecurityService.databaseLogin(http).loginPage("/").loginProcessingUrl("/login")
+            else -> userSecurityService.testLogin(http).loginPage("/").loginProcessingUrl("/login")
         }
     }
 }

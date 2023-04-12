@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { UserClient } from "../clients/UserClient";
 
-let store = null;
+const DEFAULT = "LOADING";
+let store = { type: DEFAULT };
 const listeners = [];
 
 function update(it) {
@@ -9,13 +10,17 @@ function update(it) {
   listeners.forEach((func) => func(it));
 }
 
-export function useLoginStatus() {
+export function useLoginType() {
   const [state, setState] = useState(store);
 
   useEffect(() => {
-    const listener = (it) => setState(it);
-    if (store === null && listeners.length === 0) {
-      UserClient.getStatus().then(update);
+    const listener = (it) => {
+      setState(it);
+    };
+    if (store.type === DEFAULT && listeners.length === 0) {
+      UserClient.getType().then((result) => {
+        update(result);
+      });
     }
     listeners.push(listener);
     return () => {
