@@ -38,7 +38,7 @@ import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/co
 import AssignmentReport from "../features/report/Assignment/AssignmentReport";
 import ContractOverview from "../features/report/ContractOverview/ContractOverview";
 import AssignmentOverview from "../features/report/AssignmentOverview/AssignmentOverview";
-import {LoginFeature} from "../features/login/LoginFeature";
+import { LoginFeature } from "../features/login/LoginFeature";
 
 const theme = getTheme("light");
 
@@ -79,9 +79,9 @@ export const Application = () => {
       <ApplicationContext.Provider
         value={{ authorities: status.authorities, user }}
       >
-        {
-          loginNeeded ?
-          <LoginFeature></LoginFeature>  :
+        {loginNeeded ? (
+          <LoginFeature></LoginFeature>
+        ) : (
           <Router>
             <ApplicationDrawer open={openDrawer} onClose={handleDrawerClose} />
             <ApplicationLayout onDrawer={handleDrawerOpen} />
@@ -107,14 +107,23 @@ export const Application = () => {
                   path="/event_rating/:eventCode"
                   component={EventRatingFeature}
                 />
-                <Route path="/reports/assignment" component={AssignmentReport} />
-                <Route path="/reports/contract-overview" component={ContractOverview} />
-                <Route path="/reports/assignment-overview" component={AssignmentOverview} />
+                <Route
+                  path="/reports/assignment"
+                  component={AssignmentReport}
+                />
+                <Route
+                  path="/reports/contract-overview"
+                  component={ContractOverview}
+                />
+                <Route
+                  path="/reports/assignment-overview"
+                  component={AssignmentOverview}
+                />
                 <Redirect to="/" />
               </Switch>
             </Box>
           </Router>
-        }
+        )}
         <ErrorStack ErrorList={errors} />
       </ApplicationContext.Provider>
     </ThemeProvider>
