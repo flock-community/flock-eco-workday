@@ -115,11 +115,12 @@ export function WorkDayForm({ value, onSubmit }) {
       <Grid item xs={12}>
         {renderDatePresetButtons(setFieldValue)}
       </Grid>
-      <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
+      {(UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN") ||
+        UserAuthorityUtil.hasAuthority("WorkDayAuthority.TOTAL_HOURS")) && (
         <Grid item xs={12}>
           {renderSwitch}
         </Grid>
-      </UserAuthorityUtil>
+      )}
       <Grid item xs={12}>
         {daysSwitch ? (
           <Field

@@ -29,6 +29,7 @@ class LoadUserData(
         SickdayAuthority.WRITE,
         WorkDayAuthority.READ,
         WorkDayAuthority.WRITE,
+        WorkDayAuthority.TOTAL_HOURS,
         ExpenseAuthority.READ,
         ExpenseAuthority.WRITE
     )
