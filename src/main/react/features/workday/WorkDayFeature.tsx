@@ -72,6 +72,7 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
         </CardContent>
       </Card>
       <WorkDayDialog
+        personFullName={person.fullName}
         open={open}
         code={value?.code}
         onComplete={handleCompleteDialog}

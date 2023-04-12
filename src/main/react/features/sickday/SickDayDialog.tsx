@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, Divider } from "@material-ui/core";
+import { Box, Dialog, DialogContent, Divider } from "@material-ui/core";
 import HealingIcon from "@material-ui/icons/Healing";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
@@ -11,6 +11,7 @@ import { schemaSickDayForm, SICKDAY_FORM_ID, SickDayForm } from "./SickDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
 type SickDayDialogProps = {
+  personFullName: string;
   open: boolean;
   code: string;
   personId?: string;
@@ -26,6 +27,7 @@ type SickDayDialogForm = {
 };
 
 export function SickDayDialog({
+  personFullName,
   open,
   code,
   personId,
@@ -96,6 +98,10 @@ export function SickDayDialog({
     setOpenDelete(false);
   };
 
+  const headline = UserAuthorityUtil.hasAuthority("SickdayAuthority.ADMIN")
+    ? `Create Sickday | ${personFullName}`
+    : "Create Sickday";
+
   return (
     <>
       <Dialog
@@ -107,11 +113,18 @@ export function SickDayDialog({
       >
         <DialogHeader
           icon={<HealingIcon />}
-          headline="Create Sickday"
+          headline={headline}
           subheadline="Add your sick days. Hope you feel better soon."
           onClose={handleClose}
         />
         <DialogContent>
+          <UserAuthorityUtil has={"SickdayAuthority.ADMIN"}>
+            <Box mt="1rem">
+              <Typography variant={"h5"} component={"h2"}>
+                {personFullName}
+              </Typography>
+            </Box>
+          </UserAuthorityUtil>
           {state && <SickDayForm value={state} onSubmit={handleSubmit} />}
         </DialogContent>
         <Divider />

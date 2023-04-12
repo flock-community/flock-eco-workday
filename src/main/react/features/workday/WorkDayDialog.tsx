@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, Divider } from "@material-ui/core";
+import { Box, Dialog, DialogContent, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import WorkIcon from "@material-ui/icons/Work";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
@@ -19,7 +19,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export function WorkDayDialog({ open, code, onComplete }) {
+export function WorkDayDialog({ personFullName, open, code, onComplete }) {
   const classes = useStyles();
   const [openDelete, setOpenDelete] = useState<boolean>(false);
 
@@ -89,6 +89,10 @@ export function WorkDayDialog({ open, code, onComplete }) {
     setState(null);
   };
 
+  const headline = UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN")
+    ? `Create Workday | ${personFullName}`
+    : "Create Workday";
+
   return (
     <>
       <Dialog
@@ -102,11 +106,18 @@ export function WorkDayDialog({ open, code, onComplete }) {
       >
         <DialogHeader
           icon={<WorkIcon />}
-          headline="Create Workday"
+          headline={headline}
           subheadline="Add your workday."
           onClose={handleClose}
         />
         <DialogContent className={classes.dialogContent}>
+          <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
+            <Box my="1rem">
+              <Typography variant={"h5"} component={"h2"}>
+                {personFullName}
+              </Typography>
+            </Box>
+          </UserAuthorityUtil>
           {state && <WorkDayForm value={state} onSubmit={handleSubmit} />}
         </DialogContent>
         <Divider />
