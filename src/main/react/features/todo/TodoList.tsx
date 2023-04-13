@@ -1,29 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Card, Link, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import CardHeader from "@material-ui/core/CardHeader";
-import Button from "@material-ui/core/Button";
-import PropTypes from "prop-types";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { useHistory } from "react-router-dom";
 import { TodoClient } from "../../clients/TodoClient";
 
-const useStyles = makeStyles((theme) => ({
-  buttonDefault: {
-    backgroundColor: "unset",
-  },
-  buttonRequested: {
-    backgroundColor: "unset",
-  },
-  buttonApproved: {
-    backgroundColor: theme.palette.success[500],
-  },
-  buttonRejected: {
-    backgroundColor: theme.palette.error[500],
-  },
-}));
+// Components
+import { StatusMenu } from "../../components/StatusMenu";
 
 const typeToPath = (type) => {
   switch (type) {
@@ -48,7 +33,6 @@ type TodoListProps = {
 };
 
 export function TodoList({ onItemClick, refresh }: TodoListProps) {
-  const classes = useStyles();
   const history = useHistory();
 
   const [list, setList] = useState<any>();
@@ -59,40 +43,13 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
     });
   }, [refresh]);
 
-  const handleApproveClick = (item) => (e) => {
-    onItemClick("APPROVED", item);
-    e.stopPropagation();
+  const handleStatusChange = (item) => (status) => {
+    onItemClick(status, item);
   };
-  const handleRejectClick = (item) => (e) => {
-    onItemClick("REJECTED", item);
-    e.stopPropagation();
-  };
+
   const handleCardClick = (item) => () => {
     history.push(`/${typeToPath(item.type)}?personId=${item.personId}`);
   };
-
-  function renderAction(item) {
-    return (
-      <Grid container spacing={1}>
-        <Grid item xs>
-          <Button
-            className={classes.buttonRejected}
-            onClick={handleRejectClick(item)}
-          >
-            Reject
-          </Button>
-        </Grid>
-        <Grid item xs>
-          <Button
-            className={classes.buttonApproved}
-            onClick={handleApproveClick(item)}
-          >
-            Approve
-          </Button>
-        </Grid>
-      </Grid>
-    );
-  }
 
   function renderItem(item, key) {
     return (
@@ -105,7 +62,13 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
               </Link>
             }
             subheader={`${item.type}: ${item.description}`}
-            action={renderAction(item)}
+            action={
+              <StatusMenu
+                onChange={handleStatusChange(item)}
+                disabled={false}
+                value="REQUESTED"
+              />
+            }
           />
         </Card>
       </Grid>
