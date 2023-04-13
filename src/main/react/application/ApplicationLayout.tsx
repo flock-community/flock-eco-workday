@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -7,9 +6,15 @@ import Menu from "@material-ui/core/Menu";
 import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuItem from "@material-ui/core/MenuItem";
+import Button from "@material-ui/core/Button";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link as RouterLink } from "react-router-dom";
 import { Link } from "@material-ui/core";
+
+// Hooks
+import { useSession } from "../hooks/SessionHook";
 
 const useStyles = makeStyles({
   root: {
@@ -31,6 +36,12 @@ type ApplicationLayoutProps = {
 export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
   const classes = useStyles();
 
+  const handleLogout = () => {
+    window.location.href = "/logout";
+  };
+
+  const { extendSession, sessionExpired } = useSession(handleLogout);
+
   const [state, setState] = useState({
     anchorEl: null,
   });
@@ -41,10 +52,6 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
 
   const handleClose = () => {
     setState({ anchorEl: null });
-  };
-
-  const handleLogout = () => {
-    window.location.href = "/logout";
   };
 
   const handleClickDrawer = () => {
@@ -105,6 +112,18 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
           </div>
         </Toolbar>
       </AppBar>
+      <Snackbar open={sessionExpired} autoHideDuration={6000}>
+        <Alert
+          severity="error"
+          action={
+            <Button onClick={extendSession} color="primary" size="small">
+              +30minutes
+            </Button>
+          }
+        >
+          Extend your session or be redirected you peasant.
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   );
 }
