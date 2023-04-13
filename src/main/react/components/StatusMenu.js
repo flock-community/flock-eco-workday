@@ -66,7 +66,6 @@ export function StatusMenu({ onChange, disabled, value }) {
         <Menu
           id="simple-menu"
           anchorEl={anchorEl}
-          keepMounted
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
