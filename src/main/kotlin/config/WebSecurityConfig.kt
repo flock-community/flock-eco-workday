@@ -53,6 +53,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .antMatchers("/favicon.ico").permitAll()
             .antMatchers("/").permitAll()
             .antMatchers("/*.js").permitAll()
+            .antMatchers("/images/*.webp").permitAll()
             .antMatchers("/tasks/**").permitAll()
             .antMatchers("/actuator/**").permitAll()
             .antMatchers("/login/**").permitAll()
