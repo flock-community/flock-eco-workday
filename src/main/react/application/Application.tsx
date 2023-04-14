@@ -79,51 +79,60 @@ export const Application = () => {
       <ApplicationContext.Provider
         value={{ authorities: status.authorities, user }}
       >
-        {loginNeeded ? (
-          <LoginFeature></LoginFeature>
-        ) : (
-          <Router>
-            <ApplicationDrawer open={openDrawer} onClose={handleDrawerClose} />
-            <ApplicationLayout onDrawer={handleDrawerOpen} />
-            <Box m={2}>
-              <Switch>
-                <Route path="/" exact component={HomeFeature} />
-                <Route path="/dashboard" exact component={DashboardFeature} />
-                <Route path="/month" exact component={MonthFeature} />
-                <Route path="/todo" exact component={TodoFeature} />
-                <Route path="/clients" exact component={ClientFeature} />
-                <Route path="/contracts" exact component={ContractPage} />
-                <Route path="/projects" exact component={ProjectFeature} />
-                <Route path="/assignments" exact component={AssignmentPage} />
-                <Route path="/workdays" exact component={WorkDayPage} />
-                <Route path="/holidays" exact component={HolidayPage} />
-                <Route path="/sickdays" component={SickDayPage} />
-                <Route path="/expenses" component={ExpensePage} />
-                <Route path="/exactonline" component={ExactonlineFeature} />
-                <Route path="/users" exact component={UserFeature} />
-                <Route path="/person" component={PersonFeature} />
-                <Route path="/event" component={EventFeature} />
-                <Route
-                  path="/event_rating/:eventCode"
-                  component={EventRatingFeature}
-                />
-                <Route
-                  path="/reports/assignment"
-                  component={AssignmentReport}
-                />
-                <Route
-                  path="/reports/contract-overview"
-                  component={ContractOverview}
-                />
-                <Route
-                  path="/reports/assignment-overview"
-                  component={AssignmentOverview}
-                />
-                <Redirect to="/" />
-              </Switch>
-            </Box>
-          </Router>
-        )}
+        <Router>
+          {loginNeeded ? (
+            <>
+              <Redirect to="/auth" exact />
+              <Route path="/auth" exact component={LoginFeature} />
+            </>
+          ) : (
+            <>
+              <ApplicationDrawer
+                open={openDrawer}
+                onClose={handleDrawerClose}
+              />
+              <ApplicationLayout onDrawer={handleDrawerOpen} />
+              <Box m={2}>
+                <Switch>
+                  <Route path="/" exact component={HomeFeature} />
+                  <Route path="/dashboard" exact component={DashboardFeature} />
+                  <Route path="/month" exact component={MonthFeature} />
+                  <Route path="/todo" exact component={TodoFeature} />
+                  <Route path="/clients" exact component={ClientFeature} />
+                  <Route path="/contracts" exact component={ContractPage} />
+                  <Route path="/projects" exact component={ProjectFeature} />
+                  <Route path="/assignments" exact component={AssignmentPage} />
+                  <Route path="/workdays" exact component={WorkDayPage} />
+                  <Route path="/holidays" exact component={HolidayPage} />
+                  <Route path="/sickdays" component={SickDayPage} />
+                  <Route path="/expenses" component={ExpensePage} />
+                  <Route path="/exactonline" component={ExactonlineFeature} />
+                  <Route path="/users" exact component={UserFeature} />
+                  <Route path="/person" component={PersonFeature} />
+                  <Route path="/event" component={EventFeature} />
+                  <Route
+                    path="/event_rating/:eventCode"
+                    component={EventRatingFeature}
+                  />
+                  <Route
+                    path="/reports/assignment"
+                    component={AssignmentReport}
+                  />
+                  <Route
+                    path="/reports/contract-overview"
+                    component={ContractOverview}
+                  />
+                  <Route
+                    path="/reports/assignment-overview"
+                    component={AssignmentOverview}
+                  />
+                  <Redirect to="/" />
+                </Switch>
+              </Box>
+            </>
+          )}
+        </Router>
+
         <ErrorStack ErrorList={errors} />
       </ApplicationContext.Provider>
     </ThemeProvider>
