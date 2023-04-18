@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Link, Typography } from "@material-ui/core";
+import { Box, Card, Link, Typography } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -10,9 +10,16 @@ import { TodoClient } from "../../clients/TodoClient";
 // Components
 import { StatusMenu } from "../../components/StatusMenu";
 import { SimpleTabs } from "../../components/tabs/Tabs";
+import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 // Utils
 import { groupByType } from "../../utils/groupByType";
+
+// Types
+import type { DayProps, DayListProps } from "../../types";
+
+// @todo make this a global PAGE_SIZE constants
+const TODO_PAGE_SIZE = 5;
 
 const typeToPath = (type) => {
   switch (type) {
@@ -48,11 +55,14 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
   const history = useHistory();
 
   const [list, setList] = useState<any>();
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState(-1);
 
   useEffect(() => {
     TodoClient.all().then((res) => {
       const todoItems = res.body as TodoItemProps[];
       setList(groupByType(todoItems));
+      setPageCount(Math.ceil(res.body.length / TODO_PAGE_SIZE));
     });
   }, [refresh]);
 
@@ -101,6 +111,16 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
       </Card>
     );
   }
-
-  return <SimpleTabs data={list} renderFunction={renderItem} />;
+  return (
+    <>
+      <SimpleTabs data={list} renderFunction={renderItem} />;
+      <Box mt={2}>
+        <FlockPagination
+          currentPage={page + 1}
+          totalPages={pageCount}
+          changePageCb={setPage}
+        />
+      </Box>
+    </>
+  );
 }
