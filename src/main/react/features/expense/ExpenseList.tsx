@@ -9,41 +9,54 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItem from "@material-ui/core/ListItem";
 import { StatusMenu } from "../../components/StatusMenu";
 import { EXPENSE_PAGE_SIZE, ExpenseClient } from "../../clients/ExpenseClient";
-import { Pagination } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
+import { Dayjs } from "dayjs";
+
+// Components
+import { FlockPagination } from "../../components/pagination/FlockPagination";
+
+// Types
+import type { DayListProps } from "../../types";
+
+type ExpenseProps = {
+  id: string;
+  date: Dayjs;
+  description: string;
+  person: {
+    id: number;
+    uuid: string;
+    firstname: string;
+    lastname: string;
+    email: string;
+    position: string;
+    number: number | null;
+    birthdate: string | null;
+    joinDate: string | null;
+    active: boolean;
+    lastActiveAt: string | null;
+    reminders: boolean;
+    user: string;
+    fullName: string;
+  };
+  status: string;
+  amount: number;
+  files: any[]; // You can replace 'any' with the specific type of the file object
+  type: string;
+};
 
 const useStyles = makeStyles({
   list: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
-  pagination: {
-    "& .MuiPagination-ul": {
-      justifyContent: "right",
-    },
-  },
 });
 
-type ExpenseListProps = {
-  refresh: boolean;
-  personId?: string;
-  onClickRow: (item: any) => void;
-};
-
-export function ExpenseList({
-  personId,
-  refresh,
-  onClickRow,
-}: ExpenseListProps) {
-  const [items, setItems] = useState([]);
+export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
+  const [items, setItems] = useState<ExpenseProps[]>([]);
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState(-1);
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles(loading);
-
-  const handleChangePage = (event: object, paginationComponentPage: number) =>
-    // Client page is 0-based, pagination component is 1-based
-    setPage(paginationComponentPage - 1);
 
   const loadState = () => {
     setLoading(true);
@@ -140,14 +153,10 @@ export function ExpenseList({
         {items.map(renderItem)}
       </Grid>
       <Box mt={2}>
-        <Pagination
-          className={classes.pagination}
-          count={pageCount}
-          // Client page is 0-based, pagination component is 1-based
-          page={page + 1}
-          onChange={handleChangePage}
-          shape="rounded"
-          size="small"
+        <FlockPagination
+          currentPage={page + 1}
+          totalPages={pageCount}
+          changePageCb={setPage}
         />
       </Box>
     </>
