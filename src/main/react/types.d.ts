@@ -1,3 +1,5 @@
+export type StatusProps = "REQUESTED" | "APPROVED" | "REJECTED";
+
 export type DayProps = {
   type: string;
   id: number;
@@ -7,7 +9,7 @@ export type DayProps = {
   hours: number;
   days: number[];
   description: null;
-  status: string;
+  status: StatusProps;
   personId: string;
 };
 

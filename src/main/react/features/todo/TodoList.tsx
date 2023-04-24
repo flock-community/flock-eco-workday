@@ -14,9 +14,10 @@ import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 // Utils
 import { groupByType } from "../../utils/groupByType";
+import { getPaginatedTabs } from "../../utils/paginationHelpers";
 
 // Types
-import { InputItemProps, GroupedItemProps } from "../../types";
+import { InputItemProps, GroupedItemProps, StatusProps } from "../../types";
 
 // @todo make this a global PAGE_SIZE constants
 const TODO_PAGE_SIZE = 5;
@@ -39,7 +40,7 @@ const typeToPath = (type) => {
 };
 
 type TodoListProps = {
-  onItemClick: (status: string, item: any) => void;
+  onItemClick: (status: StatusProps, item: any) => void;
   refresh: boolean;
 };
 
@@ -50,11 +51,13 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState(-1);
   const [selectedTab, setSelectedTab] = useState(0);
-  const [paginatedItems, setPaginatedItems] = useState([]);
+  const [paginatedItems, setPaginatedItems] = useState<GroupedItemProps[]>([]);
 
-  const handlePageChange = (value) => {
+  const handlePageChange = (value: number) => {
     setPage(value);
-    paginateItemsByTabAndPage(value);
+    setPaginatedItems(
+      getPaginatedTabs(list as GroupedItemProps[], value, TODO_PAGE_SIZE)
+    );
   };
 
   useEffect(() => {
@@ -71,39 +74,21 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
     });
   }, [refresh]);
 
-  const getItemsPerPage = (item, page) => {
-    return item.items.slice(
-      page * TODO_PAGE_SIZE,
-      page * TODO_PAGE_SIZE + TODO_PAGE_SIZE
-    );
-  };
-
-  const getPaginatedTabs = (data, page) => {
-    return data.map((item) => {
-      return {
-        type: item.type,
-        items: getItemsPerPage(item, page),
-      };
-    });
-  };
-
-  const paginateItemsByTabAndPage = (page) => {
-    setPaginatedItems(getPaginatedTabs(list, page));
-  };
-
   useEffect(() => {
     if (!list) return;
     setPageCount(Math.ceil(list[selectedTab].items.length / TODO_PAGE_SIZE));
-    paginateItemsByTabAndPage(0);
+    setPaginatedItems(getPaginatedTabs(list, 0, TODO_PAGE_SIZE));
     setPage(0);
   }, [selectedTab]);
 
   useEffect(() => {
     if (!list) return;
-    paginateItemsByTabAndPage(page);
+    setPaginatedItems(getPaginatedTabs(list, page, TODO_PAGE_SIZE));
   }, [list]);
 
-  const handleStatusChange = (item: InputItemProps) => (status) => {
+  const handleStatusChange = (item: InputItemProps) => (
+    status: StatusProps
+  ) => {
     onItemClick(status, item);
   };
 
