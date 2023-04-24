@@ -5,7 +5,7 @@ import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/
 import { StatusMenu } from "./StatusMenu";
 
 // types
-import type { SickDayProps } from "../features/sickday/SickDayList";
+import type { DayProps } from "../types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type DayListItemProps = {
-  value: SickDayProps;
+  value: DayProps;
   onClick: () => void;
   onClickStatus: (status: string) => void;
   hasAuthority: string;

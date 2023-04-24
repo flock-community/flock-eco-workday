@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Tabs from "@material-ui/core/Tabs";
@@ -7,19 +6,18 @@ import Tab from "@material-ui/core/Tab";
 
 // Types
 import { GroupedItemProps } from "../../types";
+type TabPanelProps = {
+  children?: React.ReactNode;
+  value: number;
+  index: number;
+};
 
-const TabPanel = ({ children, value, index, ...other }) => {
+const TabPanel = ({ children, value, index, ...other }: TabPanelProps) => {
   return (
     <div role="tabpanel" hidden={value !== index} {...other}>
       {value === index && <>{children}</>}
     </div>
   );
-};
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
 };
 
 const useStyles = makeStyles((theme) => ({
