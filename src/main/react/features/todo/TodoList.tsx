@@ -9,6 +9,10 @@ import { TodoClient } from "../../clients/TodoClient";
 
 // Components
 import { StatusMenu } from "../../components/StatusMenu";
+import { SimpleTabs } from "../../components/tabs/Tabs";
+
+// Utils
+import { groupByType } from "../../utils/groupByType";
 
 const typeToPath = (type) => {
   switch (type) {
@@ -32,6 +36,14 @@ type TodoListProps = {
   refresh: boolean;
 };
 
+export type TodoItemProps = {
+  id: string;
+  type: string;
+  personId: string;
+  personName: string;
+  description: string;
+};
+
 export function TodoList({ onItemClick, refresh }: TodoListProps) {
   const history = useHistory();
 
@@ -39,19 +51,20 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
 
   useEffect(() => {
     TodoClient.all().then((res) => {
-      setList(res.body);
+      const todoItems = res.body as TodoItemProps[];
+      setList(groupByType(todoItems));
     });
   }, [refresh]);
 
-  const handleStatusChange = (item) => (status) => {
+  const handleStatusChange = (item: TodoItemProps) => (status) => {
     onItemClick(status, item);
   };
 
-  const handleCardClick = (item) => () => {
+  const handleCardClick = (item: TodoItemProps) => () => {
     history.push(`/${typeToPath(item.type)}?personId=${item.personId}`);
   };
 
-  function renderItem(item, key) {
+  function renderItem(item: TodoItemProps, key: Number) {
     return (
       <Grid item xs={12} key={`todo-list-item-${key}`}>
         <Card>
@@ -89,9 +102,5 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
     );
   }
 
-  return (
-    <Grid container spacing={1}>
-      {list.map(renderItem)}
-    </Grid>
-  );
+  return <SimpleTabs data={list} renderFunction={renderItem} />;
 }

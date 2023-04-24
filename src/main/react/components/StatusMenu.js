@@ -25,7 +25,8 @@ export function StatusMenu({ onChange, disabled, value }) {
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const [color, setColor] = React.useState("default");
+  const [color, setColor] = useState("default");
+  const [expanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     setColor(value);
@@ -34,6 +35,7 @@ export function StatusMenu({ onChange, disabled, value }) {
   const handleMenuClick = (event) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
+    setIsExpanded(!expanded);
   };
 
   const handleClose = () => {
@@ -49,8 +51,8 @@ export function StatusMenu({ onChange, disabled, value }) {
   return (
     <div className={classes.status}>
       <Button
-        aria-controls="simple-menu"
         aria-haspopup="true"
+        aria-expanded={expanded}
         disabled={disabled}
         onClick={handleMenuClick}
         className={clsx({
@@ -64,9 +66,7 @@ export function StatusMenu({ onChange, disabled, value }) {
       </Button>
       {!disabled && (
         <Menu
-          id="simple-menu"
           anchorEl={anchorEl}
-          keepMounted
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
