@@ -16,7 +16,7 @@ import { FlockPagination } from "../../components/pagination/FlockPagination";
 import { groupByType } from "../../utils/groupByType";
 
 // Types
-import type { DayProps, DayListProps } from "../../types";
+import { InputItemProps, GroupedItemProps } from "../../types";
 
 // @todo make this a global PAGE_SIZE constants
 const TODO_PAGE_SIZE = 5;
@@ -43,38 +43,75 @@ type TodoListProps = {
   refresh: boolean;
 };
 
-export type TodoItemProps = {
-  id: string;
-  type: string;
-  personId: string;
-  personName: string;
-  description: string;
-};
-
 export function TodoList({ onItemClick, refresh }: TodoListProps) {
   const history = useHistory();
 
-  const [list, setList] = useState<any>();
+  const [list, setList] = useState<GroupedItemProps[]>();
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState(-1);
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [paginatedItems, setPaginatedItems] = useState([]);
+
+  const handlePageChange = (value) => {
+    setPage(value);
+    paginateItemsByTabAndPage(value);
+  };
 
   useEffect(() => {
     TodoClient.all().then((res) => {
-      const todoItems = res.body as TodoItemProps[];
-      setList(groupByType(todoItems));
-      setPageCount(Math.ceil(res.body.length / TODO_PAGE_SIZE));
+      const todoItems = res.body as InputItemProps[];
+      const groupedTodoItems = groupByType(todoItems);
+      setList(groupedTodoItems);
+
+      setPageCount(
+        Math.ceil(
+          groupByType(todoItems)[selectedTab].items.length / TODO_PAGE_SIZE
+        )
+      );
     });
   }, [refresh]);
 
-  const handleStatusChange = (item: TodoItemProps) => (status) => {
+  const getItemsPerPage = (item, page) => {
+    return item.items.slice(
+      page * TODO_PAGE_SIZE,
+      page * TODO_PAGE_SIZE + TODO_PAGE_SIZE
+    );
+  };
+
+  const getPaginatedTabs = (data, page) => {
+    return data.map((item) => {
+      return {
+        type: item.type,
+        items: getItemsPerPage(item, page),
+      };
+    });
+  };
+
+  const paginateItemsByTabAndPage = (page) => {
+    setPaginatedItems(getPaginatedTabs(list, page));
+  };
+
+  useEffect(() => {
+    if (!list) return;
+    setPageCount(Math.ceil(list[selectedTab].items.length / TODO_PAGE_SIZE));
+    paginateItemsByTabAndPage(0);
+    setPage(0);
+  }, [selectedTab]);
+
+  useEffect(() => {
+    if (!list) return;
+    paginateItemsByTabAndPage(page);
+  }, [list]);
+
+  const handleStatusChange = (item: InputItemProps) => (status) => {
     onItemClick(status, item);
   };
 
-  const handleCardClick = (item: TodoItemProps) => () => {
+  const handleCardClick = (item: InputItemProps) => () => {
     history.push(`/${typeToPath(item.type)}?personId=${item.personId}`);
   };
 
-  function renderItem(item: TodoItemProps, key: Number) {
+  function renderItem(item: InputItemProps, key: Number) {
     return (
       <Grid item xs={12} key={`todo-list-item-${key}`}>
         <Card>
@@ -113,12 +150,19 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
   }
   return (
     <>
-      <SimpleTabs data={list} renderFunction={renderItem} />;
+      <Typography component="h1" variant="h5">
+        Todo's
+      </Typography>
+      <SimpleTabs
+        data={paginatedItems}
+        renderFunction={renderItem}
+        exposedValue={setSelectedTab}
+      />
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}
           totalPages={pageCount}
-          changePageCb={setPage}
+          changePageCb={handlePageChange}
         />
       </Box>
     </>
