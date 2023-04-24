@@ -17,12 +17,17 @@ import { groupByType } from "../../utils/groupByType";
 import { getPaginatedTabs } from "../../utils/paginationHelpers";
 
 // Types
-import { InputItemProps, GroupedItemProps, StatusProps } from "../../types";
+import {
+  InputItemProps,
+  GroupedItemProps,
+  StatusProps,
+  typeProp,
+} from "../../types";
 
 // @todo make this a global PAGE_SIZE constants
 const TODO_PAGE_SIZE = 5;
 
-const typeToPath = (type) => {
+const typeToPath = (type: typeProp) => {
   switch (type) {
     case "WORKDAY":
       return "workdays";
@@ -40,7 +45,7 @@ const typeToPath = (type) => {
 };
 
 type TodoListProps = {
-  onItemClick: (status: StatusProps, item: any) => void;
+  onItemClick: (status: StatusProps, item: InputItemProps) => void;
   refresh: boolean;
 };
 

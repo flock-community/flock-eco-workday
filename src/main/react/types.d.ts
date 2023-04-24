@@ -1,7 +1,13 @@
 export type StatusProps = "REQUESTED" | "APPROVED" | "REJECTED";
+export type typeProp =
+  | "WORKDAY"
+  | "SICKDAY"
+  | "HOLIDAY"
+  | "PLUSDAY"
+  | "EXPENSE";
 
 export type DayProps = {
-  type: string;
+  type: typeProp;
   id: number;
   code: string;
   from: Dayjs;
@@ -22,13 +28,13 @@ export type DayListProps = {
 
 export type InputItemProps = {
   id: string;
-  type: string;
+  type: typeProp;
   personId: string;
   personName: string;
   description: string;
 };
 
 export type GroupedItemProps = {
-  type: string;
+  type: typeProp;
   items: InputItem[];
 };
