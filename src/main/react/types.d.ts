@@ -17,3 +17,16 @@ export type DayListProps = {
   onClickRow: (item: any) => void;
   onClickStatus: (status: string, item: any) => void;
 };
+
+export type InputItemProps = {
+  id: string;
+  type: string;
+  personId: string;
+  personName: string;
+  description: string;
+};
+
+export type GroupedItemProps = {
+  type: string;
+  items: InputItem[];
+};
