@@ -27,6 +27,10 @@ const useStyles = makeStyles({
     marginLeft: -12,
     marginRight: 20,
   },
+  navBar: {
+    position: "sticky",
+    top: 0,
+  },
 });
 
 type ApplicationLayoutProps = {
@@ -61,8 +65,8 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
   };
 
   return (
-    <React.Fragment>
-      <AppBar position="static">
+    <>
+      <AppBar className={classes.navBar}>
         <Toolbar>
           <IconButton
             className={classes.menuButton}
@@ -124,6 +128,6 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
           Extend your session or be redirected you peasant.
         </Alert>
       </Snackbar>
-    </React.Fragment>
+    </>
   );
 }
