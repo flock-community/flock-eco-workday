@@ -79,6 +79,18 @@
             <version>5.1.1</version>
         </dependency>
 
+        <!-- Google API-->
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-drive</artifactId>
+            <version>v3-rev20220709-1.32.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-sheets</artifactId>
+            <version>v4-rev20220620-1.32.1</version>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>com.ninja-squad</groupId>
@@ -130,6 +142,7 @@
                         <artifactId>kotlin-maven-noarg</artifactId>
                         <version>${kotlin.version}</version>
                     </dependency>
+
                 </dependencies>
             </plugin>
 

@@ -7,11 +7,12 @@ const config = {
     historyApiFallback: true,
     proxy: {
       ...ecoConfig.devServer.proxy,
-      '/bootstrap': 'http://localhost:8080',
-      '/logout': 'http://localhost:8080',
-      '/tasks/*': 'http://localhost:8080',
-      '/oauth2/*': 'http://localhost:8080',
+      "/bootstrap": "http://localhost:8080",
+      "/logout": "http://localhost:8080",
+      "/tasks/*": "http://localhost:8080",
+      "/export/*": "http://localhost:8080",
+      "/oauth2/*": "http://localhost:8080",
     },
   },
-}
+};
 module.exports = config;
