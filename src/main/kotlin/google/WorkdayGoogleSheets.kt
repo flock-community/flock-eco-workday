@@ -11,14 +11,14 @@ import org.springframework.stereotype.Component
 
 @Component
 class WorkdayGoogleSheets(
-    workdayGoogleCredentials: GoogleCredentials,
+    workdayGoogleCredentials: GoogleCredentials?,
 ) {
-    private val sheetsService = Sheets.Builder(
+    private val sheetsService = if (workdayGoogleCredentials != null ) Sheets.Builder(
         GoogleNetHttpTransport.newTrustedTransport(),
         GsonFactory.getDefaultInstance(),
         HttpCredentialsAdapter(workdayGoogleCredentials)
-    ).setApplicationName("Your Application Name").build()
-    
+    ).setApplicationName("Your Application Name").build() else null
+
     fun findAndReplaceCellByTag(sheetId: String, tag: String, newValue: String): BatchUpdateSpreadsheetResponse =
         BatchUpdateSpreadsheetRequest().apply {
             requests = listOf(Request().apply {
@@ -30,7 +30,7 @@ class WorkdayGoogleSheets(
                 }
             })
         }.let {
-            sheetsService.spreadsheets().batchUpdate(sheetId, it).execute()
+            sheetsService!!.spreadsheets().batchUpdate(sheetId, it).execute()
         }
 
     fun findCellAndInsertRowByTag(id: String, tag: String, values: List<List<Any?>>) {
@@ -43,7 +43,7 @@ class WorkdayGoogleSheets(
         val batchBody = BatchUpdateValuesRequest()
             .setValueInputOption("USER_ENTERED")
             .setData(listOf(valueRange))
-        sheetsService.spreadsheets().values()
+        sheetsService!!.spreadsheets().values()
             .batchUpdate(id, batchBody)
             .execute();
     }
@@ -51,7 +51,7 @@ class WorkdayGoogleSheets(
     private fun findRangeByTag(id: String, searchValue: String): Pair<Int, Int>? {
         val range = "A1:Z100"
         // Retrieve the values from the sheet
-        val response = sheetsService.spreadsheets().values()
+        val response = sheetsService!!.spreadsheets().values()
             .get(id, range)
             .execute()
 

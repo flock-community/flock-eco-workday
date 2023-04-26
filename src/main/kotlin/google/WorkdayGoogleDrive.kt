@@ -14,14 +14,14 @@ import org.springframework.stereotype.Component
 
 @Component
 class WorkdayGoogleDrive(
-    workdayGoogleCredentials: GoogleCredentials,
+    workdayGoogleCredentials: GoogleCredentials?,
     private val userAccountService: UserAccountService
 ) {
     companion object {
         private const val fields = "id, name, owners(permissionId, displayName, emailAddress), webViewLink"
     }
 
-    private val drive: Drive =
+    private val drive: Drive? = if (workdayGoogleCredentials != null)
         Drive.Builder(
             GoogleNetHttpTransport.newTrustedTransport(),
             GsonFactory.getDefaultInstance(),
@@ -29,9 +29,10 @@ class WorkdayGoogleDrive(
         )
             .setApplicationName("Workday")
             .build()
+    else (null)
 
     fun cloneAndShareFile(fileId: String, title: String): File =
-        drive.files().copy(fileId,
+        drive!!.files().copy(fileId,
             File().apply {
                 name = title
             }).setFields(fields)
@@ -56,7 +57,7 @@ class WorkdayGoogleDrive(
                 emailAddress = email
             }
             .let {
-                drive.permissions().create(fileId, it).also { pm -> pm.transferOwnership = true }.execute()
+                drive!!.permissions().create(fileId, it).also { pm -> pm.transferOwnership = true }.execute()
             }
 
     private fun shareFile(fileId: String, email: String) =
@@ -67,7 +68,7 @@ class WorkdayGoogleDrive(
                 emailAddress = email
             }
             .let {
-                drive.permissions().create(fileId, it).execute()
+                drive!!.permissions().create(fileId, it).execute()
             }
 
     private fun getUserEmail(): String = userAccountService.findUserAccountByUserCode(
