@@ -24,7 +24,7 @@ class WorkdayGoogleCredentials(@Value("\${google.serviceToken}") private val ser
     @get:Bean
     val workdayGoogleCredentials: GoogleCredentials =
         try {
-            GoogleCredentials.getApplicationDefault()
+            GoogleCredentials.getApplicationDefault().createScoped(scopes)
         } catch (e: IOException) {
             GoogleCredentials.fromStream(serviceToken?.byteInputStream()).createScoped(scopes)
         }
