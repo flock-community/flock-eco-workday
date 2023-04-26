@@ -13,11 +13,11 @@ fun WorkDay.toWorkWeeks(): Map<Int, List<WorkWeekDay>> {
         var index = 0
         while (!currentDay.isAfter(to)) {
             val workWeek = workWeeks.getOrPut(getWeekNumber(currentDay)) { mutableListOf() }
-            workWeek.add(WorkWeekDay(currentDay, days[index]))
+            workWeek.add(WorkWeekDay(currentDay, days[index++]))
             currentDay = currentDay.plusDays(1)
         }
     }
     return workWeeks
 }
 
-private fun getWeekNumber(date: LocalDate): Int = date.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear())
+private fun getWeekNumber(date: LocalDate): Int = date.get(WeekFields.ISO.weekOfYear())

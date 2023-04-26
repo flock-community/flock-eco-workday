@@ -20,7 +20,8 @@ private enum class Tag(val value: String) {
     ASSIGNMENT_CLIENT_CODE("#{assignmentClientId}"),
     ASSIGNMENT_DEVELOPER_ROLE("#{assignmentDeveloperRole}"),
     ASSIGNMENT_CONTRACT_DATE_FROM("#{assignmentDateFrom}"),
-    ASSIGNMENT_CONTRACT_DATE_TO("#{assignmentDateTo}")
+    ASSIGNMENT_CONTRACT_DATE_TO("#{assignmentDateTo}"),
+    EXPORT_DATE("#{exportDate}")
 }
 
 @Component
@@ -39,12 +40,19 @@ class WorkDaySheet(
     }
 
     private fun insertTable(id: String, workday: WorkDay) {
-        val weekRows = workday.toWorkWeeks().map { (weekNumber, workedDays) ->
+        val weekRows = workday.toWorkWeeks().flatMap { (weekNumber, workedDays) ->
             listOf(
-                listOf(weekNumber),
-                DayOfWeek.values().map { dayOfWeek -> workedDays.firstOrNull { it.date.dayOfWeek == dayOfWeek }?.value ?: "" },
-                listOf(workedDays.sumOf { it.value })
-            ).flatten()
+                listOf(
+                    listOf(""),
+                    DayOfWeek.values().map { dayOfWeek -> workedDays.firstOrNull { it.date.dayOfWeek.value == dayOfWeek.value }?.date?.format(DateTimeFormatter.ofPattern("YYYY-MM-dd")) ?: "" },
+                    listOf("")
+                ).flatten(),
+                listOf(
+                    listOf(weekNumber),
+                    DayOfWeek.values().map { dayOfWeek -> workedDays.firstOrNull { it.date.dayOfWeek.value == dayOfWeek.value }?.value ?: "" },
+                    listOf(workedDays.sumOf { it.value })
+                ).flatten()
+            )
         }
         sheets.findCellAndInsertRowByTag(id, Tag.WEEK_TABLE.value, weekRows)
     }
@@ -59,9 +67,10 @@ class WorkDaySheet(
         sheets.findAndReplaceCellByTag(id, Tag.ASSIGNMENT_DEVELOPER_ROLE.value, workday.assignment.role ?: "-")
         sheets.findAndReplaceCellByTag(id, Tag.ASSIGNMENT_CONTRACT_DATE_FROM.value, workday.assignment.from.format(DateTimeFormatter.ISO_DATE))
         sheets.findAndReplaceCellByTag(id, Tag.ASSIGNMENT_CONTRACT_DATE_TO.value, workday.assignment.to?.format(DateTimeFormatter.ISO_DATE) ?: "-")
+        sheets.findAndReplaceCellByTag(id, Tag.EXPORT_DATE.value, LocalDateTime.now().format(DateTimeFormatter.ISO_DATE) ?: "-")
     }
 
     private fun buildFileName(workday: WorkDay): String {
-        return "${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))} Workday ${workday.assignment.person.lastname}"
+        return "${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))} Workday ${workday.assignment.person.lastname} ${workday.from.month.name}"
     }
 }
