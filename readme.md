@@ -3,7 +3,7 @@
 ## Run
 
 ```bash
-./mvnw clean spring-boot:run -Dspring-boot.run.profiles=develop -Pdevelop
+./mvnw clean compile spring-boot:run -Dspring-boot.run.profiles=develop -Pdevelop
 ```
 
 Mark `src/develop/kotlin` as source directory.
