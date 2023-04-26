@@ -2,22 +2,22 @@ package community.flock.eco.workday.google
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
+import com.google.api.gax.core.CredentialsProvider
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.model.*
 import com.google.auth.http.HttpCredentialsAdapter
-import com.google.auth.oauth2.GoogleCredentials
 import org.springframework.stereotype.Component
 
 
 @Component
 class WorkdayGoogleSheets(
-    workdayGoogleCredentials: GoogleCredentials?,
+    credentialsProvider: CredentialsProvider,
 ) {
-    private val sheetsService = if (workdayGoogleCredentials != null ) Sheets.Builder(
+    private val sheetsService = Sheets.Builder(
         GoogleNetHttpTransport.newTrustedTransport(),
         GsonFactory.getDefaultInstance(),
-        HttpCredentialsAdapter(workdayGoogleCredentials)
-    ).setApplicationName("Your Application Name").build() else null
+        HttpCredentialsAdapter(credentialsProvider.credentials)
+    ).setApplicationName("Your Application Name").build()
 
     fun findAndReplaceCellByTag(sheetId: String, tag: String, newValue: String): BatchUpdateSpreadsheetResponse =
         BatchUpdateSpreadsheetRequest().apply {
@@ -30,7 +30,7 @@ class WorkdayGoogleSheets(
                 }
             })
         }.let {
-            sheetsService!!.spreadsheets().batchUpdate(sheetId, it).execute()
+            sheetsService.spreadsheets().batchUpdate(sheetId, it).execute()
         }
 
     fun findCellAndInsertRowByTag(id: String, tag: String, values: List<List<Any?>>) {
@@ -43,7 +43,7 @@ class WorkdayGoogleSheets(
         val batchBody = BatchUpdateValuesRequest()
             .setValueInputOption("USER_ENTERED")
             .setData(listOf(valueRange))
-        sheetsService!!.spreadsheets().values()
+        sheetsService.spreadsheets().values()
             .batchUpdate(id, batchBody)
             .execute();
     }

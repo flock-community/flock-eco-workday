@@ -2,11 +2,11 @@ package community.flock.eco.workday.google
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
+import com.google.api.gax.core.CredentialsProvider
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.File
 import com.google.api.services.drive.model.Permission
 import com.google.auth.http.HttpCredentialsAdapter
-import com.google.auth.oauth2.GoogleCredentials
 import community.flock.eco.feature.user.services.UserAccountService
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
@@ -14,25 +14,25 @@ import org.springframework.stereotype.Component
 
 @Component
 class WorkdayGoogleDrive(
-    workdayGoogleCredentials: GoogleCredentials?,
+    credentialsProvider: CredentialsProvider,
     private val userAccountService: UserAccountService
 ) {
     companion object {
         private const val fields = "id, name, owners(permissionId, displayName, emailAddress), webViewLink"
     }
 
-    private val drive: Drive? = if (workdayGoogleCredentials != null)
+    private val drive: Drive =
         Drive.Builder(
             GoogleNetHttpTransport.newTrustedTransport(),
             GsonFactory.getDefaultInstance(),
-            HttpCredentialsAdapter(workdayGoogleCredentials)
+            HttpCredentialsAdapter(credentialsProvider.credentials)
         )
             .setApplicationName("Workday")
             .build()
-    else (null)
+
 
     fun cloneAndShareFile(fileId: String, title: String): File =
-        drive!!.files().copy(fileId,
+        drive.files().copy(fileId,
             File().apply {
                 name = title
             }).setFields(fields)
