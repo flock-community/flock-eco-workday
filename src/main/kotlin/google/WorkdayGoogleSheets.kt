@@ -52,7 +52,7 @@ class WorkdayGoogleSheets(
     private fun findRangeByTag(id: String, searchValue: String): Pair<Int, Int>? {
         val range = "A1:Z100"
         // Retrieve the values from the sheet
-        val response = sheetsService!!.spreadsheets().values()
+        val response = sheetsService.spreadsheets().values()
             .get(id, range)
             .execute()
 

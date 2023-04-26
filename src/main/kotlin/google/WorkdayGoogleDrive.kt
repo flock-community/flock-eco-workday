@@ -34,12 +34,15 @@ class WorkdayGoogleDrive(
             fileId,
             File().apply {
                 name = title
+                parents = listOf("root")
             }
-        ).setFields(fields)
-            .execute()
-            .also {
-                shareOrMoveFile(it)
-            }
+        )
+        .setSupportsTeamDrives(true)
+        .setFields(fields)
+        .execute()
+        .also {
+            shareOrMoveFile(it)
+        }
 
     private fun shareOrMoveFile(file: File) {
         val email = getUserEmail()
@@ -57,7 +60,10 @@ class WorkdayGoogleDrive(
                 emailAddress = email
             }
             .let {
-                drive!!.permissions().create(fileId, it).also { pm -> pm.transferOwnership = true }.execute()
+                drive.permissions().create(fileId, it)
+                    .setSupportsAllDrives(true)
+                    .setTransferOwnership(true)
+                    .execute()
             }
 
     private fun shareFile(fileId: String, email: String) =
@@ -68,7 +74,9 @@ class WorkdayGoogleDrive(
                 emailAddress = email
             }
             .let {
-                drive!!.permissions().create(fileId, it).execute()
+                drive.permissions().create(fileId, it)
+                    .setSupportsAllDrives(true)
+                    .execute()
             }
 
     private fun getUserEmail(): String = userAccountService.findUserAccountByUserCode(
