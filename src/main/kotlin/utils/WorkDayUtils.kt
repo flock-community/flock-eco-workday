@@ -10,7 +10,7 @@ fun WorkDay.toWorkWeeks(): Map<Int, List<WorkWeekDay>> {
     val workWeeks = mutableMapOf<Int, MutableList<WorkWeekDay>>()
     if (days != null) {
         var currentDay = from
-        var index = 0;
+        var index = 0
         while (!currentDay.isAfter(to)) {
             val workWeek = workWeeks.getOrPut(getWeekNumber(currentDay)) { mutableListOf() }
             workWeek.add(WorkWeekDay(currentDay, days[index]))

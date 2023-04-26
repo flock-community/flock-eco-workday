@@ -42,7 +42,7 @@ class WorkDaySheet(
         val weekRows = workday.toWorkWeeks().map { (weekNumber, workedDays) ->
             listOf(
                 listOf(weekNumber),
-                DayOfWeek.values().map { dayOfWeek -> workedDays.firstOrNull { it.date.dayOfWeek == dayOfWeek}?.value ?: "" },
+                DayOfWeek.values().map { dayOfWeek -> workedDays.firstOrNull { it.date.dayOfWeek == dayOfWeek }?.value ?: "" },
                 listOf(workedDays.sumOf { it.value })
             ).flatten()
         }
@@ -65,4 +65,3 @@ class WorkDaySheet(
         return "${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))} Workday ${workday.assignment.person.lastname}"
     }
 }
-

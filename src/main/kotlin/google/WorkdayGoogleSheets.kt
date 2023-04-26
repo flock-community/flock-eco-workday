@@ -8,7 +8,6 @@ import com.google.api.services.sheets.v4.model.*
 import com.google.auth.http.HttpCredentialsAdapter
 import org.springframework.stereotype.Component
 
-
 @Component
 class WorkdayGoogleSheets(
     credentialsProvider: CredentialsProvider,
@@ -21,14 +20,16 @@ class WorkdayGoogleSheets(
 
     fun findAndReplaceCellByTag(sheetId: String, tag: String, newValue: String): BatchUpdateSpreadsheetResponse =
         BatchUpdateSpreadsheetRequest().apply {
-            requests = listOf(Request().apply {
-                findReplace = FindReplaceRequest().apply {
-                    find = tag
-                    replacement = newValue
-                    allSheets = true
-                    matchCase = false
+            requests = listOf(
+                Request().apply {
+                    findReplace = FindReplaceRequest().apply {
+                        find = tag
+                        replacement = newValue
+                        allSheets = true
+                        matchCase = false
+                    }
                 }
-            })
+            )
         }.let {
             sheetsService.spreadsheets().batchUpdate(sheetId, it).execute()
         }
@@ -39,13 +40,13 @@ class WorkdayGoogleSheets(
         val cell2 = "${getColumnLetter(range.first + 9)}${range.second + values.size}"
         val valueRange = ValueRange()
         valueRange.setRange("$cell1:$cell2")
-        valueRange.setValues(values);
+        valueRange.setValues(values)
         val batchBody = BatchUpdateValuesRequest()
             .setValueInputOption("USER_ENTERED")
             .setData(listOf(valueRange))
         sheetsService.spreadsheets().values()
             .batchUpdate(id, batchBody)
-            .execute();
+            .execute()
     }
 
     private fun findRangeByTag(id: String, searchValue: String): Pair<Int, Int>? {

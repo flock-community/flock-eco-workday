@@ -11,7 +11,6 @@ import community.flock.eco.feature.user.services.UserAccountService
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 
-
 @Component
 class WorkdayGoogleDrive(
     credentialsProvider: CredentialsProvider,
@@ -30,12 +29,13 @@ class WorkdayGoogleDrive(
             .setApplicationName("Workday")
             .build()
 
-
     fun cloneAndShareFile(fileId: String, title: String): File =
-        drive.files().copy(fileId,
+        drive.files().copy(
+            fileId,
             File().apply {
                 name = title
-            }).setFields(fields)
+            }
+        ).setFields(fields)
             .execute()
             .also {
                 shareOrMoveFile(it)
