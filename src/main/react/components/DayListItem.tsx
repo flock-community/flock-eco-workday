@@ -4,6 +4,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import { StatusMenu } from "./StatusMenu";
 
+// types
+import type { DayProps } from "../types";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     position: "relative",
@@ -16,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type DayListItemProps = {
-  value: any;
+  value: DayProps;
   onClick: () => void;
   onClickStatus: (status: string) => void;
   hasAuthority: string;

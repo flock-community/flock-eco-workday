@@ -13,25 +13,18 @@ import { WORK_DAY_PAGE_SIZE, WorkDayClient } from "../../clients/WorkDayClient";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
 import { WorkDayListItem } from "./WorkDayListItem";
-import { Pagination } from "@material-ui/lab";
 
-type WorkDayListProps = {
-  personId: string;
-  refresh: boolean;
-  onClickRow: (item: any) => void;
-  onClickStatus: (status: any, item: any) => void;
-};
+// Components
+import { FlockPagination } from "../../components/pagination/FlockPagination";
+
+// Types
+import type { DayProps, DayListProps } from "../../types";
 
 const useStyles = makeStyles({
   card: (loading) => ({
     marginTop: "10px",
     opacity: loading ? 0.5 : 1,
   }),
-  pagination: {
-    "& .MuiPagination-ul": {
-      justifyContent: "right",
-    },
-  },
 });
 
 export function WorkDayList({
@@ -39,25 +32,23 @@ export function WorkDayList({
   refresh,
   onClickRow,
   onClickStatus,
-}: WorkDayListProps) {
-  const [state, setState] = useState([]);
+}: DayListProps) {
+  const [list, setList] = useState<DayProps[]>([]);
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState(-1);
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles(loading);
 
-  const handleChangePage = (event: object, paginationComponentPage: number) =>
-    // Client page is 0-based, pagination component is 1-based
-    setPage(paginationComponentPage - 1);
-
   useEffect(() => {
     setLoading(true);
-    WorkDayClient.findAllByPersonUuid(personId, page).then((res) => {
-      setPageCount(Math.ceil(res.count / WORK_DAY_PAGE_SIZE));
-      setState(res.list);
-      setLoading(false);
-    });
+    WorkDayClient.findAllByPersonUuid(personId, page).then(
+      (res: { list: DayProps[]; count: number }) => {
+        setPageCount(Math.ceil(res.count / WORK_DAY_PAGE_SIZE));
+        setList(res.list);
+        setLoading(false);
+      }
+    );
   }, [personId, refresh, page]);
 
   function renderItem(item) {
@@ -73,7 +64,7 @@ export function WorkDayList({
   }
 
   const renderItems = () => {
-    if (state.length === 0) {
+    if (list.length === 0) {
       return (
         <TableRow>
           <TableCell colSpan={8}>No workdays</TableCell>
@@ -81,7 +72,7 @@ export function WorkDayList({
       );
     }
 
-    return state.map(renderItem);
+    return list.map(renderItem);
   };
 
   return (
@@ -108,14 +99,10 @@ export function WorkDayList({
         </CardContent>
       </Card>
       <Box mt={2}>
-        <Pagination
-          count={pageCount}
-          className={classes.pagination}
-          // Client page is 0-based, pagination component is 1-based
-          page={page + 1}
-          onChange={handleChangePage}
-          shape="rounded"
-          size="small"
+        <FlockPagination
+          currentPage={page + 1}
+          totalPages={pageCount}
+          changePageCb={setPage}
         />
       </Box>
     </>
