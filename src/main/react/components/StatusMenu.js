@@ -7,9 +7,6 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
-  buttonDefault: {
-    backgroundColor: "unset",
-  },
   buttonRequested: {
     backgroundColor: "unset",
   },
@@ -25,7 +22,7 @@ export function StatusMenu({ onChange, disabled, value }) {
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const [color, setColor] = useState("default");
+  const [color, setColor] = useState("REQUESTED");
   const [expanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
@@ -56,7 +53,6 @@ export function StatusMenu({ onChange, disabled, value }) {
         disabled={disabled}
         onClick={handleMenuClick}
         className={clsx({
-          [classes.buttonDefault]: color === "default",
           [classes.buttonRequested]: color === "REQUESTED",
           [classes.buttonApproved]: color === "APPROVED",
           [classes.buttonRejected]: color === "REJECTED",
