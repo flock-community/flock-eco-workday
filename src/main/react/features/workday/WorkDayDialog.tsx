@@ -20,7 +20,7 @@ type ExportStatusProps = {
   link: string | null;
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   dialogContent: {
     margin: "auto",
     maxWidth: 768, // should be a decent medium-sized breakpoint
@@ -31,9 +31,9 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
     padding: "1rem",
     border: "2px solid",
-    borderColor: "#289c2c",
+    borderColor: theme.palette.success["600"],
     borderRadius: "5px",
-    backgroundColor: "#beffbf",
+    backgroundColor: theme.palette.success["200"],
   },
   exportMessage: {
     marginRight: "0.5rem",
