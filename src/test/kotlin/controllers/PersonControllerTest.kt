@@ -10,6 +10,7 @@ import community.flock.eco.workday.Application
 import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.services.PersonService
+import config.AppTestConfig
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -34,7 +35,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.UUID
 
-@SpringBootTest(classes = [Application::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = [Application::class, AppTestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
 @AutoConfigureDataJpa
 @AutoConfigureWebClient

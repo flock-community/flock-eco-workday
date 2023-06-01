@@ -11,11 +11,32 @@ import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { schema, WORKDAY_FORM_ID, WorkDayForm } from "./WorkDayForm";
 import { isDefined } from "../../utils/validation";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import Button from "@material-ui/core/Button";
+import { ExportClient } from "../../clients/ExportClient";
+import Snackbar from "@material-ui/core/Snackbar";
 
-const useStyles = makeStyles(() => ({
+type ExportStatusProps = {
+  loading: boolean;
+  link: string | null;
+};
+
+const useStyles = makeStyles((theme) => ({
   dialogContent: {
     margin: "auto",
     maxWidth: 768, // should be a decent medium-sized breakpoint
+  },
+  exportSnackBar: {
+    display: "flex",
+    justifyItems: "center",
+    alignItems: "center",
+    padding: "1rem",
+    border: "2px solid",
+    borderColor: theme.palette.success["600"],
+    borderRadius: "5px",
+    backgroundColor: theme.palette.success["200"],
+  },
+  exportMessage: {
+    marginRight: "0.5rem",
   },
 }));
 
@@ -24,6 +45,10 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
   const [openDelete, setOpenDelete] = useState<boolean>(false);
 
   const [state, setState] = useState<any>(null);
+  const [exportLink, setExportLink] = useState<ExportStatusProps>({
+    loading: false,
+    link: null,
+  });
 
   useEffect(() => {
     if (open) {
@@ -89,9 +114,25 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
     setState(null);
   };
 
+  const handleExport =
+    code && UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN")
+      ? async () => {
+          setExportLink({ loading: true, link: null });
+          const response = await ExportClient().exportWorkday(code);
+          setExportLink({ loading: false, link: response.link });
+        }
+      : null;
+
   const headline = UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN")
     ? `Create Workday | ${personFullName}`
     : "Create Workday";
+
+  function clearExportLink() {
+    setExportLink({
+      loading: false,
+      link: null,
+    });
+  }
 
   return (
     <>
@@ -118,6 +159,13 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
               </Typography>
             </Box>
           </UserAuthorityUtil>
+          <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
+            <Box my="1rem">
+              <Typography variant={"h5"} component={"h2"}>
+                {personFullName}
+              </Typography>
+            </Box>
+          </UserAuthorityUtil>
           {state && <WorkDayForm value={state} onSubmit={handleSubmit} />}
         </DialogContent>
         <Divider />
@@ -125,6 +173,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
           formId={WORKDAY_FORM_ID}
           onClose={handleClose}
           onDelete={handleDeleteOpen}
+          onExport={handleExport}
           disableDelete={
             !UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN") &&
             state &&
@@ -135,6 +184,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
             state &&
             state.status !== "REQUESTED"
           }
+          processingExport={exportLink.loading}
         />
       </Dialog>
       <ConfirmDialog
@@ -144,6 +194,24 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
       >
         <Typography>Are you sure you want to remove this workday.</Typography>
       </ConfirmDialog>
+      <Snackbar
+        open={exportLink.link != null}
+        onClose={clearExportLink}
+        autoHideDuration={6000}
+      >
+        <div className={classes.exportSnackBar}>
+          <Typography className={classes.exportMessage}>
+            Export of workday to google drive is done.
+          </Typography>
+          <Button
+            onClick={clearExportLink}
+            href={exportLink.link!}
+            target="_blank"
+          >
+            Open in tab
+          </Button>
+        </div>
+      </Snackbar>
     </>
   );
 }

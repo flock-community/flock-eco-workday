@@ -2,6 +2,7 @@ package community.flock.eco.workday.repository
 
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.helpers.CreateHelper
+import config.AppTestConfig
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
@@ -11,7 +12,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import javax.transaction.Transactional
 
-@SpringBootTest(classes = [ApplicationConfiguration::class])
+@SpringBootTest(classes = [ApplicationConfiguration::class, AppTestConfig::class])
 @AutoConfigureTestDatabase
 @AutoConfigureDataJpa
 @AutoConfigureWebClient

@@ -3,6 +3,7 @@ package community.flock.eco.workday.repository
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Event
+import config.AppTestConfig
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -16,7 +17,7 @@ import javax.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@SpringBootTest(classes = [ApplicationConfiguration::class])
+@SpringBootTest(classes = [ApplicationConfiguration::class, AppTestConfig::class])
 @AutoConfigureTestDatabase
 @AutoConfigureDataJpa
 @AutoConfigureWebClient

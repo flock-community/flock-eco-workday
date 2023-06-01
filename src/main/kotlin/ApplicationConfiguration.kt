@@ -17,7 +17,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     basePackages = [
         "community.flock.eco.workday.services",
         "community.flock.eco.workday.controllers",
-        "community.flock.eco.workday.mappers"
+        "community.flock.eco.workday.mappers",
+        "community.flock.eco.workday.google",
     ]
 )
 @Import(

@@ -18,5 +18,4 @@ class LoginConfigController {
 
     @GetMapping("/type")
     fun getType() = LoginType(loginType)
-
 }

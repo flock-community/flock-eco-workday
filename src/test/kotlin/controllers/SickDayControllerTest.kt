@@ -7,6 +7,7 @@ import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.SickDayService
+import config.AppTestConfig
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -31,7 +32,7 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-@SpringBootTest(classes = [Application::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = [Application::class, AppTestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
 @AutoConfigureDataJpa
 @AutoConfigureWebClient

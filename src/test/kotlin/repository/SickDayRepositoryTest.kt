@@ -5,6 +5,7 @@ import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.Status
+import config.AppTestConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
 import javax.transaction.Transactional
 
-@SpringBootTest(classes = [ApplicationConfiguration::class])
+@SpringBootTest(classes = [ApplicationConfiguration::class, AppTestConfig::class])
 @AutoConfigureTestDatabase
 @AutoConfigureDataJpa
 @AutoConfigureWebClient
