@@ -16,13 +16,12 @@ export function DialogFooter({
   return (
     <DialogActions>
       {onExport && (
-        <Button disabled={processingExport} onClick={onExport} tabIndex={1}>
+        <Button disabled={processingExport} onClick={onExport}>
           {!processingExport ? (
             <img
               width="16px"
               height="16xpx"
               src="/images/googleDriveIcon.svg"
-              alt="My Icon"
             />
           ) : (
             <CircularProgress color={"secondary"} size={"20px"} />
@@ -30,14 +29,8 @@ export function DialogFooter({
           <Box ml="0.5rem">Export</Box>
         </Button>
       )}
-      <Button onClick={onClose} tabIndex={1}>
-        Cancel
-      </Button>
-      {onDelete && !disableDelete && (
-        <Button onClick={onDelete} tabIndex={1}>
-          Delete
-        </Button>
-      )}
+      <Button onClick={onClose}>Cancel</Button>
+      {onDelete && !disableDelete && <Button onClick={onDelete}>Delete</Button>}
       {!disableEdit && (
         <Button
           type="submit"
@@ -45,7 +38,6 @@ export function DialogFooter({
           color="primary"
           onClick={onSubmit}
           variant="contained"
-          tabIndex={0}
         >
           Save
         </Button>
