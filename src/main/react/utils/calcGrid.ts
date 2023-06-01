@@ -1,5 +1,14 @@
 import { dateInPeriod, getDay, Period } from "../features/period/Period";
 import { stringifyDate } from "./stringifyDate";
+import dayjs from "dayjs";
+import en from "dayjs/locale/en";
+import isoWeek from "dayjs/plugin/isoWeek";
+
+dayjs.extend(isoWeek);
+dayjs.locale({
+  ...en,
+  weekStart: 1,
+});
 
 /**
  * Calculates the 'grid' that has all the days in it from the selected period
@@ -10,10 +19,12 @@ export const calcGrid = (period: Period) => {
       period.to.startOf("week").diff(period.from.startOf("week"), "days") / 7
     ) + 1;
   const weeks = Array.from(Array(diff > 0 ? diff : 1).keys());
-  return weeks.map((week) => {
-    const day = period.from.startOf("week").add(week, "weeks").add(1, "day");
 
-    const weekNumber = day.week();
+  return weeks.map((week) => {
+    const day = period.from.startOf("week").add(week, "weeks");
+
+    const weekNumber = day.isoWeek();
+
     const year = day.year();
     const res = Array.from(Array(7).keys()).map((dayDiff) => {
       const date = day.add(dayDiff, "days");
