@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 
 @ConstructorBinding
-@ConfigurationProperties(prefix = "flock.workday.calendar")
+@ConfigurationProperties(prefix = "flock.eco.workday.calendar")
 data class CalendarProperties(
     val token: String
 )
