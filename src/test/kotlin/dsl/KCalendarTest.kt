@@ -49,8 +49,6 @@ class KCalendarTest {
         assertThat(event.summary).isEqualTo(Summary("test-summary"))
     }
 
-    // private fun dateOf(year: Int, month: Int, day: Int) =
-
     @Test
     fun `Multiple events`() {
         val startDate = LocalDate.of(2022, 2, 3)
