@@ -91,6 +91,13 @@
             <version>v4-rev20220620-1.32.1</version>
         </dependency>
 
+        <!-- Other -->
+        <dependency>
+            <groupId>net.sf.biweekly</groupId>
+            <artifactId>biweekly</artifactId>
+            <version>0.6.7</version>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>com.ninja-squad</groupId>
