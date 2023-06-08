@@ -4,7 +4,7 @@
     url: http://kratos:4433
     strip_path: /api
   match:
-    url: http://accounts.flock.local:8080/api/<.*>
+    url: http://accounts.flock.local:8081/api/<.*>
     methods:
       - GET
       - POST
@@ -25,7 +25,7 @@
   upstream:
     url: http://kratos:4434
   match:
-    url: http://accounts.flock.local:8080/admin/<.*>
+    url: http://accounts.flock.local:8081/admin/<.*>
     methods:
       - GET
       - POST

@@ -62,6 +62,7 @@ mutators:
     config:
       headers:
         X-User: "{{ print .Subject }}"
+        X-Email: "{{ print .Extra.identity.traits.email }}"
         X-Authenticator-Assurance-Level: "{{ print .Extra.authenticator_assurance_level }}"
 
   noop:

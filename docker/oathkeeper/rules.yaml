@@ -1,9 +1,11 @@
 - id: workday-everything
   upstream:
-    url: http://workday:8080
+#    url: http://workday:8080
+    # to allow to use 'local' app rather than docker one
+    url: http://host.docker.internal:8080
   version: v0.40.2
   match:
-    url: http://workday.flock.local:8080/<.*>
+    url: http://workday.flock.local:8081/<.*>
     methods:
       - GET
       - POST
