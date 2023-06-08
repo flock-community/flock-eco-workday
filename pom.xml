@@ -18,6 +18,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
         <gpg.skip>true</gpg.skip>
+        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
     </properties>
 
     <dependencies>
@@ -121,7 +122,7 @@
                         <plugin>jpa</plugin>
                         <plugin>spring</plugin>
                     </compilerPlugins>
-                    <jvmTarget>${java.version}</jvmTarget>
+                    <jvmTarget>1.8</jvmTarget>
                 </configuration>
                 <executions>
                     <execution>
@@ -225,7 +226,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>2.7.1</version>
+                <version>3.3.1</version>
                 <configuration>
                     <from>
                         <image>eclipse-temurin:17-jre</image>
@@ -233,6 +234,10 @@
                     <container>
                         <mainClass>community.flock.eco.workday.ApplicationKt</mainClass>
                     </container>
+                    <to>
+                        <image>gcr.io/flock-eco/flock-eco-workday-develop</image>
+                        <tags>snapshot,develop,latest</tags>
+                    </to>
                 </configuration>
             </plugin>
             <plugin>
@@ -306,6 +311,7 @@
                                     <goal>npm</goal>
                                 </goals>
                                 <configuration>
+<!--                                    <skip>true</skip>-->
                                     <arguments>ci</arguments>
                                 </configuration>
                             </execution>

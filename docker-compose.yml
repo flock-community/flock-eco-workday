@@ -1,6 +1,170 @@
 version: "3.9"
 services:
   workday:
-    image: gcr.io/flock-eco/flock-eco-workday-develop:latest
+    image: gcr.io/flock-eco/flock-eco-workday-develop:snapshot
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/application_default_credentials.json
+    volumes:
+      - type: bind
+        source: $HOME/.config/gcloud/application_default_credentials.json
+        target: /tmp/keys/application_default_credentials.json
+        read_only: true
     ports:
-      - "8080:8080"
+      - "8081:8080"
+    networks:
+      - intranet
+
+  oathkeeper:
+    image: oryd/oathkeeper:v0.40.2
+    depends_on:
+      - kratos
+      - kratos-selfservice-ui-node
+      - workday
+    ports:
+      - "8080:4455"
+      - "4456:4456"
+    command: serve proxy -c "/etc/config/oathkeeper/config.yaml"
+    environment:
+      - LOG_LEVEL=debug
+      - ERRORS_HANDLERS_REDIRECT_CONFIG_TO=$SELFSERVICE_URL/login
+      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_0=$PUBLIC_INGRESS_URL
+      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_1=$SELFSERVICE_URL
+      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_2=$PUBLIC_KRATOS_URL
+    restart: on-failure
+    networks:
+      - intranet
+    volumes:
+      - ./docker/oathkeeper:/etc/config/oathkeeper
+
+  keto:
+    image: oryd/keto:v0.11.1-alpha.0
+    networks:
+      - intranet
+    links:
+      - postgres-keto:postgres-keto
+    ports:
+      - "4466:4466"
+      - "4467:4467"
+    environment:
+      - DSN=postgres://keto:secret@postgres-keto:5432/keto?sslmode=disable&max_conns=20&max_idle_conns=4
+    depends_on:
+      - keto-migrate
+    labels:
+      - "traefik.http.routers.keto.rule=(Host(`${PUBLIC_INGRESS_HOST}`) && PathPrefix(`/keto`))"
+      - "traefik.http.middlewares.ketostripprefix.stripprefix.prefixes=/keto"
+      - "traefik.http.routers.keto.middlewares=ketostripprefix@docker"
+      - "traefik.http.routers.keto.entrypoints=web"
+      # - "traefik.http.routers.keto.middlewares=oathkeeper@docker"
+      - "traefik.http.services.keto.loadbalancer.server.port=4466"
+
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ./keto
+        target: /home/ory
+
+  kratos:
+    image: oryd/kratos:v0.13.0
+    links:
+      - postgres-kratos:postgres-kratos
+    environment:
+      - DSN=postgres://kratos:secret@postgres-kratos:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
+      #
+      - SERVE_PUBLIC_BASE_URL=$PUBLIC_KRATOS_URL
+      - SERVE_ADMIN_BASE_URL=$ADMIN_KRATOS_URL_INTERNAL
+      - SELFSERVICE_DEFAULT_BROWSER_RETURN_URL=$SELFSERVICE_URL
+      - SELFSERVICE_ALLOWED_RETURN_URLS_0=$PUBLIC_INGRESS_URL
+      - SELFSERVICE_ALLOWED_RETURN_URLS_1=$SELFSERVICE_URL
+      - SELFSERVICE_ALLOWED_RETURN_URLS_2=$PUBLIC_KRATOS_URL
+      # - BASE_PATH=/kratos
+      - SELFSERVICE_FLOWS_ERROR_UI_URL=$SELFSERVICE_URL/error
+      - SELFSERVICE_FLOWS_SETTINGS_UI_URL=$SELFSERVICE_URL/settings
+      - SELFSERVICE_FLOWS_RECOVERY_UI_URL=$SELFSERVICE_URL/recovery
+      - SELFSERVICE_FLOWS_VERIFICATION_UI_URL=$SELFSERVICE_URL/verification
+      - SELFSERVICE_FLOWS_LOGOUT_UI_URL=$SELFSERVICE_URL/logout
+      - SELFSERVICE_FLOWS_LOGIN_UI_URL=$SELFSERVICE_URL/login
+      - SELFSERVICE_FLOWS_REGISTRATION_UI_URL=$SELFSERVICE_URL/registration
+    ports:
+      - '4433:4433'
+      - '4434:4434'
+    depends_on:
+      - kratos-migrate
+    volumes:
+      - type: bind
+        source: ./docker/kratos
+        target: /etc/config/kratos
+    networks:
+      - intranet
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
+
+  kratos-selfservice-ui-node:
+    image: oryd/kratos-selfservice-ui-node:latest
+    environment:
+      - KRATOS_PUBLIC_URL=$PUBLIC_KRATOS_URL_INTERNAL
+      - KRATOS_BROWSER_URL=$PUBLIC_KRATOS_URL
+      - BASE_PATH=/
+    networks:
+      - intranet
+    ports:
+      - "3002:3000"
+    restart: on-failure
+
+  postgres-kratos:
+    image: postgres:13.6
+    environment:
+      - POSTGRES_USER=kratos
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=kratos
+    networks:
+      - intranet
+  postgres-keto:
+    image: postgres:13.6
+    ports:
+      - "54321:5432"
+    environment:
+      - POSTGRES_USER=keto
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=keto
+    networks:
+      - intranet
+
+  kratos-migrate:
+    image: oryd/kratos:v0.13.0
+    links:
+      - postgres-kratos:postgres-kratos
+    environment:
+      - DSN=postgres://kratos:secret@postgres-kratos:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
+    networks:
+      - intranet
+    volumes:
+      - type: bind
+        source: ./docker/kratos
+        target: /etc/config/kratos
+    command: migrate sql -e --yes -c /etc/config/kratos/kratos.yml
+
+  keto-migrate:
+    image: oryd/keto:v0.11.1-alpha.0
+    links:
+      - postgres-keto:postgres-keto
+    volumes:
+      - type: bind
+        source: ./keto
+        target: /home/ory
+    environment:
+      - LOG_LEVEL=debug
+      - DSN=postgres://keto:secret@postgres-keto:5432/keto?sslmode=disable&max_conns=20&max_idle_conns=4
+    networks:
+      - intranet
+    command: ["migrate", "up", "-y"]
+    restart: on-failure
+
+  mailslurper:
+    image: oryd/mailslurper:latest-smtps
+    ports:
+      - '4436:4436'
+      - '4437:4437'
+    networks:
+      - intranet
+
+networks:
+  intranet:
