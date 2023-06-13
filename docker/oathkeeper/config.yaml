@@ -76,6 +76,7 @@ mutators:
 authorizers:
   allow:
     enabled: true
+
   remote_json:
     enabled: true
     config:
@@ -92,6 +93,10 @@ authorizers:
 #    enabled: true
 
 authenticators:
+  noop:
+    enabled: true
+  unauthorized:
+    enabled: true
   anonymous:
     enabled: true
     config:
@@ -105,5 +110,3 @@ authenticators:
       subject_from: "identity.id"
       only:
         - flock_community_session
-  noop:
-    enabled: true

@@ -1,0 +1,25 @@
+{
+  "schema_id": "default",
+  "traits": {
+    "name": {
+      "last": "Muppets",
+      "first": "Bert"
+    },
+    "email": "bert@sesam.straat"
+  },
+  "credentials": {
+    "password": {
+      "config": {
+        "password": "bert"
+      }
+    }
+  },
+  "verifiable_addresses": [
+    {
+      "value": "bert@sesam.straat",
+      "verified": true,
+      "via": "email",
+      "status": "completed"
+    }
+  ]
+}
