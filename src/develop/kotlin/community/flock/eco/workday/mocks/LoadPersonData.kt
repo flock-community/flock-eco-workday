@@ -3,7 +3,6 @@ package community.flock.eco.workday.mocks
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.repository.PersonRepository
-import mocks.users
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.Instant
@@ -14,8 +13,8 @@ import java.time.Period
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadPersonData(
         private val loadData: LoadData,
-        userData: LoadUserData,
         private val repository: PersonRepository
+        userData: LoadUserData,
 ) {
     val data: MutableSet<Person> = mutableSetOf()
 
@@ -79,7 +78,7 @@ class LoadPersonData(
         loadData.loadWhenEmpty {
             val userMap = userData.data.associateBy { it.name }
 
-            users.forEach {
+        mockUsers.forEach {
                 createPerson(
                     firstname = it.firstName,
                     lastname = it.lastName,

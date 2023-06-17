@@ -12,6 +12,8 @@ import community.flock.eco.workday.authentication.RedirectLogoutHandler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.convert.converter.Converter
+import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -20,17 +22,50 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.oauth2.core.oidc.OidcIdToken
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher
 import org.springframework.stereotype.Component
+import java.util.*
 
+internal class CustomAuthenticationConverter(
+    private val userAccountService: UserAccountService,
+) : Converter<Jwt, AbstractAuthenticationToken> {
+    override fun convert(jwt: Jwt): AbstractAuthenticationToken {
+
+        val account = userAccountService.findUserAccountOauthByReference(jwt.subject)
+        return if (account != null) {
+            val userSecurityOauth2 = UserSecurityService.UserSecurityOauth2(
+                account, OidcIdToken(
+                    jwt.tokenValue,
+                    jwt.issuedAt, jwt.expiresAt,
+                    jwt.claims
+                )
+            )
+            PreAuthenticatedAuthenticationToken(
+                userSecurityOauth2.account.user.code,
+                userSecurityOauth2,
+                userSecurityOauth2.authorities
+            )
+        } else {
+            PreAuthenticatedAuthenticationToken(
+                jwt.subject ?: "anonymous",
+                null
+            )
+        }
+    }
+}
 
 @Component
 class MyUserSecurityService(
     private val userSecurityService: UserSecurityService,
-    private val oathkeeperProxyAuthenticationProvider:OathkeeperProxyAuthenticationProvider
+    private val userAccountService: UserAccountService,
+    private val oathkeeperProxyAuthenticationProvider: OathkeeperProxyAuthenticationProvider
 ) {
+
     fun googleLogin(http: HttpSecurity): OAuth2LoginConfigurer<HttpSecurity>.UserInfoEndpointConfig {
         return userSecurityService.googleLogin(http)
     }
@@ -39,12 +74,29 @@ class MyUserSecurityService(
         return userSecurityService.databaseLogin(http)
     }
 
-    fun kratosLogin(http: HttpSecurity, authenticationManager: AuthenticationManager): Unit {
+    fun kratosLoginJWT(http: HttpSecurity, authenticationManager: AuthenticationManager): Unit {
         http
-            .httpBasic().disable()    //No Http Basic Login
-            .formLogin().disable()    //No Form Login
-            .logout()
-            .addLogoutHandler(RedirectLogoutHandler()) //No Logout
+            .httpBasic().disable()                               //No Http Basic Login
+            .formLogin().disable()                               //No Form Login
+            .logout().addLogoutHandler(RedirectLogoutHandler())  //No Logout
+
+        // No Session pls
+        http
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .oauth2ResourceServer {
+                it.jwt { jwt ->
+                    jwt.jwtAuthenticationConverter(CustomAuthenticationConverter(userAccountService))
+                }
+            }
+    }
+
+    fun kratosLoginHeader(http: HttpSecurity, authenticationManager: AuthenticationManager): Unit {
+        http
+            .httpBasic().disable()                               //No Http Basic Login
+            .formLogin().disable()                               //No Form Login
+            .logout().addLogoutHandler(RedirectLogoutHandler())  //No Logout
+
         // No Session pls
         http
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -56,7 +108,6 @@ class MyUserSecurityService(
                     authenticationManager
                 ), AnonymousAuthenticationFilter::class.java
             )
-
     }
 
     fun testLogin(http: HttpSecurity): FormLoginConfigurer<HttpSecurity> {
@@ -77,11 +128,6 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     @Autowired
     lateinit var userSecurityService: MyUserSecurityService
 
-    @Autowired
-    lateinit var userAccountService: UserAccountService
-
-    @Autowired
-    lateinit var oathkeeperProxyAuthenticationProvider: OathkeeperProxyAuthenticationProvider
 
     @Value("\${flock.eco.workday.login:TEST}")
     lateinit var loginType: String
@@ -100,11 +146,6 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         userAuthorityService.addAuthority(LeaveDayAuthority::class.java)
         http
-            .httpBasic().disable()    //No Http Basic Login
-            .formLogin().disable()    //No Form Login
-            .logout()
-            .addLogoutHandler(RedirectLogoutHandler()) //No Logout
-            .and()
             .headers()
             .frameOptions()
             .sameOrigin()
@@ -130,17 +171,20 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .anyRequest().authenticated()
         http
             .cors()
-        http
-            // No Session pls
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .authenticationProvider(oathkeeperProxyAuthenticationProvider)
-            .addFilterBefore(
-                OathkeeperProxyAuthenticationProcessingFilter(
-                    NegatedRequestMatcher(AntPathRequestMatcher("/error")),
-                    authenticationManager()
-                ), AnonymousAuthenticationFilter::class.java
-            )
+
+        when (loginType.uppercase(Locale.getDefault())) {
+            "GOOGLE" ->
+                userSecurityService.googleLogin(http)
+                    .and()
+                    .defaultSuccessUrl("/", true)
+                    .and()
+                    .logout().logoutSuccessUrl("/")
+            "DATABASE" -> userSecurityService.databaseLogin(http).loginPage("/").loginProcessingUrl("/login")
+            "KRATOS" -> userSecurityService.kratosLoginJWT(http, authenticationManager())
+            else -> userSecurityService.testLogin(http).loginPage("/").loginProcessingUrl("/login")
+        }
+
+
     }
 }
 

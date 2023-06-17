@@ -2,18 +2,19 @@ package community.flock.eco.workday.authentication
 
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserSecurityService
-import community.flock.eco.workday.authentication.KratosIdentity.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.core.oidc.OidcIdToken
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.stereotype.Component
 import java.io.IOException
+import java.time.Instant
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
@@ -21,29 +22,34 @@ import javax.servlet.http.HttpServletResponse
 
 @Component
 class OathkeeperProxyAuthenticationProvider(
+    private val userAccountService: UserAccountService
 ) : AuthenticationProvider {
-
-    @Autowired
-    lateinit var userAccountService: UserAccountService
 
     @Throws(AuthenticationException::class)
     override fun authenticate(authentication: Authentication): Authentication {
-        val kratosIdentity = authentication.credentials as KratosIdentity?
-
-        val account =
-            kratosIdentity?.let {
-                userAccountService.findUserAccountPasswordByUserEmail(it.emailAddress.value)
-            }
+        val kratosIdentity = authentication.credentials as KratosUserId?
+        val account = kratosIdentity?.let { userAccountService.findUserAccountOauthByReference(it.value) }
         return if (account != null) {
-            val userSecurityPassword = UserSecurityService.UserSecurityPassword(account)
+            val userSecurityOauth2 = UserSecurityService.UserSecurityOauth2(
+                account, OidcIdToken(
+                    "token-value",
+                    Instant.EPOCH, Instant.MAX,
+                    mapOf(
+                        Pair("sub", account.reference),
+                        Pair("name", account.user.name ?: "anon"),
+                        Pair("email", account.user.email),
+                        Pair("kratos_user_id", kratosIdentity.value)
+                    )
+                )
+            )
             PreAuthenticatedAuthenticationToken(
-                userSecurityPassword.username,
-                userSecurityPassword,
-                userSecurityPassword.authorities
+                userSecurityOauth2.account.user.code,
+                userSecurityOauth2,
+                userSecurityOauth2.authorities
             )
         } else {
             PreAuthenticatedAuthenticationToken(
-                kratosIdentity?.emailAddress ?: "anonymous",
+                kratosIdentity?.value ?: "anonymous",
                 null
             )
         }
@@ -67,19 +73,11 @@ class OathkeeperProxyAuthenticationProcessingFilter(
     @Throws(AuthenticationException::class, IOException::class, ServletException::class)
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
         // Extract from request
-        val email = request.getHeader("X-Email")
-        val userId = request.getHeader("X-User");
-
-        if ((email == null || userId == null)) {
-            throw InvalidOathkeeperProxyHeadersException("Invalid authentication headers (X-User: $userId, X-Email: $email")
-        }
-        val auth = KratosIdentity(
-            UserId(userId),
-            EmailAddress(email)
-        )
+        val userId = request.getHeader("X-User")
+            ?: throw InvalidOathkeeperProxyHeadersException("Invalid authentication headers (X-User)")
 
         // Create a token object ot pass to Authentication Provider
-        val token = PreAuthenticatedAuthenticationToken(email, auth)
+        val token = PreAuthenticatedAuthenticationToken(userId, KratosUserId(userId))
         return authenticationManager.authenticate(token)
     }
 

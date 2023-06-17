@@ -1,3 +1,20 @@
+- id: oathkeeper-jwks
+  version: v0.40.2
+  upstream:
+    url: http://oathkeeper:4456
+  match:
+    url: http://accounts.flock.local:8081/.well-known/jwks.json
+    methods:
+      - GET
+  authenticators:
+    - handler: noop
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: noop
+  errors:
+    - handler: redirect
+
 - id: kratos-public-api
   version: v0.40.2
   upstream:

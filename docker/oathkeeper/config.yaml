@@ -57,6 +57,14 @@ errors:
         verbose: true
 
 mutators:
+  id_token:
+    # Set enabled to true if the authenticator should be enabled and false to disable the authenticator. Defaults to false.
+    enabled: true
+    config:
+      issuer_url: --set-me-through-env-variable--
+      jwks_url: file:///etc/config/oathkeeper/jwks.json
+      ttl: 60s
+      claims: '{"aud": ["https://my-backend-service/some/endpoint"],"email": "{{ print .Extra.identity.traits.email }}"}'
   header:
     enabled: true
     config:

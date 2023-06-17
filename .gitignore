@@ -44,3 +44,4 @@ secrets.yml
 node_modules
 coverage
 .env
+/docker/kratos/identities/existing_identities.json
