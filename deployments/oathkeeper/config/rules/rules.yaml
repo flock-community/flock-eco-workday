@@ -1,0 +1,39 @@
+- id: workday-everything
+  upstream:
+    url: https://host.docker.internal:8080
+  version: v0.40.3
+  match:
+    url: https://workday.flock.community/<.*>
+    methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+  authenticators:
+    - handler: noop
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: noop
+  errors:
+    - handler: json
+
+- id: shadow-workday-everything
+  upstream:
+    url: https://host.docker.internal:8080
+  version: v0.40.3
+  match:
+    url: https://shadow.workday.flock.community/<.*>
+    methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+  authenticators:
+    - handler: noop
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: noop
+  errors:
+    - handler: json
