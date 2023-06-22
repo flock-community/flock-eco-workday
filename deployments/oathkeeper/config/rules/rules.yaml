@@ -1,6 +1,6 @@
 - id: workday-everything
   upstream:
-    url: https://host.docker.internal:8080
+    url: https://workday-app-x6nsuevzyq-ew.a.run.app
   version: v0.40.3
   match:
     url: https://workday.flock.community/<.*>
@@ -20,10 +20,10 @@
 
 - id: shadow-workday-everything
   upstream:
-    url: https://host.docker.internal:8080
+    url: https://workday-app-ory-x6nsuevzyq-ew.a.run.app
   version: v0.40.3
   match:
-    url: https://shadow.workday.flock.community/<.*>
+    url: https://ory.workday.flock.community/<.*>
     methods:
       - GET
       - POST
