@@ -62,5 +62,5 @@ jobs:
         with:
           context: deployments/oathkeeper
           push: true
-          tags: eu.gcr.io/flock-eco/flock-eco-workday-oathkeeper:develop
+          tags: gcr.io/flock-eco/flock-eco-workday-oathkeeper:develop
 
