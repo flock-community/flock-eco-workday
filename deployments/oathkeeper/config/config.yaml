@@ -33,7 +33,7 @@ log:
 
 access_rules:
   repositories:
-    - file:///home/ory/config/rules.yaml
+    - file:///home/ory/config/rules/rules.yaml
 
 errors:
   fallback:
