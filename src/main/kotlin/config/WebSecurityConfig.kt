@@ -57,6 +57,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .antMatchers("/").permitAll()
             .antMatchers("/*.js").permitAll()
             .antMatchers("/images/*.webp").permitAll()
+            .antMatchers("/images/*.svg").permitAll()
             .antMatchers("/tasks/**").permitAll()
             .antMatchers("/actuator/**").permitAll()
             .antMatchers("/login/**").permitAll()
@@ -75,6 +76,8 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 userSecurityService.googleLogin(http)
                     .and()
                     .defaultSuccessUrl("/", true)
+                    .and()
+                    .logout().logoutSuccessUrl("/")
             "DATABASE" -> userSecurityService.databaseLogin(http).loginPage("/").loginProcessingUrl("/login")
             else -> userSecurityService.testLogin(http).loginPage("/").loginProcessingUrl("/login")
         }

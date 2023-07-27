@@ -159,13 +159,6 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
               </Typography>
             </Box>
           </UserAuthorityUtil>
-          <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
-            <Box my="1rem">
-              <Typography variant={"h5"} component={"h2"}>
-                {personFullName}
-              </Typography>
-            </Box>
-          </UserAuthorityUtil>
           {state && <WorkDayForm value={state} onSubmit={handleSubmit} />}
         </DialogContent>
         <Divider />
