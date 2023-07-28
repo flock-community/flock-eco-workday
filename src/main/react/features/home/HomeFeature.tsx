@@ -9,9 +9,10 @@ import {
   Container,
   Grid,
 } from "@material-ui/core";
-import { DashboardHolidayChart } from "../../components/charts/DashboardHolidayChart";
+import { DashboardHolidayTable } from "../../components/tables/DashboardHolidayTable";
 import ContractsEnding from "../../components/contracts/ContractsEnding";
 import PersonEvents from "../../components/person/PersonEvents";
+import { DashboardHolidayChart } from "../../components/charts/DashboardHolidayChart";
 
 export function HomeFeature() {
   const user = useUserMe();
@@ -47,11 +48,18 @@ export function HomeFeature() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={12}>
           <Card>
             <CardHeader title={"Holidays"} />
             <CardContent>
-              <DashboardHolidayChart />
+              <Grid container spacing={4}>
+                <Grid item xs={12} md={6}>
+                  <DashboardHolidayTable />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <DashboardHolidayChart />
+                </Grid>
+              </Grid>
             </CardContent>
           </Card>
         </Grid>
