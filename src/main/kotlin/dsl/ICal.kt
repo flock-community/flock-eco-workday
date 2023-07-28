@@ -3,48 +3,50 @@ package community.flock.eco.workday.dsl
 import biweekly.ICalendar
 import biweekly.component.VEvent
 import biweekly.util.Duration
+import community.flock.eco.workday.model.HoliDay
 import java.time.Instant
 import java.time.LocalDate
+import java.time.Period
 import java.time.ZoneId
 import java.util.Date
 
-fun calendar(f: KCalendar.() -> Unit) =
-    KCalendar().apply(f).delegate
-
-class KCalendar {
-    internal val delegate = ICalendar()
-
-    fun event(f: KEvent.() -> Unit) {
-        KEvent()
-            .apply(f)
-            .delegate
-            .let {
-                delegate.addEvent(it)
-            }
-    }
+data class KCalendar(
+    val events: List<KEvent>
+) {
+    fun serialize(): String = ICalendar()
+        .apply {
+            this@KCalendar.events
+                .map { it.serialize() }
+                .forEach { addEvent(it) }
+        }.write()
 }
 
-class KEvent {
-    internal val delegate = VEvent()
-
-    var uuid: String?
-        get() = delegate.uid?.value
-        set(value) = delegate.setUid(value).discard()
-
-    var summary: String?
-        get() = delegate.summary?.value
-        set(value) = delegate.setSummary(value).discard()
-
-    var startDate: LocalDate?
-        get() = delegate.dateStart?.value?.toInstant()?.toLocalDateTime()
-        set(value) = delegate.setDateStart(value?.toDate(), false).discard()
-
-    var durationInDays: Int?
-        get() = delegate.duration?.value?.days
-        set(value) = delegate.setDuration(Duration.builder().days(value).build()).discard()
+data class KEvent(
+    val uid: String?,
+    val summary: String?,
+    val startDate: LocalDate?,
+    val durationInDays: Int?
+) {
+    fun serialize(): VEvent = VEvent()
+        .apply {
+            setUid(this@KEvent.uid)
+            setSummary(this@KEvent.summary)
+            setDateStart(this@KEvent.startDate?.toDate())
+            setDuration(Duration.builder().days(this@KEvent.durationInDays).build())
+        }
 }
 
-private fun Any.discard() = Unit
+fun Iterable<HoliDay>.toCalendar() =
+    KCalendar(map { it.toCalendarEvent() })
+
+private fun HoliDay.toCalendarEvent() = KEvent(
+    uid = code,
+    startDate = from,
+    durationInDays = durationInDays,
+    summary = "Vakantie ${person.getFullName()} (${durationInDays} dagen)"
+)
+
+private val HoliDay.durationInDays get() = Period.between(from, to).days + 1
 
 private fun LocalDate.toDate() =
     atStartOfDay(ZoneId.systemDefault()).toInstant()

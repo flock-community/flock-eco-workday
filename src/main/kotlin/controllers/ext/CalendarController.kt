@@ -18,7 +18,7 @@ class CalendarController(
     @GetMapping("calendar.ics", produces = ["text/calendar"])
     fun get(@RequestParam token: String): ResponseEntity<String> =
         if (token == calendarProperties.token) {
-            ResponseEntity.ok(calendarService.getCalendar())
+            ResponseEntity.ok(calendarService.getCalendar().serialize())
         } else {
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         }
