@@ -99,22 +99,22 @@ class KCalendarTest {
             VERSION:2.0
             PRODID:-//Michael Angstadt//biweekly 0.6.7//EN
             BEGIN:VEVENT
-            DTSTAMP:20230728T100603Z
+            DTSTAMP:20230728T102830Z
             UID:f55ddf77-711d-47f0-a75f-677481c3452e
             SUMMARY:Vakantie Henk Henkszoon (2 dagen)
-            DTSTART:20230302T230000Z
+            DTSTART:20230303T000000Z
             DURATION:P2D
             END:VEVENT
             BEGIN:VEVENT
-            DTSTAMP:20230728T100603Z
+            DTSTAMP:20230728T102830Z
             UID:13dc180a-391b-49e2-99db-73cd33523dd9
             SUMMARY:Vakantie Henk Henkszoon (4 dagen)
-            DTSTART:20230306T230000Z
+            DTSTART:20230307T000000Z
             DURATION:P4D
             END:VEVENT
             END:VCALENDAR
 
-        """.trimIndent()
+            """.trimIndent()
 
         val resultLinesToCheck = result.lines().filterNot { it.startsWith("DTSTAMP") }
         val expectedLinesToCheck = expected.lines().filterNot { it.startsWith("DTSTAMP") }
