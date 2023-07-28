@@ -38,8 +38,11 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         "/v2/api-docs"
     )
 
-    override fun configure(http: HttpSecurity) {
+    private val EXT_WHITELIST = arrayOf(
+        "/api/ext/calendar/**"
+    )
 
+    override fun configure(http: HttpSecurity) {
         userAuthorityService.addAuthority(HolidayAuthority::class.java)
 
         http
@@ -61,6 +64,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .antMatchers("/h2/**").permitAll()
             .antMatchers("/api/events/**").permitAll()
             .antMatchers(*SWAGGER_WHITELIST).permitAll()
+            .antMatchers(*EXT_WHITELIST).permitAll()
             .anyRequest().authenticated()
         http
             .cors()

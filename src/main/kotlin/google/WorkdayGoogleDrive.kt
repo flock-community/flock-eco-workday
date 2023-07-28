@@ -37,12 +37,12 @@ class WorkdayGoogleDrive(
                 parents = listOf("root")
             }
         )
-        .setSupportsTeamDrives(true)
-        .setFields(fields)
-        .execute()
-        .also {
-            shareOrMoveFile(it)
-        }
+            .setSupportsTeamDrives(true)
+            .setFields(fields)
+            .execute()
+            .also {
+                shareOrMoveFile(it)
+            }
 
     private fun shareOrMoveFile(file: File) {
         val email = getUserEmail()
