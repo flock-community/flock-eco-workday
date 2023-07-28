@@ -98,18 +98,21 @@ class KCalendarTest {
             BEGIN:VCALENDAR
             VERSION:2.0
             PRODID:-//Michael Angstadt//biweekly 0.6.7//EN
+            BEGIN:VTIMEZONE
+            TZID:Europe/Amsterdam
+            END:VTIMEZONE
             BEGIN:VEVENT
-            DTSTAMP:20230728T102830Z
+            DTSTAMP:20230728T135556Z
             UID:f55ddf77-711d-47f0-a75f-677481c3452e
             SUMMARY:Vakantie Henk Henkszoon (2 dagen)
-            DTSTART:20230303T000000Z
+            DTSTART;TZID=Europe/Amsterdam:20230303T000000
             DURATION:P2D
             END:VEVENT
             BEGIN:VEVENT
-            DTSTAMP:20230728T102830Z
+            DTSTAMP:20230728T135556Z
             UID:13dc180a-391b-49e2-99db-73cd33523dd9
             SUMMARY:Vakantie Henk Henkszoon (4 dagen)
-            DTSTART:20230307T000000Z
+            DTSTART;TZID=Europe/Amsterdam:20230307T000000
             DURATION:P4D
             END:VEVENT
             END:VCALENDAR

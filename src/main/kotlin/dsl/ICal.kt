@@ -2,22 +2,42 @@ package community.flock.eco.workday.dsl
 
 import biweekly.ICalendar
 import biweekly.component.VEvent
+import biweekly.component.VTimezone
+import biweekly.io.TimezoneAssignment
+import biweekly.io.TimezoneInfo
 import biweekly.util.Duration
 import community.flock.eco.workday.model.HoliDay
 import java.time.LocalDate
 import java.time.Period
-import java.time.ZoneOffset.UTC
+import java.time.ZoneId
 import java.util.Date
+import java.util.TimeZone
+
+private const val TIMEZONE_ID = "Europe/Amsterdam"
 
 data class KCalendar(
     val events: List<KEvent>
 ) {
     fun serialize(): String = ICalendar()
         .apply {
-            this@KCalendar.events
+            setName("Flock. Holidays")
+            timezoneInfo = defaultTimezoneInfo
+        }
+        .also { iCalendar ->
+            events
                 .map { it.serialize() }
-                .forEach { addEvent(it) }
-        }.write()
+                .forEach { iCalendar.addEvent(it) }
+        }
+        .write()
+
+    companion object {
+        val defaultTimezoneInfo = TimezoneInfo().apply {
+            defaultTimezone = TimezoneAssignment(
+                TimeZone.getTimeZone(ZoneId.of(TIMEZONE_ID)),
+                VTimezone(TIMEZONE_ID)
+            )
+        }
+    }
 }
 
 data class KEvent(
@@ -48,6 +68,6 @@ private fun HoliDay.toCalendarEvent() = KEvent(
 private val HoliDay.durationInDays get() = Period.between(from, to).days + 1
 
 private fun LocalDate.toDate() =
-    atStartOfDay(UTC)
+    atStartOfDay(ZoneId.of(TIMEZONE_ID))
         .toInstant()
         .let { Date.from(it) }
