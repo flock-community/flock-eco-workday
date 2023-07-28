@@ -98,6 +98,7 @@ class KCalendarTest {
             BEGIN:VCALENDAR
             VERSION:2.0
             PRODID:-//Michael Angstadt//biweekly 0.6.7//EN
+            NAME:Flock. Holidays
             BEGIN:VTIMEZONE
             TZID:Europe/Amsterdam
             END:VTIMEZONE
@@ -117,7 +118,7 @@ class KCalendarTest {
             END:VEVENT
             END:VCALENDAR
 
-            """.trimIndent()
+        """.trimIndent()
 
         val resultLinesToCheck = result.lines().filterNot { it.startsWith("DTSTAMP") }
         val expectedLinesToCheck = expected.lines().filterNot { it.startsWith("DTSTAMP") }
