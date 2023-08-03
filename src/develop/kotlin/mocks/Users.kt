@@ -12,7 +12,9 @@ data class User(
     val role: Role = Role.USER,
     val active: Boolean = true,
     val birthdate: LocalDate? = null,
-    val joinDate: LocalDate? = null
+    val joinDate: LocalDate? = null,
+    val shoeSize: String? = null,
+    val shirtSize: String? = null,
 )
 
 val users = listOf(
@@ -25,14 +27,17 @@ val users = listOf(
     User(
         "Ieniemienie",
         "Mouse",
-        birthdate = LocalDate.now()
+        birthdate = LocalDate.now(),
+        shoeSize = "26,5", shirtSize = "XXS"
     ),
     User(
         "Pino",
         "Woodpecker",
-        joinDate = LocalDate.of(1983, 6, 7)
+        joinDate = LocalDate.of(1983, 6, 7),
+        shoeSize = "53",
+        shirtSize = "XXXXL",
     ),
-    User("Bert", "Muppets", role = Role.ADMIN),
-    User("Ernie", "Muppets"),
+    User("Bert", "Muppets", role = Role.ADMIN, shoeSize = "36,5", shirtSize = "M"),
+    User("Ernie", "Muppets", shoeSize = "36,5", shirtSize = "M"),
     User("Aart", "Staartjes", active = false)
 )

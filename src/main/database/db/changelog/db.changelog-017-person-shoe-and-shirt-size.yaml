@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-017-person-shoe-and-shirt-size-1
+      author: jverhaar
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: shoe_size
+                  type: varchar(10)
+                  constraints:
+                    - nullable: true
+              - column:
+                  name: shirt_size
+                  type: varchar(10)
+                  constraints:
+                    - nullable: true

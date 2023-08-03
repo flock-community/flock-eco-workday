@@ -49,3 +49,6 @@ databaseChangeLog:
   - include:
       - file: db.changelog-016-person-birthdate-join-date.yaml
         relativeToChangelogFile: true
+  - include:
+      - file: db.changelog-017-person-shoe-and-shirt-size.yaml
+        relativeToChangelogFile: true

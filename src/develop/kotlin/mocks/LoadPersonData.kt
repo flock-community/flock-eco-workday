@@ -52,7 +52,9 @@ class LoadPersonData(
         birthdate: LocalDate? = null,
         joinDate: LocalDate? = null,
         user: User,
-        active: Boolean = true
+        active: Boolean = true,
+        shoeSize: String? = null,
+        shirtSize: String? = null,
     ) = Person(
         firstname = firstname,
         lastname = lastname,
@@ -63,7 +65,9 @@ class LoadPersonData(
         joinDate = joinDate,
         user = user,
         active = active,
-        lastActiveAt = if (!active) Instant.now().minus(Period.ofDays(180)) else null
+        lastActiveAt = if (!active) Instant.now().minus(Period.ofDays(180)) else null,
+        shoeSize = shoeSize,
+        shirtSize = shirtSize,
     ).save()
 
     /**
@@ -80,7 +84,9 @@ class LoadPersonData(
                 birthdate = it.birthdate,
                 joinDate = it.joinDate,
                 user = userMap[it.firstName] ?: throw IllegalStateException("User not found with name ${it.firstName}"),
-                active = it.active
+                active = it.active,
+                shoeSize = it.shoeSize,
+                shirtSize = it.shirtSize,
             )
         }
     }
