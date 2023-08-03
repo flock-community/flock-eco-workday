@@ -16,6 +16,8 @@ export type Person = {
   user: string;
   active: boolean;
   lastActiveAt: Date;
+  shoeSize: string;
+  shirtSize: string;
 };
 
 export type PersonRaw = {
@@ -32,6 +34,8 @@ export type PersonRaw = {
   user: string;
   active: boolean;
   lastActiveAt: string;
+  shoeSize: string;
+  shirtSize: string;
 };
 
 export type PersonRequest = {
@@ -47,6 +51,8 @@ export type PersonRequest = {
   lastActiveAt?: string; // FIXME
   reminders: boolean;
   user: any; // FIXME
+  shoeSize: string;
+  shirtSize: string;
 };
 
 const path = "/api/persons";

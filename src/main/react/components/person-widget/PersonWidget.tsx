@@ -69,6 +69,18 @@ export function PersonWidget({
                   <TableCell>{person.lastActiveAt.toLocaleString()}</TableCell>
                 </TableRow>
               )}
+              <TableRow>
+                <TableCell component="th">Shoe size</TableCell>
+                <TableCell>
+                  {person.shoeSize ?? "Unknown"}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th">Shirt size</TableCell>
+                <TableCell>
+                  {person.shirtSize ?? "Unknown"}
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
