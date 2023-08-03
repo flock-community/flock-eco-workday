@@ -1,4 +1,4 @@
-import React from "React";
+import React from "react";
 import { Field } from "formik";
 import {ShirtSizeSelector} from "../selector/ShirtSizeSelector";
 
