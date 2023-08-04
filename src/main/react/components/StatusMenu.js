@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) => ({
   buttonRejected: {
     backgroundColor: theme.palette.error[500],
   },
+  buttonDone: {
+    backgroundColor: theme.palette.success[700],
+  },
 }));
 
 export function StatusMenu({ onChange, disabled, value }) {
@@ -56,6 +59,7 @@ export function StatusMenu({ onChange, disabled, value }) {
           [classes.buttonRequested]: color === "REQUESTED",
           [classes.buttonApproved]: color === "APPROVED",
           [classes.buttonRejected]: color === "REJECTED",
+          [classes.buttonDone]: color === "DONE",
         })}
       >
         {value}
@@ -74,6 +78,9 @@ export function StatusMenu({ onChange, disabled, value }) {
           </MenuItem>
           <MenuItem onClick={handleMenuItemClick} data-value={"REJECTED"}>
             REJECT
+          </MenuItem>
+          <MenuItem onClick={handleMenuItemClick} data-value={"DONE"}>
+            DONE
           </MenuItem>
         </Menu>
       )}
