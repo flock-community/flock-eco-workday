@@ -37,6 +37,8 @@ class PersonService(
             active = form.active,
             lastActiveAt = lastActiveAt(form),
             reminders = form.reminders,
+            shoeSize = form.shoeSize,
+            shirtSize = form.shirtSize,
             user = user
         )
     }

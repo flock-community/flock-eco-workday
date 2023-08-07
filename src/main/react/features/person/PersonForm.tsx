@@ -10,6 +10,8 @@ import { UserSelectorField } from "../../components/fields/UserSelectorField";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import DayjsUtils from "@date-io/dayjs";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import {ShoeSizeSelectorField} from "../../components/fields/ShoeSizeSelectorField";
+import {ShirtSizeSelectorField} from "../../components/fields/ShirtSizeSelectorField";
 
 export const PERSON_FORM_ID = "person-form";
 
@@ -90,6 +92,19 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
               <UserSelectorField name="userCode" />
             </FormControl>
           </Grid>
+
+          <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                  <ShoeSizeSelectorField name="shoeSize" />
+              </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                  <ShirtSizeSelectorField name="shirtSize" />
+              </FormControl>
+          </Grid>
+
           <Grid item xs={12}>
             <FormControl fullWidth>
               <Field

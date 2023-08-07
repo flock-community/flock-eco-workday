@@ -1,5 +1,13 @@
 # Flock Workday
 
+## Prerequisite
+
+You need to download and install the `gcloud cli`. After installing the cli run the following command to create
+Application Default Credentials (ADC):
+```bash
+gcloud auth application-default login
+```
+
 ## Run
 
 ```bash
@@ -60,6 +68,18 @@ $ ./mvnw antrun:run@ktlint-format
 # fix code styles for js files with eslint
 $ npm run lint
 ```
+
+#### View database locally
+It is possible to view the `SCHEMA` and `VALUES` that are in the database on you local environment. When the backend is running you can
+connect to a console. In the `/resources/application-develop.properties` you can find the settings:
+
+```bash
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2
+```
+
+Connect via the browser to the `localhost:8080/h2`. Fill the `spring.datasource.url` as the `JDBC URL` and press 'Connect'.
+
 
 ## Generate secrets
 
