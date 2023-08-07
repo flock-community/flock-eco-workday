@@ -16,7 +16,7 @@ import { Dayjs } from "dayjs";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 // Types
-import type { DayListProps } from "../../types";
+import type {DayListProps, StatusProps} from "../../types";
 
 type ExpenseProps = {
   id: string;
@@ -38,7 +38,7 @@ type ExpenseProps = {
     user: string;
     fullName: string;
   };
-  status: string;
+  status: StatusProps;
   amount: number;
   files: any[]; // You can replace 'any' with the specific type of the file object
   type: string;
