@@ -38,3 +38,8 @@ export type GroupedItemProps = {
   type: typeProp;
   items: InputItem[];
 };
+
+const TransitionStateProps = {
+  from: StatusProp,
+  to: StatusProp,
+};
