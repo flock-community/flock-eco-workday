@@ -15,7 +15,7 @@ fun Approve.applyAllowedToUpdate(status: Status, isAdmin: Boolean) {
     if (status !== this.status && !isAdmin) {
         throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
     }
-    if (!StatusTransition.check(this.status, status)) {
+    if (status !== this.status && !StatusTransition.check(this.status, status)) {
         throw ResponseStatusException(HttpStatus.FORBIDDEN, "This status change is not allowed")
     }
 }

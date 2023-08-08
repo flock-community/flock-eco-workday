@@ -122,7 +122,7 @@ class HolidayController(
         if (form.status !== this.status && !authentication.isAdmin()) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
         }
-        if (!StatusTransition.check(status, this.status)) {
+        if (form.status !== this.status && !StatusTransition.check(this.status, form.status)) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "This status change is not allowed")
         }
     }
