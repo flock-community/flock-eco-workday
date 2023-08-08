@@ -4,6 +4,7 @@ import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.ExpenseAuthority
 import community.flock.eco.workday.graphql.CostExpenseInput
 import community.flock.eco.workday.graphql.TravelExpenseInput
+import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.mappers.CostExpenseMapper
 import community.flock.eco.workday.mappers.TravelExpenseMapper
 import community.flock.eco.workday.model.Expense
@@ -93,7 +94,8 @@ class ExpenseController(
 @RequestMapping("/api/expenses-travel")
 class TravelExpenseController(
     private val service: TravelExpenseService,
-    private val mapper: TravelExpenseMapper
+    private val mapper: TravelExpenseMapper,
+    private val expenseService: ExpenseService
 ) {
     @PostMapping
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
@@ -112,7 +114,9 @@ class TravelExpenseController(
         @RequestBody input: TravelExpenseInput,
         authentication: Authentication
     ) = input
-        .run { mapper.consume(this, id) }
+        .run { expenseService.findById(id) }
+        ?.applyAllowedToUpdate(input.status, authentication.isAdmin())
+        .run { mapper.consume(input, id) }
         .run { service.update(id, this) }
         .toResponse()
 }
@@ -121,7 +125,8 @@ class TravelExpenseController(
 @RequestMapping("/api/expenses-cost")
 class CostExpenseController(
     private val service: CostExpenseService,
-    private val mapper: CostExpenseMapper
+    private val mapper: CostExpenseMapper,
+    private val expenseService: ExpenseService
 ) {
     @PostMapping
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
@@ -140,7 +145,9 @@ class CostExpenseController(
         @RequestBody input: CostExpenseInput,
         authentication: Authentication
     ) = input
-        .run { mapper.consume(this, id) }
+        .run { expenseService.findById(id) }
+        ?.applyAllowedToUpdate(input.status, authentication.isAdmin())
+        .run { mapper.consume(input, id) }
         .run { service.update(id, this) }
         .toResponse()
 }
