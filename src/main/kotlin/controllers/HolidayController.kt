@@ -3,6 +3,7 @@ package community.flock.eco.workday.controllers
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
+import community.flock.eco.workday.interfaces.StatusTransition
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.HoliDayService
@@ -120,6 +121,9 @@ class HolidayController(
         }
         if (form.status !== this.status && !authentication.isAdmin()) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
+        }
+        if (!StatusTransition.check(status, this.status)) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "This status change is not allowed")
         }
     }
 }
