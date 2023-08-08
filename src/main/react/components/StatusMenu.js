@@ -92,7 +92,7 @@ export function StatusMenu({onChange, disabled, value}) {
             >
                 {value}
             </Button>
-            {!disabled && (
+            {!disabled && (currentStateOptions && currentStateOptions.length > 0) && (
                 <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
