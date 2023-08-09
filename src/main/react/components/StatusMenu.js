@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.error[500],
     },
     buttonDone: {
-        backgroundColor: theme.palette.success[700],
+        backgroundColor: theme.palette.done,
     },
 }));
 

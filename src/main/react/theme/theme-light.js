@@ -10,6 +10,7 @@ export const themeLight = createTheme({
     secondary: blueGrey,
     success: green,
     error: red,
+    done: "hotpink",
   },
   overrides: {
     MuiDialogTitle: {
