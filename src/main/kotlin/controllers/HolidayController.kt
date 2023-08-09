@@ -3,7 +3,7 @@ package community.flock.eco.workday.controllers
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
-import community.flock.eco.workday.interfaces.StatusTransition
+import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.HoliDayService
@@ -72,7 +72,7 @@ class HolidayController(
     ) =
         service.findByCode(code)
             ?.applyAuthentication(authentication)
-            ?.applyAllowedToUpdate(form, authentication)
+            ?.applyAllowedToUpdate(form.status, authentication.isAdmin())
             ?.run { service.update(code, form) }
 
     @DeleteMapping("/{code}")
@@ -112,18 +112,6 @@ class HolidayController(
         }
         if (form.status !== this.status && !authentication.isAdmin()) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
-        }
-    }
-
-    private fun HoliDay.applyAllowedToUpdate(form: HoliDayForm, authentication: Authentication): HoliDay = apply {
-        if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change workday")
-        }
-        if (form.status !== this.status && !authentication.isAdmin()) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
-        }
-        if (form.status !== this.status && !StatusTransition.check(this.status, form.status)) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, "This status change is not allowed")
         }
     }
 }
