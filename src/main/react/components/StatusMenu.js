@@ -9,15 +9,28 @@ import clsx from "clsx";
 const useStyles = makeStyles((theme) => ({
     buttonRequested: {
         backgroundColor: "unset",
+        '&:disabled': {
+            backgroundColor: "unset",
+            outline: "1px solid",
+        }
     },
     buttonApproved: {
         backgroundColor: theme.palette.success[500],
+        '&:disabled': {
+            backgroundColor: theme.palette.success[500],
+        }
     },
     buttonRejected: {
         backgroundColor: theme.palette.error[500],
+        '&:disabled': {
+            backgroundColor: theme.palette.error[500],
+        }
     },
     buttonDone: {
         backgroundColor: theme.palette.done,
+        '&:disabled': {
+            backgroundColor: theme.palette.done,
+        }
     },
 }));
 
