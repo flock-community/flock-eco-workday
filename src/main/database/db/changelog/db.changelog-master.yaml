@@ -52,3 +52,6 @@ databaseChangeLog:
   - include:
       - file: db.changelog-017-person-shoe-and-shirt-size.yaml
         relativeToChangelogFile: true
+  - include:
+      - file: db.changelog-018-update-status-approved-to-done.yaml
+        relativeToChangelogFile: true
