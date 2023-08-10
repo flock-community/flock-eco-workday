@@ -49,3 +49,6 @@ databaseChangeLog:
   - include:
       - file: db.changelog-016-person-birthdate-join-date.yaml
         relativeToChangelogFile: true
+  - include:
+      - file: db.changelog-018-update-status-approved-to-done.yaml
+        relativeToChangelogFile: true

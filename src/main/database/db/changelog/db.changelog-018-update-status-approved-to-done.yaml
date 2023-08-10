@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-018-update-status-approved-to-done-1
+      author: jverhaar
+      changes:
+        - update:
+            tableName: expense
+            columns:
+              - column:
+                  name: status
+                  value: "DONE"
+            where: status='APPROVED'
+        - update:
+            tableName: holi_day
+            columns:
+              - column:
+                  name: status
+                  value: "DONE"
+            where: status='APPROVED'
+        - update:
+            tableName: sick_day
+            columns:
+              - column:
+                  name: status
+                  value: "DONE"
+            where: status='APPROVED'
+        - update:
+            tableName: work_day
+            columns:
+              - column:
+                  name: status
+                  value: "DONE"
+            where: status='APPROVED'
