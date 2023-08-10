@@ -10,42 +10,45 @@ import java.time.LocalDate
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadEventData(
-    loadPersonData: LoadPersonData,
-    private val service: EventService
+        private val loadData: LoadData,
+        loadPersonData: LoadPersonData,
+        private val service: EventService
 ) {
 
     final val now: LocalDate = LocalDate.now().withDayOfMonth(1)
     final val data: MutableList<Event> = mutableListOf()
 
     init {
-        listOf(
-            EventForm(
-                description = "New years eve",
-                from = LocalDate.of(now.year, 1, 1),
-                to = LocalDate.of(now.year, 1, 1),
-                days = listOf(8.0),
-                hours = 8.0,
-                personIds = loadPersonData.data.map { it.uuid }
-            ),
-            EventForm(
-                description = "Flock. dag",
-                from = LocalDate.of(now.year, 1, 3),
-                to = LocalDate.of(now.year, 1, 3),
-                days = listOf(8.0),
-                hours = 8.0,
-                personIds = loadPersonData.data.map { it.uuid }
-            ),
-            EventForm(
-                description = "Conference",
-                from = LocalDate.of(now.year, 5, 27),
-                to = LocalDate.of(now.year, 5, 29),
-                days = listOf(8.0, 8.0, 8.0),
-                hours = 24.0,
-                personIds = loadPersonData.data.take(2).map { it.uuid }
+        loadData.loadWhenEmpty {
+            listOf(
+                    EventForm(
+                            description = "New years eve",
+                            from = LocalDate.of(now.year, 1, 1),
+                            to = LocalDate.of(now.year, 1, 1),
+                            days = listOf(8.0),
+                            hours = 8.0,
+                            personIds = loadPersonData.data.map { it.uuid }
+                    ),
+                    EventForm(
+                            description = "Flock. dag",
+                            from = LocalDate.of(now.year, 1, 3),
+                            to = LocalDate.of(now.year, 1, 3),
+                            days = listOf(8.0),
+                            hours = 8.0,
+                            personIds = loadPersonData.data.map { it.uuid }
+                    ),
+                    EventForm(
+                            description = "Conference",
+                            from = LocalDate.of(now.year, 5, 27),
+                            to = LocalDate.of(now.year, 5, 29),
+                            days = listOf(8.0, 8.0, 8.0),
+                            hours = 24.0,
+                            personIds = loadPersonData.data.take(2).map { it.uuid }
+                    )
             )
-        )
-            .map { it.create() }
-            .let { data.addAll(it) }
+                    .map { it.create() }
+                    .let { data.addAll(it) }
+        }
     }
 
     private final fun EventForm.create() = service.create(this)

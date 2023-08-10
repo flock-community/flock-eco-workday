@@ -13,8 +13,9 @@ import java.time.Period
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadPersonData(
-    userData: LoadUserData,
-    private val repository: PersonRepository
+        private val loadData: LoadData,
+        userData: LoadUserData,
+        private val repository: PersonRepository
 ) {
     val data: MutableSet<Person> = mutableSetOf()
 
@@ -23,18 +24,18 @@ class LoadPersonData(
      * call the PersonRepository´s save function passing the Person
      */
     fun Person.save(): Person = repository
-        .save(this)
-        .also {
-            data.add(it)
-        }
+            .save(this)
+            .also {
+                data.add(it)
+            }
 
     fun findPersonByUserEmail(email: String): Person = data
-        .find { it.user?.email == email }
-        ?: error("Cannot find Client")
+            .find { it.user?.email == email }
+            ?: error("Cannot find Client")
 
     fun findPersonByUserCode(code: String): Person = data
-        .find { it.user?.code == code }
-        ?: error("Cannot find Person")
+            .find { it.user?.code == code }
+            ?: error("Cannot find Person")
 
     /**
      * createPerson() func
@@ -46,24 +47,24 @@ class LoadPersonData(
      * @param user (optional) User model the person is attached to
      */
     private fun createPerson(
-        firstname: String,
-        lastname: String,
-        position: String = "",
-        birthdate: LocalDate? = null,
-        joinDate: LocalDate? = null,
-        user: User,
-        active: Boolean = true
+            firstname: String,
+            lastname: String,
+            position: String = "",
+            birthdate: LocalDate? = null,
+            joinDate: LocalDate? = null,
+            user: User,
+            active: Boolean = true
     ) = Person(
-        firstname = firstname,
-        lastname = lastname,
-        email = user.email,
-        position = position,
-        number = null,
-        birthdate = birthdate,
-        joinDate = joinDate,
-        user = user,
-        active = active,
-        lastActiveAt = if (!active) Instant.now().minus(Period.ofDays(180)) else null
+            firstname = firstname,
+            lastname = lastname,
+            email = user.email,
+            position = position,
+            number = null,
+            birthdate = birthdate,
+            joinDate = joinDate,
+            user = user,
+            active = active,
+            lastActiveAt = if (!active) Instant.now().minus(Period.ofDays(180)) else null
     ).save()
 
     /**
@@ -71,17 +72,20 @@ class LoadPersonData(
      * iterate over userData and create a person for every user in userData
      */
     init {
-        val userMap = userData.data.associateBy { it.name }
+        loadData.loadWhenEmpty {
+            val userMap = userData.data.associateBy { it.name }
 
-        users.forEach {
-            createPerson(
-                firstname = it.firstName,
-                lastname = it.lastName,
-                birthdate = it.birthdate,
-                joinDate = it.joinDate,
-                user = userMap[it.firstName] ?: throw IllegalStateException("User not found with name ${it.firstName}"),
-                active = it.active
-            )
+            users.forEach {
+                createPerson(
+                        firstname = it.firstName,
+                        lastname = it.lastName,
+                        birthdate = it.birthdate,
+                        joinDate = it.joinDate,
+                        user = userMap[it.firstName]
+                                ?: throw IllegalStateException("User not found with name ${it.firstName}"),
+                        active = it.active
+                )
+            }
         }
     }
 }

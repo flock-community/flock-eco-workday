@@ -8,17 +8,20 @@ import org.springframework.stereotype.Component
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadProjectData(
-    val projectRepository: ProjectRepository
+        private val loadData: LoadData,
+        val projectRepository: ProjectRepository
 ) {
     val projects: MutableMap<String, Project> = mutableMapOf()
 
     fun getProjectByName(name: String) =
-        projects.computeIfAbsent(name) {
-            Project(name = it).save()
-        }
+            projects.computeIfAbsent(name) {
+                Project(name = it).save()
+            }
 
     init {
-        Project(name = "Empty project").save()
+        loadData.loadWhenEmpty {
+            Project(name = "Empty project").save()
+        }
     }
 
     fun Project.save() = projectRepository.save(this)
