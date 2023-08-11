@@ -38,12 +38,11 @@
       - DELETE
       - OPTIONS
   authenticators:
-    - handler: cookie_session
+    - handler: noop
   authorizer:
     handler: allow
   mutators:
-    - handler: header
-    - handler: id_token
+    - handler: noop
   errors:
     - handler: redirect
 
