@@ -1,6 +1,6 @@
 terraform {
- backend "gcs" {
-   bucket  = "workday-terraform-state"
-   prefix  = "terraform/state"
- }
+  backend "gcs" {
+    bucket = "workday-terraform-state"
+    prefix = "terraform/state"
+  }
 }

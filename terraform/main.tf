@@ -19,7 +19,13 @@ resource "google_cloud_run_service" "workday-oathkeeper" {
   template {
     spec {
       containers {
-        image = "gcr.io/flock-eco/flock-eco-workday-oathkeeper@sha256:7487a84ce5bd4ef54694412957f2ffe024ef4ca46bece52fccf8f00b482a0ee9"
+        args = [
+          "serve",
+          "proxy",
+          "--config",
+          "/home/ory/config/config.yaml",
+        ]
+        image = "gcr.io/flock-eco/flock-eco-workday-oathkeeper:develop"
         ports {
           container_port = 4455
         }
