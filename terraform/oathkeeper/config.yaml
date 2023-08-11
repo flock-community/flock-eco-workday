@@ -2,7 +2,7 @@ serve:
   proxy:
     port: 4455
     cors:
-      enabled: false
+      enabled: true
       allowed_origins:
         - https://workday.flock.community
         - https://ory.workday.flock.community
@@ -71,8 +71,8 @@ mutators:
     config:
       headers:
         X-User: "{{ print .Subject }}"
-#        X-Email: "{{ print .Extra.identity.traits.email }}"
-#        X-Authenticator-Assurance-Level: "{{ print .Extra.authenticator_assurance_level }}"
+        X-Email: "{{ print .Extra.identity.traits.email }}"
+        X-Authenticator-Assurance-Level: "{{ print .Extra.authenticator_assurance_level }}"
         X-Forwarded-Host: "ory.workday.flock.community"
         X-Extra-Host: "{{ .MatchContext.Header.Get \"Host\" }}"
         X-Extra-Host-Lowercase: "{{ .MatchContext.Header.Get \"host\" }}"
