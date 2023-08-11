@@ -38,14 +38,12 @@
       - DELETE
       - OPTIONS
   authenticators:
-    - handler: noop
+    - handler: cookie_session
   authorizer:
     handler: allow
   mutators:
     - handler: header
-      config:
-        headers:
-          X-Forwarded-Host: "ory.workday.flock.community"
+    - handler: id_token
   errors:
     - handler: redirect
 
