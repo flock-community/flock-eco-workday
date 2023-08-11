@@ -1,5 +1,8 @@
 package community.flock.eco.workday.config
 
+import community.flock.eco.feature.user.forms.UserAccountOauthForm
+import community.flock.eco.feature.user.model.UserAccountOauth
+import community.flock.eco.feature.user.model.UserAccountOauthProvider.KRATOS
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.feature.user.services.UserSecurityService
@@ -34,28 +37,48 @@ import java.util.*
 internal class CustomAuthenticationConverter(
     private val userAccountService: UserAccountService,
 ) : Converter<Jwt, AbstractAuthenticationToken> {
-    override fun convert(jwt: Jwt): AbstractAuthenticationToken {
-
+    override fun convert(jwt: Jwt): PreAuthenticatedAuthenticationToken? {
         val account = userAccountService.findUserAccountOauthByReference(jwt.subject)
         return if (account != null) {
-            val userSecurityOauth2 = UserSecurityService.UserSecurityOauth2(
-                account, OidcIdToken(
-                    jwt.tokenValue,
-                    jwt.issuedAt, jwt.expiresAt,
-                    jwt.claims
-                )
-            )
-            PreAuthenticatedAuthenticationToken(
-                userSecurityOauth2.account.user.code,
-                userSecurityOauth2,
-                userSecurityOauth2.authorities
-            )
+            account.toToken(jwt)
         } else {
-            PreAuthenticatedAuthenticationToken(
-                jwt.subject ?: "anonymous",
-                null
-            )
+            val email = jwt.claims["email"]
+            val name = jwt.claims["name"]
+            if (email is String && name is String) {
+                val accountOauth = userAccountService.createUserAccountOauth(
+                    UserAccountOauthForm(
+                        email = email,
+                        name = name,
+                        authorities = setOf(),
+                        reference = jwt.subject,
+                        provider = KRATOS
+                    )
+                )
+                accountOauth.toToken(jwt)
+            } else {
+                error("Kratos JWT token invalid")
+            }
         }
+    }
+
+    private fun UserAccountOauth.toToken(jwt: Jwt): PreAuthenticatedAuthenticationToken {
+        val userSecurityOauth2 = UserSecurityService.UserSecurityOauth2(
+            this, OidcIdToken(
+                jwt.tokenValue,
+                jwt.issuedAt,
+                jwt.expiresAt,
+                jwt.claims
+            )
+        )
+        return userSecurityOauth2.toToken()
+    }
+
+    private fun UserSecurityService.UserSecurityOauth2.toToken(): PreAuthenticatedAuthenticationToken {
+        return PreAuthenticatedAuthenticationToken(
+            account.user.code,
+            this,
+            authorities
+        )
     }
 }
 
@@ -172,7 +195,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         http
             .cors()
 
-        when (loginType.uppercase(Locale.getDefault())) {
+        when (loginType.uppercase()) {
             "GOOGLE" ->
                 userSecurityService.googleLogin(http)
                     .and()
