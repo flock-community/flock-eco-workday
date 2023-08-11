@@ -2,7 +2,7 @@ serve:
   proxy:
     port: 4455
     cors:
-      enabled: true
+      enabled: false
       allowed_origins:
         - https://workday.flock.community
         - https://ory.workday.flock.community
@@ -12,7 +12,6 @@ serve:
         - PUT
         - PATCH
         - DELETE
-        - OPTIONS
       allowed_headers:
         - Authorization
         - Content-Type
