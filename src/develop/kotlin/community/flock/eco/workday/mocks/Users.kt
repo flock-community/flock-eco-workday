@@ -13,7 +13,9 @@ data class MockUser(
     val role: Role = Role.USER,
     val active: Boolean = true,
     val birthdate: LocalDate? = null,
-    val joinDate: LocalDate? = null
+    val joinDate: LocalDate? = null,
+    val shoeSize: String? = null,
+    val shirtSize: String? = null,
 )
 
 data class KratosIdentity(val id: String, val email: String)
@@ -30,15 +32,17 @@ val mockUsers = listOf(
         "Ieniemienie",
         "Mouse",
         kratosId = "00000000-0000-0000-0000-000000000002",
-        birthdate = LocalDate.now()
+        birthdate = LocalDate.now(),
+        shoeSize = "26,5", shirtSize = "XXS"
     ),
     MockUser(
         "Pino",
         "Woodpecker",
         kratosId = "00000000-0000-0000-0000-000000000003",
-        joinDate = LocalDate.of(1983, 6, 7)
+        joinDate = LocalDate.of(1983, 6, 7),
+        shoeSize = "53", shirtSize = "XXXXL"
     ),
-    MockUser("Bert", "Muppets", kratosId = "00000000-0000-0000-0000-000000000004", role = Role.ADMIN),
-    MockUser("Ernie", "Muppets", kratosId = "00000000-0000-0000-0000-000000000005"),
+    MockUser("Bert", "Muppets", kratosId = "00000000-0000-0000-0000-000000000004", role = Role.ADMIN, shoeSize = ="36,5", shirtSize="M"),
+    MockUser("Ernie", "Muppets", kratosId = "00000000-0000-0000-0000-000000000005", shoeSize="36,5", shirtSize="M" ),
     MockUser("Aart", "Staartjes", kratosId = "00000000-0000-0000-0000-000000000006", active = false)
 )
