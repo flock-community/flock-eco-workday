@@ -42,7 +42,14 @@ val mockUsers = listOf(
         joinDate = LocalDate.of(1983, 6, 7),
         shoeSize = "53", shirtSize = "XXXXL"
     ),
-    MockUser("Bert", "Muppets", kratosId = "00000000-0000-0000-0000-000000000004", role = Role.ADMIN, shoeSize = ="36,5", shirtSize="M"),
-    MockUser("Ernie", "Muppets", kratosId = "00000000-0000-0000-0000-000000000005", shoeSize="36,5", shirtSize="M" ),
+    MockUser(
+        "Bert",
+        "Muppets",
+        kratosId = "00000000-0000-0000-0000-000000000004",
+        role = Role.ADMIN,
+        shoeSize = "36,5",
+        shirtSize = "M"
+    ),
+    MockUser("Ernie", "Muppets", kratosId = "00000000-0000-0000-0000-000000000005", shoeSize = "36,5", shirtSize = "M"),
     MockUser("Aart", "Staartjes", kratosId = "00000000-0000-0000-0000-000000000006", active = false)
 )
