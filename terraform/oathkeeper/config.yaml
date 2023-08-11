@@ -73,7 +73,7 @@ mutators:
         X-User: "{{ print .Subject }}"
 #        X-Email: "{{ print .Extra.identity.traits.email }}"
 #        X-Authenticator-Assurance-Level: "{{ print .Extra.authenticator_assurance_level }}"
-        X-Forwarded-Host: "ory.workday.flock.community"
+        X-Forwarded-Host: "{{ .MatchContext.Header.Get \"Host\" }}"
         X-Extra-Host: "{{ .MatchContext.Header.Get \"Host\" }}"
         X-Extra-Host-Lowercase: "{{ .MatchContext.Header.Get \"host\" }}"
   noop:
