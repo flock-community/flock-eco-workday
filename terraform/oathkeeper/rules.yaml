@@ -42,7 +42,10 @@
   authorizer:
     handler: allow
   mutators:
-    - handler: noop
+    - handler: header
+      config:
+        headers:
+          X-Forwarded-Host: "ory.workday.flock.community"
   errors:
     - handler: redirect
 
