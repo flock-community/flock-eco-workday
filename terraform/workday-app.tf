@@ -1,11 +1,11 @@
-resource "google_cloud_run_service" "workday-app-ory" {
+resource "google_cloud_run_service" "workday-app" {
   project  = "flock-community"
-  name     = "workday-app-ory"
+  name     = "workday-app"
   location = "europe-west1"
   template {
     spec {
       containers {
-        image = "gcr.io/flock-eco/flock-eco-workday@sha256:a0c8a6ae26701d6ca592d54c9d6e966054c8f88a8101d77cfbbf7aa609482bf1"
+        image = "gcr.io/flock-eco/flock-eco-workday@sha256:cbd9a2b5e7feb22ebbfb1365d08e5259fb95becc5d8a4f00d2cc1e27f5e35f12"
         env {
           name  = "MJ_APIKEY_PUBLIC"
           value = "708f0f8c5081c3ed2138b0c829be50b7"
@@ -66,10 +66,6 @@ resource "google_cloud_run_service" "workday-app-ory" {
           value = "16dSJHdp-LphqhpodNPrpDCOJLSJmDEe-NNGiZR0lbqM"
         }
         env {
-          name  = "SPRING_DATASOURCE_HIKARI_MAXIMUM-POOL-SIZE"
-          value = "1"
-        }
-        env {
           name = "SPRING_DATASOURCE_PASSWORD"
           value_from {
             secret_key_ref {
@@ -92,7 +88,7 @@ resource "google_cloud_run_service" "workday-app-ory" {
         }
         env {
           name  = "WORKDAY_LOGIN"
-          value = "KRATOS"
+          value = "GOOGLE"
         }
         env {
           name  = "WORKDAY_CALENDAR_TOKEN"
