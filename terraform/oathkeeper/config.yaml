@@ -4,8 +4,8 @@ serve:
     cors:
       enabled: true
       allowed_origins:
-        - https://accounts.flock.community
-        - https://shadow.accounts.flock.community
+        - https://workday.flock.community
+        - https://ory.workday.flock.community
       allowed_methods:
         - POST
         - GET
@@ -58,11 +58,14 @@ errors:
         verbose: true
 
 mutators:
-  noop:
-    enabled: true
   id_token:
     # Set enabled to true if the authenticator should be enabled and false to disable the authenticator. Defaults to false.
-    enabled: false
+    enabled: true
+    config:
+      issuer_url: https://workday-oathkeeper-x6nsuevzyq-ew.a.run.app
+      jwks_url: file:///home/ory/config/jwks/jwks.json
+      ttl: 60s
+      claims: '{"email": "{{ print .Extra.identity.traits.email }}", "name": "{{ print .Extra.identity.traits.name.first }} {{ print .Extra.identity.traits.name.last }}", "aal": "{{ print .Extra.authenticator_assurance_level }}"}'
   header:
     enabled: true
     config:
@@ -70,6 +73,11 @@ mutators:
         X-User: "{{ print .Subject }}"
         X-Email: "{{ print .Extra.identity.traits.email }}"
         X-Authenticator-Assurance-Level: "{{ print .Extra.authenticator_assurance_level }}"
+        X-Forwarded-Host: "ory.workday.flock.community"
+        X-Extra-Host: "{{ .MatchContext.Header.Get \"Host\" }}"
+        X-Extra-Host-Lowercase: "{{ .MatchContext.Header.Get \"host\" }}"
+  noop:
+    enabled: true
 
 authorizers:
   allow:
@@ -91,6 +99,7 @@ authenticators:
     config:
       check_session_url: https://accounts.flock.community/sessions/whoami
       preserve_path: true
+      force_method: GET
       extra_from: "@this"
       subject_from: "identity.id"
       only:

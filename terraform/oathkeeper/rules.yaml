@@ -1,0 +1,66 @@
+- id: workday-everything
+  upstream:
+    url: https://workday-app-x6nsuevzyq-ew.a.run.app
+  version: v0.40.3
+  match:
+    url: https://workday.flock.community/<.*>
+    methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+  authenticators:
+    - handler: noop
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: header
+      config:
+        headers:
+          X-User: "anonymous"
+          X-Email: "unknown"
+          X-Authenticator-Assurance-Level: "nil"
+          X-Forwarded-Host: "ory.workday.flock.community"
+  errors:
+    - handler: json
+
+- id: shadow-workday-everything
+  upstream:
+    url: https://workday-app-ory-x6nsuevzyq-ew.a.run.app
+  version: v0.40.3
+  match:
+    url: https://ory.workday.flock.community/<.*>
+    methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: header
+    - handler: id_token
+  errors:
+    - handler: redirect
+
+# Hack to get jwks through the google run link (to not clash with ory.workday.flock.community)
+- id: oathkeeper-jwks
+  version: v0.40.2
+  upstream:
+    url: http://127.0.0.1:4456
+  match:
+    url: https://workday-oathkeeper-x6nsuevzyq-ew.a.run.app/.well-known/jwks.json
+    methods:
+      - GET
+  authenticators:
+    - handler: noop
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: noop
+  errors:
+    - handler: redirect
