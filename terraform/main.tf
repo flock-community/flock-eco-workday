@@ -13,30 +13,8 @@ data "google_iam_policy" "noauth" {
   }
 }
 
-resource "google_cloud_run_service" "workday-oathkeeper" {
-  name     = "workday-oathkeeper"
-  location = "europe-west1"
-  template {
-    spec {
-      containers {
-        args = [
-          "serve",
-          "proxy",
-          "--config",
-          "/home/ory/config/config.yaml",
-        ]
-        image = "gcr.io/flock-eco/flock-eco-workday-oathkeeper:develop"
-        ports {
-          container_port = 4455
-        }
-      }
-    }
-  }
-  traffic {
-    percent         = 100
-    latest_revision = true
-  }
-}
+
+
 
 resource "google_cloud_run_service_iam_policy" "noauth" {
   location    = google_cloud_run_service.workday-oathkeeper.location
