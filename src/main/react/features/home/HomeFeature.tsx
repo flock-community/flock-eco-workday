@@ -11,7 +11,7 @@ import {DashboardHolidayChart} from "../../components/charts/DashboardHolidayCha
 export function HomeFeature() {
   const user = useUserMe();
 
-  const hasAccess = user.authorities.length > 0;
+  const hasAccess = user?.authorities?.length > 0;
 
   const showContractsEnding =
     user?.authorities?.includes("ContractAuthority.ADMIN") ?? false;
