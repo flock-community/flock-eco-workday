@@ -5,7 +5,7 @@ resource "google_cloud_run_service" "workday-app" {
   template {
     spec {
       containers {
-        image = "gcr.io/flock-eco/flock-eco-workday@sha256:cbd9a2b5e7feb22ebbfb1365d08e5259fb95becc5d8a4f00d2cc1e27f5e35f12"
+        image = "gcr.io/flock-eco/flock-eco-workday:39f341af9cf2830d239085d8610eb248c2b85449"
         env {
           name  = "MJ_APIKEY_PUBLIC"
           value = "708f0f8c5081c3ed2138b0c829be50b7"
