@@ -51,16 +51,7 @@ jobs:
           restore-keys: ${{ runner.os }}-node-
 
       - name: Build and Deploy
-        run: ./mvnw -B compile -P frontend jib:build -Djib.to.image=gcr.io/flock-eco/flock-eco-workday --file pom.xml
+        run: ./mvnw -B compile -P frontend jib:build -Djib.to.image=gcr.io/flock-eco/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
 
       - name: Build and Deploy Development version
-        run: ./mvnw -B compile -P develop -P frontend jib:build -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=gcr.io/flock-eco/flock-eco-workday-develop --file pom.xml
-
-      - id: build-and-push-oathkeeper
-        name: Build and push Oathkeeper
-        uses: docker/build-push-action@v3
-        with:
-          context: deployments/oathkeeper
-          push: true
-          tags: gcr.io/flock-eco/flock-eco-workday-oathkeeper:develop
-
+        run: ./mvnw -B compile -P develop -P frontend jib:build -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=gcr.io/flock-eco/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
