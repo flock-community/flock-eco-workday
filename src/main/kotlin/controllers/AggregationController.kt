@@ -93,7 +93,7 @@ class AggregationController(
     }
 
     @GetMapping("/client-hour-overview", params = ["year", "month"])
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
     fun hourClientOverviewEmployee(@RequestParam year: Int, @RequestParam month: Int): List<AggregationClientPersonOverview> {
         val yearMonth = YearMonth.of(year, month)
         val from = yearMonth.atDay(1)
@@ -102,7 +102,7 @@ class AggregationController(
     }
 
     @GetMapping("/client-assignment-hour-overview", params = ["from", "to"])
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
     fun hourAssignmentClientOverviewEmployee(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate
