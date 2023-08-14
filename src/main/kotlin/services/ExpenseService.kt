@@ -11,6 +11,7 @@ import community.flock.eco.workday.model.TravelExpense
 import community.flock.eco.workday.repository.CostExpenseRepository
 import community.flock.eco.workday.repository.ExpenseRepository
 import community.flock.eco.workday.repository.TravelExpenseRepository
+import community.flock.eco.workday.services.email.CostExpenseMailService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -51,13 +52,15 @@ class ExpenseService(
 @Service
 class CostExpenseService(
     private val costExpenseRepository: CostExpenseRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val emailService: CostExpenseMailService
 ) {
 
     @Transactional
     fun create(it: CostExpense): CostExpense = costExpenseRepository
         .save(it)
         .also { applicationEventPublisher.publishEvent(CreateExpenseEvent(it)) }
+        .also { emailService.sendNotification(it) }
 
     @Transactional
     fun update(id: UUID, input: CostExpense): CostExpense? = costExpenseRepository
@@ -65,6 +68,7 @@ class CostExpenseService(
         .toNullable()
         ?.let { costExpenseRepository.save(input) }
         ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
+        ?.also { emailService.sendUpdate(input, it) }
 }
 
 @Service
