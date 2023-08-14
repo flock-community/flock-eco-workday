@@ -69,7 +69,13 @@ class WorkDayService(
     fun create(form: WorkDayForm): WorkDay = form.copy(status = Status.REQUESTED)
         .validate()
         .consume()
-        .save(form)
+        .run {
+            workDayRepository.save(this)
+        }
+        .also {
+            emailService.sendNotification(it);
+        }
+
 
     fun update(workDayCode: String, form: WorkDayForm): WorkDay = workDayRepository
         .findByCode(workDayCode)
@@ -78,7 +84,12 @@ class WorkDayService(
             form
                 .validate()
                 .consume(this)
-                .save(form)
+        }
+        .run {
+            workDayRepository.save(this)
+        }
+        .also {
+            emailService.sendUpdate(form, it);
         }
 
     fun uploadSheet(byteArray: ByteArray): UUID {
@@ -144,12 +155,6 @@ class WorkDayService(
             }
         )
     }
-
-    private fun WorkDay.save(old: WorkDayForm) = workDayRepository
-        .save(this)
-        .also {
-            emailService.sendUpdate(old, this);
-        }
 
     companion object {
         val storage = StorageOptions.getDefaultInstance().service

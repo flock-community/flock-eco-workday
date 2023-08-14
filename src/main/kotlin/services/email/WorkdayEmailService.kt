@@ -16,30 +16,31 @@ class WorkdayEmailService(private val emailService: EmailService, private val ma
     private val log: Logger = LoggerFactory.getLogger(MailjetService::class.java);
 
     fun sendUpdate(old: WorkDayForm, new: WorkDay) {
-        val recipient = new.assignment.person;
-        val month = YearMonth.from(new.from).month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale());
-        log.info("Send workday update to ${recipient.email}");
-
-        var subject: String;
-        var emailMessage: String
-        var templateVariables: JSONObject;
-
         if (old.status !== new.status) {
-            subject = "Status update in Workday!";
-            emailMessage = "De status van je Workday is veranderd.\n\n" +
-            "Vorige status: ${old.status}.\n" +
-            "Nieuwe status: ${new.status}.";
-            templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage);
+            val recipient = new.assignment.person;
+            log.info("Send workday update to ${recipient.email}");
+
+            val subject = "Status update in Workday!";
+            val emailMessage = "De status van je Workday is veranderd.\n\n" +
+                "Vorige status: ${old.status}.\n" +
+                "Nieuwe status: ${new.status}.";
+            val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage);
 
             emailService.sendEmailMessage(recipient.email, subject, templateVariables, mailjetTemplateProperties.updateTemplateId);
         }
+    }
 
-        if (old.status !== new.status && new.status == Status.REQUESTED) {
-            subject = "Update in Workday."
-            emailMessage = "Er is een update van ${recipient.firstname} in uren van ${month}.";
-            templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage);
+    fun sendNotification(workDay: WorkDay) {
+        if (workDay.status == Status.REQUESTED) {
+            val employee = workDay.assignment.person;
+            val month = YearMonth.from(workDay.from).month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale());
+            log.info("Send workday notification for ${employee.email}");
 
-            emailService.sendEmailMessage(recipient.email, subject, templateVariables, mailjetTemplateProperties.updateTemplateId);
+            val subject = "Update in Workday."
+            val emailMessage = "Er is een update van ${employee.firstname} in uren van ${month}.";
+            val templateVariables = emailService.createTemplateVariables(employee.firstname, emailMessage);
+
+            emailService.sendEmailNotification(subject, templateVariables, mailjetTemplateProperties.notificationTemplateId);
         }
     }
 
