@@ -6,7 +6,7 @@ import community.flock.eco.workday.config.DummyMailjetClient
 import community.flock.eco.workday.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.config.properties.NotificationProperties
 import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.services.MailjetService
+import community.flock.eco.workday.services.email.MailjetService
 import io.mockk.every
 import io.mockk.slot
 import io.mockk.spyk

@@ -1,7 +1,7 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.workday.services.AggregationService
-import community.flock.eco.workday.services.MailjetService
+import community.flock.eco.workday.services.email.MailjetService
 import community.flock.eco.workday.services.PersonService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
