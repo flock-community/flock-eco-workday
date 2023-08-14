@@ -41,19 +41,3 @@ class HolidayEmailService(private val emailService: EmailService, private val ma
         emailService.sendEmailNotification(subject, templateVariables, mailjetTemplateProperties.notificationTemplateId);
     }
 }
-
-// Hi <recipient_salutation>,
-
-// <email_message>
-
-// <workday_url>
-
-// Hi <Jos>,
-
-// De status van je vakantie aanvraag is gewijzigd van <status_oud> naar <status_nieuw>.
-// Er is een wijziging in je vakantie aanvraag.
-
-// Link naar <workday-app>
-
-
-
