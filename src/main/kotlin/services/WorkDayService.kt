@@ -9,6 +9,8 @@ import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.model.WorkDaySheet
 import community.flock.eco.workday.repository.WorkDayRepository
+import community.flock.eco.workday.services.email.MailjetService
+import community.flock.eco.workday.services.email.WorkdayEmailService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -21,11 +23,11 @@ import javax.persistence.EntityManager
 
 @Service
 class WorkDayService(
-    private val workDayRepository: WorkDayRepository,
-    private val assignmentService: AssignmentService,
-    private val entityManager: EntityManager,
-    private val mailjetService: MailjetService,
-    @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String
+        private val workDayRepository: WorkDayRepository,
+        private val assignmentService: AssignmentService,
+        private val entityManager: EntityManager,
+        private val emailService: WorkdayEmailService,
+        @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String
 ) {
 
     fun findByCode(code: String): WorkDay? = workDayRepository
@@ -67,7 +69,7 @@ class WorkDayService(
     fun create(form: WorkDayForm): WorkDay = form.copy(status = Status.REQUESTED)
         .validate()
         .consume()
-        .save()
+        .save(form)
 
     fun update(workDayCode: String, form: WorkDayForm): WorkDay = workDayRepository
         .findByCode(workDayCode)
@@ -76,7 +78,7 @@ class WorkDayService(
             form
                 .validate()
                 .consume(this)
-                .save()
+                .save(form)
         }
 
     fun uploadSheet(byteArray: ByteArray): UUID {
@@ -143,12 +145,10 @@ class WorkDayService(
         )
     }
 
-    private fun WorkDay.save() = workDayRepository
+    private fun WorkDay.save(old: WorkDayForm) = workDayRepository
         .save(this)
         .also {
-            if (status == Status.REQUESTED) {
-                mailjetService.sendUpdate(assignment.person, YearMonth.from(from))
-            }
+            emailService.sendUpdate(old, this);
         }
 
     companion object {
