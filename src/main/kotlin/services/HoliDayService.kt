@@ -8,6 +8,7 @@ import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.HolidayRepository
+import community.flock.eco.workday.services.email.HolidayEmailService
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,7 +20,8 @@ import javax.persistence.EntityManager
 class HoliDayService(
     private val holidayRepository: HolidayRepository,
     private val personService: PersonService,
-    private val entityManager: EntityManager
+    private val entityManager: EntityManager,
+    private val emailService: HolidayEmailService
 ) {
 
     fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
@@ -59,6 +61,7 @@ class HoliDayService(
         .consume()
         .validate()
         .save()
+        .also { emailService.sendNotification(it) }
 
     fun update(code: String, form: HoliDayForm): HoliDay? = holidayRepository
         .findByCode(code)
@@ -69,10 +72,13 @@ class HoliDayService(
                 .consume(this)
                 .save()
         }
+        .also { emailService.sendUpdate(form, it) }
 
     @Transactional
     fun deleteByCode(code: String) = holidayRepository
-        .deleteByCode(code)
+        .findByCode(code)
+        .toNullable()
+        ?.also { holidayRepository.deleteByCode(code) }
 
     private fun HoliDay.save() = holidayRepository.save(this)
 
