@@ -1,4 +1,4 @@
-package community.flock.eco.workday.services
+package community.flock.eco.workday.services.email
 
 import com.mailjet.client.MailjetClient
 import com.mailjet.client.MailjetRequest
@@ -58,6 +58,21 @@ class MailjetService(
             variables = variables,
             recipientName = person.getFullName(),
             recipientEmailAddress = person.email
+        )
+        try {
+            client.post(request)
+        } catch (ex: Exception) {
+            log.error("Cannot send mail to mailjet", ex)
+        }
+    }
+
+    fun sendEmailMessage(requestProperties: EmailMessageProperties) {
+        val request = createMailjetRequest(
+            recipientName = requestProperties.recipientFirstName,
+            recipientEmailAddress = requestProperties.recipientEmailAddress,
+            templateId = requestProperties.templateId,
+            subject = requestProperties.subject,
+            variables = requestProperties.templateVariables,
         )
         try {
             client.post(request)

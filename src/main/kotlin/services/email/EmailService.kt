@@ -1,0 +1,34 @@
+package community.flock.eco.workday.services.email
+
+import org.json.JSONObject
+import org.springframework.stereotype.Component
+import java.net.URL
+
+@Component
+class EmailService(private val emailSendService: MailjetService) {
+
+    fun sendEmailMessage(recipientEmail: String, emailSubject: String, templateVariables: JSONObject,
+                         templateId: Int) {
+        emailSendService.sendEmailMessage(EmailMessageProperties(recipientEmail, emailSubject, templateVariables,
+                templateId));
+    }
+
+    fun createTemplateVariables(salutation: String, emailMessage: String,
+                                url: URL = URL("https://workday.flock.community")): JSONObject {
+        return JSONObject()
+            .put("recipient_salutation", salutation)
+            .put("email_message", emailMessage)
+            .put("workday_url", url)
+    }
+}
+
+class EmailMessageProperties(recipientEmail: String, subjectLine: String, variables: JSONObject, var templateId: Int) {
+    var recipientFirstName: String
+    var recipientEmailAddress: String = recipientEmail
+    var subject: String = subjectLine
+    var templateVariables: JSONObject = variables
+
+    init {
+        recipientFirstName = "recipient"
+    }
+}
