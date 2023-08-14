@@ -6,6 +6,7 @@ import community.flock.eco.workday.config.DummyMailjetClient
 import community.flock.eco.workday.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.config.properties.NotificationProperties
 import community.flock.eco.workday.model.Person
+import community.flock.eco.workday.services.email.EmailMessageProperties
 import community.flock.eco.workday.services.email.MailjetService
 import io.mockk.every
 import io.mockk.slot
@@ -45,6 +46,26 @@ internal class MailjetServiceTest {
         client = spyk(DummyMailjetClient())
 
         service = MailjetService(notificationProperties, mailjetTemplateProperties, client)
+    }
+
+    @Test
+    fun sendEmailMessage_shouldCreateAMailjetRequest() {
+        val requestSlot = slot<MailjetRequest>()
+        every { client.post(capture(requestSlot)) } returns null
+
+        service.sendEmailMessage(EmailMessageProperties(
+            recipientEmail = "some.mail@adress.com",
+            subjectLine = "Nice subjectline",
+            variables = JSONObject().put("key01", "value01"),
+            templateId = mailjetTemplateProperties.updateTemplateId
+        ));
+
+        val recipientEmail = requestSlot.captured.getSingleRecipientEmail();
+        assertEquals(recipientEmail, "some.mail@adress.com");
+        val subjectLine = requestSlot.captured.getSubjectLine();
+        assertEquals(subjectLine, "Nice subjectline");
+        val templateId = requestSlot.captured.getSingleTemplateId();
+        assertEquals(templateId, mailjetTemplateProperties.updateTemplateId);
     }
 
     @Test
@@ -97,6 +118,8 @@ internal class MailjetServiceTest {
 
     private fun MailjetRequest.getSingleRecipientEmail() = getSingleMessage().getSingleRecipient().getEmail()
 
+    private fun MailjetRequest.getSubjectLine() = getSingleMessage().getSubject();
+
     private fun MailjetRequest.getSingleMessage() =
         bodyJSON
             .apply {
@@ -106,6 +129,7 @@ internal class MailjetServiceTest {
             .apply { assertEquals(1, length(), "Found more than one message") }
             .getJSONObject(0)
 
+
     private fun JSONObject.getSingleRecipient() =
         getJSONArray("To")
             .apply { assertEquals(1, length(), "Found more than one recipient") }
@@ -114,4 +138,9 @@ internal class MailjetServiceTest {
     private fun JSONObject.getEmail() =
         optString("Email")
             ?: fail("No email property found")
+
+    private fun JSONObject.getSubject() =
+        optString("Subject")
+            ?: fail("No subject property found")
+
 }

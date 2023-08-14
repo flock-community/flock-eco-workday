@@ -77,7 +77,7 @@ class MailjetService(
         try {
             client.post(request)
         } catch (ex: Exception) {
-            log.error("Cannot send mail to mailjet", ex)
+            log.error("Cannot send mail to mailjet:", ex)
         }
     }
 
