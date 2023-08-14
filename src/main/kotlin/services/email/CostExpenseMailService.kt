@@ -10,7 +10,7 @@ class CostExpenseMailService(private val emailService: EmailService, private val
 
     fun sendUpdate(old: CostExpense, new: CostExpense) {
         val recipient = new.person;
-        log.info("Send holiday update to ${recipient.email}");
+        log.info("Send CostExpense update to ${recipient.email}");
 
         var subject = "Update in CostExpense!";
         var emailMessage = "Er is een update in CostExpense.";
