@@ -12,6 +12,7 @@ import community.flock.eco.workday.repository.CostExpenseRepository
 import community.flock.eco.workday.repository.ExpenseRepository
 import community.flock.eco.workday.repository.TravelExpenseRepository
 import community.flock.eco.workday.services.email.CostExpenseMailService
+import community.flock.eco.workday.services.email.TravelExpenseMailService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -53,14 +54,14 @@ class ExpenseService(
 class CostExpenseService(
     private val costExpenseRepository: CostExpenseRepository,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val emailService: CostExpenseMailService
+    private val costExpenseMailService: CostExpenseMailService
 ) {
 
     @Transactional
     fun create(it: CostExpense): CostExpense = costExpenseRepository
         .save(it)
         .also { applicationEventPublisher.publishEvent(CreateExpenseEvent(it)) }
-        .also { emailService.sendNotification(it) }
+        .also { costExpenseMailService.sendNotification(it) }
 
     @Transactional
     fun update(id: UUID, input: CostExpense): CostExpense? = costExpenseRepository
@@ -68,19 +69,21 @@ class CostExpenseService(
         .toNullable()
         ?.let { costExpenseRepository.save(input) }
         ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
-        ?.also { emailService.sendUpdate(input, it) }
+        ?.also { costExpenseMailService.sendUpdate(input, it) }
 }
 
 @Service
 class TravelExpenseService(
     private val travelExpenseRepository: TravelExpenseRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val travelExpenseMailService: TravelExpenseMailService
 ) {
 
     @Transactional
     fun create(it: TravelExpense): TravelExpense = travelExpenseRepository
         .save(it)
         .also { applicationEventPublisher.publishEvent(CreateExpenseEvent(it)) }
+        .also { travelExpenseMailService.sendNotification(it) }
 
     @Transactional
     fun update(id: UUID, input: TravelExpense): TravelExpense? = travelExpenseRepository
@@ -88,4 +91,5 @@ class TravelExpenseService(
         .toNullable()
         ?.let { travelExpenseRepository.save(input) }
         ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
+        ?.also { travelExpenseMailService.sendUpdate(input, it) }
 }
