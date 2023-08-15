@@ -1,7 +1,6 @@
 package community.flock.eco.workday.services.email
 
 import community.flock.eco.workday.config.properties.MailjetTemplateProperties
-import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.model.HoliDay
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -10,7 +9,7 @@ import java.time.format.DateTimeFormatter
 class HolidayEmailService(private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
     private val log: Logger = LoggerFactory.getLogger(MailjetService::class.java)
 
-    fun sendUpdate(old: HoliDayForm, new: HoliDay) {
+    fun sendUpdate(old: HoliDay, new: HoliDay) {
         val recipient = new.person;
         log.info("Send holiday update to ${recipient.email}");
 

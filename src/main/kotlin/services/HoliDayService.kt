@@ -63,16 +63,19 @@ class HoliDayService(
         .save()
         .also { emailService.sendNotification(it) }
 
-    fun update(code: String, form: HoliDayForm): HoliDay? = holidayRepository
-        .findByCode(code)
-        .toNullable()
-        .run {
-            form
-                .validate()
-                .consume(this)
-                .save()
-        }
-        .also { emailService.sendUpdate(form, it) }
+    fun update(code: String, form: HoliDayForm): HoliDay {
+        val currentHoliDay = holidayRepository.findByCode(code).toNullable();
+        return currentHoliDay
+            .run {
+                form
+                    .validate()
+                    .consume(this)
+                    .save()
+            }
+            .also {
+                emailService.sendUpdate(currentHoliDay!!, it)
+            }
+    }
 
     @Transactional
     fun deleteByCode(code: String) = holidayRepository

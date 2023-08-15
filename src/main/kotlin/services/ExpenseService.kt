@@ -64,12 +64,13 @@ class CostExpenseService(
         .also { costExpenseMailService.sendNotification(it) }
 
     @Transactional
-    fun update(id: UUID, input: CostExpense): CostExpense? = costExpenseRepository
-        .findById(id)
-        .toNullable()
-        ?.let { costExpenseRepository.save(input) }
-        ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
-        ?.also { costExpenseMailService.sendUpdate(input, it) }
+    fun update(id: UUID, input: CostExpense): CostExpense? {
+        val currentExpense = costExpenseRepository.findById(id).toNullable();
+        return currentExpense
+            ?.let { costExpenseRepository.save(input) }
+            ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
+            ?.also { costExpenseMailService.sendUpdate(currentExpense, it) }
+    }
 }
 
 @Service
@@ -86,10 +87,11 @@ class TravelExpenseService(
         .also { travelExpenseMailService.sendNotification(it) }
 
     @Transactional
-    fun update(id: UUID, input: TravelExpense): TravelExpense? = travelExpenseRepository
-        .findById(id)
-        .toNullable()
-        ?.let { travelExpenseRepository.save(input) }
-        ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
-        ?.also { travelExpenseMailService.sendUpdate(input, it) }
+    fun update(id: UUID, input: TravelExpense): TravelExpense? {
+        val currentExpense = travelExpenseRepository.findById(id).toNullable();
+        return currentExpense
+            ?.let { travelExpenseRepository.save(input) }
+            ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
+            ?.also { travelExpenseMailService.sendUpdate(currentExpense, it) }
+    }
 }
