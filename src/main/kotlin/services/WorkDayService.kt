@@ -4,10 +4,7 @@ import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.WorkDayForm
-import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.model.WorkDay
-import community.flock.eco.workday.model.WorkDaySheet
+import community.flock.eco.workday.model.*
 import community.flock.eco.workday.repository.WorkDayRepository
 import community.flock.eco.workday.services.email.MailjetService
 import community.flock.eco.workday.services.email.WorkdayEmailService
@@ -69,9 +66,7 @@ class WorkDayService(
     fun create(form: WorkDayForm): WorkDay = form.copy(status = Status.REQUESTED)
         .validate()
         .consume()
-        .run {
-            workDayRepository.save(this)
-        }
+        .save()
         .also {
             emailService.sendNotification(it);
         }
@@ -81,11 +76,10 @@ class WorkDayService(
         val currentWorkday = workDayRepository.findByCode(workDayCode).toNullable();
         return currentWorkday
             .run {
-                form.validate()
-                .consume(this)
-            }
-            .run {
-                workDayRepository.save(this)
+                form
+                    .validate()
+                    .consume(this)
+                    .save()
             }
             .also {
                 emailService.sendUpdate(currentWorkday!!, it)
@@ -155,6 +149,8 @@ class WorkDayService(
             }
         )
     }
+
+    private fun WorkDay.save() = workDayRepository.save(this)
 
     companion object {
         val storage = StorageOptions.getDefaultInstance().service
