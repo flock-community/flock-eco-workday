@@ -9,8 +9,8 @@ const _defaultObject = {
   number: string().default("").nullable(),
   position: string().default(""),
   reminders: boolean().default(false),
-  shoeSize: string().default(""),
-  shirtSize: string().default(""),
+  shoeSize: string().default("").nullable(),
+  shirtSize: string().default("").nullable(),
 };
 
 const PERSON_SCHEMA = object(_defaultObject)
