@@ -13,7 +13,7 @@ export function ShirtSizeSelectorField({ name }: ShirtSizeSelectorFieldPropertie
         return (
           <ShirtSizeSelector
             selectedItem={value}
-            onChange={(shoeSize) => setFieldValue(name, shoeSize)}
+            onChange={(shirtSize) => setFieldValue(name, shirtSize)}
           />
         );
       }}
