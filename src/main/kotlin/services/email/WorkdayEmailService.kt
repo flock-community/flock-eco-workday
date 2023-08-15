@@ -1,11 +1,9 @@
 package community.flock.eco.workday.services.email
 
 import community.flock.eco.workday.config.properties.MailjetTemplateProperties
-import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
-import org.json.JSONObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.i18n.LocaleContextHolder
