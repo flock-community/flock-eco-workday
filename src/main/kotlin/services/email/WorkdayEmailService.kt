@@ -15,7 +15,7 @@ import java.time.format.TextStyle
 class WorkdayEmailService(private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
     private val log: Logger = LoggerFactory.getLogger(MailjetService::class.java);
 
-    fun sendUpdate(old: WorkDayForm, new: WorkDay) {
+    fun sendUpdate(old: WorkDay, new: WorkDay) {
         val recipient = new.assignment.person;
         log.info("Send workday update to ${recipient.email}");
 
