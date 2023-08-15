@@ -77,20 +77,20 @@ class WorkDayService(
         }
 
 
-    fun update(workDayCode: String, form: WorkDayForm): WorkDay = workDayRepository
-        .findByCode(workDayCode)
-        .toNullable()
-        .run {
-            form
-                .validate()
+    fun update(workDayCode: String, form: WorkDayForm): WorkDay {
+        val currentWorkday = workDayRepository.findByCode(workDayCode).toNullable();
+        return currentWorkday
+            .run {
+                form.validate()
                 .consume(this)
-        }
-        .run {
-            workDayRepository.save(this)
-        }
-        .also {
-            emailService.sendUpdate(form, it);
-        }
+            }
+            .run {
+                workDayRepository.save(this)
+            }
+            .also {
+                emailService.sendUpdate(currentWorkday!!, it)
+            }
+    }
 
     fun uploadSheet(byteArray: ByteArray): UUID {
         return UUID.randomUUID()
