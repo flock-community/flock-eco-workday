@@ -30,7 +30,7 @@ class HolidayEmailService(private val emailService: EmailService, private val ma
     }
 
     fun sendNotification(holiDay: HoliDay) {
-        val timeDateFormat = DateTimeFormatter.ofPattern("dd/mm/yyyy")
+        val timeDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy")
         val employee = holiDay.person
         log.info("Send Holiday notification for ${employee.email}")
 
