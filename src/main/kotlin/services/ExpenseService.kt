@@ -65,7 +65,7 @@ class CostExpenseService(
 
     @Transactional
     fun update(id: UUID, input: CostExpense): CostExpense? {
-        val currentExpense = costExpenseRepository.findById(id).toNullable();
+        val currentExpense = costExpenseRepository.findById(id).toNullable()
         return currentExpense
             ?.let { costExpenseRepository.save(input) }
             ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
@@ -88,7 +88,7 @@ class TravelExpenseService(
 
     @Transactional
     fun update(id: UUID, input: TravelExpense): TravelExpense? {
-        val currentExpense = travelExpenseRepository.findById(id).toNullable();
+        val currentExpense = travelExpenseRepository.findById(id).toNullable()
         return currentExpense
             ?.let { travelExpenseRepository.save(input) }
             ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }

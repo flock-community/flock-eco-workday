@@ -6,25 +6,23 @@ import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.model.*
 import community.flock.eco.workday.repository.WorkDayRepository
-import community.flock.eco.workday.services.email.MailjetService
 import community.flock.eco.workday.services.email.WorkdayEmailService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
-import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 import javax.persistence.EntityManager
 
 @Service
 class WorkDayService(
-        private val workDayRepository: WorkDayRepository,
-        private val assignmentService: AssignmentService,
-        private val entityManager: EntityManager,
-        private val emailService: WorkdayEmailService,
-        @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String
+    private val workDayRepository: WorkDayRepository,
+    private val assignmentService: AssignmentService,
+    private val entityManager: EntityManager,
+    private val emailService: WorkdayEmailService,
+    @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String
 ) {
 
     fun findByCode(code: String): WorkDay? = workDayRepository
@@ -68,12 +66,11 @@ class WorkDayService(
         .consume()
         .save()
         .also {
-            emailService.sendNotification(it);
+            emailService.sendNotification(it)
         }
 
-
     fun update(workDayCode: String, form: WorkDayForm): WorkDay {
-        val currentWorkday = workDayRepository.findByCode(workDayCode).toNullable();
+        val currentWorkday = workDayRepository.findByCode(workDayCode).toNullable()
         return currentWorkday
             .run {
                 form

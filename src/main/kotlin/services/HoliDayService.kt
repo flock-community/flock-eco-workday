@@ -64,7 +64,7 @@ class HoliDayService(
         .also { emailService.sendNotification(it) }
 
     fun update(code: String, form: HoliDayForm): HoliDay {
-        val currentHoliDay = holidayRepository.findByCode(code).toNullable();
+        val currentHoliDay = holidayRepository.findByCode(code).toNullable()
         return currentHoliDay
             .run {
                 form
