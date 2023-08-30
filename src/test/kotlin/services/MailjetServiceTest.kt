@@ -39,7 +39,7 @@ internal class MailjetServiceTest {
     @BeforeAll
     fun beforeAll() {
         mailjetTemplateProperties =
-            MailjetTemplateProperties(reminderTemplateId = 2, updateTemplateId = 3)
+            MailjetTemplateProperties(reminderTemplateId = 2, updateTemplateId = 3, notificationTemplateId = 4)
 
         notificationProperties = NotificationProperties("recipient@test.com")
 
@@ -53,19 +53,21 @@ internal class MailjetServiceTest {
         val requestSlot = slot<MailjetRequest>()
         every { client.post(capture(requestSlot)) } returns null
 
-        service.sendEmailMessage(EmailMessageProperties(
-            recipientEmail = "some.mail@adress.com",
-            subjectLine = "Nice subjectline",
-            variables = JSONObject().put("key01", "value01"),
-            templateId = mailjetTemplateProperties.updateTemplateId
-        ));
+        service.sendEmailMessage(
+            EmailMessageProperties(
+                recipientEmail = "some.mail@adress.com",
+                subjectLine = "Nice subjectline",
+                variables = JSONObject().put("key01", "value01"),
+                templateId = mailjetTemplateProperties.updateTemplateId
+            )
+        )
 
-        val recipientEmail = requestSlot.captured.getSingleRecipientEmail();
-        assertEquals(recipientEmail, "some.mail@adress.com");
-        val subjectLine = requestSlot.captured.getSubjectLine();
-        assertEquals(subjectLine, "Nice subjectline");
-        val templateId = requestSlot.captured.getSingleTemplateId();
-        assertEquals(templateId, mailjetTemplateProperties.updateTemplateId);
+        val recipientEmail = requestSlot.captured.getSingleRecipientEmail()
+        assertEquals(recipientEmail, "some.mail@adress.com")
+        val subjectLine = requestSlot.captured.getSubjectLine()
+        assertEquals(subjectLine, "Nice subjectline")
+        val templateId = requestSlot.captured.getSingleTemplateId()
+        assertEquals(templateId, mailjetTemplateProperties.updateTemplateId)
     }
 
     @Test
@@ -118,7 +120,7 @@ internal class MailjetServiceTest {
 
     private fun MailjetRequest.getSingleRecipientEmail() = getSingleMessage().getSingleRecipient().getEmail()
 
-    private fun MailjetRequest.getSubjectLine() = getSingleMessage().getSubject();
+    private fun MailjetRequest.getSubjectLine() = getSingleMessage().getSubject()
 
     private fun MailjetRequest.getSingleMessage() =
         bodyJSON
@@ -128,7 +130,6 @@ internal class MailjetServiceTest {
             .getJSONArray("Messages")
             .apply { assertEquals(1, length(), "Found more than one message") }
             .getJSONObject(0)
-
 
     private fun JSONObject.getSingleRecipient() =
         getJSONArray("To")
@@ -142,5 +143,4 @@ internal class MailjetServiceTest {
     private fun JSONObject.getSubject() =
         optString("Subject")
             ?: fail("No subject property found")
-
 }
