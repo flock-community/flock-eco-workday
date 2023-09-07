@@ -13,14 +13,13 @@ import community.flock.eco.workday.authorities.ExpenseAuthority
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.authorities.WorkDayAuthority
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.io.File
 import java.io.IOException
-import java.util.*
 
 
 @Component
@@ -29,8 +28,9 @@ class LoadUserData(
     @Value("\${flock.eco.workday.login}")
     private val loginType: String,
     private val userAccountService: UserAccountService,
+    private val objectMapper: ObjectMapper,
+    loadData: LoadData,
     userAuthorityService: UserAuthorityService,
-    private val objectMapper: ObjectMapper
 ) {
 
     val data: MutableSet<User> = mutableSetOf()
@@ -51,12 +51,13 @@ class LoadUserData(
     private val workerAuthorities = userAuthorityService.allAuthorities().filter { workerRoles.contains(it) }
 
     init {
-        if (loginType == "KRATOS") {
-            mockUsers.forEach { createUserAccountOAuth(it, getKratosIdentities()) }
-        } else {
-            mockUsers.forEach { createUserAccountPassword(it) }
+        loadData.loadWhenEmpty {
+            if (loginType == "KRATOS") {
+                mockUsers.forEach { createUserAccountOAuth(it, getKratosIdentities()) }
+            } else {
+                mockUsers.forEach { createUserAccountPassword(it) }
+            }
         }
-
     }
 
     private fun getKratosIdentities() = try {

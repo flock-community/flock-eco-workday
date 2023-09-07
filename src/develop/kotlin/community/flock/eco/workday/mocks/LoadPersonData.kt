@@ -12,8 +12,8 @@ import java.time.Period
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadPersonData(
-        private val loadData: LoadData,
-        private val repository: PersonRepository
+        private val repository: PersonRepository,
+        loadData: LoadData,
         userData: LoadUserData,
 ) {
     val data: MutableSet<Person> = mutableSetOf()
