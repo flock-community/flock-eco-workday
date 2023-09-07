@@ -34,12 +34,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
 
-#      - name: Build with Maven
-#        run: ./mvnw -B verify --file pom.xml
-
-      #TODO FIXME Take me out again
-      - name: Build and Deploy
-        run: ./mvnw -B compile -P frontend jib:build -Djib.to.image=gcr.io/flock-eco/flock-eco-workday --file pom.xml
+      - name: Build with Maven
+        run: ./mvnw -B verify --file pom.xml
 
     - name: Build with Maven
       run: ./mvnw -B verify -P develop --file pom.xml
