@@ -13,8 +13,9 @@ import java.time.Period
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadPersonData(
-    userData: LoadUserData,
-    private val repository: PersonRepository
+        private val loadData: LoadData,
+        userData: LoadUserData,
+        private val repository: PersonRepository
 ) {
     val data: MutableSet<Person> = mutableSetOf()
 
@@ -75,19 +76,21 @@ class LoadPersonData(
      * iterate over userData and create a person for every user in userData
      */
     init {
-        val userMap = userData.data.associateBy { it.name }
+        loadData.loadWhenEmpty {
+            val userMap = userData.data.associateBy { it.name }
 
-        users.forEach {
-            createPerson(
-                firstname = it.firstName,
-                lastname = it.lastName,
-                birthdate = it.birthdate,
-                joinDate = it.joinDate,
-                user = userMap[it.firstName] ?: throw IllegalStateException("User not found with name ${it.firstName}"),
-                active = it.active,
-                shoeSize = it.shoeSize,
-                shirtSize = it.shirtSize,
-            )
+            users.forEach {
+                createPerson(
+                    firstname = it.firstName,
+                    lastname = it.lastName,
+                    birthdate = it.birthdate,
+                    joinDate = it.joinDate,
+                    user = userMap[it.firstName] ?: throw IllegalStateException("User not found with name ${it.firstName}"),
+                    active = it.active,
+                    shoeSize = it.shoeSize,
+                    shirtSize = it.shirtSize,
+                )
+            }
         }
     }
 }
