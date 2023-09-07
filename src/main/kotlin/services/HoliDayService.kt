@@ -79,9 +79,7 @@ class HoliDayService(
 
     @Transactional
     fun deleteByCode(code: String) = holidayRepository
-        .findByCode(code)
-        .toNullable()
-        ?.also { holidayRepository.deleteByCode(code) }
+        .deleteByCode(code)
 
     private fun HoliDay.save() = holidayRepository.save(this)
 
