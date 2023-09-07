@@ -20,7 +20,7 @@ class LoadClientData(
     }
 
     private final fun create(name: String) = Client(
-        code = name.lowercase().replace(" ", "_"),
+        code = name.toLowerCase().replace(" ", "_"),
         name = name
     )
         .save()

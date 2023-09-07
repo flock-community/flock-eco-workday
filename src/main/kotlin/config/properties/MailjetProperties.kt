@@ -16,6 +16,5 @@ data class MailjetClientProperties(
 @ConstructorBinding
 data class MailjetTemplateProperties(
     val reminderTemplateId: Int,
-    val updateTemplateId: Int,
-    val notificationTemplateId: Int
+    val updateTemplateId: Int
 )
