@@ -1,8 +1,10 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.workday.services.AggregationService
+import community.flock.eco.workday.services.MailjetService
 import community.flock.eco.workday.services.PersonService
-import community.flock.eco.workday.services.email.WorkdayEmailService
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -14,8 +16,10 @@ import java.time.YearMonth
 class TaskController(
     private val aggregationService: AggregationService,
     private val personService: PersonService,
-    private val emailService: WorkdayEmailService
+    private val mailjetService: MailjetService
 ) {
+
+    private val log: Logger = LoggerFactory.getLogger(TaskController::class.java)
 
     @GetMapping("/reminder")
     fun reminder() {
@@ -27,6 +31,9 @@ class TaskController(
             .filter { it.workDays == BigDecimal.ZERO }
             .mapNotNull { personService.findByUuid(it.id) }
             .filter { it.reminders }
-            .forEach { emailService.sendReminder(it); }
+            .forEach {
+                log.info("Send email ${it.email}")
+                mailjetService.sendReminder(it, YearMonth.now().minusMonths(1))
+            }
     }
 }
