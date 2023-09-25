@@ -8,7 +8,7 @@ import clsx from "clsx";
 import {
   canChangeStatus,
   filterTransitionsFromByStatus,
-} from "./status/StatusMethods";
+} from "./StatusMethods";
 
 const useStyles = makeStyles((theme) => ({
   buttonRequested: {
