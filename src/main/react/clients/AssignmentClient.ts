@@ -105,8 +105,8 @@ const findAllByToAfterOrToNull = (to: Date, pageable: {size: number, page: numbe
       size: pageable.size,
       sort: pageable.sort,
     },
-    {to: toString}
-  )
+    { to: toString }
+  );
 };
 
 export const AssignmentClient = {

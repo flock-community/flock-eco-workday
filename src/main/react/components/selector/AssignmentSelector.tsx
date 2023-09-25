@@ -51,9 +51,11 @@ export function AssignmentSelector({
   }, [value]);
 
   const assignmentInPeriod = (assignment: Assignment) => {
-    return assignment.code === value ||
+    return (
+      assignment.code === value ||
       (assignment.from.isSameOrBefore(from) &&
-        (!assignment.to || assignment.to.isSameOrAfter(to, 'day')));
+        (!assignment.to || assignment.to.isSameOrAfter(to, "day")))
+    );
   };
 
   function handleChange(event) {

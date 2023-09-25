@@ -20,7 +20,7 @@ import Button from "@material-ui/core/Button";
 import { DatePreset, datePresets } from "../../utils/DatePreset";
 import dayjs from "dayjs";
 import DayjsUtils from "@date-io/dayjs";
-import {StatusSelect} from "../../components/status/StatusSelect";
+import { StatusSelect } from "../../components/status/StatusSelect";
 
 export const WORKDAY_FORM_ID = "work-day-form";
 
@@ -140,42 +140,49 @@ export function WorkDayForm({ value, onSubmit }) {
 
   const renderForm = ({ values, setFieldValue }) => {
     const handleStatusChange = (newValue) => {
-        setFieldValue("status", newValue);
-    }
+      setFieldValue("status", newValue);
+    };
 
     return (
-    <Form id={WORKDAY_FORM_ID}>
-      <MuiPickersUtilsProvider utils={DayjsUtils}>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <AssignmentSelectorField
-              fullWidth
-              name="assignmentCode"
-              label="Assignment"
-              personId={person?.uuid}
-              from={values.from}
-              to={values.to}
-            />
-          </Grid>
-
-          <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
+      <Form id={WORKDAY_FORM_ID}>
+        <MuiPickersUtilsProvider utils={DayjsUtils}>
+          <Grid container spacing={1}>
             <Grid item xs={12}>
-              <StatusSelect value={values.status} onChange={handleStatusChange}></StatusSelect>
+              <AssignmentSelectorField
+                fullWidth
+                name="assignmentCode"
+                label="Assignment"
+                personId={person?.uuid}
+                from={values.from}
+                to={values.to}
+              />
             </Grid>
-          </UserAuthorityUtil>
-          <Grid item xs={12}>
-            <hr />
+
+            <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
+              <Grid item xs={12}>
+                <StatusSelect
+                  value={values.status}
+                  onChange={handleStatusChange}
+                ></StatusSelect>
+              </Grid>
+            </UserAuthorityUtil>
+            <Grid item xs={12}>
+              <hr />
+            </Grid>
+            {renderFormHours({ values, setFieldValue })}
+            <Grid item xs={12}>
+              <hr />
+            </Grid>
+            <Grid item xs={12}>
+              <DropzoneAreaField
+                name="sheets"
+                endpoint="/api/workdays/sheets"
+              />
+            </Grid>
           </Grid>
-          {renderFormHours({ values, setFieldValue })}
-          <Grid item xs={12}>
-            <hr />
-          </Grid>
-          <Grid item xs={12}>
-            <DropzoneAreaField name="sheets" endpoint="/api/workdays/sheets" />
-          </Grid>
-        </Grid>
-      </MuiPickersUtilsProvider>
-    </Form>)
+        </MuiPickersUtilsProvider>
+      </Form>
+    );
   };
 
   return value ? (

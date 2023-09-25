@@ -16,7 +16,7 @@ import { Dayjs } from "dayjs";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 // Types
-import type {DayListProps, StatusProps} from "../../types";
+import type { DayListProps, StatusProps } from "../../types";
 
 type ExpenseProps = {
   id: string;

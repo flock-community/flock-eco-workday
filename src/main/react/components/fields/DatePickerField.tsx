@@ -17,7 +17,7 @@ export function DatePickerField({ name, ...props }: DatePickerFieldProps) {
           value={value}
           format={DMY_DATE}
           onChange={(it) => {
-            setFieldValue(name, it?.startOf('day'));
+            setFieldValue(name, it?.startOf("day"));
           }}
           disabled={isSubmitting}
           {...props}

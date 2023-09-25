@@ -1,10 +1,20 @@
-import React, {useEffect, useState} from "react";
-import {useHistory, useRouteMatch} from "react-router-dom"
-import {Table, TableBody, TableCell, TableContainer, TablePagination, TableRow} from "@material-ui/core";
-import {Assignment, AssignmentClient} from "../../../clients/AssignmentClient";
+import React, { useEffect, useState } from "react";
+import { useHistory, useRouteMatch } from "react-router-dom";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TablePagination,
+  TableRow,
+} from "@material-ui/core";
+import {
+  Assignment,
+  AssignmentClient,
+} from "../../../clients/AssignmentClient";
 import dayjs from "dayjs";
-import {AssignmentOverviewTableHead} from "./AssignmentOverviewTableHead";
-import {DMY_DATE} from "../../../clients/util/DateFormats";
+import { AssignmentOverviewTableHead } from "./AssignmentOverviewTableHead";
+import { DMY_DATE } from "../../../clients/util/DateFormats";
 
 export default function AssignmentOverviewTable() {
   const [assignmentList, setAssignmentList] = useState<Assignment[]>([]);
@@ -12,16 +22,16 @@ export default function AssignmentOverviewTable() {
   const [size, setSize] = useState(-1);
   const [rowCount, setRowCount] = useState(-1);
   const history = useHistory();
-  const {url} = useRouteMatch();
+  const { url } = useRouteMatch();
 
   useEffect(() => {
     AssignmentClient.findAllByToAfterOrToNull(dayjs().toDate(), {
       page: page,
       size: size,
-      sort: 'person.firstname,from'
+      sort: "person.firstname,from",
     }).then((res) => {
       setAssignmentList(res.list);
-      setRowCount(res.count)
+      setRowCount(res.count);
     });
   }, [page, size]);
 
@@ -42,28 +52,20 @@ export default function AssignmentOverviewTable() {
   return (
     <TableContainer>
       <Table>
-        <AssignmentOverviewTableHead/>
+        <AssignmentOverviewTableHead />
         <TableBody>
-          {assignmentList.map((assignment, idx) =>
-              <TableRow key={idx}>
-                <TableCell>
-                  {assignment.person.fullName}
-                </TableCell>
-                <TableCell>
-                  {assignment.client.name}
-                </TableCell>
-                <TableCell>
-                  {assignment.from.format(DMY_DATE)}
-                </TableCell>
-                <TableCell>
-                  {assignment.to?.format(DMY_DATE)}
-                </TableCell>
-              </TableRow>
-          )}
+          {assignmentList.map((assignment, idx) => (
+            <TableRow key={idx}>
+              <TableCell>{assignment.person.fullName}</TableCell>
+              <TableCell>{assignment.client.name}</TableCell>
+              <TableCell>{assignment.from.format(DMY_DATE)}</TableCell>
+              <TableCell>{assignment.to?.format(DMY_DATE)}</TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
       <TablePagination
-        rowsPerPageOptions={[10, 20, 50, {value: -1, label: 'All'}]}
+        rowsPerPageOptions={[10, 20, 50, { value: -1, label: "All" }]}
         component="div"
         count={rowCount}
         rowsPerPage={size}
@@ -72,5 +74,5 @@ export default function AssignmentOverviewTable() {
         onRowsPerPageChange={handleRowsPerPageChange}
       />
     </TableContainer>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import {TableCell, TableHead, TableRow} from "@material-ui/core";
+import { TableCell, TableHead, TableRow } from "@material-ui/core";
 import React from "react";
 
 const headCells = [
@@ -12,12 +12,8 @@ const headCells = [
     disablePadding: false,
     label: "from".toUpperCase(),
   },
-  { id: "to",
-    label: "to".toUpperCase()
-  },
-  { id: "type",
-    label: "type".toUpperCase()
-  },
+  { id: "to", label: "to".toUpperCase() },
+  { id: "type", label: "type".toUpperCase() },
 ];
 
 export const ContractOverviewTableHead = () => {
