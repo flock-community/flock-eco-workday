@@ -20,6 +20,7 @@ import Button from "@material-ui/core/Button";
 import { DatePreset, datePresets } from "../../utils/DatePreset";
 import dayjs from "dayjs";
 import DayjsUtils from "@date-io/dayjs";
+import {StatusSelect} from "../../components/status/StatusSelect";
 
 export const WORKDAY_FORM_ID = "work-day-form";
 
@@ -137,7 +138,12 @@ export function WorkDayForm({ value, onSubmit }) {
     </>
   );
 
-  const renderForm = ({ values, setFieldValue }) => (
+  const renderForm = ({ values, setFieldValue }) => {
+    const handleStatusChange = (newValue) => {
+        setFieldValue("status", newValue);
+    }
+
+    return (
     <Form id={WORKDAY_FORM_ID}>
       <MuiPickersUtilsProvider utils={DayjsUtils}>
         <Grid container spacing={1}>
@@ -154,19 +160,7 @@ export function WorkDayForm({ value, onSubmit }) {
 
           <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
             <Grid item xs={12}>
-              <Field
-                fullWidth
-                type="text"
-                name="status"
-                label="Status"
-                select
-                variant="standard"
-                component={TextField}
-              >
-                <MenuItem value="REQUESTED">REQUESTED</MenuItem>
-                <MenuItem value="APPROVED">APPROVED</MenuItem>
-                <MenuItem value="REJECTED">REJECTED</MenuItem>
-              </Field>
+              <StatusSelect value={values.status} onChange={handleStatusChange}></StatusSelect>
             </Grid>
           </UserAuthorityUtil>
           <Grid item xs={12}>
@@ -181,8 +175,8 @@ export function WorkDayForm({ value, onSubmit }) {
           </Grid>
         </Grid>
       </MuiPickersUtilsProvider>
-    </Form>
-  );
+    </Form>)
+  };
 
   return value ? (
     <Formik
