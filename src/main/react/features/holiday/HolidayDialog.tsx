@@ -20,6 +20,8 @@ import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 enum Types {
   HOLIDAY = "HOLIDAY",
   PLUSDAY = "PLUSDAY",
+  PAID_PARENTAL_LEAVE = "PAID_PARENTAL_LEAVE",
+  UNPAID_PARENTAL_LEAVE = "UNPAID_PARENTAL_LEAVE",
 }
 
 type HolidayDialogProps = {
@@ -77,14 +79,23 @@ export function HolidayDialog({
           });
         });
       } else {
-        setState(
-          type === Types.PLUSDAY
-            ? schemaPlusDayForm.default()
-            : schemaHoliDayForm.default()
-        );
+        setState(getDefaultSchemaFor(type));
       }
     }
   }, [code, open]);
+
+  const getDefaultSchemaFor = (type: Types) => {
+    switch (type) {
+      case Types.HOLIDAY:
+        return schemaHoliDayForm.default();
+      case Types.PLUSDAY:
+        return schemaPlusDayForm.default();
+      case Types.PAID_PARENTAL_LEAVE:
+        break;
+      case Types.UNPAID_PARENTAL_LEAVE:
+        break;
+    }
+  }
 
   const handleDelete = () => {
     HolidayClient.delete(code).then(() => {
@@ -134,8 +145,10 @@ export function HolidayDialog({
                     }}
                     fullWidth
                   >
-                    <MenuItem value={Types.HOLIDAY}>HoliDay</MenuItem>
-                    <MenuItem value={Types.PLUSDAY}>PlusDay</MenuItem>
+                    <MenuItem value={Types.HOLIDAY}>Holiday</MenuItem>
+                    <MenuItem value={Types.PLUSDAY}>Plus Day</MenuItem>
+                    <MenuItem value={Types.PAID_PARENTAL_LEAVE}>Paid Parental Leave</MenuItem>
+                    <MenuItem value={Types.UNPAID_PARENTAL_LEAVE}>Unpaid Parental Leave</MenuItem>
                   </Select>
                 </Grid>
               </UserAuthorityUtil>
@@ -147,6 +160,12 @@ export function HolidayDialog({
                 )}
                 {type === Types.PLUSDAY && (
                   <PlusDayForm value={state} onSubmit={handleSubmit} />
+                )}
+                {type === Types.PAID_PARENTAL_LEAVE && (
+                  <Typography>PAID_PARENTAL_LEAVE</Typography>
+                )}
+                {type === Types.UNPAID_PARENTAL_LEAVE && (
+                  <Typography>UNPAID_PARENTAL_LEAVE</Typography>
                 )}
               </Grid>
             )}
