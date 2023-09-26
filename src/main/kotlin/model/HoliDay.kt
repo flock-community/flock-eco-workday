@@ -17,7 +17,9 @@ import javax.persistence.ManyToOne
 
 enum class HolidayType {
     HOLIDAY,
-    PLUSDAY
+    PLUSDAY,
+    PAID_PARENTAL_LEAVE,
+    UNPAID_PARENTAL_LEAVE
 }
 
 @Entity
