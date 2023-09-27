@@ -13,9 +13,11 @@ import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/co
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { HolidayClient } from "../../clients/HolidayClient";
-import { HolidayForm, schemaHoliDayForm } from "./HolidayForm";
-import { PlusDayForm, schemaPlusDayForm } from "./PlusDayForm";
+import { HolidayForm } from "./HolidayForm";
+import { PlusDayForm } from "./PlusDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import { LeaveDayForm } from "./LeaveDayForm";
+import dayjs from "dayjs";
 
 export const LEAVE_DAY_DIALOG_FORM_ID = "leave-day-dialog-form-id";
 
@@ -43,6 +45,7 @@ export function HolidayDialog({
 
   const [state, setState] = useState<any>();
   const [type, setType] = useState<Types>(Types.HOLIDAY);
+  const now = dayjs();
 
   const handleSubmit = (it) => {
     const body = {
@@ -81,23 +84,17 @@ export function HolidayDialog({
           });
         });
       } else {
-        setState(getDefaultSchemaFor(type));
+        setState({
+          description: "",
+          status: "REQUESTED",
+          from: now,
+          to: now,
+          days: [8],
+          hours: "",
+        });
       }
     }
   }, [code, open]);
-
-  const getDefaultSchemaFor = (type: Types) => {
-    switch (type) {
-      case Types.HOLIDAY:
-        return schemaHoliDayForm.default();
-      case Types.PLUSDAY:
-        return schemaPlusDayForm.default();
-      case Types.PAID_PARENTAL_LEAVE:
-        break;
-      case Types.UNPAID_PARENTAL_LEAVE:
-        break;
-    }
-  }
 
   const handleDelete = () => {
     HolidayClient.delete(code).then(() => {
