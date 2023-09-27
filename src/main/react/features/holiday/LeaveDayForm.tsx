@@ -10,8 +10,7 @@ import {DatePickerField} from "../../components/fields/DatePickerField";
 import {PeriodInputField} from "../../components/fields/PeriodInputField";
 import dayjs from "dayjs";
 import DayjsUtils from "@date-io/dayjs";
-
-export const LEAVE_DAY_FORM_ID = "leave-day-form-id";
+import {LEAVE_DAY_DIALOG_FORM_ID} from "./HolidayDialog";
 
 const now = dayjs();
 
@@ -42,7 +41,7 @@ export function LeaveDayForm({ value, onSubmit }: LeaveDayFormProps) {
   const renderForm = ({ values }) => {
     console.log('LeaveDayForm > renderForm');
     return (
-      <Form id={LEAVE_DAY_FORM_ID}>
+      <Form id={LEAVE_DAY_DIALOG_FORM_ID}>
         <MuiPickersUtilsProvider utils={DayjsUtils}>
           <Grid container spacing={1}>
             <Grid item xs={12}>

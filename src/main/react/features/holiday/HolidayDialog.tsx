@@ -13,9 +13,11 @@ import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/co
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { HolidayClient } from "../../clients/HolidayClient";
-import { HOLIDAY_FORM_ID, HolidayForm, schemaHoliDayForm } from "./HolidayForm";
+import { HolidayForm, schemaHoliDayForm } from "./HolidayForm";
 import { PlusDayForm, schemaPlusDayForm } from "./PlusDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+
+export const LEAVE_DAY_DIALOG_FORM_ID = "leave-day-dialog-form-id";
 
 enum Types {
   HOLIDAY = "HOLIDAY",
@@ -172,7 +174,7 @@ export function HolidayDialog({
           </Grid>
         </DialogContent>
         <DialogFooter
-          formId={HOLIDAY_FORM_ID}
+          formId={LEAVE_DAY_DIALOG_FORM_ID}
           onClose={handleClose}
           onDelete={handleDeleteOpen}
           disableDelete={

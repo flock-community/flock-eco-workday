@@ -9,8 +9,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import dayjs from "dayjs";
 import DayjsUtils from "@date-io/dayjs";
-
-export const HOLIDAY_FORM_ID = "holiday-form-id";
+import {LEAVE_DAY_DIALOG_FORM_ID} from "./HolidayDialog";
 
 const now = dayjs();
 
@@ -38,7 +37,7 @@ export function PlusDayForm({ value, onSubmit }: PlusDayFormProps) {
 
   const renderForm = ({ values }) => {
     return (
-      <Form id={HOLIDAY_FORM_ID}>
+      <Form id={LEAVE_DAY_DIALOG_FORM_ID}>
         <MuiPickersUtilsProvider utils={DayjsUtils}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
