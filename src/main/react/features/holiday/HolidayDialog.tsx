@@ -161,10 +161,10 @@ export function HolidayDialog({
                   <PlusDayForm value={state} onSubmit={handleSubmit} />
                 )}
                 {type === Types.PAID_PARENTAL_LEAVE && (
-                  <Typography>PAID_PARENTAL_LEAVE</Typography>
+                  <LeaveDayForm value={state} onSubmit={handleSubmit} />
                 )}
                 {type === Types.UNPAID_PARENTAL_LEAVE && (
-                  <Typography>UNPAID_PARENTAL_LEAVE</Typography>
+                  <LeaveDayForm value={state} onSubmit={handleSubmit} />
                 )}
               </Grid>
             )}
