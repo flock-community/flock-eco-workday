@@ -38,7 +38,7 @@ import kotlin.test.assertNull
 @AutoConfigureMockMvc
 @Import(CreateHelper::class)
 @ActiveProfiles(profiles = ["test"])
-class HoliDayControllerTest(
+class LeaveDayControllerTest(
     @Autowired private val mvc: MockMvc,
     @Autowired private val mapper: ObjectMapper,
     @Autowired private val createHelper: CreateHelper,

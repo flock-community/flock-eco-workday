@@ -29,7 +29,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api/holidays")
-class HolidayController(
+class LeaveDayController(
     private val service: LeaveDayService,
     private val personService: PersonService
 ) {
