@@ -16,7 +16,6 @@ export function DashboardHoursChart() {
   const [state, setState] = useState<any>();
 
   useEffect(() => {
-    const date = new Date();
     AggregationClient.totalPerPersonMe().then((res) => setState(res));
   }, []);
 
@@ -29,7 +28,8 @@ export function DashboardHoursChart() {
     .map((it) => ({
       ...it,
       missing: Math.max(
-        it.total - (it.workDays + it.holiDayUsed + it.sickDays + it.event),
+        it.total - (it.workDays + it.holiDayUsed + it.sickDays + it.event + it.paidParentalLeaveUsed
+        + it.unpaidParentalLeaveUsed),
         0
       ),
     }));
@@ -54,6 +54,18 @@ export function DashboardHoursChart() {
           stackId="days"
           dataKey="holiDayUsed"
           name="holiday hours"
+          fill="#42a5f5"
+        />
+        <Bar
+          stackId="days"
+          dataKey="paidParentalLeaveUsed"
+          name="paid parental leave"
+          fill="#42a5f5"
+        />
+        <Bar
+          stackId="days"
+          dataKey="unpaidParentalLeaveUsed"
+          name="unpaid parental leave"
           fill="#42a5f5"
         />
         <Bar
