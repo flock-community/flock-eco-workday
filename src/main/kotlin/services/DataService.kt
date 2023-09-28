@@ -24,7 +24,7 @@ data class Data(
 class DataService(
     private val assignmentService: AssignmentService,
     private val contractService: ContractService,
-    private val holiDayService: HoliDayService,
+    private val leaveDayService: LeaveDayService,
     private val sickDayService: SickDayService,
     private val workDayService: WorkDayService,
     private val eventService: EventService
@@ -32,7 +32,7 @@ class DataService(
 
     fun findAllData(from: LocalDate, to: LocalDate) = Data(
         sickDayService.findAllActive(from, to),
-        holiDayService.findAllActive(from, to),
+        leaveDayService.findAllActive(from, to),
         workDayService.findAllActive(from, to),
         eventService.findAllActive(from, to),
         assignmentService.findAllActive(from, to),
@@ -41,7 +41,7 @@ class DataService(
 
     fun findAllData(personId: UUID) = Data(
         sickDayService.findAllByPersonUuid(personId),
-        holiDayService.findAllByPersonUuid(personId),
+        leaveDayService.findAllByPersonUuid(personId),
         workDayService.findAllByPersonUuid(personId),
         eventService.findAllByPersonUuid(personId),
         assignmentService.findAllByPersonUuid(personId),
@@ -50,7 +50,7 @@ class DataService(
 
     fun findAllData(from: LocalDate, to: LocalDate, personId: UUID) = Data(
         sickDayService.findAllActiveByPerson(from, to, personId),
-        holiDayService.findAllActiveByPerson(from, to, personId),
+        leaveDayService.findAllActiveByPerson(from, to, personId),
         workDayService.findAllActiveByPerson(from, to, personId),
         eventService.findAllActiveByPerson(from, to, personId),
         assignmentService.findAllActiveByPerson(from, to, personId),

@@ -6,7 +6,7 @@ import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.services.HoliDayService
+import community.flock.eco.workday.services.LeaveDayService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.isUser
 import org.springframework.data.domain.Pageable
@@ -30,7 +30,7 @@ import java.util.*
 @RestController
 @RequestMapping("/api/holidays")
 class HolidayController(
-    private val service: HoliDayService,
+    private val service: LeaveDayService,
     private val personService: PersonService
 ) {
     @GetMapping(params = ["personId"])

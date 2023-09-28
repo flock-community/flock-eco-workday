@@ -48,7 +48,7 @@ class AggregationService(
     private val dataService: DataService,
     private val applicationConstants: ApplicationConstants,
     private val workDayService: WorkDayService,
-    private val holiDayService: HoliDayService,
+    private val leaveDayService: LeaveDayService,
     private val sickDayService: SickDayService
 ) {
 
@@ -482,7 +482,7 @@ class AggregationService(
     }
 
     fun personNonProductiveHoursPerDay(person: Person, from: LocalDate, to: LocalDate): List<NonProductiveHours> {
-        val holidayData = holiDayService.findAllActiveByPerson(from, to, person.uuid)
+        val holidayData = leaveDayService.findAllActiveByPerson(from, to, person.uuid)
         val holidays = holidayData.filter { it.type == HolidayType.HOLIDAY }
             .map { it.hoursPerDayInPeriod(from, to) }
             .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }

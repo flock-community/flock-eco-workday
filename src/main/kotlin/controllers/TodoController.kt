@@ -17,7 +17,7 @@ import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.TravelExpense
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.ExpenseService
-import community.flock.eco.workday.services.HoliDayService
+import community.flock.eco.workday.services.LeaveDayService
 import community.flock.eco.workday.services.SickDayService
 import community.flock.eco.workday.services.WorkDayService
 import org.springframework.security.access.prepost.PreAuthorize
@@ -30,7 +30,7 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api/todos")
 class TodoController(
-    private val holiDayService: HoliDayService,
+    private val leaveDayService: LeaveDayService,
     private val sickDayService: SickDayService,
     private val workDayService: WorkDayService,
     private val expenseService: ExpenseService
@@ -49,7 +49,7 @@ class TodoController(
         .flatMap { it.value }
         .sortedWith(compareBy({ it.personName }, { it.type }))
 
-    fun findHolidayTodo() = holiDayService
+    fun findHolidayTodo() = leaveDayService
         .findAllByStatus(Status.REQUESTED)
         .map { it.mapTodo() }
 

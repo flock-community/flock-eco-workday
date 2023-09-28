@@ -3,7 +3,7 @@ package community.flock.eco.workday.mocks
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.model.HolidayType
 import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.services.HoliDayService
+import community.flock.eco.workday.services.LeaveDayService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -13,7 +13,7 @@ import java.time.LocalDate
 class LoadHolidayData(
         private val loadData: LoadData,
         loadPersonData: LoadPersonData,
-        private val holiDayService: HoliDayService
+        private val leaveDayService: LeaveDayService
 ) {
 
     final val now: LocalDate = LocalDate.now().withDayOfYear(1).withDayOfMonth(1)
@@ -60,6 +60,6 @@ class LoadHolidayData(
     }
 
     fun HoliDayForm.create() {
-        holiDayService.create(this)
+        leaveDayService.create(this)
     }
 }

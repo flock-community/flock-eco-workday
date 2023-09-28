@@ -6,7 +6,7 @@ import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.services.HoliDayService
+import community.flock.eco.workday.services.LeaveDayService
 import config.AppTestConfig
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -42,7 +42,7 @@ class HoliDayControllerTest(
     @Autowired private val mvc: MockMvc,
     @Autowired private val mapper: ObjectMapper,
     @Autowired private val createHelper: CreateHelper,
-    @Autowired private val holiDayService: HoliDayService
+    @Autowired private val leaveDayService: LeaveDayService
 ) {
     private val baseUrl: String = "/api/holidays"
 
@@ -71,7 +71,7 @@ class HoliDayControllerTest(
             status = status
         )
 
-        val created = holiDayService.create(createForm)
+        val created = leaveDayService.create(createForm)
 
         mvc.perform(
             get("$baseUrl/${created.code}")
@@ -152,7 +152,7 @@ class HoliDayControllerTest(
             status = status
         )
 
-        val created = holiDayService.create(createForm)
+        val created = leaveDayService.create(createForm)
 
         val updatedCreateForm = createForm.copy(description = updatedDescription)
 
@@ -197,7 +197,7 @@ class HoliDayControllerTest(
             status = status
         )
 
-        val created = holiDayService.create(createForm)
+        val created = leaveDayService.create(createForm)
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 
@@ -210,7 +210,7 @@ class HoliDayControllerTest(
         )
             .andExpect(status().isForbidden)
 
-        assertEquals(holiDayService.findByCode(created.code)?.status, status)
+        assertEquals(leaveDayService.findByCode(created.code)?.status, status)
     }
 
     @Test
@@ -236,7 +236,7 @@ class HoliDayControllerTest(
             status = status
         )
 
-        val created = holiDayService.create(createForm)
+        val created = leaveDayService.create(createForm)
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 
@@ -276,7 +276,7 @@ class HoliDayControllerTest(
             status = status
         )
 
-        val created = holiDayService.create(createForm)
+        val created = leaveDayService.create(createForm)
 
         mvc.perform(
             delete("$baseUrl/${created.code}")
@@ -286,6 +286,6 @@ class HoliDayControllerTest(
         )
             .andExpect(status().isNoContent)
 
-        assertNull(holiDayService.findByCode(created.code))
+        assertNull(leaveDayService.findByCode(created.code))
     }
 }

@@ -18,7 +18,7 @@ import java.util.UUID
 import javax.persistence.EntityManager
 
 @Service
-class HoliDayService(
+class LeaveDayService(
     private val leaveDayRepository: LeaveDayRepository,
     private val personService: PersonService,
     private val entityManager: EntityManager,

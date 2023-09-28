@@ -25,7 +25,7 @@ class CreateHelper(
     private val personService: PersonService,
     private val userService: UserService,
     private val sickDayService: SickDayService,
-    private val holiDayService: HoliDayService,
+    private val leaveDayService: LeaveDayService,
     private val workDayService: WorkDayService,
     private val eventService: EventService
 ) {
@@ -169,7 +169,7 @@ class CreateHelper(
         hours = 40.0,
         days = listOf(8.0, 8.0, 8.0, 8.0, 8.0)
     ).run {
-        holiDayService.create(this)
+        leaveDayService.create(this)
     } ?: error("Cannot create sick day contract")
 
     fun createEvent(
