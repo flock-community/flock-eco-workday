@@ -161,7 +161,7 @@ class CreateHelper(
         workDayService.create(this)
     } ?: error("Cannot create sick day contract")
 
-    fun createHoliDay(person: Person, from: LocalDate, to: LocalDate) = HoliDayForm(
+    fun createHoliDay(person: Person, from: LocalDate, to: LocalDate) = LeaveDayForm(
         description = "description",
         from = from,
         to = to,

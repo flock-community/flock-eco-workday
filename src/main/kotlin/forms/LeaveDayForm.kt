@@ -11,7 +11,7 @@ import community.flock.eco.workday.model.Status
 import java.time.LocalDate
 import java.util.*
 
-data class HoliDayForm(
+data class LeaveDayForm(
 
     val description: String,
 

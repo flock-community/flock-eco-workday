@@ -3,7 +3,7 @@ package community.flock.eco.workday.controllers
 import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.authorities.LeaveDayAuthority
-import community.flock.eco.workday.forms.HoliDayForm
+import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.LeaveDayService
@@ -61,7 +61,7 @@ class LeaveDayControllerTest(
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = HoliDayForm(
+        val createForm = LeaveDayForm(
             from = from,
             to = to,
             days = days,
@@ -101,7 +101,7 @@ class LeaveDayControllerTest(
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = HoliDayForm(
+        val createForm = LeaveDayForm(
             from = from,
             to = to,
             days = days,
@@ -142,7 +142,7 @@ class LeaveDayControllerTest(
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = HoliDayForm(
+        val createForm = LeaveDayForm(
             from = from,
             to = to,
             days = days,
@@ -187,7 +187,7 @@ class LeaveDayControllerTest(
         val updatedStatus = Status.APPROVED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = HoliDayForm(
+        val createForm = LeaveDayForm(
             from = from,
             to = to,
             days = days,
@@ -226,7 +226,7 @@ class LeaveDayControllerTest(
         val updatedStatus = Status.APPROVED
         val person = createHelper.createPerson("john", "doe", admin.code)
 
-        val createForm = HoliDayForm(
+        val createForm = LeaveDayForm(
             from = from,
             to = to,
             days = days,
@@ -266,7 +266,7 @@ class LeaveDayControllerTest(
         val updatedStatus = Status.APPROVED
         val person = createHelper.createPerson("john", "doe", admin.code)
 
-        val createForm = HoliDayForm(
+        val createForm = LeaveDayForm(
             from = from,
             to = to,
             days = days,

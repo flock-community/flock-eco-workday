@@ -3,7 +3,7 @@ package community.flock.eco.workday.services
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.workday.authorities.LeaveDayAuthority
-import community.flock.eco.workday.forms.HoliDayForm
+import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.model.Status
@@ -58,13 +58,13 @@ class LeaveDayService(
             .toSet()
     }
 
-    fun create(form: HoliDayForm): HoliDay = form.copy(status = Status.REQUESTED)
+    fun create(form: LeaveDayForm): HoliDay = form.copy(status = Status.REQUESTED)
         .consume()
         .validate()
         .save()
         .also { emailService.sendNotification(it) }
 
-    fun update(code: String, form: HoliDayForm): HoliDay {
+    fun update(code: String, form: LeaveDayForm): HoliDay {
         val currentHoliDay = holidayRepository.findByCode(code).toNullable()
         return currentHoliDay
             .run {
@@ -84,7 +84,7 @@ class LeaveDayService(
 
     private fun HoliDay.save() = leaveDayRepository.save(this)
 
-    private fun HoliDayForm.consume(it: HoliDay? = null): HoliDay {
+    private fun LeaveDayForm.consume(it: HoliDay? = null): HoliDay {
         val person = personService
             .findByUuid(this.personId)
             ?: throw error("Cannot find person: ${this.personId}")

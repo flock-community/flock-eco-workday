@@ -1,6 +1,6 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.workday.forms.HoliDayForm
+import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.model.HolidayType
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.LeaveDayService
@@ -31,7 +31,7 @@ class LoadHolidayData(
     private fun createHolidays(it: Person) {
         for (i in 0 until 10) {
             val random = (0..200).random().toLong()
-            HoliDayForm(
+            LeaveDayForm(
                     description = "Test holiday ${it.firstname}",
                     from = now.plusYears(i.toLong()).plusDays(random),
                     to = now.plusYears(i.toLong()).plusDays(random + 5),
@@ -47,7 +47,7 @@ class LoadHolidayData(
             val random = (0..200).random().toLong()
             val date = now.plusYears(i.toLong()).plusDays(random)
 
-            HoliDayForm(
+            LeaveDayForm(
                     type = HolidayType.PLUSDAY,
                     description = "Plus day ${it.firstname}",
                     from = date,
@@ -59,7 +59,7 @@ class LoadHolidayData(
         }
     }
 
-    fun HoliDayForm.create() {
+    fun LeaveDayForm.create() {
         leaveDayService.create(this)
     }
 }

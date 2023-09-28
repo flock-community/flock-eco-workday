@@ -2,7 +2,7 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.LeaveDayAuthority
-import community.flock.eco.workday.forms.HoliDayForm
+import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.model.Status
@@ -57,7 +57,7 @@ class LeaveDayController(
     @PostMapping
     @PreAuthorize("hasAuthority('LeaveDayAuthority.WRITE')")
     fun post(
-        @RequestBody form: HoliDayForm,
+        @RequestBody form: LeaveDayForm,
         authentication: Authentication
     ) = service
         .create(form.setPersonCode(authentication))
@@ -67,7 +67,7 @@ class LeaveDayController(
     @PreAuthorize("hasAuthority('LeaveDayAuthority.WRITE')")
     fun put(
         @PathVariable code: String,
-        @RequestBody form: HoliDayForm,
+        @RequestBody form: LeaveDayForm,
         authentication: Authentication
     ) =
         service.findByCode(code)
@@ -85,7 +85,7 @@ class LeaveDayController(
         ?.run { service.deleteByCode(this.code) }
         .toResponse()
 
-    private fun HoliDayForm.setPersonCode(authentication: Authentication): HoliDayForm {
+    private fun LeaveDayForm.setPersonCode(authentication: Authentication): LeaveDayForm {
         if (authentication.isAdmin()) {
             return this
         }
@@ -106,7 +106,7 @@ class LeaveDayController(
         }
     }
 
-    private fun HoliDay.applyAllowedToCreate(form: HoliDayForm, authentication: Authentication): HoliDay = apply {
+    private fun HoliDay.applyAllowedToCreate(form: LeaveDayForm, authentication: Authentication): HoliDay = apply {
         if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change workday")
         }
