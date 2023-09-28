@@ -28,8 +28,8 @@ import javax.transaction.Transactional
 @Import(CreateHelper::class)
 @ActiveProfiles(profiles = ["test"])
 class HoliDayRepositoryTest(
-    @Autowired private val repository: HolidayRepository,
-    @Autowired private val personRepository: PersonRepository
+        @Autowired private val repository: LeaveDayRepository,
+        @Autowired private val personRepository: PersonRepository
 ) {
 
     private val persons: List<Person> = mutableListOf(

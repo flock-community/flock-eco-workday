@@ -9,6 +9,7 @@ import community.flock.eco.workday.model.HoliDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.HolidayRepository
 import community.flock.eco.workday.services.email.HolidayEmailService
+import community.flock.eco.workday.repository.LeaveDayRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,17 +19,17 @@ import javax.persistence.EntityManager
 
 @Service
 class HoliDayService(
-    private val holidayRepository: HolidayRepository,
+    private val leaveDayRepository: LeaveDayRepository,
     private val personService: PersonService,
     private val entityManager: EntityManager,
     private val emailService: HolidayEmailService
 ) {
 
-    fun findByCode(code: String) = holidayRepository.findByCode(code).toNullable()
-    fun findAllByPersonUuid(personCode: UUID) = holidayRepository.findAllByPersonUuid(personCode)
-    fun findAllByPersonUuid(personCode: UUID, pageable: Pageable) = holidayRepository.findAllByPersonUuid(personCode, pageable)
-    fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = holidayRepository.findAllByPersonUserCode(userCode, pageable)
-    fun findAllByStatus(status: Status) = holidayRepository.findAllByStatus(status)
+    fun findByCode(code: String) = leaveDayRepository.findByCode(code).toNullable()
+    fun findAllByPersonUuid(personCode: UUID) = leaveDayRepository.findAllByPersonUuid(personCode)
+    fun findAllByPersonUuid(personCode: UUID, pageable: Pageable) = leaveDayRepository.findAllByPersonUuid(personCode, pageable)
+    fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = leaveDayRepository.findAllByPersonUserCode(userCode, pageable)
+    fun findAllByStatus(status: Status) = leaveDayRepository.findAllByStatus(status)
 
     fun findAllActive(from: LocalDate, to: LocalDate): Iterable<HoliDay> {
         val query = "SELECT h FROM HoliDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from)"
@@ -78,10 +79,10 @@ class HoliDayService(
     }
 
     @Transactional
-    fun deleteByCode(code: String) = holidayRepository
+    fun deleteByCode(code: String) = leaveDayRepository
             .deleteByCode(code)
 
-    private fun HoliDay.save() = holidayRepository.save(this)
+    private fun HoliDay.save() = leaveDayRepository.save(this)
 
     private fun HoliDayForm.consume(it: HoliDay? = null): HoliDay {
         val person = personService

@@ -11,7 +11,7 @@ import java.util.Optional
 import java.util.UUID
 
 @Repository
-interface HolidayRepository : PagingAndSortingRepository<HoliDay, Long> {
+interface LeaveDayRepository : PagingAndSortingRepository<HoliDay, Long> {
     fun findByCode(code: String): Optional<HoliDay>
     fun findAllByPersonUuid(personCode: UUID): Iterable<HoliDay>
     fun findAllByPersonUuid(personCode: UUID, pageable: Pageable): Page<HoliDay>
