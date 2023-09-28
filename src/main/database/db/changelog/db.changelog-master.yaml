@@ -55,3 +55,6 @@ databaseChangeLog:
   - include:
       - file: db.changelog-018-update-status-approved-to-done.yaml
         relativeToChangelogFile: true
+  - include:
+      - file: db.changelog-019-rename-table-holiday-to-leaveday.yaml
+        relativeToChangelogFile: true

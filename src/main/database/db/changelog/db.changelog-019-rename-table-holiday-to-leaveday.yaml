@@ -1,0 +1,8 @@
+databaseChangeLog:
+  -  changeSet:
+       id: db.changelog-019-rename-table-holiday-to-leaveday
+       author: jverhaar
+       changes:
+         -  renameTable:
+              newTableName:  leave_day
+              oldTableName:  holi_day
