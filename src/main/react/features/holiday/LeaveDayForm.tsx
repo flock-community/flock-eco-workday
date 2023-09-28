@@ -53,7 +53,7 @@ export function LeaveDayForm({ value, onSubmit }: LeaveDayFormProps) {
 
             {value && (
               <Grid item xs={12}>
-                <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+                <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
                   <Field name="status"
                          type="text"
                          label="Status"

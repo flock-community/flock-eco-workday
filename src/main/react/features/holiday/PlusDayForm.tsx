@@ -52,7 +52,7 @@ export function PlusDayForm({ value, onSubmit }: PlusDayFormProps) {
 
             {value && (
               <Grid item xs={12}>
-                <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+                <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
                   <Field
                     fullWidth
                     type="text"

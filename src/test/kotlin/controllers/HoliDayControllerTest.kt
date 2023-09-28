@@ -2,7 +2,7 @@ package community.flock.eco.workday.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.Application
-import community.flock.eco.workday.authorities.HolidayAuthority
+import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Status
@@ -46,8 +46,8 @@ class HoliDayControllerTest(
 ) {
     private val baseUrl: String = "/api/holidays"
 
-    val adminAuthorities = setOf(HolidayAuthority.READ, HolidayAuthority.WRITE, HolidayAuthority.ADMIN)
-    val userAuthorities = setOf(HolidayAuthority.READ, HolidayAuthority.WRITE)
+    val adminAuthorities = setOf(LeaveDayAuthority.READ, LeaveDayAuthority.WRITE, LeaveDayAuthority.ADMIN)
+    val userAuthorities = setOf(LeaveDayAuthority.READ, LeaveDayAuthority.WRITE)
 
     @Test
     fun `should get a holiday via GET-method`() {

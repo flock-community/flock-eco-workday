@@ -104,7 +104,7 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
       name: "Holidays",
       icon: HolidayIcon,
       url: "/holidays",
-      authority: "HolidayAuthority.READ",
+      authority: "LeaveDayAuthority.READ",
     },
     {
       name: "Sickday",

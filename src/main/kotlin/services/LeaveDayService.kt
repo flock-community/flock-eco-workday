@@ -2,7 +2,7 @@ package community.flock.eco.workday.services
 
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.feature.user.model.User
-import community.flock.eco.workday.authorities.HolidayAuthority
+import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.HoliDay
@@ -105,4 +105,4 @@ class LeaveDayService(
 }
 
 fun User.isAdmin(): Boolean = this.authorities
-    .contains(HolidayAuthority.ADMIN.toName())
+    .contains(LeaveDayAuthority.ADMIN.toName())

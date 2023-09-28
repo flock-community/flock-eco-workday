@@ -135,7 +135,7 @@ export function HolidayDialog({
         <DialogContent>
           <Grid container spacing={2}>
             {!code && (
-              <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+              <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
                 <Grid item xs={12}>
                   <Select
                     value={type}
@@ -175,12 +175,12 @@ export function HolidayDialog({
           onClose={handleClose}
           onDelete={handleDeleteOpen}
           disableDelete={
-            !UserAuthorityUtil.hasAuthority("HolidayAuthority.ADMIN") &&
+            !UserAuthorityUtil.hasAuthority("LeaveDayAuthority.ADMIN") &&
             state &&
             state.status !== "REQUESTED"
           }
           disableEdit={
-            !UserAuthorityUtil.hasAuthority("HolidayAuthority.ADMIN") &&
+            !UserAuthorityUtil.hasAuthority("LeaveDayAuthority.ADMIN") &&
             state &&
             state.status !== "REQUESTED"
           }

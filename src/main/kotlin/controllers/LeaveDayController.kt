@@ -1,7 +1,7 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
-import community.flock.eco.workday.authorities.HolidayAuthority
+import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.forms.HoliDayForm
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.model.HoliDay
@@ -34,7 +34,7 @@ class HolidayController(
     private val personService: PersonService
 ) {
     @GetMapping(params = ["personId"])
-    @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
+    @PreAuthorize("hasAuthority('LeaveDayAuthority.READ')")
     fun getAll(
         @RequestParam personId: UUID,
         authentication: Authentication,
@@ -45,7 +45,7 @@ class HolidayController(
     }.toResponse()
 
     @GetMapping("/{code}")
-    @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
+    @PreAuthorize("hasAuthority('LeaveDayAuthority.READ')")
     fun findByCode(
         @PathVariable code: String,
         authentication: Authentication
@@ -55,7 +55,7 @@ class HolidayController(
         .toResponse()
 
     @PostMapping
-    @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
+    @PreAuthorize("hasAuthority('LeaveDayAuthority.WRITE')")
     fun post(
         @RequestBody form: HoliDayForm,
         authentication: Authentication
@@ -64,7 +64,7 @@ class HolidayController(
         .toResponse()
 
     @PutMapping("/{code}")
-    @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
+    @PreAuthorize("hasAuthority('LeaveDayAuthority.WRITE')")
     fun put(
         @PathVariable code: String,
         @RequestBody form: HoliDayForm,
@@ -76,7 +76,7 @@ class HolidayController(
             ?.run { service.update(code, form) }
 
     @DeleteMapping("/{code}")
-    @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
+    @PreAuthorize("hasAuthority('LeaveDayAuthority.WRITE')")
     fun delete(
         @PathVariable code: String,
         authentication: Authentication
@@ -98,7 +98,7 @@ class HolidayController(
 
     private fun Authentication.isAdmin(): Boolean = this.authorities
         .map { it.authority }
-        .contains(HolidayAuthority.ADMIN.toName())
+        .contains(LeaveDayAuthority.ADMIN.toName())
 
     private fun HoliDay.applyAuthentication(authentication: Authentication) = apply {
         if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {

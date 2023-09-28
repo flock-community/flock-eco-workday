@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-020-update-authorities-holiday-to-leaveday
+      author: jverhaar
+      changes:
+        - update:
+            tableName: user_authorities
+            columns:
+              - column:
+                  name: authorities
+                  value: "LeaveDayAuthority.READ"
+            where: authorities='HolidayAuthority.READ'
+        - update:
+            tableName: user_authorities
+            columns:
+              - column:
+                  name: authorities
+                  value: "LeaveDayAuthority.WRITE"
+            where: authorities='HolidayAuthority.WRITE'
+        - update:
+            tableName: user_authorities
+            columns:
+              - column:
+                  name: authorities
+                  value: "LeaveDayAuthority.ADMIN"
+            where: authorities='HolidayAuthority.ADMIN'
+

@@ -4,7 +4,7 @@ import PersonLayout from "../../components/layouts/PersonLayout";
 
 export default function HolidayPage() {
   return (
-    <PersonLayout requireAuthority={"HolidayAuthority.ADMIN"}>
+    <PersonLayout requireAuthority={"LeaveDayAuthority.ADMIN"}>
       {(person) => <HolidayFeature person={person} />}
     </PersonLayout>
   );

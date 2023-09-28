@@ -2,7 +2,7 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.authorities.Authority
 import community.flock.eco.workday.authorities.ExpenseAuthority
-import community.flock.eco.workday.authorities.HolidayAuthority
+import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.authorities.WorkDayAuthority
 import community.flock.eco.workday.graphql.kotlin.Todo
@@ -40,7 +40,7 @@ class TodoController(
     fun getTodoAll(
         authentication: Authentication
     ) = mapOf<Authority, List<Todo>>(
-        HolidayAuthority.READ to findHolidayTodo(),
+        LeaveDayAuthority.READ to findHolidayTodo(),
         SickdayAuthority.READ to findSickDayTodo(),
         WorkDayAuthority.READ to findWorkDayTodo(),
         ExpenseAuthority.READ to findExpenseTodo()

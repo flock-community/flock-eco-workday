@@ -6,7 +6,7 @@ import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.workday.authorities.ExpenseAuthority
-import community.flock.eco.workday.authorities.HolidayAuthority
+import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.authorities.WorkDayAuthority
 import mocks.Role
@@ -24,8 +24,8 @@ class LoadUserData(
     val data: MutableSet<User> = mutableSetOf()
 
     val workerRoles = setOf(
-            HolidayAuthority.READ,
-            HolidayAuthority.WRITE,
+            LeaveDayAuthority.READ,
+            LeaveDayAuthority.WRITE,
             SickdayAuthority.READ,
             SickdayAuthority.WRITE,
             WorkDayAuthority.READ,

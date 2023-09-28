@@ -53,7 +53,7 @@ export function HolidayForm({ value, onSubmit }: HolidayFormProps) {
 
             {value && (
               <Grid item xs={12}>
-                <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+                <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
                   <Field
                     fullWidth
                     type="text"

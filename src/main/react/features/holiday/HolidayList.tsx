@@ -55,7 +55,7 @@ export function HolidayList({
           value={item}
           onClick={() => onClickRow(item)}
           onClickStatus={(status) => onClickStatus(status, item)}
-          hasAuthority={"HolidayAuthority.ADMIN"}
+          hasAuthority={"LeaveDayAuthority.ADMIN"}
         />
       </Grid>
     );
