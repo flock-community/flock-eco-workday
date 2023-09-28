@@ -22,6 +22,8 @@ type NonProductiveHoursProps = {
 type NonProductiveHoursPerDay = {
   sickHours: number;
   holidayHours: number;
+  paidParentalLeaveHours: number;
+  unpaidParentalLeaveHours: number;
 };
 
 export default function NonProductiveHours({
@@ -75,6 +77,24 @@ export default function NonProductiveHours({
         {days.map((day, index) => (
           <TableCell key={index}>
             {day.holidayHours > 0.0 ? day.holidayHours : ""}
+          </TableCell>
+        ))}
+      </TableRow>
+      <TableRow className={classes.row}>
+        <TableCell />
+        <TableCell>Paid Parental Leave</TableCell>
+        {days.map((day, index) => (
+          <TableCell key={index}>
+            {day.paidParentalLeaveHours > 0.0 ? day.paidParentalLeaveHours : ""}
+          </TableCell>
+        ))}
+      </TableRow>
+      <TableRow className={classes.row}>
+        <TableCell />
+        <TableCell>Unpaid Parental Leave</TableCell>
+        {days.map((day, index) => (
+          <TableCell key={index}>
+            {day.unpaidParentalLeaveHours > 0.0 ? day.unpaidParentalLeaveHours : ""}
           </TableCell>
         ))}
       </TableRow>

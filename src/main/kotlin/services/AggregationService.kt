@@ -483,17 +483,26 @@ class AggregationService(
     }
 
     fun personNonProductiveHoursPerDay(person: Person, from: LocalDate, to: LocalDate): List<NonProductiveHours> {
-        val holidays = holiDayService.findAllActiveByPerson(from, to, person.uuid)
+        val holidayData = holiDayService.findAllActiveByPerson(from, to, person.uuid)
+        val holidays = holidayData.filter { it.type == HolidayType.HOLIDAY }
             .map { it.hoursPerDayInPeriod(from, to) }
             .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
         val sickdays = sickDayService.findAllActiveByPerson(from, to, person.uuid)
             .map { it.hoursPerDayInPeriod(from, to) }
             .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
+        val paidParentalLeave = holidayData.filter { it.type == HolidayType.PAID_PARENTAL_LEAVE}
+            .map { it.hoursPerDayInPeriod(from, to)}
+            .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
+        val unpaidParentalLeave = holidayData.filter { it.type == HolidayType.UNPAID_PARENTAL_LEAVE}
+            .map { it.hoursPerDayInPeriod(from, to)}
+            .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
 
         val map = from.datesUntil(to.plusDays(1)).toList().associateWith { date ->
             NonProductiveHours(
                 sickHours = sickdays[date]?.toDouble() ?: 0.0,
-                holidayHours = holidays[date]?.toDouble() ?: 0.0
+                holidayHours = holidays[date]?.toDouble() ?: 0.0,
+                paidParentalLeaveHours = paidParentalLeave[date]?.toDouble() ?: 0.0,
+                unpaidParentalLeaveHours = unpaidParentalLeave[date]?.toDouble() ?: 0.0,
             )
         }
 
@@ -509,8 +518,12 @@ class AggregationService(
         }
 
     // TODO: Move this?
-    // TODO: WRK-89 Do we need to add PaidParentalLeave and UnPaidParentalLeave?
-    data class NonProductiveHours(val sickHours: Double, val holidayHours: Double)
+    data class NonProductiveHours(
+        val sickHours: Double,
+        val holidayHours: Double,
+        val paidParentalLeaveHours: Double,
+        val unpaidParentalLeaveHours: Double,
+    )
 
     fun Iterable<Iterable<Float>>.sumAtIndex() = this
         .reduce { acc, cur ->
