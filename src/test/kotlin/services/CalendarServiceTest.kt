@@ -1,6 +1,6 @@
 package services
 
-import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.LeaveDay
 import community.flock.eco.workday.model.LeaveDayType.HOLIDAY
 import community.flock.eco.workday.model.Status.APPROVED
 import community.flock.eco.workday.repository.LeaveDayRepository
@@ -19,7 +19,7 @@ class CalendarServiceTest {
     @Test
     fun `Fetch holidays from repository and build calendar`() {
         val holidays = listOf(
-            HoliDay(
+            LeaveDay(
                 description = "description-1",
                 hours = 8.0,
                 person = aPerson(),
@@ -28,7 +28,7 @@ class CalendarServiceTest {
                 from = LocalDate.of(2023, 3, 3),
                 to = LocalDate.of(2023, 3, 4)
             ),
-            HoliDay(
+            LeaveDay(
                 description = "description-2",
                 hours = 8.0,
                 person = aPerson(),

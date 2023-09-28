@@ -4,7 +4,7 @@ import community.flock.eco.workday.interfaces.filterInRange
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.Event
-import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.LeaveDay
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.WorkDay
 import org.springframework.stereotype.Service
@@ -13,7 +13,7 @@ import java.util.UUID
 
 data class Data(
     val sickDay: Iterable<SickDay>,
-    val holiDay: Iterable<HoliDay>,
+    val holiDay: Iterable<LeaveDay>,
     val workDay: Iterable<WorkDay>,
     val eventDay: Iterable<Event>,
     val assignment: Iterable<Assignment>,

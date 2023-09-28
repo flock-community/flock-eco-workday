@@ -3,7 +3,7 @@ package community.flock.eco.workday.repository
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.LeaveDay
 import community.flock.eco.workday.model.LeaveDayType
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.Status
@@ -54,11 +54,11 @@ class HoliDayRepositoryTest(
 
     @Test
     fun `should find a Holiday via holidayCode by querying findByCode`() {
-        val holiDays: MutableSet<HoliDay> = mutableSetOf()
+        val leaveDays: MutableSet<LeaveDay> = mutableSetOf()
         persons.forEach { person ->
-            holiDays.add(
+            leaveDays.add(
                 createAndPersist(
-                    HoliDay(
+                    LeaveDay(
                         description = "",
                         status = Status.REQUESTED,
                         hours = 42.0,
@@ -75,11 +75,11 @@ class HoliDayRepositoryTest(
         val holidayCode = repository.findAll().first().code
         val res = repository.findByCode(holidayCode).toNullable()
 
-        assertThat(res).isEqualTo(holiDays.first())
+        assertThat(res).isEqualTo(leaveDays.first())
     }
 
-    private fun createAndPersist(holiDay: HoliDay): HoliDay {
-        repository.save(holiDay)
-        return holiDay
+    private fun createAndPersist(leaveDay: LeaveDay): LeaveDay {
+        repository.save(leaveDay)
+        return leaveDay
     }
 }

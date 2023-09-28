@@ -2,7 +2,7 @@ package community.flock.eco.workday.helpers
 
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Contract
-import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.LeaveDay
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.WorkDay
 import org.springframework.context.annotation.Import
@@ -103,7 +103,7 @@ class DataHelper(
         return res
     }
 
-    fun createHoliDayData(): MutableMap<String, HoliDay> {
+    fun createHoliDayData(): MutableMap<String, LeaveDay> {
 
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 5)
@@ -112,7 +112,7 @@ class DataHelper(
         val person2 = createHelper.createPerson()
         val person3 = createHelper.createPerson()
 
-        val res = mutableMapOf<String, HoliDay>()
+        val res = mutableMapOf<String, LeaveDay>()
         // In range
         res["in1"] = createHelper.createHoliDay(person1, from, to)
         res["in2"] = createHelper.createHoliDay(person2, from, to)

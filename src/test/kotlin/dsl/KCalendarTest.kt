@@ -3,7 +3,7 @@ package dsl
 import community.flock.eco.workday.dsl.KCalendar
 import community.flock.eco.workday.dsl.KEvent
 import community.flock.eco.workday.dsl.toCalendar
-import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.LeaveDay
 import community.flock.eco.workday.model.LeaveDayType
 import community.flock.eco.workday.model.Status.APPROVED
 import model.aPerson
@@ -23,7 +23,7 @@ class KCalendarTest {
     @Test
     fun `Build calendar from holiDays`() {
         val holidays = listOf(
-            HoliDay(
+            LeaveDay(
                 description = "description-1",
                 hours = 8.0,
                 person = aPerson(),
@@ -32,7 +32,7 @@ class KCalendarTest {
                 from = LocalDate.of(2023, 3, 3),
                 to = LocalDate.of(2023, 3, 4)
             ),
-            HoliDay(
+            LeaveDay(
                 description = "description-2",
                 hours = 8.0,
                 person = aPerson(),
@@ -70,7 +70,7 @@ class KCalendarTest {
     @Test
     fun `Serializes to string`() {
         val holidays = listOf(
-            HoliDay(
+            LeaveDay(
                 code = "f55ddf77-711d-47f0-a75f-677481c3452e",
                 description = "description-1",
                 hours = 8.0,
@@ -80,7 +80,7 @@ class KCalendarTest {
                 from = LocalDate.of(2023, 3, 3),
                 to = LocalDate.of(2023, 3, 4)
             ),
-            HoliDay(
+            LeaveDay(
                 code = "13dc180a-391b-49e2-99db-73cd33523dd9",
                 description = "description-2",
                 hours = 8.0,

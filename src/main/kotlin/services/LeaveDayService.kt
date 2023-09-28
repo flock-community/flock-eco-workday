@@ -5,7 +5,7 @@ import community.flock.eco.feature.user.model.User
 import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.interfaces.validate
-import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.LeaveDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.HolidayRepository
 import community.flock.eco.workday.services.email.HolidayEmailService
@@ -31,10 +31,10 @@ class LeaveDayService(
     fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = leaveDayRepository.findAllByPersonUserCode(userCode, pageable)
     fun findAllByStatus(status: Status) = leaveDayRepository.findAllByStatus(status)
 
-    fun findAllActive(from: LocalDate, to: LocalDate): Iterable<HoliDay> {
-        val query = "SELECT h FROM HoliDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from)"
+    fun findAllActive(from: LocalDate, to: LocalDate): Iterable<LeaveDay> {
+        val query = "SELECT h FROM LeaveDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from)"
         return entityManager
-            .createQuery(query, HoliDay::class.java)
+            .createQuery(query, LeaveDay::class.java)
             .setParameter("from", from)
             .setParameter("to", to)
             .resultList
@@ -47,10 +47,10 @@ class LeaveDayService(
      * The result could include holidays that also contain days that do not fall within that range.
      * You can filter these out using [community.flock.eco.workday.model.Day.hoursPerDayInPeriod].
      */
-    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): Iterable<HoliDay> {
-        val query = "SELECT h FROM HoliDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from) AND h.person.uuid = :personCode"
+    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): Iterable<LeaveDay> {
+        val query = "SELECT h FROM LeaveDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from) AND h.person.uuid = :personCode"
         return entityManager
-            .createQuery(query, HoliDay::class.java)
+            .createQuery(query, LeaveDay::class.java)
             .setParameter("from", from)
             .setParameter("to", to)
             .setParameter("personCode", personCode)
@@ -58,15 +58,15 @@ class LeaveDayService(
             .toSet()
     }
 
-    fun create(form: LeaveDayForm): HoliDay = form.copy(status = Status.REQUESTED)
+    fun create(form: LeaveDayForm): LeaveDay = form.copy(status = Status.REQUESTED)
         .consume()
         .validate()
         .save()
         .also { emailService.sendNotification(it) }
 
-    fun update(code: String, form: LeaveDayForm): HoliDay {
-        val currentHoliDay = holidayRepository.findByCode(code).toNullable()
-        return currentHoliDay
+    fun update(code: String, form: LeaveDayForm): LeaveDay {
+        val currentLeaveDay = leaveDayRepository.findByCode(code).toNullable()
+        return currentLeaveDay
             .run {
                 form
                     .validate()
@@ -74,7 +74,7 @@ class LeaveDayService(
                     .save()
             }
             .also {
-                emailService.sendUpdate(currentHoliDay!!, it)
+                emailService.sendUpdate(currentLeaveDay!!, it)
             }
     }
 
@@ -82,14 +82,14 @@ class LeaveDayService(
     fun deleteByCode(code: String) = leaveDayRepository
             .deleteByCode(code)
 
-    private fun HoliDay.save() = leaveDayRepository.save(this)
+    private fun LeaveDay.save() = leaveDayRepository.save(this)
 
-    private fun LeaveDayForm.consume(it: HoliDay? = null): HoliDay {
+    private fun LeaveDayForm.consume(it: LeaveDay? = null): LeaveDay {
         val person = personService
             .findByUuid(this.personId)
             ?: throw error("Cannot find person: ${this.personId}")
 
-        return HoliDay(
+        return LeaveDay(
             id = it?.id ?: 0L,
             code = it?.code ?: UUID.randomUUID().toString(),
             description = description,

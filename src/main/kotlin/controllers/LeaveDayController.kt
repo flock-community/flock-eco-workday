@@ -4,7 +4,7 @@ import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
-import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.LeaveDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.LeaveDayService
 import community.flock.eco.workday.services.PersonService
@@ -39,7 +39,7 @@ class LeaveDayController(
         @RequestParam personId: UUID,
         authentication: Authentication,
         pageable: Pageable
-    ): ResponseEntity<List<HoliDay>> = when {
+    ): ResponseEntity<List<LeaveDay>> = when {
         authentication.isAdmin() -> service.findAllByPersonUuid(personId, pageable)
         else -> service.findAllByPersonUserCode(authentication.name, pageable)
     }.toResponse()
@@ -100,13 +100,13 @@ class LeaveDayController(
         .map { it.authority }
         .contains(LeaveDayAuthority.ADMIN.toName())
 
-    private fun HoliDay.applyAuthentication(authentication: Authentication) = apply {
+    private fun LeaveDay.applyAuthentication(authentication: Authentication) = apply {
         if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
         }
     }
 
-    private fun HoliDay.applyAllowedToCreate(form: LeaveDayForm, authentication: Authentication): HoliDay = apply {
+    private fun LeaveDay.applyAllowedToCreate(form: LeaveDayForm, authentication: Authentication): LeaveDay = apply {
         if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change workday")
         }

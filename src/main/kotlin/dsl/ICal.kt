@@ -6,7 +6,7 @@ import biweekly.component.VTimezone
 import biweekly.io.TimezoneAssignment
 import biweekly.io.TimezoneInfo
 import biweekly.util.Duration
-import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.LeaveDay
 import java.time.LocalDate
 import java.time.Period
 import java.time.ZoneId
@@ -55,17 +55,17 @@ data class KEvent(
         }
 }
 
-fun Iterable<HoliDay>.toCalendar() =
+fun Iterable<LeaveDay>.toCalendar() =
     KCalendar(map { it.toCalendarEvent() })
 
-private fun HoliDay.toCalendarEvent() = KEvent(
+private fun LeaveDay.toCalendarEvent() = KEvent(
     uid = code,
     startDate = from,
     durationInDays = durationInDays,
     summary = "Vakantie ${person.getFullName()} ($durationInDays dagen)"
 )
 
-private val HoliDay.durationInDays get() = Period.between(from, to).days + 1
+private val LeaveDay.durationInDays get() = Period.between(from, to).days + 1
 
 private fun LocalDate.toDate() =
     atStartOfDay(ZoneId.of(TIMEZONE_ID))

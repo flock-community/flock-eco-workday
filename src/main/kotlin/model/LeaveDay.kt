@@ -25,7 +25,7 @@ enum class LeaveDayType {
 @Entity
 @EntityListeners(EventEntityListeners::class)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-data class HoliDay(
+data class LeaveDay(
 
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
