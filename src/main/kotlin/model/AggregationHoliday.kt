@@ -7,4 +7,6 @@ data class AggregationHoliday(
     val contractHours: BigDecimal,
     val plusHours: BigDecimal,
     val holidayHours: BigDecimal,
+    val paidParentalLeaveHours: BigDecimal,
+    val unpaidParentalLeaveHours: BigDecimal,
 )

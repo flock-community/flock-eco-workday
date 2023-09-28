@@ -15,6 +15,8 @@ data class AggregationPerson(
     val total: Int,
     val holiDayUsed: BigDecimal,
     val holiDayBalance: BigDecimal,
+    val paidParentalLeaveUsed: BigDecimal,
+    val unpaidParentalLeaveUsed: BigDecimal,
     val revenue: AggregationPersonClientRevenueOverview? = null,
     val cost: BigDecimal? = null
 )
