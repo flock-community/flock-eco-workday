@@ -69,9 +69,16 @@ class AggregationService(
                 .totalHoursInPeriod(from, to),
             holidayHours = data.holiDay
                 .filter { it.type == HolidayType.HOLIDAY }
-                .totalHoursInPeriod(from, to)
+                .totalHoursInPeriod(from, to),
+            paidParentalLeaveHours = data.holiDay
+                .filter { it.type == HolidayType.PAID_PARENTAL_LEAVE }
+                .totalHoursInPeriod(from, to),
+            unpaidParentalLeaveHours = data.holiDay
+                .filter { it.type == HolidayType.UNPAID_PARENTAL_LEAVE }
+                .totalHoursInPeriod(from, to),
         )
     }
+
     fun holidayReport(year: Int): List<AggregationHoliday> {
         val from = YearMonth.of(year, 1).atDay(1)
         val to = YearMonth.of(year, 12).atEndOfMonth()
@@ -93,7 +100,13 @@ class AggregationService(
                     holidayHours = all.holiDay
                         .filter { it.type == HolidayType.HOLIDAY }
                         .filter { it.person == person }
-                        .totalHoursInPeriod(from, to)
+                        .totalHoursInPeriod(from, to),
+                    paidParentalLeaveHours = all.holiDay
+                        .filter { it.type == HolidayType.PAID_PARENTAL_LEAVE }
+                        .totalHoursInPeriod(from, to),
+                    unpaidParentalLeaveHours = all.holiDay
+                        .filter { it.type == HolidayType.UNPAID_PARENTAL_LEAVE }
+                        .totalHoursInPeriod(from, to),
                 )
             }
     }
@@ -150,6 +163,12 @@ class AggregationService(
                 .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                 .sum()
                 .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
+            paidParentalLeaveUsed = allData.holiDay
+                .filter { it.type == HolidayType.PAID_PARENTAL_LEAVE }
+                .totalHoursInPeriod(from, to),
+            unpaidParentalLeaveUsed = allData.holiDay
+                .filter { it.type == HolidayType.UNPAID_PARENTAL_LEAVE }
+                .totalHoursInPeriod(from, to),
         )
     }
 
@@ -195,6 +214,14 @@ class AggregationService(
                         .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                         .sum()
                         .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
+                    paidParentalLeaveUsed = all.holiDay
+                        .filter { it.type == HolidayType.PAID_PARENTAL_LEAVE }
+                        .filter { it.person == person }
+                        .totalHoursInPeriod(from, to),
+                    unpaidParentalLeaveUsed = all.holiDay
+                        .filter { it.type == HolidayType.UNPAID_PARENTAL_LEAVE }
+                        .filter { it.person == person }
+                        .totalHoursInPeriod(from, to),
                     revenue = personClientRevenueOverview(all.workDay, from, to)
                         .filter { it.key.id == person.id.toString() }
                         .values
@@ -482,6 +509,7 @@ class AggregationService(
         }
 
     // TODO: Move this?
+    // TODO: WRK-89 Do we need to add PaidParentalLeave and UnPaidParentalLeave?
     data class NonProductiveHours(val sickHours: Double, val holidayHours: Double)
 
     fun Iterable<Iterable<Float>>.sumAtIndex() = this
