@@ -1,7 +1,7 @@
 package services
 
 import community.flock.eco.workday.model.HoliDay
-import community.flock.eco.workday.model.HolidayType.HOLIDAY
+import community.flock.eco.workday.model.LeaveDayType.HOLIDAY
 import community.flock.eco.workday.model.Status.APPROVED
 import community.flock.eco.workday.repository.LeaveDayRepository
 import community.flock.eco.workday.services.CalendarService

@@ -1,7 +1,7 @@
 package community.flock.eco.workday.mocks
 
 import community.flock.eco.workday.forms.LeaveDayForm
-import community.flock.eco.workday.model.HolidayType
+import community.flock.eco.workday.model.LeaveDayType
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.LeaveDayService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -48,7 +48,7 @@ class LoadHolidayData(
             val date = now.plusYears(i.toLong()).plusDays(random)
 
             LeaveDayForm(
-                    type = HolidayType.PLUSDAY,
+                    type = LeaveDayType.PLUSDAY,
                     description = "Plus day ${it.firstname}",
                     from = date,
                     to = date,

@@ -15,7 +15,7 @@ import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.ManyToOne
 
-enum class HolidayType {
+enum class LeaveDayType {
     HOLIDAY,
     PLUSDAY,
     PAID_PARENTAL_LEAVE,
@@ -40,7 +40,7 @@ data class HoliDay(
     val description: String,
 
     @Enumerated(EnumType.STRING)
-    val type: HolidayType,
+    val type: LeaveDayType,
 
     @Enumerated(EnumType.STRING)
     override val status: Status,

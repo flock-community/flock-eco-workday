@@ -10,7 +10,7 @@ import community.flock.eco.workday.graphql.kotlin.TodoType
 import community.flock.eco.workday.model.CostExpense
 import community.flock.eco.workday.model.Expense
 import community.flock.eco.workday.model.HoliDay
-import community.flock.eco.workday.model.HolidayType
+import community.flock.eco.workday.model.LeaveDayType
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.Status
@@ -70,10 +70,10 @@ class TodoController(
     fun HoliDay.mapTodo() = Todo(
         id = UUID.fromString(code),
         type = when (type) {
-            HolidayType.HOLIDAY -> TodoType.HOLIDAY
-            HolidayType.PLUSDAY -> TodoType.PLUSDAY
-            HolidayType.PAID_PARENTAL_LEAVE -> TodoType.PAID_PARENTAL_LEAVE
-            HolidayType.UNPAID_PARENTAL_LEAVE -> TodoType.UNPAID_PARENTAL_LEAVE
+            LeaveDayType.HOLIDAY -> TodoType.HOLIDAY
+            LeaveDayType.PLUSDAY -> TodoType.PLUSDAY
+            LeaveDayType.PAID_PARENTAL_LEAVE -> TodoType.PAID_PARENTAL_LEAVE
+            LeaveDayType.UNPAID_PARENTAL_LEAVE -> TodoType.UNPAID_PARENTAL_LEAVE
         },
         personId = person.uuid,
         personName = person.fullName(),

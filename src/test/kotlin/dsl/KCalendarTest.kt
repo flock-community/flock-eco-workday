@@ -4,7 +4,7 @@ import community.flock.eco.workday.dsl.KCalendar
 import community.flock.eco.workday.dsl.KEvent
 import community.flock.eco.workday.dsl.toCalendar
 import community.flock.eco.workday.model.HoliDay
-import community.flock.eco.workday.model.HolidayType
+import community.flock.eco.workday.model.LeaveDayType
 import community.flock.eco.workday.model.Status.APPROVED
 import model.aPerson
 import org.assertj.core.api.Assertions.assertThat
@@ -27,7 +27,7 @@ class KCalendarTest {
                 description = "description-1",
                 hours = 8.0,
                 person = aPerson(),
-                type = HolidayType.HOLIDAY,
+                type = LeaveDayType.HOLIDAY,
                 status = APPROVED,
                 from = LocalDate.of(2023, 3, 3),
                 to = LocalDate.of(2023, 3, 4)
@@ -36,7 +36,7 @@ class KCalendarTest {
                 description = "description-2",
                 hours = 8.0,
                 person = aPerson(),
-                type = HolidayType.HOLIDAY,
+                type = LeaveDayType.HOLIDAY,
                 status = APPROVED,
                 from = LocalDate.of(2023, 3, 7),
                 to = LocalDate.of(2023, 3, 10)
@@ -75,7 +75,7 @@ class KCalendarTest {
                 description = "description-1",
                 hours = 8.0,
                 person = aPerson(),
-                type = HolidayType.HOLIDAY,
+                type = LeaveDayType.HOLIDAY,
                 status = APPROVED,
                 from = LocalDate.of(2023, 3, 3),
                 to = LocalDate.of(2023, 3, 4)
@@ -85,7 +85,7 @@ class KCalendarTest {
                 description = "description-2",
                 hours = 8.0,
                 person = aPerson(),
-                type = HolidayType.HOLIDAY,
+                type = LeaveDayType.HOLIDAY,
                 status = APPROVED,
                 from = LocalDate.of(2023, 3, 7),
                 to = LocalDate.of(2023, 3, 10)
