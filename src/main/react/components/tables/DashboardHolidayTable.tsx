@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import {
   AggregationClient,
-  AggregationHoliday,
+  AggregationLeaveDay,
 } from "../../clients/AggregationClient";
 import {
   makeStyles,
@@ -25,7 +25,7 @@ const useStyles = makeStyles({
   },
 });
 
-export type HolidayReport = AggregationHoliday & {
+export type HolidayReport = AggregationLeaveDay & {
   total: number;
   available: number;
 };

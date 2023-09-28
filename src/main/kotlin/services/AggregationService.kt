@@ -13,7 +13,7 @@ import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
 import community.flock.eco.workday.interfaces.inRange
 import community.flock.eco.workday.model.AggregationClient
-import community.flock.eco.workday.model.AggregationHoliday
+import community.flock.eco.workday.model.AggregationLeaveDay
 import community.flock.eco.workday.model.AggregationMonth
 import community.flock.eco.workday.model.AggregationPerson
 import community.flock.eco.workday.model.Assignment
@@ -38,7 +38,6 @@ import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
-import kotlin.streams.toList
 import community.flock.eco.workday.model.ContractService as ContractServiceModel
 
 @Service
@@ -53,12 +52,12 @@ class AggregationService(
     private val sickDayService: SickDayService
 ) {
 
-    fun holidayReportMe(year: Int, person: Person): AggregationHoliday {
+    fun holidayReportMe(year: Int, person: Person): AggregationLeaveDay {
         val from = YearMonth.of(year, 1).atDay(1)
         val to = YearMonth.of(year, 12).atEndOfMonth()
         val period = FromToPeriod(from, to)
         val data = dataService.findAllData(from, to, person.uuid)
-        return AggregationHoliday(
+        return AggregationLeaveDay(
             name = person.getFullName(),
             contractHours = data.contract
                 .filterIsInstance(ContractInternal::class.java)
@@ -79,14 +78,14 @@ class AggregationService(
         )
     }
 
-    fun holidayReport(year: Int): List<AggregationHoliday> {
+    fun holidayReport(year: Int): List<AggregationLeaveDay> {
         val from = YearMonth.of(year, 1).atDay(1)
         val to = YearMonth.of(year, 12).atEndOfMonth()
         val period = FromToPeriod(from, to)
         val all = dataService.findAllData(from, to)
         return all.allPersons()
             .map { person ->
-                AggregationHoliday(
+                AggregationLeaveDay(
                     name = person.getFullName(),
                     contractHours = all.contract
                         .filterIsInstance(ContractInternal::class.java)

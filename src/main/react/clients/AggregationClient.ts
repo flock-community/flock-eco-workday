@@ -67,19 +67,19 @@ export const totalPerPersonMe = () => {
     .then((res) => res.body);
 };
 
-export type AggregationHoliday = {
+export type AggregationLeaveDay = {
   name: String;
   contractHours: number;
   plusHours: number;
   holidayHours: number;
 };
 
-export const holidayReportMe = (year): Promise<AggregationHoliday> => {
+export const holidayReportMe = (year): Promise<AggregationLeaveDay> => {
   const opts = {
     method: "GET",
   };
   return fetch(`${path}/holiday-report-me?year=${year}`, opts)
-    .then((res) => validateResponse<AggregationHoliday>(res))
+    .then((res) => validateResponse<AggregationLeaveDay>(res))
     .then(checkResponse)
     .then((res) => res.body);
 };
@@ -94,12 +94,12 @@ export const totalPerMonthByYear = (year) => {
     .then((res) => res.body);
 };
 
-export const holidayReportByYear = (year): Promise<AggregationHoliday[]> => {
+export const holidayReportByYear = (year): Promise<AggregationLeaveDay[]> => {
   const opts = {
     method: "GET",
   };
   return fetch(`${path}/holiday-report?year=${year}`, opts)
-    .then((res) => validateResponse<AggregationHoliday[]>(res))
+    .then((res) => validateResponse<AggregationLeaveDay[]>(res))
     .then(checkResponse)
     .then((res) => res.body);
 };
