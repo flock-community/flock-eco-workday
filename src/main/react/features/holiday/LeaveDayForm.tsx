@@ -30,7 +30,6 @@ type LeaveDayFormProps = {
 export function LeaveDayForm({ value, onSubmit }: LeaveDayFormProps) {
 
   const handleSubmit = (data) => {
-    console.log('LeaveDayForm > handleSubmit is called');
     onSubmit?.({
       ...value,
       ...data,
@@ -39,7 +38,6 @@ export function LeaveDayForm({ value, onSubmit }: LeaveDayFormProps) {
   };
 
   const renderForm = ({ values }) => {
-    console.log('LeaveDayForm > renderForm');
     return (
       <Form id={LEAVE_DAY_DIALOG_FORM_ID}>
         <MuiPickersUtilsProvider utils={DayjsUtils}>
