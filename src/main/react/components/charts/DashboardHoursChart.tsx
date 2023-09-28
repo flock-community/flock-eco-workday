@@ -60,13 +60,13 @@ export function DashboardHoursChart() {
           stackId="days"
           dataKey="paidParentalLeaveUsed"
           name="paid parental leave"
-          fill="#42a5f5"
+          fill="#FFB6C1"
         />
         <Bar
           stackId="days"
           dataKey="unpaidParentalLeaveUsed"
           name="unpaid parental leave"
-          fill="#42a5f5"
+          fill="#87CEFA"
         />
         <Bar
           stackId="days"
