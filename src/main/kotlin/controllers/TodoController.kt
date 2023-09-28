@@ -72,8 +72,8 @@ class TodoController(
         type = when (type) {
             HolidayType.HOLIDAY -> TodoType.HOLIDAY
             HolidayType.PLUSDAY -> TodoType.PLUSDAY
-            HolidayType.PAID_PARENTAL_LEAVE -> TodoType.PLUSDAY
-            HolidayType.UNPAID_PARENTAL_LEAVE -> TodoType.PLUSDAY
+            HolidayType.PAID_PARENTAL_LEAVE -> TodoType.PAID_PARENTAL_LEAVE
+            HolidayType.UNPAID_PARENTAL_LEAVE -> TodoType.UNPAID_PARENTAL_LEAVE
         },
         personId = person.uuid,
         personName = person.fullName(),

@@ -490,11 +490,11 @@ class AggregationService(
         val sickdays = sickDayService.findAllActiveByPerson(from, to, person.uuid)
             .map { it.hoursPerDayInPeriod(from, to) }
             .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
-        val paidParentalLeave = holidayData.filter { it.type == HolidayType.PAID_PARENTAL_LEAVE}
-            .map { it.hoursPerDayInPeriod(from, to)}
+        val paidParentalLeave = holidayData.filter { it.type == HolidayType.PAID_PARENTAL_LEAVE }
+            .map { it.hoursPerDayInPeriod(from, to) }
             .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
-        val unpaidParentalLeave = holidayData.filter { it.type == HolidayType.UNPAID_PARENTAL_LEAVE}
-            .map { it.hoursPerDayInPeriod(from, to)}
+        val unpaidParentalLeave = holidayData.filter { it.type == HolidayType.UNPAID_PARENTAL_LEAVE }
+            .map { it.hoursPerDayInPeriod(from, to) }
             .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
 
         val map = from.datesUntil(to.plusDays(1)).toList().associateWith { date ->

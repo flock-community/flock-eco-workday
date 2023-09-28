@@ -3,6 +3,8 @@ export type typeProp =
   | "WORKDAY"
   | "SICKDAY"
   | "HOLIDAY"
+  | "PAID_PARENTAL_LEAVE"
+  | "UNPAID_PARENTAL_LEAVE"
   | "PLUSDAY"
   | "EXPENSE";
 
