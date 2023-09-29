@@ -30,7 +30,7 @@ import { ErrorStack } from "../components/error/ErrorBarStack";
 import { ProjectFeature } from "../features/project/ProjectFeature";
 import ContractPage from "../features/contract/ContractPage";
 import AssignmentPage from "../features/assignments/AssignmentPage";
-import HolidayPage from "../features/holiday/HolidayPage";
+import LeaveDayPage from "../features/holiday/LeaveDayPage";
 import ExpensePage from "../features/expense/ExpensePage";
 import WorkDayPage from "../features/workday/WorkDayPage";
 import SickDayPage from "../features/sickday/SickDayPage";
@@ -103,7 +103,7 @@ export const Application = () => {
                   <Route path="/projects" exact component={ProjectFeature} />
                   <Route path="/assignments" exact component={AssignmentPage} />
                   <Route path="/workdays" exact component={WorkDayPage} />
-                  <Route path="/holidays" exact component={HolidayPage} />
+                  <Route path="/holidays" exact component={LeaveDayPage} />
                   <Route path="/sickdays" component={SickDayPage} />
                   <Route path="/expenses" component={ExpensePage} />
                   <Route path="/exactonline" component={ExactonlineFeature} />
