@@ -13,7 +13,7 @@ import java.util.UUID
 
 data class Data(
     val sickDay: Iterable<SickDay>,
-    val holiDay: Iterable<LeaveDay>,
+    val leaveDay: Iterable<LeaveDay>,
     val workDay: Iterable<WorkDay>,
     val eventDay: Iterable<Event>,
     val assignment: Iterable<Assignment>,
@@ -60,7 +60,7 @@ class DataService(
 
 fun Data.filterInRange(date: LocalDate): Data = Data(
     sickDay.filterInRange(date),
-    holiDay.filterInRange(date),
+    leaveDay.filterInRange(date),
     workDay.filterInRange(date),
     eventDay.filterInRange(date),
     assignment.filterInRange(date),

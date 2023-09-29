@@ -63,16 +63,16 @@ class AggregationService(
                 .filterIsInstance(ContractInternal::class.java)
                 .map { it.totalLeaveDayHoursInPeriod(period) }
                 .sum(),
-            plusHours = data.holiDay
+            plusHours = data.leaveDay
                 .filter { it.type == LeaveDayType.PLUSDAY }
                 .totalHoursInPeriod(from, to),
-            holidayHours = data.holiDay
+            holidayHours = data.leaveDay
                 .filter { it.type == LeaveDayType.HOLIDAY }
                 .totalHoursInPeriod(from, to),
-            paidParentalLeaveHours = data.holiDay
+            paidParentalLeaveHours = data.leaveDay
                 .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
                 .totalHoursInPeriod(from, to),
-            unpaidParentalLeaveHours = data.holiDay
+            unpaidParentalLeaveHours = data.leaveDay
                 .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
                 .totalHoursInPeriod(from, to),
         )
@@ -92,18 +92,18 @@ class AggregationService(
                         .filter { it.person == person }
                         .map { it.totalLeaveDayHoursInPeriod(period) }
                         .sum(),
-                    plusHours = all.holiDay
+                    plusHours = all.leaveDay
                         .filter { it.type == LeaveDayType.PLUSDAY }
                         .filter { it.person == person }
                         .totalHoursInPeriod(from, to),
-                    holidayHours = all.holiDay
+                    holidayHours = all.leaveDay
                         .filter { it.type == LeaveDayType.HOLIDAY }
                         .filter { it.person == person }
                         .totalHoursInPeriod(from, to),
-                    paidParentalLeaveHours = all.holiDay
+                    paidParentalLeaveHours = all.leaveDay
                         .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
                         .totalHoursInPeriod(from, to),
-                    unpaidParentalLeaveHours = all.holiDay
+                    unpaidParentalLeaveHours = all.leaveDay
                         .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
                         .totalHoursInPeriod(from, to),
                 )
@@ -153,7 +153,7 @@ class AggregationService(
                 .toInt(),
             total = allData.contract
                 .sumHoursWithinAPeriod(from, to),
-            leaveDayUsed = allData.holiDay
+            leaveDayUsed = allData.leaveDay
                 .filter { it.type == LeaveDayType.HOLIDAY }
                 .totalHoursInPeriod(from, to),
             leaveDayBalance = allData.contract
@@ -162,10 +162,10 @@ class AggregationService(
                 .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                 .sum()
                 .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
-            paidParentalLeaveUsed = allData.holiDay
+            paidParentalLeaveUsed = allData.leaveDay
                 .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
                 .totalHoursInPeriod(from, to),
-            unpaidParentalLeaveUsed = allData.holiDay
+            unpaidParentalLeaveUsed = allData.leaveDay
                 .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
                 .totalHoursInPeriod(from, to),
         )
@@ -202,7 +202,7 @@ class AggregationService(
                     total = all.contract
                         .filter { it.person == person }
                         .sumHoursWithinAPeriod(from, to),
-                    leaveDayUsed = all.holiDay
+                    leaveDayUsed = all.leaveDay
                         .filter { it.type == LeaveDayType.HOLIDAY }
                         .filter { it.person == person }
                         .totalHoursInPeriod(from, to),
@@ -213,11 +213,11 @@ class AggregationService(
                         .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                         .sum()
                         .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
-                    paidParentalLeaveUsed = all.holiDay
+                    paidParentalLeaveUsed = all.leaveDay
                         .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
                         .filter { it.person == person }
                         .totalHoursInPeriod(from, to),
-                    unpaidParentalLeaveUsed = all.holiDay
+                    unpaidParentalLeaveUsed = all.leaveDay
                         .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
                         .filter { it.person == person }
                         .totalHoursInPeriod(from, to),
@@ -549,7 +549,7 @@ class AggregationService(
             this.assignment.map { it.person } +
                 this.contract.map { it.person } +
                 this.sickDay.map { it.person } +
-                this.holiDay.map { it.person } +
+                this.leaveDay.map { it.person } +
                 this.workDay.map { it.assignment.person }
             )
             .filterNotNull()
