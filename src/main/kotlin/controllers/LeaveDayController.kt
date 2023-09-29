@@ -28,7 +28,7 @@ import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @RestController
-@RequestMapping("/api/leave-day")
+@RequestMapping("/api/leave-days")
 class LeaveDayController(
     private val service: LeaveDayService,
     private val personService: PersonService

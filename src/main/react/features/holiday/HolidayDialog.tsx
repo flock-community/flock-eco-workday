@@ -12,7 +12,7 @@ import Typography from "@material-ui/core/Typography";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
-import { HolidayClient } from "../../clients/HolidayClient";
+import { LeaveDayClient } from "../../clients/LeaveDayClient";
 import { HolidayForm } from "./HolidayForm";
 import { PlusDayForm } from "./PlusDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
@@ -57,12 +57,12 @@ export function HolidayDialog({
       personId,
     };
     if (code) {
-      HolidayClient.put(code, body).then((res) => {
+      LeaveDayClient.put(code, body).then((res) => {
         setState(undefined);
         onComplete?.(res);
       });
     } else {
-      HolidayClient.post(body).then((res) => {
+      LeaveDayClient.post(body).then((res) => {
         setState(undefined);
         onComplete?.(res);
       });
@@ -72,7 +72,7 @@ export function HolidayDialog({
   useEffect(() => {
     if (open) {
       if (code) {
-        HolidayClient.get(code).then((res) => {
+        LeaveDayClient.get(code).then((res) => {
           setType(res.type);
           setState({
             description: res.description,
@@ -97,7 +97,7 @@ export function HolidayDialog({
   }, [code, open]);
 
   const handleDelete = () => {
-    HolidayClient.delete(code).then(() => {
+    LeaveDayClient.delete(code).then(() => {
       onComplete?.();
       setOpenDelete(false);
       setState(undefined);

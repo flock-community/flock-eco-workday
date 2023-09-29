@@ -3,7 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import { Box, CardContent } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import { HOLIDAY_PAGE_SIZE, HolidayClient } from "../../clients/HolidayClient";
+import { LEAVE_DAY_PAGE_SIZE, LeaveDayClient } from "../../clients/LeaveDayClient";
 import { DayListItem } from "../../components/DayListItem";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -36,10 +36,10 @@ export function HolidayList({
   useEffect(() => {
     if (personId) {
       setLoading(true);
-      HolidayClient.findAllByPersonId(personId, page).then(
+      LeaveDayClient.findAllByPersonId(personId, page).then(
         (res: { list: DayProps[]; count: number }) => {
           setList(res.list);
-          setPageCount(Math.ceil(res.count / HOLIDAY_PAGE_SIZE));
+          setPageCount(Math.ceil(res.count / LEAVE_DAY_PAGE_SIZE));
           setLoading(false);
         }
       );
