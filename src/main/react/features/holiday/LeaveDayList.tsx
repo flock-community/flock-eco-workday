@@ -19,7 +19,7 @@ const useStyles = makeStyles({
   }),
 });
 
-export function HolidayList({
+export function LeaveDayList({
   personId,
   refresh,
   onClickRow,
@@ -65,7 +65,7 @@ export function HolidayList({
     return (
       <Card>
         <CardContent>
-          <Typography>No holidays.</Typography>
+          <Typography>No leave days.</Typography>
         </CardContent>
       </Card>
     );
