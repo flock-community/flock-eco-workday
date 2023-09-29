@@ -153,10 +153,10 @@ class AggregationService(
                 .toInt(),
             total = allData.contract
                 .sumHoursWithinAPeriod(from, to),
-            holiDayUsed = allData.holiDay
+            leaveDayUsed = allData.holiDay
                 .filter { it.type == LeaveDayType.HOLIDAY }
                 .totalHoursInPeriod(from, to),
-            holiDayBalance = allData.contract
+            leaveDayBalance = allData.contract
                 .filterIsInstance(ContractInternal::class.java)
                 .mapWorkingDay(from, to)
                 .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
@@ -202,11 +202,11 @@ class AggregationService(
                     total = all.contract
                         .filter { it.person == person }
                         .sumHoursWithinAPeriod(from, to),
-                    holiDayUsed = all.holiDay
+                    leaveDayUsed = all.holiDay
                         .filter { it.type == LeaveDayType.HOLIDAY }
                         .filter { it.person == person }
                         .totalHoursInPeriod(from, to),
-                    holiDayBalance = all.contract
+                    leaveDayBalance = all.contract
                         .filter { it.person == person }
                         .filterIsInstance(ContractInternal::class.java)
                         .mapWorkingDay(from, to)

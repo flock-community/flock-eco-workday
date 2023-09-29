@@ -142,7 +142,7 @@ class AggregationServiceTest(
         val res = aggregationService
             .totalPerPerson(from, to)
 
-        val holiDayBalance: BigDecimal = res.first().holiDayBalance
+        val holiDayBalance: BigDecimal = res.first().leaveDayBalance
         assertEquals(holiDayBalance.toString(), "192.0000000000")
     }
 
@@ -158,7 +158,7 @@ class AggregationServiceTest(
         val res = aggregationService
             .totalPerPerson(from, to)
 
-        val holiDayBalance: BigDecimal = res.first().holiDayBalance
+        val holiDayBalance: BigDecimal = res.first().leaveDayBalance
         assertEquals(holiDayBalance.toString(), "192.0000000000")
     }
 
@@ -170,7 +170,7 @@ class AggregationServiceTest(
         createHelper.createContractInternal(person, from, to, hoursPerWeek = 32)
         val res = aggregationService
             .totalPerPerson(from, to)
-        val holiDayBalance: BigDecimal = res.first().holiDayBalance
+        val holiDayBalance: BigDecimal = res.first().leaveDayBalance
         assertEquals(holiDayBalance.toString(), "153.6000000000")
     }
 
@@ -380,7 +380,7 @@ class AggregationServiceTest(
         assertEquals(BigDecimal("40.0"), result.workDays)
         assertEquals(BigDecimal("40.0"), result.workDays)
         assertEquals(80, result.event)
-        assertEquals(BigDecimal("40.0"), result.holiDayUsed)
+        assertEquals(BigDecimal("40.0"), result.leaveDayUsed)
     }
 
     @Test
