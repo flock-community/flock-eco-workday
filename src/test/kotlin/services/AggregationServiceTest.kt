@@ -237,7 +237,7 @@ class AggregationServiceTest(
     @Test
     fun `holiday report`() {
         dataHelper.createContractInternalData()
-        val res = aggregationService.holidayReport(2020)
+        val res = aggregationService.leaveDayReport(2020)
         assertEquals(res[0].contractHours, 192.toBigDecimal().setScale(10))
         assertEquals(res[2].contractHours, 160.toBigDecimal().setScale(10))
     }

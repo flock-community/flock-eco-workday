@@ -81,7 +81,7 @@ class AggregationController(
     @GetMapping("/leave-day-report", params = ["year"])
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
     fun leaveDayReportByYear(@RequestParam year: Int): List<AggregationLeaveDay> {
-        return aggregationService.holidayReport(year)
+        return aggregationService.leaveDayReport(year)
     }
 
     @GetMapping("/leave-day-report-me", params = ["year"])
