@@ -52,7 +52,7 @@ class AggregationService(
     private val sickDayService: SickDayService
 ) {
 
-    fun holidayReportMe(year: Int, person: Person): AggregationLeaveDay {
+    fun leaveDayReportMe(year: Int, person: Person): AggregationLeaveDay {
         val from = YearMonth.of(year, 1).atDay(1)
         val to = YearMonth.of(year, 12).atEndOfMonth()
         val period = FromToPeriod(from, to)

@@ -89,7 +89,7 @@ class AggregationController(
     fun leaveDayReportMeByYear(authentication: Authentication, @RequestParam year: Int): AggregationLeaveDay {
         val person = personService.findByUserCode(authentication.name)
             ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
-        return aggregationService.holidayReportMe(year, person)
+        return aggregationService.leaveDayReportMe(year, person)
     }
 
     @GetMapping("/client-hour-overview", params = ["year", "month"])
