@@ -25,13 +25,13 @@ const useStyles = makeStyles({
   },
 });
 
-export type HolidayReport = AggregationLeaveDay & {
+export type LeaveDayReport = AggregationLeaveDay & {
   total: number;
   available: number;
 };
 
 export function DashboardLeaveDayTable() {
-  const [state, setState] = useState<HolidayReport>();
+  const [state, setState] = useState<LeaveDayReport>();
 
   const classes = useStyles();
 
@@ -42,7 +42,7 @@ export function DashboardLeaveDayTable() {
       const total = res.contractHours + res.plusHours;
       const available = total - res.holidayHours;
 
-      const report: HolidayReport = {
+      const report: LeaveDayReport = {
         ...res,
         total,
         available,
