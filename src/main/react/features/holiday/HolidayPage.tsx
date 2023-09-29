@@ -1,11 +1,11 @@
 import React from "react";
-import { HolidayFeature } from "./HolidayFeature";
+import { LeaveDayFeature } from "./LeaveDayFeature";
 import PersonLayout from "../../components/layouts/PersonLayout";
 
 export default function HolidayPage() {
   return (
     <PersonLayout requireAuthority={"LeaveDayAuthority.ADMIN"}>
-      {(person) => <HolidayFeature person={person} />}
+      {(person) => <LeaveDayFeature person={person} />}
     </PersonLayout>
   );
 }

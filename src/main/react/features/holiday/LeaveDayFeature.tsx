@@ -7,11 +7,11 @@ import AddIcon from "@material-ui/icons/Add";
 import { Person } from "../../clients/PersonClient";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
-type HolidayFeatureProps = {
+type LeaveDayFeatureProps = {
   person: Person;
 };
 
-export function HolidayFeature({ person }: HolidayFeatureProps) {
+export function LeaveDayFeature({ person }: LeaveDayFeatureProps) {
   const [refresh, setRefresh] = useState(false);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<any>();

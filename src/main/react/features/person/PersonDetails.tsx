@@ -10,7 +10,7 @@ import { PersonDialog } from "./PersonDialog";
 import { ContractFeature } from "../contract/ContractFeature";
 import { WorkDayFeature } from "../workday/WorkDayFeature";
 import { AssignmentFeature } from "../assignments/AssignmentFeature";
-import { HolidayFeature } from "../holiday/HolidayFeature";
+import { LeaveDayFeature } from "../holiday/LeaveDayFeature";
 import { SickDayFeature } from "../sickday/SickDayFeature";
 import { ExpenseFeature } from "../expense/ExpenseFeature";
 import { usePerson } from "../../hooks/PersonHook";
@@ -83,7 +83,7 @@ export const PersonDetails = (props) => {
 
   const holidays = (
     <Grid item xs={12} sm={6}>
-      <HolidayFeature person={person} />
+      <LeaveDayFeature person={person} />
     </Grid>
   );
 
