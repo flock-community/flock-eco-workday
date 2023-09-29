@@ -25,7 +25,7 @@ const updateStatusSickDay = async (id, status) => {
   });
 };
 
-const updateStatusHoliDay = async (id, status) => {
+const updateStatusLeaveDay = async (id, status) => {
   const res = await LeaveDayClient.get(id);
   await LeaveDayClient.put(id, {
     ...res,
@@ -49,8 +49,8 @@ const updateStatusExpense = async (id, status) => {
 export const updateStatus = (status, item) => {
   if (item.type === "WORKDAY") return updateStatusWorkDay(item.id, status);
   if (item.type === "SICKDAY") return updateStatusSickDay(item.id, status);
-  if (item.type === "HOLIDAY") return updateStatusHoliDay(item.id, status);
-  if (item.type === "PLUSDAY") return updateStatusHoliDay(item.id, status);
+  if (item.type === "HOLIDAY") return updateStatusLeaveDay(item.id, status);
+  if (item.type === "PLUSDAY") return updateStatusLeaveDay(item.id, status);
   if (item.type === "EXPENSE") return updateStatusExpense(item.id, status);
   return Promise.reject("Invalid item type");
 };
