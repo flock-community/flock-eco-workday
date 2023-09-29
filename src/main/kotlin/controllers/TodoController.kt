@@ -40,7 +40,7 @@ class TodoController(
     fun getTodoAll(
         authentication: Authentication
     ) = mapOf<Authority, List<Todo>>(
-        LeaveDayAuthority.READ to findHolidayTodo(),
+        LeaveDayAuthority.READ to findLeaveDayTodo(),
         SickdayAuthority.READ to findSickDayTodo(),
         WorkDayAuthority.READ to findWorkDayTodo(),
         ExpenseAuthority.READ to findExpenseTodo()
@@ -49,7 +49,7 @@ class TodoController(
         .flatMap { it.value }
         .sortedWith(compareBy({ it.personName }, { it.type }))
 
-    fun findHolidayTodo() = leaveDayService
+    fun findLeaveDayTodo() = leaveDayService
         .findAllByStatus(Status.REQUESTED)
         .map { it.mapTodo() }
 
