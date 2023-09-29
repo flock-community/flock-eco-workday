@@ -52,8 +52,8 @@ export function DashboardHoursChart() {
         />
         <Bar
           stackId="days"
-          dataKey="holiDayUsed"
-          name="holiday hours"
+          dataKey="leaveDayUsed"
+          name="leave hours"
           fill="#42a5f5"
         />
         <Bar
