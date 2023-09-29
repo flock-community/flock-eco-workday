@@ -482,17 +482,17 @@ class AggregationService(
     }
 
     fun personNonProductiveHoursPerDay(person: Person, from: LocalDate, to: LocalDate): List<NonProductiveHours> {
-        val holidayData = leaveDayService.findAllActiveByPerson(from, to, person.uuid)
-        val holidays = holidayData.filter { it.type == LeaveDayType.HOLIDAY }
+        val leaveDayData = leaveDayService.findAllActiveByPerson(from, to, person.uuid)
+        val holidays = leaveDayData.filter { it.type == LeaveDayType.HOLIDAY }
             .map { it.hoursPerDayInPeriod(from, to) }
             .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
         val sickdays = sickDayService.findAllActiveByPerson(from, to, person.uuid)
             .map { it.hoursPerDayInPeriod(from, to) }
             .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
-        val paidParentalLeave = holidayData.filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
+        val paidParentalLeave = leaveDayData.filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
             .map { it.hoursPerDayInPeriod(from, to) }
             .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
-        val unpaidParentalLeave = holidayData.filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
+        val unpaidParentalLeave = leaveDayData.filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
             .map { it.hoursPerDayInPeriod(from, to) }
             .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
 
