@@ -42,9 +42,9 @@ class LeaveDayService(
     }
 
     /**
-     * Return all holidays that have at least one day in the date range specified by "from" and "to".
+     * Return all leave days that have at least one day in the date range specified by "from" and "to".
      *
-     * The result could include holidays that also contain days that do not fall within that range.
+     * The result could include leave days that also contain days that do not fall within that range.
      * You can filter these out using [community.flock.eco.workday.model.Day.hoursPerDayInPeriod].
      */
     fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): Iterable<LeaveDay> {
