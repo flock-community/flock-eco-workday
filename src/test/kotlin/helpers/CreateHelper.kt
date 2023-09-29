@@ -87,7 +87,7 @@ class CreateHelper(
         from = from,
         to = to,
         billable = billable,
-        holidayHours = holidayHours,
+        leaveHours = holidayHours,
     ).run {
         contractService.create(this)
     } ?: error("Cannot create internal contract")

@@ -26,7 +26,7 @@ data class ContractInternal(
     override val monthlySalary: Double,
     override val hoursPerWeek: Int,
 
-    val holidayHours: Int,
+    val leaveHours: Int,
     val billable: Boolean = true
 
 ) : Monthly, Contract(id, code, from, to, person, ContractType.INTERNAL) {
@@ -47,9 +47,9 @@ data class ContractInternal(
         .sum()
         .divide(yearMonth.lengthOfMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
 
-    fun totalHolidayHoursInPeriod(period: Period): BigDecimal = this
+    fun totalLeaveDayHoursInPeriod(period: Period): BigDecimal = this
         .toDateRangeInPeriod(period)
-        .sumOf { this.holidayHours }
+        .sumOf { this.leaveHours }
         .toBigDecimal()
         .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
 }

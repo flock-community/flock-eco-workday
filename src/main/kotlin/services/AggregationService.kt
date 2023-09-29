@@ -61,7 +61,7 @@ class AggregationService(
             name = person.getFullName(),
             contractHours = data.contract
                 .filterIsInstance(ContractInternal::class.java)
-                .map { it.totalHolidayHoursInPeriod(period) }
+                .map { it.totalLeaveDayHoursInPeriod(period) }
                 .sum(),
             plusHours = data.holiDay
                 .filter { it.type == LeaveDayType.PLUSDAY }
@@ -90,7 +90,7 @@ class AggregationService(
                     contractHours = all.contract
                         .filterIsInstance(ContractInternal::class.java)
                         .filter { it.person == person }
-                        .map { it.totalHolidayHoursInPeriod(period) }
+                        .map { it.totalLeaveDayHoursInPeriod(period) }
                         .sum(),
                     plusHours = all.holiDay
                         .filter { it.type == LeaveDayType.PLUSDAY }
