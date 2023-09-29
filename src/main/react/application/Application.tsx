@@ -103,7 +103,7 @@ export const Application = () => {
                   <Route path="/projects" exact component={ProjectFeature} />
                   <Route path="/assignments" exact component={AssignmentPage} />
                   <Route path="/workdays" exact component={WorkDayPage} />
-                  <Route path="/holidays" exact component={LeaveDayPage} />
+                  <Route path="/leave-days" exact component={LeaveDayPage} />
                   <Route path="/sickdays" component={SickDayPage} />
                   <Route path="/expenses" component={ExpensePage} />
                   <Route path="/exactonline" component={ExactonlineFeature} />
