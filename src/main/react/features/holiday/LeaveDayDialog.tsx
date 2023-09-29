@@ -28,19 +28,19 @@ enum Types {
   UNPAID_PARENTAL_LEAVE = "UNPAID_PARENTAL_LEAVE",
 }
 
-type HolidayDialogProps = {
+type LeaveDayDialogProps = {
   open: boolean;
   code?: string;
   personId?: string;
   onComplete?: (item?: any) => void;
 };
 
-export function HolidayDialog({
+export function LeaveDayDialog({
   open,
   code,
   personId,
   onComplete,
-}: HolidayDialogProps) {
+}: LeaveDayDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
 
   const [state, setState] = useState<any>();
@@ -191,7 +191,7 @@ export function HolidayDialog({
         onClose={handleDeleteClose}
         onConfirm={handleDelete}
       >
-        <Typography>Are you sure you want to remove this Holiday.</Typography>
+        <Typography>Are you sure you want to remove this Leave Day?</Typography>
       </ConfirmDialog>
     </>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Card, CardContent, CardHeader } from "@material-ui/core";
-import { HolidayDialog } from "./HolidayDialog";
+import { LeaveDayDialog } from "./LeaveDayDialog";
 import { HolidayList } from "./HolidayList";
 import { LeaveDayClient } from "../../clients/LeaveDayClient";
 import AddIcon from "@material-ui/icons/Add";
@@ -62,7 +62,7 @@ export function HolidayFeature({ person }: HolidayFeatureProps) {
           />
         </CardContent>
       </Card>
-      <HolidayDialog
+      <LeaveDayDialog
         open={open}
         code={value?.code}
         personId={person?.uuid}

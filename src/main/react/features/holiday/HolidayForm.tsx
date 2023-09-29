@@ -10,7 +10,7 @@ import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
 import dayjs from "dayjs";
 import DayjsUtils from "@date-io/dayjs";
-import {LEAVE_DAY_DIALOG_FORM_ID} from "./HolidayDialog";
+import {LEAVE_DAY_DIALOG_FORM_ID} from "./LeaveDayDialog";
 
 const now = dayjs();
 
