@@ -81,7 +81,7 @@ export const PersonDetails = (props) => {
     </Grid>
   );
 
-  const holidays = (
+  const leaveDays = (
     <Grid item xs={12} sm={6}>
       <LeaveDayFeature person={person} />
     </Grid>
@@ -114,7 +114,7 @@ export const PersonDetails = (props) => {
         {workDays}
         {contracts}
         {assignments}
-        {holidays}
+        {leaveDays}
         {sickdays}
       </Grid>
 
