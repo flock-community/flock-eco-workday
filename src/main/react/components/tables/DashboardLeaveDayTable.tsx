@@ -30,7 +30,7 @@ export type HolidayReport = AggregationLeaveDay & {
   available: number;
 };
 
-export function DashboardHolidayTable() {
+export function DashboardLeaveDayTable() {
   const [state, setState] = useState<HolidayReport>();
 
   const classes = useStyles();
@@ -38,7 +38,7 @@ export function DashboardHolidayTable() {
   useEffect(() => {
     const thisYear = new Date().getFullYear();
 
-    AggregationClient.holidayReportMe(thisYear).then((res) => {
+    AggregationClient.leaveDayReportMe(thisYear).then((res) => {
       const total = res.contractHours + res.plusHours;
       const available = total - res.holidayHours;
 
