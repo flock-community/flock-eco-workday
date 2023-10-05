@@ -4,6 +4,7 @@ import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.model.LeaveDayType
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.LeaveDayService
+import community.flock.eco.workday.utils.DateUtils.isWorkingDay
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -25,16 +26,23 @@ class LoadLeaveDayData(
                 createPlusDays(it)
             }
         }
+    }
 
+    private fun getRandomDate(index: Int, onlyWorkDay: Boolean = false, offsetInDays: Long = 0): LocalDate {
+        val random = (0..200).random().toLong()
+        var date: LocalDate = now.plusYears(index.toLong()).plusDays(random + offsetInDays)
+        while (onlyWorkDay && !date.isWorkingDay()) {
+            date = now.plusYears(index.toLong()).plusDays(random)
+        }
+        return date
     }
 
     private fun createHolidays(it: Person) {
         for (i in 0 until 10) {
-            val random = (0..200).random().toLong()
             LeaveDayForm(
                     description = "Test holiday ${it.firstname}",
-                    from = now.plusYears(i.toLong()).plusDays(random),
-                    to = now.plusYears(i.toLong()).plusDays(random + 5),
+                    from = getRandomDate(i),
+                    to = getRandomDate(i, false, 5),
                     days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
                     hours = 48.0,
                     personId = it.uuid
@@ -44,9 +52,7 @@ class LoadLeaveDayData(
 
     private fun createPlusDays(it: Person) {
         for (i in 0 until 10 step 3) {
-            val random = (0..200).random().toLong()
-            val date = now.plusYears(i.toLong()).plusDays(random)
-
+            val date = getRandomDate(i, true)
             LeaveDayForm(
                     type = LeaveDayType.PLUSDAY,
                     description = "Plus day ${it.firstname}",
