@@ -24,6 +24,8 @@ class LoadLeaveDayData(
             loadPersonData.data.forEach {
                 createHolidays(it)
                 createPlusDays(it)
+                createPaidParentalLeave(it)
+                createUnpaidParentalLeave(it)
             }
         }
     }
@@ -61,6 +63,36 @@ class LoadLeaveDayData(
                     days = listOf(8.0),
                     hours = 8.0,
                     personId = it.uuid
+            ).create()
+        }
+    }
+
+    private fun createPaidParentalLeave(it: Person) {
+        for (i in 0 until 10 step 3) {
+            val date = getRandomDate(i, true)
+            LeaveDayForm(
+                type = LeaveDayType.PAID_PARENTAL_LEAVE,
+                description = "Paid parental leave for ${it.firstname}",
+                from = date,
+                to = date,
+                days = listOf(4.0),
+                hours = 4.0,
+                personId = it.uuid
+            ).create()
+        }
+    }
+
+    private fun createUnpaidParentalLeave(it: Person) {
+        for (i in 0 until 10 step 3) {
+            val date = getRandomDate(i, true)
+            LeaveDayForm(
+                type = LeaveDayType.PAID_PARENTAL_LEAVE,
+                description = "Unpaid parental leave for ${it.firstname}",
+                from = date,
+                to = date,
+                days = listOf(8.0),
+                hours = 8.0,
+                personId = it.uuid
             ).create()
         }
     }
