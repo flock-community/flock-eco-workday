@@ -10,7 +10,7 @@ import java.time.LocalDate
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
-class LoadHolidayData(
+class LoadLeaveDayData(
         private val loadData: LoadData,
         loadPersonData: LoadPersonData,
         private val leaveDayService: LeaveDayService
