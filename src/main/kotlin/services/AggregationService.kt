@@ -588,16 +588,12 @@ private fun Assignment.revenuePerDay(): BigDecimal = (this.hourlyRate * this.hou
 private fun Iterable<LocalDate>.filterWorkingDay() = this.filter { it.isWorkingDay() }
 
 fun countWorkDaysInPeriod(from: LocalDate, to: LocalDate): Int {
-    val diff = if (from.isEqual(to)) 1 else ChronoUnit.DAYS.between(from, to);
+    val diff = ChronoUnit.DAYS.between(from, to);
     return (0..diff)
         .map { from.plusDays(it) }
         .filterWorkingDay()
         .count()
 }
-
-
-
-
 
 private fun <T : Period> Iterable<T>.mapWorkingDay(from: LocalDate, to: LocalDate?) = dateRange(from, to)
     .filterWorkingDay()
