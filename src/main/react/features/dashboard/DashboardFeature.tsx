@@ -59,64 +59,64 @@ export function DashboardFeature() {
             </CardContent>
           </Card>
         </Grid>
-        {/*<Grid item xs={12} md={12}>*/}
-        {/*  <Card>*/}
-        {/*    <CardHeader title="Actual cost revenue" />*/}
-        {/*    <CardContent>*/}
-        {/*      <div style={{ height: CHART_HEIGHT * 2 }}>*/}
-        {/*        <TotalPerMonthChart year={year} />*/}
-        {/*      </div>*/}
-        {/*    </CardContent>*/}
-        {/*  </Card>*/}
-        {/*</Grid>*/}
-        {/*<Grid item xs={12} md={12}>*/}
-        {/*  <Card>*/}
-        {/*    <CardHeader title="Average hours per day" />*/}
-        {/*    <CardContent>*/}
-        {/*      <div style={{ height: CHART_HEIGHT * 2 }}>*/}
-        {/*        <AverageHoursPerDayChart year={year} />*/}
-        {/*      </div>*/}
-        {/*    </CardContent>*/}
-        {/*  </Card>*/}
-        {/*</Grid>*/}
-        {/*<Grid item xs={12} md={12}>*/}
-        {/*  <Card>*/}
-        {/*    <CardHeader title="Internal overview" />*/}
-        {/*    <CardContent>*/}
-        {/*      <div style={{ height: CHART_HEIGHT * 2 }}>*/}
-        {/*        <InternalOverviewChart year={year} />*/}
-        {/*      </div>*/}
-        {/*    </CardContent>*/}
-        {/*  </Card>*/}
-        {/*</Grid>*/}
-        {/*<Grid item xs={12} md={12}>*/}
-        {/*  <Card>*/}
-        {/*    <CardHeader title="External overview" />*/}
-        {/*    <CardContent>*/}
-        {/*      <div style={{ height: CHART_HEIGHT * 2 }}>*/}
-        {/*        <ExternalOverviewChart year={year} />*/}
-        {/*      </div>*/}
-        {/*    </CardContent>*/}
-        {/*  </Card>*/}
-        {/*</Grid>*/}
-        {/*<Grid item xs={12} md={12}>*/}
-        {/*  <Card>*/}
-        {/*    <CardHeader title="Management overview" />*/}
-        {/*    <CardContent>*/}
-        {/*      <div style={{ height: CHART_HEIGHT * 2 }}>*/}
-        {/*        <ManagementOverviewChart year={year} />*/}
-        {/*      </div>*/}
-        {/*    </CardContent>*/}
-        {/*  </Card>*/}
-        {/*</Grid>*/}
-        {/*<Grid item xs={12} md={12}>*/}
-        {/*  <Card>*/}
-        {/*    <CardHeader title="Gross revenue per client" />*/}
-        {/*    <CardContent>*/}
-        {/*      <RevenuePerClientTable year={year} />*/}
-        {/*    </CardContent>*/}
-        {/*  </Card>*/}
-        {/*</Grid>*/}
+        <Grid item xs={12} md={12}>
+          <Card>
+            <CardHeader title="Actual cost revenue" />
+            <CardContent>
+              <div style={{ height: CHART_HEIGHT * 2 }}>
+                <TotalPerMonthChart year={year} />
+              </div>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <Card>
+            <CardHeader title="Average hours per day" />
+            <CardContent>
+              <div style={{ height: CHART_HEIGHT * 2 }}>
+                <AverageHoursPerDayChart year={year} />
+              </div>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <Card>
+            <CardHeader title="Internal overview" />
+            <CardContent>
+              <div style={{ height: CHART_HEIGHT * 2 }}>
+                <InternalOverviewChart year={year} />
+              </div>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <Card>
+            <CardHeader title="External overview" />
+            <CardContent>
+              <div style={{ height: CHART_HEIGHT * 2 }}>
+                <ExternalOverviewChart year={year} />
+              </div>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <Card>
+            <CardHeader title="Management overview" />
+            <CardContent>
+              <div style={{ height: CHART_HEIGHT * 2 }}>
+                <ManagementOverviewChart year={year} />
+              </div>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <Card>
+            <CardHeader title="Gross revenue per client" />
+            <CardContent>
+              <RevenuePerClientTable year={year} />
+            </CardContent>
+          </Card>
+        </Grid>
         <Grid item xs={12}>
           <Card>
             <CardHeader title="Holiday" />
@@ -125,22 +125,22 @@ export function DashboardFeature() {
             </CardContent>
           </Card>
         </Grid>
-      {/*  <Grid item xs={12}>*/}
-      {/*    <Card>*/}
-      {/*      <CardHeader title="Sickday" />*/}
-      {/*      <CardContent>*/}
-      {/*        <SickdayPerPersonChart year={year} />*/}
-      {/*      </CardContent>*/}
-      {/*    </Card>*/}
-      {/*  </Grid>*/}
-      {/*  <Grid item xs={12}>*/}
-      {/*    <Card>*/}
-      {/*      <CardHeader title="Gross margin" />*/}
-      {/*      <CardContent>*/}
-      {/*        <GrossMarginTable year={year} />*/}
-      {/*      </CardContent>*/}
-      {/*    </Card>*/}
-      {/*  </Grid>*/}
+        <Grid item xs={12}>
+          <Card>
+            <CardHeader title="Sickday" />
+            <CardContent>
+              <SickdayPerPersonChart year={year} />
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CardHeader title="Gross margin" />
+            <CardContent>
+              <GrossMarginTable year={year} />
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
     </div>
   );
