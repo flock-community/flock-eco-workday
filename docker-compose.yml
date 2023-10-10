@@ -4,3 +4,7 @@ services:
     image: gcr.io/flock-eco/flock-eco-workday-develop:latest
     ports:
       - "8080:8080"
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/application_default_credentials.json
+    volumes:
+      - $HOME/.config/gcloud/application_default_credentials.json:/tmp/keys/application_default_credentials.json:ro
