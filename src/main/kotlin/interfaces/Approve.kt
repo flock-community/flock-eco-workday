@@ -22,15 +22,15 @@ fun Approve.applyAllowedToUpdate(status: Status, isAdmin: Boolean) {
 
 object StatusTransition {
     private val validStatusTransitions = mapOf(
-            Status.REQUESTED to arrayOf(Status.APPROVED, Status.REJECTED),
-            Status.APPROVED to arrayOf(Status.REQUESTED, Status.DONE),
-            Status.REJECTED to arrayOf(Status.REQUESTED)
-    );
+        Status.REQUESTED to arrayOf(Status.APPROVED, Status.REJECTED),
+        Status.APPROVED to arrayOf(Status.REQUESTED, Status.DONE),
+        Status.REJECTED to arrayOf(Status.REQUESTED)
+    )
 
     fun check(fromStatus: Status, toStatus: Status): Boolean =
-            if (validStatusTransitions.containsKey(fromStatus)) {
-                validStatusTransitions[fromStatus]!!.contains(toStatus);
-            } else {
-                false;
-            }
+        if (validStatusTransitions.containsKey(fromStatus)) {
+            validStatusTransitions[fromStatus]!!.contains(toStatus)
+        } else {
+            false
+        }
 }

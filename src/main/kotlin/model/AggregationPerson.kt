@@ -1,6 +1,6 @@
 package community.flock.eco.workday.model
 
-import community.flock.eco.workday.graphql.AggregationPersonClientRevenueOverview
+import community.flock.eco.workday.graphql.kotlin.AggregationPersonClientRevenueOverview
 import java.math.BigDecimal
 import java.util.*
 

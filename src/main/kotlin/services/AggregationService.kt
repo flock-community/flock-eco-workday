@@ -1,13 +1,13 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.ApplicationConstants
-import community.flock.eco.workday.graphql.AggregationClientPersonAssignmentItem
-import community.flock.eco.workday.graphql.AggregationClientPersonAssignmentOverview
-import community.flock.eco.workday.graphql.AggregationClientPersonItem
-import community.flock.eco.workday.graphql.AggregationClientPersonOverview
-import community.flock.eco.workday.graphql.AggregationIdentifier
-import community.flock.eco.workday.graphql.AggregationPersonClientRevenueItem
-import community.flock.eco.workday.graphql.AggregationPersonClientRevenueOverview
+import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonAssignmentItem
+import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonAssignmentOverview
+import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonItem
+import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonOverview
+import community.flock.eco.workday.graphql.kotlin.AggregationIdentifier
+import community.flock.eco.workday.graphql.kotlin.AggregationPersonClientRevenueItem
+import community.flock.eco.workday.graphql.kotlin.AggregationPersonClientRevenueOverview
 import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
