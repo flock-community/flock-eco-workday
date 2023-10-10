@@ -1,7 +1,8 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {
-  FormControl, FormControlProps,
+  FormControl,
+  FormControlProps,
   InputLabel,
   MenuItem,
   Select,
@@ -13,9 +14,23 @@ type ShirtSizeSelectorProps = FormControlProps & {
   label?: string;
 };
 
-export function ShirtSizeSelector({ onChange, label, selectedItem }: ShirtSizeSelectorProps) {
-  const [ selected, setSelected ] = useState(selectedItem);
-  const shirtSizes: string[] = [ "XXXS", "XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+export function ShirtSizeSelector({
+  onChange,
+  label,
+  selectedItem,
+}: ShirtSizeSelectorProps) {
+  const [selected, setSelected] = useState(selectedItem);
+  const shirtSizes: string[] = [
+    "XXXS",
+    "XXS",
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "XXL",
+    "XXXL",
+  ];
 
   function handleChange(event) {
     // eslint-disable-next-line no-shadow
@@ -41,16 +56,16 @@ export function ShirtSizeSelector({ onChange, label, selectedItem }: ShirtSizeSe
       </Select>
     </FormControl>
   );
-  return ( <div>{selectInput}</div> );
+  return <div>{selectInput}</div>;
 }
 
 ShirtSizeSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
-  selectedItem: PropTypes.string
+  selectedItem: PropTypes.string,
 };
 
 ShirtSizeSelector.defaultProps = {
   selectedItem: "",
-  label: "Select shirt size"
-}
+  label: "Select shirt size",
+};

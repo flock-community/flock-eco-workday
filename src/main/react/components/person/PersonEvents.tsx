@@ -1,10 +1,22 @@
-import React, {useEffect, useState} from "react";
-import {Card, CardContent, CardHeader, TableBody, TableCell, TableContainer, TableHead,} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import TableRow from "@material-ui/core/TableRow";
 import Table from "@material-ui/core/Table";
 import dayjs from "dayjs";
-import {PersonEvent, PersonEventClient, PersonEventType,} from "../../clients/PersonEventClient";
+import {
+  PersonEvent,
+  PersonEventClient,
+  PersonEventType,
+} from "../../clients/PersonEventClient";
 
 type PersonEventsProps = {
   withinNWeeks: number;
