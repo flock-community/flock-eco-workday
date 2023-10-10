@@ -29,7 +29,6 @@ const useStyles = makeStyles({
   },
   navBar: {
     position: "sticky",
-    top: 0,
   },
 });
 
