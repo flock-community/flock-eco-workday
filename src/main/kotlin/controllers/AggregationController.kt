@@ -1,8 +1,8 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
-import community.flock.eco.workday.graphql.AggregationClientPersonAssignmentOverview
-import community.flock.eco.workday.graphql.AggregationClientPersonOverview
+import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonAssignmentOverview
+import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonOverview
 import community.flock.eco.workday.model.AggregationClient
 import community.flock.eco.workday.model.AggregationHoliday
 import community.flock.eco.workday.model.AggregationMonth

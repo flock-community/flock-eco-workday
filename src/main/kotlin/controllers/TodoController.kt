@@ -5,8 +5,8 @@ import community.flock.eco.workday.authorities.ExpenseAuthority
 import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.authorities.WorkDayAuthority
-import community.flock.eco.workday.graphql.Todo
-import community.flock.eco.workday.graphql.TodoType
+import community.flock.eco.workday.graphql.kotlin.Todo
+import community.flock.eco.workday.graphql.kotlin.TodoType
 import community.flock.eco.workday.model.CostExpense
 import community.flock.eco.workday.model.Expense
 import community.flock.eco.workday.model.HoliDay

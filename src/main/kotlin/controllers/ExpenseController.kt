@@ -2,8 +2,8 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.ExpenseAuthority
-import community.flock.eco.workday.graphql.CostExpenseInput
-import community.flock.eco.workday.graphql.TravelExpenseInput
+import community.flock.eco.workday.graphql.kotlin.CostExpenseInput
+import community.flock.eco.workday.graphql.kotlin.TravelExpenseInput
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.mappers.CostExpenseMapper
 import community.flock.eco.workday.mappers.TravelExpenseMapper

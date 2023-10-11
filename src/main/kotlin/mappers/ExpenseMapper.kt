@@ -1,8 +1,8 @@
 package community.flock.eco.workday.mappers
 
-import community.flock.eco.workday.graphql.CostExpenseInput
-import community.flock.eco.workday.graphql.TravelExpenseInput
-import community.flock.eco.workday.graphql.UUID
+import community.flock.eco.workday.graphql.kotlin.CostExpenseInput
+import community.flock.eco.workday.graphql.kotlin.TravelExpenseInput
+import community.flock.eco.workday.graphql.kotlin.UUID
 import community.flock.eco.workday.model.CostExpense
 import community.flock.eco.workday.model.Document
 import community.flock.eco.workday.model.TravelExpense
