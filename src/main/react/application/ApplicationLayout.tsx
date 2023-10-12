@@ -109,7 +109,7 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
               open={state.anchorEl != null}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleClose} disabled>Profile</MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>
