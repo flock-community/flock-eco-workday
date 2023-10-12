@@ -84,7 +84,7 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
             component={RouterLink}
             to="/"
           >
-            Flock.
+            Flock. Workday
           </Link>
 
           <div>
