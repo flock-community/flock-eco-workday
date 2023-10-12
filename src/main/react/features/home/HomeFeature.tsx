@@ -7,6 +7,7 @@ import {DashboardLeaveDayTable} from "../../components/tables/DashboardLeaveDayT
 import ContractsEnding from "../../components/contracts/ContractsEnding";
 import PersonEvents from "../../components/person/PersonEvents";
 import {DashboardLeaveDayChart} from "../../components/charts/DashboardLeaveDayChart";
+import {highLightClass} from "../../theme/theme-light";
 
 export function HomeFeature() {
   const [ user ] = useUserMe();
@@ -19,12 +20,13 @@ export function HomeFeature() {
   const showPersonEvents =
     user?.authorities?.includes("PersonAuthority.READ") ?? false;
 
+  const classes = highLightClass();
+
   return (
     <Container>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Typography variant="h2">Welcome in workday</Typography>
-          <Typography>You are logged in as {user && user.name}</Typography>
+          <Typography variant="h2">Hi, <span className={classes.highlight}>{user && user.name}</span>!</Typography>
         </Grid>
         {!hasAccess && (<Grid item xs={12}>
             <Typography>No roles are assigned to your account.</Typography>
