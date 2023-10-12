@@ -53,17 +53,3 @@ export const highLightClass = makeStyles((theme) => ({
     },
   },
 }));
-
-export const layoutClasses = makeStyles(() => ({
-  flow: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    "& > *": {
-      marginBlock: 0,
-    },
-    "& > * + *": {
-      marginBlockStart: "1rem",
-    },
-  },
-}));
