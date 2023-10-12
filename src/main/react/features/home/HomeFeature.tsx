@@ -24,13 +24,14 @@ export function HomeFeature() {
 
   return (
     <Container>
-      <Grid container spacing={2}>
+      <Grid container spacing={6} style={{ marginTop: '24px' }}>
         <Grid item xs={12}>
           <Typography variant="h2">Hi, <span className={classes.highlight}>{user && user.name}</span>!</Typography>
         </Grid>
-        {!hasAccess && (<Grid item xs={12}>
+        {!hasAccess && (
+          <Grid item xs={12}>
             <Typography>No roles are assigned to your account.</Typography>
-        </Grid>
+          </Grid>
         )}
         {showContractsEnding && (
           <Grid item xs={12}>
