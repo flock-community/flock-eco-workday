@@ -22,6 +22,7 @@ type ExpenseDialogProps = {
   personId?: string;
   personFullName: string;
   onComplete?: (item?: any) => void;
+  expenseType?: string
 };
 
 export function ExpenseDialog({
@@ -30,6 +31,7 @@ export function ExpenseDialog({
   personId,
   personFullName,
   onComplete,
+  expenseType
 }: ExpenseDialogProps) {
   const [type, setType] = useState(ExpenseType.COST);
   const [state, setState] = useState(null);
@@ -37,7 +39,7 @@ export function ExpenseDialog({
 
   useEffect(() => {
     setState(null);
-    setType(ExpenseType.COST);
+    setType(expenseType ?? ExpenseType.COST);
     if (id) {
       ExpenseClient.get(id).then((res) => {
         setState(res);
