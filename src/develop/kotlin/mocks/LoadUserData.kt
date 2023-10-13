@@ -46,8 +46,8 @@ class LoadUserData(
 
     private final fun create(user: mocks.User) = UserAccountPasswordForm(
             name = user.firstName,
-            email = "${user.firstName.toLowerCase()}@sesam.straat",
-            password = user.firstName.toLowerCase(),
+            email = "${user.firstName.lowercase()}@sesam.straat",
+            password = user.firstName.lowercase(),
             authorities = user.authorities.map { it.toName() }.toSet()
     )
             .save()
