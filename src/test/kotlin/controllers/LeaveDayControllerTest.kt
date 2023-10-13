@@ -44,7 +44,7 @@ class LeaveDayControllerTest(
     @Autowired private val createHelper: CreateHelper,
     @Autowired private val leaveDayService: LeaveDayService
 ) {
-    private val baseUrl: String = "/api/holidays"
+    private val baseUrl: String = "/api/leave-days"
 
     val adminAuthorities = setOf(LeaveDayAuthority.READ, LeaveDayAuthority.WRITE, LeaveDayAuthority.ADMIN)
     val userAuthorities = setOf(LeaveDayAuthority.READ, LeaveDayAuthority.WRITE)
