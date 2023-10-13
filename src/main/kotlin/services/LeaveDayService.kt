@@ -7,8 +7,7 @@ import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.LeaveDay
 import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.repository.HolidayRepository
-import community.flock.eco.workday.services.email.HolidayEmailService
+import community.flock.eco.workday.services.email.LeaveDayEmailService
 import community.flock.eco.workday.repository.LeaveDayRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -22,7 +21,7 @@ class LeaveDayService(
     private val leaveDayRepository: LeaveDayRepository,
     private val personService: PersonService,
     private val entityManager: EntityManager,
-    private val emailService: HolidayEmailService
+    private val emailService: LeaveDayEmailService
 ) {
 
     fun findByCode(code: String) = leaveDayRepository.findByCode(code).toNullable()
