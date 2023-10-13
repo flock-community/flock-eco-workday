@@ -2,12 +2,13 @@ import React from "react";
 import Typography from "@material-ui/core/Typography";
 import {useUserMe} from "../../hooks/UserMeHook";
 import {DashboardHoursChart} from "../../components/charts/DashboardHoursChart";
-import {Card, CardContent, CardHeader, Container, Grid,} from "@material-ui/core";
+import {Box, Card, CardContent, CardHeader, Container, Grid, Paper,} from "@material-ui/core";
 import {DashboardHolidayTable} from "../../components/tables/DashboardHolidayTable";
 import ContractsEnding from "../../components/contracts/ContractsEnding";
 import PersonEvents from "../../components/person/PersonEvents";
 import {DashboardHolidayChart} from "../../components/charts/DashboardHolidayChart";
 import {highLightClass} from "../../theme/theme-light";
+import {QuickLinks} from "../../components/quick-links/QuickLinks";
 
 export function HomeFeature() {
   const user = useUserMe();
@@ -26,7 +27,9 @@ export function HomeFeature() {
     <Container>
       <Grid container spacing={6} style={{ marginTop: '24px' }}>
         <Grid item xs={12}>
-          <Typography variant="h2">Hi, <span className={classes.highlight}>{user && user.name}</span>!</Typography>
+          <Box style={{ paddingInline: "16px" }}>
+            <Typography variant="h2">Hi, <span className={classes.highlight}>{user && user.name}</span>!</Typography>
+          </Box>
         </Grid>
         {!hasAccess && (
           <Grid item xs={12}>
@@ -43,6 +46,14 @@ export function HomeFeature() {
             <PersonEvents withinNWeeks={6}/>
           </Grid>
         )}
+        {hasAccess && (
+          <Grid item xs={12}>
+            <QuickLinks />
+          </Grid>
+        )}
+
+
+
         {hasAccess && (
           <Grid item xs={12}>
             <Card style={{overflow: "visible"}}>
