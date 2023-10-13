@@ -5,11 +5,13 @@ import AddIcon from "@material-ui/icons/Add";
 import {usePerson} from "../../hooks/PersonHook";
 import {WorkDayDialog} from "../../features/workday/WorkDayDialog";
 import {addError} from "../../hooks/ErrorHook";
+import {HolidayDialog} from "../../features/holiday/HolidayDialog";
 
 export function QuickLinks() {
     const [person, setPerson] = usePerson();
     const [value, setValue] = useState<any>()
     const [workDayOpen, setWorkDayOpen] = useState(false);
+    const [LeaveDayOpen, setLeaveDayOpen] = useState(false);
 
     const openAddWorkDay = () => {
         if (person === null) {
@@ -25,7 +27,15 @@ export function QuickLinks() {
         setValue(undefined);
     }
 
-    const openAddLeaveDay = () => {}
+    const openAddLeaveDay = () => {
+        setValue(undefined);
+        setLeaveDayOpen(true);
+    }
+
+    const handleCompleteLeaveDayDialog = () => {
+        setLeaveDayOpen(false);
+        setValue(undefined);
+    }
 
     const openAddTravelExpense = () => {}
 
@@ -50,6 +60,12 @@ export function QuickLinks() {
             open={workDayOpen}
             code={value?.code}
             onComplete={handleCLoseWorkdayDialog}
+        />
+        <HolidayDialog
+            open={LeaveDayOpen}
+            code={value?.code}
+            personId={person?.uuid}
+            onComplete={handleCompleteLeaveDayDialog}
         />
     </>
     );
