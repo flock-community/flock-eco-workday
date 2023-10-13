@@ -6,12 +6,16 @@ import {usePerson} from "../../hooks/PersonHook";
 import {WorkDayDialog} from "../../features/workday/WorkDayDialog";
 import {addError} from "../../hooks/ErrorHook";
 import {HolidayDialog} from "../../features/holiday/HolidayDialog";
+import {ExpenseDialog} from "../../features/expense/ExpenseDialog";
+import {ExpenseType} from "../../features/expense/ExpenseType";
 
 export function QuickLinks() {
     const [person, setPerson] = usePerson();
     const [value, setValue] = useState<any>()
     const [workDayOpen, setWorkDayOpen] = useState(false);
-    const [LeaveDayOpen, setLeaveDayOpen] = useState(false);
+    const [leaveDayOpen, setLeaveDayOpen] = useState(false);
+    const [travelExpenseOpen, setTravelExpenseOpen] = useState(false);
+    const [costExpenseOpen, setCostExpenseOpen] = useState(false);
 
     const openAddWorkDay = () => {
         if (person === null) {
@@ -37,9 +41,23 @@ export function QuickLinks() {
         setValue(undefined);
     }
 
-    const openAddTravelExpense = () => {}
+    const openAddTravelExpense = () => {
+        setValue(undefined);
+        setTravelExpenseOpen(true);
+    }
 
-    const openAddCostExpense = () => {}
+    const handleCompleteTravelExpenseDialog = () => {
+        setValue(undefined);
+        setTravelExpenseOpen(false);
+    }
+
+    const openAddCostExpense = () => {
+        setValue(undefined);
+        setCostExpenseOpen(true);}
+
+    const handleCompleteCostExpenseDialog = () => {
+        setValue(undefined);
+        setCostExpenseOpen(false);}
 
     return (
     <>
@@ -62,10 +80,26 @@ export function QuickLinks() {
             onComplete={handleCLoseWorkdayDialog}
         />
         <HolidayDialog
-            open={LeaveDayOpen}
+            open={leaveDayOpen}
             code={value?.code}
             personId={person?.uuid}
             onComplete={handleCompleteLeaveDayDialog}
+        />
+        <ExpenseDialog
+            open={travelExpenseOpen}
+            id={undefined}
+            personId={person?.uuid}
+            personFullName={person?.fullName ?? ''}
+            onComplete={handleCompleteTravelExpenseDialog}
+            expenseType={ExpenseType.TRAVEL}
+        />
+        <ExpenseDialog
+            open={costExpenseOpen}
+            id={undefined}
+            personId={person?.uuid}
+            personFullName={person?.fullName ?? ''}
+            onComplete={handleCompleteCostExpenseDialog}
+            expenseType={ExpenseType.COST}
         />
     </>
     );
