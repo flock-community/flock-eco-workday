@@ -558,7 +558,7 @@ class AggregationService(
 
     fun netRevenueFactor(from: LocalDate, to: LocalDate): BigDecimal {
         val totalOffDays = listOf(
-            applicationConstants.averageLeaveDays,
+            applicationConstants.averageHoliDays,
             applicationConstants.averageSickDays,
             applicationConstants.averagePublicDays,
             applicationConstants.averageTrainingDays

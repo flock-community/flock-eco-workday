@@ -12,8 +12,8 @@ class ApplicationConstants {
     @Value("\${workday.average_training_days}")
     lateinit var averageTrainingDays: String
 
-    @Value("\${workday.average_leave_days}")
-    lateinit var averageLeaveDays: String
+    @Value("\${workday.average_holi_days}")
+    lateinit var averageHoliDays: String
 
     @Value("\${workday.average_public_days}")
     lateinit var averagePublicDays: String
