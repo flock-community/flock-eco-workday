@@ -4,17 +4,14 @@ import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.WorkDayForm
-import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.model.WorkDay
-import community.flock.eco.workday.model.WorkDaySheet
+import community.flock.eco.workday.model.*
 import community.flock.eco.workday.repository.WorkDayRepository
+import community.flock.eco.workday.services.email.WorkdayEmailService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
-import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 import javax.persistence.EntityManager
@@ -24,7 +21,7 @@ class WorkDayService(
     private val workDayRepository: WorkDayRepository,
     private val assignmentService: AssignmentService,
     private val entityManager: EntityManager,
-    private val mailjetService: MailjetService,
+    private val emailService: WorkdayEmailService,
     @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String
 ) {
 
@@ -68,16 +65,23 @@ class WorkDayService(
         .validate()
         .consume()
         .save()
-
-    fun update(workDayCode: String, form: WorkDayForm): WorkDay = workDayRepository
-        .findByCode(workDayCode)
-        .toNullable()
-        .run {
-            form
-                .validate()
-                .consume(this)
-                .save()
+        .also {
+            emailService.sendNotification(it)
         }
+
+    fun update(workDayCode: String, form: WorkDayForm): WorkDay {
+        val currentWorkday = workDayRepository.findByCode(workDayCode).toNullable()
+        return currentWorkday
+            .run {
+                form
+                    .validate()
+                    .consume(this)
+                    .save()
+            }
+            .also {
+                emailService.sendUpdate(currentWorkday!!, it)
+            }
+    }
 
     fun uploadSheet(byteArray: ByteArray): UUID {
         return UUID.randomUUID()
@@ -143,13 +147,7 @@ class WorkDayService(
         )
     }
 
-    private fun WorkDay.save() = workDayRepository
-        .save(this)
-        .also {
-            if (status == Status.REQUESTED) {
-                mailjetService.sendUpdate(assignment.person, YearMonth.from(from))
-            }
-        }
+    private fun WorkDay.save() = workDayRepository.save(this)
 
     companion object {
         val storage = StorageOptions.getDefaultInstance().service
