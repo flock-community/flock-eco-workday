@@ -1,9 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: db.changelog-021-rename-holiday_hours-to-leave_hours
-      author: jverhaar
-      changes:
-        - renameColumn:
-            newColumnName: leave_hours
-            oldColumnName: holiday_hours
-            tableName: contract_internal
