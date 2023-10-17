@@ -13,8 +13,10 @@ data class AggregationPerson(
     val assignment: Int,
     val event: Int,
     val total: Int,
-    val holiDayUsed: BigDecimal,
-    val holiDayBalance: BigDecimal,
+    val leaveDayUsed: BigDecimal,
+    val leaveDayBalance: BigDecimal,
+    val paidParentalLeaveUsed: BigDecimal,
+    val unpaidParentalLeaveUsed: BigDecimal,
     val revenue: AggregationPersonClientRevenueOverview? = null,
     val cost: BigDecimal? = null
 )

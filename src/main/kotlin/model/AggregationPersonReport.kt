@@ -11,12 +11,12 @@ data class AggregationPersonReport(
 
 data class AggregationPersonReportMonth(
     val name: String,
-    val actualTotalHours: AggregationDayly
+    val actualTotalHours: AggregationDaily
 )
 
-data class AggregationDayly(
+data class AggregationDaily(
     val workDay: BigDecimal,
-    val holiDay: BigDecimal,
+    val leaveDay: BigDecimal,
     val sickDay: BigDecimal,
     val eventDay: BigDecimal
 )

@@ -13,7 +13,7 @@ import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
 import community.flock.eco.workday.interfaces.inRange
 import community.flock.eco.workday.model.AggregationClient
-import community.flock.eco.workday.model.AggregationHoliday
+import community.flock.eco.workday.model.AggregationLeaveDay
 import community.flock.eco.workday.model.AggregationMonth
 import community.flock.eco.workday.model.AggregationPerson
 import community.flock.eco.workday.model.Assignment
@@ -21,7 +21,7 @@ import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
 import community.flock.eco.workday.model.Day
-import community.flock.eco.workday.model.HolidayType
+import community.flock.eco.workday.model.LeaveDayType
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.model.sumHoursWithinAPeriod
@@ -38,7 +38,6 @@ import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
-import kotlin.streams.toList
 import community.flock.eco.workday.model.ContractService as ContractServiceModel
 
 @Service
@@ -49,51 +48,64 @@ class AggregationService(
     private val dataService: DataService,
     private val applicationConstants: ApplicationConstants,
     private val workDayService: WorkDayService,
-    private val holiDayService: HoliDayService,
+    private val leaveDayService: LeaveDayService,
     private val sickDayService: SickDayService
 ) {
 
-    fun holidayReportMe(year: Int, person: Person): AggregationHoliday {
+    fun leaveDayReportMe(year: Int, person: Person): AggregationLeaveDay {
         val from = YearMonth.of(year, 1).atDay(1)
         val to = YearMonth.of(year, 12).atEndOfMonth()
         val period = FromToPeriod(from, to)
         val data = dataService.findAllData(from, to, person.uuid)
-        return AggregationHoliday(
+        return AggregationLeaveDay(
             name = person.getFullName(),
             contractHours = data.contract
                 .filterIsInstance(ContractInternal::class.java)
-                .map { it.totalHolidayHoursInPeriod(period) }
+                .map { it.totalLeaveDayHoursInPeriod(period) }
                 .sum(),
-            plusHours = data.holiDay
-                .filter { it.type == HolidayType.PLUSDAY }
+            plusHours = data.leaveDay
+                .filter { it.type == LeaveDayType.PLUSDAY }
                 .totalHoursInPeriod(from, to),
-            holidayHours = data.holiDay
-                .filter { it.type == HolidayType.HOLIDAY }
-                .totalHoursInPeriod(from, to)
+            holidayHours = data.leaveDay
+                .filter { it.type == LeaveDayType.HOLIDAY }
+                .totalHoursInPeriod(from, to),
+            paidParentalLeaveHours = data.leaveDay
+                .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
+                .totalHoursInPeriod(from, to),
+            unpaidParentalLeaveHours = data.leaveDay
+                .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
+                .totalHoursInPeriod(from, to),
         )
     }
-    fun holidayReport(year: Int): List<AggregationHoliday> {
+
+    fun leaveDayReport(year: Int): List<AggregationLeaveDay> {
         val from = YearMonth.of(year, 1).atDay(1)
         val to = YearMonth.of(year, 12).atEndOfMonth()
         val period = FromToPeriod(from, to)
         val all = dataService.findAllData(from, to)
         return all.allPersons()
             .map { person ->
-                AggregationHoliday(
+                AggregationLeaveDay(
                     name = person.getFullName(),
                     contractHours = all.contract
                         .filterIsInstance(ContractInternal::class.java)
                         .filter { it.person == person }
-                        .map { it.totalHolidayHoursInPeriod(period) }
+                        .map { it.totalLeaveDayHoursInPeriod(period) }
                         .sum(),
-                    plusHours = all.holiDay
-                        .filter { it.type == HolidayType.PLUSDAY }
+                    plusHours = all.leaveDay
+                        .filter { it.type == LeaveDayType.PLUSDAY }
                         .filter { it.person == person }
                         .totalHoursInPeriod(from, to),
-                    holidayHours = all.holiDay
-                        .filter { it.type == HolidayType.HOLIDAY }
+                    holidayHours = all.leaveDay
+                        .filter { it.type == LeaveDayType.HOLIDAY }
                         .filter { it.person == person }
-                        .totalHoursInPeriod(from, to)
+                        .totalHoursInPeriod(from, to),
+                    paidParentalLeaveHours = all.leaveDay
+                        .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
+                        .totalHoursInPeriod(from, to),
+                    unpaidParentalLeaveHours = all.leaveDay
+                        .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
+                        .totalHoursInPeriod(from, to),
                 )
             }
     }
@@ -141,15 +153,21 @@ class AggregationService(
                 .toInt(),
             total = allData.contract
                 .sumHoursWithinAPeriod(from, to),
-            holiDayUsed = allData.holiDay
-                .filter { it.type == HolidayType.HOLIDAY }
+            leaveDayUsed = allData.leaveDay
+                .filter { it.type == LeaveDayType.HOLIDAY }
                 .totalHoursInPeriod(from, to),
-            holiDayBalance = allData.contract
+            leaveDayBalance = allData.contract
                 .filterIsInstance(ContractInternal::class.java)
                 .mapWorkingDay(from, to)
                 .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                 .sum()
                 .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
+            paidParentalLeaveUsed = allData.leaveDay
+                .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
+                .totalHoursInPeriod(from, to),
+            unpaidParentalLeaveUsed = allData.leaveDay
+                .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
+                .totalHoursInPeriod(from, to),
         )
     }
 
@@ -184,17 +202,25 @@ class AggregationService(
                     total = all.contract
                         .filter { it.person == person }
                         .sumHoursWithinAPeriod(from, to),
-                    holiDayUsed = all.holiDay
-                        .filter { it.type == HolidayType.HOLIDAY }
+                    leaveDayUsed = all.leaveDay
+                        .filter { it.type == LeaveDayType.HOLIDAY }
                         .filter { it.person == person }
                         .totalHoursInPeriod(from, to),
-                    holiDayBalance = all.contract
+                    leaveDayBalance = all.contract
                         .filter { it.person == person }
                         .filterIsInstance(ContractInternal::class.java)
                         .mapWorkingDay(from, to)
                         .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                         .sum()
                         .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
+                    paidParentalLeaveUsed = all.leaveDay
+                        .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
+                        .filter { it.person == person }
+                        .totalHoursInPeriod(from, to),
+                    unpaidParentalLeaveUsed = all.leaveDay
+                        .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
+                        .filter { it.person == person }
+                        .totalHoursInPeriod(from, to),
                     revenue = personClientRevenueOverview(all.workDay, from, to)
                         .filter { it.key.id == person.id.toString() }
                         .values
@@ -456,17 +482,26 @@ class AggregationService(
     }
 
     fun personNonProductiveHoursPerDay(person: Person, from: LocalDate, to: LocalDate): List<NonProductiveHours> {
-        val holidays = holiDayService.findAllActiveByPerson(from, to, person.uuid)
+        val leaveDayData = leaveDayService.findAllActiveByPerson(from, to, person.uuid)
+        val holidays = leaveDayData.filter { it.type == LeaveDayType.HOLIDAY }
             .map { it.hoursPerDayInPeriod(from, to) }
             .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
         val sickdays = sickDayService.findAllActiveByPerson(from, to, person.uuid)
+            .map { it.hoursPerDayInPeriod(from, to) }
+            .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
+        val paidParentalLeave = leaveDayData.filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
+            .map { it.hoursPerDayInPeriod(from, to) }
+            .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
+        val unpaidParentalLeave = leaveDayData.filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
             .map { it.hoursPerDayInPeriod(from, to) }
             .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
 
         val map = from.datesUntil(to.plusDays(1)).toList().associateWith { date ->
             NonProductiveHours(
                 sickHours = sickdays[date]?.toDouble() ?: 0.0,
-                holidayHours = holidays[date]?.toDouble() ?: 0.0
+                holidayHours = holidays[date]?.toDouble() ?: 0.0,
+                paidParentalLeaveHours = paidParentalLeave[date]?.toDouble() ?: 0.0,
+                unpaidParentalLeaveHours = unpaidParentalLeave[date]?.toDouble() ?: 0.0,
             )
         }
 
@@ -482,7 +517,12 @@ class AggregationService(
         }
 
     // TODO: Move this?
-    data class NonProductiveHours(val sickHours: Double, val holidayHours: Double)
+    data class NonProductiveHours(
+        val sickHours: Double,
+        val holidayHours: Double,
+        val paidParentalLeaveHours: Double,
+        val unpaidParentalLeaveHours: Double,
+    )
 
     fun Iterable<Iterable<Float>>.sumAtIndex() = this
         .reduce { acc, cur ->
@@ -509,7 +549,7 @@ class AggregationService(
             this.assignment.map { it.person } +
                 this.contract.map { it.person } +
                 this.sickDay.map { it.person } +
-                this.holiDay.map { it.person } +
+                this.leaveDay.map { it.person } +
                 this.workDay.map { it.assignment.person }
             )
             .filterNotNull()
@@ -548,7 +588,7 @@ private fun Assignment.revenuePerDay(): BigDecimal = (this.hourlyRate * this.hou
 private fun Iterable<LocalDate>.filterWorkingDay() = this.filter { it.isWorkingDay() }
 
 fun countWorkDaysInPeriod(from: LocalDate, to: LocalDate): Int {
-    val diff = ChronoUnit.DAYS.between(from, to)
+    val diff = ChronoUnit.DAYS.between(from, to);
     return (0..diff)
         .map { from.plusDays(it) }
         .filterWorkingDay()

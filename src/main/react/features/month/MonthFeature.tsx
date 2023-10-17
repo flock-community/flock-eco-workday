@@ -67,7 +67,8 @@ export function MonthFeature() {
     .map((it) => ({
       ...it,
       missing: Math.max(
-        it.total - (it.workDays + it.holiDayUsed + it.sickDays + it.event),
+        it.total - (it.workDays + it.leaveDayUsed + it.sickDays + it.event + it.paidParentalLeaveUsed
+          + it.unpaidParentalLeaveUsed),
         0
       ),
     }));
@@ -97,9 +98,21 @@ export function MonthFeature() {
           />
           <Bar
             stackId="days"
-            dataKey="holiDayUsed"
-            name="holiday hours"
+            dataKey="leaveDayUsed"
+            name="leave hours"
             fill="#42a5f5"
+          />
+          <Bar
+            stackId="days"
+            dataKey="paidParentalLeaveUsed"
+            name="paid parental leave"
+            fill="#FFB6C1"
+          />
+          <Bar
+            stackId="days"
+            dataKey="unpaidParentalLeaveUsed"
+            name="unpaid parental leave"
+            fill="#87CEFA"
           />
           <Bar
             stackId="days"

@@ -2,22 +2,22 @@ package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.authorities.Authority
 import community.flock.eco.workday.authorities.ExpenseAuthority
-import community.flock.eco.workday.authorities.HolidayAuthority
+import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.authorities.WorkDayAuthority
 import community.flock.eco.workday.graphql.kotlin.Todo
 import community.flock.eco.workday.graphql.kotlin.TodoType
 import community.flock.eco.workday.model.CostExpense
 import community.flock.eco.workday.model.Expense
-import community.flock.eco.workday.model.HoliDay
-import community.flock.eco.workday.model.HolidayType
+import community.flock.eco.workday.model.LeaveDay
+import community.flock.eco.workday.model.LeaveDayType
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.TravelExpense
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.ExpenseService
-import community.flock.eco.workday.services.HoliDayService
+import community.flock.eco.workday.services.LeaveDayService
 import community.flock.eco.workday.services.SickDayService
 import community.flock.eco.workday.services.WorkDayService
 import org.springframework.security.access.prepost.PreAuthorize
@@ -30,7 +30,7 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api/todos")
 class TodoController(
-    private val holiDayService: HoliDayService,
+    private val leaveDayService: LeaveDayService,
     private val sickDayService: SickDayService,
     private val workDayService: WorkDayService,
     private val expenseService: ExpenseService
@@ -40,7 +40,7 @@ class TodoController(
     fun getTodoAll(
         authentication: Authentication
     ) = mapOf<Authority, List<Todo>>(
-        HolidayAuthority.READ to findHolidayTodo(),
+        LeaveDayAuthority.READ to findLeaveDayTodo(),
         SickdayAuthority.READ to findSickDayTodo(),
         WorkDayAuthority.READ to findWorkDayTodo(),
         ExpenseAuthority.READ to findExpenseTodo()
@@ -49,7 +49,7 @@ class TodoController(
         .flatMap { it.value }
         .sortedWith(compareBy({ it.personName }, { it.type }))
 
-    fun findHolidayTodo() = holiDayService
+    fun findLeaveDayTodo() = leaveDayService
         .findAllByStatus(Status.REQUESTED)
         .map { it.mapTodo() }
 
@@ -67,11 +67,13 @@ class TodoController(
 
     fun Person.fullName() = "$firstname $lastname"
 
-    fun HoliDay.mapTodo() = Todo(
+    fun LeaveDay.mapTodo() = Todo(
         id = UUID.fromString(code),
         type = when (type) {
-            HolidayType.HOLIDAY -> TodoType.HOLIDAY
-            HolidayType.PLUSDAY -> TodoType.PLUSDAY
+            LeaveDayType.HOLIDAY -> TodoType.HOLIDAY
+            LeaveDayType.PLUSDAY -> TodoType.PLUSDAY
+            LeaveDayType.PAID_PARENTAL_LEAVE -> TodoType.PAID_PARENTAL_LEAVE
+            LeaveDayType.UNPAID_PARENTAL_LEAVE -> TodoType.UNPAID_PARENTAL_LEAVE
         },
         personId = person.uuid,
         personName = person.fullName(),

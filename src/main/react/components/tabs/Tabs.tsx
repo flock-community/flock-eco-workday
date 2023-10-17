@@ -5,7 +5,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 
 // Types
-import { GroupedItemProps } from "../../types";
+import {GroupedItemProps, typeProp} from "../../types";
 type TabPanelProps = {
   children?: React.ReactNode;
   value: number;
@@ -48,11 +48,15 @@ export const SimpleTabs = ({
     exposedValue && exposedValue(newValue);
   };
 
+  const getCategoryLabel = (category: typeProp) => {
+    return category.replaceAll('_', ' ');
+  };
+
   return (
     <div className={classes.root}>
       <Tabs value={value} onChange={handleChange}>
         {categories.map((category, index) => {
-          return <Tab key={index} label={category} />;
+          return <Tab key={index} label={getCategoryLabel(category)} />;
         })}
       </Tabs>
       {categories.map((category, index) => {

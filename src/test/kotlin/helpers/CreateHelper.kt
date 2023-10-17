@@ -25,7 +25,7 @@ class CreateHelper(
     private val personService: PersonService,
     private val userService: UserService,
     private val sickDayService: SickDayService,
-    private val holiDayService: HoliDayService,
+    private val leaveDayService: LeaveDayService,
     private val workDayService: WorkDayService,
     private val eventService: EventService
 ) {
@@ -87,7 +87,7 @@ class CreateHelper(
         from = from,
         to = to,
         billable = billable,
-        holidayHours = holidayHours,
+        leaveHours = holidayHours,
     ).run {
         contractService.create(this)
     } ?: error("Cannot create internal contract")
@@ -161,7 +161,7 @@ class CreateHelper(
         workDayService.create(this)
     } ?: error("Cannot create sick day contract")
 
-    fun createHoliDay(person: Person, from: LocalDate, to: LocalDate) = HoliDayForm(
+    fun createHoliDay(person: Person, from: LocalDate, to: LocalDate) = LeaveDayForm(
         description = "description",
         from = from,
         to = to,
@@ -169,7 +169,7 @@ class CreateHelper(
         hours = 40.0,
         days = listOf(8.0, 8.0, 8.0, 8.0, 8.0)
     ).run {
-        holiDayService.create(this)
+        leaveDayService.create(this)
     } ?: error("Cannot create sick day contract")
 
     fun createEvent(

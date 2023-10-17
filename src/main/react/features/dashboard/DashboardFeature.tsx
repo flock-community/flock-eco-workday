@@ -4,7 +4,7 @@ import Card from "@material-ui/core/Card";
 import { CardContent, MenuItem, Select } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CardHeader from "@material-ui/core/CardHeader";
-import { HolidaysPerPersonChart } from "../../components/charts/HolidaysPerPersonChart";
+import { LeaveDaysPerPersonChart } from "../../components/charts/LeaveDaysPerPersonChart";
 import { SickdayPerPersonChart } from "../../components/charts/SickdayPerPersonChart";
 import { RevenuePerClientTable } from "../../components/charts/RevenuePerClientTable";
 import { TotalPerMonthChart } from "../../components/charts/TotalPerMonthChart";
@@ -121,7 +121,7 @@ export function DashboardFeature() {
           <Card>
             <CardHeader title="Holiday" />
             <CardContent>
-              <HolidaysPerPersonChart year={year} />
+              <LeaveDaysPerPersonChart year={year} />
             </CardContent>
           </Card>
         </Grid>

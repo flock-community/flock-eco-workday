@@ -4,7 +4,7 @@ import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonAssignmentOverview
 import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonOverview
 import community.flock.eco.workday.model.AggregationClient
-import community.flock.eco.workday.model.AggregationHoliday
+import community.flock.eco.workday.model.AggregationLeaveDay
 import community.flock.eco.workday.model.AggregationMonth
 import community.flock.eco.workday.model.AggregationPerson
 import community.flock.eco.workday.services.AggregationService
@@ -78,18 +78,18 @@ class AggregationController(
         return aggregationService.totalPerMonth(from, to)
     }
 
-    @GetMapping("/holiday-report", params = ["year"])
+    @GetMapping("/leave-day-report", params = ["year"])
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun holidayReportByYear(@RequestParam year: Int): List<AggregationHoliday> {
-        return aggregationService.holidayReport(year)
+    fun leaveDayReportByYear(@RequestParam year: Int): List<AggregationLeaveDay> {
+        return aggregationService.leaveDayReport(year)
     }
 
-    @GetMapping("/holiday-report-me", params = ["year"])
+    @GetMapping("/leave-day-report-me", params = ["year"])
     @PreAuthorize("isAuthenticated()")
-    fun holidayReportMeByYear(authentication: Authentication, @RequestParam year: Int): AggregationHoliday {
+    fun leaveDayReportMeByYear(authentication: Authentication, @RequestParam year: Int): AggregationLeaveDay {
         val person = personService.findByUserCode(authentication.name)
             ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
-        return aggregationService.holidayReportMe(year, person)
+        return aggregationService.leaveDayReportMe(year, person)
     }
 
     @GetMapping("/client-hour-overview", params = ["year", "month"])

@@ -1,12 +1,12 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
-import community.flock.eco.workday.authorities.HolidayAuthority
-import community.flock.eco.workday.forms.HoliDayForm
+import community.flock.eco.workday.authorities.LeaveDayAuthority
+import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
-import community.flock.eco.workday.model.HoliDay
+import community.flock.eco.workday.model.LeaveDay
 import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.services.HoliDayService
+import community.flock.eco.workday.services.LeaveDayService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.isUser
 import org.springframework.data.domain.Pageable
@@ -28,24 +28,24 @@ import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @RestController
-@RequestMapping("/api/holidays")
-class HolidayController(
-    private val service: HoliDayService,
+@RequestMapping("/api/leave-days")
+class LeaveDayController(
+    private val service: LeaveDayService,
     private val personService: PersonService
 ) {
     @GetMapping(params = ["personId"])
-    @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
+    @PreAuthorize("hasAuthority('LeaveDayAuthority.READ')")
     fun getAll(
         @RequestParam personId: UUID,
         authentication: Authentication,
         pageable: Pageable
-    ): ResponseEntity<List<HoliDay>> = when {
+    ): ResponseEntity<List<LeaveDay>> = when {
         authentication.isAdmin() -> service.findAllByPersonUuid(personId, pageable)
         else -> service.findAllByPersonUserCode(authentication.name, pageable)
     }.toResponse()
 
     @GetMapping("/{code}")
-    @PreAuthorize("hasAuthority('HolidayAuthority.READ')")
+    @PreAuthorize("hasAuthority('LeaveDayAuthority.READ')")
     fun findByCode(
         @PathVariable code: String,
         authentication: Authentication
@@ -55,19 +55,19 @@ class HolidayController(
         .toResponse()
 
     @PostMapping
-    @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
+    @PreAuthorize("hasAuthority('LeaveDayAuthority.WRITE')")
     fun post(
-        @RequestBody form: HoliDayForm,
+        @RequestBody form: LeaveDayForm,
         authentication: Authentication
     ) = service
         .create(form.setPersonCode(authentication))
         .toResponse()
 
     @PutMapping("/{code}")
-    @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
+    @PreAuthorize("hasAuthority('LeaveDayAuthority.WRITE')")
     fun put(
         @PathVariable code: String,
-        @RequestBody form: HoliDayForm,
+        @RequestBody form: LeaveDayForm,
         authentication: Authentication
     ) =
         service.findByCode(code)
@@ -76,7 +76,7 @@ class HolidayController(
             ?.run { service.update(code, form) }
 
     @DeleteMapping("/{code}")
-    @PreAuthorize("hasAuthority('HolidayAuthority.WRITE')")
+    @PreAuthorize("hasAuthority('LeaveDayAuthority.WRITE')")
     fun delete(
         @PathVariable code: String,
         authentication: Authentication
@@ -85,7 +85,7 @@ class HolidayController(
         ?.run { service.deleteByCode(this.code) }
         .toResponse()
 
-    private fun HoliDayForm.setPersonCode(authentication: Authentication): HoliDayForm {
+    private fun LeaveDayForm.setPersonCode(authentication: Authentication): LeaveDayForm {
         if (authentication.isAdmin()) {
             return this
         }
@@ -98,15 +98,15 @@ class HolidayController(
 
     private fun Authentication.isAdmin(): Boolean = this.authorities
         .map { it.authority }
-        .contains(HolidayAuthority.ADMIN.toName())
+        .contains(LeaveDayAuthority.ADMIN.toName())
 
-    private fun HoliDay.applyAuthentication(authentication: Authentication) = apply {
+    private fun LeaveDay.applyAuthentication(authentication: Authentication) = apply {
         if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
         }
     }
 
-    private fun HoliDay.applyAllowedToCreate(form: HoliDayForm, authentication: Authentication): HoliDay = apply {
+    private fun LeaveDay.applyAllowedToCreate(form: LeaveDayForm, authentication: Authentication): LeaveDay = apply {
         if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change workday")
         }

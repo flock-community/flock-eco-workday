@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import { Button, Card, CardContent, CardHeader } from "@material-ui/core";
-import { HolidayDialog } from "./HolidayDialog";
-import { HolidayList } from "./HolidayList";
-import { HolidayClient } from "../../clients/HolidayClient";
+import { LeaveDayDialog } from "./LeaveDayDialog";
+import { LeaveDayList } from "./LeaveDayList";
+import { LeaveDayClient } from "../../clients/LeaveDayClient";
 import AddIcon from "@material-ui/icons/Add";
 import { Person } from "../../clients/PersonClient";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 
-type HolidayFeatureProps = {
+type LeaveDayFeatureProps = {
   person: Person;
 };
 
-export function HolidayFeature({ person }: HolidayFeatureProps) {
+export function LeaveDayFeature({ person }: LeaveDayFeatureProps) {
   const [refresh, setRefresh] = useState(false);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<any>();
@@ -33,7 +33,7 @@ export function HolidayFeature({ person }: HolidayFeatureProps) {
   }
 
   function handleStatusChange(status, it) {
-    HolidayClient.put(it.code, {
+    LeaveDayClient.put(it.code, {
       ...it,
       status,
       from: it.from.format(ISO_8601_DATE),
@@ -54,7 +54,7 @@ export function HolidayFeature({ person }: HolidayFeatureProps) {
           }
         />
         <CardContent>
-          <HolidayList
+          <LeaveDayList
             personId={person?.uuid}
             refresh={refresh}
             onClickRow={handleClickRow}
@@ -62,7 +62,7 @@ export function HolidayFeature({ person }: HolidayFeatureProps) {
           />
         </CardContent>
       </Card>
-      <HolidayDialog
+      <LeaveDayDialog
         open={open}
         code={value?.code}
         personId={person?.uuid}

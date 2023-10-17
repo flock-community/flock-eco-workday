@@ -12,33 +12,40 @@ import Typography from "@material-ui/core/Typography";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
-import { HolidayClient } from "../../clients/HolidayClient";
-import { HOLIDAY_FORM_ID, HolidayForm, schemaHoliDayForm } from "./HolidayForm";
-import { PlusDayForm, schemaPlusDayForm } from "./PlusDayForm";
+import { LeaveDayClient } from "../../clients/LeaveDayClient";
+import { HolidayForm } from "./HolidayForm";
+import { PlusDayForm } from "./PlusDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import { LeaveDayForm } from "./LeaveDayForm";
+import dayjs from "dayjs";
+
+export const LEAVE_DAY_DIALOG_FORM_ID = "leave-day-dialog-form-id";
 
 enum Types {
   HOLIDAY = "HOLIDAY",
   PLUSDAY = "PLUSDAY",
+  PAID_PARENTAL_LEAVE = "PAID_PARENTAL_LEAVE",
+  UNPAID_PARENTAL_LEAVE = "UNPAID_PARENTAL_LEAVE",
 }
 
-type HolidayDialogProps = {
+type LeaveDayDialogProps = {
   open: boolean;
   code?: string;
   personId?: string;
   onComplete?: (item?: any) => void;
 };
 
-export function HolidayDialog({
+export function LeaveDayDialog({
   open,
   code,
   personId,
   onComplete,
-}: HolidayDialogProps) {
+}: LeaveDayDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
 
   const [state, setState] = useState<any>();
   const [type, setType] = useState<Types>(Types.HOLIDAY);
+  const now = dayjs();
 
   const handleSubmit = (it) => {
     const body = {
@@ -50,12 +57,12 @@ export function HolidayDialog({
       personId,
     };
     if (code) {
-      HolidayClient.put(code, body).then((res) => {
+      LeaveDayClient.put(code, body).then((res) => {
         setState(undefined);
         onComplete?.(res);
       });
     } else {
-      HolidayClient.post(body).then((res) => {
+      LeaveDayClient.post(body).then((res) => {
         setState(undefined);
         onComplete?.(res);
       });
@@ -65,7 +72,7 @@ export function HolidayDialog({
   useEffect(() => {
     if (open) {
       if (code) {
-        HolidayClient.get(code).then((res) => {
+        LeaveDayClient.get(code).then((res) => {
           setType(res.type);
           setState({
             description: res.description,
@@ -77,17 +84,20 @@ export function HolidayDialog({
           });
         });
       } else {
-        setState(
-          type === Types.PLUSDAY
-            ? schemaPlusDayForm.default()
-            : schemaHoliDayForm.default()
-        );
+        setState({
+          description: "",
+          status: "REQUESTED",
+          from: now,
+          to: now,
+          days: [8],
+          hours: "",
+        });
       }
     }
   }, [code, open]);
 
   const handleDelete = () => {
-    HolidayClient.delete(code).then(() => {
+    LeaveDayClient.delete(code).then(() => {
       onComplete?.();
       setOpenDelete(false);
       setState(undefined);
@@ -125,7 +135,7 @@ export function HolidayDialog({
         <DialogContent>
           <Grid container spacing={2}>
             {!code && (
-              <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+              <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
                 <Grid item xs={12}>
                   <Select
                     value={type}
@@ -134,8 +144,10 @@ export function HolidayDialog({
                     }}
                     fullWidth
                   >
-                    <MenuItem value={Types.HOLIDAY}>HoliDay</MenuItem>
-                    <MenuItem value={Types.PLUSDAY}>PlusDay</MenuItem>
+                    <MenuItem value={Types.HOLIDAY}>Holiday</MenuItem>
+                    <MenuItem value={Types.PLUSDAY}>Plus Day</MenuItem>
+                    <MenuItem value={Types.PAID_PARENTAL_LEAVE}>Paid Parental Leave</MenuItem>
+                    <MenuItem value={Types.UNPAID_PARENTAL_LEAVE}>Unpaid Parental Leave</MenuItem>
                   </Select>
                 </Grid>
               </UserAuthorityUtil>
@@ -148,21 +160,27 @@ export function HolidayDialog({
                 {type === Types.PLUSDAY && (
                   <PlusDayForm value={state} onSubmit={handleSubmit} />
                 )}
+                {type === Types.PAID_PARENTAL_LEAVE && (
+                  <LeaveDayForm value={state} onSubmit={handleSubmit} />
+                )}
+                {type === Types.UNPAID_PARENTAL_LEAVE && (
+                  <LeaveDayForm value={state} onSubmit={handleSubmit} />
+                )}
               </Grid>
             )}
           </Grid>
         </DialogContent>
         <DialogFooter
-          formId={HOLIDAY_FORM_ID}
+          formId={LEAVE_DAY_DIALOG_FORM_ID}
           onClose={handleClose}
           onDelete={handleDeleteOpen}
           disableDelete={
-            !UserAuthorityUtil.hasAuthority("HolidayAuthority.ADMIN") &&
+            !UserAuthorityUtil.hasAuthority("LeaveDayAuthority.ADMIN") &&
             state &&
             state.status !== "REQUESTED"
           }
           disableEdit={
-            !UserAuthorityUtil.hasAuthority("HolidayAuthority.ADMIN") &&
+            !UserAuthorityUtil.hasAuthority("LeaveDayAuthority.ADMIN") &&
             state &&
             state.status !== "REQUESTED"
           }
@@ -173,7 +191,7 @@ export function HolidayDialog({
         onClose={handleDeleteClose}
         onConfirm={handleDelete}
       >
-        <Typography>Are you sure you want to remove this Holiday.</Typography>
+        <Typography>Are you sure you want to remove this Leave Day?</Typography>
       </ConfirmDialog>
     </>
   );

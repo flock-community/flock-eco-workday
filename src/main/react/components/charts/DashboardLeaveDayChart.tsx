@@ -30,12 +30,12 @@ const renderCustomizedLabel = ({
     </text>
   );
 };
-export function DashboardHolidayChart() {
+export function DashboardLeaveDayChart() {
   const [state, setState] = useState<any>();
 
   useEffect(() => {
     const date = new Date();
-    AggregationClient.holidayReportMe(date.getFullYear()).then((res) =>
+    AggregationClient.leaveDayReportMe(date.getFullYear()).then((res) =>
       setState(res)
     );
   }, []);

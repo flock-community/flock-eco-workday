@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import {
   AggregationClient,
-  AggregationHoliday,
+  AggregationLeaveDay,
 } from "../../clients/AggregationClient";
 import {
   makeStyles,
@@ -25,24 +25,24 @@ const useStyles = makeStyles({
   },
 });
 
-export type HolidayReport = AggregationHoliday & {
+export type LeaveDayReport = AggregationLeaveDay & {
   total: number;
   available: number;
 };
 
-export function DashboardHolidayTable() {
-  const [state, setState] = useState<HolidayReport>();
+export function DashboardLeaveDayTable() {
+  const [state, setState] = useState<LeaveDayReport>();
 
   const classes = useStyles();
 
   useEffect(() => {
     const thisYear = new Date().getFullYear();
 
-    AggregationClient.holidayReportMe(thisYear).then((res) => {
+    AggregationClient.leaveDayReportMe(thisYear).then((res) => {
       const total = res.contractHours + res.plusHours;
       const available = total - res.holidayHours;
 
-      const report: HolidayReport = {
+      const report: LeaveDayReport = {
         ...res,
         total,
         available,

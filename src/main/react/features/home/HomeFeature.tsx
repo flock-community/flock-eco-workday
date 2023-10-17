@@ -3,10 +3,10 @@ import Typography from "@material-ui/core/Typography";
 import {useUserMe} from "../../hooks/UserMeHook";
 import {DashboardHoursChart} from "../../components/charts/DashboardHoursChart";
 import {Card, CardContent, CardHeader, Container, Grid,} from "@material-ui/core";
-import {DashboardHolidayTable} from "../../components/tables/DashboardHolidayTable";
+import {DashboardLeaveDayTable} from "../../components/tables/DashboardLeaveDayTable";
 import ContractsEnding from "../../components/contracts/ContractsEnding";
 import PersonEvents from "../../components/person/PersonEvents";
-import {DashboardHolidayChart} from "../../components/charts/DashboardHolidayChart";
+import {DashboardLeaveDayChart} from "../../components/charts/DashboardLeaveDayChart";
 
 export function HomeFeature() {
   const user = useUserMe();
@@ -57,10 +57,10 @@ export function HomeFeature() {
               <CardContent>
                 <Grid container spacing={4}>
                   <Grid item xs={12} md={6}>
-                    <DashboardHolidayTable/>
+                    <DashboardLeaveDayTable/>
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    <DashboardHolidayChart/>
+                    <DashboardLeaveDayChart/>
                   </Grid>
                 </Grid>
               </CardContent>

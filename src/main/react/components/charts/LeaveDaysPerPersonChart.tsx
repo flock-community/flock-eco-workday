@@ -12,19 +12,19 @@ import {
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import {
   AggregationClient,
-  AggregationHoliday,
+  AggregationLeaveDay,
 } from "../../clients/AggregationClient";
 
-type HolidaysPerPersonChartProps = {
+type LeaveDaysPerPersonChartProps = {
   year?: number;
 };
 
-export function HolidaysPerPersonChart({ year }: HolidaysPerPersonChartProps) {
-  const [state, setState] = useState<AggregationHoliday[] | null>(null);
+export function LeaveDaysPerPersonChart({ year }: LeaveDaysPerPersonChartProps) {
+  const [state, setState] = useState<AggregationLeaveDay[] | null>(null);
 
   useEffect(() => {
     const date = new Date();
-    AggregationClient.holidayReportByYear(year || date.getFullYear()).then(
+    AggregationClient.leaveDayReportByYear(year || date.getFullYear()).then(
       (res) =>
         setState(
           res

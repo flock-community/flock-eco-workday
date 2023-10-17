@@ -2,11 +2,11 @@ package community.flock.eco.workday.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.Application
-import community.flock.eco.workday.authorities.HolidayAuthority
-import community.flock.eco.workday.forms.HoliDayForm
+import community.flock.eco.workday.authorities.LeaveDayAuthority
+import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.services.HoliDayService
+import community.flock.eco.workday.services.LeaveDayService
 import config.AppTestConfig
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,16 +38,16 @@ import kotlin.test.assertNull
 @AutoConfigureMockMvc
 @Import(CreateHelper::class)
 @ActiveProfiles(profiles = ["test"])
-class HoliDayControllerTest(
+class LeaveDayControllerTest(
     @Autowired private val mvc: MockMvc,
     @Autowired private val mapper: ObjectMapper,
     @Autowired private val createHelper: CreateHelper,
-    @Autowired private val holiDayService: HoliDayService
+    @Autowired private val leaveDayService: LeaveDayService
 ) {
-    private val baseUrl: String = "/api/holidays"
+    private val baseUrl: String = "/api/leave-days"
 
-    val adminAuthorities = setOf(HolidayAuthority.READ, HolidayAuthority.WRITE, HolidayAuthority.ADMIN)
-    val userAuthorities = setOf(HolidayAuthority.READ, HolidayAuthority.WRITE)
+    val adminAuthorities = setOf(LeaveDayAuthority.READ, LeaveDayAuthority.WRITE, LeaveDayAuthority.ADMIN)
+    val userAuthorities = setOf(LeaveDayAuthority.READ, LeaveDayAuthority.WRITE)
 
     @Test
     fun `should get a holiday via GET-method`() {
@@ -61,7 +61,7 @@ class HoliDayControllerTest(
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = HoliDayForm(
+        val createForm = LeaveDayForm(
             from = from,
             to = to,
             days = days,
@@ -71,7 +71,7 @@ class HoliDayControllerTest(
             status = status
         )
 
-        val created = holiDayService.create(createForm)
+        val created = leaveDayService.create(createForm)
 
         mvc.perform(
             get("$baseUrl/${created.code}")
@@ -101,7 +101,7 @@ class HoliDayControllerTest(
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = HoliDayForm(
+        val createForm = LeaveDayForm(
             from = from,
             to = to,
             days = days,
@@ -142,7 +142,7 @@ class HoliDayControllerTest(
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = HoliDayForm(
+        val createForm = LeaveDayForm(
             from = from,
             to = to,
             days = days,
@@ -152,7 +152,7 @@ class HoliDayControllerTest(
             status = status
         )
 
-        val created = holiDayService.create(createForm)
+        val created = leaveDayService.create(createForm)
 
         val updatedCreateForm = createForm.copy(description = updatedDescription)
 
@@ -187,7 +187,7 @@ class HoliDayControllerTest(
         val updatedStatus = Status.APPROVED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = HoliDayForm(
+        val createForm = LeaveDayForm(
             from = from,
             to = to,
             days = days,
@@ -197,7 +197,7 @@ class HoliDayControllerTest(
             status = status
         )
 
-        val created = holiDayService.create(createForm)
+        val created = leaveDayService.create(createForm)
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 
@@ -210,7 +210,7 @@ class HoliDayControllerTest(
         )
             .andExpect(status().isForbidden)
 
-        assertEquals(holiDayService.findByCode(created.code)?.status, status)
+        assertEquals(leaveDayService.findByCode(created.code)?.status, status)
     }
 
     @Test
@@ -226,7 +226,7 @@ class HoliDayControllerTest(
         val updatedStatus = Status.APPROVED
         val person = createHelper.createPerson("john", "doe", admin.code)
 
-        val createForm = HoliDayForm(
+        val createForm = LeaveDayForm(
             from = from,
             to = to,
             days = days,
@@ -236,7 +236,7 @@ class HoliDayControllerTest(
             status = status
         )
 
-        val created = holiDayService.create(createForm)
+        val created = leaveDayService.create(createForm)
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 
@@ -266,7 +266,7 @@ class HoliDayControllerTest(
         val updatedStatus = Status.APPROVED
         val person = createHelper.createPerson("john", "doe", admin.code)
 
-        val createForm = HoliDayForm(
+        val createForm = LeaveDayForm(
             from = from,
             to = to,
             days = days,
@@ -276,7 +276,7 @@ class HoliDayControllerTest(
             status = status
         )
 
-        val created = holiDayService.create(createForm)
+        val created = leaveDayService.create(createForm)
 
         mvc.perform(
             delete("$baseUrl/${created.code}")
@@ -286,6 +286,6 @@ class HoliDayControllerTest(
         )
             .andExpect(status().isNoContent)
 
-        assertNull(holiDayService.findByCode(created.code))
+        assertNull(leaveDayService.findByCode(created.code))
     }
 }

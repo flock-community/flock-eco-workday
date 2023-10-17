@@ -3,7 +3,7 @@ package community.flock.eco.workday.config
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.feature.user.services.UserSecurityService
-import community.flock.eco.workday.authorities.HolidayAuthority
+import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.filters.GoogleTokenFilter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -43,7 +43,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     )
 
     override fun configure(http: HttpSecurity) {
-        userAuthorityService.addAuthority(HolidayAuthority::class.java)
+        userAuthorityService.addAuthority(LeaveDayAuthority::class.java)
 
         http
             .headers()

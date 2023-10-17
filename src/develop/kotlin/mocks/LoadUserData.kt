@@ -6,7 +6,7 @@ import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.workday.authorities.ExpenseAuthority
-import community.flock.eco.workday.authorities.HolidayAuthority
+import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.authorities.WorkDayAuthority
 import mocks.Role
@@ -24,8 +24,8 @@ class LoadUserData(
     val data: MutableSet<User> = mutableSetOf()
 
     val workerRoles = setOf(
-            HolidayAuthority.READ,
-            HolidayAuthority.WRITE,
+            LeaveDayAuthority.READ,
+            LeaveDayAuthority.WRITE,
             SickdayAuthority.READ,
             SickdayAuthority.WRITE,
             WorkDayAuthority.READ,
@@ -46,8 +46,8 @@ class LoadUserData(
 
     private final fun create(user: mocks.User) = UserAccountPasswordForm(
             name = user.firstName,
-            email = "${user.firstName.toLowerCase()}@sesam.straat",
-            password = user.firstName.toLowerCase(),
+            email = "${user.firstName.lowercase()}@sesam.straat",
+            password = user.firstName.lowercase(),
             authorities = user.authorities.map { it.toName() }.toSet()
     )
             .save()

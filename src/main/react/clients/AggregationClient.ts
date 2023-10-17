@@ -67,19 +67,21 @@ export const totalPerPersonMe = () => {
     .then((res) => res.body);
 };
 
-export type AggregationHoliday = {
+export type AggregationLeaveDay = {
   name: String;
   contractHours: number;
   plusHours: number;
   holidayHours: number;
+  paidParentalLeaveHours: number;
+  unpaidParentalLeaveHours: number;
 };
 
-export const holidayReportMe = (year): Promise<AggregationHoliday> => {
+export const leaveDayReportMe = (year): Promise<AggregationLeaveDay> => {
   const opts = {
     method: "GET",
   };
-  return fetch(`${path}/holiday-report-me?year=${year}`, opts)
-    .then((res) => validateResponse<AggregationHoliday>(res))
+  return fetch(`${path}/leave-day-report-me?year=${year}`, opts)
+    .then((res) => validateResponse<AggregationLeaveDay>(res))
     .then(checkResponse)
     .then((res) => res.body);
 };
@@ -94,12 +96,12 @@ export const totalPerMonthByYear = (year) => {
     .then((res) => res.body);
 };
 
-export const holidayReportByYear = (year): Promise<AggregationHoliday[]> => {
+export const leaveDayReportByYear = (year): Promise<AggregationLeaveDay[]> => {
   const opts = {
     method: "GET",
   };
-  return fetch(`${path}/holiday-report?year=${year}`, opts)
-    .then((res) => validateResponse<AggregationHoliday[]>(res))
+  return fetch(`${path}/leave-day-report?year=${year}`, opts)
+    .then((res) => validateResponse<AggregationLeaveDay[]>(res))
     .then(checkResponse)
     .then((res) => res.body);
 };
@@ -132,6 +134,6 @@ export const AggregationClient = {
   clientAssignmentPersonBetween,
   totalPerMonthByYear,
   totalPerPersonMe,
-  holidayReportMe,
-  holidayReportByYear,
+  leaveDayReportMe,
+  leaveDayReportByYear,
 };

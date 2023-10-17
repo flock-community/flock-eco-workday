@@ -47,7 +47,7 @@ data class ContractInternal(
         .sum()
         .divide(yearMonth.lengthOfMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
 
-    fun totalHolidayHoursInPeriod(period: Period): BigDecimal = this
+    fun totalLeaveDayHoursInPeriod(period: Period): BigDecimal = this
         .toDateRangeInPeriod(period)
         .sumOf { this.holidayHours }
         .toBigDecimal()

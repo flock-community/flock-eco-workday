@@ -142,7 +142,7 @@ class AggregationServiceTest(
         val res = aggregationService
             .totalPerPerson(from, to)
 
-        val holiDayBalance: BigDecimal = res.first().holiDayBalance
+        val holiDayBalance: BigDecimal = res.first().leaveDayBalance
         assertEquals(holiDayBalance.toString(), "192.0000000000")
     }
 
@@ -158,7 +158,7 @@ class AggregationServiceTest(
         val res = aggregationService
             .totalPerPerson(from, to)
 
-        val holiDayBalance: BigDecimal = res.first().holiDayBalance
+        val holiDayBalance: BigDecimal = res.first().leaveDayBalance
         assertEquals(holiDayBalance.toString(), "192.0000000000")
     }
 
@@ -170,7 +170,7 @@ class AggregationServiceTest(
         createHelper.createContractInternal(person, from, to, hoursPerWeek = 32)
         val res = aggregationService
             .totalPerPerson(from, to)
-        val holiDayBalance: BigDecimal = res.first().holiDayBalance
+        val holiDayBalance: BigDecimal = res.first().leaveDayBalance
         assertEquals(holiDayBalance.toString(), "153.6000000000")
     }
 
@@ -237,7 +237,7 @@ class AggregationServiceTest(
     @Test
     fun `holiday report`() {
         dataHelper.createContractInternalData()
-        val res = aggregationService.holidayReport(2020)
+        val res = aggregationService.leaveDayReport(2020)
         assertEquals(res[0].contractHours, 192.toBigDecimal().setScale(10))
         assertEquals(res[2].contractHours, 160.toBigDecimal().setScale(10))
     }
@@ -380,7 +380,7 @@ class AggregationServiceTest(
         assertEquals(BigDecimal("40.0"), result.workDays)
         assertEquals(BigDecimal("40.0"), result.workDays)
         assertEquals(80, result.event)
-        assertEquals(BigDecimal("40.0"), result.holiDayUsed)
+        assertEquals(BigDecimal("40.0"), result.leaveDayUsed)
     }
 
     @Test
@@ -391,7 +391,7 @@ class AggregationServiceTest(
         createHelper.createContractInternal(person, LocalDate.of(2021, 1, 1), LocalDate.of(2021, 12, 31))
         createHelper.createHoliDay(person, from, to)
 
-        val result = aggregationService.holidayReportMe(2021, person)
+        val result = aggregationService.leaveDayReportMe(2021, person)
         assertEquals(BigDecimal("192.0000000000"), result.contractHours)
         assertEquals(BigDecimal("40.0"), result.holidayHours)
     }
