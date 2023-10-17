@@ -1,13 +1,11 @@
 import {Card, CardContent, CardHeader} from "@material-ui/core";
 import React, {useEffect, useState} from "react";
-import {AggregationClient} from "../../clients/AggregationClient";
 import {AlignedLoader} from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import {MissingHoursDetailDialog} from "./MissingHoursDetailDialog";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Typography from "@material-ui/core/Typography";
-import {Contract} from "../../clients/ContractClient";
 
 type MissingHoursCardProps = {
   totalPerPersonMe: any;
