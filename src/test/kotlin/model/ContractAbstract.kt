@@ -53,7 +53,7 @@ abstract class ContractAbstract {
             to = endDate,
             monthlySalary = salary,
             hoursPerWeek = 36,
-            leaveHours = 30,
+            holidayHours = 30,
             billable = true
         )
     }

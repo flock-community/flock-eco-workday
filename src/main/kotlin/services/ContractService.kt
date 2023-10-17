@@ -133,7 +133,7 @@ class ContractService(
         billable = this.billable,
         monthlySalary = this.monthlySalary,
         hoursPerWeek = this.hoursPerWeek,
-        leaveHours = this.leaveHours,
+        holidayHours = this.leaveHours,
         person = it?.person
             ?: this.personId.let { personRepository.findByUuid(it).toNullable() }
             ?: error("Cannot find Person")
