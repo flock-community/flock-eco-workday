@@ -68,7 +68,7 @@ export function MonthFeature() {
             ...it,
             missing: Math.max(
                 it.total - (it.workDays + it.leaveDayUsed + it.sickDays + it.event + it.paidParentalLeaveUsed
-                    + it.unpaidParentalLeaveUsed),
+          + it.unpaidParentalLeaveUsed),
                 0
             ),
         }));
@@ -100,19 +100,19 @@ export function MonthFeature() {
                         stackId="days"
                         dataKey="leaveDayUsed"
                         name="leave hours"
-                        fill="#42a5f5"
-                    />
-                    <Bar
-                        stackId="days"
-                        dataKey="paidParentalLeaveUsed"
-                        name="paid parental leave"
-                        fill="#FFB6C1"
-                    />
-                    <Bar
-                        stackId="days"
-                        dataKey="unpaidParentalLeaveUsed"
-                        name="unpaid parental leave"
-                        fill="#87CEFA"
+            fill="#42a5f5"
+          />
+          <Bar
+            stackId="days"
+            dataKey="paidParentalLeaveUsed"
+            name="paid parental leave"
+            fill="#FFB6C1"
+          />
+          <Bar
+            stackId="days"
+            dataKey="unpaidParentalLeaveUsed"
+            name="unpaid parental leave"
+            fill="#87CEFA"
                     />
                     <Bar
                         stackId="days"
