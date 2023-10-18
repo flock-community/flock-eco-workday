@@ -28,7 +28,7 @@ export function DashboardHoursChart() {
     .map((it) => ({
       ...it,
       missing: Math.max(
-        it.total - (it.workDays + it.holiDayUsed + it.sickDays + it.event + it.paidParentalLeaveUsed
+        it.total - (it.workDays + it.leaveDayUsed + it.sickDays + it.event + it.paidParentalLeaveUsed
         + it.unpaidParentalLeaveUsed),
         0
       ),
