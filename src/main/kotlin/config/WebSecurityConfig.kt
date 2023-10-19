@@ -7,8 +7,6 @@ import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.feature.user.services.UserSecurityService
 import community.flock.eco.workday.authorities.LeaveDayAuthority
-import community.flock.eco.workday.config.KratosIdentity.EmailAddress
-import community.flock.eco.workday.config.KratosIdentity.UserId
 import community.flock.eco.workday.authentication.OathkeeperProxyAuthenticationProcessingFilter
 import community.flock.eco.workday.authentication.OathkeeperProxyAuthenticationProvider
 import community.flock.eco.workday.authentication.RedirectLogoutHandler

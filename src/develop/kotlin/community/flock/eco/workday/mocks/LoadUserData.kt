@@ -10,9 +10,9 @@ import community.flock.eco.feature.user.model.UserAccountOauthProvider
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
 import community.flock.eco.workday.authorities.ExpenseAuthority
-import community.flock.eco.workday.authorities.HolidayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.authorities.WorkDayAuthority
+import community.flock.eco.workday.authorities.LeaveDayAuthority
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
@@ -25,19 +25,19 @@ import java.io.IOException
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadUserData(
-    @Value("\${flock.eco.workday.login}")
+        @Value("\${flock.eco.workday.login}")
     private val loginType: String,
-    private val userAccountService: UserAccountService,
-    private val objectMapper: ObjectMapper,
-    loadData: LoadData,
-    userAuthorityService: UserAuthorityService,
+        private val userAccountService: UserAccountService,
+        private val objectMapper: ObjectMapper,
+        loadData: LoadData,
+        userAuthorityService: UserAuthorityService,
 ) {
 
     val data: MutableSet<User> = mutableSetOf()
 
     val workerRoles = setOf(
-        HolidayAuthority.READ,
-        HolidayAuthority.WRITE,
+        LeaveDayAuthority.READ,
+        LeaveDayAuthority.WRITE,
         SickdayAuthority.READ,
         SickdayAuthority.WRITE,
         WorkDayAuthority.READ,
