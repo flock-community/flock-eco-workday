@@ -27,11 +27,11 @@ services:
     command: serve proxy -c "/etc/config/oathkeeper/config.yaml"
     environment:
       - LOG_LEVEL=debug
-      - ERRORS_HANDLERS_REDIRECT_CONFIG_TO=$ACCOUNTS_SELFSERVICE_URL/login
-      - MUTATORS_ID_TOKEN_CONFIG_ISSUER_URL=$PUBLIC_ACCOUNTS_URL
-      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_0=$PUBLIC_APP_URL
-      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_1=$ACCOUNTS_SELFSERVICE_URL
-      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_2=$PUBLIC_KRATOS_URL
+      - ERRORS_HANDLERS_REDIRECT_CONFIG_TO=http://accounts.flock.local:8081/ui/login
+      - MUTATORS_ID_TOKEN_CONFIG_ISSUER_URL=http://accounts.flock.local:8081
+      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_0=http://workday.flock.local:8081
+      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_1=http://accounts.flock.local:8081/ui/
+      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_2=http://accounts.flock.local:8081/api
     restart: on-failure
     networks:
       - intranet
@@ -48,20 +48,20 @@ services:
     environment:
       - DSN=postgres://kratos:secret@postgres-kratos:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
       #
-      - SERVE_PUBLIC_BASE_URL=$PUBLIC_KRATOS_URL
-      - SERVE_ADMIN_BASE_URL=$INTERNAL_ADMIN_KRATOS_URL
-      - SELFSERVICE_DEFAULT_BROWSER_RETURN_URL=$PUBLIC_APP_URL
-      - SELFSERVICE_ALLOWED_RETURN_URLS_0=$PUBLIC_APP_URL
-      - SELFSERVICE_ALLOWED_RETURN_URLS_1=$ACCOUNTS_SELFSERVICE_URL
+      - SERVE_PUBLIC_BASE_URL=http://accounts.flock.local:8081/api
+      - SERVE_ADMIN_BASE_URL=http://kratos:4434
+      - SELFSERVICE_DEFAULT_BROWSER_RETURN_URL=http://workday.flock.local:8081
+      - SELFSERVICE_ALLOWED_RETURN_URLS_0=http://workday.flock.local:8081
+      - SELFSERVICE_ALLOWED_RETURN_URLS_1=http://accounts.flock.local:8081/ui/
       # - BASE_PATH=/kratos
-      - SELFSERVICE_FLOWS_ERROR_UI_URL=$ACCOUNTS_SELFSERVICE_URL/error
-      - SELFSERVICE_FLOWS_SETTINGS_UI_URL=$ACCOUNTS_SELFSERVICE_URL/settings
-      - SELFSERVICE_FLOWS_RECOVERY_UI_URL=$ACCOUNTS_SELFSERVICE_URL/recovery
-      - SELFSERVICE_FLOWS_VERIFICATION_UI_URL=$ACCOUNTS_SELFSERVICE_URL/verification
-      - SELFSERVICE_FLOWS_LOGOUT_UI_URL=$ACCOUNTS_SELFSERVICE_URL/logout
-      - SELFSERVICE_FLOWS_LOGOUT_AFTER_DEFAULT_BROWSER_RETURN_URL=$PUBLIC_APP_URL
-      - SELFSERVICE_FLOWS_LOGIN_UI_URL=$ACCOUNTS_SELFSERVICE_URL/login
-      - SELFSERVICE_FLOWS_REGISTRATION_UI_URL=$ACCOUNTS_SELFSERVICE_URL/registration
+      - SELFSERVICE_FLOWS_ERROR_UI_URL=http://accounts.flock.local:8081/ui/error
+      - SELFSERVICE_FLOWS_SETTINGS_UI_URL=http://accounts.flock.local:8081/ui/settings
+      - SELFSERVICE_FLOWS_RECOVERY_UI_URL=http://accounts.flock.local:8081/ui/recovery
+      - SELFSERVICE_FLOWS_VERIFICATION_UI_URL=http://accounts.flock.local:8081/ui/verification
+      - SELFSERVICE_FLOWS_LOGOUT_UI_URL=http://accounts.flock.local:8081/ui/logout
+      - SELFSERVICE_FLOWS_LOGOUT_AFTER_DEFAULT_BROWSER_RETURN_URL=http://workday.flock.local:8081
+      - SELFSERVICE_FLOWS_LOGIN_UI_URL=http://accounts.flock.local:8081/ui/login
+      - SELFSERVICE_FLOWS_REGISTRATION_UI_URL=http://accounts.flock.local:8081/ui/registration
     ports:
       - '4433:4433'
       - '4434:4434'
@@ -116,8 +116,8 @@ services:
   kratos-selfservice-ui-node:
     image: oryd/kratos-selfservice-ui-node:latest
     environment:
-      - KRATOS_PUBLIC_URL=$INTERNAL_KRATOS_URL
-      - KRATOS_BROWSER_URL=$PUBLIC_KRATOS_URL
+      - KRATOS_PUBLIC_URL=http://kratos:4433
+      - KRATOS_BROWSER_URL=http://accounts.flock.local:8081/api
       - BASE_PATH=/ui
     networks:
       - intranet

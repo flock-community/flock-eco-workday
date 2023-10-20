@@ -67,7 +67,7 @@
     url: http://keto:4467
     strip_path: /keto
   match:
-    url: https://accounts.flock.local:8081/keto/admin/<.*>
+    url: http://accounts.flock.local:8081/keto/admin/<.*>
     methods:
       - POST
       - PUT
