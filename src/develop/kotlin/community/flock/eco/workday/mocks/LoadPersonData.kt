@@ -105,23 +105,23 @@ class LoadPersonData(
                 )
             }
 
-            if (loginType == "KRATOS") {
-
-                val kratosIds: List<String> = getKratosIdentities().map { it.id }
-                persons.mapNotNull { person ->
-                    val kratosReferences =
-                        person.user?.accounts
-                            ?.filter { a -> a is UserAccountOauth && a.provider == UserAccountOauthProvider.KRATOS }
-                            ?.map { (it as UserAccountOauth).reference } ?: emptyList()
-
-                    val kratosId = kratosIds.firstOrNull { kratosReferences.contains(it) }
-                    kratosId?.let {
-                        UserPerson(kratosId, person.uuid.toString())
-                    }
-
-                }
-                    .let { writeUserPersonRelations(it) }
-            }
+//            if (loginType == "KRATOS") {
+//
+//                val kratosIds: List<String> = getKratosIdentities().map { it.id }
+//                persons.mapNotNull { person ->
+//                    val kratosReferences =
+//                        person.user?.accounts
+//                            ?.filter { a -> a is UserAccountOauth && a.provider == UserAccountOauthProvider.KRATOS }
+//                            ?.map { (it as UserAccountOauth).reference } ?: emptyList()
+//
+//                    val kratosId = kratosIds.firstOrNull { kratosReferences.contains(it) }
+//                    kratosId?.let {
+//                        UserPerson(kratosId, person.uuid.toString())
+//                    }
+//
+//                }
+//                    .let { writeUserPersonRelations(it) }
+//            }
         }
     }
 

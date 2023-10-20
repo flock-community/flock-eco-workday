@@ -16,9 +16,13 @@ data class MockUser(
     val joinDate: LocalDate? = null,
     val shoeSize: String? = null,
     val shirtSize: String? = null,
-)
+) {
+    val email = "${firstName.lowercase()}@sesam.straat";
+}
 
-data class KratosIdentity(val id: String, val email: String)
+data class KratosIdentity(val id: String, val traits: Traits) {
+    data class Traits(val email: String)
+}
 
 val mockUsers = listOf(
     MockUser(
