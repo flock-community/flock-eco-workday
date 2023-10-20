@@ -11,8 +11,6 @@ function update(it: Person | null) {
   listeners.forEach((func) => func(it));
 }
 
-
-
 export function usePerson(): [Person | null, (personId: string) => void] {
   const status = useLoginStatus();
   const location = useLocation();
@@ -22,7 +20,6 @@ export function usePerson(): [Person | null, (personId: string) => void] {
   useEffect(() => {
     const listener = (it) => setState(it);
     if (store === null && listeners.length === 0) {
-      console.log("statussssss", status)
       if (status && status.isLoggedIn) {
         PersonClient.me().then(update);
       }
