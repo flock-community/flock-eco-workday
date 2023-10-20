@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { UserClient } from "../clients/UserClient";
+import { BootstrapClient } from "../clients/BootstrapClient";
 
 let store = null;
 const listeners = [];
@@ -15,7 +15,7 @@ export function useLoginStatus() {
   useEffect(() => {
     const listener = (it) => setState(it);
     if (store === null && listeners.length === 0) {
-      UserClient.getStatus().then(update);
+      BootstrapClient.getBootstrap().then(update);
     }
     listeners.push(listener);
     return () => {
