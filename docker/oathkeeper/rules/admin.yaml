@@ -74,7 +74,7 @@
       - PATCH
       - DELETE
   authenticators:
-    - handler: cookie_session
+    - handler: noop
   authorizer:
     handler: allow
 #    handler: remote_json
