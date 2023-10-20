@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Person, PersonClient } from "../clients/PersonClient";
 import { useLoginStatus } from "./StatusHook";
 
-let store: Person | null = null;
+export let store: Person | null = null;
 const listeners: ((person: Person | null) => void)[] = [];
 
 function update(it: Person | null) {

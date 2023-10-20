@@ -12,7 +12,6 @@ import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import { ApplicationLayout } from "./ApplicationLayout";
 import { ApplicationDrawer } from "./ApplicationDrawer";
-import { ApplicationContext } from "./ApplicationContext";
 import { HomeFeature } from "../features/home/HomeFeature";
 import { ClientFeature } from "../features/client/ClientFeature";
 import { PersonFeature } from "../features/person/PersonFeature";
@@ -39,102 +38,99 @@ import AssignmentReport from "../features/report/Assignment/AssignmentReport";
 import ContractOverview from "../features/report/ContractOverview/ContractOverview";
 import AssignmentOverview from "../features/report/AssignmentOverview/AssignmentOverview";
 import { LoginFeature } from "../features/login/LoginFeature";
+import {usePerson} from "../hooks/PersonHook";
 
 const theme = getTheme("light");
 
-const unauthorizedRoutes = [/^#\/event_rating\/.*/];
-
 export const Application = () => {
   const status = useLoginStatus();
-  const user = useUserMe();
   const errors = useError();
-  const [openDrawer, setOpenDrawer] = useState(false);
+
+  if (status == null) {
+    return <AlignedLoader/>;
+  }
+
+  return (
+    <Router>
+      <ThemeProvider theme={theme}>
+        { status.isLoggedIn ? <RenderAuthenticated status={status} /> : <RenderUnauthenticated />}
+          <ErrorStack ErrorList={errors}/>
+      </ThemeProvider>
+    </Router>
+  );
+};
+
+const RenderAuthenticated = ({status}) => {
+  const [ person, handlePerson ] = usePerson();
+  const [ user, handleUser ] = useUserMe();
 
   useEffect(() => {
     if (status) {
       UserAuthorityUtil.setAuthorities(status.authorities);
+      handlePerson(status.personId);
+      handleUser(status.userId);
     }
   }, [status]);
 
-  function handleDrawerClose() {
-    setOpenDrawer(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
+
+  if (person == null || status == null || user == null) {
+    return <AlignedLoader/>;
   }
 
-  function handleDrawerOpen() {
-    setOpenDrawer(true);
-  }
+  return <>
+    <ApplicationDrawer
+      open={openDrawer}
+      onClose={() => setOpenDrawer(false)}
+    />
+    <ApplicationLayout onDrawer={() => setOpenDrawer(true)}/>
+    <Box>
+      <Switch>
+        <Route path="/" exact component={HomeFeature}/>
+        <Route path="/dashboard" exact component={DashboardFeature}/>
+        <Route path="/month" exact component={MonthFeature}/>
+        <Route path="/todo" exact component={TodoFeature}/>
+        <Route path="/clients" exact component={ClientFeature}/>
+        <Route path="/contracts" exact component={ContractPage}/>
+        <Route path="/projects" exact component={ProjectFeature}/>
+        <Route path="/assignments" exact component={AssignmentPage}/>
+        <Route path="/workdays" exact component={WorkDayPage}/>
+        <Route path="/leave-days" exact component={LeaveDayPage}/>
+        <Route path="/sickdays" component={SickDayPage}/>
+        <Route path="/expenses" component={ExpensePage}/>
+        <Route path="/exactonline" component={ExactonlineFeature}/>
+        <Route path="/users" exact component={UserFeature}/>
+        <Route path="/person" component={PersonFeature}/>
+        <Route path="/event" component={EventFeature}/>
+        <Route
+          path="/event_rating/:eventCode"
+          component={EventRatingFeature}
+        />
+        <Route
+          path="/reports/assignment"
+          component={AssignmentReport}
+        />
+        <Route
+          path="/reports/contract-overview"
+          component={ContractOverview}
+        />
+        <Route
+          path="/reports/assignment-overview"
+          component={AssignmentOverview}
+        />
+        <Redirect to="/"/>
+      </Switch>
+    </Box>
+  </>
+};
 
-  if (!status) {
-    return <AlignedLoader />;
-  }
-
-  const authorize = !unauthorizedRoutes.find((it) =>
-    it.exec(window.location.hash)
-  );
-
-  const loginNeeded = authorize && !status.isLoggedIn;
-
-  return (
-    <ThemeProvider theme={theme}>
-      <ApplicationContext.Provider
-        value={{ authorities: status.authorities, user }}
-      >
-        <Router>
-          {loginNeeded ? (
-            <>
-              <Redirect to="/auth" exact />
-              <Route path="/auth" exact component={LoginFeature} />
-            </>
-          ) : (
-            <>
-              <ApplicationDrawer
-                open={openDrawer}
-                onClose={handleDrawerClose}
-              />
-              <ApplicationLayout onDrawer={handleDrawerOpen} />
-              <Box m={2}>
-                <Switch>
-                  <Route path="/" exact component={HomeFeature} />
-                  <Route path="/dashboard" exact component={DashboardFeature} />
-                  <Route path="/month" exact component={MonthFeature} />
-                  <Route path="/todo" exact component={TodoFeature} />
-                  <Route path="/clients" exact component={ClientFeature} />
-                  <Route path="/contracts" exact component={ContractPage} />
-                  <Route path="/projects" exact component={ProjectFeature} />
-                  <Route path="/assignments" exact component={AssignmentPage} />
-                  <Route path="/workdays" exact component={WorkDayPage} />
-                  <Route path="/leave-days" exact component={LeaveDayPage} />
-                  <Route path="/sickdays" component={SickDayPage} />
-                  <Route path="/expenses" component={ExpensePage} />
-                  <Route path="/exactonline" component={ExactonlineFeature} />
-                  <Route path="/users" exact component={UserFeature} />
-                  <Route path="/person" component={PersonFeature} />
-                  <Route path="/event" component={EventFeature} />
-                  <Route
-                    path="/event_rating/:eventCode"
-                    component={EventRatingFeature}
-                  />
-                  <Route
-                    path="/reports/assignment"
-                    component={AssignmentReport}
-                  />
-                  <Route
-                    path="/reports/contract-overview"
-                    component={ContractOverview}
-                  />
-                  <Route
-                    path="/reports/assignment-overview"
-                    component={AssignmentOverview}
-                  />
-                  <Redirect to="/" />
-                </Switch>
-              </Box>
-            </>
-          )}
-        </Router>
-
-        <ErrorStack ErrorList={errors} />
-      </ApplicationContext.Provider>
-    </ThemeProvider>
-  );
+const RenderUnauthenticated = () => {
+  return <>
+    <ApplicationDrawer open={false} onClose={() => {}} />
+    <ApplicationLayout onDrawer={() => {}}/>
+    <Box>
+      <Redirect to="/auth" exact/>
+      <Route path="/auth" exact component={LoginFeature}/>
+    </Box>
+  </>
 };

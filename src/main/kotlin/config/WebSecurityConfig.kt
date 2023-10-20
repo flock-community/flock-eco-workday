@@ -61,6 +61,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .antMatchers("/tasks/**").permitAll()
             .antMatchers("/actuator/**").permitAll()
             .antMatchers("/login/**").permitAll()
+            .antMatchers("/bootstrap").permitAll()
             .antMatchers("/h2/**").permitAll()
             .antMatchers("/api/events/**").permitAll()
             .antMatchers(*SWAGGER_WHITELIST).permitAll()

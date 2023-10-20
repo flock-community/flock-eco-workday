@@ -42,7 +42,7 @@ type ApplicationDrawerProps = {
 
 export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
   const classes = useStyles();
-  const user = useUserMe();
+  const [ user ] = useUserMe();
 
   const handleClose = () => onClose?.();
 

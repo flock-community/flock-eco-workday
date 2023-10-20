@@ -3,19 +3,19 @@ import {
   validateResponse,
 } from "@flock-community/flock-eco-core/src/main/react/clients/utils.ts";
 
-const path = "/login";
+const path = "/bootstrap";
 
-const getType = () => {
+const getBootstrap = () => {
   const opts = {
     method: "GET",
   };
 
-  return fetch(`${path}/type`, opts)
+  return fetch(`${path}`, opts)
     .then(validateResponse)
     .then(checkResponse)
     .then((res) => res.body);
 };
 
-export const UserClient = {
-  getType,
+export const BootstrapClient = {
+  getBootstrap,
 };
