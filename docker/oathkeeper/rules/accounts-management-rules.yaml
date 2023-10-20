@@ -82,13 +82,15 @@
   upstream:
     url: http://kratos-selfservice-ui-node:3000/ui/
   match:
-    url: http://accounts.flock.local:8081/
+    url: http://accounts.flock.local:8081/<(ui)?>
     methods:
       - GET
   authenticators:
     - handler: unauthorized
   authorizer:
     handler: allow
+  mutators:
+    - handler: noop
   errors:
     - handler: redirect
       config:

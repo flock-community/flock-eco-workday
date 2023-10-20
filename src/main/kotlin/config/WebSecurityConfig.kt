@@ -30,7 +30,6 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher
 import org.springframework.stereotype.Component
-import java.util.*
 
 internal class CustomAuthenticationConverter(
     private val userAccountService: UserAccountService,

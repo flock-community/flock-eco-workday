@@ -38,25 +38,9 @@ services:
     volumes:
       - ./docker/oathkeeper:/etc/config/oathkeeper
 
-  keto:
-    image: oryd/keto:v0.11.1-alpha.0
-    networks:
-      - intranet
-    links:
-      - postgres-keto:postgres-keto
-    ports:
-      - "4466:4466"
-      - "4467:4467"
-    environment:
-      - DSN=postgres://keto:secret@postgres-keto:5432/keto?sslmode=disable&max_conns=20&max_idle_conns=4
-    depends_on:
-      - keto-migrate
-    restart: on-failure
-    volumes:
-      - type: bind
-        source: ./keto
-        target: /home/ory
-
+  #############
+  ## Kratos  ##
+  #############
   kratos:
     image: oryd/kratos:v0.13.0
     links:
@@ -91,34 +75,12 @@ services:
       - intranet
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
 
-  kratos-selfservice-ui-node:
-    image: oryd/kratos-selfservice-ui-node:latest
-    environment:
-      - KRATOS_PUBLIC_URL=$INTERNAL_KRATOS_URL
-      - KRATOS_BROWSER_URL=$PUBLIC_KRATOS_URL
-      - BASE_PATH=/ui
-    networks:
-      - intranet
-    ports:
-      - "3002:3000"
-    restart: on-failure
-
   postgres-kratos:
     image: postgres:13.6
     environment:
       - POSTGRES_USER=kratos
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=kratos
-    networks:
-      - intranet
-  postgres-keto:
-    image: postgres:13.6
-    ports:
-      - "54321:5432"
-    environment:
-      - POSTGRES_USER=keto
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=keto
     networks:
       - intranet
 
@@ -148,13 +110,60 @@ services:
         target: /tmp
     command: /tmp/import_identities.sh
 
+  #############################
+  ## Kratos selfservice ui   ##
+  #############################
+  kratos-selfservice-ui-node:
+    image: oryd/kratos-selfservice-ui-node:latest
+    environment:
+      - KRATOS_PUBLIC_URL=$INTERNAL_KRATOS_URL
+      - KRATOS_BROWSER_URL=$PUBLIC_KRATOS_URL
+      - BASE_PATH=/ui
+    networks:
+      - intranet
+    ports:
+      - "3002:3000"
+    restart: on-failure
+
+  ############
+  ## Keto  ##
+  ############
+  keto:
+    image: oryd/keto:v0.11.1-alpha.0
+    networks:
+      - intranet
+    links:
+      - postgres-keto:postgres-keto
+    ports:
+      - "4466:4466"
+      - "4467:4467"
+    environment:
+      - DSN=postgres://keto:secret@postgres-keto:5432/keto?sslmode=disable&max_conns=20&max_idle_conns=4
+    depends_on:
+      - keto-migrate
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ./docker/keto
+        target: /home/ory
+  postgres-keto:
+    image: postgres:13.6
+    ports:
+      - "54321:5432"
+    environment:
+      - POSTGRES_USER=keto
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=keto
+    networks:
+      - intranet
+
   keto-migrate:
     image: oryd/keto:v0.11.1-alpha.0
     links:
       - postgres-keto:postgres-keto
     volumes:
       - type: bind
-        source: ./keto
+        source: ./docker/keto
         target: /home/ory
     environment:
       - LOG_LEVEL=debug
@@ -164,7 +173,20 @@ services:
     command: ["migrate", "up", "-y"]
     restart: on-failure
 
-
+  keto-add-access-rules:
+    image: oryd/keto:v0.11.1-alpha.0
+    networks:
+      - intranet
+    environment:
+      - LOG_LEVEL=debug
+      - KETO_WRITE_REMOTE=keto:4467
+    entrypoint: /bin/sh /home/ory/update-zanzibar-rules.sh
+    depends_on:
+      - keto
+    volumes:
+      - type: bind
+        source: ./docker/keto
+        target: /home/ory
   mailslurper:
     image: oryd/mailslurper:latest-smtps
     ports:

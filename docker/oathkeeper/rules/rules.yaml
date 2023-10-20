@@ -1,0 +1,68 @@
+- id: workday-api-calls
+  upstream:
+    #    url: http://workday:8080
+    # to allow to use 'local' app rather than docker one
+    url: http://host.docker.internal:8080
+  version: v0.40.2
+  match:
+    url: http://workday.flock.local:8081/<(api|login).*>
+    methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: allow
+#        handler: remote_json
+#        config:
+#          payload: |
+#            {
+#              "namespace": "Person",
+#              "object": "{{ .MatchContext.Header.Get "Context-Person-Id" }}",
+#              "relation": "view",
+#              "subject_set" : {
+#                 "namespace": "User",
+#                 "object": "{{print .Subject}}",
+#                 "relation": ""
+#               }
+#            }
+  mutators:
+    - handler: header
+    - handler: id_token
+#      config:
+#        claims: |
+#          {
+#            "aud": ["http://workday.flock.local:8081"],
+#            "email": "{{ print .Extra.identity.traits.email }}"
+#          }
+  errors:
+    - handler: redirect
+
+- id: workday-fe-resources
+  upstream:
+#    url: http://workday:8080
+    # to allow to use 'local' app rather than docker one
+    url: http://host.docker.internal:8080
+  version: v0.40.2
+  match:
+    # all urls not starting with /api or /login
+    url: http://workday.flock.local:8081/<(?!(api|login)).*>
+    methods:
+      - GET
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+      handler: allow
+  mutators:
+    - handler: header
+    - handler: id_token
+#      config:
+#        claims: |
+#          {
+#            "aud": ["http://workday.flock.local:8081"],
+#            "email": "{{ print .Extra.identity.traits.email }}"
+#          }
+  errors:
+    - handler: redirect

@@ -30,9 +30,11 @@ log:
   format: json
 
 access_rules:
+  matching_strategy: regexp
   repositories:
-    - file:///etc/config/oathkeeper/accounts-management-rules.yaml
-    - file:///etc/config/oathkeeper/rules.yaml
+    - file:///etc/config/oathkeeper/rules/accounts-management-rules.yaml
+    - file:///etc/config/oathkeeper/rules/admin.yaml
+    - file:///etc/config/oathkeeper/rules/rules.yaml
 
 errors:
   fallback:
@@ -64,7 +66,7 @@ mutators:
       issuer_url: --set-me-through-env-variable--
       jwks_url: file:///etc/config/oathkeeper/jwks.json
       ttl: 60s
-      claims: '{"aud": ["https://my-backend-service/some/endpoint"],"email": "{{ print .Extra.identity.traits.email }}"}'
+      claims: '{"email": "{{ print .Extra.identity.traits.email }}", "name": "{{ print .Extra.identity.traits.name.first }} {{ print .Extra.identity.traits.name.last }}", "aal": "{{ print .Extra.authenticator_assurance_level }}"}'
   header:
     enabled: true
     config:
