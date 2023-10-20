@@ -34,5 +34,13 @@ export function useUserMe() {
     };
   }, [status]);
 
-  return state;
+  const handleUser = (userId) => {
+    if (userId !== null) {
+      UserClient.findUsersMe().then(update);
+    } else {
+      update(null);
+    }
+  };
+
+  return [state, handleUser];
 }

@@ -5,17 +5,6 @@ import {
 
 const path = "/login";
 
-const getStatus = () => {
-  const opts = {
-    method: "GET",
-  };
-
-  return fetch(`${path}/status`, opts)
-    .then(validateResponse)
-    .then(checkResponse)
-    .then((res) => res.body);
-};
-
 const getType = () => {
   const opts = {
     method: "GET",
@@ -28,6 +17,5 @@ const getType = () => {
 };
 
 export const UserClient = {
-  getStatus,
   getType,
 };

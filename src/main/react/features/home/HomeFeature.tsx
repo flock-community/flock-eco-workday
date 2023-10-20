@@ -9,7 +9,7 @@ import PersonEvents from "../../components/person/PersonEvents";
 import {DashboardLeaveDayChart} from "../../components/charts/DashboardLeaveDayChart";
 
 export function HomeFeature() {
-  const user = useUserMe();
+  const [ user ] = useUserMe();
 
   const hasAccess = user?.authorities?.length > 0;
 
