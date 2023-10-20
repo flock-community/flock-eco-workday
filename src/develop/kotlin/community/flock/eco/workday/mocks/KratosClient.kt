@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.BodyInserters
+import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 
@@ -17,32 +19,21 @@ class KratosClient(
     private val objectMapper: ObjectMapper,
     kratosConfig: KratosConfig,
 ) {
-
     val kratosClient: WebClient = WebClient.builder()
         .baseUrl(kratosConfig.requestUri)
+        .defaultHeaders {
+            it.accept = listOf(MediaType.APPLICATION_JSON)
+        }
         .build()
 
 
     fun getKratosIdentities(): List<KratosIdentity> {
         return kratosClient.get()
             .uri("admin/identities")
-            .accept(MediaType.APPLICATION_JSON)
-            .exchangeToMono { response ->
-                when (response.rawStatusCode()) {
-                    in 200..299 -> {
-                        response.toEntityList(KratosIdentity::class.java)
-                    }
-
-                    else -> {
-                        response.createException()
-                            .flatMap { i -> Mono.error(i) }
-                    }
-                }
-            }.block()?.body ?: error("Fetching kratos identities was unsuccessful")
-
+            .handleResponseList()
     }
 
-    fun getOrCreateIdentities(mockUser: MockUser, identities: List<KratosIdentity>): KratosIdentity =
+    fun getOrCreateIdentity(mockUser: MockUser, identities: List<KratosIdentity>): KratosIdentity =
         identities.find { it.traits.email == mockUser.email }
             ?: createKratosIdentity(mockUser)
 
@@ -56,7 +47,7 @@ class KratosClient(
                         createKratosIdentity
                     )
                 )
-            ).accept(MediaType.APPLICATION_JSON)
+            )
             .handleResponse<KratosIdentity>()
     }
 
@@ -78,16 +69,18 @@ class KratosClient(
 
 }
 
-private inline fun <reified T> WebClient.RequestHeadersSpec<*>.handleResponse(): T = exchangeToMono { response ->
-    when (response.rawStatusCode()) {
-        in 200..299 -> {
-            response.bodyToMono(T::class.java)
-        }
+private inline fun <reified T> WebClient.RequestHeadersSpec<*>.handleResponseList(): List<T> =
+    handleResponseDetails { it.toEntityList(T::class.java) }
 
-        else -> {
-            response.createException()
-                .flatMap { i -> Mono.error(i) }
+private inline fun <reified T> WebClient.RequestHeadersSpec<*>.handleResponse(): T =
+    handleResponseDetails { it.toEntity(T::class.java) }
+
+private inline fun <reified T> WebClient.RequestHeadersSpec<*>.handleResponseDetails(crossinline responseMapper: (ClientResponse) -> Mono<ResponseEntity<T>>): T =
+    exchangeToMono { response ->
+        when (response.rawStatusCode()) {
+            in 200..299 -> responseMapper(response)
+            else -> response.createException().flatMap { Mono.error(it) }
         }
-    }
-}.block() ?: error("Something went wrong")
+    }.block()?.body ?: error("Something went wrong")
+
 

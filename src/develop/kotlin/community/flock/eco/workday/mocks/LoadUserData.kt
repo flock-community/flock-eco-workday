@@ -49,7 +49,7 @@ class LoadUserData(
             if (loginType == "KRATOS") {
                 val identities = kratosClient.getKratosIdentities()
                 mockUsers.forEach {
-                    val kratosId = kratosClient.getOrCreateIdentities(it, identities)
+                    val kratosId = kratosClient.getOrCreateIdentity(it, identities)
                     createUserAccountOAuth(it, kratosId)
                 }
             } else {
@@ -83,7 +83,6 @@ class LoadUserData(
                 Role.USER -> workerAuthorities
             }
         }
-
 
     private fun UserAccountPasswordForm.save(): User =
         userAccountService.createUserAccountPassword(this)
