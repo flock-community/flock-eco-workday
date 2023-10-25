@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc
 
 @Configuration
 @EnableJpaRepositories
-@EnableWebMvc
+//@EnableWebMvc
 @EntityScan
 @ComponentScan(
     basePackages = [
@@ -22,6 +22,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc
         "community.flock.eco.workday.controllers",
         "community.flock.eco.workday.mappers",
         "community.flock.eco.workday.google",
+        "community.flock.eco.workday.authentication",
     ]
 )
 @Import(

@@ -20,13 +20,18 @@ const config = {
   devServer: {
     ...ecoConfig.devServer,
     historyApiFallback: true,
+    // TODO: create separate config to do local development with the Ory stack
+    host: '0.0.0.0', // needed for the Ory stack
+    disableHostCheck: true, // needed for the Ory stack
     proxy: {
       ...ecoConfig.devServer.proxy,
-      "/bootstrap": "http://localhost:8080",
-      "/logout": "http://localhost:8080",
-      "/tasks/*": "http://localhost:8080",
-      "/export/*": "http://localhost:8080",
-      "/oauth2/*": "http://localhost:8080",
+      "/api": "http://workday.flock.local:8081",
+      "/login": "http://workday.flock.local:8081",
+      "/bootstrap": "http://workday.flock.local:8081",
+      "/logout": "http://workday.flock.local:8081",
+      "/tasks/*": "http://workday.flock.local:8081",
+      "/export/*": "http://workday.flock.local:8081",
+      "/oauth2/*": "http://workday.flock.local:8081",
     },
   },
 };

@@ -56,7 +56,7 @@ class KratosClient(
             CreateKratosIdentity.Traits.Name(firstName, lastName),
             email
         ),
-        credentials = CreateKratosIdentity.Credentials.passwordCredentials(firstName),
+        credentials = CreateKratosIdentity.Credentials.passwordCredentials(firstName.lowercase()),
         verifiableAddresses = listOf(
             CreateKratosIdentity.Address(
                 value = email,

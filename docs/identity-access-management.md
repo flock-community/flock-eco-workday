@@ -60,8 +60,7 @@ Which can be read as
 > ℹ️
 > This model allows manager of (a) Flock. to have a relation with a specific Workday coupled to a person.
 >
-> E.g. _Workday-X_ is **owned** by _Person-Y_, which is part of **organisational unit** _Flock-Z_, which in turn is \*
-> \*managed\*\* by _User-manager-A_
+> E.g. _Workday-X_ is **owned** by _Person-Y_, which is part of **organisational unit** _Flock-Z_, which in turn is \* > \*managed\*\* by _User-manager-A_
 
 Besides the relations model, Workday also need permissions assigned. Ory's keto, provided an intuitive concept for
 permissions in the following form:
@@ -83,11 +82,12 @@ for the implementation details see [permissions.ts](../docker/keto/namespaces/pe
 
 > ℹ️ Prerequisites:
 >
-> 1. In your `etc/hosts`, the domains `accounts.flock.local` and `workday.flock.local` should both resolve to 127.0.0.1
+> 1. In your `etc/hosts`, the domains `accounts.flock.local`, `fe-workday.flock.local` and `workday.flock.local` should both resolve to 127.0.0.1
 >
 > ```
 >   127.0.0.1	accounts.flock.local
 >   127.0.0.1	workday.flock.local
+>   127.0.0.1	fe-workday.flock.local
 > ```
 >
 > 2. Run `docker compose up -d` to start all Ory related containers for identity and access management.

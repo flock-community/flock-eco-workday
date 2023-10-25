@@ -30,8 +30,8 @@ services:
       - ERRORS_HANDLERS_REDIRECT_CONFIG_TO=http://accounts.flock.local:8081/ui/login
       - MUTATORS_ID_TOKEN_CONFIG_ISSUER_URL=http://accounts.flock.local:8081
       - SERVE_PROXY_CORS_ALLOWED_ORIGINS_0=http://workday.flock.local:8081
-      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_1=http://accounts.flock.local:8081/ui/
-      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_2=http://accounts.flock.local:8081/api
+      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_1=http://accounts.flock.local:8081
+      - SERVE_PROXY_CORS_ALLOWED_ORIGINS_2=http://fe-workday.flock.local:8081
     restart: on-failure
     networks:
       - intranet
@@ -51,8 +51,9 @@ services:
       - SERVE_PUBLIC_BASE_URL=http://accounts.flock.local:8081/api
       - SERVE_ADMIN_BASE_URL=http://kratos:4434
       - SELFSERVICE_DEFAULT_BROWSER_RETURN_URL=http://workday.flock.local:8081
-      - SELFSERVICE_ALLOWED_RETURN_URLS_0=http://workday.flock.local:8081
-      - SELFSERVICE_ALLOWED_RETURN_URLS_1=http://accounts.flock.local:8081/ui/
+      - SELFSERVICE_ALLOWED_RETURN_URLS_0=http://accounts.flock.local:8081
+      - SELFSERVICE_ALLOWED_RETURN_URLS_1=http://workday.flock.local:8081
+      - SELFSERVICE_ALLOWED_RETURN_URLS_2=http://fe-workday.flock.local:8081
       # - BASE_PATH=/kratos
       - SELFSERVICE_FLOWS_ERROR_UI_URL=http://accounts.flock.local:8081/ui/error
       - SELFSERVICE_FLOWS_SETTINGS_UI_URL=http://accounts.flock.local:8081/ui/settings
