@@ -312,16 +312,30 @@
             <plugin>
                 <groupId>community.flock.wirespec.plugin.maven</groupId>
                 <artifactId>wirespec-maven-plugin</artifactId>
-                <version>0.8.10</version>
+                <version>0.8.11</version>
                 <executions>
                     <execution>
-                        <id>kotlin</id>
+                        <id>keto</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
                             <openapi>v3</openapi>
-                            <input>${project.basedir}/src/openapi/keto.json</input>
+                            <input>${project.basedir}/src/main/openapi/keto.json</input>
+                            <output>${project.build.directory}/generated-sources</output>
+                            <languages>
+                                <language>Kotlin</language>
+                            </languages>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>workday</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <openapi>v3</openapi>
+                            <input>${project.basedir}/src/main/openapi/workday.json</input>
                             <output>${project.build.directory}/generated-sources</output>
                             <languages>
                                 <language>Kotlin</language>

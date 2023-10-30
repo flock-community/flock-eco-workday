@@ -17,7 +17,7 @@ class KetoClientConfiguration {
     val restTemplate = RestTemplate()
 
     @Bean
-    fun kotlinContentMapper(objectMapper: ObjectMapper) =
+    fun contentMapper(objectMapper: ObjectMapper) =
         object : Wirespec.ContentMapper<ByteArray> {
             override fun <T> read(
                 content: Wirespec.Content<ByteArray>,
@@ -38,7 +38,7 @@ class KetoClientConfiguration {
 
 
     @Bean
-    fun ketoClient(kotlinContentMapper: Wirespec.ContentMapper<ByteArray>): KetoClient =
+    fun ketoClient(contentMapper: Wirespec.ContentMapper<ByteArray>): KetoClient =
         object : KetoClient {
             fun <Req : Wirespec.Request<*>, Res : Wirespec.Response<*>> handle(
                 request: Req,
@@ -48,13 +48,13 @@ class KetoClientConfiguration {
                 HttpMethod.valueOf(request.method.name),
                 { req ->
                     request.content
-                        ?.let { kotlinContentMapper.write(it) }
+                        ?.let { contentMapper.write(it) }
                         ?.let { req.body.write(it.body) }
                 },
                 { res ->
                     val contentType = res.headers.contentType?.toString()?.replace(";charset=utf-8", "") ?: error("No content type")
                     val content = Wirespec.Content(contentType, res.body.readBytes())
-                    responseMapper(kotlinContentMapper)(
+                    responseMapper(contentMapper)(
                         res.statusCode.value(),
                         res.headers,
                         content
