@@ -2,6 +2,7 @@ package community.flock.eco.workday.mocks
 
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.model.UserAccountOauth
+import community.flock.eco.feature.user.model.UserAccountOauthProvider
 import community.flock.eco.workday.clients.KetoClientConfiguration
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.repository.PersonRepository
@@ -102,9 +103,7 @@ class LoadPersonData(
                         shirtSize = it.shirtSize,
                     )
                 }.map {
-                    if (loginType == "KRATOS") {
-                        createKetoRelationBetweenKratosUserAndPerson(it)
-                    }
+                    createKetoRelationForPersonAndUserAccounts(it)
                     it
                 }.groupBy { if (it.user?.authorities?.any { a -> a.endsWith("ADMIN") } == true) "admin" else "worker" }
 
@@ -141,14 +140,20 @@ class LoadPersonData(
         }
     }
 
-    private fun createKetoRelationBetweenKratosUserAndPerson(person: Person) = runBlocking {
-        val kratosUserId =
+    private fun createKetoRelationForPersonAndUserAccounts(person: Person) {
+        val kratosUserIds =
             (person.user
                 ?.accounts
-                ?.first { ua -> ua is UserAccountOauth } as UserAccountOauth?)
-                ?.reference
-                ?: error("No Kratos UserAccount found for ${person.firstname} ${person.lastname}")
+                ?.filter { ua -> ua is UserAccountOauth && ua.provider == UserAccountOauthProvider.KRATOS } as List<UserAccountOauth>?)
+                ?.map { it.reference }
+                ?: emptyList()
 
+        kratosUserIds.forEach {
+            runBlocking { createRelationBetweenPersonAndUser(person, it) }
+        }
+    }
+
+    private suspend fun createRelationBetweenPersonAndUser(person: Person, kratosUserId: String) {
         val body = CreateRelationshipBody(
             namespace = "Person",
             `object` = person.uuid.toString(),
@@ -161,9 +166,7 @@ class LoadPersonData(
         )
 
         val createRelationship = ketoClient.createRelationship(
-            CreateRelationship.RequestApplicationJson(
-                body
-            )
+            CreateRelationship.RequestApplicationJson(body)
         )
         if (createRelationship.status > 299) {
             error("Some error occurred creating relationship $body. Error: ${createRelationship.content?.body}")
