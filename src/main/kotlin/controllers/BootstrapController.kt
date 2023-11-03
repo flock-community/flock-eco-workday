@@ -20,7 +20,7 @@ class BootstrapController(
             isLoggedIn = authentication?.isAuthenticated ?: false,
             userId = authentication?.name,
             personId = authentication?.name?.let {
-                personService.findByUserCode(it)?.uuid.toString()
+                personService.findByUserCode(it)?.uuid?.toString()
             },
         ));
 }
