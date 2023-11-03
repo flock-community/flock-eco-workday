@@ -3,7 +3,6 @@ package community.flock.eco.workday.services.email
 import community.flock.eco.workday.config.properties.NotificationProperties
 import org.json.JSONObject
 import org.springframework.stereotype.Component
-import java.net.URL
 
 @Component
 class EmailService(private val emailSendService: MailjetService, private val notificationProperties: NotificationProperties) {
@@ -29,7 +28,7 @@ class EmailService(private val emailSendService: MailjetService, private val not
     fun createTemplateVariables(
         salutation: String,
         emailMessage: String,
-        url: URL = URL("https://workday.flock.community")
+        url: String = "https://workday.flock.community"
     ): JSONObject {
         return JSONObject()
             .put("recipient_salutation", salutation)
