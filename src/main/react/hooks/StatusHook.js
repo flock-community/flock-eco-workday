@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { BootstrapClient } from "../clients/BootstrapClient";
 
-let store = null;
+// eslint-disable-next-line import/no-mutable-exports
+export let store = null;
 const listeners = [];
 
 function update(it) {
@@ -19,7 +20,11 @@ export function useLoginStatus() {
     }
     listeners.push(listener);
     return () => {
-      listeners.filter((it) => it !== listener);
+      const index = listeners.indexOf(listener);
+      if (index !== -1) {
+        // Remove listener at cleanup
+        listeners.splice(index, 1);
+      }
     };
   }, []);
 
