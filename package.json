@@ -7,7 +7,7 @@
     "start": "npm run start:local",
     "start:local": "webpack-dev-server --mode development --env.proxy local",
     "build": "webpack --mode production ./src/main/react",
-    "storybook": "start-storybook",
+    "storybook": "sb dev",
     "test": "jest",
     "test:tdd": "nodemon -w ./src -e js --exec npm test",
     "generate": "graphql-simple-bindings './src/main/graphql/*' './src/main/react/graphql'"
@@ -36,16 +36,20 @@
     "yup": "^0.27.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@babel/plugin-transform-runtime": "^7.12.10",
-    "@babel/preset-env": "^7.12.10",
-    "@babel/preset-react": "^7.12.10",
-    "@babel/preset-typescript": "^7.12.7",
+    "@babel/core": "^7.23.2",
+    "@babel/plugin-proposal-class-properties": "^7.2.1-26",
+    "@babel/plugin-transform-runtime": "^7.23.2",
+    "@babel/preset-env": "^7.23.2",
+    "@babel/preset-react": "^7.22.15",
+    "@babel/preset-typescript": "^7.23.2",
     "@flock-community/flock-eco-webpack": "^2.7.11",
     "@flock/graphql-simple-bindings": "^1.0.8",
     "@flock/graphql-to-rest": "^0.1.0",
-    "@storybook/react": "^5.1.4",
+    "@storybook/cli": "^7.5.2",
+    "@storybook/react-vite": "^7.5.2",
+    "@storybook/addon-themes": "^7.5.2",
+    "@fontsource/roboto":  "^5.0.8",
+    "@fontsource/material-icons": "^5.0.7",
     "@testing-library/react": "^9.3.2",
     "@types/jest": "^24.0.23",
     "babel-jest": "^24.9.0",
@@ -67,7 +71,7 @@
     "nodemon": "^2.0.2",
     "prettier": "^2.2.1",
     "react-test-renderer": "^16.12.0",
-    "typescript": "^4.0.5",
+    "typescript": "^5.2.2",
     "webpack-bundle-analyzer": "^3.8.0"
   },
   "husky": {
@@ -85,12 +89,12 @@
       "git add"
     ]
   },
-  "homepage": "https://github.com/flock-community/flock-eco-holidays#readme",
+  "homepage": "https://github.com/flock-community/flock-eco-workday#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/flock-community/flock-eco-holidays.git"
+    "url": "git+https://github.com/flock-community/flock-eco-workday.git"
   },
   "bugs": {
-    "url": "https://github.com/flock-community/flock-eco-holidays/issues"
+    "url": "https://github.com/flock-community/flock-eco-workday/issues"
   }
 }
