@@ -8,11 +8,13 @@ import AddIcon from "@material-ui/icons/Add";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 
 type AssignmentFeatureProps = {
-  person: Person,
+  person: Person;
 };
 
 export function AssignmentFeature({ person }: AssignmentFeatureProps) {
-  const hasWriteAuthority = UserAuthorityUtil.hasAuthority("AssignmentAuthority.WRITE")
+  const hasWriteAuthority = UserAuthorityUtil.hasAuthority(
+    "AssignmentAuthority.WRITE"
+  );
   const [reload, setReload] = useState(true);
   const [dialog, setDialog] = useState({ open: false, code: null });
 
@@ -34,10 +36,12 @@ export function AssignmentFeature({ person }: AssignmentFeatureProps) {
       <Card>
         <CardHeader
           title="Assignments"
-          action={hasWriteAuthority &&
-            <Button onClick={handleClickAdd}>
-              <AddIcon /> Add
-            </Button>
+          action={
+            hasWriteAuthority && (
+              <Button onClick={handleClickAdd}>
+                <AddIcon /> Add
+              </Button>
+            )
           }
         />
         <CardContent>

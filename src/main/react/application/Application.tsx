@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   BrowserRouter as Router,
@@ -38,7 +38,7 @@ import AssignmentReport from "../features/report/Assignment/AssignmentReport";
 import ContractOverview from "../features/report/ContractOverview/ContractOverview";
 import AssignmentOverview from "../features/report/AssignmentOverview/AssignmentOverview";
 import { LoginFeature } from "../features/login/LoginFeature";
-import {usePerson} from "../hooks/PersonHook";
+import { usePerson } from "../hooks/PersonHook";
 
 const theme = getTheme("light");
 
@@ -47,22 +47,26 @@ export const Application = () => {
   const errors = useError();
 
   if (status == null) {
-    return <AlignedLoader/>;
+    return <AlignedLoader />;
   }
 
   return (
     <Router>
       <ThemeProvider theme={theme}>
-        { status.isLoggedIn ? <RenderAuthenticated status={status} /> : <RenderUnauthenticated />}
-          <ErrorStack ErrorList={errors}/>
+        {status.isLoggedIn ? (
+          <RenderAuthenticated status={status} />
+        ) : (
+          <RenderUnauthenticated />
+        )}
+        <ErrorStack ErrorList={errors} />
       </ThemeProvider>
     </Router>
   );
 };
 
-const RenderAuthenticated = ({status}) => {
-  const [ person, handlePerson ] = usePerson();
-  const [ user, handleUser ] = useUserMe();
+const RenderAuthenticated = ({ status }) => {
+  const [person, handlePerson] = usePerson();
+  const [user, handleUser] = useUserMe();
 
   useEffect(() => {
     if (status) {
@@ -72,65 +76,63 @@ const RenderAuthenticated = ({status}) => {
     }
   }, [status]);
 
+
   const [openDrawer, setOpenDrawer] = useState(false);
 
-  if (person == null || status == null || user == null) {
-    return <AlignedLoader/>;
-  }
-
-  return <>
-    <ApplicationDrawer
-      open={openDrawer}
-      onClose={() => setOpenDrawer(false)}
-    />
-    <ApplicationLayout onDrawer={() => setOpenDrawer(true)}/>
-    <Box>
-      <Switch>
-        <Route path="/" exact component={HomeFeature}/>
-        <Route path="/dashboard" exact component={DashboardFeature}/>
-        <Route path="/month" exact component={MonthFeature}/>
-        <Route path="/todo" exact component={TodoFeature}/>
-        <Route path="/clients" exact component={ClientFeature}/>
-        <Route path="/contracts" exact component={ContractPage}/>
-        <Route path="/projects" exact component={ProjectFeature}/>
-        <Route path="/assignments" exact component={AssignmentPage}/>
-        <Route path="/workdays" exact component={WorkDayPage}/>
-        <Route path="/leave-days" exact component={LeaveDayPage}/>
-        <Route path="/sickdays" component={SickDayPage}/>
-        <Route path="/expenses" component={ExpensePage}/>
-        <Route path="/exactonline" component={ExactonlineFeature}/>
-        <Route path="/users" exact component={UserFeature}/>
-        <Route path="/person" component={PersonFeature}/>
-        <Route path="/event" component={EventFeature}/>
-        <Route
-          path="/event_rating/:eventCode"
-          component={EventRatingFeature}
-        />
-        <Route
-          path="/reports/assignment"
-          component={AssignmentReport}
-        />
-        <Route
-          path="/reports/contract-overview"
-          component={ContractOverview}
-        />
-        <Route
-          path="/reports/assignment-overview"
-          component={AssignmentOverview}
-        />
-        <Redirect to="/"/>
-      </Switch>
-    </Box>
-  </>
+  return (
+    <>
+      <ApplicationDrawer
+        open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+      />
+      <ApplicationLayout onDrawer={() => setOpenDrawer(true)} />
+      <Box>
+        <Switch>
+          <Route path="/" exact component={HomeFeature} />
+          <Route path="/dashboard" exact component={DashboardFeature} />
+          <Route path="/month" exact component={MonthFeature} />
+          <Route path="/todo" exact component={TodoFeature} />
+          <Route path="/clients" exact component={ClientFeature} />
+          <Route path="/contracts" exact component={ContractPage} />
+          <Route path="/projects" exact component={ProjectFeature} />
+          <Route path="/assignments" exact component={AssignmentPage} />
+          <Route path="/workdays" exact component={WorkDayPage} />
+          <Route path="/leave-days" exact component={LeaveDayPage} />
+          <Route path="/sickdays" component={SickDayPage} />
+          <Route path="/expenses" component={ExpensePage} />
+          <Route path="/exactonline" component={ExactonlineFeature} />
+          <Route path="/users" exact component={UserFeature} />
+          <Route path="/person" component={PersonFeature} />
+          <Route path="/event" component={EventFeature} />
+          <Route
+            path="/event_rating/:eventCode"
+            component={EventRatingFeature}
+          />
+          <Route path="/reports/assignment" component={AssignmentReport} />
+          <Route
+            path="/reports/contract-overview"
+            component={ContractOverview}
+          />
+          <Route
+            path="/reports/assignment-overview"
+            component={AssignmentOverview}
+          />
+          <Redirect to="/" />
+        </Switch>
+      </Box>
+    </>
+  );
 };
 
 const RenderUnauthenticated = () => {
-  return <>
-    <ApplicationDrawer open={false} onClose={() => {}} />
-    <ApplicationLayout onDrawer={() => {}}/>
-    <Box>
-      <Redirect to="/auth" exact/>
-      <Route path="/auth" exact component={LoginFeature}/>
-    </Box>
-  </>
+  return (
+    <>
+      <ApplicationDrawer open={false} onClose={() => {}} />
+      <ApplicationLayout onDrawer={() => {}} />
+      <Box>
+        <Redirect to="/auth" exact />
+        <Route path="/auth" exact component={LoginFeature} />
+      </Box>
+    </>
+  );
 };

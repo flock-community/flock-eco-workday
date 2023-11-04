@@ -21,9 +21,9 @@ export function SickdayPerPersonChart({ year }: SickdayPerPersonChartProps) {
 
   useEffect(() => {
     const date = new Date();
-    AggregationClient.totalPerPersonByYear(
-      year || date.getFullYear()
-    ).then((res) => setState(res.filter((it) => it.sickDays > 0)));
+    AggregationClient.totalPerPersonByYear(year || date.getFullYear()).then(
+      (res) => setState(res.filter((it) => it.sickDays > 0))
+    );
   }, [year]);
 
   if (!state) return <AlignedLoader />;

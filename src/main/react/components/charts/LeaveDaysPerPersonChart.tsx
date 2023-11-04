@@ -19,7 +19,9 @@ type LeaveDaysPerPersonChartProps = {
   year?: number;
 };
 
-export function LeaveDaysPerPersonChart({ year }: LeaveDaysPerPersonChartProps) {
+export function LeaveDaysPerPersonChart({
+  year,
+}: LeaveDaysPerPersonChartProps) {
   const [state, setState] = useState<AggregationLeaveDay[] | null>(null);
 
   useEffect(() => {

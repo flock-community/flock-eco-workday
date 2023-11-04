@@ -23,9 +23,9 @@ export function ManagementOverviewChart({
 
   useEffect(() => {
     const date = new Date();
-    AggregationClient.totalPerMonthByYear(
-      year || date.getFullYear()
-    ).then((res) => setState(res));
+    AggregationClient.totalPerMonthByYear(year || date.getFullYear()).then(
+      (res) => setState(res)
+    );
   }, [year]);
 
   if (!state) return <AlignedLoader />;

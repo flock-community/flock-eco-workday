@@ -2,7 +2,7 @@ import List from "@material-ui/core/List";
 import React from "react";
 import ProjectIcon from "@material-ui/icons/AccountTree";
 import AssignmentIcon from "@material-ui/icons/Assignment";
-import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined';
+import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
 import ContractIcon from "@material-ui/icons/Description";
 import HolidayIcon from "@material-ui/icons/WbSunny";
 import HealingIcon from "@material-ui/icons/Healing";
@@ -42,7 +42,7 @@ type ApplicationDrawerProps = {
 
 export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
   const classes = useStyles();
-  const [ user ] = useUserMe();
+  const [user] = useUserMe();
 
   const handleClose = () => onClose?.();
 

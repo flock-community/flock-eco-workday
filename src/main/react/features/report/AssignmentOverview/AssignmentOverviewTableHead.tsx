@@ -1,23 +1,23 @@
-import {TableCell, TableHead, TableRow} from "@material-ui/core";
+import { TableCell, TableHead, TableRow } from "@material-ui/core";
 import React from "react";
 
 const headcells = [
   {
     id: "person",
-    label: "person".toUpperCase()
+    label: "person".toUpperCase(),
   },
   {
     id: "client",
-    label: "client".toUpperCase()
+    label: "client".toUpperCase(),
   },
   {
     id: "from",
-    label: "from".toUpperCase()
+    label: "from".toUpperCase(),
   },
   {
     id: "to",
-    label: "to".toUpperCase()
-  }
+    label: "to".toUpperCase(),
+  },
 ];
 
 export const AssignmentOverviewTableHead = () => {
@@ -25,11 +25,7 @@ export const AssignmentOverviewTableHead = () => {
     <TableHead>
       <TableRow>
         {headcells.map((cell) => (
-          <TableCell
-            key={cell.id}
-          >
-            {cell.label}
-          </TableCell>
+          <TableCell key={cell.id}>{cell.label}</TableCell>
         ))}
       </TableRow>
     </TableHead>

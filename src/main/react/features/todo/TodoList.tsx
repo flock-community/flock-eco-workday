@@ -91,11 +91,10 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
     setPaginatedItems(getPaginatedTabs(list, page, TODO_PAGE_SIZE));
   }, [list]);
 
-  const handleStatusChange = (item: InputItemProps) => (
-    status: StatusProps
-  ) => {
-    onItemClick(status, item);
-  };
+  const handleStatusChange =
+    (item: InputItemProps) => (status: StatusProps) => {
+      onItemClick(status, item);
+    };
 
   const handleCardClick = (item: InputItemProps) => () => {
     history.push(`/${typeToPath(item.type)}?personId=${item.personId}`);

@@ -51,8 +51,10 @@ export const updateStatus = (status, item) => {
   if (item.type === "SICKDAY") return updateStatusSickDay(item.id, status);
   if (item.type === "HOLIDAY") return updateStatusLeaveDay(item.id, status);
   if (item.type === "PLUSDAY") return updateStatusLeaveDay(item.id, status);
-  if (item.type === "PAID_PARENTAL_LEAVE") return updateStatusLeaveDay(item.id, status);
-  if (item.type === "UNPAID_PARENTAL_LEAVE") return updateStatusLeaveDay(item.id, status);
+  if (item.type === "PAID_PARENTAL_LEAVE")
+    return updateStatusLeaveDay(item.id, status);
+  if (item.type === "UNPAID_PARENTAL_LEAVE")
+    return updateStatusLeaveDay(item.id, status);
   if (item.type === "EXPENSE") return updateStatusExpense(item.id, status);
   return Promise.reject("Invalid item type");
 };
