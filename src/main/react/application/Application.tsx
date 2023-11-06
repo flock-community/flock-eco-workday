@@ -74,10 +74,6 @@ const RenderAuthenticated = ({status}) => {
 
   const [openDrawer, setOpenDrawer] = useState(false);
 
-  if (person == null || status == null || user == null) {
-    return <AlignedLoader/>;
-  }
-
   return <>
     <ApplicationDrawer
       open={openDrawer}
