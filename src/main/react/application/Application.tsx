@@ -122,8 +122,6 @@ const RenderAuthenticated = ({status}) => {
 
 const RenderUnauthenticated = () => {
   return <>
-    <ApplicationDrawer open={false} onClose={() => {}} />
-    <ApplicationLayout onDrawer={() => {}}/>
     <Box>
       <Redirect to="/auth" exact/>
       <Route path="/auth" exact component={LoginFeature}/>
