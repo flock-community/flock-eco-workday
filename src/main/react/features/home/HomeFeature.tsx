@@ -12,11 +12,13 @@ import {QuickLinks} from "../../components/quick-links/QuickLinks";
 import {MissingHoursCard} from "../../components/missing-hours-card/MissingHoursCard";
 import { ContractClient } from "../../clients/ContractClient";
 import dayjs from "dayjs";
+import {PersonEvent, PersonEventClient} from "../../clients/PersonEventClient";
 
 export function HomeFeature() {
   const [ user ] = useUserMe();
   const [ withinNWeek ] = useState<number>(6);
   const [contracts, setContracts] = useState<any[]>([]);
+  const [personEvents, setPersonEvents] = useState<PersonEvent[]>([]);
 
   const hasAccess = user?.authorities?.length > 0;
 
@@ -30,9 +32,10 @@ export function HomeFeature() {
   const layout = layoutClasses();
 
   useEffect(() => {
-    ContractClient.findAllByToBetween(new Date(), dayjs().add(withinNWeek, "weeks").toDate()).then((contracts) => {
-      setContracts(contracts)
-    });
+    const today: Date = new Date();
+    const nWeeksFromNow: Date = dayjs().add(withinNWeek, "weeks").toDate();
+    ContractClient.findAllByToBetween(today, nWeeksFromNow).then((contracts) => setContracts(contracts));
+    PersonEventClient.findAllBetween(today, nWeeksFromNow).then((personEvents) => setPersonEvents(personEvents));
   }, []);
 
   return (
@@ -50,12 +53,12 @@ export function HomeFeature() {
         )}
         {showContractsEnding && (
           <Grid item xs={12}>
-            <ContractsEnding withinNWeeks={withinNWeek} contracts={contracts}/>
+            <ContractsEnding withinNWeeks={withinNWeek} contracts={contracts} />
           </Grid>
         )}
         {showPersonEvents && (
           <Grid item xs={12}>
-            <PersonEvents withinNWeeks={6}/>
+            <PersonEvents withinNWeeks={withinNWeek} personEvents={personEvents} />
           </Grid>
         )}
         {hasAccess && (

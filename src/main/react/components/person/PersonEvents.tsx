@@ -8,17 +8,10 @@ import {PersonEvent, PersonEventClient, PersonEventType,} from "../../clients/Pe
 
 type PersonEventsProps = {
   withinNWeeks: number;
+  personEvents: PersonEvent[];
 };
 
-export default function PersonEvents({ withinNWeeks }: PersonEventsProps) {
-  const [personEvents, setPersonEvents] = useState<PersonEvent[]>([]);
-
-  useEffect(() => {
-    PersonEventClient.findAllBetween(
-      new Date(),
-      dayjs().add(withinNWeeks, "weeks").toDate()
-    ).then((res) => setPersonEvents(res));
-  }, [withinNWeeks]);
+export default function PersonEvents({ withinNWeeks, personEvents }: PersonEventsProps) {
 
   const noContent = (
     <Typography variant="caption">
