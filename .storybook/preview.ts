@@ -8,14 +8,15 @@ import '@fontsource/material-icons';
 
 import { CssBaseline, ThemeProvider } from '@material-ui/core';
 import { withThemeFromJSXProvider } from '@storybook/addon-themes';
-import { lightTheme, darkTheme } from './themes';
+import { themeLight } from '../src/main/react/theme/theme-light';
+import { darkTheme } from './themes';
 
 /* snipped for brevity */
 
 export const decorators = [
   withThemeFromJSXProvider({
     themes: {
-      light: lightTheme,
+      light: themeLight,
       dark: darkTheme,
     },
     defaultTheme: 'light',
