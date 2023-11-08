@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Typography from "@material-ui/core/Typography";
 import {useUserMe} from "../../hooks/UserMeHook";
 import {DashboardHoursChart} from "../../components/charts/DashboardHoursChart";
@@ -10,9 +10,13 @@ import {DashboardLeaveDayChart} from "../../components/charts/DashboardLeaveDayC
 import {highLightClass} from "../../theme/theme-light";
 import {QuickLinks} from "../../components/quick-links/QuickLinks";
 import {MissingHoursCard} from "../../components/missing-hours-card/MissingHoursCard";
+import { ContractClient } from "../../clients/ContractClient";
+import dayjs from "dayjs";
 
 export function HomeFeature() {
   const [ user ] = useUserMe();
+  const [ withinNWeek ] = useState<number>(6);
+  const [contracts, setContracts] = useState<any[]>([]);
 
   const hasAccess = user?.authorities?.length > 0;
 
@@ -23,6 +27,13 @@ export function HomeFeature() {
     user?.authorities?.includes("PersonAuthority.READ") ?? false;
 
   const classes = highLightClass();
+  const layout = layoutClasses();
+
+  useEffect(() => {
+    ContractClient.findAllByToBetween(new Date(), dayjs().add(withinNWeek, "weeks").toDate()).then((contracts) => {
+      setContracts(contracts)
+    });
+  }, []);
 
   return (
     <Container>
@@ -39,7 +50,7 @@ export function HomeFeature() {
         )}
         {showContractsEnding && (
           <Grid item xs={12}>
-            <ContractsEnding withinNWeeks={6}/>
+            <ContractsEnding withinNWeeks={withinNWeek} contracts={contracts}/>
           </Grid>
         )}
         {showPersonEvents && (

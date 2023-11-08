@@ -1,6 +1,6 @@
 import Typography from "@material-ui/core/Typography";
-import React, { useEffect, useState } from "react";
-import { ContractClient } from "../../clients/ContractClient";
+import React from "react";
+import {Contract} from "../../clients/ContractClient";
 import {
   Card,
   CardContent,
@@ -17,19 +17,12 @@ import {DMY_DATE} from "../../clients/util/DateFormats";
 
 type ContractsEndingProps = {
   withinNWeeks: number;
+  contracts: Contract[]
 };
 
 export default function ContractsEnding({
-  withinNWeeks,
+  withinNWeeks, contracts
 }: ContractsEndingProps) {
-  const [contracts, setContracts] = useState<any[]>([]);
-
-  useEffect(() => {
-    ContractClient.findAllByToBetween(
-      new Date(),
-      dayjs().add(withinNWeeks, "weeks").toDate()
-    ).then((res) => setContracts(res));
-  }, [withinNWeeks]);
 
   const noContent = (
     <Typography variant="caption">
