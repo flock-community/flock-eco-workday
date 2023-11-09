@@ -2,11 +2,14 @@ package community.flock.eco.workday.services.email
 
 import community.flock.eco.workday.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.model.SickDay
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.format.DateTimeFormatter
 
 @Service
 class SickDayEmailService (private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
+    private val log: Logger = LoggerFactory.getLogger(SickDayEmailService::class.java)
 
     fun sendUpdate(old: SickDay, new: SickDay) {
         val recipient = new.person
@@ -21,9 +24,11 @@ class SickDayEmailService (private val emailService: EmailService, private val m
                 "Nieuwe status: ${new.status}."
         }
 
+        log.info("Email generated for SickDay update for ${recipient.email}")
+
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
-        emailService.sendEmailMessage("Send SickDay update to ${recipient.email}", recipient.receiveEmail,
-            recipient.email, subject, templateVariables, mailjetTemplateProperties.updateTemplateId)
+        emailService.sendEmailMessage(recipient.receiveEmail, recipient.email, subject, templateVariables,
+            mailjetTemplateProperties.updateTemplateId)
     }
 
     fun sendNotification(sickDay: SickDay) {
@@ -35,7 +40,9 @@ class SickDayEmailService (private val emailService: EmailService, private val m
             " (van: ${sickDay.from.format(timeDateFormat)} tot: ${sickDay.to.format(timeDateFormat)})."
         val templateVariables = emailService.createTemplateVariables(employee.firstname, emailMessage)
 
-        emailService.sendEmailNotification("Send SickDay notification for ${employee.email}",
-            employee.receiveEmail, subject, templateVariables, mailjetTemplateProperties.notificationTemplateId)
+        log.info("Email generated for SickDay notification for ${employee.email}")
+
+        emailService.sendEmailNotification(employee.receiveEmail, subject, templateVariables,
+            mailjetTemplateProperties.notificationTemplateId)
     }
 }
