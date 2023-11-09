@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { FormControl, Grid } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import {
@@ -111,6 +111,16 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
                 name="reminders"
                 type="checkbox"
                 Label={{ label: "Reminders" }}
+                component={CheckboxWithLabel}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <Field
+                name="receiveEmail"
+                type="checkbox"
+                Label={{ label: "Receive system emails" }}
                 component={CheckboxWithLabel}
               />
             </FormControl>

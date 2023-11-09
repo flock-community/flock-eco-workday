@@ -13,6 +13,7 @@ data class PersonForm(
     val active: Boolean,
     val userCode: String?,
     val reminders: Boolean = false,
+    val receiveEmail: Boolean = true,
     val shoeSize: String? = null,
     val shirtSize: String? = null,
 )

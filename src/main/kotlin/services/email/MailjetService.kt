@@ -67,6 +67,7 @@ class MailjetService(
     }
 
     fun sendEmailMessage(requestProperties: EmailMessageProperties) {
+        log.info("Send email message to ${requestProperties.recipientEmailAddress}")
         val request = createMailjetRequest(
             recipientName = requestProperties.recipientFirstName,
             recipientEmailAddress = requestProperties.recipientEmailAddress,

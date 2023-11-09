@@ -38,6 +38,7 @@ data class Person(
     val lastActiveAt: Instant? = null,
 
     val reminders: Boolean = false,
+    val receiveEmail: Boolean = true,
 
     val shoeSize: String? = null,
     val shirtSize: String? = null,

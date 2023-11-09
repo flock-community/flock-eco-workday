@@ -9,6 +9,7 @@ const _defaultObject = {
   number: string().default("").nullable(),
   position: string().default(""),
   reminders: boolean().default(false),
+  receiveEmail: boolean().default(true),
   shoeSize: string().default("").nullable(),
   shirtSize: string().default("").nullable(),
 };

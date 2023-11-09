@@ -70,6 +70,14 @@ export function PersonWidget({
                 </TableRow>
               )}
               <TableRow>
+                <TableCell component="th">Reminders</TableCell>
+                <TableCell>{person.reminders ? "Yes" : "No"}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th">Receive system emails</TableCell>
+                <TableCell>{person.receiveEmail ? "Yes" : "No"}</TableCell>
+              </TableRow>
+              <TableRow>
                 <TableCell component="th">Shoe size</TableCell>
                 <TableCell>
                   {person.shoeSize ?? "Unknown"}

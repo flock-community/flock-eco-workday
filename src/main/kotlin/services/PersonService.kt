@@ -37,6 +37,7 @@ class PersonService(
             active = form.active,
             lastActiveAt = lastActiveAt(form),
             reminders = form.reminders,
+            receiveEmail = form.receiveEmail,
             shoeSize = form.shoeSize,
             shirtSize = form.shirtSize,
             user = user
@@ -116,7 +117,9 @@ class PersonService(
             joinDate = form.joinDate,
             user = user,
             active = form.active,
-            lastActiveAt = if (form.active) null else Instant.now()
+            lastActiveAt = if (form.active) null else Instant.now(),
+            reminders = form.reminders,
+            receiveEmail = form.receiveEmail
         ).save()
     }
 

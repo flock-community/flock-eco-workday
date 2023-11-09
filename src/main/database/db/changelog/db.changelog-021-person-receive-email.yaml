@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-021-person-receive-email
+      author: jverhaar
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: receive_email
+                  type: boolean
+                  defaultValue: true
