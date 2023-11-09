@@ -18,6 +18,8 @@ export type Person = {
   lastActiveAt: Date;
   shoeSize?: string;
   shirtSize?: string;
+  reminders: boolean;
+  receiveEmail: boolean;
 };
 
 export type PersonRaw = {
@@ -36,6 +38,8 @@ export type PersonRaw = {
   lastActiveAt: string;
   shoeSize?: string;
   shirtSize?: string;
+  reminders: boolean;
+  receiveEmail: boolean;
 };
 
 export type PersonRequest = {
@@ -50,6 +54,7 @@ export type PersonRequest = {
   active: boolean;
   lastActiveAt?: string; // FIXME
   reminders: boolean;
+  receiveEmail: boolean;
   user: any; // FIXME
   shoeSize?: string;
   shirtSize?: string;
