@@ -6,6 +6,7 @@ import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.SickdayRepository
+import community.flock.eco.workday.services.email.SickDayEmailService
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,7 +18,8 @@ import javax.persistence.EntityManager
 class SickDayService(
     private val repository: SickdayRepository,
     private val personService: PersonService,
-    private val entityManager: EntityManager
+    private val entityManager: EntityManager,
+    private val emailService: SickDayEmailService
 ) {
 
     fun findAll(): Iterable<SickDay> = repository
@@ -63,16 +65,19 @@ class SickDayService(
         .validate()
         .consume()
         .save()
+        .also { emailService.sendNotification(it) }
 
-    fun update(code: String, form: SickDayForm): SickDay = repository
-        .findByCode(code)
-        .toNullable()
-        .run {
-            form
-                .validate()
-                .consume(this)
-                .save()
-        }
+    fun update(code: String, form: SickDayForm): SickDay {
+        val currentSickDay = repository.findByCode(code).toNullable()
+        return currentSickDay
+            .run {
+                form
+                    .validate()
+                    .consume(this)
+                    .save()
+            }
+            .also { emailService.sendUpdate(currentSickDay!!, it) }
+    }
 
     @Transactional
     fun deleteByCode(code: String) = repository.deleteByCode(code)
