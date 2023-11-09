@@ -12,6 +12,10 @@ class TravelExpenseMailService(private val emailService: EmailService, private v
 
     fun sendUpdate(old: TravelExpense, new: TravelExpense) {
         val recipient = new.person
+        if (!recipient.receiveEmail) {
+            log.info("Should send TravelExpense update to ${recipient.email}. But person does not receive emails.")
+            return;
+        }
         log.info("Send TravelExpense update to ${recipient.email}")
 
         var subject = "Update in TravelExpense."
@@ -30,6 +34,10 @@ class TravelExpenseMailService(private val emailService: EmailService, private v
 
     fun sendNotification(expense: TravelExpense) {
         val employee = expense.person
+        if (!employee.receiveEmail) {
+            log.info("Should send TravelExpense notification for ${employee.email}. But person does not receive emails.")
+            return;
+        }
         log.info("Send TravelExpense notification for ${employee.email}")
 
         val subject = "Update in TravelExpense."

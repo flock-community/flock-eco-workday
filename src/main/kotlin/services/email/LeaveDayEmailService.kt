@@ -13,6 +13,10 @@ class LeaveDayEmailService(private val emailService: EmailService, private val m
 
     fun sendUpdate(old: LeaveDay, new: LeaveDay) {
         val recipient = new.person
+        if (!recipient.receiveEmail) {
+            log.info("Should send Leave Day update to ${recipient.email}. But person does not receive emails.")
+            return;
+        }
         log.info("Send leave day update to ${recipient.email}")
 
         var subject = "Update in Leave Day."
@@ -32,6 +36,10 @@ class LeaveDayEmailService(private val emailService: EmailService, private val m
     fun sendNotification(leaveDay: LeaveDay) {
         val timeDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy")
         val employee = leaveDay.person
+        if (!employee.receiveEmail) {
+            log.info("Should send Leave Day notification for ${employee.email}. But person does not receive emails.")
+            return;
+        }
         log.info("Send Leave Day notification for ${employee.email}")
 
         val subject = "Update in Leave Day."

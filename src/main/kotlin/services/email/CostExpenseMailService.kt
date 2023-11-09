@@ -12,6 +12,10 @@ class CostExpenseMailService(private val emailService: EmailService, private val
 
     fun sendUpdate(old: CostExpense, new: CostExpense) {
         val recipient = new.person
+        if (!recipient.receiveEmail) {
+            log.info("Should send CostExpense update to ${recipient.email}. But person does not receive emails.")
+            return;
+        }
         log.info("Send CostExpense update to ${recipient.email}")
 
         var subject = "Update in CostExpense!"
@@ -30,6 +34,10 @@ class CostExpenseMailService(private val emailService: EmailService, private val
 
     fun sendNotification(expense: CostExpense) {
         val employee = expense.person
+        if (!employee.receiveEmail) {
+            log.info("Should send CostExpense notification for ${employee.email}. But person does not receive emails.")
+            return;
+        }
         log.info("Send CostExpense notification for ${employee.email}")
 
         val subject = "Update in CostExpense."

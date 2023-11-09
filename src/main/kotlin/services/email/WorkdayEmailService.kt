@@ -17,6 +17,11 @@ class WorkdayEmailService(private val emailService: EmailService, private val ma
 
     fun sendUpdate(old: WorkDay, new: WorkDay) {
         val recipient = new.assignment.person
+        if (!recipient.receiveEmail) {
+            log.info("Should send workday update to ${recipient.email}. But person does not receive emails.")
+            //services.email.MailjetService
+            return;
+        }
         log.info("Send workday update to ${recipient.email}")
 
         var subject = "Update in Workday."
@@ -37,10 +42,14 @@ class WorkdayEmailService(private val emailService: EmailService, private val ma
         if (workDay.status == Status.REQUESTED) {
             val employee = workDay.assignment.person
             val month = YearMonth.from(workDay.from).month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
+            if (!employee.receiveEmail) {
+                log.info("Should send workday notification for ${employee.email}. But person does not receive emails.")
+                return;
+            }
             log.info("Send workday notification for ${employee.email}")
 
             val subject = "Update in Workday."
-            val emailMessage = "Er is een update van ${employee.firstname} in uren van $month."
+            val emailMessage = "Er is een update van ${employee.firstname} in uren van ${month}."
             val templateVariables = emailService.createTemplateVariables(employee.firstname, emailMessage)
 
             emailService.sendEmailNotification(subject, templateVariables, mailjetTemplateProperties.notificationTemplateId)
@@ -50,10 +59,14 @@ class WorkdayEmailService(private val emailService: EmailService, private val ma
     fun sendReminder(recipient: Person) {
         val previousMonth = YearMonth.now().minusMonths(1)
         val monthString = previousMonth.month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
+        if (!recipient.receiveEmail) {
+            log.info("Should send workday reminder to ${recipient.email}. But person does not receive emails.")
+            return;
+        }
         log.info("Send workday reminder to ${recipient.email}")
 
-        val subject = "Please submit your hours for $monthString."
-        val emailMessage = "We didn't receive your hours for $monthString.\n" +
+        val subject = "Please submit your hours for ${monthString}."
+        val emailMessage = "We didn't receive your hours for ${monthString}.\n" +
             "Please submit your hours in the Workday App."
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
 
