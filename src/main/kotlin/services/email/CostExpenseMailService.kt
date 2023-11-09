@@ -2,21 +2,13 @@ package community.flock.eco.workday.services.email
 
 import community.flock.eco.workday.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.model.CostExpense
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
 class CostExpenseMailService(private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
-    private val log: Logger = LoggerFactory.getLogger(MailjetService::class.java)
 
     fun sendUpdate(old: CostExpense, new: CostExpense) {
         val recipient = new.person
-        if (!recipient.receiveEmail) {
-            log.info("Should send CostExpense update to ${recipient.email}. But person does not receive emails.")
-            return;
-        }
-        log.info("Send CostExpense update to ${recipient.email}")
 
         var subject = "Update in CostExpense!"
         var emailMessage = "Er is een update in CostExpense."
@@ -29,21 +21,18 @@ class CostExpenseMailService(private val emailService: EmailService, private val
         }
 
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
-        emailService.sendEmailMessage(recipient.email, subject, templateVariables, mailjetTemplateProperties.updateTemplateId)
+        emailService.sendEmailMessage("Send CostExpense update to ${recipient.email}",
+            recipient.receiveEmail, recipient.email, subject, templateVariables, mailjetTemplateProperties.updateTemplateId)
     }
 
     fun sendNotification(expense: CostExpense) {
         val employee = expense.person
-        if (!employee.receiveEmail) {
-            log.info("Should send CostExpense notification for ${employee.email}. But person does not receive emails.")
-            return;
-        }
-        log.info("Send CostExpense notification for ${employee.email}")
 
         val subject = "Update in CostExpense."
         val emailMessage = "Er is een CostExpense door ${employee.firstname} toegevoegd."
         val templateVariables = emailService.createTemplateVariables(employee.firstname, emailMessage)
 
-        emailService.sendEmailNotification(subject, templateVariables, mailjetTemplateProperties.notificationTemplateId)
+        emailService.sendEmailNotification("Send CostExpense notification for ${employee.email}",
+            employee.receiveEmail, subject, templateVariables, mailjetTemplateProperties.notificationTemplateId)
     }
 }
