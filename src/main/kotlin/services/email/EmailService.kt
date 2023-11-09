@@ -11,7 +11,6 @@ class EmailService(private val emailSendService: MailjetService, private val not
     private val log: Logger = LoggerFactory.getLogger(EmailService::class.java)
 
     fun sendEmailMessage(
-        loggingString: String,
         personReceiveEmail: Boolean,
         recipientEmail: String,
         emailSubject: String,
@@ -19,9 +18,8 @@ class EmailService(private val emailSendService: MailjetService, private val not
         templateId: Int
     ) {
         if (!personReceiveEmail) {
-            log.info("Dit not send this email because of receiveEmail setting: $loggingString");
+            log.info("Dit not send generated email because of the receiveEmail setting.");
         } else {
-            log.info(loggingString);
             emailSendService.sendEmailMessage(
                 EmailMessageProperties(
                     recipientEmail, emailSubject, templateVariables,
@@ -31,9 +29,9 @@ class EmailService(private val emailSendService: MailjetService, private val not
         }
     }
 
-    fun sendEmailNotification(loggingString: String, personReceiveEmail: Boolean,emailSubject: String,
+    fun sendEmailNotification(personReceiveEmail: Boolean,emailSubject: String,
                               templateVariables: JSONObject, templateId: Int) {
-        sendEmailMessage(loggingString, personReceiveEmail, notificationProperties.recipient, emailSubject,
+        sendEmailMessage(personReceiveEmail, notificationProperties.recipient, emailSubject,
             templateVariables, templateId)
     }
 

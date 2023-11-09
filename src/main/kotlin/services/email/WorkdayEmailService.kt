@@ -4,6 +4,8 @@ import community.flock.eco.workday.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Service
 import java.time.YearMonth
@@ -11,6 +13,7 @@ import java.time.format.TextStyle
 
 @Service
 class WorkdayEmailService(private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
+    private val log: Logger = LoggerFactory.getLogger(WorkdayEmailService::class.java)
 
     fun sendUpdate(old: WorkDay, new: WorkDay) {
         val recipient = new.assignment.person
@@ -25,8 +28,10 @@ class WorkdayEmailService(private val emailService: EmailService, private val ma
                 "Nieuwe status: ${new.status}."
         }
 
+        log.info("Email generated for workday update for ${recipient.email}")
+
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
-        emailService.sendEmailMessage("Send workday update to ${recipient.email}", recipient.receiveEmail,
+        emailService.sendEmailMessage(recipient.receiveEmail,
             recipient.email, subject, templateVariables, mailjetTemplateProperties.updateTemplateId)
     }
 
@@ -39,8 +44,10 @@ class WorkdayEmailService(private val emailService: EmailService, private val ma
             val emailMessage = "Er is een update van ${employee.firstname} in uren van ${month}."
             val templateVariables = emailService.createTemplateVariables(employee.firstname, emailMessage)
 
-            emailService.sendEmailNotification("Send workday notification for ${employee.email}",
-                employee.receiveEmail, subject, templateVariables, mailjetTemplateProperties.notificationTemplateId)
+            log.info("Email generated for workday notification for ${employee.email}")
+
+            emailService.sendEmailNotification(employee.receiveEmail, subject, templateVariables,
+                mailjetTemplateProperties.notificationTemplateId)
         }
     }
 
@@ -53,7 +60,9 @@ class WorkdayEmailService(private val emailService: EmailService, private val ma
             "Please submit your hours in the Workday App."
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
 
-        emailService.sendEmailMessage("Send workday reminder to ${recipient.email}", recipient.receiveEmail,
-            recipient.email, subject, templateVariables, mailjetTemplateProperties.reminderTemplateId)
+        log.info("Email generated for workday reminder for ${recipient.email}")
+
+        emailService.sendEmailMessage(recipient.receiveEmail, recipient.email, subject, templateVariables,
+            mailjetTemplateProperties.reminderTemplateId)
     }
 }
