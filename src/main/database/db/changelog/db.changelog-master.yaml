@@ -64,3 +64,6 @@ databaseChangeLog:
   - include:
       - file: db.changelog-021-person-receive-email.yaml
         relativeToChangelogFile: true
+  - include:
+      - file: db.changelog-022-person-google-drive-id.yaml
+        relativeToChangelogFile: true
