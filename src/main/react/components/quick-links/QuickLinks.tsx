@@ -66,7 +66,7 @@ export function QuickLinks() {
             <CardContent>
                 <Box display="flex" justifyContent="space-around">
                     <Button variant={"contained"} startIcon={<AddIcon/>} onClick={openAddWorkDay} >Workday</Button>
-                    <Button variant={"contained"} startIcon={<AddIcon/>} onClick={openAddLeaveDay} >Leave day</Button>
+                    <Button variant={"contained"} startIcon={<AddIcon/>} onClick={openAddLeaveDay} >Holiday</Button>
                     <Button variant={"contained"} startIcon={<AddIcon/>} onClick={openAddTravelExpense} >Travel expense</Button>
                     <Button variant={"contained"} startIcon={<AddIcon/>} onClick={openAddCostExpense} >Cost expense</Button>
                 </Box>
