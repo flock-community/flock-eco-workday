@@ -29,9 +29,8 @@ class EmailService(private val emailSendService: MailjetService, private val not
         }
     }
 
-    fun sendEmailNotification(personReceiveEmail: Boolean,emailSubject: String,
-                              templateVariables: JSONObject, templateId: Int) {
-        sendEmailMessage(personReceiveEmail, notificationProperties.recipient, emailSubject,
+    fun sendEmailNotification(emailSubject: String, templateVariables: JSONObject, templateId: Int) {
+        sendEmailMessage(true, notificationProperties.recipient, emailSubject,
             templateVariables, templateId)
     }
 

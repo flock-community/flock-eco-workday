@@ -42,7 +42,7 @@ class SickDayEmailService (private val emailService: EmailService, private val m
 
         log.info("Email generated for SickDay notification for ${employee.email}")
 
-        emailService.sendEmailNotification(employee.receiveEmail, subject, templateVariables,
+        emailService.sendEmailNotification(subject, templateVariables,
             mailjetTemplateProperties.notificationTemplateId)
     }
 }

@@ -46,7 +46,7 @@ class WorkdayEmailService(private val emailService: EmailService, private val ma
 
             log.info("Email generated for workday notification for ${employee.email}")
 
-            emailService.sendEmailNotification(employee.receiveEmail, subject, templateVariables,
+            emailService.sendEmailNotification(subject, templateVariables,
                 mailjetTemplateProperties.notificationTemplateId)
         }
     }
