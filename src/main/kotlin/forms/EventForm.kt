@@ -24,6 +24,8 @@ data class EventForm(
 
     override val days: List<Double>,
 
+    val costs: Double,
+
     val personIds: List<UUID>
 
 ) : Dayly

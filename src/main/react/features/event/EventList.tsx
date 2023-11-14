@@ -23,7 +23,7 @@ export function EventList({ refresh, onClickRow }: EventListProps) {
     };
   }
 
-  function renderItem(item) {
+  function renderItem(item: FlockEvent) {
     return (
       <Grid key={`workday-list-item-${item.id}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
@@ -37,6 +37,12 @@ export function EventList({ refresh, onClickRow }: EventListProps) {
               Aantal dagen: {item.to.diff(item.from, "days") + 1}
             </Typography>
             <Typography>Aantal uren: {item.hours}</Typography>
+            <Typography>Totale kosten: {" "}
+              {item.costs.toLocaleString("nl-NL", {
+                style: "currency",
+                currency: "EUR",
+              })}
+            </Typography>
             <Typography>
               {item.persons
                 .sort((a, b) => (a.lastname > b.lastname ? 1 : -1))

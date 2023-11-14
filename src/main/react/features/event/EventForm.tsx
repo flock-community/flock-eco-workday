@@ -22,6 +22,7 @@ const schema = Yup.object().shape({
   to: Yup.date().required("To date is required").default(now),
   days: Yup.array().default([8]).nullable(),
   personIds: Yup.array().default([]),
+  costs: Yup.number().required().min(0).default(0),
 });
 
 /**
@@ -35,6 +36,7 @@ export function EventForm({ value, onSubmit }) {
       from: data.from,
       to: data.to,
       days: data.days,
+      costs: data.costs
     });
   };
 
@@ -47,6 +49,15 @@ export function EventForm({ value, onSubmit }) {
               name="description"
               type="text"
               label="Description"
+              fullWidth
+              component={TextField}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Field
+              name="costs"
+              type="number"
+              label="Costs"
               fullWidth
               component={TextField}
             />

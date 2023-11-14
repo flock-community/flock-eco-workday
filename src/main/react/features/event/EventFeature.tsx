@@ -1,30 +1,31 @@
-import React, {useState} from "react";
-import {EventDialog} from "./EventDialog";
-import {EventList} from "./EventList";
-import {Box, Card, CardContent, CardHeader} from "@material-ui/core";
+import React, { useState } from "react";
+import { EventDialog } from "./EventDialog";
+import { EventList } from "./EventList";
+import { Card, CardContent, CardHeader } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
+import {FlockEvent} from "../../clients/EventClient";
 
 export function EventFeature() {
-    const [reload, setReload] = useState(false);
-    const [open, setOpen] = useState(false);
-    const [state, setState] = useState<any>(null);
+  const [reload, setReload] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [state, setState] = useState<FlockEvent | undefined>(undefined);
 
-    function handleCompleteDialog() {
-        setReload(!reload);
-        setOpen(false);
-        setState(null);
-    }
+  function handleCompleteDialog() {
+    setReload(!reload);
+    setOpen(false);
+    setState(undefined);
+  }
 
-    function handleClickAdd() {
-        setState(null);
-        setOpen(true);
-    }
+  function handleClickAdd() {
+    setState(undefined);
+    setOpen(true);
+  }
 
-    function handleClickRow(item) {
-        setState(item);
-        setOpen(true);
-    }
+  function handleClickRow(item: FlockEvent) {
+    setState(item);
+    setOpen(true);
+  }
 
     return (
         <Box className={'flow'} flow-gap={'wide'} style={{paddingBottom: '1.5rem'}}>
