@@ -41,7 +41,8 @@ class EventRepositoryTest(
             to = LocalDate.now().plusDays(5),
             hours = 40.0,
             days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
-            persons = listOf(person1, person2)
+            persons = listOf(person1, person2),
+            costs = 538.38
         )
 
         val created = eventRepository.save(event)

@@ -184,7 +184,8 @@ class CreateHelper(
         to = to,
         hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
         days = days ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 },
-        personIds = persons
+        personIds = persons,
+        costs = 538.38
     ).run {
         eventService.create(this)
     }
