@@ -132,3 +132,36 @@
     - handler: id_token
   errors:
     - handler: redirect
+
+
+- id: workday-put
+  upstream:
+    #    url: http://workday:8080
+    # to allow to use 'local' app rather than docker one
+    url: http://host.docker.internal:8080
+  version: v0.40.2
+  match:
+    url: http://<(fe-)?>workday.flock.local:8081/api/workdays/<.*>
+    methods:
+      - PUT
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: remote_json
+    config:
+      payload: |
+        {
+          "namespace": "Workday",
+          "object": "{{ printIndex .MatchContext.RegexpCaptureGroups 2 }}",
+          "relation": "view",
+          "subject_set" : {
+             "namespace": "User",
+             "object": "{{print .Subject}}",
+             "relation": ""
+           }
+        }
+  mutators:
+    - handler: header
+    - handler: id_token
+  errors:
+    - handler: redirect
