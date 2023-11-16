@@ -3,17 +3,19 @@ package community.flock.eco.workday.clients
 import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.wirespec.Wirespec
 import community.flock.wirespec.generated.CreateRelationship
+import community.flock.wirespec.generated.DeleteRelationships
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriComponentsBuilder
 import java.lang.reflect.Type
-import java.net.URI
 import kotlin.reflect.KFunction1
 
 @Configuration
 class KetoClientConfiguration {
-    interface KetoClient : CreateRelationship
+    interface KetoClient : CreateRelationship, DeleteRelationships
 
     val restTemplate = RestTemplate()
 
@@ -37,6 +39,11 @@ class KetoClientConfiguration {
             }
         }
 
+    fun Wirespec.Request<*>.toUri() = UriComponentsBuilder
+        .fromUriString("http://accounts.flock.local:8081/keto${path}")
+        .queryParams(LinkedMultiValueMap(query.mapValues { it.value.filterNotNull().map { it.toString() } }.filter { it.value.isNotEmpty() }))
+        .build()
+        .toUri()
 
     @Bean
     fun ketoClient(contentMapper: Wirespec.ContentMapper<ByteArray>): KetoClient = object : KetoClient {
@@ -44,7 +51,7 @@ class KetoClientConfiguration {
             request: Req,
             responseMapper: KFunction1<Wirespec.ContentMapper<ByteArray>, (Wirespec.Response<ByteArray>) -> Res>
         ) = restTemplate.execute(
-            URI("http://accounts.flock.local:8081/keto${request.path}"),
+            request.toUri(),
             HttpMethod.valueOf(request.method.name),
             { req ->
                 request.content
@@ -52,9 +59,8 @@ class KetoClientConfiguration {
                     ?.let { req.body.write(it.body) }
             },
             { res ->
-                val contentType =
-                    res.headers.contentType?.toString()?.replace(";charset=utf-8", "") ?: error("No content type")
-                val content = Wirespec.Content(contentType, res.body.readBytes())
+                val contentType = res.headers.contentType?.toString()?.replace(";charset=utf-8", "")
+                val content = contentType?.let { Wirespec.Content(it, res.body.readBytes()) }
                 val response = object : Wirespec.Response<ByteArray> {
                     override val status = res.statusCode.value()
                     override val headers = res.headers
@@ -66,6 +72,10 @@ class KetoClientConfiguration {
 
         override suspend fun createRelationship(request: CreateRelationship.Request<*>): CreateRelationship.Response<*> {
             return handle(request, CreateRelationship::RESPONSE_MAPPER)
+        }
+
+        override suspend fun deleteRelationships(request: DeleteRelationships.Request<*>): DeleteRelationships.Response<*> {
+            return handle(request, DeleteRelationships::RESPONSE_MAPPER)
         }
     }
 }

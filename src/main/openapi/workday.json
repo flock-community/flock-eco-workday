@@ -82,7 +82,7 @@
         "tags": [
           "workday-controller"
         ],
-        "operationId": "delete",
+        "operationId": "WorkdayDelete",
         "parameters": [
           {
             "name": "code",
