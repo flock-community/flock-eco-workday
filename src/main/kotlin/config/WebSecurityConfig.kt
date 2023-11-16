@@ -186,6 +186,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .antMatchers("/error").permitAll()
             .antMatchers("/h2/**").permitAll()
             .antMatchers("/api/events/**").permitAll()
+            .antMatchers("/sync/keto/**").permitAll()
             .antMatchers(*SWAGGER_WHITELIST).permitAll()
             .antMatchers(*EXT_WHITELIST).permitAll()
             .anyRequest().authenticated()

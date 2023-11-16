@@ -143,7 +143,6 @@
                         <plugin>jpa</plugin>
                         <plugin>spring</plugin>
                     </compilerPlugins>
-                    <jvmTarget>1.8</jvmTarget>
                 </configuration>
                 <executions>
                     <execution>
@@ -312,7 +311,7 @@
             <plugin>
                 <groupId>community.flock.wirespec.plugin.maven</groupId>
                 <artifactId>wirespec-maven-plugin</artifactId>
-                <version>0.8.11</version>
+                <version>0.8.26</version>
                 <executions>
                     <execution>
                         <id>keto</id>

@@ -1,14 +1,15 @@
 package community.flock.eco.workday.clients
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import community.flock.wirespec.Wirespec
 import community.flock.wirespec.generated.CreateRelationship
-import community.flock.wirespec.kotlin.Wirespec
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.web.client.RestTemplate
 import java.lang.reflect.Type
 import java.net.URI
+import kotlin.reflect.KFunction1
 
 @Configuration
 class KetoClientConfiguration {
@@ -38,32 +39,33 @@ class KetoClientConfiguration {
 
 
     @Bean
-    fun ketoClient(contentMapper: Wirespec.ContentMapper<ByteArray>): KetoClient =
-        object : KetoClient {
-            fun <Req : Wirespec.Request<*>, Res : Wirespec.Response<*>> handle(
-                request: Req,
-                responseMapper: (Wirespec.ContentMapper<ByteArray>) -> (Int, Map<String, List<String>>, Wirespec.Content<ByteArray>) -> Res
-            ) = restTemplate.execute(
-                URI("http://accounts.flock.local:8081/keto${request.path}"),
-                HttpMethod.valueOf(request.method.name),
-                { req ->
-                    request.content
-                        ?.let { contentMapper.write(it) }
-                        ?.let { req.body.write(it.body) }
-                },
-                { res ->
-                    val contentType = res.headers.contentType?.toString()?.replace(";charset=utf-8", "") ?: error("No content type")
-                    val content = Wirespec.Content(contentType, res.body.readBytes())
-                    responseMapper(contentMapper)(
-                        res.statusCode.value(),
-                        res.headers,
-                        content
-                    )
+    fun ketoClient(contentMapper: Wirespec.ContentMapper<ByteArray>): KetoClient = object : KetoClient {
+        fun <Req : Wirespec.Request<*>, Res : Wirespec.Response<*>> handle(
+            request: Req,
+            responseMapper: KFunction1<Wirespec.ContentMapper<ByteArray>, (Wirespec.Response<ByteArray>) -> Res>
+        ) = restTemplate.execute(
+            URI("http://accounts.flock.local:8081/keto${request.path}"),
+            HttpMethod.valueOf(request.method.name),
+            { req ->
+                request.content
+                    ?.let { contentMapper.write(it) }
+                    ?.let { req.body.write(it.body) }
+            },
+            { res ->
+                val contentType =
+                    res.headers.contentType?.toString()?.replace(";charset=utf-8", "") ?: error("No content type")
+                val content = Wirespec.Content(contentType, res.body.readBytes())
+                val response = object : Wirespec.Response<ByteArray> {
+                    override val status = res.statusCode.value()
+                    override val headers = res.headers
+                    override val content = content
                 }
-            ) ?: error("No response")
-
-            override suspend fun createRelationship(request: CreateRelationship.Request<*>): CreateRelationship.Response<*> {
-                return handle(request, CreateRelationship::RESPONSE_MAPPER)
+                responseMapper(contentMapper)(response)
             }
+        ) ?: error("No response")
+
+        override suspend fun createRelationship(request: CreateRelationship.Request<*>): CreateRelationship.Response<*> {
+            return handle(request, CreateRelationship::RESPONSE_MAPPER)
         }
+    }
 }

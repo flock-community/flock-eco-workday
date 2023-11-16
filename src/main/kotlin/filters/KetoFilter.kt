@@ -1,11 +1,12 @@
 package community.flock.eco.workday.filters
 
 import community.flock.eco.workday.clients.KetoClientConfiguration
+import community.flock.eco.workday.services.KetoService
 import community.flock.wirespec.generated.CreateRelationship
 import community.flock.wirespec.generated.CreateRelationshipBody
 import community.flock.wirespec.generated.SubjectSet
 import community.flock.wirespec.generated.WorkdayCreate
-import community.flock.wirespec.kotlin.Wirespec
+import community.flock.wirespec.Wirespec
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -22,7 +23,7 @@ import javax.servlet.http.HttpServletResponse
 class KetoFilter(
     private val contentMapper: Wirespec.ContentMapper<ByteArray>,
     private val pathMatcher: PathMatcher,
-    private val ketoClient: KetoClientConfiguration.KetoClient
+    private val ketoService: KetoService
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
@@ -36,11 +37,14 @@ class KetoFilter(
 
         filterChain.doFilter(req, res);
 
-        if (req.method == "POST" && pathMatcher.match(WorkdayCreate.PATH, req.servletPath)) {
-            val mapper = WorkdayCreate.RESPONSE_MAPPER(contentMapper)
+        if ("POST" == req.method && pathMatcher.match(WorkdayCreate.PATH, req.servletPath)) {
             val content = Wirespec.Content(res.contentType, res.contentAsByteArray)
-            val workdayRes = mapper(res.status, emptyMap(), content)
-
+            val r = object: Wirespec.Response<ByteArray>{
+                override val status = res.status
+                override val headers: Map<String, List<Any?>> = emptyMap()
+                override val content = content
+            }
+            val workdayRes = WorkdayCreate.RESPONSE_MAPPER(contentMapper)(r)
             val responseBody = workdayRes.content.body
             LOG.debug(
                 "Creating a relation in Keto between workday: ${responseBody.code} " +
@@ -52,33 +56,13 @@ class KetoFilter(
                 val personId = responseBody.assignment?.person?.uuid
 
                 if (workdayId != null && personId != null) {
-                    createRelation(workdayId, personId)
+                    ketoService.createWorkdayRelation(workdayId, personId)
                 }
             }
         }
 
         res.copyBodyToResponse();
 
-    }
-
-    suspend fun createRelation(workDayId: String, personId: String) {
-        val createRelationshipBody = CreateRelationshipBody(
-            namespace = "Workday",
-            `object` = workDayId,
-            relation = "owners",
-            subject_set = SubjectSet(
-                namespace = "Person",
-                `object` = personId,
-                relation = ""
-            )
-        )
-        createRelationshipBody
-            .run { CreateRelationship.RequestApplicationJson(this) }
-            .run { ketoClient.createRelationship(this) }
-            .run { if (status > 299) {
-                //TODO: error handling in some form or another
-                error("Some error occurred creating relationship $createRelationshipBody. Error: ${content?.body}")
-            } }
     }
 
     companion object {
