@@ -115,7 +115,7 @@ services:
   ## Kratos selfservice ui   ##
   #############################
   kratos-selfservice-ui-node:
-    image: oryd/kratos-selfservice-ui-node:latest
+    image: oryd/kratos-selfservice-ui-node@sha256:bcc49d047038e5f2c42a5f0b57948e303725df0221009853b1183bc54fc606c8 # TODO FIXME bump me
     environment:
       - KRATOS_PUBLIC_URL=http://kratos:4433
       - KRATOS_BROWSER_URL=http://accounts.flock.local:8081/api
