@@ -36,6 +36,43 @@
 
 
 
+- id: workday-api-call-login
+  upstream:
+    #    url: http://workday:8080
+    # to allow to use 'local' app rather than docker one
+    url: http://host.docker.internal:8080
+  version: v0.40.2
+  match:
+    url: http://<(fe-)?>workday.flock.local:8081/login<.*>
+    methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: remote_json
+    config:
+      payload: |
+        {
+          "namespace": "Person",
+          "object": "{{ .MatchContext.Header.Get "Context-Person-Id" }}",
+          "relation": "view",
+          "subject_set" : {
+             "namespace": "User",
+             "object": "{{print .Subject}}",
+             "relation": ""
+           }
+        }
+  mutators:
+    - handler: header
+    - handler: id_token
+  errors:
+    - handler: redirect
+
+
+
 - id: workday-api-call-bootstrap
   upstream:
     #    url: http://workday:8080
