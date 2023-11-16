@@ -16,6 +16,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.web.util.ContentCachingRequestWrapper
 import org.springframework.web.util.ContentCachingResponseWrapper
 import javax.servlet.FilterChain
+
+
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -35,7 +37,10 @@ class KetoFilter(
         val req = ContentCachingRequestWrapper(request)
         val res = ContentCachingResponseWrapper(response)
 
+
+
         filterChain.doFilter(req, res);
+
 
         if ("POST" == req.method && pathMatcher.match(WorkdayCreate.PATH, req.servletPath)) {
             val content = Wirespec.Content(res.contentType, res.contentAsByteArray)

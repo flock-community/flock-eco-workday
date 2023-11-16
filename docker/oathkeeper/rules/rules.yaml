@@ -6,7 +6,7 @@
   version: v0.40.2
   match:
     # exclude api/workday/ calls, but allow al others
-    url: http://<(fe-)?>workday.flock.local:8081/<api(?!(/workdays/)).*>
+    url: http://<(fe-)?>workday.flock.local:8081/<api(?!(/workdays)).*>
     methods:
       - GET
       - POST
@@ -72,6 +72,71 @@
     - handler: redirect
 
 
+- id: workday-list-call
+  upstream:
+    #    url: http://workday:8080
+    # to allow to use 'local' app rather than docker one
+    url: http://host.docker.internal:8080
+  version: v0.40.2
+  match:
+    # exclude api/workday/ calls, but allow al others
+    url: http://<(fe-)?>workday.flock.local:8081/api/workdays
+    methods:
+      - GET
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: remote_json
+    config:
+      payload: |
+        {
+          "namespace": "Person",
+          "object": "{{ .MatchContext.Header.Get "Context-Person-Id" }}",
+          "relation": "view",
+          "subject_set" : {
+             "namespace": "User",
+             "object": "{{print .Subject}}",
+             "relation": ""
+           }
+        }
+  mutators:
+    - handler: header
+    - handler: id_token
+  errors:
+    - handler: redirect
+
+
+- id: workdayCreate
+  upstream:
+    #    url: http://workday:8080
+    # to allow to use 'local' app rather than docker one
+    url: http://host.docker.internal:8080
+  version: v0.40.2
+  match:
+    url: http://<(fe-)?>workday.flock.local:8081/api/workdays
+    methods:
+      - POST
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: remote_json
+    config:
+      payload: |
+        {
+          "namespace": "Person",
+          "object": "{{ .MatchContext.Header.Get "Context-Person-Id" }}",
+          "relation": "view",
+          "subject_set" : {
+             "namespace": "User",
+             "object": "{{print .Subject}}",
+             "relation": ""
+           }
+        }
+  mutators:
+    - handler: header
+    - handler: id_token
+  errors:
+    - handler: redirect
 
 - id: workday-api-call-bootstrap
   upstream:

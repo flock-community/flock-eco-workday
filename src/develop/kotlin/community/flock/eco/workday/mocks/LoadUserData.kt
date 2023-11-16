@@ -7,6 +7,7 @@ import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.model.UserAccountOauthProvider
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
+import community.flock.eco.workday.authorities.AssignmentAuthority
 import community.flock.eco.workday.authorities.ExpenseAuthority
 import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
@@ -38,7 +39,9 @@ class LoadUserData(
         WorkDayAuthority.WRITE,
         WorkDayAuthority.TOTAL_HOURS,
         ExpenseAuthority.READ,
-        ExpenseAuthority.WRITE
+        ExpenseAuthority.WRITE,
+        AssignmentAuthority.READ
+
     )
     private val allAuthorities = userAuthorityService.allAuthorities()
 

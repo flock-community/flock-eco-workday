@@ -1,9 +1,10 @@
 package community.flock.eco.workday.mocks
 
 import community.flock.eco.workday.clients.KetoClientConfiguration
-import community.flock.eco.workday.forms.WorkDayForm
-import community.flock.eco.workday.forms.WorkDaySheetForm
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.model.WorkDaySheet
+import community.flock.eco.workday.services.AssignmentService
 import community.flock.eco.workday.services.WorkDayService
 import community.flock.wirespec.generated.CreateRelationship
 import community.flock.wirespec.generated.CreateRelationshipBody
@@ -22,6 +23,7 @@ class LoadWorkDayData(
     loadPersonData: LoadPersonData,
     loadAssignmentData: LoadAssignmentData,
     private val workDayService: WorkDayService,
+    private val assignmentSevice: AssignmentService,
     private val ketoClient: KetoClientConfiguration.KetoClient,
     ) {
     val now = LocalDate.now()
@@ -31,7 +33,7 @@ class LoadWorkDayData(
      * add a create() function to the WorkDayForm which calls the create function of WorkDayService
      * to create and persist the Workday.
      */
-    private final fun WorkDayForm.create(): WorkDay? {
+    private final fun WorkDay.create(): WorkDay? {
         return loadData.loadWhenEmpty {
             workDayService.create(this)
         }
@@ -47,27 +49,30 @@ class LoadWorkDayData(
             .flatMap { assignment ->
                     (1..3)
                             .map {
-                                WorkDayForm(
-                                        from = now.withMonth(it).withDayOfMonth(1),
-                                        to = now.withMonth(it).withDayOfMonth(1).plusDays(9),
-                                        hours = 80.0,
-                                        days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
-                                        assignmentCode = assignment.code,
-                                        sheets = listOf(
-                                                WorkDaySheetForm(
-                                                        name = "File1.jpg",
-                                                        file = UUID.randomUUID()
-                                                ),
-                                                WorkDaySheetForm(
-                                                        name = "File2.pdf",
-                                                        file = UUID.randomUUID()
-                                                )
+                                WorkDay(
+                                    from = now.withMonth(it).withDayOfMonth(1),
+                                    to = now.withMonth(it).withDayOfMonth(1).plusDays(9),
+                                    hours = 80.0,
+                                    days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
+                                    id = 0,
+                                    assignment = loadAssignmentData.data.first { a -> a.code == assignment.code },
+                                    status = Status.values().random(),
+                                    sheets = listOf(
+                                        WorkDaySheet(
+                                            name = "File1.jpg",
+                                            file = UUID.randomUUID()
+                                        ),
+                                        WorkDaySheet(
+                                            name = "File2.pdf",
+                                            file = UUID.randomUUID()
                                         )
+                                    )
                                 )
                             }
                 }
             .forEach {
-                it.create()
+                it
+                    .create()
                     ?.run {
                         runBlocking { createRelationBetweenWorkdayAndPerson(this@run) }
                     }

@@ -4,7 +4,11 @@ import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.WorkDayForm
-import community.flock.eco.workday.model.*
+import community.flock.eco.workday.interfaces.validate
+import community.flock.eco.workday.model.Assignment
+import community.flock.eco.workday.model.Status
+import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.model.WorkDaySheet
 import community.flock.eco.workday.repository.WorkDayRepository
 import community.flock.eco.workday.services.email.WorkdayEmailService
 import org.springframework.beans.factory.annotation.Value
@@ -13,7 +17,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.UUID
+import java.util.*
 import javax.persistence.EntityManager
 
 @Service
@@ -61,9 +65,7 @@ class WorkDayService(
 
     fun findAllByStatus(status: Status) = workDayRepository.findAllByStatus(status)
 
-    fun create(form: WorkDayForm): WorkDay = form.copy(status = Status.REQUESTED)
-        .validate()
-        .consume()
+    fun create(workday: WorkDay): WorkDay = workday
         .save()
         .also {
             emailService.sendNotification(it)
@@ -127,7 +129,10 @@ class WorkDayService(
     private fun WorkDayForm.consume(it: WorkDay? = null): WorkDay {
         val assignment = assignmentService
             .findByCode(this.assignmentCode)
-            ?: throw error("Cannot find assignment: ${this.assignmentCode}")
+            ?: error("Cannot find assignment: ${this.assignmentCode}")
+
+        // -- person id check
+
 
         return WorkDay(
             id = it?.id ?: 0L,
@@ -148,8 +153,8 @@ class WorkDayService(
     }
 
     private fun WorkDay.save() = workDayRepository.save(this)
-
     companion object {
         val storage = StorageOptions.getDefaultInstance().service
     }
 }
+

@@ -17,5 +17,4 @@ class KetoController(
         .map {
             ketoService.createWorkdayRelation(it.code, it.assignment.person.uuid.toString())
         }
-
 }

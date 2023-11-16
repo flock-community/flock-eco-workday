@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component
 import java.time.Instant
 import java.time.LocalDate
 import java.time.Period
-import kotlin.community.flock.eco.workday.mocks.LoadUserData
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
