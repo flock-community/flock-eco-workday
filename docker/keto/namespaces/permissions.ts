@@ -50,6 +50,7 @@ class Workday implements Namespace {
     permits = {
         view: (ctx: Context): boolean =>
             this.related.owners.traverse((p) => p.permits.view(ctx)),
+        edit: (ctx: Context): boolean => this.permits.view(ctx),
     }
 }
 

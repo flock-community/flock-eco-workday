@@ -138,7 +138,7 @@
     - handler: redirect
 
 
-- id: workday-get
+- id: workday-view
   upstream:
     #    url: http://workday:8080
     # to allow to use 'local' app rather than docker one
@@ -171,7 +171,7 @@
     - handler: redirect
 
 
-- id: workday-put
+- id: workday-edit
   upstream:
     #    url: http://workday:8080
     # to allow to use 'local' app rather than docker one
@@ -181,6 +181,7 @@
     url: http://<(fe-)?>workday.flock.local:8081/api/workdays/<.*>
     methods:
       - PUT
+      - DELETE
   authenticators:
     - handler: cookie_session
   authorizer:
@@ -190,7 +191,7 @@
         {
           "namespace": "Workday",
           "object": "{{ printIndex .MatchContext.RegexpCaptureGroups 2 }}",
-          "relation": "view",
+          "relation": "edit",
           "subject_set" : {
              "namespace": "User",
              "object": "{{print .Subject}}",
