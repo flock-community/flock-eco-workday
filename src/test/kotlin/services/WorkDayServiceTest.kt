@@ -3,6 +3,10 @@ package community.flock.eco.workday.services
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.helpers.CreateHelper
+import community.flock.eco.workday.model.Assignment
+import community.flock.eco.workday.model.Status
+import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.model.WorkDaySheet
 import config.AppTestConfig
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,7 +36,6 @@ class WorkDayServiceTest(
 
     @Test
     fun `creat update delete workday`() {
-
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val client = createHelper.createClient()
@@ -47,7 +50,10 @@ class WorkDayServiceTest(
             sheets = listOf()
         )
 
-        val created = workDayService.create(createForm)
+        val created = workDayService.create(
+            workDay(from, to, assignment, 50.0, emptyList())
+        )
+
         assertNotNull(created.id)
         assertEquals(50.0, created.hours)
 
@@ -69,4 +75,20 @@ class WorkDayServiceTest(
 
         assertNull(workDayService.findByCode(created.code))
     }
+
+    private fun workDay(
+        from: LocalDate,
+        to: LocalDate,
+        assignment: Assignment,
+        hours: Double,
+        sheets: List<WorkDaySheet>,
+    ) = WorkDay(
+        from = from,
+        to = to,
+        status = Status.APPROVED,
+        sheets = sheets,
+        hours = hours,
+        assignment = assignment,
+    )
+
 }

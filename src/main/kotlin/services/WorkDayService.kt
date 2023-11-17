@@ -4,7 +4,6 @@ import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.WorkDayForm
-import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay

@@ -5,7 +5,10 @@ import community.flock.eco.workday.Application
 import community.flock.eco.workday.authorities.WorkDayAuthority
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.helpers.CreateHelper
+import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Status
+import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.model.WorkDaySheet
 import community.flock.eco.workday.services.WorkDayService
 import config.AppTestConfig
 import org.junit.jupiter.api.Test
@@ -57,15 +60,10 @@ class WorkDayControllerTest(
         val person = createHelper.createPerson()
         val assignment = createHelper.createAssignment(client, person, from, to)
 
-        val createForm = WorkDayForm(
-            from = from,
-            to = to,
-            assignmentCode = assignment.code,
-            hours = 50.0,
-            sheets = listOf()
-        )
 
-        workDayService.create(createForm)
+        workDayService.create(
+            workDay(from, to, assignment, 50.0, emptyList())
+        )
 
         mvc.perform(
             get("$baseUrl?personId=${person.uuid}")
@@ -75,6 +73,21 @@ class WorkDayControllerTest(
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
     }
+
+    private fun workDay(
+        from: LocalDate,
+        to: LocalDate,
+        assignment: Assignment,
+        hours: Double,
+        sheets: List<WorkDaySheet>
+    ) = WorkDay(
+        from = from,
+        to = to,
+        status = Status.REQUESTED,
+        sheets = sheets,
+        hours = hours,
+        assignment = assignment,
+    )
 
     @Test
     fun `user can only access its own workdays`() {
@@ -86,15 +99,9 @@ class WorkDayControllerTest(
         val personNotlinkedToUser = createHelper.createPerson()
         val assignment = createHelper.createAssignment(client, personNotlinkedToUser, from, to)
 
-        val createForm = WorkDayForm(
-            from = from,
-            to = to,
-            assignmentCode = assignment.code,
-            hours = 50.0,
-            sheets = listOf()
+        workDayService.create(
+            workDay(from, to, assignment, 50.0, emptyList())
         )
-
-        workDayService.create(createForm)
 
         mvc.perform(
             get("$baseUrl?personId=${personNotlinkedToUser.uuid}")
@@ -117,17 +124,10 @@ class WorkDayControllerTest(
         val person = createHelper.createPerson("john", "doe", user.code)
         val assignment = createHelper.createAssignment(client, person, from, to)
 
-        val createForm = WorkDayForm(
-            status = status,
-            from = from,
-            to = to,
-            assignmentCode = assignment.code,
-            hours = 50.0,
-            sheets = listOf()
+
+        val created = workDayService.create(
+            workDay(from, to, assignment, 50.0, emptyList())
         )
-
-        val created = workDayService.create(createForm)
-
         mvc.perform(
             get("$baseUrl/${created.code}")
                 .with(user(CreateHelper.UserSecurity(user)))
@@ -161,8 +161,10 @@ class WorkDayControllerTest(
             sheets = listOf()
         )
 
-        val created = workDayService.create(createForm)
 
+        val created = workDayService.create(
+            workDay(from, to, assignment, 50.0, emptyList())
+        )
         val updatedForm = createForm.copy(status = Status.APPROVED)
 
         mvc.perform(
@@ -178,7 +180,7 @@ class WorkDayControllerTest(
     }
 
     @Test
-    fun `admin can update status field existing wrokday via PUT-Method`() {
+    fun `admin can update status field existing workday via PUT-Method`() {
 
         val admin = createHelper.createUser(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
@@ -198,7 +200,9 @@ class WorkDayControllerTest(
             sheets = listOf()
         )
 
-        val created = workDayService.create(createForm)
+        val created = workDayService.create(
+            workDay(from, to, assignment, 50.0, emptyList())
+        )
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 

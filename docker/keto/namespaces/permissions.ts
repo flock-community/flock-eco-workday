@@ -29,14 +29,14 @@ class Person implements Namespace {
     related: {
         organisationalUnits: Flock[]
         owners: User[]
-        managers: User[]
+        managers: Person[]
     }
 
     // if you can view a Person, you can view all owned Workdays of the Person
     permits = {
         view: (ctx: Context): boolean =>
             this.related.owners.includes(ctx.subject) ||
-            this.related.managers.includes(ctx.subject) ||
+            this.related.managers.traverse((f) => f.permits.view(ctx)) ||
             this.related.organisationalUnits.traverse((f) => f.permits.view(ctx)),
     }
 }
