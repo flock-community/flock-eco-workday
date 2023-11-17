@@ -4,8 +4,10 @@ import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.authorities.WorkDayAuthority
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
-import community.flock.eco.workday.services.PersonService
+import community.flock.eco.workday.model.WorkDaySheet
+import community.flock.eco.workday.services.AssignmentService
 import community.flock.eco.workday.services.WorkDayService
 import community.flock.eco.workday.services.isUser
 import org.springframework.data.domain.PageRequest
@@ -22,18 +24,20 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
-import java.util.UUID
+import java.time.temporal.ChronoUnit
+import java.util.*
 
 @RestController
 @RequestMapping("/api/workdays")
 class WorkdayController(
     private val service: WorkDayService,
-    private val personService: PersonService
+    private val assignmentService: AssignmentService,
 ) {
     @GetMapping(params = ["personId"])
     @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")
@@ -65,9 +69,19 @@ class WorkdayController(
     @PreAuthorize("hasAuthority('WorkDayAuthority.WRITE')")
     fun post(
         @RequestBody form: WorkDayForm,
+        @RequestHeader(value = "context-person-id", required = false) personId: String?, //TODO make required
         authentication: Authentication
-    ) = service
-        .create(form)
+    ): ResponseEntity<WorkDay> = form
+        .validate()
+        .copy(status = Status.REQUESTED)
+        .consume()
+        .also {
+            personId?.let { x ->
+                require(x == it.assignment.person.uuid.toString())
+                { "Assignment ${it.assignment.code} is not owned by Person $personId." }
+            }
+        }
+        .let { service.create(it) }
         .toResponse()
 
     @PutMapping("/{code}")
@@ -130,4 +144,50 @@ class WorkdayController(
         val mime = org.springframework.boot.web.server.MimeMappings.DEFAULT.get(extension)
         return MediaType.parseMediaType(mime)
     }
+
+    private fun WorkDayForm.validate() = apply {
+        val daysBetween = ChronoUnit.DAYS.between(from, to) + 1
+        if (hours < 0) {
+            error("Hours cannot have negative value")
+        }
+        if (days?.any { it < 0 } == true) {
+            error("Days cannot have negative value")
+        }
+        if (days != null) {
+            if (days.size.toLong() != daysBetween) {
+                error("amount of days ($daysBetween) not equal to period (${days.size})")
+            }
+            if (days.sum() != hours) {
+                error("Total hour does not match sum: ${days.sum()} hours: $hours")
+            }
+        }
+    }
+
+    private fun WorkDayForm.consume(it: WorkDay? = null): WorkDay {
+        val assignment = assignmentService
+            .findByCode(this.assignmentCode)
+            ?: error("Cannot find assignment: ${this.assignmentCode}")
+
+        // -- person id check
+
+
+        return WorkDay(
+            id = it?.id ?: 0L,
+            code = it?.code ?: UUID.randomUUID().toString(),
+            from = this.from,
+            to = this.to,
+            assignment = assignment,
+            hours = this.hours,
+            days = this.days,
+            status = this.status,
+            sheets = this.sheets.map {
+                WorkDaySheet(
+                    name = it.name,
+                    file = it.file
+                )
+            }
+        )
+    }
+
+
 }

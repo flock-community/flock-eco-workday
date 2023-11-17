@@ -4,18 +4,35 @@ import community.flock.eco.core.authorities.Authority
 import community.flock.eco.feature.user.forms.UserForm
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserService
-import community.flock.eco.workday.forms.*
+import community.flock.eco.workday.forms.AssignmentForm
+import community.flock.eco.workday.forms.ClientForm
+import community.flock.eco.workday.forms.ContractExternalForm
+import community.flock.eco.workday.forms.ContractInternalForm
+import community.flock.eco.workday.forms.ContractManagementForm
+import community.flock.eco.workday.forms.EventForm
+import community.flock.eco.workday.forms.LeaveDayForm
+import community.flock.eco.workday.forms.PersonForm
+import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Client
 import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.services.*
+import community.flock.eco.workday.model.Status
+import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.services.AssignmentService
+import community.flock.eco.workday.services.ClientService
+import community.flock.eco.workday.services.ContractService
+import community.flock.eco.workday.services.EventService
+import community.flock.eco.workday.services.LeaveDayService
+import community.flock.eco.workday.services.PersonService
+import community.flock.eco.workday.services.SickDayService
+import community.flock.eco.workday.services.WorkDayService
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.UUID
+import java.util.*
 
 @Component
 class CreateHelper(
@@ -133,16 +150,17 @@ class CreateHelper(
         to: LocalDate,
         hours: Double? = 40.0,
         days: List<Double>? = null
-    ) = WorkDayForm(
+    ) = WorkDay(
         from = from,
         to = to,
-        assignmentCode = assignment.code,
-        hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
+        assignment = assignment,
+        hours = hours ?: ((ChronoUnit.DAYS.between(from, to) + 1) * 8.0),
         days = days ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 },
-        sheets = listOf()
+        sheets = emptyList(),
+        status = Status.REQUESTED
     ).run {
         workDayService.create(this)
-    } ?: error("Cannot create sick day contract")
+    }
 
     fun createWorkDayWithoutDays(
         assignment: Assignment,
@@ -150,16 +168,17 @@ class CreateHelper(
         to: LocalDate,
         hours: Double? = 40.0,
         days: List<Double>? = null
-    ) = WorkDayForm(
+    ) = WorkDay(
         from = from,
         to = to,
-        assignmentCode = assignment.code,
-        hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
+        assignment = assignment,
+        hours = hours ?: ((ChronoUnit.DAYS.between(from, to) + 1) * 8.0),
         days = days,
-        sheets = listOf()
+        sheets = emptyList(),
+        status = Status.REQUESTED
     ).run {
         workDayService.create(this)
-    } ?: error("Cannot create sick day contract")
+    }
 
     fun createHoliDay(person: Person, from: LocalDate, to: LocalDate) = LeaveDayForm(
         description = "description",
@@ -170,7 +189,7 @@ class CreateHelper(
         days = listOf(8.0, 8.0, 8.0, 8.0, 8.0)
     ).run {
         leaveDayService.create(this)
-    } ?: error("Cannot create sick day contract")
+    }
 
     fun createEvent(
         from: LocalDate,
@@ -182,7 +201,7 @@ class CreateHelper(
         description = "Very description",
         from = from,
         to = to,
-        hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
+        hours = hours ?: ((ChronoUnit.DAYS.between(from, to) + 1) * 8.0),
         days = days ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 },
         personIds = persons
     ).run {

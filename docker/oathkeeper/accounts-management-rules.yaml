@@ -1,0 +1,49 @@
+- id: kratos-public-api
+  version: v0.40.2
+  upstream:
+    url: http://kratos:4433
+    strip_path: /api
+  match:
+    url: http://accounts.flock.local:8080/api/<.*>
+    methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - OPTIONS
+  authenticators:
+    - handler: noop
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: noop
+  errors:
+    - handler: redirect
+
+- id: kratos-admin-api
+  version: v0.40.2
+  upstream:
+    url: http://kratos:4434
+  match:
+    url: http://accounts.flock.local:8080/admin/<.*>
+    methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: remote_json
+    config:
+      payload: |
+        {
+          "namespace": "Application",
+          "object": "kratos-admin-api",
+          "relation": "access",
+          "subject_id": "{{print .Subject}}"
+        }
+  mutators:
+    - handler: noop
+  errors:
+    - handler: redirect

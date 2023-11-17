@@ -1,0 +1,122 @@
+serve:
+  proxy:
+    port: 4455 # run the proxy at port 4455
+    cors:
+      enabled: true
+      allowed_origins:
+        - --set-through-env-variable--
+      allowed_methods:
+        - POST
+        - GET
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Content-Type
+      exposed_headers:
+        - Content-Type
+      allow_credentials: true
+      debug: true
+  api:
+    port: 4456 # run the api at port 4456
+  prometheus:
+    port: 9000
+    host: oathkeeper
+    metrics_path: /metrics
+
+log:
+  level: debug
+  format: json
+
+access_rules:
+  matching_strategy: regexp
+  repositories:
+    - file:///etc/config/oathkeeper/rules/accounts-management-rules.yaml
+    - file:///etc/config/oathkeeper/rules/admin.yaml
+    - file:///etc/config/oathkeeper/rules/rules.yaml
+
+errors:
+  fallback:
+    - json
+  handlers:
+    redirect:
+      enabled: true
+      config:
+        to: --set-me-through-env-variable--
+        return_to_query_param: return_to
+        when:
+          - error:
+              - unauthorized
+              # - forbidden
+            request:
+              header:
+                accept:
+                  - text/html
+    json:
+      enabled: true
+      config:
+        verbose: true
+
+mutators:
+  id_token:
+    # Set enabled to true if the authenticator should be enabled and false to disable the authenticator. Defaults to false.
+    enabled: true
+    config:
+      issuer_url: --set-me-through-env-variable--
+      jwks_url: file:///etc/config/oathkeeper/jwks.json
+      ttl: 60s
+      claims: '{"email": "{{ print .Extra.identity.traits.email }}", "name": "{{ print .Extra.identity.traits.name.first }} {{ print .Extra.identity.traits.name.last }}", "aal": "{{ print .Extra.authenticator_assurance_level }}"}'
+  header:
+    enabled: true
+    config:
+      headers:
+        X-User: "{{ print .Subject }}"
+        X-Email: "{{ print .Extra.identity.traits.email }}"
+        X-Authenticator-Assurance-Level: "{{ print .Extra.authenticator_assurance_level }}"
+
+  noop:
+    enabled: true
+#  id_token:
+#    enabled: true
+#    config:
+#      issuer_url: http://localhost:4455/
+#      jwks_url: file:///etc/config/oathkeeper/jwks.json
+
+authorizers:
+  allow:
+    enabled: true
+
+  remote_json:
+    enabled: true
+    config:
+      remote: http://keto:4466/relation-tuples/check
+      # https://github.com/ory/oathkeeper/issues/797
+      forward_response_headers_to_upstream: []
+      payload: |
+        {
+          "subject": "{{ print .Subject }}",
+          "resource": "{{ printIndex .MatchContext.RegexpCaptureGroups 0 }}"
+        }
+
+#  deny:
+#    enabled: true
+
+authenticators:
+  noop:
+    enabled: true
+  unauthorized:
+    enabled: true
+  anonymous:
+    enabled: true
+    config:
+      subject: guest
+  cookie_session:
+    enabled: true
+    config:
+      check_session_url: http://kratos:4433/sessions/whoami
+      preserve_path: true
+      extra_from: "@this"
+      subject_from: "identity.id"
+      only:
+        - flock_community_session

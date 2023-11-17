@@ -1,0 +1,130 @@
+- id: kratos-admin-ui
+  version: v0.40.2
+  upstream:
+    url: http://kratos-admin-ui
+  match:
+    url: http://admin.flock.local:8081/<.*>
+    methods:
+      - GET
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: allow
+#    handler: remote_json
+#    config:
+#      payload: |
+#        {
+#          "namespace": "Application",
+#          "object": "kratos-admin-ui",
+#          "relation": "access",
+#          "subject_set" : {
+#             "namespace": "User",
+#             "object": "{{print .Subject}}",
+#             "relation": ""
+#           }
+#        }
+  mutators:
+    - handler: noop
+  errors:
+    - handler: redirect
+
+
+- id: keto-read-api
+  version: v0.40.2
+  upstream:
+    url: http://keto:4466
+    strip_path: /keto/api
+  match:
+    url: http://accounts.flock.local:8081/keto/api/<.*>
+    methods:
+      - GET
+      - POST
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: allow
+#    handler: remote_json
+#    config:
+#      payload: |
+#        {
+#          "namespace": "Application",
+#          "object": "keto-read-api",
+#          "relation": "access",
+#          "subject_set" : {
+#            "namespace": "User",
+#            "object": "{{print .Subject}}",
+#            "relation": ""
+#          }
+#        }
+  mutators:
+    - handler: noop
+  errors:
+    - handler: redirect
+
+- id: keto-write-api
+  version: v0.40.2
+  upstream:
+    url: http://keto:4467
+    strip_path: /keto
+  match:
+    url: http://accounts.flock.local:8081/keto/admin/<.*>
+    methods:
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+  authenticators:
+    - handler: noop
+  authorizer:
+    handler: allow
+#    handler: remote_json
+#    config:
+#      payload: |
+#        {
+#          "namespace": "Application",
+#          "object": "keto-write-api",
+#          "relation": "access",
+#          "subject_set" : {
+#            "namespace": "User",
+#            "object": "{{print .Subject}}",
+#            "relation": ""
+#          }
+#        }
+  mutators:
+    - handler: noop
+  errors:
+    - handler: redirect
+
+
+- id: keto-admin-ui
+  version: v0.40.2
+  upstream:
+    url: http://host.docker.internal:3001
+  match:
+    url: http://accounts.flock.local:8081/keto-ui/<.*>
+    methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: allow
+#    handler: remote_json
+#    config:
+#      payload: |
+#        {
+#          "namespace": "Application",
+#          "object": "keto-admin-ui",
+#          "relation": "access",
+#          "subject_set" : {
+#             "namespace": "User",
+#             "object": "{{print .Subject}}",
+#             "relation": ""
+#           }
+#        }
+  mutators:
+    - handler: noop
+  errors:
+    - handler: redirect

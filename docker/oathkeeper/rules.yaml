@@ -1,0 +1,120 @@
+- id: workday-everything
+  upstream:
+    url: http://workday:8080
+  version: v0.40.2
+  match:
+    url: http://workday.flock.local:8080/<.*>
+    methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: header
+  errors:
+    - handler: redirect
+
+- id: echo-public
+  version: v0.40.2
+  match:
+    url: http://localhost:8085/<.*>
+    methods:
+      - GET
+  authenticators:
+    - handler: anonymous
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: header
+  errors:
+    - handler: redirect
+- id: echo-public
+  version: v0.40.2
+  match:
+    url: https://<.*>.gitpod.io/echo/public/<.*>
+    methods:
+      - GET
+  authenticators:
+    - handler: anonymous
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: header
+  errors:
+    - handler: redirect
+- id: echo-protected
+  version: v0.40.2
+  match:
+    url: https://<.*>.gitpod.io/echo/protected/<.*>
+    methods:
+      - GET
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: header
+  errors:
+    - handler: redirect
+- id: echo-elevated-authentication
+  version: v0.40.2
+  match:
+    url: https://<.*>.gitpod.io/echo/elevated/<.*>
+    methods:
+      - GET
+  authenticators:
+    - handler: cookie_session
+      config:
+        check_session_url: http://kratos-whoami-aal-aware:8080/sessions/whoami?aal=aal2
+  authorizer:
+    handler: remote_json
+    config:
+      remote: http://keto:4466/relation-tuples/check
+      payload: '{ "namespace": "access", "object": "{{printIndex .MatchContext.RegexpCaptureGroups
+        1}}", "relation": "read", "subject_id": "{{print .Subject}}" }'
+  mutators:
+    - handler: header
+  errors:
+    - handler: redirect
+      config:
+        to: https://8085-flockcommun-identityacc-995ctfvg8og.ws-eu96b.gitpod.io/kratos/self-service/login/browser?refresh=true&aal=aal2
+- id: echo-keto-get-vehicles
+  version: v0.40.2
+  match:
+    url: https://<.*>.gitpod.io/echo/vehicles/<.*>
+    methods:
+      - GET
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: remote_json
+    config:
+      remote: http://keto:4466/relation-tuples/check
+      payload: '{ "namespace": "access", "object": "{{printIndex .MatchContext.RegexpCaptureGroups
+        1}}", "relation": "read", "subject_id": "{{print .Subject}}" }'
+  mutators:
+    - handler: header
+  errors:
+    - handler: redirect
+- id: echo-keto-get-finances
+  version: v0.40.2
+  match:
+    url: https://<.*>.gitpod.io/echo/finances/<.*>
+    methods:
+      - GET
+  authenticators:
+    - handler: cookie_session
+  authorizer:
+    handler: remote_json
+    config:
+      remote: http://keto:4466/relation-tuples/check
+      payload: '{ "namespace": "access", "object": "{{printIndex .MatchContext.RegexpCaptureGroups
+        1}}", "relation": "read", "subject_id": "{{print .Subject}}" }'
+  mutators:
+    - handler: header
+  errors:
+    - handler: redirect

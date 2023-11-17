@@ -11,7 +11,18 @@ jobs:
   build-kotlin:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+
+      - name: Setup GCP
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: flock-community
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Setup docker
+        run: gcloud auth configure-docker
+
     - uses: actions/setup-java@v1
       with:
         java-version: 17
@@ -23,8 +34,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
 
+      - name: Build with Maven
+        run: ./mvnw -B verify --file pom.xml
+
     - name: Build with Maven
-      run: ./mvnw -B package --file pom.xml
+      run: ./mvnw -B verify -P develop --file pom.xml
 
   build-react:
     runs-on: ubuntu-latest
@@ -39,5 +53,5 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-
       - run: npm ci
-#      - run: npm run format
+      #      - run: npm run format
       - run: npm run build
