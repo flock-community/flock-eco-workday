@@ -4,7 +4,7 @@ import {useUserMe} from "../../hooks/UserMeHook";
 import {Box} from "@material-ui/core";
 import ContractsEnding from "../../components/contracts/ContractsEnding";
 import PersonEvents from "../../components/person/PersonEvents";
-import {highLightClass, layoutClasses} from "../../theme/theme-light";
+import {highLightClass} from "../../theme/theme-light";
 import {QuickLinks} from "../../components/quick-links/QuickLinks";
 import {MissingHoursCard} from "../../components/missing-hours-card/MissingHoursCard";
 import {HolidayCard} from "../../components/holiday-card/HolidayCard";
@@ -30,7 +30,6 @@ export function HomeFeature() {
         user?.authorities?.includes("PersonAuthority.READ") ?? false;
 
     const classes = highLightClass();
-    const layout = layoutClasses();
 
     useEffect(() => {
         const today: Date = new Date();
@@ -41,12 +40,11 @@ export function HomeFeature() {
             AggregationClient.totalPerPersonMe().then(totalPerPersonMe => setTotalPerPersonMe(totalPerPersonMe));
             AggregationClient.leaveDayReportMeNew(new Date().getFullYear()).then((res) => setPersonHolidayDetails(res));
         }
-    }, []);
+    }, [user]);
 
     return (
-        // <div className={layout.contentGrid.concat(' ').concat(layout.flow)} style={{marginTop: '24px', paddingBottom: '24px'}} flow-gap={'wide'}>
-        <div className={layout.flow} style={{marginTop: '24px', paddingBottom: '24px'}} flow-gap={'wide'}>
-            <section className={layout.flow}>
+        <div className={'content flow'} style={{marginTop: '24px', paddingBottom: '24px'}} flow-gap={'wide'}>
+            <section className={'flow'}>
                 <Box style={{paddingInline: "16px"}}>
                     <Typography variant="h2">Hi, <span
                         className={classes.highlight}>{user && user.name}!</span></Typography>
@@ -57,7 +55,7 @@ export function HomeFeature() {
                     </div>
                 )}
             </section>
-            <section className={layout.flow}>
+            <section className={'flow'}>
                 {showContractsEnding && (
                     <div>
                         <ContractsEnding withinNWeeks={withinNWeek} contracts={contracts}/>
@@ -70,12 +68,12 @@ export function HomeFeature() {
                 )}
             </section>
             {hasAccess && (
-                <section className={layout.flow}>
+                <section className={'flow'}>
                     <div>
                         <QuickLinks/>
                     </div>
 
-                    <div className={layout.evenColumns}>
+                    <div className={'even-columns'}>
                         <MissingHoursCard totalPerPersonMe={totalPerPersonMe}/>
                         <HolidayCard item={personHolidayDetails}/>
                     </div>

@@ -31,6 +31,7 @@ export default function ProjectList({ editProject, refresh }) {
           <TableRow>
             <TableCell />
             <TableCell>Project name</TableCell>
+            <TableCell />
           </TableRow>
         </TableHead>
         <TableBody>{projects.map(renderItem)}</TableBody>

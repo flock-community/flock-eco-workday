@@ -1,22 +1,24 @@
 import {Card, CardContent, CardHeader} from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import List from "@material-ui/core/List";
 import React, {useEffect, useState} from "react";
-import {AggregationClient, leaveDayReportMeNew, PersonHolidayDetails} from "../../clients/AggregationClient";
+import {PersonHolidayDetails} from "../../clients/AggregationClient";
 import {hoursFormatter} from "../../utils/Hours";
 import {makeStyles} from "@material-ui/core/styles";
 import {highLightClass} from "../../theme/theme-light";
-import HealingIcon from "@material-ui/icons/Healing";
-import {LeaveDayReport} from "../tables/DashboardLeaveDayTable";
 import {HolidayDetailDialog} from "./HolidayDetailDialog";
-import {AggregationPersonObject} from "../missing-hours-card/MissingHoursCard";
 
 const useStyles = makeStyles(() => ({
+  hoursLeftWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'baseline'
+  },
   hoursLeft: {
-    fontSize: '10rem',
+    fontSize: '11rem',
     position: "relative",
     textAlign: "center",
     zIndex: 2,
+    marginInline: '2.5rem'
   }
 }));
 
@@ -50,10 +52,10 @@ export function HolidayCard({ item }: HolidayCardProps) {
   }
 
   return (<>
-    <Card variant={"outlined"} style={{borderRadius: 0}} onClick={() => openLeaveDayDetailsDialog()}>
+    <Card variant={"outlined"} style={{borderRadius: 0, cursor: "pointer"}} onClick={() => openLeaveDayDetailsDialog()}>
       <CardHeader title={"Holidays"}/>
       <CardContent>
-        <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'flex-end'}}>
+        <div className={classes.hoursLeftWrapper}>
           <span>You have</span>
           <div className={classes.hoursLeft}>
             <span className={highLightClasses.highlight}>{hoursFormatter.format(available)}</span>

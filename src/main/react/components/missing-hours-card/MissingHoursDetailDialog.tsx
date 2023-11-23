@@ -16,7 +16,6 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import {ChildCare, MoreHoriz, Timeline} from "@material-ui/icons";
-import {layoutClasses} from "../../theme/theme-light";
 import {AggregationPersonObject} from "./MissingHoursCard";
 import Typography from "@material-ui/core/Typography";
 
@@ -60,7 +59,6 @@ type MissingHoursDetailDialogProps = {
 export function MissingHoursDetailDialog({ open, item, onComplete }: MissingHoursDetailDialogProps) {
     const [state, setState] = useState<any>(null);
     const classes = useStyles();
-    const layOutClass = layoutClasses();
 
     useEffect(() => {
         if (open) {
@@ -84,7 +82,7 @@ export function MissingHoursDetailDialog({ open, item, onComplete }: MissingHour
                   </Typography>
                 )}
                 { item && (
-                <Box className={layOutClass.flow}>
+                <Box className={'flow'}>
                 <div className={classes.flexDataContainer}>
                     <div className={classes.dataItemWorkDay} style={{flexGrow: state?.workDays}}></div>
                     <div className={classes.dataItemHoliday} style={{flexGrow: state?.leaveDayUsed}}></div>
