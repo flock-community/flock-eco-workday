@@ -8,10 +8,10 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import { EventClient } from "../../clients/EventClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { EVENT_FORM_ID, EventForm } from "./EventForm";
 import { schema } from "../workday/WorkDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import {DialogFooter, DialogHeader} from "../../components/dialog";
 
 const useStyles = makeStyles(() => ({
   dialogContent: {

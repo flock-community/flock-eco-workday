@@ -3,10 +3,7 @@ package community.flock.eco.workday.controllers
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonAssignmentOverview
 import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonOverview
-import community.flock.eco.workday.model.AggregationClient
-import community.flock.eco.workday.model.AggregationLeaveDay
-import community.flock.eco.workday.model.AggregationMonth
-import community.flock.eco.workday.model.AggregationPerson
+import community.flock.eco.workday.model.*
 import community.flock.eco.workday.services.AggregationService
 import community.flock.eco.workday.services.PersonService
 import org.springframework.format.annotation.DateTimeFormat
@@ -121,4 +118,12 @@ class AggregationController(
             ?.let { person ->
                 aggregationService.personNonProductiveHoursPerDay(person, from, to)
             }.toResponse()
+
+    @GetMapping("/leave-day-report-me-new", params = ["year"])
+    @PreAuthorize("isAuthenticated()")
+    fun leaveDayReportMeByYearNew(authentication: Authentication, @RequestParam year: Int): PersonHolidayDetails {
+        val person = personService.findByUserCode(authentication.name)
+            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        return aggregationService.getHolidayDetailsMe(year, person)
+    }
 }
