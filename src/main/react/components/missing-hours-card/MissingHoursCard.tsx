@@ -7,14 +7,17 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Typography from "@material-ui/core/Typography";
+import {Contract} from "../../clients/ContractClient";
 
+type MissingHoursCardProps = {
+  totalPerPersonMe: any;
+};
 export type AggregationPersonObject = { monthYear: string, missing: number, id: string, name: string, contractTypes: string[],
-    sickDays: number, workDays: number, assignment: number, event: number, total: number, holiDayUsed: number,
-    holidayBalance: number, revenue: {}, cost: number };
+    sickDays: number, workDays: number, assignment: number, event: number, total: number, leaveDayUsed: number,
+    leaveDayBalance: number, paidParentalLeaveUsed: number, unpaidParentalLeaveUsed: number, revenue: {}, cost: number };
 
-export function MissingHoursCard() {
+export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
     const [data, setData] = useState<AggregationPersonObject[]>([]);
-    const [state, setState] = useState<any>();
     const [missingHoursDetailsOpen, setMissingHoursDetailsOpen] = useState<boolean>(false);
     const [missingHoursDetailsItem, setMissingHoursDetailsItem] = useState<AggregationPersonObject>();
 
@@ -23,26 +26,22 @@ export function MissingHoursCard() {
     }
 
     useEffect(() => {
-        AggregationClient.totalPerPersonMe().then(res => setState(res));
-    }, []);
-
-    useEffect(() => {
-        if (state) {
-            const data: AggregationPersonObject[] = Object.keys(state)
-                .map((monthYear) => ({...state[monthYear], monthYear}))
+        if (totalPerPersonMe) {
+            const data: AggregationPersonObject[] = Object.keys(totalPerPersonMe)
+                .map((monthYear) => ({...totalPerPersonMe[monthYear], monthYear}))
                 .filter((it) => it !== null)
                 .filter((it) => it.assignment > 0)
                 .map((it) => ({
                     ...it, missing: Math.max(0,
-                        it.total - (it.workDays + it.holiDayUsed + it.sickDays + it.event))
+                        it.total - (it.workDays + it.leaveDayUsed + it.sickDays + it.event))
                 }))
                 .filter((it) => it.missing > 0)
                 .map((it) => toAggregationPersonObject(it));
             setData(data);
         }
-    }, [state]);
+    }, [totalPerPersonMe]);
 
-    if (!state) return <AlignedLoader />;
+    if (!totalPerPersonMe) return <AlignedLoader />;
 
     const openWorkDayDialog = (item: AggregationPersonObject) => {
         setMissingHoursDetailsOpen(true);

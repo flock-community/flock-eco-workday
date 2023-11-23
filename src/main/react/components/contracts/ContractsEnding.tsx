@@ -12,7 +12,6 @@ import {
 } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
-import dayjs from "dayjs";
 import {DMY_DATE} from "../../clients/util/DateFormats";
 
 type ContractsEndingProps = {
