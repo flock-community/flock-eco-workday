@@ -12,19 +12,7 @@ import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
 import community.flock.eco.workday.interfaces.inRange
-import community.flock.eco.workday.model.AggregationClient
-import community.flock.eco.workday.model.AggregationLeaveDay
-import community.flock.eco.workday.model.AggregationMonth
-import community.flock.eco.workday.model.AggregationPerson
-import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.ContractExternal
-import community.flock.eco.workday.model.ContractInternal
-import community.flock.eco.workday.model.ContractManagement
-import community.flock.eco.workday.model.Day
-import community.flock.eco.workday.model.LeaveDayType
-import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.model.WorkDay
-import community.flock.eco.workday.model.sumHoursWithinAPeriod
+import community.flock.eco.workday.model.*
 import community.flock.eco.workday.utils.DateUtils.countWorkDaysInMonth
 import community.flock.eco.workday.utils.DateUtils.dateRange
 import community.flock.eco.workday.utils.DateUtils.isWorkingDay
@@ -76,6 +64,36 @@ class AggregationService(
                 .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
                 .totalHoursInPeriod(from, to),
         )
+    }
+
+    fun getHolidayDetailsMe(year: Int, person: Person): PersonHolidayDetails {
+        val from = YearMonth.of(year, 1).atDay(1)
+        val to = YearMonth.of(year, 12).atEndOfMonth()
+        val period = FromToPeriod(from, to)
+        val data = dataService.findAllData(from, to, person.uuid)
+        return PersonHolidayDetails(
+            name = person.getFullName(),
+            holidayHoursFromContract = data.contract
+                .filterIsInstance(ContractInternal::class.java)
+                .map { it.totalLeaveDayHoursInPeriod(period) }
+                .sum(),
+            plusHours = data.leaveDay
+                .filter { it.type == LeaveDayType.PLUSDAY }
+                .filter { it.status !== Status.REQUESTED } // Only get status Done and Approved
+                .totalHoursInPeriod(from, to),
+            holidayHoursDone = data.leaveDay
+                .filter { it.type == LeaveDayType.HOLIDAY }
+                .filter { it.status === Status.DONE }
+                .totalHoursInPeriod(from, to),
+            holidayHoursApproved = data.leaveDay
+                .filter { it.type == LeaveDayType.HOLIDAY }
+                .filter { it.status === Status.APPROVED }
+                .totalHoursInPeriod(from, to),
+            holidayHoursRequested = data.leaveDay
+                .filter { it.type == LeaveDayType.HOLIDAY }
+                .filter { it.status === Status.REQUESTED }
+                .totalHoursInPeriod(from, to)
+        );
     }
 
     fun leaveDayReport(year: Int): List<AggregationLeaveDay> {
@@ -588,7 +606,7 @@ private fun Assignment.revenuePerDay(): BigDecimal = (this.hourlyRate * this.hou
 private fun Iterable<LocalDate>.filterWorkingDay() = this.filter { it.isWorkingDay() }
 
 fun countWorkDaysInPeriod(from: LocalDate, to: LocalDate): Int {
-    val diff = ChronoUnit.DAYS.between(from, to);
+    val diff = ChronoUnit.DAYS.between(from, to)
     return (0..diff)
         .map { from.plusDays(it) }
         .filterWorkingDay()
