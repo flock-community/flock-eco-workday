@@ -8,7 +8,7 @@ import { useHistory } from "react-router-dom";
 import { TodoClient } from "../../clients/TodoClient";
 
 // Components
-import { StatusMenu } from "../../components/StatusMenu";
+import { StatusMenu } from "../../components/status/StatusMenu";
 import { SimpleTabs } from "../../components/tabs/Tabs";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 

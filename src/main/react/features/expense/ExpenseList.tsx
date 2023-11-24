@@ -7,7 +7,7 @@ import CardHeader from "@material-ui/core/CardHeader";
 import List from "@material-ui/core/List";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItem from "@material-ui/core/ListItem";
-import { StatusMenu } from "../../components/StatusMenu";
+import { StatusMenu } from "../../components/status/StatusMenu";
 import { EXPENSE_PAGE_SIZE, ExpenseClient } from "../../clients/ExpenseClient";
 import { makeStyles } from "@material-ui/core/styles";
 import { Dayjs } from "dayjs";
@@ -16,7 +16,7 @@ import { Dayjs } from "dayjs";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 // Types
-import type {DayListProps, StatusProps} from "../../types";
+import type { DayListProps, StatusProps } from "../../types";
 
 type ExpenseProps = {
   id: string;

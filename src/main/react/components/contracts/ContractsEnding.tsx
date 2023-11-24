@@ -30,13 +30,13 @@ export default function ContractsEnding({
   );
 
   const renderContract = (contract, index) => (
-      <TableRow key={index}>
-        <TableCell>{contract.person?.fullName ?? "NVT"}</TableCell>
-        <TableCell>{contract.from.format(DMY_DATE)}</TableCell>
-        <TableCell>{contract.to.format(DMY_DATE)}</TableCell>
-        <TableCell>{contract.type}</TableCell>
-      </TableRow>
-    );
+    <TableRow key={index}>
+      <TableCell>{contract.person?.fullName ?? "NVT"}</TableCell>
+      <TableCell>{contract.from.format(DMY_DATE)}</TableCell>
+      <TableCell>{contract.to.format(DMY_DATE)}</TableCell>
+      <TableCell>{contract.type}</TableCell>
+    </TableRow>
+  );
 
   const table = (
     <TableContainer>

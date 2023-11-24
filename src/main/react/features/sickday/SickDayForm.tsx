@@ -11,6 +11,7 @@ import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
 import dayjs from "dayjs";
 import DayjsUtils from "@date-io/dayjs";
+import {StatusSelect} from "../../components/status/StatusSelect";
 
 export const SICKDAY_FORM_ID = "sick-day-form";
 
@@ -33,7 +34,12 @@ export function SickDayForm({ value, onSubmit }) {
     });
   };
 
-  const renderForm = ({ values }) => (
+  const renderForm = ({ values, setFieldValue }) => {
+    const handleStatusChange = (newValue) => {
+      setFieldValue("status", newValue);
+    };
+
+    return (
     <Form id={SICKDAY_FORM_ID}>
       <MuiPickersUtilsProvider utils={DayjsUtils}>
         <Grid container spacing={1}>
@@ -48,20 +54,10 @@ export function SickDayForm({ value, onSubmit }) {
           </Grid>
           <Grid item xs={12}>
             <UserAuthorityUtil has={"SickdayAuthority.ADMIN"}>
-              <Field
-                fullWidth
-                type="text"
-                name="status"
-                label="Status"
-                select
-                variant="standard"
-                margin="normal"
-                component={TextField}
-              >
-                <MenuItem value="REQUESTED">REQUESTED</MenuItem>
-                <MenuItem value="APPROVED">APPROVED</MenuItem>
-                <MenuItem value="REJECTED">REJECTED</MenuItem>
-              </Field>
+              <StatusSelect
+                value={values.status}
+                onChange={handleStatusChange}
+              ></StatusSelect>
             </UserAuthorityUtil>
           </Grid>
           <Grid item xs={6}>
@@ -81,12 +77,12 @@ export function SickDayForm({ value, onSubmit }) {
             />
           </Grid>
           <Grid item xs={12}>
-            <PeriodInputField name="days" from={values.from} to={values.to} />
+            <PeriodInputField name="days" from={values.from} to={values.to}/>
           </Grid>
         </Grid>
       </MuiPickersUtilsProvider>
     </Form>
-  );
+  )};
 
   return (
     value && (

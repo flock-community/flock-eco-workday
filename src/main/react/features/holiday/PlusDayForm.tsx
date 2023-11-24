@@ -10,6 +10,9 @@ import { DatePickerField } from "../../components/fields/DatePickerField";
 import dayjs from "dayjs";
 import DayjsUtils from "@date-io/dayjs";
 import {LEAVE_DAY_DIALOG_FORM_ID} from "./LeaveDayDialog";
+import {StatusSelect} from "../../components/status/StatusSelect";
+
+export const HOLIDAY_FORM_ID = "holiday-form-id";
 
 const now = dayjs();
 
@@ -35,7 +38,11 @@ export function PlusDayForm({ value, onSubmit }: PlusDayFormProps) {
     });
   };
 
-  const renderForm = ({ values }) => {
+  const renderForm = ({ values, setFieldValue }) => {
+    const handleStatusChange = (newValue) => {
+      setFieldValue("status", newValue);
+    };
+
     return (
       <Form id={LEAVE_DAY_DIALOG_FORM_ID}>
         <MuiPickersUtilsProvider utils={DayjsUtils}>
@@ -52,21 +59,11 @@ export function PlusDayForm({ value, onSubmit }: PlusDayFormProps) {
 
             {value && (
               <Grid item xs={12}>
-                <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
-                  <Field
-                    fullWidth
-                    type="text"
-                    name="status"
-                    label="Status"
-                    select
-                    variant="standard"
-                    margin="normal"
-                    component={TextField}
-                  >
-                    <MenuItem value="REQUESTED">REQUESTED</MenuItem>
-                    <MenuItem value="APPROVED">APPROVED</MenuItem>
-                    <MenuItem value="REJECTED">REJECTED</MenuItem>
-                  </Field>
+                <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+                  <StatusSelect
+                    value={values.status}
+                    onChange={handleStatusChange}
+                  ></StatusSelect>
                 </UserAuthorityUtil>
               </Grid>
             )}

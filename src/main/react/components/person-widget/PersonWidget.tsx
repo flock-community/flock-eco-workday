@@ -1,10 +1,19 @@
 import React from "react";
-import {Card, CardContent, CardHeader, Table, TableBody, TableCell, TableContainer, TableRow,} from "@material-ui/core";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+} from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import CreateIcon from "@material-ui/icons/Create";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import {Person} from "../../clients/PersonClient";
-import {DMY_DATE} from "../../clients/util/DateFormats";
+import { Person } from "../../clients/PersonClient";
+import { DMY_DATE } from "../../clients/util/DateFormats";
 
 type PersonWidgetProps = {
   person: Person;
@@ -79,15 +88,11 @@ export function PersonWidget({
               </TableRow>
               <TableRow>
                 <TableCell component="th">Shoe size</TableCell>
-                <TableCell>
-                  {person.shoeSize ?? "Unknown"}
-                </TableCell>
+                <TableCell>{person.shoeSize ?? "Unknown"}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th">Shirt size</TableCell>
-                <TableCell>
-                  {person.shirtSize ?? "Unknown"}
-                </TableCell>
+                <TableCell>{person.shirtSize ?? "Unknown"}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { TableCell } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import TableRow from "@material-ui/core/TableRow";
-import { StatusMenu } from "../../components/StatusMenu";
+import { StatusMenu } from "../../components/status/StatusMenu";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import CreateIcon from "@material-ui/icons/Create";
 import IconButton from "@material-ui/core/IconButton";
