@@ -19,6 +19,7 @@ export type FlockEvent = {
   hours: number;
   days: number[];
   persons: Person[];
+  costs: number;
 };
 
 type FlockEventRaw = {
@@ -30,10 +31,19 @@ type FlockEventRaw = {
   hours: number;
   days: number[];
   persons: Person[];
+  costs: number;
 };
 
 export type FlockEventRequest = {
-  // TODO
+  description: string;
+  id: number;
+  code: string;
+  from: Dayjs;
+  to: Dayjs;
+  hours: number;
+  days: number[];
+  personIds: string[];
+  costs: number;
 };
 
 const internalize = (it) => ({

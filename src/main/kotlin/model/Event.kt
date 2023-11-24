@@ -24,6 +24,8 @@ class Event(
 
     override val hours: Double,
 
+    val costs: Double,
+
     @ElementCollection
     override val days: List<Double>? = null,
 

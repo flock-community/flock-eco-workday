@@ -27,7 +27,8 @@ class LoadEventData(
                             to = LocalDate.of(now.year, 1, 1),
                             days = listOf(8.0),
                             hours = 8.0,
-                            personIds = loadPersonData.data.map { it.uuid }
+                            personIds = loadPersonData.data.map { it.uuid },
+                            costs = 1000.0
                     ),
                     EventForm(
                             description = "Flock. dag",
@@ -35,7 +36,8 @@ class LoadEventData(
                             to = LocalDate.of(now.year, 1, 3),
                             days = listOf(8.0),
                             hours = 8.0,
-                            personIds = loadPersonData.data.map { it.uuid }
+                            personIds = loadPersonData.data.map { it.uuid },
+                            costs = 1000.0
                     ),
                     EventForm(
                             description = "Conference",
@@ -43,7 +45,8 @@ class LoadEventData(
                             to = LocalDate.of(now.year, 5, 29),
                             days = listOf(8.0, 8.0, 8.0),
                             hours = 24.0,
-                            personIds = loadPersonData.data.take(2).map { it.uuid }
+                            personIds = loadPersonData.data.take(2).map { it.uuid },
+                        costs = 1000.0
                     )
             )
                     .map { it.create() }

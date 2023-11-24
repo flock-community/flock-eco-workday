@@ -67,3 +67,6 @@ databaseChangeLog:
   - include:
       - file: db.changelog-022-person-google-drive-id.yaml
         relativeToChangelogFile: true
+  - include:
+      - file: db.changelog-023-event-add-costs.yaml
+        relativeToChangelogFile: true

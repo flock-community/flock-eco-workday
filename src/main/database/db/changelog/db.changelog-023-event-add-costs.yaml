@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-023-event-add-costs
+      author: jverhaar
+      changes:
+        - addColumn:
+            tableName: event
+            columns:
+              - column:
+                  name: costs
+                  type: DOUBLE
+                  defaultValue: '0'
+                  constraints:
+                    nullable: false

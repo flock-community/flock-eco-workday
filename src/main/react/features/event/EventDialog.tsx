@@ -6,7 +6,7 @@ import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/co
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import { EventClient } from "../../clients/EventClient";
+import {EventClient, FlockEvent, FlockEventRequest} from "../../clients/EventClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { EVENT_FORM_ID, EventForm } from "./EventForm";
 import { schema } from "../workday/WorkDayForm";
@@ -31,48 +31,41 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
 
   const [openDelete, setOpenDelete] = useState(false);
 
-  const [state, setState] = useState<any>(null);
+  const [state, setState] = useState<FlockEventRequest | undefined>(undefined);
 
   useEffect(() => {
     if (open) {
       if (code) {
         EventClient.get(code).then((res) => {
           setState({
-            description: res.description,
-            personIds: res.persons.map((it) => it.uuid) ?? [],
-            from: res.from,
-            to: res.to,
-            days: res.days,
+            ...res,
+            personIds: res.persons.map((it) => it.uuid) ?? []
           });
         });
       } else {
         setState(schema.cast());
       }
     } else {
-      setState(null);
+      setState(undefined);
     }
   }, [open, code]);
 
   const handleSubmit = (it) => {
     if (code) {
       EventClient.put(code, {
-        description: it.description,
+        ...it,
         from: it.from.format(ISO_8601_DATE),
         to: it.to.format(ISO_8601_DATE),
-        days: it.days,
-        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
-        personIds: it.personIds,
+        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0)
       }).then((res) => {
         onComplete?.(res);
       });
     } else {
       EventClient.post({
-        description: it.description,
+        ...it,
         from: it.from.format(ISO_8601_DATE),
         to: it.to.format(ISO_8601_DATE),
-        days: it.days,
-        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
-        personIds: it.personIds,
+        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0)
       }).then((res) => {
         onComplete?.(res);
       });
