@@ -3,10 +3,7 @@ package community.flock.eco.workday.controllers
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonAssignmentOverview
 import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonOverview
-import community.flock.eco.workday.model.AggregationClient
-import community.flock.eco.workday.model.AggregationLeaveDay
-import community.flock.eco.workday.model.AggregationMonth
-import community.flock.eco.workday.model.AggregationPerson
+import community.flock.eco.workday.model.*
 import community.flock.eco.workday.services.AggregationService
 import community.flock.eco.workday.services.PersonService
 import org.springframework.format.annotation.DateTimeFormat
@@ -84,6 +81,7 @@ class AggregationController(
         return aggregationService.leaveDayReport(year)
     }
 
+    // TODO: refactor the leave-day-report-me into new endpoint: holiday-details-me
     @GetMapping("/leave-day-report-me", params = ["year"])
     @PreAuthorize("isAuthenticated()")
     fun leaveDayReportMeByYear(authentication: Authentication, @RequestParam year: Int): AggregationLeaveDay {
@@ -121,4 +119,13 @@ class AggregationController(
             ?.let { person ->
                 aggregationService.personNonProductiveHoursPerDay(person, from, to)
             }.toResponse()
+
+    // TODO: refactor the leave-day-report-me into this new endpoint
+    @GetMapping("/holiday-details-me", params = ["year"])
+    @PreAuthorize("isAuthenticated()")
+    fun holidayDetailsMeYear(authentication: Authentication, @RequestParam year: Int): PersonHolidayDetails {
+        val person = personService.findByUserCode(authentication.name)
+            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        return aggregationService.getHolidayDetailsMe(year, person)
+    }
 }

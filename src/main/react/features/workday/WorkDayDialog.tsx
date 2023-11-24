@@ -103,12 +103,15 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
       setOpenDelete(false);
     });
   };
+
   const handleDeleteOpen = () => {
     setOpenDelete(true);
   };
+
   const handleDeleteClose = () => {
     setOpenDelete(false);
   };
+
   const handleClose = () => {
     if (isDefined(onComplete)) onComplete();
     setState(null);

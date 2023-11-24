@@ -40,7 +40,8 @@ class PersonService(
             receiveEmail = form.receiveEmail,
             shoeSize = form.shoeSize,
             shirtSize = form.shirtSize,
-            user = user
+            user = user,
+            googleDriveId = form.googleDriveId,
         )
     }
 

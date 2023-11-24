@@ -80,7 +80,6 @@ const RenderAuthenticated = ({status}) => {
       onClose={() => setOpenDrawer(false)}
     />
     <ApplicationLayout onDrawer={() => setOpenDrawer(true)}/>
-    <Box>
       <Switch>
         <Route path="/" exact component={HomeFeature}/>
         <Route path="/dashboard" exact component={DashboardFeature}/>
@@ -116,13 +115,12 @@ const RenderAuthenticated = ({status}) => {
         />
         <Redirect to="/"/>
       </Switch>
-    </Box>
   </>
 };
 
 const RenderUnauthenticated = () => {
   return <>
-    <Box>
+    <Box className={'full-width'} style={{'--row-gap': 0}}>
       <Redirect to="/auth" exact/>
       <Route path="/auth" exact component={LoginFeature}/>
     </Box>

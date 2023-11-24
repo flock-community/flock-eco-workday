@@ -7,8 +7,8 @@ import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.LeaveDay
 import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.services.email.LeaveDayEmailService
 import community.flock.eco.workday.repository.LeaveDayRepository
+import community.flock.eco.workday.services.email.LeaveDayEmailService
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -79,7 +79,7 @@ class LeaveDayService(
 
     @Transactional
     fun deleteByCode(code: String) = leaveDayRepository
-            .deleteByCode(code)
+        .deleteByCode(code)
 
     private fun LeaveDay.save() = leaveDayRepository.save(this)
 

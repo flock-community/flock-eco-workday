@@ -43,6 +43,8 @@ data class Person(
     val shoeSize: String? = null,
     val shirtSize: String? = null,
 
+    val googleDriveId: String? = null,
+
     @OneToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)

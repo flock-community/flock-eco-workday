@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-022-person-google-drive-id
+      author: jverhaar
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: google_drive_id
+                  type: varchar(255)
+                  constraints:
+                    - nullable: true
