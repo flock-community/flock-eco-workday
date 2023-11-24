@@ -57,6 +57,7 @@ export const clientHourOverviewByYearMonth: (
     .then(checkResponse)
     .then((res) => res.body);
 };
+
 export const totalPerPersonMe = () => {
   const opts = {
     method: "GET",
@@ -76,12 +77,34 @@ export type AggregationLeaveDay = {
   unpaidParentalLeaveHours: number;
 };
 
+export type PersonHolidayDetails = {
+  name: String;
+  holidayHoursFromContract: number;
+  plusHours: number;
+  holidayHoursDone: number;
+  holidayHoursApproved: number;
+  holidayHoursRequested: number;
+  totalHoursAvailable: number;
+  totalHoursUsed: number;
+  totalHoursRemaining: number;
+}
+
 export const leaveDayReportMe = (year): Promise<AggregationLeaveDay> => {
   const opts = {
     method: "GET",
   };
   return fetch(`${path}/leave-day-report-me?year=${year}`, opts)
     .then((res) => validateResponse<AggregationLeaveDay>(res))
+    .then(checkResponse)
+    .then((res) => res.body);
+};
+
+export const holidayDetailsMeYear = (year): Promise<PersonHolidayDetails> => {
+  const opts = {
+    method: "GET",
+  };
+  return fetch(`${path}/holiday-details-me?year=${year}`, opts)
+    .then((res) => validateResponse<PersonHolidayDetails>(res))
     .then(checkResponse)
     .then((res) => res.body);
 };
@@ -136,4 +159,5 @@ export const AggregationClient = {
   totalPerPersonMe,
   leaveDayReportMe,
   leaveDayReportByYear,
+  holidayDetailsMeYear,
 };

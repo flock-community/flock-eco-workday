@@ -43,27 +43,13 @@ export const highLightClass = makeStyles((theme) => ({
       content: '""',
       backgroundColor: theme.palette.primary.main,
       width: "100%",
-      height: "1em",
+      height: ".9em",
       position: "absolute",
       zIndex: "-1",
       filter: "url(#markerShape)",
       left: "-0.15em",
       top: "0.1em",
-      padding: "0 0.25em",
-    },
-  },
-}));
-
-export const layoutClasses = makeStyles(() => ({
-  flow: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    "& > *": {
-      marginBlock: 0,
-    },
-    "& > * + *": {
-      marginBlockStart: "1rem",
+      padding: "0 0.15em",
     },
   },
 }));

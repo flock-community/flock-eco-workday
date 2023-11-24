@@ -5,7 +5,7 @@ import AddIcon from "@material-ui/icons/Add";
 import {usePerson} from "../../hooks/PersonHook";
 import {WorkDayDialog} from "../../features/workday/WorkDayDialog";
 import {addError} from "../../hooks/ErrorHook";
-import {HolidayDialog} from "../../features/holiday/HolidayDialog";
+import {LeaveDayDialog} from "../../features/holiday/LeaveDayDialog";
 import {ExpenseDialog} from "../../features/expense/ExpenseDialog";
 import {ExpenseType} from "../../features/expense/ExpenseType";
 
@@ -79,7 +79,7 @@ export function QuickLinks() {
             code={value?.code}
             onComplete={handleCLoseWorkdayDialog}
         />
-        <HolidayDialog
+        <LeaveDayDialog
             open={leaveDayOpen}
             code={value?.code}
             personId={person?.uuid}

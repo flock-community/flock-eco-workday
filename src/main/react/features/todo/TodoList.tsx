@@ -140,9 +140,6 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
   }
   return (
     <>
-      <Typography component="h1" variant="h5">
-        Todo's
-      </Typography>
       <SimpleTabs
         data={paginatedItems}
         renderFunction={renderItem}

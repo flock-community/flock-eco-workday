@@ -59,5 +59,8 @@ databaseChangeLog:
       - file: db.changelog-019-rename-table-holiday-to-leaveday.yaml
         relativeToChangelogFile: true
   - include:
+      - file: db.changelog-020-update-authorities-holiday-to-leaveday.yaml
+        relativeToChangelogFile: true
+  - include:
       - file: db.changelog-021-person-receive-email.yaml
         relativeToChangelogFile: true

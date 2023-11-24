@@ -15,8 +15,9 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import {MoreHoriz, Timeline} from "@material-ui/icons";
-import {layoutClasses} from "../../theme/theme-light";
+import {ChildCare, MoreHoriz, Timeline} from "@material-ui/icons";
+import {AggregationPersonObject} from "./MissingHoursCard";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
     flexDataContainer: {
@@ -32,6 +33,12 @@ const useStyles = makeStyles((theme) => ({
     dataItemHoliday: {
         backgroundColor: "#42a5f5",
     },
+    dataItemPaidPL: {
+        backgroundColor: "#ffb6c1",
+    },
+    dataItemUnpaidPL: {
+        backgroundColor: "#87cefa",
+    },
     dataItemSickDay: {
         backgroundColor: "#ef5350",
     },
@@ -43,10 +50,15 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export function MissingHoursDetailDialog({ open, item, onComplete }) {
+type MissingHoursDetailDialogProps = {
+  open: boolean;
+  item: AggregationPersonObject;
+  onComplete: () => void
+}
+
+export function MissingHoursDetailDialog({ open, item, onComplete }: MissingHoursDetailDialogProps) {
     const [state, setState] = useState<any>(null);
     const classes = useStyles();
-    const layOutClass = layoutClasses();
 
     useEffect(() => {
         if (open) {
@@ -64,10 +76,18 @@ export function MissingHoursDetailDialog({ open, item, onComplete }) {
             <DialogHeader onClose={handleClose} icon={<Timeline />}
                           headline={'Missing hours details'} subheadline={ new Date(state?.monthYear).toLocaleString('en-EN', { month: 'long'})} />
             <DialogContent style={{ padding: '32px 24px' }}>
-                <Box className={layOutClass.flow}>
+                { !item && (
+                  <Typography align={"center"}>
+                    No data to display.
+                  </Typography>
+                )}
+                { item && (
+                <Box className={'flow'}>
                 <div className={classes.flexDataContainer}>
                     <div className={classes.dataItemWorkDay} style={{flexGrow: state?.workDays}}></div>
-                    <div className={classes.dataItemHoliday} style={{flexGrow: state?.holiDayUsed}}></div>
+                    <div className={classes.dataItemHoliday} style={{flexGrow: state?.leaveDayUsed}}></div>
+                    <div className={classes.dataItemPaidPL} style={{flexGrow: state?.paidParentalLeaveUsed}}></div>
+                    <div className={classes.dataItemUnpaidPL} style={{flexGrow: state?.unpaidParentalLeaveUsed}}></div>
                     <div className={classes.dataItemSickDay} style={{flexGrow: state?.sickDays}}></div>
                     <div className={classes.dataItemEventDay} style={{flexGrow: state?.event}}></div>
                     <div className={classes.dataItemMissing} style={{flexGrow: state?.missing}}></div>
@@ -89,7 +109,25 @@ export function MissingHoursDetailDialog({ open, item, onComplete }) {
                         </ListItemIcon>
                         <ListItemText primary={"Holiday hours"} />
                         <ListItemSecondaryAction>
-                            {state?.holiDayUsed}
+                            {state?.leaveDayUsed}
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                    <ListItem>
+                        <ListItemIcon style={{ color: '#ffb6c1' }}>
+                            <ChildCare/>
+                        </ListItemIcon>
+                        <ListItemText primary={"Paid Parental leave"} />
+                        <ListItemSecondaryAction>
+                            {state?.paidParentalLeaveUsed}
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                    <ListItem>
+                        <ListItemIcon style={{ color: '#87cefa' }}>
+                          <ChildCare/>
+                        </ListItemIcon>
+                        <ListItemText primary={"Unpaid Parental leave"} />
+                        <ListItemSecondaryAction>
+                            {state?.unpaidParentalLeaveUsed}
                         </ListItemSecondaryAction>
                     </ListItem>
                     <ListItem>
@@ -129,7 +167,7 @@ export function MissingHoursDetailDialog({ open, item, onComplete }) {
                     </ListItem>
                     <Divider />
                 </List>
-                </Box>
+                </Box> )}
             </DialogContent>
         </Dialog>
     </>);

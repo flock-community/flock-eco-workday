@@ -39,8 +39,8 @@ abstract class Day(
         when (days.isNullOrEmpty()) {
             true -> {
                 val workingDaysCount = BigDecimal(countWorkDaysInPeriod(from, to))
-                val hoursADay = BigDecimal(hours)
-                    .divide(workingDaysCount, 10, RoundingMode.HALF_UP)
+                    val hoursADay = BigDecimal(hours)
+                        .divide(workingDaysCount, 10, RoundingMode.HALF_UP)
                 this.toDateRange().associateWith {
                     when (it.isWorkingDay()) {
                         true -> hoursADay
