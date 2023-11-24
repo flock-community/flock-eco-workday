@@ -16,4 +16,5 @@ data class PersonForm(
     val receiveEmail: Boolean = true,
     val shoeSize: String? = null,
     val shirtSize: String? = null,
+    val googleDriveId: String? = null,
 )

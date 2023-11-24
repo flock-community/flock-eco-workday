@@ -108,6 +108,18 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
           <Grid item xs={12}>
             <FormControl fullWidth>
               <Field
+                id="googleDriveId"
+                type="text"
+                label="Google Drive map Id"
+                name="googleDriveId"
+                component={FormikTextField}
+              />
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <Field
                 name="reminders"
                 type="checkbox"
                 Label={{ label: "Reminders" }}
