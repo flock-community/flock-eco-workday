@@ -69,9 +69,9 @@ export const ContractFormInternal = ({
           </Grid>
           <Grid item xs={12}>
             <Field
-              name="leaveHours"
+              name="holidayHours"
               type="number"
-              label="Leave hours"
+              label="Holiday hours"
               fullWidth
               component={TextField}
             />
@@ -87,7 +87,7 @@ export const ContractFormInternal = ({
     from: value.from,
     to: value.to,
     billable: value.billable,
-    leaveHours: value.leaveHours,
+    holidayHours: value.holidayHours,
   };
 
   const schema = object({
@@ -96,7 +96,7 @@ export const ContractFormInternal = ({
     from: mixed().required().default(dayjs()),
     to: mixed().default(null),
     billable: boolean().default(true),
-    leaveHours: number().required().default(192),
+    holidayHours: number().required().default(192),
   });
 
   return (
