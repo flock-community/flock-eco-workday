@@ -99,11 +99,11 @@ export const leaveDayReportMe = (year): Promise<AggregationLeaveDay> => {
     .then((res) => res.body);
 };
 
-export const leaveDayReportMeNew = (year): Promise<PersonHolidayDetails> => {
+export const holidayDetailsMeYear = (year): Promise<PersonHolidayDetails> => {
   const opts = {
     method: "GET",
   };
-  return fetch(`${path}/leave-day-report-me-new?year=${year}`, opts)
+  return fetch(`${path}/holiday-details-me?year=${year}`, opts)
     .then((res) => validateResponse<PersonHolidayDetails>(res))
     .then(checkResponse)
     .then((res) => res.body);
@@ -159,5 +159,5 @@ export const AggregationClient = {
   totalPerPersonMe,
   leaveDayReportMe,
   leaveDayReportByYear,
-  leaveDayReportMeNew,
+  holidayDetailsMeYear,
 };

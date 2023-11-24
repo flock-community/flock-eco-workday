@@ -81,6 +81,7 @@ class AggregationController(
         return aggregationService.leaveDayReport(year)
     }
 
+    // TODO: refactor the leave-day-report-me into new endpoint: holiday-details-me
     @GetMapping("/leave-day-report-me", params = ["year"])
     @PreAuthorize("isAuthenticated()")
     fun leaveDayReportMeByYear(authentication: Authentication, @RequestParam year: Int): AggregationLeaveDay {
@@ -119,9 +120,10 @@ class AggregationController(
                 aggregationService.personNonProductiveHoursPerDay(person, from, to)
             }.toResponse()
 
-    @GetMapping("/leave-day-report-me-new", params = ["year"])
+    // TODO: refactor the leave-day-report-me into this new endpoint
+    @GetMapping("/holiday-details-me", params = ["year"])
     @PreAuthorize("isAuthenticated()")
-    fun leaveDayReportMeByYearNew(authentication: Authentication, @RequestParam year: Int): PersonHolidayDetails {
+    fun holidayDetailsMeYear(authentication: Authentication, @RequestParam year: Int): PersonHolidayDetails {
         val person = personService.findByUserCode(authentication.name)
             ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
         return aggregationService.getHolidayDetailsMe(year, person)

@@ -38,7 +38,7 @@ export function HomeFeature() {
         showPersonEvents && PersonEventClient.findAllBetween(today, nWeeksFromNow).then((personEvents) => setPersonEvents(personEvents));
         if (hasAccess) {
             AggregationClient.totalPerPersonMe().then(totalPerPersonMe => setTotalPerPersonMe(totalPerPersonMe));
-            AggregationClient.leaveDayReportMeNew(new Date().getFullYear()).then((res) => setPersonHolidayDetails(res));
+            AggregationClient.holidayDetailsMeYear(new Date().getFullYear()).then((res) => setPersonHolidayDetails(res));
         }
     }, [user]);
 
