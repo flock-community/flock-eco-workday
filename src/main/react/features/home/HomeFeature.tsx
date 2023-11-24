@@ -9,6 +9,7 @@ import PersonEvents from "../../components/person/PersonEvents";
 import {DashboardLeaveDayChart} from "../../components/charts/DashboardLeaveDayChart";
 import {highLightClass} from "../../theme/theme-light";
 import {QuickLinks} from "../../components/quick-links/QuickLinks";
+import {MissingHoursCard} from "../../components/missing-hours-card/MissingHoursCard";
 
 export function HomeFeature() {
   const [ user ] = useUserMe();
@@ -49,6 +50,13 @@ export function HomeFeature() {
         {hasAccess && (
           <Grid item xs={12}>
             <QuickLinks />
+          </Grid>
+        )}
+        {hasAccess && (
+          <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
+              <MissingHoursCard />
+            </Grid>
           </Grid>
         )}
 
