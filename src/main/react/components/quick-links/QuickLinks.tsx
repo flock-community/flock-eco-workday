@@ -70,7 +70,7 @@ export function QuickLinks() {
                     <Button variant={"contained"} startIcon={<AddIcon/>} onClick={openAddLeaveDay} >Holiday</Button>
                     <Button variant={"contained"} startIcon={<AddIcon/>} onClick={openAddTravelExpense} >Travel expense</Button>
                     <Button variant={"contained"} startIcon={<AddIcon/>} onClick={openAddCostExpense} >Cost expense</Button>
-                    {person?.googleDriveId && <Link href={`https://drive.google.com/drive/folder/${person?.googleDriveId}`}
+                    {person?.googleDriveId && <Link href={`https://drive.google.com/drive/folders/${person?.googleDriveId}`}
                                                       component={Button} target={"_blank"} rel={"noreferrer"}
                                                       underline="none" startIcon={<Cloud/>} >Google Drive</Link> }
                 </Box>
