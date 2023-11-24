@@ -39,7 +39,7 @@ class TravelExpenseMailService(private val emailService: EmailService, private v
 
         log.info("Email generated for TravelExpense notification for ${employee.email}")
 
-        emailService.sendEmailNotification(employee.receiveEmail, subject, templateVariables,
+        emailService.sendEmailNotification(subject, templateVariables,
             mailjetTemplateProperties.notificationTemplateId)
     }
 }
