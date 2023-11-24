@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { EventDialog } from "./EventDialog";
 import { EventList } from "./EventList";
-import { Card, CardContent, CardHeader } from "@material-ui/core";
+import { Card, CardContent, CardHeader, Box } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
 import {FlockEvent} from "../../clients/EventClient";
