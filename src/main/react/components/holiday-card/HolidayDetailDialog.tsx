@@ -7,6 +7,7 @@ import List from "@material-ui/core/List";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import {PersonHolidayDetails} from "../../clients/AggregationClient";
+import {hoursFormatter} from "../../utils/Hours";
 
 const initialData: PersonHolidayDetails = {
   name: '', holidayHoursFromContract: 0, plusHours: 0, holidayHoursDone: 0, holidayHoursApproved: 0,
@@ -43,20 +44,20 @@ export function HolidayDetailDialog({ open, item, onComplete }: HolidayDetailDia
           <ListItem>
             <ListItemText primary={"Contract"} />
             <ListItemSecondaryAction>
-              { state?.holidayHoursFromContract }
+              {hoursFormatter.format(state?.holidayHoursFromContract)}
             </ListItemSecondaryAction>
           </ListItem>
           <ListItem>
             <ListItemText primary={"Plus"} />
             <ListItemSecondaryAction>
-              { state?.plusHours }
+              {hoursFormatter.format(state?.plusHours)}
             </ListItemSecondaryAction>
           </ListItem>
             <Divider />
           <ListItem style={{ fontStyle: "italic" }}>
             <ListItemText primary={"Total"} />
             <ListItemSecondaryAction style={{ fontStyle: "italic" }}>
-              { state?.totalHoursAvailable }
+              {hoursFormatter.format(state?.totalHoursAvailable)}
             </ListItemSecondaryAction>
           </ListItem>
           <Divider />
@@ -67,20 +68,20 @@ export function HolidayDetailDialog({ open, item, onComplete }: HolidayDetailDia
           <ListItem>
             <ListItemText primary={"Contract"} />
             <ListItemSecondaryAction>
-              { state?.holidayHoursFromContract }
+              {hoursFormatter.format(state?.holidayHoursFromContract)}
             </ListItemSecondaryAction>
           </ListItem> }
           <ListItem>
             <ListItemText primary={"Used"} />
             <ListItemSecondaryAction>
-              { state?.totalHoursUsed }
+              {hoursFormatter.format(state?.totalHoursUsed)}
             </ListItemSecondaryAction>
           </ListItem>
           <Divider />
           <ListItem style={{ fontStyle: "italic" }}>
             <ListItemText primary={"Remaining"} />
             <ListItemSecondaryAction style={{ fontStyle: "italic" }}>
-              { state?.totalHoursRemaining }
+              {hoursFormatter.format(state?.totalHoursRemaining)}
             </ListItemSecondaryAction>
           </ListItem>
           <Divider />
