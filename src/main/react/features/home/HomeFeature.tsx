@@ -55,18 +55,16 @@ export function HomeFeature() {
                     </div>
                 )}
             </section>
-            <section className={'flow'}>
+            { (showContractsEnding || showPersonEvents) && (
+              <section className={'flow'}>
                 {showContractsEnding && (
-                    <div>
-                        <ContractsEnding withinNWeeks={withinNWeek} contracts={contracts}/>
-                    </div>
+                    <ContractsEnding withinNWeeks={withinNWeek} contracts={contracts}/>
                 )}
                 {showPersonEvents && (
-                    <div>
-                        <PersonEvents withinNWeeks={withinNWeek} personEvents={personEvents}/>
-                    </div>
+                    <PersonEvents withinNWeeks={withinNWeek} personEvents={personEvents}/>
                 )}
-            </section>
+              </section>
+            )}
             {hasAccess && (
                 <section className={'flow'}>
                     <div>
