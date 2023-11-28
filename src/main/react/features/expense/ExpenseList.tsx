@@ -18,7 +18,7 @@ import { FlockPagination } from "../../components/pagination/FlockPagination";
 // Types
 import type { DayListProps, StatusProps } from "../../types";
 
-type ExpenseProps = {
+export type ExpenseProps = {
   id: string;
   date: Dayjs;
   description: string;

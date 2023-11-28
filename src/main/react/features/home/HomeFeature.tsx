@@ -12,6 +12,7 @@ import {ContractClient} from "../../clients/ContractClient";
 import dayjs from "dayjs";
 import {PersonEvent, PersonEventClient} from "../../clients/PersonEventClient";
 import {AggregationClient, PersonHolidayDetails} from "../../clients/AggregationClient";
+import {ExpensesCard} from "../../components/expenses-card/ExpensesCard";
 
 export function HomeFeature() {
     const [user] = useUserMe();
@@ -67,14 +68,17 @@ export function HomeFeature() {
             )}
             {hasAccess && (
                 <section className={'flow'}>
-                    <div>
-                        <QuickLinks/>
-                    </div>
+                  <QuickLinks/>
 
-                    <div className={'even-columns'}>
-                        <MissingHoursCard totalPerPersonMe={totalPerPersonMe}/>
-                        <HolidayCard item={personHolidayDetails}/>
-                    </div>
+                  <div className={'even-columns'}>
+                      <MissingHoursCard totalPerPersonMe={totalPerPersonMe}/>
+                      <HolidayCard item={personHolidayDetails}/>
+                  </div>
+
+                  <div className={'even-columns'}>
+                    <ExpensesCard />
+                  </div>
+
                 </section>)}
         </div>
     );
