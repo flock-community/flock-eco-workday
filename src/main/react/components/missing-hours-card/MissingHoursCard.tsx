@@ -31,7 +31,8 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
                 .filter((it) => it.assignment > 0)
                 .map((it) => ({
                     ...it, missing: Math.max(0,
-                        it.total - (it.workDays + it.leaveDayUsed + it.sickDays + it.event))
+                        it.total - (it.workDays + it.leaveDayUsed + it.sickDays + it.event + it.paidParentalLeaveUsed
+                            + it.unpaidParentalLeaveUsed))
                 }))
                 .filter((it) => it.missing > 0)
                 .map((it) => toAggregationPersonObject(it));
