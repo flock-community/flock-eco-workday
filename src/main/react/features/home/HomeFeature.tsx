@@ -13,22 +13,24 @@ import dayjs from "dayjs";
 import {PersonEvent, PersonEventClient} from "../../clients/PersonEventClient";
 import {AggregationClient, PersonHolidayDetails} from "../../clients/AggregationClient";
 import {ExpensesCard} from "../../components/expenses-card/ExpensesCard";
+import {useLoginStatus} from "../../hooks/StatusHook";
 
 export function HomeFeature() {
     const [user] = useUserMe();
+    const status = useLoginStatus();
     const [withinNWeek] = useState<number>(6);
     const [contracts, setContracts] = useState<any[]>([]);
     const [personEvents, setPersonEvents] = useState<PersonEvent[]>([]);
     const [totalPerPersonMe, setTotalPerPersonMe] = useState<any>(undefined);
     const [personHolidayDetails, setPersonHolidayDetails] = useState<PersonHolidayDetails>();
 
-    const hasAccess = user?.authorities?.length > 0;
+    const hasAccess = status?.authorities?.length > 0;
 
     const showContractsEnding =
-        user?.authorities?.includes("ContractAuthority.ADMIN") ?? false;
+        status?.authorities?.includes("ContractAuthority.ADMIN") ?? false;
 
     const showPersonEvents =
-        user?.authorities?.includes("PersonAuthority.READ") ?? false;
+        status?.authorities?.includes("PersonAuthority.READ") ?? false;
 
     const classes = highLightClass();
 
@@ -41,7 +43,7 @@ export function HomeFeature() {
             AggregationClient.totalPerPersonMe().then(totalPerPersonMe => setTotalPerPersonMe(totalPerPersonMe));
             AggregationClient.holidayDetailsMeYear(new Date().getFullYear()).then((res) => setPersonHolidayDetails(res));
         }
-    }, [user]);
+    }, [status]);
 
     return (
         <div className={'content flow'} style={{marginTop: '24px', paddingBottom: '24px'}} flow-gap={'wide'}>
