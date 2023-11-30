@@ -13,6 +13,8 @@ import dayjs from "dayjs";
 import {PersonEvent, PersonEventClient} from "../../clients/PersonEventClient";
 import {AggregationClient, PersonHolidayDetails} from "../../clients/AggregationClient";
 import {ExpensesCard} from "../../components/expenses-card/ExpensesCard";
+import {ExpenseClient} from "../../clients/ExpenseClient";
+import {ExpenseProps} from "../expense/ExpenseList";
 import {useLoginStatus} from "../../hooks/StatusHook";
 
 export function HomeFeature() {
@@ -23,6 +25,7 @@ export function HomeFeature() {
     const [personEvents, setPersonEvents] = useState<PersonEvent[]>([]);
     const [totalPerPersonMe, setTotalPerPersonMe] = useState<any>(undefined);
     const [personHolidayDetails, setPersonHolidayDetails] = useState<PersonHolidayDetails>();
+    const [expenses, setExpenses] = useState<ExpenseProps[]>([]);
 
     const hasAccess = status?.authorities?.length > 0;
 
@@ -41,7 +44,8 @@ export function HomeFeature() {
         showPersonEvents && PersonEventClient.findAllBetween(today, nWeeksFromNow).then((personEvents) => setPersonEvents(personEvents));
         if (hasAccess) {
             AggregationClient.totalPerPersonMe().then(totalPerPersonMe => setTotalPerPersonMe(totalPerPersonMe));
-            AggregationClient.holidayDetailsMeYear(new Date().getFullYear()).then((res) => setPersonHolidayDetails(res));
+            AggregationClient.holidayDetailsMeYear(new Date().getFullYear()).then(res => setPersonHolidayDetails(res));
+            ExpenseClient.findAllByPersonId(status?.personId, 'all', null).then(res => setExpenses(res.list));
         }
     }, [status]);
 
@@ -78,7 +82,7 @@ export function HomeFeature() {
                   </div>
 
                   <div className={'even-columns'}>
-                    <ExpensesCard />
+                    <ExpensesCard items={expenses} />
                   </div>
 
                 </section>)}
