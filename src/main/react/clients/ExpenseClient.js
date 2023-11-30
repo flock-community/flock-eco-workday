@@ -22,11 +22,11 @@ const costExpenseClient = InternalizingClient(costPath, internalize);
 
 export const EXPENSE_PAGE_SIZE = 5;
 
-const findAllByPersonId = (personId, page) =>
+const findAllByPersonId = (personId, page, pageSize = EXPENSE_PAGE_SIZE) =>
   resourceClient.queryByPage(
     {
       page,
-      size: EXPENSE_PAGE_SIZE,
+      size: pageSize,
       sort: "date,desc",
     },
     {
