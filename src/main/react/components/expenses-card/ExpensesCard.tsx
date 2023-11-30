@@ -81,7 +81,7 @@ export function ExpensesCard({items}: ExpenseCardProps) {
   }
 
   function renderExpense(item, key) {
-    const totalAmount = item.type === "COST" ? item.amount : item.allowance * item.distance;
+    const totalAmount = item.type === "TRAVEL" ? item.allowance * item.distance : item.amount;
     return (
       <TableRow key={key}>
         <TableCell>{item.description}</TableCell>
