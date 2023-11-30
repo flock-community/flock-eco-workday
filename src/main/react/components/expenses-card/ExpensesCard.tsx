@@ -13,15 +13,14 @@ import {
 import Typography from "@material-ui/core/Typography";
 import React, {useEffect, useState} from "react";
 import {ExpenseProps} from "../../features/expense/ExpenseList";
+import {DMY_DATE} from "../../clients/util/DateFormats";
 import dayjs from "dayjs";
-import {DMY_DATE, ISO_8601_DATE} from "../../clients/util/DateFormats";
 
 type ExpenseCardProps = {
-  openItems: ExpenseProps[]
-  recentItems: ExpenseProps[]
+  items: ExpenseProps[]
 }
 
-export function ExpensesCard({openItems, recentItems}: ExpenseCardProps) {
+export function ExpensesCard({items}: ExpenseCardProps) {
   const [openExpenses, setOpenExpenses] = useState<ExpenseProps[]>([]);
   const [recentExpenses, setRecentExpenses] = useState<ExpenseProps[]>([]);
   const [openPage, setOpenPage] = useState(0);
@@ -29,13 +28,14 @@ export function ExpensesCard({openItems, recentItems}: ExpenseCardProps) {
   const [rowsPerPage, setRowsPerPage] = useState(4);
 
   useEffect(() => {
-    if (openItems) {
-      setOpenExpenses(openItems);
+    if (items) {
+      setOpenExpenses(items.filter(it => it.status === "REQUESTED"));
+      setRecentExpenses(
+          items.filter(it => it.status !== "REQUESTED")
+              .filter(it => it.date > dayjs().startOf('day').subtract(30, 'days'))
+      );
     }
-    if (recentItems) {
-      setRecentExpenses(recentItems);
-    }
-  }, []);
+  }, [items]);
 
   const handleChangeOpenItemPage = (event: unknown, newPage: number) => {
     setOpenPage(newPage);
