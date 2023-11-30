@@ -81,11 +81,12 @@ export function ExpensesCard({openItems, recentItems}: ExpenseCardProps) {
   }
 
   function renderExpense(item, key) {
+    const totalAmount = item.type === "COST" ? item.amount : item.allowance * item.distance;
     return (
       <TableRow key={key}>
         <TableCell>{item.description}</TableCell>
         <TableCell width={120} align={"right"}>{item.date.format(DMY_DATE)}</TableCell>
-        <TableCell width={110} align={"right"}>{item.amount.toLocaleString("nl-NL", {
+        <TableCell width={110} align={"right"}>{totalAmount.toLocaleString("nl-NL", {
           style: "currency",
           currency: "EUR",
         })}</TableCell>
