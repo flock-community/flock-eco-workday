@@ -2,6 +2,7 @@
 src/main/webapp/**/*
 src/main/resources/**/*
 src/test/**/*
+*.spec.js
 target/**/*
 *.properties
 *.min.js
