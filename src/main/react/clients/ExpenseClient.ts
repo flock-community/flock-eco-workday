@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
-import InternalizingClient from "../utils/InternalizingClient.ts";
-import { ISO_8601_DATE } from "./util/DateFormats.ts";
+import InternalizingClient from "../utils/InternalizingClient";
+import {ISO_8601_DATE} from "./util/DateFormats";
+import {CostExpense, Expense, ExpenseType, TravelExpense} from "../models/Expense";
 
 const internalize = (it) => ({
   ...it,
@@ -20,19 +21,36 @@ const resourceClient = InternalizingClient(path, internalize);
 const travelExpenseClient = InternalizingClient(travelPath, internalize);
 const costExpenseClient = InternalizingClient(costPath, internalize);
 
-export const EXPENSE_PAGE_SIZE = 5;
+export const EXPENSE_PAGE_SIZE: number = 5;
 
+// TODO: Deprecated method, should use findAllByPersonIdNEW
 const findAllByPersonId = (personId, page, pageSize = EXPENSE_PAGE_SIZE) =>
-  resourceClient.queryByPage(
-    {
-      page,
-      size: pageSize,
-      sort: "date,desc",
-    },
-    {
-      personId,
-    }
+    resourceClient.queryByPage(
+        {
+          page,
+          size: pageSize,
+          sort: "date,desc",
+        },
+        {
+          personId,
+        }
+    );
+
+// TODO: should replace findAllByPersonId. When it does rename back to findAllByPersonId.
+const findAllByPersonIdNEW = async (personId: string, page: number, pageSize: number = EXPENSE_PAGE_SIZE): Promise<{ count: number, list: Expense[] }> => {
+  const listOfExpenseObjects: Expense[] = [];
+  const resultPromise = await resourceClient.queryByPage({
+        page, size: pageSize, sort: "date,desc", },
+        { personId }
   );
+  resultPromise.list.map((expenseJson) => {
+    listOfExpenseObjects.push(
+        expenseJson.type === ExpenseType.TRAVEL ? TravelExpense.fromJson(expenseJson) : CostExpense.fromJson(expenseJson)
+    );
+  });
+
+  return { count: listOfExpenseObjects.length, list: listOfExpenseObjects };
+}
 
 const post = (type, item) => {
   const serialized = serialize(item);
@@ -65,4 +83,5 @@ export const ExpenseClient = {
   post,
   put,
   findAllByPersonId,
+  findAllByPersonIdNEW
 };
