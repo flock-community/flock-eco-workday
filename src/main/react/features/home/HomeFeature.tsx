@@ -14,8 +14,8 @@ import {PersonEvent, PersonEventClient} from "../../clients/PersonEventClient";
 import {AggregationClient, PersonHolidayDetails} from "../../clients/AggregationClient";
 import {ExpensesCard} from "../../components/expenses-card/ExpensesCard";
 import {ExpenseClient} from "../../clients/ExpenseClient";
-import {ExpenseProps} from "../expense/ExpenseList";
 import {useLoginStatus} from "../../hooks/StatusHook";
+import {Expense} from "../../models/Expense";
 
 export function HomeFeature() {
     const [user] = useUserMe();
@@ -25,7 +25,7 @@ export function HomeFeature() {
     const [personEvents, setPersonEvents] = useState<PersonEvent[]>([]);
     const [totalPerPersonMe, setTotalPerPersonMe] = useState<any>(undefined);
     const [personHolidayDetails, setPersonHolidayDetails] = useState<PersonHolidayDetails>();
-    const [expenses, setExpenses] = useState<ExpenseProps[]>([]);
+    const [expenses, setExpenses] = useState<Expense[]>([]);
 
     const hasAccess = status?.authorities?.length > 0;
 
@@ -45,7 +45,8 @@ export function HomeFeature() {
         if (hasAccess) {
             AggregationClient.totalPerPersonMe().then(totalPerPersonMe => setTotalPerPersonMe(totalPerPersonMe));
             AggregationClient.holidayDetailsMeYear(new Date().getFullYear()).then(res => setPersonHolidayDetails(res));
-            ExpenseClient.findAllByPersonId(status?.personId, 'all', null).then(res => setExpenses(res.list));
+            ExpenseClient.findAllByPersonIdNEW(status?.personId, 'all', null).then(
+                res=> setExpenses(res.list));
         }
     }, [status]);
 

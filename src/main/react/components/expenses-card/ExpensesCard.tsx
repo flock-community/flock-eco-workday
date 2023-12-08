@@ -12,18 +12,17 @@ import {
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import React, {useEffect, useState} from "react";
-import {ExpenseProps} from "../../features/expense/ExpenseList";
 import {DMY_DATE} from "../../clients/util/DateFormats";
-import dayjs from "dayjs";
 import {useExpenseFilters} from "../../hooks/useExpenseFiltersHook";
+import {Expense} from "../../models/Expense";
 
 type ExpenseCardProps = {
-  items: ExpenseProps[]
+  items: Expense[]
 }
 
 export function ExpensesCard({items}: ExpenseCardProps) {
-  const [openExpenses, setOpenExpenses] = useState<ExpenseProps[]>([]);
-  const [recentExpenses, setRecentExpenses] = useState<ExpenseProps[]>([]);
+  const [openExpenses, setOpenExpenses] = useState<Expense[]>([]);
+  const [recentExpenses, setRecentExpenses] = useState<Expense[]>([]);
   const [openPage, setOpenPage] = useState(0);
   const [recentPage, setRecentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(4);
@@ -44,7 +43,7 @@ export function ExpensesCard({items}: ExpenseCardProps) {
     setRecentPage(newPage);
   };
 
-  function renderTable(tableItems: ExpenseProps[], page: number, handleChangePageCallBack: (event, newPage) => void) {
+  function renderTable(tableItems: Expense[], page: number, handleChangePageCallBack: (event, newPage) => void) {
     return (
       <Table size={'small'}>
         <TableHead>
@@ -56,9 +55,10 @@ export function ExpensesCard({items}: ExpenseCardProps) {
           </TableRow>
         </TableHead>
         <TableBody>
-          { (tableItems.length > 0) && tableItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(renderExpense)}
+          { (tableItems.length > 0) && tableItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((item, key) => renderExpense(item, key))}
           { (tableItems.length === 0) &&
-            <TableRow>
+            <TableRow data-testid={'expense-empty'}>
               <TableCell colSpan={4} align={'center'}>No expenses found.</TableCell>
             </TableRow>
           }
@@ -80,12 +80,11 @@ export function ExpensesCard({items}: ExpenseCardProps) {
   }
 
   function renderExpense(item, key) {
-    const totalAmount = item.type === "TRAVEL" ? item.allowance * item.distance : item.amount;
     return (
       <TableRow key={key}>
         <TableCell>{item.description}</TableCell>
         <TableCell width={120} align={"right"}>{item.date.format(DMY_DATE)}</TableCell>
-        <TableCell width={110} align={"right"}>{totalAmount.toLocaleString("nl-NL", {
+        <TableCell width={110} align={"right"}>{item.amount.toLocaleString("nl-NL", {
           style: "currency",
           currency: "EUR",
         })}</TableCell>
@@ -95,7 +94,7 @@ export function ExpensesCard({items}: ExpenseCardProps) {
   }
 
   return (
-    <Card variant={"outlined"} style={{borderRadius: 0}}>
+    <Card variant={"outlined"} style={{borderRadius: 0}} data-testid={'expenses-card'}>
       <CardHeader title={"Expenses"}/>
       <CardContent className={'flow'}>
         <Box>
