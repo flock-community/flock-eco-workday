@@ -15,6 +15,7 @@ import React, {useEffect, useState} from "react";
 import {ExpenseProps} from "../../features/expense/ExpenseList";
 import {DMY_DATE} from "../../clients/util/DateFormats";
 import dayjs from "dayjs";
+import {useExpenseFilters} from "../../hooks/useExpenseFiltersHook";
 
 type ExpenseCardProps = {
   items: ExpenseProps[]
@@ -26,14 +27,12 @@ export function ExpensesCard({items}: ExpenseCardProps) {
   const [openPage, setOpenPage] = useState(0);
   const [recentPage, setRecentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(4);
+  const [ getOpenExpenses, getRecentExpenses ] = useExpenseFilters();
 
   useEffect(() => {
     if (items) {
-      setOpenExpenses(items.filter(it => it.status === "REQUESTED"));
-      setRecentExpenses(
-          items.filter(it => it.status !== "REQUESTED")
-              .filter(it => it.date > dayjs().startOf('day').subtract(30, 'days'))
-      );
+      setOpenExpenses(getOpenExpenses(items));
+      setRecentExpenses(getRecentExpenses(items, 30));
     }
   }, [items]);
 
