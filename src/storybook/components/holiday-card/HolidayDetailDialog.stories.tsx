@@ -1,6 +1,5 @@
 import {
-  HolidayDetailDialog,
-  HolidayHoursDetails
+  HolidayDetailDialog
 } from "../../../main/react/components/holiday-card/HolidayDetailDialog";
 import {Meta, StoryObj} from "@storybook/react";
 

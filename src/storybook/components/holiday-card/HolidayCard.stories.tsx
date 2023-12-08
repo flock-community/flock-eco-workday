@@ -24,3 +24,9 @@ type Story = StoryObj<typeof HolidayCard>;
 export const withDefaultHours: Story = {
 }
 
+export const noData: Story = {
+  args: {
+    item: {}
+  }
+}
+

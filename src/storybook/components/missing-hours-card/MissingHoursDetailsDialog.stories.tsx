@@ -42,7 +42,6 @@ export const withoutMissingHoursData: Story = {
   args: {
     item: {
       ...meta.args?.item,
-      missing: 0,
       workDays: 212
     }
   }

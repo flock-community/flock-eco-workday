@@ -60,10 +60,10 @@ const meta: Meta<typeof MissingHoursCard> = {
 export default meta;
 type Story = StoryObj<typeof MissingHoursCard>;
 
-export const nodata: Story = {
+export const noData: Story = {
   args: {
     totalPerPersonMe: {}
   }
 }
 
-export const withdata: Story = {}
+export const withData: Story = {}
