@@ -23,7 +23,7 @@ const costExpenseClient = InternalizingClient(costPath, internalize);
 
 export const EXPENSE_PAGE_SIZE: number = 5;
 
-// TODO: Deprecated method, should use findAllByPersonIdNEW
+// TODO: Deprecated method, should use findAllByPersonIdNEW (https://flock.atlassian.net/browse/WRK-176)
 const findAllByPersonId = (personId, page, pageSize = EXPENSE_PAGE_SIZE) =>
     resourceClient.queryByPage(
         {
@@ -36,7 +36,7 @@ const findAllByPersonId = (personId, page, pageSize = EXPENSE_PAGE_SIZE) =>
         }
     );
 
-// TODO: should replace findAllByPersonId. When it does rename back to findAllByPersonId.
+// TODO: should replace findAllByPersonId. When it does rename back to findAllByPersonId. (https://flock.atlassian.net/browse/WRK-176)
 const findAllByPersonIdNEW = async (personId: string, page: number, pageSize: number = EXPENSE_PAGE_SIZE): Promise<{ count: number, list: Expense[] }> => {
   const listOfExpenseObjects: Expense[] = [];
   const resultPromise = await resourceClient.queryByPage({
