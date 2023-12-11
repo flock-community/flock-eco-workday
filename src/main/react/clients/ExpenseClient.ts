@@ -37,10 +37,10 @@ const findAllByPersonId = (personId, page, pageSize = EXPENSE_PAGE_SIZE) =>
     );
 
 // TODO: should replace findAllByPersonId. When it does rename back to findAllByPersonId. (https://flock.atlassian.net/browse/WRK-176)
-const findAllByPersonIdNEW = async (personId: string, page: number, pageSize: number = EXPENSE_PAGE_SIZE): Promise<{ count: number, list: Expense[] }> => {
+const findAllByPersonIdNEW = async (personId: string, page: number, pageSize: number | null = EXPENSE_PAGE_SIZE): Promise<{ count: number, list: Expense[] }> => {
   const listOfExpenseObjects: Expense[] = [];
   const resultPromise = await resourceClient.queryByPage({
-        page, size: pageSize, sort: "date,desc", },
+        page, size: pageSize ?? undefined, sort: "date,desc", },
         { personId }
   );
   resultPromise.list.map((expenseJson) => {

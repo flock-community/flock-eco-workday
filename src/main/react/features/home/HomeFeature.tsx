@@ -45,7 +45,7 @@ export function HomeFeature() {
         if (hasAccess) {
             AggregationClient.totalPerPersonMe().then(totalPerPersonMe => setTotalPerPersonMe(totalPerPersonMe));
             AggregationClient.holidayDetailsMeYear(new Date().getFullYear()).then(res => setPersonHolidayDetails(res));
-            ExpenseClient.findAllByPersonIdNEW(status?.personId, 'all', null).then(
+            ExpenseClient.findAllByPersonIdNEW(status?.personId, 0, null).then(
                 res=> setExpenses(res.list));
         }
     }, [status]);
