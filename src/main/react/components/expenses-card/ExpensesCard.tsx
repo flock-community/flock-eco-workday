@@ -2,19 +2,13 @@ import {
   Box,
   Card,
   CardContent,
-  CardHeader,
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead, TablePagination,
-  TableRow
+  CardHeader
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import React, {useEffect, useState} from "react";
-import {DMY_DATE} from "../../clients/util/DateFormats";
 import {useExpenseFilters} from "../../hooks/useExpenseFiltersHook";
 import {Expense} from "../../models/Expense";
+import {ExpenseTable} from "./ExpenseTable";
 
 type ExpenseCardProps = {
   items: Expense[]
@@ -25,7 +19,6 @@ export function ExpensesCard({items}: ExpenseCardProps) {
   const [recentExpenses, setRecentExpenses] = useState<Expense[]>([]);
   const [openPage, setOpenPage] = useState(0);
   const [recentPage, setRecentPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(4);
   const [ getOpenExpenses, getRecentExpenses ] = useExpenseFilters();
 
   useEffect(() => {
@@ -43,67 +36,18 @@ export function ExpensesCard({items}: ExpenseCardProps) {
     setRecentPage(newPage);
   };
 
-  function renderTable(tableItems: Expense[], page: number, handleChangePageCallBack: (event, newPage) => void) {
-    return (
-      <Table size={'small'}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Description</TableCell>
-            <TableCell align={"right"}>Date</TableCell>
-            <TableCell align={"right"}>Amount</TableCell>
-            <TableCell align={"right"}>Status</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          { (tableItems.length > 0) && tableItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((item, key) => renderExpense(item, key))}
-          { (tableItems.length === 0) &&
-            <TableRow data-testid={'expense-empty'}>
-              <TableCell colSpan={4} align={'center'}>No expenses found.</TableCell>
-            </TableRow>
-          }
-        </TableBody>
-        {(tableItems.length > rowsPerPage) &&
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[rowsPerPage]}
-              count={tableItems.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePageCallBack}
-            />
-          </TableRow>
-        </TableFooter>}
-      </Table>
-    )
-  }
-
-  function renderExpense(item, key) {
-    return (
-      <TableRow key={key} data-testid={'table-row-expense'}>
-        <TableCell>{item.description}</TableCell>
-        <TableCell width={120} align={"right"}>{item.date.format(DMY_DATE)}</TableCell>
-        <TableCell width={110} align={"right"}>{item.amount.toLocaleString("nl-NL", {
-          style: "currency",
-          currency: "EUR",
-        })}</TableCell>
-        <TableCell width={110} align={"right"}>{item.status.toLowerCase()}</TableCell>
-      </TableRow>
-    )
-  }
-
   return (
     <Card variant={"outlined"} style={{borderRadius: 0}} data-testid={'expenses-card'}>
       <CardHeader title={"Expenses"}/>
       <CardContent className={'flow'}>
         <Box>
           <Typography variant={'h6'}>open</Typography>
-          { renderTable(openExpenses, openPage, handleChangeOpenItemPage) }
+          <ExpenseTable tableItems={openExpenses} page={openPage} handleChangePageCallBack={handleChangeOpenItemPage}/>
         </Box>
         <Box>
           <Typography variant={'h6'}>most recent</Typography>
-          { renderTable(recentExpenses, recentPage, handleChangeRecentItemPage) }
+          <ExpenseTable tableItems={recentExpenses} page={recentPage}
+                        handleChangePageCallBack={handleChangeRecentItemPage}/>
         </Box>
       </CardContent>
     </Card>
