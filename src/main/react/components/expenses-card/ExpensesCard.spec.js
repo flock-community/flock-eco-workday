@@ -37,7 +37,9 @@ describe("ExpensesCard", () => {
 
         it('should have no items', () => {
             const emptyElements = screen.queryAllByTestId('expense-empty');
+            const rowElements = screen.queryAllByTestId('table-row-expense');
             expect(emptyElements.length).toBe(2);
+            expect(rowElements.length).toBe(0);
         });
     });
 
@@ -54,7 +56,16 @@ describe("ExpensesCard", () => {
 
         it('should not have expense-empty', () => {
             const emptyElements = screen.queryAllByTestId('expense-empty');
+            const rowElements = screen.queryAllByTestId('table-row-expense');
             expect(emptyElements.length).toBe(0);
+            expect(rowElements.length).not.toBe(0);
+        });
+
+        it('should have the right amount of rows in the table', () => {
+          const emptyElements = screen.queryAllByTestId('expense-empty');
+          const rowElements = screen.queryAllByTestId('table-row-expense');
+          expect(emptyElements.length).toBe(0);
+          expect(rowElements.length).not.toBe(expenses.length);
         });
     });
 

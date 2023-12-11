@@ -81,7 +81,7 @@ export function ExpensesCard({items}: ExpenseCardProps) {
 
   function renderExpense(item, key) {
     return (
-      <TableRow key={key}>
+      <TableRow key={key} data-testid={'table-row-expense'}>
         <TableCell>{item.description}</TableCell>
         <TableCell width={120} align={"right"}>{item.date.format(DMY_DATE)}</TableCell>
         <TableCell width={110} align={"right"}>{item.amount.toLocaleString("nl-NL", {
@@ -98,11 +98,11 @@ export function ExpensesCard({items}: ExpenseCardProps) {
       <CardHeader title={"Expenses"}/>
       <CardContent className={'flow'}>
         <Box>
-          <Typography>open</Typography>
+          <Typography variant={'h6'}>open</Typography>
           { renderTable(openExpenses, openPage, handleChangeOpenItemPage) }
         </Box>
         <Box>
-          <Typography>most recent</Typography>
+          <Typography variant={'h6'}>most recent</Typography>
           { renderTable(recentExpenses, recentPage, handleChangeRecentItemPage) }
         </Box>
       </CardContent>
