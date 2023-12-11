@@ -1,84 +1,23 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import {ExpensesCard} from "../../../main/react/components/expenses-card/ExpensesCard";
 import dayjs from "dayjs";
+import {createTestCostExpense, createTestTravelExpense} from "../../../main/react/utils/tests/test-models";
+import {Status} from "../../../main/react/models/Status";
+
+const testExpense001 = createTestCostExpense('item-01', dayjs());
+const testExpense002 = createTestTravelExpense('item-02', dayjs().subtract(3, 'months'));
+const testExpense003 = createTestCostExpense('item-03', dayjs().subtract(3, 'days'), Status.APPROVED);
+const testExpense004 = createTestTravelExpense('item-04', dayjs().subtract(15, 'days'), Status.REJECTED);
+const testExpense005 = createTestCostExpense('item-05', dayjs().subtract(25, 'days'), Status.DONE);
+const testExpense006 = createTestCostExpense('item-06', dayjs().subtract(31, 'days'), Status.REJECTED);
 
 const meta: Meta<typeof ExpensesCard> = {
   component: ExpensesCard,
   args: {
     items: [
-      {
-        id: 'item-01',
-        date: dayjs(),
-        description: 'Software license',
-        person: {},
-        status: 'REQUESTED',
-        amount: 120,
-        files: [],
-        type: 'COST'
-      },
-      {
-        id: 'item-02',
-        date: dayjs().subtract(3, 'months'),
-        description: 'Travel Costs November',
-        person: {},
-        status: 'REQUESTED',
-        allowance: 0.19,
-        distance: 100,
-        files: [],
-        type: 'TRAVEL'
-      },
-      {
-        id: 'item-03',
-        date: dayjs().subtract(3, 'days'), // 12-11-2023
-        description: 'Software license',
-        person: {},
-        status: 'APPROVED',
-        amount: 375.80,
-        files: [],
-        type: 'COST'
-      },
-      {
-        id: 'item-04',
-        date: dayjs().subtract(15, 'days'), // 31-10-2023
-        description: 'Travel Costs November',
-        person: {},
-        status: 'REJECTED',
-        allowance: 0.19,
-        distance: 122,
-        files: [],
-        type: 'TRAVEL'
-      },
-      {
-        id: 'item-05',
-        date: dayjs().subtract(25, 'days'),
-        description: 'Hotel bill',
-        person: {},
-        status: 'DONE',
-        amount: 689.99,
-        files: [],
-        type: 'COST'
-      },
-      {
-        id: 'item-06',
-        date: dayjs().subtract(30, 'days'),
-        description: 'Very expense expense with long title',
-        person: {},
-        status: 'DONE',
-        amount: 2424.95,
-        files: [],
-        type: 'COST'
-      },
-      {
-        id: 'item-07',
-        date: dayjs().subtract(31, 'days'),
-        description: 'Very expense expense with long title but rejected...',
-        person: {},
-        status: 'REJECTED',
-        amount: 12424.95,
-        files: [],
-        type: 'COST'
-      }
-    ],
+      testExpense001, testExpense002, testExpense003, testExpense004,
+      testExpense005, testExpense006
+    ]
   }
 }
 
@@ -92,3 +31,33 @@ export const noData: Story = {
 }
 
 export const withData: Story = {}
+
+export const withPagination: Story = {
+  args: {
+    items: [
+      testExpense001, testExpense002,
+      testExpense001, testExpense002,
+      testExpense001, testExpense002,
+      testExpense004, testExpense005,
+      testExpense004, testExpense005,
+      testExpense004, testExpense005
+    ]
+  }
+}
+
+export const withLongData: Story = {
+  args: {
+    items: [
+      {
+        ...testExpense001,
+        description: 'Very expense expense with long title',
+        amount: 2424.95
+      },
+      {
+        ...testExpense005,
+        description: 'Very expense expense with long title but rejected...',
+        amount: 12424.95
+      }
+    ]
+  }
+}
