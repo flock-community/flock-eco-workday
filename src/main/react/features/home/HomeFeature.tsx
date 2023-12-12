@@ -16,6 +16,8 @@ import {ExpensesCard} from "../../components/expenses-card/ExpensesCard";
 import {ExpenseClient} from "../../clients/ExpenseClient";
 import {useLoginStatus} from "../../hooks/StatusHook";
 import {Expense} from "../../models/Expense";
+import {UpcomingEventsCard} from "../../components/upcoming-events/UpcomingEventsCard";
+import {EventClient, FlockEvent} from "../../clients/EventClient";
 
 export function HomeFeature() {
     const [user] = useUserMe();
@@ -26,6 +28,7 @@ export function HomeFeature() {
     const [totalPerPersonMe, setTotalPerPersonMe] = useState<any>(undefined);
     const [personHolidayDetails, setPersonHolidayDetails] = useState<PersonHolidayDetails>();
     const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [flockEvents, setFlockEvents] = useState<FlockEvent[]>([]);
 
     const hasAccess = status?.authorities?.length > 0;
 
@@ -47,6 +50,7 @@ export function HomeFeature() {
             AggregationClient.holidayDetailsMeYear(new Date().getFullYear()).then(res => setPersonHolidayDetails(res));
             ExpenseClient.findAllByPersonIdNEW(status?.personId, 0, null).then(
                 res=> setExpenses(res.list));
+          EventClient.getUpcoming(dayjs(), dayjs().add(1, 'month').endOf('month')).then((res) => setFlockEvents(res));
         }
     }, [status]);
 
@@ -84,6 +88,7 @@ export function HomeFeature() {
 
                   <div className={'even-columns'}>
                     <ExpensesCard items={expenses} />
+                    <UpcomingEventsCard items={flockEvents}/>
                   </div>
 
                 </section>)}
