@@ -10,6 +10,7 @@ import community.flock.eco.workday.services.EventRatingService
 import community.flock.eco.workday.services.EventService
 import community.flock.eco.workday.services.isUser
 import org.springframework.data.domain.Sort
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
@@ -20,8 +21,10 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.time.LocalDate
 import java.util.*
 
 @RestController
@@ -36,6 +39,17 @@ class EventController(
     fun getAll(authentication: Authentication) = eventService
         .findAll(Sort.by("from"))
         .filter { it.isAuthenticated(authentication) }
+        .toResponse()
+
+    @GetMapping("/upcoming")
+    @PreAuthorize("hasAuthority('EventAuthority.READ')")
+    fun getUpcoming(
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fromDate: LocalDate,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) toDate: LocalDate,
+        authentication: Authentication?
+    ) = eventService
+        .findAllActive(fromDate, toDate)
+        .sortedBy { it.from }
         .toResponse()
 
     @GetMapping("/{code}")
