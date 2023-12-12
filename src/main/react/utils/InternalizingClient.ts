@@ -8,7 +8,7 @@ import {
 // FIXME: Use the one in PageableClient
 interface Pageable {
   page: number;
-  size: number;
+  size?: number;
   sort: string;
 }
 
