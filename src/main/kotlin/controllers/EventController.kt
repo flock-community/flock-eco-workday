@@ -1,9 +1,13 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
+import community.flock.eco.feature.user.model.User
+import community.flock.eco.feature.user.services.UserService
+import community.flock.eco.workday.authorities.AssignmentAuthority
 import community.flock.eco.workday.authorities.EventAuthority
 import community.flock.eco.workday.forms.EventForm
 import community.flock.eco.workday.forms.EventRatingForm
+import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.model.EventRating
 import community.flock.eco.workday.services.EventRatingService
@@ -12,6 +16,7 @@ import community.flock.eco.workday.services.isUser
 import org.springframework.data.domain.Sort
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus.UNAUTHORIZED
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -24,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.security.Principal
 import java.time.LocalDate
 import java.util.*
 
@@ -31,7 +37,8 @@ import java.util.*
 @RequestMapping("/api/events")
 class EventController(
     private val eventService: EventService,
-    private val eventRatingService: EventRatingService
+    private val eventRatingService: EventRatingService,
+    private val userService: UserService
 ) {
 
     @GetMapping()
@@ -46,11 +53,16 @@ class EventController(
     fun getUpcoming(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fromDate: LocalDate,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) toDate: LocalDate,
-        authentication: Authentication?
-    ) = eventService
-        .findAllActive(fromDate, toDate)
-        .sortedBy { it.from }
-        .toResponse()
+        principal: Principal
+    ): ResponseEntity<List<Event>> =
+        principal.findUser()
+            ?.let { user ->
+                eventService
+                    .findAllActive(fromDate, toDate)
+                    .sortedBy { it.from }
+                    .map { event -> if (user.isAdmin()) event else event.copy(costs = 0.0) }
+            }
+            .toResponse()
 
     @GetMapping("/{code}")
     // @PreAuthorize("hasAuthority('EventAuthority.READ')")
@@ -142,4 +154,11 @@ class EventController(
             throw ResponseStatusException(UNAUTHORIZED, "User has not access to event rating")
         }
     }
+
+    private fun Principal.findUser(): User? = userService
+        .findByCode(this.name)
+
+    private fun User.isAdmin(): Boolean = this
+        .authorities
+        .contains(EventAuthority.ADMIN.toName())
 }

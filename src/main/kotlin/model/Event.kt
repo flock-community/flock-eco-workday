@@ -12,7 +12,7 @@ import javax.persistence.ManyToMany
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-class Event(
+data class Event(
 
     val description: String,
 
