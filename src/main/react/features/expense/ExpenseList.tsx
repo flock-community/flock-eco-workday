@@ -53,7 +53,6 @@ const useStyles = makeStyles({
 export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
   const [items, setItems] = useState<ExpenseProps[]>([]);
   const [page, setPage] = useState(0);
-  const [pageCount, setPageCount] = useState(-1);
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles(loading);
@@ -62,7 +61,6 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
     setLoading(true);
 
     ExpenseClient.findAllByPersonId(personId, page).then((res) => {
-      setPageCount(Math.ceil(res.count / EXPENSE_PAGE_SIZE));
       setItems(res.list);
       setLoading(false);
     });
@@ -155,7 +153,8 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}
-          totalPages={pageCount}
+          numberOfItems={items.length}
+          itemsPerPage={EXPENSE_PAGE_SIZE}
           changePageCb={setPage}
         />
       </Box>
