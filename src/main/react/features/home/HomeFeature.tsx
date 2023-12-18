@@ -81,12 +81,12 @@ export function HomeFeature() {
                 <section className={'flow'}>
                   <QuickLinks/>
 
-                  <div className={'even-columns'}>
+                  <div className={'gid-auto-fit'}>
                       <MissingHoursCard totalPerPersonMe={totalPerPersonMe}/>
                       <HolidayCard item={personHolidayDetails}/>
                   </div>
 
-                  <div className={'even-columns'}>
+                  <div className={'gid-auto-fit'}>
                     <ExpensesCard items={expenses} />
                     <UpcomingEventsCard items={flockEvents}/>
                   </div>
