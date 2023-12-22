@@ -15,7 +15,7 @@ export function FlockEventList({events}: FlockEventListProps) {
   }
 
   return (
-    <List>
+    <List data-testid={'flock-event-list'}>
       {events.map((event, idx) => <FlockEventListItem key={idx} event={event}/>)}
     </List>
   )

@@ -21,7 +21,7 @@ export function FlockEventListItem({event}: FlockEventListItemProps) {
   }, [event]);
 
   return (
-    <ListItem>
+    <ListItem data-testid={'flock-event-list-item'}>
       <ListItemText primary={event.description}
                     secondary={dateString}/>
     </ListItem>
