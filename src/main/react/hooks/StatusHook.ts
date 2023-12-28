@@ -1,20 +1,20 @@
-import { useEffect, useState } from "react";
-import { BootstrapClient } from "../clients/BootstrapClient";
+import { SetStateAction, useEffect, useState } from "react";
+import { BootstrapClient, BootstrapData } from "../clients/BootstrapClient";
 
 // eslint-disable-next-line import/no-mutable-exports
-export let store = null;
-const listeners = [];
+export let store: BootstrapData | null = null;
+const listeners: ((block: BootstrapData | null) => void)[] = [];
 
-function update(it) {
+const update = (it: BootstrapData | null) => {
   store = it;
   listeners.forEach((func) => func(it));
-}
+};
 
 export function useLoginStatus() {
   const [state, setState] = useState(store);
 
   useEffect(() => {
-    const listener = (it) => setState(it);
+    const listener = (it: SetStateAction<BootstrapData | null>) => setState(it);
     if (store === null && listeners.length === 0) {
       BootstrapClient.getBootstrap().then(update);
     }

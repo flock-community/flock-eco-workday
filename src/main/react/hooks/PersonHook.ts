@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Person, PersonClient } from "../clients/PersonClient";
 import { useLoginStatus } from "./StatusHook";
@@ -18,7 +18,7 @@ export function usePerson(): [Person | null, (personId: string) => void] {
   const [state, setState] = useState(store);
 
   useEffect(() => {
-    const listener = (it) => setState(it);
+    const listener = (it: SetStateAction<Person | null>) => setState(it);
     if (store === null && listeners.length === 0) {
       if (status && status.isLoggedIn) {
         PersonClient.me().then(update);
