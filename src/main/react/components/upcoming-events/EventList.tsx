@@ -9,7 +9,7 @@ type FlockEventListProps = {
   onEventToggle: (FlockEvent, boolean) => void
 }
 
-export function FlockEventList({events, onEventToggle}: FlockEventListProps) {
+export function EventList({events, onEventToggle}: FlockEventListProps) {
 
   if (events && events.length === 0) {
     return <Typography display={"block"}>There are no events planned.</Typography>

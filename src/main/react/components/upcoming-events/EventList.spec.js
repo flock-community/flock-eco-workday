@@ -3,7 +3,7 @@ import {render, screen, cleanup} from "@testing-library/react";
 import '@testing-library/jest-dom';
 import {createTestMultiDayFlockEvent, createTestOneDayFlockEvent} from "../../utils/tests/test-models";
 import dayjs from "dayjs";
-import {FlockEventList} from "./FlockEventList";
+import {EventList} from "./EventList";
 
 describe('FlockEventList', () => {
   afterEach(() => {
@@ -18,14 +18,14 @@ describe('FlockEventList', () => {
   let flockEventListElement;
 
   describe('should show empty state when there are no events', () => {
-    render(<FlockEventList events={eventsList}/>);
+    render(<EventList events={eventsList}/>);
     flockEventListElement = screen.queryByTestId('flock-event-list');
     !expect(flockEventListElement).toBeInTheDocument();
   })
 
   describe('Show events in a list', () => {
     beforeEach(() => {
-      render(<FlockEventList events={eventsList}/>);
+      render(<EventList events={eventsList}/>);
       flockEventListElement = screen.queryAllByTestId('flock-event-list');
     });
 

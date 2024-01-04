@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Card, CardActions, CardHeader} from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import {FlockEvent} from "../../clients/EventClient";
-import {FlockEventList} from "./FlockEventList";
+import {EventList} from "./EventList";
 import {FlockPagination} from "../pagination/FlockPagination";
 
 type UpcomingEventsCardProps = {
@@ -18,8 +18,8 @@ export function UpcomingEventsCard({items, onEventToggle}: UpcomingEventsCardPro
     <Card variant={'outlined'} style={{borderRadius: 0, display: "flex", flexDirection: "column"}}>
       <CardHeader title={'Upcoming Events'}/>
       <CardContent>
-        <FlockEventList events={items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)}
-                        onEventToggle={onEventToggle}/>
+        <EventList events={items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)}
+                   onEventToggle={onEventToggle}/>
       </CardContent>
       {(items.length > rowsPerPage) &&
         <CardActions style={{justifyContent: "end", marginTop: "auto"}}>
