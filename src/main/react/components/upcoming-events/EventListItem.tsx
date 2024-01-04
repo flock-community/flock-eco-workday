@@ -13,7 +13,7 @@ type FlockEventListItemProps = {
   onEventToggle: (FlockEvent, boolean) => void
 }
 
-export function FlockEventListItem({event, onEventToggle}: FlockEventListItemProps) {
+export function EventListItem({event, onEventToggle}: FlockEventListItemProps) {
   const [person] = usePerson();
   const [dateString, setDateString] = useState<string>('');
   const [btnState, setBtnState] = useState<boolean>(false);

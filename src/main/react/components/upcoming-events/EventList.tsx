@@ -2,7 +2,7 @@ import React from 'react';
 import {FlockEvent} from "../../clients/EventClient";
 import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
-import {FlockEventListItem} from "./FlockEventListItem";
+import {EventListItem} from "./EventListItem";
 
 type FlockEventListProps = {
   events: FlockEvent[],
@@ -17,7 +17,7 @@ export function EventList({events, onEventToggle}: FlockEventListProps) {
 
   return (
     <List data-testid={'flock-event-list'}>
-      {events.map((event, idx) => <FlockEventListItem key={idx} event={event} onEventToggle={onEventToggle}/>)}
+      {events.map((event, idx) => <EventListItem key={idx} event={event} onEventToggle={onEventToggle}/>)}
     </List>
   )
 }
