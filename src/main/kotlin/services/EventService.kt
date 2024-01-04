@@ -4,6 +4,7 @@ import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.EventForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.Event
+import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.repository.EventRatingRepository
 import community.flock.eco.workday.repository.EventRepository
 import org.springframework.data.domain.Sort
@@ -61,6 +62,22 @@ class EventService(
                 .consume(this)
                 .save()
         }
+
+    fun subscribeToEvent(eventCode: String, person: Person): Event {
+        return eventRepository.findByCode(eventCode).toNullable()
+            ?.run {
+                copy(persons = persons.filter { it.uuid != person.uuid }.plus(person))
+                    .run { eventRepository.save(this) }
+            } ?: error("Cannot subscribe to Event: ${eventCode}")
+    }
+
+    fun unsubscribeFromEvent(eventCode: String, person: Person): Event {
+        return eventRepository.findByCode(eventCode).toNullable()
+            ?.run {
+                copy(persons = persons.filter { it.uuid != person.uuid })
+                    .run { eventRepository.save(this) }
+            } ?: error("Cannot unsubscribe from Event: ${eventCode}")
+    }
 
     @Transactional
     fun deleteByCode(code: String) {

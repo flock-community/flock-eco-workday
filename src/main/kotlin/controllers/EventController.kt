@@ -12,9 +12,11 @@ import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.model.EventRating
 import community.flock.eco.workday.services.EventRatingService
 import community.flock.eco.workday.services.EventService
+import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.isUser
 import org.springframework.data.domain.Sort
 import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -38,7 +40,8 @@ import java.util.*
 class EventController(
     private val eventService: EventService,
     private val eventRatingService: EventRatingService,
-    private val userService: UserService
+    private val userService: UserService,
+    private val personService: PersonService
 ) {
 
     @GetMapping()
@@ -137,6 +140,30 @@ class EventController(
         authentication: Authentication
     ) = eventRatingService.deleteByEventCodeAndPersonUuid(eventCode, personId)
         .toResponse()
+
+    @PostMapping("/{eventCode}/subscribe")
+    @PreAuthorize("isAuthenticated()")
+    fun subscribeToEvent(
+        @PathVariable eventCode: String,
+        authentication: Authentication
+    ): Event {
+        val person = personService.findByUserCode(authentication.name)
+            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        return eventService.subscribeToEvent(eventCode, person)
+    }
+
+    @PostMapping("/{eventCode}/unsubscribe")
+    @PreAuthorize("isAuthenticated()")
+    fun unsubscribeFromEvent(
+        @PathVariable eventCode: String,
+        authentication: Authentication
+    ): Event {
+        val person = personService.findByUserCode(authentication.name)
+            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        return eventService.unsubscribeFromEvent(eventCode, person)
+    }
 
     private fun Authentication.isAdmin(): Boolean = this.authorities
         .map { it.authority }.contains(EventAuthority.ADMIN.toName())
