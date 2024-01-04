@@ -6,10 +6,11 @@ import {FlockEventList} from "./FlockEventList";
 import {FlockPagination} from "../pagination/FlockPagination";
 
 type UpcomingEventsCardProps = {
-  items: FlockEvent[]
+  items: FlockEvent[],
+  onEventToggle: (FlockEvent, boolean) => void
 }
 
-export function UpcomingEventsCard({items}: UpcomingEventsCardProps) {
+export function UpcomingEventsCard({items, onEventToggle}: UpcomingEventsCardProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(4);
 
@@ -17,7 +18,8 @@ export function UpcomingEventsCard({items}: UpcomingEventsCardProps) {
     <Card variant={'outlined'} style={{borderRadius: 0, display: "flex", flexDirection: "column"}}>
       <CardHeader title={'Upcoming Events'}/>
       <CardContent>
-        <FlockEventList events={items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)}/>
+        <FlockEventList events={items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)}
+                        onEventToggle={onEventToggle}/>
       </CardContent>
       {(items.length > rowsPerPage) &&
         <CardActions style={{justifyContent: "end", marginTop: "auto"}}>
