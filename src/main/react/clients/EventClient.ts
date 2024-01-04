@@ -104,10 +104,38 @@ const getUpcoming = (from: Dayjs, to: Dayjs): Promise<FlockEvent[]> => {
     .then((res) => res?.body.map(internalize));
 }
 
+const subscribeToEvent = (event: FlockEvent) => {
+  const opts = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    }
+  }
+  return fetch(`${path}/${event.code}/subscribe`, opts)
+    .then(validateResponse)
+    .catch(checkResponse)
+    .then((res) => internalize(res));
+}
+
+const unsubscribeFromEvent = (event: FlockEvent) => {
+  const opts = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    }
+  }
+  return fetch(`${path}/${event.code}/unsubscribe`, opts)
+    .then(validateResponse)
+    .catch(checkResponse)
+    .then((res) => internalize(res));
+}
+
 export const EventClient = {
   ...internalizingClient,
   getRatings,
   postRatings,
   deleteRatings,
-  getUpcoming
+  getUpcoming,
+  subscribeToEvent,
+  unsubscribeFromEvent
 };
