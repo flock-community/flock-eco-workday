@@ -141,7 +141,7 @@ class EventController(
     ) = eventRatingService.deleteByEventCodeAndPersonUuid(eventCode, personId)
         .toResponse()
 
-    @PostMapping("/{eventCode}/subscribe")
+    @PutMapping("/{eventCode}/subscribe")
     @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
     fun subscribeToEvent(
         @PathVariable eventCode: String,
@@ -153,7 +153,7 @@ class EventController(
         return eventService.subscribeToEvent(eventCode, person)
     }
 
-    @PostMapping("/{eventCode}/unsubscribe")
+    @PutMapping("/{eventCode}/unsubscribe")
     @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
     fun unsubscribeFromEvent(
         @PathVariable eventCode: String,
