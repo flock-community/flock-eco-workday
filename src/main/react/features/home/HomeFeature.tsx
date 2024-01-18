@@ -17,8 +17,9 @@ import {ExpenseClient} from "../../clients/ExpenseClient";
 import {useLoginStatus} from "../../hooks/StatusHook";
 import {Expense} from "../../models/Expense";
 import {UpcomingEventsCard} from "../../components/upcoming-events/UpcomingEventsCard";
-import {EventClient, Event} from "../../clients/EventClient";
-import {handleEventToggle} from "../../utils/EventUtils";
+import {EventClient, FlockEvent} from "../../clients/EventClient";
+import {handleEventToggle, isPersonAttending} from "../../utils/EventUtils";
+import {Person} from "../../clients/PersonClient";
 
 export function HomeFeature() {
   const [user] = useUserMe();
@@ -29,7 +30,7 @@ export function HomeFeature() {
   const [totalPerPersonMe, setTotalPerPersonMe] = useState<any>(undefined);
   const [personHolidayDetails, setPersonHolidayDetails] = useState<PersonHolidayDetails>();
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [flockEvents, setFlockEvents] = useState<Event[]>([]);
+  const [flockEvents, setFlockEvents] = useState<FlockEvent[]>([]);
 
   const hasAccess = status?.authorities?.length > 0;
 
@@ -51,9 +52,17 @@ export function HomeFeature() {
       AggregationClient.holidayDetailsMeYear(new Date().getFullYear()).then(res => setPersonHolidayDetails(res));
       ExpenseClient.findAllByPersonIdNEW(status?.personId, 0, null).then(
         res => setExpenses(res.list));
-      EventClient.getUpcoming(dayjs(), dayjs().add(1, 'month').endOf('month')).then((res) => setFlockEvents(res));
+      fetchEvents();
     }
   }, [status]);
+
+  const fetchEvents = () => {
+    EventClient.getUpcoming(dayjs(), dayjs().add(1, 'month').endOf('month')).then((res) => setFlockEvents(res));
+  }
+
+  const eventToggled = (event: FlockEvent, isPresent: boolean) => {
+    handleEventToggle(event, isPresent).then(() => fetchEvents());
+  }
 
   return (
     <div className={'content flow'} style={{marginTop: '24px', paddingBottom: '24px'}} flow-gap={'wide'}>
@@ -90,7 +99,7 @@ export function HomeFeature() {
           <div className={'gid-auto-fit'}>
             <ExpensesCard items={expenses}/>
             <UpcomingEventsCard items={flockEvents}
-                                onEventToggle={(event, isPresent) => handleEventToggle(event, isPresent)}/>
+                                onEventToggle={(event, isPresent) => eventToggled(event, isPresent)}/>
           </div>
 
         </section>)}
