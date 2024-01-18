@@ -17,7 +17,7 @@ export function EventList({events, onEventToggle}: FlockEventListProps) {
 
   return (
     <List data-testid={'flock-event-list'}>
-      {events.map((event, idx) => <EventListItem key={idx} event={event} onEventToggle={onEventToggle}/>)}
+      {events.map((event) => <EventListItem key={event.id} event={event} onEventToggle={onEventToggle}/>)}
     </List>
   )
 }
