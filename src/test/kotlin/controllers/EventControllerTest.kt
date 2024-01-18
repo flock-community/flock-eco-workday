@@ -6,6 +6,7 @@ import community.flock.eco.feature.user.services.UserSecurityService
 import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.forms.EventForm
+import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.services.EventRatingService
 import community.flock.eco.workday.services.EventService
 import org.junit.jupiter.api.Test
@@ -14,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.repository.EventRepository
+import community.flock.eco.workday.services.PersonService
 import config.AppTestConfig
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.TestInstance
@@ -65,6 +68,9 @@ class EventControllerTest() {
     @Autowired
     private lateinit var eventRepository: EventRepository
 
+    @Autowired
+    private lateinit var personService: PersonService
+
     fun createUser(authorities: Set<String>) = UserAccountPasswordForm(
         email = UUID.randomUUID().toString(),
         name = "Administrator",
@@ -73,16 +79,27 @@ class EventControllerTest() {
     )
         .run { userAccountService.createUserAccountPassword(this) }
         .run { UserSecurityService.UserSecurityPassword(this) }
-        .run { SecurityMockMvcRequestPostProcessors.user(this) }
 
-    fun createEvent(from: LocalDate, to: LocalDate) = EventForm(
+    fun createPerson(userCode: String) = PersonForm(
+        email = "piet@flock",
+        firstname = "Piet",
+        lastname = "Flock",
+        position = "Software engineer",
+        userCode = userCode,
+        number = null,
+        active = true
+    ).run {
+        personService.create(this)
+    } ?: error("Cannot create person")
+
+    fun createEvent(from: LocalDate, to: LocalDate, ids: List<UUID> = listOf()) = EventForm(
         description = "Henk",
         from = from,
         to = to,
         hours = 16.0,
         days = listOf(8.0, 8.0),
         costs = 200.0,
-        personIds = listOf()
+        personIds = ids
     )
         .run { eventService.create(this) }
 
@@ -99,7 +116,7 @@ class EventControllerTest() {
 
         mvc.perform(
             get("$baseUrl/upcoming?fromDate=2023-01-01&toDate=2023-03-01")
-                .with(createUser(adminAuthorities))
+                .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk)
@@ -116,7 +133,7 @@ class EventControllerTest() {
 
         mvc.perform(
             get("$baseUrl/upcoming?fromDate=2023-01-01&toDate=2023-12-31")
-                .with(createUser(adminAuthorities))
+                .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk)
@@ -130,11 +147,62 @@ class EventControllerTest() {
 
         mvc.perform(
             get("$baseUrl/upcoming?fromDate=2023-01-01&toDate=2023-12-31")
-                .with(createUser(userAuthorities))
+                .with(SecurityMockMvcRequestPostProcessors.user(createUser(userAuthorities)))
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$[0].costs").value(0.0))
+    }
+
+    @Test
+    fun `Person is able to subscribe to an Event`() {
+        val event = createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3));
+        val user = createUser(userAuthorities)
+        val person = createPerson(user.account.user.code)
+
+        mvc.perform(
+            put("$baseUrl/${event.code}/subscribe")
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.persons[0].uuid").value(person.uuid.toString()))
+    }
+
+    @Test
+    fun `Person is able to unsubscribe from an Event`() {
+        val user = createUser(userAuthorities)
+        val person01 = createPerson(user.account.user.code)
+        val person02 = createPerson("")
+        val event = createEvent(
+            LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3),
+            listOf(person01.uuid, person02.uuid)
+        );
+
+        mvc.perform(
+            put("$baseUrl/${event.code}/unsubscribe")
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.persons.length()").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.persons[0].uuid").value(person02.uuid.toString()))
+    }
+
+    @Test
+    fun `User needs the right EventAuthority`() {
+        val event = createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3));
+        val user = createUser(setOf("EventAuthority.READ", "EventAuthority.WRITE", "EventAuthority.ADMIN"))
+        createPerson(user.account.user.code)
+
+        mvc.perform(
+            put("$baseUrl/${event.code}/unsubscribe")
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isForbidden)
     }
 }
