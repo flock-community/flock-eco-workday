@@ -4,12 +4,12 @@ import { EventList } from "./EventList";
 import { Card, CardContent, CardHeader, Box } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
-import {Event} from "../../clients/EventClient";
+import {FlockEvent} from "../../clients/EventClient";
 
 export function EventFeature() {
   const [reload, setReload] = useState(false);
   const [open, setOpen] = useState(false);
-  const [state, setState] = useState<Event | undefined>(undefined);
+  const [state, setState] = useState<FlockEvent | undefined>(undefined);
 
   function handleCompleteDialog() {
     setReload(!reload);
