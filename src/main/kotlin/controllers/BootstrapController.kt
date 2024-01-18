@@ -15,14 +15,16 @@ class BootstrapController(
 
     @GetMapping
     fun bootstrap(authentication: Authentication?) = ResponseEntity
-        .ok(Bootstrap(
-            authorities = authentication?.authorities?.map { it.authority }?.toSet() ?: emptySet(),
-            isLoggedIn = authentication?.isAuthenticated ?: false,
-            userId = authentication?.name,
-            personId = authentication?.name?.let {
-                personService.findByUserCode(it)?.uuid.toString()
-            },
-        ));
+        .ok(
+            Bootstrap(
+                authorities = authentication?.authorities?.map { it.authority }?.toSet() ?: emptySet(),
+                isLoggedIn = authentication?.isAuthenticated ?: false,
+                userId = authentication?.name,
+                personId = authentication?.name?.let {
+                    personService.findByUserCode(it)?.uuid.toString()
+                },
+            )
+        )
 }
 
 data class Bootstrap(

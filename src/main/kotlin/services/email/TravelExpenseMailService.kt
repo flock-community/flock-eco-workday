@@ -26,8 +26,10 @@ class TravelExpenseMailService(private val emailService: EmailService, private v
         log.info("Email generated for TravelExpense update for ${recipient.email}")
 
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
-        emailService.sendEmailMessage(recipient.receiveEmail, recipient.email, subject, templateVariables,
-            mailjetTemplateProperties.updateTemplateId)
+        emailService.sendEmailMessage(
+            recipient.receiveEmail, recipient.email, subject, templateVariables,
+            mailjetTemplateProperties.updateTemplateId
+        )
     }
 
     fun sendNotification(expense: TravelExpense) {
@@ -39,7 +41,9 @@ class TravelExpenseMailService(private val emailService: EmailService, private v
 
         log.info("Email generated for TravelExpense notification for ${employee.email}")
 
-        emailService.sendEmailNotification(subject, templateVariables,
-            mailjetTemplateProperties.notificationTemplateId)
+        emailService.sendEmailNotification(
+            subject, templateVariables,
+            mailjetTemplateProperties.notificationTemplateId
+        )
     }
 }

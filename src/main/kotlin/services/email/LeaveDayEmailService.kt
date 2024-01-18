@@ -27,8 +27,10 @@ class LeaveDayEmailService(private val emailService: EmailService, private val m
         log.info("Email generated for LeaveDay update for ${recipient.email}")
 
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
-        emailService.sendEmailMessage(recipient.receiveEmail, recipient.email, subject, templateVariables,
-            mailjetTemplateProperties.updateTemplateId)
+        emailService.sendEmailMessage(
+            recipient.receiveEmail, recipient.email, subject, templateVariables,
+            mailjetTemplateProperties.updateTemplateId
+        )
     }
 
     fun sendNotification(leaveDay: LeaveDay) {
@@ -42,7 +44,9 @@ class LeaveDayEmailService(private val emailService: EmailService, private val m
 
         log.info("Email generated for LeaveDay notification for ${employee.email}")
 
-        emailService.sendEmailNotification(subject, templateVariables,
-            mailjetTemplateProperties.notificationTemplateId)
+        emailService.sendEmailNotification(
+            subject, templateVariables,
+            mailjetTemplateProperties.notificationTemplateId
+        )
     }
 }

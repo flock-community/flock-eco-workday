@@ -19,13 +19,13 @@ data class PersonHolidayDetails(
     val holidayHoursApproved: BigDecimal,
     val holidayHoursRequested: BigDecimal
 ) {
-    val totalHoursAvailable: BigDecimal;
-    val totalHoursUsed: BigDecimal;
-    val totalHoursRemaining: BigDecimal;
+    val totalHoursAvailable: BigDecimal
+    val totalHoursUsed: BigDecimal
+    val totalHoursRemaining: BigDecimal
 
     init {
-        totalHoursAvailable = this.holidayHoursFromContract + this.plusHours;
-        totalHoursUsed = this.holidayHoursDone + this.holidayHoursApproved;
-        totalHoursRemaining = totalHoursAvailable - totalHoursUsed;
+        totalHoursAvailable = this.holidayHoursFromContract + this.plusHours
+        totalHoursUsed = this.holidayHoursDone + this.holidayHoursApproved
+        totalHoursRemaining = totalHoursAvailable - totalHoursUsed
     }
 }
