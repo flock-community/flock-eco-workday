@@ -43,8 +43,9 @@ import java.util.*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EventControllerTest() {
     private val baseUrl: String = "/api/events"
-    private val adminAuthorities = setOf("EventAuthority.READ", "EventAuthority.WRITE", "EventAuthority.ADMIN")
-    private val userAuthorities = setOf("EventAuthority.READ", "EventAuthority.WRITE")
+    private val adminAuthorities =
+        setOf("EventAuthority.READ", "EventAuthority.WRITE", "EventAuthority.SUBSCRIBE", "EventAuthority.ADMIN")
+    private val userAuthorities = setOf("EventAuthority.READ", "EventAuthority.WRITE", "EventAuthority.SUBSCRIBE")
 
     @Autowired
     private lateinit var mvc: MockMvc

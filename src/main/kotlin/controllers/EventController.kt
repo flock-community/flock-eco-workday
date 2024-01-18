@@ -52,7 +52,7 @@ class EventController(
         .toResponse()
 
     @GetMapping("/upcoming")
-    @PreAuthorize("hasAuthority('EventAuthority.READ')")
+    @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
     fun getUpcoming(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fromDate: LocalDate,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) toDate: LocalDate,
@@ -142,7 +142,7 @@ class EventController(
         .toResponse()
 
     @PostMapping("/{eventCode}/subscribe")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
     fun subscribeToEvent(
         @PathVariable eventCode: String,
         authentication: Authentication
@@ -154,7 +154,7 @@ class EventController(
     }
 
     @PostMapping("/{eventCode}/unsubscribe")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
     fun unsubscribeFromEvent(
         @PathVariable eventCode: String,
         authentication: Authentication

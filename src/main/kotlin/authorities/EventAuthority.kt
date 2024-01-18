@@ -4,6 +4,7 @@ import community.flock.eco.core.authorities.Authority
 
 enum class EventAuthority : Authority {
     READ,
+    SUBSCRIBE,
     WRITE,
     ADMIN
 }
