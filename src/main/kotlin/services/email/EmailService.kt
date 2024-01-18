@@ -18,7 +18,7 @@ class EmailService(private val emailSendService: MailjetService, private val not
         templateId: Int
     ) {
         if (!personReceiveEmail) {
-            log.info("Dit not send generated email because of the receiveEmail setting.");
+            log.info("Dit not send generated email because of the receiveEmail setting.")
         } else {
             emailSendService.sendEmailMessage(
                 EmailMessageProperties(
@@ -30,8 +30,10 @@ class EmailService(private val emailSendService: MailjetService, private val not
     }
 
     fun sendEmailNotification(emailSubject: String, templateVariables: JSONObject, templateId: Int) {
-        sendEmailMessage(true, notificationProperties.recipient, emailSubject,
-            templateVariables, templateId)
+        sendEmailMessage(
+            true, notificationProperties.recipient, emailSubject,
+            templateVariables, templateId
+        )
     }
 
     fun createTemplateVariables(

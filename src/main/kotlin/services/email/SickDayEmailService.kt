@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 import java.time.format.DateTimeFormatter
 
 @Service
-class SickDayEmailService (private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
+class SickDayEmailService(private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
     private val log: Logger = LoggerFactory.getLogger(SickDayEmailService::class.java)
 
     fun sendUpdate(old: SickDay, new: SickDay) {
@@ -27,8 +27,10 @@ class SickDayEmailService (private val emailService: EmailService, private val m
         log.info("Email generated for SickDay update for ${recipient.email}")
 
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
-        emailService.sendEmailMessage(recipient.receiveEmail, recipient.email, subject, templateVariables,
-            mailjetTemplateProperties.updateTemplateId)
+        emailService.sendEmailMessage(
+            recipient.receiveEmail, recipient.email, subject, templateVariables,
+            mailjetTemplateProperties.updateTemplateId
+        )
     }
 
     fun sendNotification(sickDay: SickDay) {
@@ -42,7 +44,9 @@ class SickDayEmailService (private val emailService: EmailService, private val m
 
         log.info("Email generated for SickDay notification for ${employee.email}")
 
-        emailService.sendEmailNotification(subject, templateVariables,
-            mailjetTemplateProperties.notificationTemplateId)
+        emailService.sendEmailNotification(
+            subject, templateVariables,
+            mailjetTemplateProperties.notificationTemplateId
+        )
     }
 }

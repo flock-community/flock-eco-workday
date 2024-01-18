@@ -93,7 +93,7 @@ class AggregationService(
                 .filter { it.type == LeaveDayType.HOLIDAY }
                 .filter { it.status === Status.REQUESTED }
                 .totalHoursInPeriod(from, to)
-        );
+        )
     }
 
     fun leaveDayReport(year: Int): List<AggregationLeaveDay> {
@@ -606,7 +606,7 @@ private fun Assignment.revenuePerDay(): BigDecimal = (this.hourlyRate * this.hou
 private fun Iterable<LocalDate>.filterWorkingDay() = this.filter { it.isWorkingDay() }
 
 fun countWorkDaysInPeriod(from: LocalDate, to: LocalDate): Int {
-    val diff = ChronoUnit.DAYS.between(from, to);
+    val diff = ChronoUnit.DAYS.between(from, to)
     return (0..diff)
         .map { from.plusDays(it) }
         .filterWorkingDay()
