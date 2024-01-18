@@ -3,7 +3,7 @@ import {FlockEvent} from "../../clients/EventClient";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import {DMY_DATE} from "../../clients/util/DateFormats";
-import {FormControlLabel, FormGroup} from "@material-ui/core";
+import {FormGroup} from "@material-ui/core";
 import Switch from "@material-ui/core/Switch";
 import {isPersonAttending} from "../../utils/EventUtils";
 import {usePerson} from "../../hooks/PersonHook";
@@ -49,10 +49,8 @@ export function EventListItem({event, onEventToggle}: FlockEventListItemProps) {
       <ListItemText primary={event.description}
                     secondary={dateString}/>
       <FormGroup row>
-        <FormControlLabel
-          control={<Switch checked={btnState} onChange={handleChange} size="small" name="presentToggle"/>}
-          label="present" labelPlacement="start"
-        />
+        <Switch checked={btnState} onChange={handleChange} name="presentToggle"
+                color="primary"/>
       </FormGroup>
     </ListItem>
   )
