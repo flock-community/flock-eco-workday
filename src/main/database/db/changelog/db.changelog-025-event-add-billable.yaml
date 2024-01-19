@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-025-event-add-billable
+      author: jverhaar
+      changes:
+        - addColumn:
+            tableName: event
+            columns:
+              - column:
+                  name: billable
+                  type: boolean
+                  defaultValue: false
