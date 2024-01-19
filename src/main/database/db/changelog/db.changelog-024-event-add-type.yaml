@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-024-event-add-type
+      author: jverhaar
+      changes:
+        - addColumn:
+            tableName: event
+            columns:
+              - column:
+                  name: type
+                  type: VARCHAR(255)
+                  defaultValue: 'GENERAL_EVENT'
+                  constraints:
+                    nullable: false
