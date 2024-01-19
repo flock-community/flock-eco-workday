@@ -28,6 +28,8 @@ class Event(
 
     val type: EventType,
 
+    val billable: Boolean,
+
     @ElementCollection
     override val days: List<Double>? = null,
 

@@ -83,9 +83,9 @@ class EventService(
             persons = persons.toList(),
             hours = this.hours,
             days = this.days,
-            costs = this.costs
             costs = this.costs,
             type = this.type,
+            billable = this.billable
         )
     }
 }

@@ -27,9 +27,10 @@ data class EventForm(
 
     val costs: Double,
 
-    val personIds: List<UUID>
     val personIds: List<UUID>,
 
     val type: EventType,
+
+    val billable: Boolean,
 
 ) : Dayly
