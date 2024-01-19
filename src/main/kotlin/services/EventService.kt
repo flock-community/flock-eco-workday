@@ -84,8 +84,7 @@ class EventService(
             hours = this.hours,
             days = this.days,
             costs = this.costs,
-            type = this.type,
-            billable = this.billable
+            type = this.type
         )
     }
 }

@@ -26,8 +26,6 @@ class Event(
     @Enumerated(EnumType.STRING)
     val type: EventType,
 
-    val billable: Boolean,
-
     @ElementCollection
     override val days: List<Double>? = null,
 

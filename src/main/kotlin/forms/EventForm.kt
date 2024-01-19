@@ -31,6 +31,4 @@ data class EventForm(
 
     val type: EventType,
 
-    val billable: Boolean,
-
 ) : Dayly

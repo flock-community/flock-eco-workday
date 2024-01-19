@@ -21,7 +21,6 @@ export type FlockEvent = {
   persons: Person[];
   costs: number;
   type: EventType;
-  billable: boolean;
 };
 
 type FlockEventRaw = {
@@ -35,7 +34,6 @@ type FlockEventRaw = {
   persons: Person[];
   costs: number;
   type: EventType;
-  billable: boolean;
 };
 
 export type FlockEventRequest = {
@@ -49,7 +47,6 @@ export type FlockEventRequest = {
   personIds: string[];
   costs: number;
   type: EventType;
-  billable: boolean;
 };
 
 export enum EventType {

@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
 import Grid from "@material-ui/core/Grid";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import {CheckboxWithLabel, TextField} from "formik-material-ui";
+import {TextField} from "formik-material-ui";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PersonSelectorField } from "../../components/fields/PersonSelectorField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
@@ -12,7 +12,6 @@ import { mutatePeriod } from "../period/Period";
 import dayjs from "dayjs";
 import DayjsUtils from "@date-io/dayjs";
 import {EventTypeSelect} from "./EventTypeSelect";
-import {FormControl} from "@material-ui/core";
 import {EventTypeMappingToBillable} from "../../utils/mappings";
 
 export const EVENT_FORM_ID = "event-form";
@@ -27,7 +26,6 @@ const schema = Yup.object().shape({
   personIds: Yup.array().default([]),
   costs: Yup.number().required().min(0).default(0),
   type: Yup.string().required("Field required").default("GENERAL_EVENT"),
-  billable: Yup.boolean().default(false)
 });
 
 
@@ -44,7 +42,6 @@ export function EventForm({ value, onSubmit }) {
       days: data.days,
       costs: data.costs,
       type: data.type,
-      billable: data.billable,
     });
   };
 
@@ -81,18 +78,8 @@ export function EventForm({ value, onSubmit }) {
             <Grid item xs={12}>
               <PersonSelectorField name="personIds" multiple fullWidth/>
             </Grid>
-            <Grid item xs={6} style={{marginTop: '1rem'}}>
+            <Grid item xs={12} style={{marginTop: '1rem'}}>
               <EventTypeSelect value={values.type} onChange={handleEventTypeChange}/>
-            </Grid>
-            <Grid item xs={6} style={{marginTop: '1rem'}}>
-              <FormControl fullWidth>
-                <Field
-                  name="billable"
-                  type="checkbox"
-                  Label={{label: "Are these hours billable to client?"}}
-                  component={CheckboxWithLabel}
-                />
-              </FormControl>
             </Grid>
             <Grid item xs={6}>
               <DatePickerField
