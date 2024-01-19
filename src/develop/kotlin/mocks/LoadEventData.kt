@@ -2,6 +2,7 @@ package community.flock.eco.workday.mocks
 
 import community.flock.eco.workday.forms.EventForm
 import community.flock.eco.workday.model.Event
+import community.flock.eco.workday.model.EventType
 import community.flock.eco.workday.services.EventService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
@@ -28,17 +29,32 @@ class LoadEventData(
                             days = listOf(8.0),
                             hours = 8.0,
                             personIds = loadPersonData.data.map { it.uuid },
-                            costs = 1000.0
+                        costs = 1000.0,
+                        type = EventType.GENERAL_EVENT,
+                        billable = false
                     ),
                     EventForm(
-                            description = "Flock. dag",
+                        description = "Flock. Hack Day",
                             from = LocalDate.of(now.year, 1, 3),
                             to = LocalDate.of(now.year, 1, 3),
                             days = listOf(8.0),
                             hours = 8.0,
                             personIds = loadPersonData.data.map { it.uuid },
-                            costs = 1000.0
+                        costs = 1000.0,
+                        type = EventType.FLOCK_HACK_DAY,
+                        billable = false
                     ),
+                EventForm(
+                    description = "Flock. Community Day",
+                    from = LocalDate.of(now.year, 1, 3),
+                    to = LocalDate.of(now.year, 1, 3),
+                    days = listOf(8.0),
+                    hours = 8.0,
+                    personIds = loadPersonData.data.map { it.uuid },
+                    costs = 1000.0,
+                    type = EventType.FLOCK_COMMUNITY_DAY,
+                    billable = true
+                ),
                     EventForm(
                             description = "Conference",
                             from = LocalDate.of(now.year, 5, 27),
@@ -46,7 +62,9 @@ class LoadEventData(
                             days = listOf(8.0, 8.0, 8.0),
                             hours = 24.0,
                             personIds = loadPersonData.data.take(2).map { it.uuid },
-                        costs = 1000.0
+                        costs = 1000.0,
+                        type = EventType.CONFERENCE,
+                        billable = false
                     )
             )
                     .map { it.create() }
