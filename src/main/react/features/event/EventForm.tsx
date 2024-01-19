@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
@@ -15,7 +15,7 @@ import {EventTypeSelect} from "./EventTypeSelect";
 import {FormControl} from "@material-ui/core";
 import {EventTypeMappingToBillable} from "../../utils/mappings";
 
-export const EVENT_FORM_ID = "work-day-form";
+export const EVENT_FORM_ID = "event-form";
 
 const now = dayjs();
 
@@ -49,9 +49,11 @@ export function EventForm({ value, onSubmit }) {
   };
 
   const renderForm = ({values, setFieldValue}) => {
+    const [resetHours, setResetHours] = useState<boolean>(false);
+
     const handleEventTypeChange = (newValue) => {
       setFieldValue("type", newValue);
-      setFieldValue("billable", EventTypeMappingToBillable[newValue]);
+      setResetHours(EventTypeMappingToBillable[newValue]);
     };
 
     return (
@@ -109,7 +111,7 @@ export function EventForm({ value, onSubmit }) {
               />
             </Grid>
             <Grid item xs={12}>
-              <PeriodInputField name="days" from={values.from} to={values.to}/>
+              <PeriodInputField name="days" from={values.from} to={values.to} reset={resetHours}/>
             </Grid>
           </Grid>
         </MuiPickersUtilsProvider>

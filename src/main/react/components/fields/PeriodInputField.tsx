@@ -15,6 +15,7 @@ type PeriodInputFieldProps = {
   name: string;
   from: dayjs.Dayjs;
   to: dayjs.Dayjs;
+  reset: boolean;
 };
 
 const useStyles = makeStyles({
@@ -23,7 +24,7 @@ const useStyles = makeStyles({
   },
 });
 
-export function PeriodInputField({ name, from, to }: PeriodInputFieldProps) {
+export function PeriodInputField({name, from, to, reset}: PeriodInputFieldProps) {
   const classes = useStyles();
 
   const render = ({ field: { value }, form: { setFieldValue } }) => {
@@ -41,6 +42,10 @@ export function PeriodInputField({ name, from, to }: PeriodInputFieldProps) {
     useEffect(() => {
       update(mutatePeriod(period, { from, to }));
     }, [from, to]);
+
+    useEffect(() => {
+      reset ? setHoursPerDay(0) : null;
+    }, [reset]);
 
     const setHoursPerDay = (hoursPerDay: number) => {
       update({
