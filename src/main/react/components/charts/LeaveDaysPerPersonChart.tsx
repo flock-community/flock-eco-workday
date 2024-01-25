@@ -70,6 +70,8 @@ export function LeaveDaysPerPersonChart({ year }: LeaveDaysPerPersonChartProps) 
           fill="#6c6c6c"
         />
         <Bar stackId="used" dataKey="holidayHours" name="used" fill="#42a5f5" />
+        <Bar stackId="padiPL" dataKey="paidParentalLeaveHours" name="paid parental leave" fill="#ffb6c1"/>
+        <Bar stackId="unPaidPL" dataKey="unpaidParentalLeaveHours" name="unpaid parental leave" fill="#87cefa"/>
         <Bar
           stackId="used"
           dataKey="availableHours"

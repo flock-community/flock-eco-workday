@@ -95,7 +95,7 @@ export function DashboardFeature() {
             </Card>
 
             <Card>
-                <CardHeader title="Holiday"/>
+              <CardHeader title="Leave Days"/>
                 <CardContent>
                     <LeaveDaysPerPersonChart year={year}/>
                 </CardContent>
