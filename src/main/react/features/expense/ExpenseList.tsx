@@ -10,39 +10,14 @@ import ListItem from "@material-ui/core/ListItem";
 import { StatusMenu } from "../../components/status/StatusMenu";
 import { EXPENSE_PAGE_SIZE, ExpenseClient } from "../../clients/ExpenseClient";
 import { makeStyles } from "@material-ui/core/styles";
-import { Dayjs } from "dayjs";
 
 // Components
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 // Types
-import type { DayListProps, StatusProps } from "../../types";
-
-export type ExpenseProps = {
-  id: string;
-  date: Dayjs;
-  description: string;
-  person: {
-    id: number;
-    uuid: string;
-    firstname: string;
-    lastname: string;
-    email: string;
-    position: string;
-    number: number | null;
-    birthdate: string | null;
-    joinDate: string | null;
-    active: boolean;
-    lastActiveAt: string | null;
-    reminders: boolean;
-    user: string;
-    fullName: string;
-  };
-  status: StatusProps;
-  amount: number;
-  files: any[]; // You can replace 'any' with the specific type of the file object
-  type: string;
-};
+import type { DayListProps } from "../../types";
+import { Status } from "../../models/Status";
+import { CostExpense, TravelExpense } from "../../models/Expense";
 
 const useStyles = makeStyles({
   list: (loading) => ({
@@ -51,7 +26,7 @@ const useStyles = makeStyles({
 });
 
 export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
-  const [items, setItems] = useState<ExpenseProps[]>([]);
+  const [items, setItems] = useState<(CostExpense | TravelExpense)[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -75,23 +50,22 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
   const isAdmin = () =>
     !UserAuthorityUtil.hasAuthority("ExpenseAuthority.ADMIN");
 
-  const handleClickRow = (item) => {
+  const handleClickRow = (item: CostExpense | TravelExpense) => {
     return () => {
       if (onClickRow) onClickRow(item);
     };
   };
 
-  const handleStatusChange = (item) => (status) => {
-    ExpenseClient.put(item.id, item.type.toLowerCase(), {
-      ...item,
-      personId,
-      status,
-    }).then(() => loadState());
-  };
+  const handleStatusChange =
+    (item: CostExpense | TravelExpense) => (status: Status) => {
+      ExpenseClient.put(item.id, {
+        ...item,
+        status,
+      }).then(() => loadState());
+    };
 
-  function renderItem(item, key) {
-    const totalAmount: number =
-      "amount" in item ? item.amount : item.distance * item.allowance;
+  const renderItem = (item: CostExpense | TravelExpense, key: number) => {
+    const totalAmount: number = item.amount;
 
     return (
       <Grid key={`workday-list-item-${key}`} item xs={12}>
@@ -133,7 +107,7 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
         </Card>
       </Grid>
     );
-  }
+  };
 
   if (items.length === 0) {
     return (

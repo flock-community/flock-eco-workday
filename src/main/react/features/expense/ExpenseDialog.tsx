@@ -9,20 +9,28 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
-import { ExpenseClient } from "../../clients/ExpenseClient";
+import {
+  emptyPersonWithUUID,
+  ExpenseClient,
+} from "../../clients/ExpenseClient";
 import { ExpenseFormTravel } from "./ExpenseFormTravel";
 import { ExpenseFormCost } from "./ExpenseFormCost";
-import { ExpenseType } from "./ExpenseType";
-import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import {
+  CostExpense,
+  Expense,
+  ExpenseType,
+  TravelExpense,
+} from "../../models/Expense";
+import { Status } from "../../models/Status";
 
 type ExpenseDialogProps = {
   open: boolean;
   id?: string;
   personId?: string;
   personFullName: string;
-  onComplete?: (item?: any) => void;
-  expenseType?: string;
+  onComplete?: (item?: CostExpense | TravelExpense) => void;
+  expenseType?: ExpenseType;
 };
 
 export function ExpenseDialog({
@@ -34,16 +42,16 @@ export function ExpenseDialog({
   expenseType,
 }: ExpenseDialogProps) {
   const [type, setType] = useState(ExpenseType.COST);
-  const [state, setState] = useState(null);
+  const [state, setState] = useState<Expense | undefined>(undefined);
   const [openDelete, setOpenDelete] = useState(false);
 
   useEffect(() => {
-    setState(null);
+    setState(undefined);
     setType(expenseType ?? ExpenseType.COST);
     if (id) {
       ExpenseClient.get(id).then((res) => {
         setState(res);
-        setType(res.type);
+        setType(res.expenseType);
       });
     }
   }, [id, open]);
@@ -52,29 +60,37 @@ export function ExpenseDialog({
     setType(ev.target.value);
   };
 
-  const handleSubmit = (it) => {
+  const handleSubmit = (it: CostExpense | TravelExpense) => {
     if (id) {
-      ExpenseClient.put(id, type, {
+      ExpenseClient.put(id, {
         ...it,
-        status: "REQUESTED",
-        date: it.date.format(ISO_8601_DATE),
-        personId,
-      }).then((res) => {
+        person: emptyPersonWithUUID({ value: personId! }),
+        expenseType:
+          type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
+        status: Status.REQUESTED,
+        date: it.date,
+      }).then((res: CostExpense | TravelExpense) => {
         onComplete?.(res);
       });
     } else {
-      ExpenseClient.post(type, {
+      ExpenseClient.post({
         ...it,
-        status: "REQUESTED",
-        date: it.date.format(ISO_8601_DATE),
-        personId,
-      }).then((res) => {
+        expenseType:
+          type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
+        person: emptyPersonWithUUID({ value: personId! }),
+        status: Status.REQUESTED,
+        date: it.date,
+      }).then((res: CostExpense | TravelExpense) => {
         onComplete?.(res);
       });
     }
   };
 
   const handleDelete = () => {
+    if (id === undefined) {
+      return;
+    }
+
     ExpenseClient.delete(id).then(() => {
       if (onComplete) onComplete();
       setOpenDelete(false);
@@ -96,7 +112,6 @@ export function ExpenseDialog({
   const headline = UserAuthorityUtil.hasAuthority("ExpenseAuthority.ADMIN")
     ? `Create expense | ${personFullName}`
     : "Create expense";
-
   return (
     <>
       <Dialog

@@ -1,5 +1,7 @@
+import { Todo } from "./wirespec/Models";
+
 export type StatusProps = "REQUESTED" | "APPROVED" | "REJECTED";
-export type typeProp =
+export type TypeProp =
   | "WORKDAY"
   | "SICKDAY"
   | "HOLIDAY"
@@ -9,7 +11,7 @@ export type typeProp =
   | "EXPENSE";
 
 export type DayProps = {
-  type: typeProp;
+  type: TypeProp;
   id: number;
   code: string;
   from: Dayjs;
@@ -28,15 +30,7 @@ export type DayListProps = {
   onClickStatus: (status: string, item: any) => void;
 };
 
-export type InputItemProps = {
-  id: string;
-  type: typeProp;
-  personId: string;
-  personName: string;
-  description: string;
-};
-
-export type GroupedItemProps = {
-  type: typeProp;
-  items: InputItem[];
+export type GroupedTodos = {
+  todoType: TypeProp;
+  todos: Todo[];
 };

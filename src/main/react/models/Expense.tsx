@@ -16,7 +16,7 @@ export class Expense {
     public status: Status,
     public amount: number,
     public files: any[],
-    public type: ExpenseType
+    public expenseType: ExpenseType
   ) {}
 }
 
@@ -49,8 +49,8 @@ export class CostExpense extends Expense {
       json.description,
       json.person,
       Status[json.status],
-      json.amount,
-      json.files
+      json.costDetails?.amount,
+      json.costDetails?.files
     );
   }
 }
@@ -86,8 +86,8 @@ export class TravelExpense extends Expense {
       json.person,
       Status[json.status],
       json.files,
-      json.allowance,
-      json.distance
+      json.travelDetails?.allowance,
+      json.travelDetails?.distance
     );
   }
 }

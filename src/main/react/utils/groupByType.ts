@@ -1,22 +1,23 @@
-import type { InputItemProps, GroupedItemProps } from "../types";
+import type { GroupedTodos } from "../types";
+import { Todo } from "../wirespec/Models";
 
 /**
  * Groups an array of input items by their type.
  *
- * @param {InputItemProps[]} input - The array of input items to group.
- * @returns {GroupedItemProps[]} An array of grouped items, where each group contains all items of a given type.
+ * @param {Todo[]} input - The array of input items to group.
+ * @returns {GroupedTodos[]} An array of grouped items, where each group contains all items of a given type.
  */
-export const groupByType = (input: InputItemProps[]): GroupedItemProps[] => {
-  const grouped: Record<string, GroupedItemProps> = {};
+export const groupByType = (input: Todo[]): GroupedTodos[] => {
+  const grouped: Record<string, GroupedTodos> = {};
 
   for (const item of input) {
-    if (!grouped[item.type]) {
-      grouped[item.type] = {
-        type: item.type,
-        items: [],
+    if (!grouped[item.todoType]) {
+      grouped[item.todoType] = {
+        todoType: item.todoType,
+        todos: [],
       };
     }
-    grouped[item.type].items.push(item);
+    grouped[item.todoType].todos.push(item);
   }
 
   return Object.values(grouped);

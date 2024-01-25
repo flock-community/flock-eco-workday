@@ -5,7 +5,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 
 // Types
-import { GroupedItemProps, typeProp } from "../../types";
+import { GroupedTodos, TypeProp } from "../../types";
 type TabPanelProps = {
   children?: React.ReactNode;
   value: number;
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type simpleTabsProps = {
-  data: GroupedItemProps[];
+  data: GroupedTodos[];
   renderFunction: Function;
   exposedValue?: Function;
 };
@@ -40,7 +40,7 @@ export const SimpleTabs = ({
 }: simpleTabsProps) => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
-  const categories = data.map((item) => item.type);
+  const categories = data.map((item) => item.todoType);
 
   const handleChange = (event: any, newValue: React.SetStateAction<number>) => {
     setValue(newValue);
@@ -48,7 +48,7 @@ export const SimpleTabs = ({
     exposedValue && exposedValue(newValue);
   };
 
-  const getCategoryLabel = (category: typeProp) => {
+  const getCategoryLabel = (category: TypeProp) => {
     return category.replaceAll("_", " ");
   };
 
@@ -61,13 +61,13 @@ export const SimpleTabs = ({
       </Tabs>
       {categories.map((category, index) => {
         const selectedTab =
-          data && data.find((tabPanel) => tabPanel.type === category);
+          data && data.find((tabPanel) => tabPanel.todoType === category);
 
         return (
           <TabPanel key={index} value={value} index={index}>
             <Grid container spacing={1}>
               {selectedTab &&
-                selectedTab.items.map((item, index) => {
+                selectedTab.todos.map((item, index) => {
                   return renderFunction(item, index);
                 })}
             </Grid>

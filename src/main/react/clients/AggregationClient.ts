@@ -1,13 +1,13 @@
 import {
-  AggregationClientPersonAssignmentOverview,
-  AggregationClientPersonOverview,
-} from "../graphql/aggregation";
-import {
   checkResponse,
   validateResponse,
 } from "@flock-community/flock-eco-core";
 import { Dayjs } from "dayjs";
 import { ISO_8601_DATE } from "./util/DateFormats";
+import {
+  AggregationClientPersonAssignmentOverview,
+  AggregationClientPersonOverview,
+} from "../wirespec/Models";
 
 const path = "/api/aggregations";
 

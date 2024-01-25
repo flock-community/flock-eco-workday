@@ -6,6 +6,7 @@ import { SickDayClient } from "../../clients/SickDayClient";
 import { Person } from "../../clients/PersonClient";
 import AddIcon from "@material-ui/icons/Add";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import type { DayProps } from "../../types";
 
 type SickDayFeatureProps = {
   person: Person;
@@ -27,12 +28,12 @@ export function SickDayFeature({ person }: SickDayFeatureProps) {
     setOpen(true);
   }
 
-  function handleClickRow(item) {
+  function handleClickRow(item: DayProps) {
     setValue(item);
     setOpen(true);
   }
 
-  function handleStatusChange(status, it) {
+  function handleStatusChange(status: string, it: DayProps) {
     SickDayClient.put(it.code, {
       ...it,
       status,

@@ -1,13 +1,16 @@
 package community.flock.eco.workday.mappers
 
-import community.flock.eco.workday.graphql.kotlin.CostExpenseInput
-import community.flock.eco.workday.graphql.kotlin.TravelExpenseInput
-import community.flock.eco.workday.graphql.kotlin.UUID
+import community.flock.eco.workday.api.CostExpenseInput
+import community.flock.eco.workday.api.TravelExpenseInput
 import community.flock.eco.workday.model.CostExpense
 import community.flock.eco.workday.model.Document
+import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.TravelExpense
 import community.flock.eco.workday.services.PersonService
 import org.springframework.stereotype.Component
+import java.time.LocalDate
+import java.util.UUID
+import community.flock.eco.workday.api.Status as StatusApi
 
 @Component
 class TravelExpenseMapper(
@@ -18,14 +21,14 @@ class TravelExpenseMapper(
         id: UUID? = null,
     ) = TravelExpense(
         id = id ?: UUID.randomUUID(),
-        date = input.date,
+        date = LocalDate.parse(input.date),
         description = input.description,
         distance = input.distance.toString().toDouble(),
         allowance = input.allowance.toString().toDouble(),
-        status = input.status,
+        status = input.status.consume(),
         person =
             personService
-                .findByUuid(input.personId)
+                .findByUuid(UUID.fromString(input.personId.value))
                 ?: error("Cannot find person"),
     )
 }
@@ -39,20 +42,28 @@ class CostExpenseMapper(
         id: UUID? = null,
     ) = CostExpense(
         id = id ?: UUID.randomUUID(),
-        date = input.date,
+        date = LocalDate.parse(input.date),
         description = input.description,
         amount = input.amount.toString().toDouble(),
         files =
             input.files.map {
                 Document(
                     name = it.name,
-                    file = it.file,
+                    file = UUID.fromString(it.file.value),
                 )
             },
-        status = input.status,
+        status = input.status.consume(),
         person =
             personService
-                .findByUuid(input.personId)
+                .findByUuid(UUID.fromString(input.personId.value))
                 ?: error("Cannot find person"),
     )
 }
+
+fun StatusApi.consume(): Status =
+    when (this) {
+        StatusApi.REQUESTED -> Status.REQUESTED
+        StatusApi.APPROVED -> Status.APPROVED
+        StatusApi.REJECTED -> Status.REJECTED
+        StatusApi.DONE -> Status.DONE
+    }

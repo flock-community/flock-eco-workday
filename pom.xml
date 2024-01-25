@@ -182,24 +182,30 @@
                     <projectId>flock-community</projectId>
                 </configuration>
             </plugin>
-
             <plugin>
-                <groupId>community.flock</groupId>
-                <artifactId>graphql-simple-bindings-maven-plugin</artifactId>
-                <configuration>
-                    <sourceDirectory>${project.basedir}/src/main/graphql</sourceDirectory>
-                    <targetDirectory>${project.build.directory}/generated-sources</targetDirectory>
-                    <packageName>community.flock.eco.workday.graphql</packageName>
-                    <scalarsKotlin>
-                        <BigDecimal>java.math.BigDecimal</BigDecimal>
-                        <Date>java.time.LocalDate</Date>
-                        <UUID>java.util.UUID</UUID>
-                        <Status>community.flock.eco.workday.model.Status</Status>
-                    </scalarsKotlin>
-                </configuration>
+                <groupId>community.flock.wirespec.plugin.maven</groupId>
+                <artifactId>wirespec-maven-plugin</artifactId>
+                <version>0.8.51</version>
+                <executions>
+                    <execution>
+                        <id>kotlin</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <input>${project.basedir}/src/main/wirespec</input>
+                            <output>${project.build.directory}/generated-sources</output>
+                            <packageName>community.flock.eco.workday.api</packageName>
+                            <languages>
+                                <language>Kotlin</language>
+                            </languages>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.6.1</version>
                 <configuration>
@@ -246,6 +252,7 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.1.0</version>
                 <executions>

@@ -1,12 +1,26 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.utils.toResponse
+import community.flock.eco.workday.api.CostExpenseDetails
+import community.flock.eco.workday.api.CostExpenseFile
+import community.flock.eco.workday.api.CostExpenseInput
+import community.flock.eco.workday.api.ExpenseType
+import community.flock.eco.workday.api.TravelExpenseDetails
+import community.flock.eco.workday.api.TravelExpenseInput
+import community.flock.eco.workday.api.validate
 import community.flock.eco.workday.authorities.ExpenseAuthority
-import community.flock.eco.workday.graphql.kotlin.CostExpenseInput
-import community.flock.eco.workday.graphql.kotlin.TravelExpenseInput
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.mappers.CostExpenseMapper
 import community.flock.eco.workday.mappers.TravelExpenseMapper
+import community.flock.eco.workday.mappers.consume
+import community.flock.eco.workday.model.CostExpense
+import community.flock.eco.workday.model.Document
+import community.flock.eco.workday.model.Status
+import community.flock.eco.workday.model.Status.APPROVED
+import community.flock.eco.workday.model.Status.DONE
+import community.flock.eco.workday.model.Status.REJECTED
+import community.flock.eco.workday.model.Status.REQUESTED
+import community.flock.eco.workday.model.TravelExpense
 import community.flock.eco.workday.services.CostExpenseService
 import community.flock.eco.workday.services.DocumentService
 import community.flock.eco.workday.services.ExpenseService
@@ -28,6 +42,9 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
+import community.flock.eco.workday.api.Expense as ExpenseApi
+import community.flock.eco.workday.api.Status as StatusApi
+import community.flock.eco.workday.api.UUID as UUIDApi
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -41,27 +58,51 @@ class ExpenseController(
         @RequestParam personId: UUID,
         authentication: Authentication,
         pageable: Pageable,
-    ) = when {
-        authentication.isAdmin() -> expenseService.findAllByPersonUuid(personId, pageable)
-        else -> expenseService.findAllByPersonUserCode(authentication.name, pageable)
-    }
-        .toResponse()
+    ): ResponseEntity<List<ExpenseApi>> =
+        when {
+            authentication.isAdmin() -> expenseService.findAllByPersonUuid(personId, pageable)
+            else -> expenseService.findAllByPersonUserCode(authentication.name, pageable)
+        }
+            .map {
+                when (it) {
+                    is TravelExpense -> it.produce()
+                    is CostExpense -> it.produce()
+                    else -> error("Unsupported expense type")
+                }
+            }
+            .toResponse()
 
     @GetMapping("{id}")
     fun getExpenseById(
         @PathVariable id: UUID,
         authentication: Authentication,
-    ) = expenseService
-        .findById(id)
-        .toResponse()
+    ): ResponseEntity<ExpenseApi> =
+        expenseService
+            .findById(id)
+            ?.let {
+                when (it) {
+                    is TravelExpense -> it.produce()
+                    is CostExpense -> it.produce()
+                    else -> error("Unsupported expense type")
+                }
+            }
+            .toResponse()
 
     @DeleteMapping("{id}")
     fun deleteExpenseById(
         @PathVariable id: UUID,
         authentication: Authentication,
-    ) = expenseService
-        .deleteById(id)
-        .toResponse()
+    ): ResponseEntity<ExpenseApi> =
+        expenseService
+            .deleteById(id)
+            ?.let {
+                when (it) {
+                    is TravelExpense -> it.produce()
+                    is CostExpense -> it.produce()
+                    else -> error("Unsupported expense type")
+                }
+            }
+            .toResponse()
 
     @GetMapping("/files/{file}/{name}")
     @PreAuthorize("hasAuthority('ExpenseAuthority.READ')")
@@ -83,10 +124,32 @@ class ExpenseController(
     fun postFiles(
         @RequestParam("file") file: MultipartFile,
         authentication: Authentication,
-    ) = documentService
-        .storeDocument(file.bytes)
-        .toResponse()
+    ): ResponseEntity<UUID> =
+        documentService
+            .storeDocument(file.bytes)
+            .toResponse()
 }
+
+private fun CostExpense.produce() =
+    ExpenseApi(
+        id = id.toString(),
+        personId = UUIDApi(person.uuid.toString()).also(UUIDApi::validate),
+        description = description ?: "",
+        date = date.toString(),
+        status = status.produce(),
+        expenseType = ExpenseType.COST,
+        costDetails =
+            CostExpenseDetails(
+                amount = amount,
+                files = files.map { it.produce() },
+            ),
+    )
+
+private fun Document.produce() =
+    CostExpenseFile(
+        name = name,
+        file = UUIDApi(file.toString()).also(UUIDApi::validate),
+    )
 
 @RestController
 @RequestMapping("/api/expenses-travel")
@@ -100,10 +163,12 @@ class TravelExpenseController(
     fun postTravelExpense(
         @RequestBody input: TravelExpenseInput,
         authentication: Authentication,
-    ) = input
-        .run { mapper.consume(this) }
-        .run { service.create(this) }
-        .toResponse()
+    ): ResponseEntity<ExpenseApi> =
+        input
+            .run { mapper.consume(this) }
+            .run { service.create(this) }
+            .produce()
+            .toResponse()
 
     @PutMapping("{id}")
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
@@ -111,13 +176,38 @@ class TravelExpenseController(
         @PathVariable id: UUID,
         @RequestBody input: TravelExpenseInput,
         authentication: Authentication,
-    ) = input
-        .run { expenseService.findById(id) }
-        ?.applyAllowedToUpdate(input.status, authentication.isAdmin())
-        .run { mapper.consume(input, id) }
-        .run { service.update(id, this) }
-        .toResponse()
+    ): ResponseEntity<ExpenseApi> =
+        input
+            .run { expenseService.findById(id) }
+            ?.applyAllowedToUpdate(input.status.consume(), authentication.isAdmin())
+            .run { mapper.consume(input, id) }
+            .run { service.update(id, this) }
+            ?.produce()
+            .toResponse()
 }
+
+private fun TravelExpense.produce(): ExpenseApi =
+    ExpenseApi(
+        id = id.toString(),
+        personId = UUIDApi(person.uuid.toString()).also(UUIDApi::validate),
+        description = description ?: "",
+        date = date.toString(),
+        status = status.produce(),
+        expenseType = ExpenseType.TRAVEL,
+        travelDetails =
+            TravelExpenseDetails(
+                distance = distance,
+                allowance = allowance,
+            ),
+    )
+
+private fun Status.produce() =
+    when (this) {
+        REQUESTED -> StatusApi.REQUESTED
+        APPROVED -> StatusApi.APPROVED
+        REJECTED -> StatusApi.REJECTED
+        DONE -> StatusApi.DONE
+    }
 
 @RestController
 @RequestMapping("/api/expenses-cost")
@@ -131,10 +221,12 @@ class CostExpenseController(
     fun postCostExpense(
         @RequestBody input: CostExpenseInput,
         authentication: Authentication,
-    ) = input
-        .run { mapper.consume(this) }
-        .run { service.create(this) }
-        .toResponse()
+    ): ResponseEntity<ExpenseApi> =
+        input
+            .run { mapper.consume(this) }
+            .run { service.create(this) }
+            .produce()
+            .toResponse()
 
     @PutMapping("{id}")
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
@@ -142,12 +234,14 @@ class CostExpenseController(
         @PathVariable id: UUID,
         @RequestBody input: CostExpenseInput,
         authentication: Authentication,
-    ) = input
-        .run { expenseService.findById(id) }
-        ?.applyAllowedToUpdate(input.status, authentication.isAdmin())
-        .run { mapper.consume(input, id) }
-        .run { service.update(id, this) }
-        .toResponse()
+    ): ResponseEntity<ExpenseApi> =
+        input
+            .run { expenseService.findById(id) }
+            ?.applyAllowedToUpdate(input.status.consume(), authentication.isAdmin())
+            .run { mapper.consume(input, id) }
+            .run { service.update(id, this) }
+            ?.produce()
+            .toResponse()
 }
 
 private fun Authentication.isAdmin(): Boolean =

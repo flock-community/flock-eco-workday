@@ -7,6 +7,7 @@ import { TextField } from "formik-material-ui";
 import * as Yup from "yup";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import dayjs from "dayjs";
+import { TravelExpense } from "../../models/Expense";
 
 export const EXPENSE_TRAVEL_FORM_ID = "travel-expense-form";
 
@@ -19,7 +20,7 @@ const schema = Yup.object({
 
 type ExpenseFormTravelProps = {
   value: any;
-  onSubmit: (item: any) => void;
+  onSubmit: (item: TravelExpense) => void;
 };
 
 export const ExpenseFormTravel = ({
