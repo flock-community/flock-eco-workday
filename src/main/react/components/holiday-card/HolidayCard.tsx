@@ -7,18 +7,28 @@ import {highLightClass} from "../../theme/theme-light";
 import {HolidayDetailDialog} from "./HolidayDetailDialog";
 
 const useStyles = makeStyles(() => ({
+  containerWrapper: {
+    containerType: 'inline-size'
+  },
   hoursLeftWrapper: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'baseline'
+    alignItems: 'baseline',
+    '@container (max-width: 500px)': {
+      flexDirection: 'column',
+      alignItems: 'center'
+    }
   },
   hoursLeft: {
-    fontSize: '11rem',
+    fontSize: 'clamp(6rem, 25cqw, 11rem)',
     position: "relative",
     textAlign: "center",
     zIndex: 2,
-    marginInline: '2.5rem'
+    marginInline: '2.5rem',
+    '@container (max-width: 500px)': {
+      fontSize: 'clamp(6rem, 40cqw, 9rem)'
+    }
   }
 }));
 
@@ -54,7 +64,7 @@ export function HolidayCard({ item }: HolidayCardProps) {
   return (<>
     <Card variant={"outlined"} style={{borderRadius: 0, cursor: "pointer"}} onClick={() => openLeaveDayDetailsDialog()}>
       <CardHeader title={"Holidays"}/>
-      <CardContent>
+      <CardContent className={classes.containerWrapper}>
         <div className={classes.hoursLeftWrapper}>
           <span>You have</span>
           <div className={classes.hoursLeft}>

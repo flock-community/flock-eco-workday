@@ -5,6 +5,7 @@ import {
   validateResponse,
 } from "@flock-community/flock-eco-core";
 import dayjs, { Dayjs } from "dayjs";
+import {DMY_DATE} from "./util/DateFormats";
 
 const path = "/api/events";
 
@@ -93,9 +94,20 @@ const deleteRatings = (eventCode, personId) => {
     .then((res) => res?.body);
 };
 
+const getUpcoming = (from: Dayjs, to: Dayjs): Promise<FlockEvent[]> => {
+  const opts = {
+    method: "GET"
+  }
+  return fetch(`${path}/upcoming?fromDate=${from.toISOString().substring(0, 10)}&toDate=${to.toISOString().substring(0, 10)}`, opts)
+    .then(validateResponse)
+    .catch(checkResponse)
+    .then((res) => res?.body.map(internalize));
+}
+
 export const EventClient = {
   ...internalizingClient,
   getRatings,
   postRatings,
   deleteRatings,
+  getUpcoming
 };
