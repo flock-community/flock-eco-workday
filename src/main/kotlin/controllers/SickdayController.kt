@@ -38,8 +38,8 @@ class SickdayController(
         authentication: Authentication,
         pageable: Pageable
     ): ResponseEntity<List<SickDay>> = when {
-        personId == null -> service.findAll(pageable)
-        authentication.isAdmin() -> service.findAllByPersonUuid(personId, pageable)
+        authentication.isAdmin() && personId == null -> service.findAll(pageable)
+        authentication.isAdmin() && personId != null -> service.findAllByPersonUuid(personId, pageable)
         else -> service.findAllByPersonUserCode(authentication.name, pageable)
     }.toResponse()
 
