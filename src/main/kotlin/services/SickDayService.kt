@@ -22,8 +22,8 @@ class SickDayService(
     private val emailService: SickDayEmailService
 ) {
 
-    fun findAll(): Iterable<SickDay> = repository
-        .findAll()
+    fun findAll(pageable: Pageable) = repository
+        .findAll(pageable)
 
     fun findByCode(code: String): SickDay? = repository
         .findByCode(code)

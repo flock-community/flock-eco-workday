@@ -3,11 +3,9 @@ package community.flock.eco.workday.controllers
 import community.flock.eco.core.utils.toResponse
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserService
-import community.flock.eco.workday.authorities.AssignmentAuthority
 import community.flock.eco.workday.authorities.EventAuthority
 import community.flock.eco.workday.forms.EventForm
 import community.flock.eco.workday.forms.EventRatingForm
-import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.model.EventRating
 import community.flock.eco.workday.services.EventRatingService

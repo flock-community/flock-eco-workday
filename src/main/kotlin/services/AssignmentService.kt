@@ -3,7 +3,6 @@ package community.flock.eco.workday.services
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.AssignmentForm
 import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Project
 import community.flock.eco.workday.repository.AssignmentRepository
 import community.flock.eco.workday.repository.ClientRepository
 import community.flock.eco.workday.repository.PersonRepository
@@ -12,7 +11,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
@@ -51,7 +50,8 @@ class AssignmentService(
     }
 
     fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<Assignment> {
-        val query = "SELECT a FROM Assignment a WHERE a.from <= :to AND (a.to is null OR a.to >= :from) AND a.person.uuid = :personCode"
+        val query =
+            "SELECT a FROM Assignment a WHERE a.from <= :to AND (a.to is null OR a.to >= :from) AND a.person.uuid = :personCode"
         return entityManager
             .createQuery(query, Assignment::class.java)
             .setParameter("from", from)
@@ -60,13 +60,8 @@ class AssignmentService(
             .resultList
     }
 
-    fun findByProject(project: Project): List<Assignment> {
-        val query = "SELECT a FROM Assignment a WHERE a.project = :project"
-        return entityManager
-            .createQuery(query, Assignment::class.java)
-            .setParameter("project", project)
-            .resultList
-    }
+    fun findByProjectCode(projectCode: String, page: Pageable): Page<Assignment> =
+        assignmentRepository.findByProjectCode(projectCode, page)
 
     @Transactional
     fun create(form: AssignmentForm): Assignment? = form

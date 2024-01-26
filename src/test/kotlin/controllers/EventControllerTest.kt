@@ -6,29 +6,28 @@ import community.flock.eco.feature.user.services.UserSecurityService
 import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.forms.EventForm
-import community.flock.eco.workday.services.EventRatingService
-import community.flock.eco.workday.services.EventService
-import org.junit.jupiter.api.Test
-
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.repository.EventRepository
+import community.flock.eco.workday.services.EventRatingService
+import community.flock.eco.workday.services.EventService
 import config.AppTestConfig
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
+import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 import java.util.*
@@ -103,10 +102,14 @@ class EventControllerTest() {
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(content().json("""
+            .andExpect(
+                content().json(
+                    """
                 [{"description":"Henk","id":${event.id},"code":"${event.code}","from":"2023-02-02","to":"2023-02-03",
                   "hours":16.0,"costs":200.0,"days":[8.0,8.0],"persons":[]}]
-            """.trimIndent()))
+                    """.trimIndent()
+                )
+            )
     }
 
     @Test

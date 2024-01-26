@@ -16,4 +16,5 @@ interface AssignmentRepository : PagingAndSortingRepository<Assignment, Long> {
     fun findAllByPersonUserCode(userCode: String, page: Pageable): Page<Assignment>
     fun deleteByCode(code: String)
     fun findAllByToAfterOrToNull(to: LocalDate, page: Pageable): Page<Assignment>
+    fun findByProjectCode(projectCode: String, page: Pageable): Page<Assignment>
 }
