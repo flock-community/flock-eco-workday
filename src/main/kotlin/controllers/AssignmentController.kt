@@ -41,36 +41,30 @@ class AssignmentController(
     private val workDayService: WorkDayService
 ) {
 
-    @GetMapping(params = ["personId"])
+    @GetMapping
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
     fun findAll(
-        @RequestParam(required = false) personId: UUID?,
+        @RequestParam personId: UUID?,
+        @RequestParam projectCode: String?,
         page: Pageable,
         principal: Principal
-    ): ResponseEntity<List<Assignment>> =
+    ): ResponseEntity<List<AssignmentWithHours>> =
         principal.findUser()
             ?.let { user ->
                 when {
-                    user.isAdmin() && personId != null -> assignmentService.findAllByPersonUuid(personId, page)
-                    else -> assignmentService.findAllByPersonUserCode(user.code, page)
+                    user.isAdmin() && personId != null -> assignmentService.findAllByPersonUuid(personId, page).map { it.toDto() }
+                    user.isAdmin() && projectCode != null -> assignmentService.findByProjectCode(projectCode, page).map { it.toDto() }
+                    else -> assignmentService.findAllByPersonUserCode(user.code, page).map { it.toDto() }
                 }.let {
-                    it.map { assignment -> if (user.isAdmin()) assignment else assignment.copy(hourlyRate = 0.0) }
+                    it.map { assignment ->
+                        if (user.isAdmin())
+                            assignment
+                        else
+                            assignment.copy(hourlyRate = 0.0)
+                    }
                 }
             }
             .toResponse()
-
-    @GetMapping(params = ["projectCode"])
-    @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
-    fun findAll(@RequestParam projectCode: String, principal: Principal): List<AssignmentWithHours> =
-        principal.findUser()
-            ?.takeIf { it.isAdmin() }
-            // TODO: Maybe return 403 here if not admin?
-            ?.let { projectService.findByCode(projectCode) }
-            ?.let {
-                assignmentService.findByProject(it)
-                    .map { assignment -> assignment.toDto() }
-            }
-            ?: emptyList()
 
     @GetMapping(params = ["to"])
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
@@ -140,7 +134,7 @@ class AssignmentController(
         .authorities
         .contains(AssignmentAuthority.WRITE.toName())
 
-    class AssignmentWithHours(
+    data class AssignmentWithHours(
         val id: Long = 0,
         val code: String,
 

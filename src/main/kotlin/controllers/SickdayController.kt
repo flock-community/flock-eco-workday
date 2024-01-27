@@ -31,21 +31,15 @@ class SickdayController(
     private val service: SickDayService,
     private val personService: PersonService
 ) {
-
-    @GetMapping()
-    @PreAuthorize("hasAuthority('SickdayAuthority.ADMIN')")
-    fun getAll(): ResponseEntity<Iterable<SickDay>> = service
-        .findAll()
-        .toResponse()
-
-    @GetMapping(params = ["personId"])
+    @GetMapping
     @PreAuthorize("hasAuthority('SickdayAuthority.READ')")
     fun getAllByPersonId(
-        @RequestParam personId: UUID,
+        @RequestParam personId: UUID?,
         authentication: Authentication,
         pageable: Pageable
     ): ResponseEntity<List<SickDay>> = when {
-        authentication.isAdmin() -> service.findAllByPersonUuid(personId, pageable)
+        authentication.isAdmin() && personId == null -> service.findAll(pageable)
+        authentication.isAdmin() && personId != null -> service.findAllByPersonUuid(personId, pageable)
         else -> service.findAllByPersonUserCode(authentication.name, pageable)
     }.toResponse()
 

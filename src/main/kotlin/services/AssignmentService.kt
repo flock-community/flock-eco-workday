@@ -3,7 +3,6 @@ package community.flock.eco.workday.services
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.AssignmentForm
 import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Project
 import community.flock.eco.workday.repository.AssignmentRepository
 import community.flock.eco.workday.repository.ClientRepository
 import community.flock.eco.workday.repository.PersonRepository
@@ -13,7 +12,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.util.UUID
-import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
 @Service
@@ -22,7 +20,6 @@ class AssignmentService(
     private val personRepository: PersonRepository,
     private val assignmentRepository: AssignmentRepository,
     private val projectRepository: ProjectRepository,
-    private val entityManager: EntityManager
 ) {
 
     fun findAll(page: Pageable): Page<Assignment> = assignmentRepository
@@ -41,32 +38,14 @@ class AssignmentService(
     fun findAllByToAfterOrToNull(to: LocalDate, page: Pageable): Page<Assignment> =
         assignmentRepository.findAllByToAfterOrToNull(to, page)
 
-    fun findAllActive(from: LocalDate, to: LocalDate): MutableList<Assignment> {
-        val query = "SELECT a FROM Assignment a WHERE a.from <= :to AND (a.to is null OR a.to >= :from)"
-        return entityManager
-            .createQuery(query, Assignment::class.java)
-            .setParameter("from", from)
-            .setParameter("to", to)
-            .resultList
-    }
+    fun findAllActive(from: LocalDate, to: LocalDate): List<Assignment> =
+        assignmentRepository.findAllActive(from, to)
 
-    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<Assignment> {
-        val query = "SELECT a FROM Assignment a WHERE a.from <= :to AND (a.to is null OR a.to >= :from) AND a.person.uuid = :personCode"
-        return entityManager
-            .createQuery(query, Assignment::class.java)
-            .setParameter("from", from)
-            .setParameter("to", to)
-            .setParameter("personCode", personCode)
-            .resultList
-    }
+    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): List<Assignment> =
+        assignmentRepository.findAllActiveByPerson(from, to, personCode)
 
-    fun findByProject(project: Project): List<Assignment> {
-        val query = "SELECT a FROM Assignment a WHERE a.project = :project"
-        return entityManager
-            .createQuery(query, Assignment::class.java)
-            .setParameter("project", project)
-            .resultList
-    }
+    fun findByProjectCode(projectCode: String, page: Pageable): Page<Assignment> =
+        assignmentRepository.findByProjectCode(projectCode, page)
 
     @Transactional
     fun create(form: AssignmentForm): Assignment? = form
@@ -101,5 +80,3 @@ class AssignmentService(
 
     private fun Assignment.save() = assignmentRepository.save(this)
 }
-
-fun Assignment.isActive(from: LocalDate, to: LocalDate) = this.from <= to && this.to?.let { it >= from } ?: true
