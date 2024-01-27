@@ -1,7 +1,7 @@
 import React from "react";
 import {render, screen, cleanup} from "@testing-library/react";
 import '@testing-library/jest-dom';
-import {FlockEventListItem} from "./FlockEventListItem";
+import {EventListItem} from "./EventListItem";
 import {
   createTestMultiDayFlockEvent,
   createTestOneDayFlockEvent
@@ -18,7 +18,7 @@ describe('FlockEventListItem', () => {
 
   describe('Single day event', () => {
     beforeEach(() => {
-      render(<FlockEventListItem event={createTestOneDayFlockEvent(dayjs())}/>);
+      render(<EventListItem event={createTestOneDayFlockEvent(dayjs())}/>);
       flockEventListItemElement = screen.queryByTestId('flock-event-list-item');
     });
 
@@ -33,7 +33,7 @@ describe('FlockEventListItem', () => {
 
   describe('Multi day event', () => {
     beforeEach(() => {
-      render(<FlockEventListItem event={createTestMultiDayFlockEvent(dayjs(), dayjs().add(2, 'days'))}/>);
+      render(<EventListItem event={createTestMultiDayFlockEvent(dayjs(), dayjs().add(2, 'days'))}/>);
       flockEventListItemElement = screen.queryByTestId('flock-event-list-item');
     });
 

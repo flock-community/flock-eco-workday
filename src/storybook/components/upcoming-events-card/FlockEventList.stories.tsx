@@ -1,16 +1,16 @@
 import {Meta, StoryObj} from "@storybook/react";
-import {FlockEventList} from "../../../main/react/components/upcoming-events/FlockEventList";
+import {EventList} from "../../../main/react/components/upcoming-events/EventList";
 import dayjs from "dayjs";
 
-const meta: Meta<typeof FlockEventList> = {
-  component: FlockEventList,
+const meta: Meta<typeof EventList> = {
+  component: EventList,
   args: {
     events: []
   }
 }
 
 export default meta;
-type Story = StoryObj<typeof FlockEventList>;
+type Story = StoryObj<typeof EventList>;
 
 export const noData: Story = {}
 
