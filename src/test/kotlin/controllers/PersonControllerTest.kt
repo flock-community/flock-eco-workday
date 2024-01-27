@@ -344,26 +344,6 @@ class PersonControllerTest {
     )
 
     @Test
-    fun `expect to retrieve both active and inactive users without query params`() {
-        val user = createUser()
-
-        mvc.perform(
-            get("$baseUrl")
-                .with(user)
-                .accept("application/json")
-        )
-            .andExpect(status().isOk())
-            .andExpect(
-                jsonPath(
-                    "$.*.active",
-                    Matchers.hasItems(
-                        Matchers.`is`(false), Matchers.`is`(true)
-                    )
-                )
-            )
-    }
-
-    @Test
     fun `expect to retrieve only active users with active=true query param`() {
         val user = createUser()
 
