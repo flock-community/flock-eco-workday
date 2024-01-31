@@ -8,6 +8,7 @@ import community.flock.eco.workday.forms.*
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Client
+import community.flock.eco.workday.model.EventType
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.*
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -185,7 +186,8 @@ class CreateHelper(
         hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
         days = days ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 },
         personIds = persons,
-        costs = 538.38
+        costs = 538.38,
+        type = EventType.GENERAL_EVENT
     ).run {
         eventService.create(this)
     }

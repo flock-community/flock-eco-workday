@@ -5,10 +5,7 @@ import community.flock.eco.core.model.AbstractCodeEntity
 import community.flock.eco.workday.interfaces.Dayly
 import java.time.LocalDate
 import java.util.UUID
-import javax.persistence.ElementCollection
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.ManyToMany
+import javax.persistence.*
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
@@ -25,6 +22,9 @@ data class Event(
     override val hours: Double,
 
     val costs: Double,
+
+    @Enumerated(EnumType.STRING)
+    val type: EventType,
 
     @ElementCollection
     override val days: List<Double>? = null,

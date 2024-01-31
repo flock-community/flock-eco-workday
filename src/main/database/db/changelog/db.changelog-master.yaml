@@ -70,3 +70,6 @@ databaseChangeLog:
   - include:
       - file: db.changelog-023-event-add-costs.yaml
         relativeToChangelogFile: true
+  - include:
+      - file: db.changelog-024-event-add-type.yaml
+        relativeToChangelogFile: true

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Card, Typography } from "@material-ui/core";
+import {Box, Card, Chip, Typography} from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import { EventClient, FlockEvent } from "../../clients/EventClient";
 import { isDefined } from "../../utils/validation";
+import {EventTypeMapping} from "../../utils/mappings";
 
 type EventListProps = {
   refresh: boolean;
@@ -28,7 +29,10 @@ export function EventList({ refresh, onClickRow }: EventListProps) {
       <Grid key={`workday-list-item-${item.id}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
           <CardContent>
-            <Typography variant="h6">{item.description}</Typography>
+            <Box style={{display: 'flex', alignItems: 'center', gap: '.5rem'}}>
+              <Typography variant="h6">{item.description}</Typography>
+              <Chip label={EventTypeMapping[item.type]} size={'small'} color={"primary"} variant="outlined"/>
+            </Box>
             <Typography>
               Period: {item.from.format("DD-MM-YYYY")} -{" "}
               {item.to ? item.to.format("DD-MM-YYYY") : <em>now</em>}

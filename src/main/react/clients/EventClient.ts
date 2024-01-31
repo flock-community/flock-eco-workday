@@ -21,6 +21,7 @@ export type FlockEvent = {
   days: number[];
   persons: Person[];
   costs: number;
+  type: EventType;
 };
 
 type FlockEventRaw = {
@@ -33,6 +34,7 @@ type FlockEventRaw = {
   days: number[];
   persons: Person[];
   costs: number;
+  type: EventType;
 };
 
 export type FlockEventRequest = {
@@ -45,7 +47,15 @@ export type FlockEventRequest = {
   days: number[];
   personIds: string[];
   costs: number;
+  type: EventType;
 };
+
+export enum EventType {
+  CONFERENCE = 'CONFERENCE',
+  FLOCK_COMMUNITY_DAY = 'FLOCK_COMMUNITY_DAY',
+  FLOCK_HACK_DAY = 'FLOCK_HACK_DAY',
+  GENERAL_EVENT = 'GENERAL_EVENT'
+}
 
 const internalize = (it) => ({
   ...it,

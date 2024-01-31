@@ -3,6 +3,7 @@ package community.flock.eco.workday.repository
 import community.flock.eco.workday.ApplicationConfiguration
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.model.Event
+import community.flock.eco.workday.model.EventType
 import config.AppTestConfig
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -42,7 +43,8 @@ class EventRepositoryTest(
             hours = 40.0,
             days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
             persons = listOf(person1, person2),
-            costs = 538.38
+            costs = 538.38,
+            type = EventType.GENERAL_EVENT
         )
 
         val created = eventRepository.save(event)
