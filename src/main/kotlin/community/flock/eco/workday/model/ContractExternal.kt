@@ -34,6 +34,4 @@ data class ContractExternal(
     ): BigDecimal {
         return totalDaysInPeriod(from, to, hoursPerWeek)
     }
-
-    override fun equals(obj: Any?) = super.equals(obj)
 }

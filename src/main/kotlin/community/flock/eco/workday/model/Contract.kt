@@ -35,14 +35,6 @@ abstract class Contract(
         to: LocalDate,
     ): BigDecimal
 
-    fun totalHoursPerWeek() =
-        when (this) {
-            is ContractInternal -> this.hoursPerWeek
-            is ContractExternal -> this.hoursPerWeek
-            is ContractManagement -> 40
-            else -> error("Unknown contract type")
-        }
-
     abstract fun totalDaysInPeriod(
         from: LocalDate,
         to: LocalDate,

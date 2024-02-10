@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.feature.user.forms.UserAccountPasswordForm
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserSecurityService
-import community.flock.eco.feature.user.services.UserService
 import community.flock.eco.workday.Application
 import community.flock.eco.workday.config.AppTestConfig
 import community.flock.eco.workday.forms.PersonForm
@@ -55,9 +54,6 @@ class PersonControllerTest {
 
     @Autowired
     private lateinit var userAccountService: UserAccountService
-
-    @Autowired
-    private lateinit var userService: UserService
 
     @Autowired
     private lateinit var personService: PersonService
@@ -321,14 +317,6 @@ class PersonControllerTest {
             .andExpect(status().isNotFound)
         // DRY-Bock
     }
-
-    // *-- utility functions --*
-    private fun findUser(email: String) =
-        user(
-            userAccountService
-                .findUserAccountPasswordByUserEmail(email)
-                ?.let { UserSecurityService.UserSecurityPassword(it) },
-        )
 
     @Test
     fun `should return an error while trying to update a non-existing person via PUT-method`() {

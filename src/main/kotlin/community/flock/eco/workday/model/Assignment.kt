@@ -28,6 +28,4 @@ data class Assignment(
     @ManyToOne
     @JsonIgnoreProperties("assignments")
     val project: Project? = null,
-) : Hourly, Period, AbstractCodeEntity(id, code) {
-    override fun equals(obj: Any?) = super.equals(obj)
-}
+) : Hourly, Period, AbstractCodeEntity(id, code)

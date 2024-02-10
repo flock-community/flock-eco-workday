@@ -39,8 +39,6 @@ data class ContractInternal(
         return totalDaysInPeriod(from, to, hoursPerWeek)
     }
 
-    override fun equals(obj: Any?) = super.equals(obj)
-
     fun totalCostInPeriod(yearMonth: YearMonth): BigDecimal =
         this
             .toDateRangeInPeriod(yearMonth)

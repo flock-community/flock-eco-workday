@@ -34,8 +34,6 @@ class InvoiceService(
 ) {
     fun findAll(pageable: Pageable): Page<Invoice> = invoiceRepository.findAll(pageable)
 
-    fun findById(id: UUID): Invoice? = invoiceRepository.findById(id).toNullable()
-
     fun uploadExactonline(
         httpSession: HttpSession,
         id: UUID,

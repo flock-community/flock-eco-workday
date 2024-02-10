@@ -185,13 +185,6 @@ class EventController(
     private fun EventRating.isAuthenticated(authentication: Authentication?) =
         authentication?.isAdmin() == true || this.person.isUser(authentication?.name)
 
-    private fun EventRating.applyAuthentication(authentication: Authentication?) =
-        apply {
-            if (!this.isAuthenticated(authentication)) {
-                throw ResponseStatusException(UNAUTHORIZED, "User has not access to event rating")
-            }
-        }
-
     private fun Principal.findUser(): User? =
         userService
             .findByCode(this.name)

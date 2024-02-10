@@ -8,13 +8,11 @@ import community.flock.eco.workday.forms.AssignmentForm
 import community.flock.eco.workday.forms.ClientForm
 import community.flock.eco.workday.forms.ContractExternalForm
 import community.flock.eco.workday.forms.ContractInternalForm
-import community.flock.eco.workday.forms.ContractManagementForm
 import community.flock.eco.workday.forms.EventForm
 import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.forms.PersonForm
 import community.flock.eco.workday.forms.SickDayForm
 import community.flock.eco.workday.forms.WorkDayForm
-import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Client
 import community.flock.eco.workday.model.EventType
@@ -89,12 +87,6 @@ class CreateHelper(
     fun createAssignment(
         client: Client,
         person: Person,
-        period: Period,
-    ) = createAssignment(client, person, period.from, period.to)
-
-    fun createAssignment(
-        client: Client,
-        person: Person,
         from: LocalDate,
         to: LocalDate?,
         hoursPerWeek: Int? = null,
@@ -126,20 +118,6 @@ class CreateHelper(
         to = to,
         billable = billable,
         holidayHours = holidayHours,
-    ).run {
-        contractService.create(this)
-    } ?: error("Cannot create internal contract")
-
-    fun createContractManagement(
-        person: Person,
-        from: LocalDate,
-        to: LocalDate?,
-        monthlyFee: Double = 10000.0,
-    ) = ContractManagementForm(
-        personId = person.uuid,
-        from = from,
-        to = to,
-        monthlyFee = monthlyFee,
     ).run {
         contractService.create(this)
     } ?: error("Cannot create internal contract")
@@ -183,7 +161,7 @@ class CreateHelper(
         from = from,
         to = to,
         assignmentCode = assignment.code,
-        hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
+        hours = hours ?: ((ChronoUnit.DAYS.between(from, to) + 1) * 8.0),
         days = days ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 },
         sheets = listOf(),
     ).run {
@@ -200,7 +178,7 @@ class CreateHelper(
         from = from,
         to = to,
         assignmentCode = assignment.code,
-        hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
+        hours = hours ?: ((ChronoUnit.DAYS.between(from, to) + 1) * 8.0),
         days = days,
         sheets = listOf(),
     ).run {
@@ -232,7 +210,7 @@ class CreateHelper(
         description = "Very description",
         from = from,
         to = to,
-        hours = hours ?: (ChronoUnit.DAYS.between(from, to) + 1) * 8.0,
+        hours = hours ?: ((ChronoUnit.DAYS.between(from, to) + 1) * 8.0),
         days = days ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 },
         personIds = persons,
         costs = 538.38,
