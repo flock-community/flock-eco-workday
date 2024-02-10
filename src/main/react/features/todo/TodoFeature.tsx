@@ -6,7 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 
 // Types
 import { StatusProps } from "../../types";
-import { Todo } from "../../wirespec/Models";
+import { Todo } from "../../wirespec/Openapispec";
 
 export function TodoFeature() {
   const [refresh, setRefresh] = useState(false);

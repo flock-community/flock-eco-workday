@@ -9,7 +9,7 @@ import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/co
 import { makeStyles } from "@material-ui/core/styles";
 import AssignmentReportTableRow from "./AssignmentReportTableRow";
 import { Dayjs } from "dayjs";
-import { AggregationClientPersonAssignmentOverview } from "../../../wirespec/Models";
+import { AggregationClientPersonAssignmentOverview } from "../../../wirespec/Openapispec";
 
 const useStyles = makeStyles({
   tableContainer: {

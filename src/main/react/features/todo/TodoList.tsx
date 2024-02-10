@@ -18,7 +18,7 @@ import { getPaginatedTabs } from "../../utils/paginationHelpers";
 
 // Types
 import { GroupedTodos, StatusProps, TypeProp } from "../../types";
-import { Todo } from "../../wirespec/Models";
+import { Todo } from "../../wirespec/Openapispec";
 
 // @todo make this a global PAGE_SIZE constants
 const TODO_PAGE_SIZE = 5;
@@ -66,7 +66,7 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
       const groupedTodos = groupByType(res);
       setList(groupedTodos);
 
-      setPageCount(
+      setItemCount(
         Math.ceil(groupedTodos[selectedTab].todos.length / TODO_PAGE_SIZE)
       );
     });

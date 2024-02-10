@@ -7,7 +7,7 @@ import { ISO_8601_DATE } from "./util/DateFormats";
 import {
   AggregationClientPersonAssignmentOverview,
   AggregationClientPersonOverview,
-} from "../wirespec/Models";
+} from "../wirespec/Openapispec";
 
 const path = "/api/aggregations";
 

@@ -10,10 +10,10 @@ import {
 import {
   CostExpenseInput,
   Expense as ExpenseApi,
-  Status as StatusApi,
+  ExpenseStatus as StatusApi,
   TravelExpenseInput,
   UUID,
-} from "../wirespec/Models";
+} from "../wirespec/Openapispec";
 import { Status } from "../models/Status";
 
 const externalizeStatus = (status: Status): StatusApi => {

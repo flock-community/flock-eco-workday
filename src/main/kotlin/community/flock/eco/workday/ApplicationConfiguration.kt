@@ -27,5 +27,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     ApplicationConstants::class,
     PropertyConfig::class,
     MailjetClientConfig::class,
+    JacksonConfiguration::class,
 )
 class ApplicationConfiguration

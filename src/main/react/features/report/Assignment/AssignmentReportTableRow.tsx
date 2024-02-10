@@ -7,7 +7,7 @@ import {
 } from "@material-ui/icons";
 import NonProductiveHours from "./NonProductiveHours";
 import React, { useState } from "react";
-import { AggregationClientPersonAssignmentItem } from "../../../wirespec/Models";
+import { AggregationClientPersonAssignmentItem } from "../../../wirespec/Openapispec";
 import { makeStyles } from "@material-ui/core/styles";
 import { Dayjs } from "dayjs";
 

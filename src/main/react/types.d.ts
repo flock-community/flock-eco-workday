@@ -1,4 +1,4 @@
-import { Todo } from "./wirespec/Models";
+import { Todo } from "./wirespec/Openapispec";
 
 export type StatusProps = "REQUESTED" | "APPROVED" | "REJECTED";
 export type TypeProp =

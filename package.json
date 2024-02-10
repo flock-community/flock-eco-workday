@@ -15,7 +15,7 @@
     "storybook": "sb dev",
     "test": "jest",
     "test:tdd": "nodemon -w ./src -e js --exec npm test",
-    "generate": "wirespec compile --input-dir ./src/main/wirespec --package wirespec --output-dir ./src/main/react --language TypeScript",
+    "generate": "wirespec convert OpenApiV3 -f ./src/main/openapi/openapispec.json  --output-dir ./src/main/react --package wirespec --language TypeScript",
     "prepare": "husky install && npm run generate"
   },
   "author": "",

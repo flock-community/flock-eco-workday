@@ -3,7 +3,7 @@ import { SickDayClient } from "../../clients/SickDayClient";
 import { LeaveDayClient } from "../../clients/LeaveDayClient";
 import { ExpenseClient } from "../../clients/ExpenseClient";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import { Todo, UUID } from "../../wirespec/Models";
+import { Todo, UUID } from "../../wirespec/Openapispec";
 import { Status } from "../../models/Status";
 import { StatusProps } from "../../types";
 

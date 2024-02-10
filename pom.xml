@@ -18,6 +18,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
         <gpg.skip>true</gpg.skip>
+
+        <wirespec.version>0.8.51</wirespec.version>
     </properties>
 
     <dependencies>
@@ -98,7 +100,11 @@
             <artifactId>biweekly</artifactId>
             <version>0.6.7</version>
         </dependency>
-
+        <dependency>
+            <groupId>community.flock.wirespec.integration</groupId>
+            <artifactId>jackson-jvm</artifactId>
+            <version>${wirespec.version}</version>
+        </dependency>
         <!-- Testing -->
         <dependency>
             <groupId>com.ninja-squad</groupId>
@@ -185,7 +191,7 @@
             <plugin>
                 <groupId>community.flock.wirespec.plugin.maven</groupId>
                 <artifactId>wirespec-maven-plugin</artifactId>
-                <version>0.8.51</version>
+                <version>${wirespec.version}</version>
                 <executions>
                     <execution>
                         <id>kotlin</id>

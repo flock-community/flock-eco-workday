@@ -1,5 +1,5 @@
 import type { GroupedTodos } from "../types";
-import { Todo } from "../wirespec/Models";
+import { Todo } from "../wirespec/Openapispec";
 
 /**
  * Groups an array of input items by their type.

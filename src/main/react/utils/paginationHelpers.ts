@@ -1,5 +1,5 @@
 import { GroupedTodos } from "../types";
-import { Todo } from "../wirespec/Models";
+import { Todo } from "../wirespec/Openapispec";
 
 export const getItemsPerPage: (
   data: GroupedTodos,
