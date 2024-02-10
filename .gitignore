@@ -44,3 +44,5 @@ secrets.yml
 node_modules
 coverage
 .env
+
+.husky
