@@ -14,9 +14,9 @@ import java.time.LocalDate
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadContractData(
-    private val loadData: LoadData,
     private val contractRepository: ContractRepository,
     private val loadPersonData: LoadPersonData,
+    loadData: LoadData,
 ) {
     final val now: LocalDate = LocalDate.now().withDayOfMonth(1)
     val data: MutableSet<Contract> = mutableSetOf()

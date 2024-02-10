@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadClientData(
-    private val loadData: LoadData,
     private val clientRepository: ClientRepository,
+    loadData: LoadData,
 ) {
     val data: MutableSet<Client> = mutableSetOf()
 

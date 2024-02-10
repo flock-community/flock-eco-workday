@@ -9,17 +9,16 @@ import community.flock.eco.workday.authorities.ExpenseAuthority
 import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.authorities.WorkDayAuthority
-import mocks.Role
-import mocks.users
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
+import community.flock.eco.workday.mocks.User as MockUser
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadUserData(
-    private val loadData: LoadData,
     private val userAccountService: UserAccountService,
-    private val userAuthorityService: UserAuthorityService,
+    loadData: LoadData,
+    userAuthorityService: UserAuthorityService,
 ) {
     val data: MutableSet<User> = mutableSetOf()
 
@@ -45,7 +44,7 @@ class LoadUserData(
         }
     }
 
-    private final fun create(user: mocks.User) =
+    private final fun create(user: MockUser) =
         UserAccountPasswordForm(
             name = user.firstName,
             email = "${user.firstName.lowercase()}@sesam.straat",
@@ -54,7 +53,7 @@ class LoadUserData(
         )
             .save()
 
-    val mocks.User.authorities: List<Authority>
+    val MockUser.authorities: List<Authority>
         get() {
             return when (role) {
                 Role.ADMIN -> allAuthorities
