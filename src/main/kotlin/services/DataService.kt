@@ -17,7 +17,7 @@ data class Data(
     val workDay: Iterable<WorkDay>,
     val eventDay: Iterable<Event>,
     val assignment: Iterable<Assignment>,
-    val contract: Iterable<Contract>
+    val contract: Iterable<Contract>,
 )
 
 @Service
@@ -27,28 +27,35 @@ class DataService(
     private val leaveDayService: LeaveDayService,
     private val sickDayService: SickDayService,
     private val workDayService: WorkDayService,
-    private val eventService: EventService
+    private val eventService: EventService,
 ) {
-
-    fun findAllData(from: LocalDate, to: LocalDate) = Data(
+    fun findAllData(
+        from: LocalDate,
+        to: LocalDate,
+    ) = Data(
         sickDayService.findAllActive(from, to),
         leaveDayService.findAllActive(from, to),
         workDayService.findAllActive(from, to),
         eventService.findAllActive(from, to),
         assignmentService.findAllActive(from, to),
-        contractService.findAllActive(from, to)
+        contractService.findAllActive(from, to),
     )
 
-    fun findAllData(personId: UUID) = Data(
-        sickDayService.findAllByPersonUuid(personId),
-        leaveDayService.findAllByPersonUuid(personId),
-        workDayService.findAllByPersonUuid(personId),
-        eventService.findAllByPersonUuid(personId),
-        assignmentService.findAllByPersonUuid(personId),
-        contractService.findAllByPersonUuid(personId)
-    )
+    fun findAllData(personId: UUID) =
+        Data(
+            sickDayService.findAllByPersonUuid(personId),
+            leaveDayService.findAllByPersonUuid(personId),
+            workDayService.findAllByPersonUuid(personId),
+            eventService.findAllByPersonUuid(personId),
+            assignmentService.findAllByPersonUuid(personId),
+            contractService.findAllByPersonUuid(personId),
+        )
 
-    fun findAllData(from: LocalDate, to: LocalDate, personId: UUID) = Data(
+    fun findAllData(
+        from: LocalDate,
+        to: LocalDate,
+        personId: UUID,
+    ) = Data(
         sickDayService.findAllActiveByPerson(from, to, personId),
         leaveDayService.findAllActiveByPerson(from, to, personId),
         workDayService.findAllActiveByPerson(from, to, personId),
@@ -58,11 +65,12 @@ class DataService(
     )
 }
 
-fun Data.filterInRange(date: LocalDate): Data = Data(
-    sickDay.filterInRange(date),
-    leaveDay.filterInRange(date),
-    workDay.filterInRange(date),
-    eventDay.filterInRange(date),
-    assignment.filterInRange(date),
-    contract.filterInRange(date)
-)
+fun Data.filterInRange(date: LocalDate): Data =
+    Data(
+        sickDay.filterInRange(date),
+        leaveDay.filterInRange(date),
+        workDay.filterInRange(date),
+        eventDay.filterInRange(date),
+        assignment.filterInRange(date),
+        contract.filterInRange(date),
+    )

@@ -17,7 +17,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
@@ -40,7 +39,6 @@ import kotlin.test.assertNull
 @Import(CreateHelper::class)
 @ActiveProfiles(profiles = ["test"])
 class SickDayControllerTest {
-
     private val baseUrl: String = "/api/sickdays"
 
     @Autowired
@@ -65,7 +63,7 @@ class SickDayControllerTest {
         mvc.perform(
             get(baseUrl)
                 .with(user(CreateHelper.UserSecurity(admin)))
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -80,7 +78,7 @@ class SickDayControllerTest {
         mvc.perform(
             get("$baseUrl?code=${person.uuid}")
                 .with(user(CreateHelper.UserSecurity(admin)))
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -88,7 +86,6 @@ class SickDayControllerTest {
 
     @Test
     fun `should get a sickday via GET-method`() {
-
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
@@ -98,22 +95,23 @@ class SickDayControllerTest {
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = SickDayForm(
-            from = from,
-            to = to,
-            days = days,
-            hours = hours,
-            personId = person.uuid,
-            description = description,
-            status = status
-        )
+        val createForm =
+            SickDayForm(
+                from = from,
+                to = to,
+                days = days,
+                hours = hours,
+                personId = person.uuid,
+                description = description,
+                status = status,
+            )
 
         val created = sickDayService.create(createForm)
 
         mvc.perform(
             get("$baseUrl/${created.code}")
                 .with(user(CreateHelper.UserSecurity(user)))
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -128,7 +126,6 @@ class SickDayControllerTest {
 
     @Test
     fun `should create a valid sickday via POST-method with status REQUESTED`() {
-
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
@@ -138,22 +135,23 @@ class SickDayControllerTest {
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = SickDayForm(
-            from = from,
-            to = to,
-            days = days,
-            hours = hours,
-            personId = person.uuid,
-            description = description,
-            status = status
-        )
+        val createForm =
+            SickDayForm(
+                from = from,
+                to = to,
+                days = days,
+                hours = hours,
+                personId = person.uuid,
+                description = description,
+                status = status,
+            )
 
         mvc.perform(
-            post("$baseUrl")
-                .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
+            post(baseUrl)
+                .with(user(CreateHelper.UserSecurity(user)))
                 .content(mapper.writeValueAsString(createForm))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -168,7 +166,6 @@ class SickDayControllerTest {
 
     @Test
     fun `should update a existing sickday via PUT-Method`() {
-
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
@@ -179,15 +176,16 @@ class SickDayControllerTest {
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = SickDayForm(
-            from = from,
-            to = to,
-            days = days,
-            hours = hours,
-            personId = person.uuid,
-            description = description,
-            status = status
-        )
+        val createForm =
+            SickDayForm(
+                from = from,
+                to = to,
+                days = days,
+                hours = hours,
+                personId = person.uuid,
+                description = description,
+                status = status,
+            )
 
         val created = sickDayService.create(createForm)
 
@@ -195,10 +193,10 @@ class SickDayControllerTest {
 
         mvc.perform(
             put("$baseUrl/${created.code}")
-                .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
+                .with(user(CreateHelper.UserSecurity(user)))
                 .content(mapper.writeValueAsString(updatedCreateForm))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -213,7 +211,6 @@ class SickDayControllerTest {
 
     @Test
     fun `should not be allowed to update status field existing sickday via PUT-Method`() {
-
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
@@ -224,15 +221,16 @@ class SickDayControllerTest {
         val updatedStatus = Status.APPROVED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = SickDayForm(
-            from = from,
-            to = to,
-            days = days,
-            hours = hours,
-            personId = person.uuid,
-            description = description,
-            status = status
-        )
+        val createForm =
+            SickDayForm(
+                from = from,
+                to = to,
+                days = days,
+                hours = hours,
+                personId = person.uuid,
+                description = description,
+                status = status,
+            )
 
         val created = sickDayService.create(createForm)
 
@@ -240,10 +238,10 @@ class SickDayControllerTest {
 
         mvc.perform(
             put("$baseUrl/${created.code}")
-                .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
+                .with(user(CreateHelper.UserSecurity(user)))
                 .content(mapper.writeValueAsString(updatedCreateForm))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isForbidden)
 
@@ -252,7 +250,6 @@ class SickDayControllerTest {
 
     @Test
     fun `admin can update status field existing sickday via PUT-Method`() {
-
         val admin = createHelper.createUser(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
@@ -263,15 +260,16 @@ class SickDayControllerTest {
         val updatedStatus = Status.APPROVED
         val person = createHelper.createPerson("john", "doe", admin.code)
 
-        val createForm = SickDayForm(
-            from = from,
-            to = to,
-            days = days,
-            hours = hours,
-            personId = person.uuid,
-            description = description,
-            status = status
-        )
+        val createForm =
+            SickDayForm(
+                from = from,
+                to = to,
+                days = days,
+                hours = hours,
+                personId = person.uuid,
+                description = description,
+                status = status,
+            )
 
         val created = sickDayService.create(createForm)
 
@@ -282,7 +280,7 @@ class SickDayControllerTest {
                 .with(user(CreateHelper.UserSecurity(admin)))
                 .content(mapper.writeValueAsString(updatedCreateForm))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -300,18 +298,18 @@ class SickDayControllerTest {
         val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
-        val updatedStatus = Status.APPROVED
         val person = createHelper.createPerson("john", "doe", admin.code)
 
-        val createForm = SickDayForm(
-            from = from,
-            to = to,
-            days = days,
-            hours = hours,
-            personId = person.uuid,
-            description = description,
-            status = status
-        )
+        val createForm =
+            SickDayForm(
+                from = from,
+                to = to,
+                days = days,
+                hours = hours,
+                personId = person.uuid,
+                description = description,
+                status = status,
+            )
 
         val created = sickDayService.create(createForm)
 
@@ -319,7 +317,7 @@ class SickDayControllerTest {
             delete("$baseUrl/${created.code}")
                 .with(user(CreateHelper.UserSecurity(admin)))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isNoContent)
 

@@ -10,7 +10,6 @@ import javax.transaction.Transactional
 
 @Service
 class ProjectService(private val projectRepository: ProjectRepository) {
-
     fun findAll(pageable: Pageable): Page<Project> = projectRepository.findAll(pageable)
 
     fun findByCode(code: String) = projectRepository.findByCode(code)
@@ -19,20 +18,22 @@ class ProjectService(private val projectRepository: ProjectRepository) {
     fun deleteByCode(code: String) = projectRepository.deleteByCode(code)
 
     @Transactional
-    fun update(code: String, form: ProjectForm): Project =
+    fun update(
+        code: String,
+        form: ProjectForm,
+    ): Project =
         projectRepository
             .findByCode(code)
             .let { form.internalize(it) }
             .save()
 
     @Transactional
-    fun create(form: ProjectForm): Project =
-        form.internalize().save()
+    fun create(form: ProjectForm): Project = form.internalize().save()
 
     fun ProjectForm.internalize(project: Project? = null) =
         Project(
             id = project?.id ?: 0,
-            name = name
+            name = name,
         )
 
     // Why does this give a warning and the same thing on the Client doesn't?

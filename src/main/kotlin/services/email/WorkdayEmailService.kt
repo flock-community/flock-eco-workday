@@ -15,7 +15,10 @@ import java.time.format.TextStyle
 class WorkdayEmailService(private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
     private val log: Logger = LoggerFactory.getLogger(WorkdayEmailService::class.java)
 
-    fun sendUpdate(old: WorkDay, new: WorkDay) {
+    fun sendUpdate(
+        old: WorkDay,
+        new: WorkDay,
+    ) {
         val recipient = new.assignment.person
 
         var subject = "Update in Workday."
@@ -33,7 +36,10 @@ class WorkdayEmailService(private val emailService: EmailService, private val ma
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
         emailService.sendEmailMessage(
             recipient.receiveEmail,
-            recipient.email, subject, templateVariables, mailjetTemplateProperties.updateTemplateId
+            recipient.email,
+            subject,
+            templateVariables,
+            mailjetTemplateProperties.updateTemplateId,
         )
     }
 
@@ -49,8 +55,9 @@ class WorkdayEmailService(private val emailService: EmailService, private val ma
             log.info("Email generated for workday notification for ${employee.email}")
 
             emailService.sendEmailNotification(
-                subject, templateVariables,
-                mailjetTemplateProperties.notificationTemplateId
+                subject,
+                templateVariables,
+                mailjetTemplateProperties.notificationTemplateId,
             )
         }
     }
@@ -60,15 +67,19 @@ class WorkdayEmailService(private val emailService: EmailService, private val ma
         val monthString = previousMonth.month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
 
         val subject = "Please submit your hours for $monthString."
-        val emailMessage = "We didn't receive your hours for $monthString.\n" +
-            "Please submit your hours in the Workday App."
+        val emailMessage =
+            "We didn't receive your hours for $monthString.\n" +
+                "Please submit your hours in the Workday App."
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
 
         log.info("Email generated for workday reminder for ${recipient.email}")
 
         emailService.sendEmailMessage(
-            recipient.receiveEmail, recipient.email, subject, templateVariables,
-            mailjetTemplateProperties.reminderTemplateId
+            recipient.receiveEmail,
+            recipient.email,
+            subject,
+            templateVariables,
+            mailjetTemplateProperties.reminderTemplateId,
         )
     }
 }

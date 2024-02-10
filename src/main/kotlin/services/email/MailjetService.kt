@@ -19,25 +19,30 @@ import java.time.format.TextStyle
 class MailjetService(
     private val notificationProperties: NotificationProperties,
     private val mailjetTemplateProperties: MailjetTemplateProperties,
-    private val client: MailjetClient
+    private val client: MailjetClient,
 ) {
     private val log: Logger = LoggerFactory.getLogger(MailjetService::class.java)
 
-    fun sendUpdate(person: Person, yearMonth: YearMonth) {
+    fun sendUpdate(
+        person: Person,
+        yearMonth: YearMonth,
+    ) {
         log.info("Send update ${person.email}")
         val month = yearMonth.month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
         val subject = "Workday hours are updated by ${person.firstname} for $month"
 
-        val variables = JSONObject()
-            .put("month", month)
-            .put("person", person.firstname)
+        val variables =
+            JSONObject()
+                .put("month", month)
+                .put("person", person.firstname)
 
-        val request = createMailjetRequest(
-            templateId = mailjetTemplateProperties.updateTemplateId,
-            subject = subject,
-            variables = variables,
-            recipientEmailAddress = notificationProperties.recipient
-        )
+        val request =
+            createMailjetRequest(
+                templateId = mailjetTemplateProperties.updateTemplateId,
+                subject = subject,
+                variables = variables,
+                recipientEmailAddress = notificationProperties.recipient,
+            )
         try {
             client.post(request)
         } catch (ex: Exception) {
@@ -45,20 +50,25 @@ class MailjetService(
         }
     }
 
-    fun sendReminder(person: Person, yearMonth: YearMonth) {
+    fun sendReminder(
+        person: Person,
+        yearMonth: YearMonth,
+    ) {
         log.info("Send reminder ${person.email}")
         val month = yearMonth.month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
         val subject = "Please submit your hours for $month"
-        val variables = JSONObject()
-            .put("month", month)
-            .put("name", person.firstname)
-        val request = createMailjetRequest(
-            templateId = mailjetTemplateProperties.reminderTemplateId,
-            subject = subject,
-            variables = variables,
-            recipientName = person.getFullName(),
-            recipientEmailAddress = person.email
-        )
+        val variables =
+            JSONObject()
+                .put("month", month)
+                .put("name", person.firstname)
+        val request =
+            createMailjetRequest(
+                templateId = mailjetTemplateProperties.reminderTemplateId,
+                subject = subject,
+                variables = variables,
+                recipientName = person.getFullName(),
+                recipientEmailAddress = person.email,
+            )
         try {
             client.post(request)
         } catch (ex: Exception) {
@@ -68,13 +78,14 @@ class MailjetService(
 
     fun sendEmailMessage(requestProperties: EmailMessageProperties) {
         log.info("Send email message to ${requestProperties.recipientEmailAddress}")
-        val request = createMailjetRequest(
-            recipientName = requestProperties.recipientFirstName,
-            recipientEmailAddress = requestProperties.recipientEmailAddress,
-            templateId = requestProperties.templateId,
-            subject = requestProperties.subject,
-            variables = requestProperties.templateVariables,
-        )
+        val request =
+            createMailjetRequest(
+                recipientName = requestProperties.recipientFirstName,
+                recipientEmailAddress = requestProperties.recipientEmailAddress,
+                templateId = requestProperties.templateId,
+                subject = requestProperties.subject,
+                variables = requestProperties.templateVariables,
+            )
         try {
             client.post(request)
         } catch (ex: Exception) {
@@ -87,7 +98,7 @@ class MailjetService(
         recipientName: String? = null,
         recipientEmailAddress: String,
         subject: String,
-        variables: JSONObject
+        variables: JSONObject,
     ): MailjetRequest? =
         MailjetRequest(Emailv31.resource)
             .property(
@@ -99,15 +110,19 @@ class MailjetService(
                         .put(Emailv31.Message.TEMPLATEID, templateId)
                         .put(Emailv31.Message.TEMPLATELANGUAGE, true)
                         .put(Emailv31.Message.SUBJECT, subject)
-                        .put(Emailv31.Message.VARIABLES, variables)
-                )
+                        .put(Emailv31.Message.VARIABLES, variables),
+                ),
             )
 
-    private fun createFrom() = JSONObject()
-        .put("Email", "info@flock.community")
-        .put("Name", "Flock.")
+    private fun createFrom() =
+        JSONObject()
+            .put("Email", "info@flock.community")
+            .put("Name", "Flock.")
 
-    private fun createTo(recipientName: String?, recipientEmailAddress: String) = JSONArray()
+    private fun createTo(
+        recipientName: String?,
+        recipientEmailAddress: String,
+    ) = JSONArray()
         .put(
             JSONObject()
                 .apply {
@@ -115,6 +130,6 @@ class MailjetService(
                         put("Name", recipientName)
                     }
                     put("Email", recipientEmailAddress)
-                }
+                },
         )
 }

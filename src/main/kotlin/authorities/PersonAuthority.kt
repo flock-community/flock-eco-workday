@@ -5,5 +5,5 @@ import community.flock.eco.core.authorities.Authority
 enum class PersonAuthority : Authority {
     ADMIN,
     READ,
-    WRITE
+    WRITE,
 }

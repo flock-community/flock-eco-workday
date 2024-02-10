@@ -33,14 +33,14 @@ import java.util.UUID
 @RequestMapping("/api/workdays")
 class WorkdayController(
     private val service: WorkDayService,
-    private val personService: PersonService
+    private val personService: PersonService,
 ) {
     @GetMapping(params = ["personId"])
     @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")
     fun getAll(
         @RequestParam personId: UUID,
         authentication: Authentication,
-        pageable: Pageable
+        pageable: Pageable,
     ): ResponseEntity<List<WorkDay>> {
         val sort = Sort.by("from").descending().and(Sort.by("id"))
         val page = PageRequest.of(pageable.pageNumber, pageable.pageSize, sort)
@@ -55,7 +55,7 @@ class WorkdayController(
     @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")
     fun findByCode(
         @PathVariable code: String,
-        authentication: Authentication
+        authentication: Authentication,
     ) = service
         .findByCode(code)
         ?.applyAuthentication(authentication)
@@ -65,7 +65,7 @@ class WorkdayController(
     @PreAuthorize("hasAuthority('WorkDayAuthority.WRITE')")
     fun post(
         @RequestBody form: WorkDayForm,
-        authentication: Authentication
+        authentication: Authentication,
     ) = service
         .create(form)
         .toResponse()
@@ -75,7 +75,7 @@ class WorkdayController(
     fun put(
         @PathVariable code: String,
         @RequestBody form: WorkDayForm,
-        authentication: Authentication
+        authentication: Authentication,
     ) = service.findByCode(code)
         ?.applyAuthentication(authentication)
         ?.applyAllowedToUpdate(form.status, authentication.isAdmin())
@@ -86,7 +86,7 @@ class WorkdayController(
     @PreAuthorize("hasAuthority('WorkDayAuthority.WRITE')")
     fun delete(
         @PathVariable code: String,
-        authentication: Authentication
+        authentication: Authentication,
     ) = service.findByCode(code)
         ?.applyAuthentication(authentication)
         ?.run { service.deleteByCode(this.code) }
@@ -97,7 +97,7 @@ class WorkdayController(
     fun getSheets(
         @PathVariable file: UUID,
         @PathVariable name: String,
-        authentication: Authentication
+        authentication: Authentication,
     ) = service.readSheet(file)
         .run {
             ResponseEntity
@@ -110,23 +110,25 @@ class WorkdayController(
     @PreAuthorize("hasAuthority('WorkDayAuthority.WRITE')")
     fun postSheets(
         @RequestParam("file") file: MultipartFile,
-        authentication: Authentication
+        authentication: Authentication,
     ) = service
         .uploadSheet(file.bytes)
         .toResponse()
 
-    private fun Authentication.isAdmin(): Boolean = this.authorities
-        .map { it.authority }
-        .contains(WorkDayAuthority.ADMIN.toName())
+    private fun Authentication.isAdmin(): Boolean =
+        this.authorities
+            .map { it.authority }
+            .contains(WorkDayAuthority.ADMIN.toName())
 
-    private fun WorkDay.applyAuthentication(authentication: Authentication) = apply {
-        if (!(authentication.isAdmin() || this.assignment.person.isUser(authentication.name))) {
-            throw ResponseStatusException(UNAUTHORIZED, "User has not access to workday: ${this.code}")
+    private fun WorkDay.applyAuthentication(authentication: Authentication) =
+        apply {
+            if (!(authentication.isAdmin() || this.assignment.person.isUser(authentication.name))) {
+                throw ResponseStatusException(UNAUTHORIZED, "User has not access to workday: ${this.code}")
+            }
         }
-    }
 
     private fun getMediaType(name: String): MediaType {
-        val extension = java.io.File(name).extension.toLowerCase()
+        val extension = java.io.File(name).extension.lowercase()
         val mime = org.springframework.boot.web.server.MimeMappings.DEFAULT.get(extension)
         return MediaType.parseMediaType(mime)
     }

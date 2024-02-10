@@ -5,20 +5,20 @@ import community.flock.eco.workday.model.EventRating
 import community.flock.eco.workday.repository.EventRatingRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
+import java.util.UUID
 
 @Service
 class EventRatingService(
     private val eventRatingRepository: EventRatingRepository,
     private val personService: PersonService,
-    private val eventService: EventService
+    private val eventService: EventService,
 ) {
-
     fun findAll(): Iterable<EventRating> = eventRatingRepository.findAll()
 
-    fun create(form: EventRatingForm) = form
-        .consume()
-        .save()
+    fun create(form: EventRatingForm) =
+        form
+            .consume()
+            .save()
 
     fun EventRatingForm.consume(): EventRating {
         val person = personService.findByUuid(personId) ?: error("Cannot find person")
@@ -26,7 +26,7 @@ class EventRatingService(
         return EventRating(
             person = person,
             event = event,
-            rating = rating
+            rating = rating,
         )
     }
 
@@ -35,5 +35,8 @@ class EventRatingService(
     fun findByEventCode(eventCode: String) = eventRatingRepository.findByEventCode(eventCode)
 
     @Transactional
-    fun deleteByEventCodeAndPersonUuid(eventCode: String, personId: UUID) = eventRatingRepository.deleteByEventCodeAndPersonUuid(eventCode, personId)
+    fun deleteByEventCodeAndPersonUuid(
+        eventCode: String,
+        personId: UUID,
+    ) = eventRatingRepository.deleteByEventCodeAndPersonUuid(eventCode, personId)
 }

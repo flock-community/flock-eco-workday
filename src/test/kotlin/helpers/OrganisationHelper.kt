@@ -9,9 +9,8 @@ import java.time.LocalDate
 @Component
 @Import(CreateHelper::class)
 class OrganisationHelper(
-    val createHelper: CreateHelper
+    val createHelper: CreateHelper,
 ) {
-
     val from = LocalDate.of(2020, 1, 1)
     val to = LocalDate.of(2021, 12, 31)
 

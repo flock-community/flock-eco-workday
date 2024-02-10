@@ -8,7 +8,10 @@ interface Approve {
     val status: Status
 }
 
-fun Approve.applyAllowedToUpdate(status: Status, isAdmin: Boolean) {
+fun Approve.applyAllowedToUpdate(
+    status: Status,
+    isAdmin: Boolean,
+) {
     if (this.status !== Status.REQUESTED && !isAdmin) {
         throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status")
     }
@@ -21,13 +24,17 @@ fun Approve.applyAllowedToUpdate(status: Status, isAdmin: Boolean) {
 }
 
 object StatusTransition {
-    private val validStatusTransitions = mapOf(
-        Status.REQUESTED to arrayOf(Status.APPROVED, Status.REJECTED),
-        Status.APPROVED to arrayOf(Status.REQUESTED, Status.DONE),
-        Status.REJECTED to arrayOf(Status.REQUESTED)
-    )
+    private val validStatusTransitions =
+        mapOf(
+            Status.REQUESTED to arrayOf(Status.APPROVED, Status.REJECTED),
+            Status.APPROVED to arrayOf(Status.REQUESTED, Status.DONE),
+            Status.REJECTED to arrayOf(Status.REQUESTED),
+        )
 
-    fun check(fromStatus: Status, toStatus: Status): Boolean =
+    fun check(
+        fromStatus: Status,
+        toStatus: Status,
+    ): Boolean =
         if (validStatusTransitions.containsKey(fromStatus)) {
             validStatusTransitions[fromStatus]!!.contains(toStatus)
         } else {

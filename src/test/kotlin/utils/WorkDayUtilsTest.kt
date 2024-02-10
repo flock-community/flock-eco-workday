@@ -10,21 +10,22 @@ import java.time.LocalDate
 import kotlin.test.DefaultAsserter.assertEquals
 
 class WorkDayUtilsTest {
-
     private val startDate = LocalDate.of(2023, 3, 1)
     private val endDate = LocalDate.of(2023, 3, 15)
     private val days = listOf(8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0, 8.0)
-    private val workday = WorkDay(
-        id = 0L,
-        hours = 24.0,
-        from = startDate,
-        to = endDate,
-        assignment = mockk<Assignment>(),
-        days = days,
-        code = "test",
-        sheets = listOf(),
-        status = Status.REQUESTED
-    )
+    private val workday =
+        WorkDay(
+            id = 0L,
+            hours = 24.0,
+            from = startDate,
+            to = endDate,
+            assignment = mockk<Assignment>(),
+            days = days,
+            code = "test",
+            sheets = listOf(),
+            status = Status.REQUESTED,
+        )
+
     @Test
     fun createWorkdayAndCheckData() {
         val weeks = workday.toWorkWeeks()

@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>flock-eco-application-parent</artifactId>
         <groupId>community.flock.flock-eco</groupId>
-        <version>2.7.11</version>
+        <artifactId>flock-eco-application-parent</artifactId>
+        <version>2.8.1</version>
     </parent>
 
     <groupId>flock.community.eco.workday</groupId>

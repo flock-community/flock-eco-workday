@@ -5,5 +5,5 @@ import community.flock.eco.core.authorities.Authority
 enum class ContractAuthority : Authority {
     READ,
     WRITE,
-    ADMIN
+    ADMIN,
 }

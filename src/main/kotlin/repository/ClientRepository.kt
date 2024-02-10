@@ -7,7 +7,7 @@ import java.util.Optional
 
 @Repository
 interface ClientRepository : PagingAndSortingRepository<Client, Long> {
-
     fun findByCode(code: String): Optional<Client>
+
     fun deleteByCode(code: String)
 }

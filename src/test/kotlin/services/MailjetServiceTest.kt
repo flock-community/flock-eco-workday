@@ -21,20 +21,20 @@ import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class MailjetServiceTest {
-
     private lateinit var service: MailjetService
     private lateinit var client: MailjetClient
     private lateinit var notificationProperties: NotificationProperties
     private lateinit var mailjetTemplateProperties: MailjetTemplateProperties
 
-    private val person = Person(
-        firstname = "First",
-        lastname = "Last",
-        email = "person@test.com",
-        position = "",
-        number = "",
-        user = null
-    )
+    private val person =
+        Person(
+            firstname = "First",
+            lastname = "Last",
+            email = "person@test.com",
+            position = "",
+            number = "",
+            user = null,
+        )
 
     @BeforeAll
     fun beforeAll() {
@@ -58,8 +58,8 @@ internal class MailjetServiceTest {
                 recipientEmail = "some.mail@adress.com",
                 subjectLine = "Nice subjectline",
                 variables = JSONObject().put("key01", "value01"),
-                templateId = mailjetTemplateProperties.updateTemplateId
-            )
+                templateId = mailjetTemplateProperties.updateTemplateId,
+            ),
         )
 
         val recipientEmail = requestSlot.captured.getSingleRecipientEmail()
@@ -115,8 +115,9 @@ internal class MailjetServiceTest {
         assertEquals(mailjetTemplateProperties.reminderTemplateId, templateId)
     }
 
-    private fun MailjetRequest.getSingleTemplateId() = getSingleMessage()
-        .optInt("TemplateID", -1)
+    private fun MailjetRequest.getSingleTemplateId() =
+        getSingleMessage()
+            .optInt("TemplateID", -1)
 
     private fun MailjetRequest.getSingleRecipientEmail() = getSingleMessage().getSingleRecipient().getEmail()
 

@@ -4,5 +4,5 @@ import java.math.BigDecimal
 
 data class AggregationClient(
     val name: String,
-    val revenueGross: BigDecimal
+    val revenueGross: BigDecimal,
 )

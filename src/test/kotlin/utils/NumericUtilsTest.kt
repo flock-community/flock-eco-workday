@@ -9,7 +9,6 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 
 class NumericUtilsTest {
-
     val startDate = LocalDate.of(2021, 12, 1)
     val endDate = LocalDate.of(2021, 12, 5)
 

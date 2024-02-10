@@ -4,11 +4,12 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 object NumericUtils {
+    fun Iterable<BigDecimal>.sum(): BigDecimal =
+        this
+            .fold(BigDecimal.ZERO) { acc, cur -> acc + cur }
 
-    fun Iterable<BigDecimal>.sum() = this
-        .fold(BigDecimal.ZERO) { acc, cur -> acc + cur }
-
-    fun Map<LocalDate, BigDecimal>.calculateRevenue(hourlyRate: Double) = this
-        .map { BigDecimal("${it.value}").multiply(BigDecimal("$hourlyRate")) }
-        .sum()
+    fun Map<LocalDate, BigDecimal>.calculateRevenue(hourlyRate: Double) =
+        this
+            .map { BigDecimal("${it.value}").multiply(BigDecimal("$hourlyRate")) }
+            .sum()
 }

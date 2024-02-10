@@ -21,48 +21,56 @@ import javax.persistence.ManyToOne
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 abstract class Contract(
-
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
-
     override val from: LocalDate,
     override val to: LocalDate?,
-
     @ManyToOne
     open val person: Person?,
-
     @Enumerated(EnumType.STRING)
-    open val type: ContractType
-
+    open val type: ContractType,
 ) : Period, AbstractCodeEntity(id, code) {
+    abstract fun totalCostsInPeriod(
+        from: LocalDate,
+        to: LocalDate,
+    ): BigDecimal
 
-    abstract fun totalCostsInPeriod(from: LocalDate, to: LocalDate): BigDecimal
-
-    fun totalHoursPerWeek() = when (this) {
-        is ContractInternal -> this.hoursPerWeek
-        is ContractExternal -> this.hoursPerWeek
-        is ContractManagement -> 40
-        else -> error("Unknown contract type")
-    }
-
-    abstract fun totalDaysInPeriod(from: LocalDate, to: LocalDate): BigDecimal
-
-    fun totalCostInPeriod(from: LocalDate, to: LocalDate, salary: Double): BigDecimal {
-        var monthLengthSum = 0
-        val dateRangeContract = DateUtils.dateRange(
-            this.from,
-            this.to
-                ?: LocalDate.of(to.year, to.month, to.month.length(to.isLeapYear))
-        )
-        val unionDateRange = DateUtils.dateRange(from, to)
-            .intersect(dateRangeContract.toSet())
-        val yearMonthsInRange = unionDateRange.map { YearMonth.of(it.year, it.month) }.distinct()
-        val daysInMonth = yearMonthsInRange.sumOf { yearMonth ->
-            monthLengthSum += yearMonth.lengthOfMonth()
-            unionDateRange
-                .count { it.year == yearMonth.year && it.month == yearMonth.month }
-                .toBigDecimal()
+    fun totalHoursPerWeek() =
+        when (this) {
+            is ContractInternal -> this.hoursPerWeek
+            is ContractExternal -> this.hoursPerWeek
+            is ContractManagement -> 40
+            else -> error("Unknown contract type")
         }
+
+    abstract fun totalDaysInPeriod(
+        from: LocalDate,
+        to: LocalDate,
+    ): BigDecimal
+
+    fun totalCostInPeriod(
+        from: LocalDate,
+        to: LocalDate,
+        salary: Double,
+    ): BigDecimal {
+        var monthLengthSum = 0
+        val dateRangeContract =
+            DateUtils.dateRange(
+                this.from,
+                this.to
+                    ?: LocalDate.of(to.year, to.month, to.month.length(to.isLeapYear)),
+            )
+        val unionDateRange =
+            DateUtils.dateRange(from, to)
+                .intersect(dateRangeContract.toSet())
+        val yearMonthsInRange = unionDateRange.map { YearMonth.of(it.year, it.month) }.distinct()
+        val daysInMonth =
+            yearMonthsInRange.sumOf { yearMonth ->
+                monthLengthSum += yearMonth.lengthOfMonth()
+                unionDateRange
+                    .count { it.year == yearMonth.year && it.month == yearMonth.month }
+                    .toBigDecimal()
+            }
         return if (daysInMonth.toDouble() == 0.0) {
             BigDecimal(BigInteger.ZERO)
         } else {
@@ -73,13 +81,18 @@ abstract class Contract(
         }
     }
 
-    fun totalDaysInPeriod(from: LocalDate, to: LocalDate, hoursPerWeek: Int): BigDecimal {
+    fun totalDaysInPeriod(
+        from: LocalDate,
+        to: LocalDate,
+        hoursPerWeek: Int,
+    ): BigDecimal {
         val dateRange = DateUtils.dateRange(from, to)
-        val dateRangeContract = DateUtils.dateRange(
-            this.from,
-            this.to
-                ?: LocalDate.of(to.year, to.month, to.month.length(to.isLeapYear))
-        )
+        val dateRangeContract =
+            DateUtils.dateRange(
+                this.from,
+                this.to
+                    ?: LocalDate.of(to.year, to.month, to.month.length(to.isLeapYear)),
+            )
         val hoursPerDay = hoursPerWeek.toBigDecimal().divide(BigDecimal("5.0"), 10, RoundingMode.HALF_UP)
         return dateRange.intersect(dateRangeContract.toSet()).map {
             when (it.isWorkingDay()) {
@@ -90,7 +103,10 @@ abstract class Contract(
     }
 }
 
-fun Iterable<Contract>.sumHoursWithinAPeriod(from: LocalDate, to: LocalDate) = this
+fun Iterable<Contract>.sumHoursWithinAPeriod(
+    from: LocalDate,
+    to: LocalDate,
+) = this
     .map { it.totalDaysInPeriod(from, to) }
     .sum()
     .toInt()

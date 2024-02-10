@@ -10,14 +10,17 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Component
 class ExactonlineDivisionClient(
-    private val exactonlineProperties: ExactonlineProperties
+    exactonlineProperties: ExactonlineProperties,
 ) {
+    val client: WebClient =
+        WebClient.builder()
+            .baseUrl(exactonlineProperties.requestUri)
+            .build()
 
-    val client: WebClient = WebClient.builder()
-        .baseUrl(exactonlineProperties.requestUri)
-        .build()
-
-    fun getDivisionByCode(requestObject: ExactonlineRequestObject, id: Int) = client
+    fun getDivisionByCode(
+        requestObject: ExactonlineRequestObject,
+        id: Int,
+    ) = client
         .get()
         .uri("/api/v1/${requestObject.division}/system/Divisions($id)")
         .header("authorization", "Bearer ${requestObject.accessToken}")
@@ -28,7 +31,7 @@ class ExactonlineDivisionClient(
         .map {
             ExactonlineDivision(
                 code = it.get("Code").asInt(),
-                description = it.get("Description").asText(null)
+                description = it.get("Description").asText(null),
             )
         }
 }

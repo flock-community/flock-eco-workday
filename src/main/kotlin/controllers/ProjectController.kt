@@ -17,31 +17,34 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("api/projects")
 class ProjectController(
-    private val projectService: ProjectService
-
+    private val projectService: ProjectService,
 ) {
     @GetMapping
     @PreAuthorize("hasAuthority('ProjectAuthority.READ')")
-    fun findAll(pageable: Pageable) =
-        projectService.findAll(pageable).toResponse()
+    fun findAll(pageable: Pageable) = projectService.findAll(pageable).toResponse()
 
     @GetMapping("{code}")
     @PreAuthorize("hasAuthority('ProjectAuthority.WRITE')")
-    fun findByCode(@PathVariable code: String) =
-        projectService.findByCode(code).toResponse()
+    fun findByCode(
+        @PathVariable code: String,
+    ) = projectService.findByCode(code).toResponse()
 
     @DeleteMapping("{code}")
     @PreAuthorize("hasAuthority('ProjectAuthority.WRITE')")
-    fun delete(@PathVariable code: String) =
-        projectService.deleteByCode(code).toResponse()
+    fun delete(
+        @PathVariable code: String,
+    ) = projectService.deleteByCode(code).toResponse()
 
     @PutMapping("{code}")
     @PreAuthorize("hasAuthority('ProjectAuthority.WRITE')")
-    fun update(@PathVariable code: String, @RequestBody form: ProjectForm) =
-        projectService.update(code, form).toResponse()
+    fun update(
+        @PathVariable code: String,
+        @RequestBody form: ProjectForm,
+    ) = projectService.update(code, form).toResponse()
 
     @PostMapping
     @PreAuthorize("hasAuthority('ProjectAuthority.WRITE')")
-    fun create(@RequestBody form: ProjectForm) =
-        projectService.create(form)
+    fun create(
+        @RequestBody form: ProjectForm,
+    ) = projectService.create(form)
 }

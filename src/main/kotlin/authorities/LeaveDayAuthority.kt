@@ -5,5 +5,5 @@ import community.flock.eco.core.authorities.Authority
 enum class LeaveDayAuthority : Authority {
     READ,
     WRITE,
-    ADMIN
+    ADMIN,
 }

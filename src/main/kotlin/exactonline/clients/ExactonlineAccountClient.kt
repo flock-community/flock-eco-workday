@@ -9,19 +9,20 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Component
 class ExactonlineAccountClient(
-    private val exactonlineProperties: ExactonlineProperties
+    exactonlineProperties: ExactonlineProperties,
 ) {
+    val client: WebClient =
+        WebClient.builder()
+            .baseUrl(exactonlineProperties.requestUri)
+            .build()
 
-    val client: WebClient = WebClient.builder()
-        .baseUrl(exactonlineProperties.requestUri)
-        .build()
-
-    fun getAccounts(requestObject: ExactonlineRequestObject) = client
-        .get()
-        .uri("/api/v1/${requestObject.division}/crm/Accounts")
-        .header("authorization", "Bearer ${requestObject.accessToken}")
-        .accept(MediaType.APPLICATION_JSON)
-        .retrieve()
-        .bodyToMono(ObjectNode::class.java)
-        .map { it.get("d").get("results") }
+    fun getAccounts(requestObject: ExactonlineRequestObject) =
+        client
+            .get()
+            .uri("/api/v1/${requestObject.division}/crm/Accounts")
+            .header("authorization", "Bearer ${requestObject.accessToken}")
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .bodyToMono(ObjectNode::class.java)
+            .map { it.get("d").get("results") }
 }

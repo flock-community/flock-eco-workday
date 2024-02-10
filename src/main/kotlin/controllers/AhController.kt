@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/_ah")
 class AhController {
-
     @GetMapping("/start")
-    fun start() = ResponseEntity
-        .noContent()
-        .build<Unit>()
+    fun start() =
+        ResponseEntity
+            .noContent()
+            .build<Unit>()
 }

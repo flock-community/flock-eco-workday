@@ -6,5 +6,5 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConfigurationProperties(prefix = "workday.notifications")
 @ConstructorBinding
 data class NotificationProperties(
-    val recipient: String
+    val recipient: String,
 )

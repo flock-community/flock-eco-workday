@@ -19,17 +19,24 @@ class EventService(
     private val eventRepository: EventRepository,
     private val eventRatingRepository: EventRatingRepository,
     private val personService: PersonService,
-    private val entityManager: EntityManager
+    private val entityManager: EntityManager,
 ) {
     fun findAll(): Iterable<Event> = eventRepository.findAll()
+
     fun findAll(sort: Sort): Iterable<Event> = eventRepository.findAll(sort)
 
-    fun findAllByPersonUuid(personCode: UUID) = eventRepository
-        .findAllByPersonsIsEmptyOrPersonsUuid(personCode)
+    fun findAllByPersonUuid(personCode: UUID) =
+        eventRepository
+            .findAllByPersonsIsEmptyOrPersonsUuid(personCode)
+
     fun findByCode(code: String) = eventRepository.findByCode(code).toNullable()
 
-    fun findAllActive(from: LocalDate, to: LocalDate): Iterable<Event> {
-        val query = "SELECT e FROM Event e LEFT JOIN FETCH e.days WHERE e.from <= :to AND (e.to is null OR e.to >= :from)"
+    fun findAllActive(
+        from: LocalDate,
+        to: LocalDate,
+    ): Iterable<Event> {
+        val query =
+            "SELECT e FROM Event e LEFT JOIN FETCH e.days WHERE e.from <= :to AND (e.to is null OR e.to >= :from)"
         return entityManager
             .createQuery(query, Event::class.java)
             .setParameter("from", from)
@@ -37,8 +44,21 @@ class EventService(
             .resultList
             .toSet()
     }
-    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): Iterable<Event> {
-        val query = "SELECT e FROM Event e LEFT JOIN FETCH e.days INNER JOIN e.persons p WHERE  e.from <= :to AND (e.to is null OR e.to >= :from) AND p.uuid = :personCode"
+
+    fun findAllActiveByPerson(
+        from: LocalDate,
+        to: LocalDate,
+        personCode: UUID,
+    ): Iterable<Event> {
+        val query =
+            """SELECT e
+                |FROM Event e
+                |LEFT JOIN FETCH e.days
+                |INNER JOIN e.persons p
+                |WHERE  e.from <= :to
+                |AND (e.to is null OR e.to >= :from)
+                |AND p.uuid = :personCode
+            """.trimMargin()
         return entityManager
             .createQuery(query, Event::class.java)
             .setParameter("from", from)
@@ -48,22 +68,30 @@ class EventService(
             .toSet()
     }
 
-    fun create(form: EventForm): Event = form
-        .validate()
-        .consume()
-        .save()
+    fun create(form: EventForm): Event =
+        form
+            .validate()
+            .consume()
+            .save()
 
-    fun update(code: String, form: EventForm): Event = eventRepository
-        .findByCode(code)
-        .toNullable()
-        .run {
-            form
-                .validate()
-                .consume(this)
-                .save()
-        }
+    fun update(
+        code: String,
+        form: EventForm,
+    ): Event =
+        eventRepository
+            .findByCode(code)
+            .toNullable()
+            .run {
+                form
+                    .validate()
+                    .consume(this)
+                    .save()
+            }
 
-    fun subscribeToEvent(eventCode: String, person: Person): Event {
+    fun subscribeToEvent(
+        eventCode: String,
+        person: Person,
+    ): Event {
         return eventRepository.findByCode(eventCode).toNullable()
             ?.run {
                 copy(persons = persons.filter { it.uuid != person.uuid }.plus(person))
@@ -71,7 +99,10 @@ class EventService(
             } ?: error("Cannot subscribe to Event: $eventCode")
     }
 
-    fun unsubscribeFromEvent(eventCode: String, person: Person): Event {
+    fun unsubscribeFromEvent(
+        eventCode: String,
+        person: Person,
+    ): Event {
         return eventRepository.findByCode(eventCode).toNullable()
             ?.run {
                 copy(persons = persons.filter { it.uuid != person.uuid })
@@ -88,8 +119,9 @@ class EventService(
     private fun Event.save() = eventRepository.save(this)
 
     private fun EventForm.consume(it: Event? = null): Event {
-        val persons = personService
-            .findByPersonCodeIdIn(this.personIds)
+        val persons =
+            personService
+                .findByPersonCodeIdIn(this.personIds)
 
         return Event(
             id = it?.id ?: 0L,
@@ -101,7 +133,7 @@ class EventService(
             hours = this.hours,
             days = this.days,
             costs = this.costs,
-            type = this.type
+            type = this.type,
         )
     }
 }

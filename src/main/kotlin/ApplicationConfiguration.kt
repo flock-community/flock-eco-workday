@@ -19,13 +19,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         "community.flock.eco.workday.controllers",
         "community.flock.eco.workday.mappers",
         "community.flock.eco.workday.google",
-    ]
+    ],
 )
 @Import(
     UserConfiguration::class,
     ExactonlineConfiguration::class,
     ApplicationConstants::class,
     PropertyConfig::class,
-    MailjetClientConfig::class
+    MailjetClientConfig::class,
 )
 class ApplicationConfiguration

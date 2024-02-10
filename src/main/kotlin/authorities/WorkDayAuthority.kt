@@ -6,5 +6,5 @@ enum class WorkDayAuthority : Authority {
     READ,
     WRITE,
     ADMIN,
-    TOTAL_HOURS
+    TOTAL_HOURS,
 }

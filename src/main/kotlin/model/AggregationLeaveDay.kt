@@ -17,7 +17,7 @@ data class PersonHolidayDetails(
     val plusHours: BigDecimal,
     val holidayHoursDone: BigDecimal,
     val holidayHoursApproved: BigDecimal,
-    val holidayHoursRequested: BigDecimal
+    val holidayHoursRequested: BigDecimal,
 ) {
     val totalHoursAvailable: BigDecimal
     val totalHoursUsed: BigDecimal

@@ -21,17 +21,30 @@ class LeaveDayService(
     private val leaveDayRepository: LeaveDayRepository,
     private val personService: PersonService,
     private val entityManager: EntityManager,
-    private val emailService: LeaveDayEmailService
+    private val emailService: LeaveDayEmailService,
 ) {
-
     fun findByCode(code: String) = leaveDayRepository.findByCode(code).toNullable()
+
     fun findAllByPersonUuid(personCode: UUID) = leaveDayRepository.findAllByPersonUuid(personCode)
-    fun findAllByPersonUuid(personCode: UUID, pageable: Pageable) = leaveDayRepository.findAllByPersonUuid(personCode, pageable)
-    fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = leaveDayRepository.findAllByPersonUserCode(userCode, pageable)
+
+    fun findAllByPersonUuid(
+        personCode: UUID,
+        pageable: Pageable,
+    ) = leaveDayRepository.findAllByPersonUuid(personCode, pageable)
+
+    fun findAllByPersonUserCode(
+        userCode: String,
+        pageable: Pageable,
+    ) = leaveDayRepository.findAllByPersonUserCode(userCode, pageable)
+
     fun findAllByStatus(status: Status) = leaveDayRepository.findAllByStatus(status)
 
-    fun findAllActive(from: LocalDate, to: LocalDate): Iterable<LeaveDay> {
-        val query = "SELECT h FROM LeaveDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from)"
+    fun findAllActive(
+        from: LocalDate,
+        to: LocalDate,
+    ): Iterable<LeaveDay> {
+        val query =
+            "SELECT h FROM LeaveDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from)"
         return entityManager
             .createQuery(query, LeaveDay::class.java)
             .setParameter("from", from)
@@ -46,8 +59,19 @@ class LeaveDayService(
      * The result could include leave days that also contain days that do not fall within that range.
      * You can filter these out using [community.flock.eco.workday.model.Day.hoursPerDayInPeriod].
      */
-    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): Iterable<LeaveDay> {
-        val query = "SELECT h FROM LeaveDay h LEFT JOIN FETCH h.days WHERE h.from <= :to AND (h.to is null OR h.to >= :from) AND h.person.uuid = :personCode"
+    fun findAllActiveByPerson(
+        from: LocalDate,
+        to: LocalDate,
+        personCode: UUID,
+    ): Iterable<LeaveDay> {
+        val query =
+            """SELECT h
+                |FROM LeaveDay h
+                |LEFT JOIN FETCH h.days
+                |WHERE h.from <= :to
+                |AND (h.to is null OR h.to >= :from)
+                |AND h.person.uuid = :personCode
+            """.trimMargin()
         return entityManager
             .createQuery(query, LeaveDay::class.java)
             .setParameter("from", from)
@@ -57,13 +81,17 @@ class LeaveDayService(
             .toSet()
     }
 
-    fun create(form: LeaveDayForm): LeaveDay = form.copy(status = Status.REQUESTED)
-        .consume()
-        .validate()
-        .save()
-        .also { emailService.sendNotification(it) }
+    fun create(form: LeaveDayForm): LeaveDay =
+        form.copy(status = Status.REQUESTED)
+            .consume()
+            .validate()
+            .save()
+            .also { emailService.sendNotification(it) }
 
-    fun update(code: String, form: LeaveDayForm): LeaveDay {
+    fun update(
+        code: String,
+        form: LeaveDayForm,
+    ): LeaveDay {
         val currentLeaveDay = leaveDayRepository.findByCode(code).toNullable()
         return currentLeaveDay
             .run {
@@ -78,15 +106,17 @@ class LeaveDayService(
     }
 
     @Transactional
-    fun deleteByCode(code: String) = leaveDayRepository
-        .deleteByCode(code)
+    fun deleteByCode(code: String) =
+        leaveDayRepository
+            .deleteByCode(code)
 
     private fun LeaveDay.save() = leaveDayRepository.save(this)
 
     private fun LeaveDayForm.consume(it: LeaveDay? = null): LeaveDay {
-        val person = personService
-            .findByUuid(this.personId)
-            ?: throw error("Cannot find person: ${this.personId}")
+        val person =
+            personService
+                .findByUuid(this.personId)
+                ?: error("Cannot find person: ${this.personId}")
 
         return LeaveDay(
             id = it?.id ?: 0L,
@@ -98,10 +128,11 @@ class LeaveDayService(
             person = person,
             hours = hours,
             days = days,
-            type = type
+            type = type,
         )
     }
 }
 
-fun User.isAdmin(): Boolean = this.authorities
-    .contains(LeaveDayAuthority.ADMIN.toName())
+fun User.isAdmin(): Boolean =
+    this.authorities
+        .contains(LeaveDayAuthority.ADMIN.toName())

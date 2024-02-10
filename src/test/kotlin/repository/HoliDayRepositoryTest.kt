@@ -29,28 +29,28 @@ import javax.transaction.Transactional
 @ActiveProfiles(profiles = ["test"])
 class HoliDayRepositoryTest(
     @Autowired private val repository: LeaveDayRepository,
-    @Autowired private val personRepository: PersonRepository
+    @Autowired private val personRepository: PersonRepository,
 ) {
-
-    private val persons: List<Person> = mutableListOf(
-        Person(
-            firstname = "",
-            lastname = "",
-            email = "admin@reynholm-industries.co.uk",
-            position = "",
-            number = null,
-            user = null
-        ),
-        Person(
-            firstname = "IT",
-            lastname = "",
-            email = "admin@reynholm-industries.co.uk",
-            position = "",
-            number = null,
-            user = null
-        )
-    ).apply { personRepository.saveAll(this) }
-        .run { this.toList() }
+    private val persons: List<Person> =
+        mutableListOf(
+            Person(
+                firstname = "",
+                lastname = "",
+                email = "admin@reynholm-industries.co.uk",
+                position = "",
+                number = null,
+                user = null,
+            ),
+            Person(
+                firstname = "IT",
+                lastname = "",
+                email = "admin@reynholm-industries.co.uk",
+                position = "",
+                number = null,
+                user = null,
+            ),
+        ).apply { personRepository.saveAll(this) }
+            .run { this.toList() }
 
     @Test
     fun `should find a Holiday via holidayCode by querying findByCode`() {
@@ -66,9 +66,9 @@ class HoliDayRepositoryTest(
                         to = dayFromLocalDate(1),
                         days = listOf(8.0),
                         person = person,
-                        type = LeaveDayType.PLUSDAY
-                    )
-                )
+                        type = LeaveDayType.PLUSDAY,
+                    ),
+                ),
             )
         }
 

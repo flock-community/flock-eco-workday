@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class KCalendarTest {
-
     @Test
     fun `Empty calendar`() {
         val calendar = KCalendar(emptyList())
@@ -22,26 +21,27 @@ class KCalendarTest {
 
     @Test
     fun `Build calendar from holiDays`() {
-        val holidays = listOf(
-            LeaveDay(
-                description = "description-1",
-                hours = 8.0,
-                person = aPerson(),
-                type = LeaveDayType.HOLIDAY,
-                status = APPROVED,
-                from = LocalDate.of(2023, 3, 3),
-                to = LocalDate.of(2023, 3, 4)
-            ),
-            LeaveDay(
-                description = "description-2",
-                hours = 8.0,
-                person = aPerson(),
-                type = LeaveDayType.HOLIDAY,
-                status = APPROVED,
-                from = LocalDate.of(2023, 3, 7),
-                to = LocalDate.of(2023, 3, 10)
+        val holidays =
+            listOf(
+                LeaveDay(
+                    description = "description-1",
+                    hours = 8.0,
+                    person = aPerson(),
+                    type = LeaveDayType.HOLIDAY,
+                    status = APPROVED,
+                    from = LocalDate.of(2023, 3, 3),
+                    to = LocalDate.of(2023, 3, 4),
+                ),
+                LeaveDay(
+                    description = "description-2",
+                    hours = 8.0,
+                    person = aPerson(),
+                    type = LeaveDayType.HOLIDAY,
+                    status = APPROVED,
+                    from = LocalDate.of(2023, 3, 7),
+                    to = LocalDate.of(2023, 3, 10),
+                ),
             )
-        )
 
         val result = holidays.toCalendar()
 
@@ -53,8 +53,8 @@ class KCalendarTest {
                 uid = "any",
                 summary = "Vakantie Henk Henkszoon (2 dagen)",
                 startDate = LocalDate.of(2023, 3, 3),
-                durationInDays = 2
-            )
+                durationInDays = 2,
+            ),
         )
 
         assertThat(resultEvents[1]).usingRecursiveComparison().ignoringFields("uid").isEqualTo(
@@ -62,39 +62,41 @@ class KCalendarTest {
                 uid = "any",
                 summary = "Vakantie Henk Henkszoon (4 dagen)",
                 startDate = LocalDate.of(2023, 3, 7),
-                durationInDays = 4
-            )
+                durationInDays = 4,
+            ),
         )
     }
 
     @Test
     fun `Serializes to string`() {
-        val holidays = listOf(
-            LeaveDay(
-                code = "f55ddf77-711d-47f0-a75f-677481c3452e",
-                description = "description-1",
-                hours = 8.0,
-                person = aPerson(),
-                type = LeaveDayType.HOLIDAY,
-                status = APPROVED,
-                from = LocalDate.of(2023, 3, 3),
-                to = LocalDate.of(2023, 3, 4)
-            ),
-            LeaveDay(
-                code = "13dc180a-391b-49e2-99db-73cd33523dd9",
-                description = "description-2",
-                hours = 8.0,
-                person = aPerson(),
-                type = LeaveDayType.HOLIDAY,
-                status = APPROVED,
-                from = LocalDate.of(2023, 3, 7),
-                to = LocalDate.of(2023, 3, 10)
+        val holidays =
+            listOf(
+                LeaveDay(
+                    code = "f55ddf77-711d-47f0-a75f-677481c3452e",
+                    description = "description-1",
+                    hours = 8.0,
+                    person = aPerson(),
+                    type = LeaveDayType.HOLIDAY,
+                    status = APPROVED,
+                    from = LocalDate.of(2023, 3, 3),
+                    to = LocalDate.of(2023, 3, 4),
+                ),
+                LeaveDay(
+                    code = "13dc180a-391b-49e2-99db-73cd33523dd9",
+                    description = "description-2",
+                    hours = 8.0,
+                    person = aPerson(),
+                    type = LeaveDayType.HOLIDAY,
+                    status = APPROVED,
+                    from = LocalDate.of(2023, 3, 7),
+                    to = LocalDate.of(2023, 3, 10),
+                ),
             )
-        )
 
         val result = holidays.toCalendar().serialize()
 
-        val expected = """
+        val expected =
+            """
             BEGIN:VCALENDAR
             VERSION:2.0
             PRODID:-//Michael Angstadt//biweekly 0.6.7//EN
@@ -118,7 +120,7 @@ class KCalendarTest {
             END:VEVENT
             END:VCALENDAR
 
-        """.trimIndent()
+            """.trimIndent()
 
         val resultLinesToCheck = result.lines().filterNot { it.startsWith("DTSTAMP") }
         val expectedLinesToCheck = expected.lines().filterNot { it.startsWith("DTSTAMP") }

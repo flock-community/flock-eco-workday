@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class CalendarService(
-    private val leaveDayRepository: LeaveDayRepository
+    private val leaveDayRepository: LeaveDayRepository,
 ) {
     fun getCalendar() =
         leaveDayRepository

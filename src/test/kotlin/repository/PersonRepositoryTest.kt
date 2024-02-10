@@ -24,19 +24,19 @@ import javax.transaction.Transactional
 @Import(CreateHelper::class)
 @ActiveProfiles(profiles = ["test"])
 class PersonRepositoryTest(
-    @Autowired private val repository: PersonRepository
+    @Autowired private val repository: PersonRepository,
 ) {
-
     @Test
     fun `should create person without email`() {
-        val person = Person(
-            firstname = "Maurice",
-            lastname = "Moss",
-            email = "",
-            position = "",
-            number = null,
-            user = null
-        )
+        val person =
+            Person(
+                firstname = "Maurice",
+                lastname = "Moss",
+                email = "",
+                position = "",
+                number = null,
+                user = null,
+            )
 
         repository.save(person)
         val res = repository.findByUuid(person.uuid)
@@ -45,14 +45,15 @@ class PersonRepositoryTest(
 
     @Test
     fun `should create person with email`() {
-        val person = Person(
-            firstname = "Roy",
-            lastname = "Trennerman",
-            email = "roy@reynholm-industries.co.uk",
-            position = "",
-            number = null,
-            user = null
-        )
+        val person =
+            Person(
+                firstname = "Roy",
+                lastname = "Trennerman",
+                email = "roy@reynholm-industries.co.uk",
+                position = "",
+                number = null,
+                user = null,
+            )
 
         repository.save(person)
 
@@ -62,24 +63,25 @@ class PersonRepositoryTest(
 
     @Test
     fun `should find person by firstname`() {
-        val persons = listOf(
-            Person(
-                firstname = "Roy",
-                lastname = "Jensen",
-                email = "roy@jensen-industries.co.uk",
-                position = "",
-                number = null,
-                user = null
-            ),
-            Person(
-                firstname = "Rob",
-                lastname = "Jansen",
-                email = "rob@jansen-industries.co.uk",
-                position = "",
-                number = null,
-                user = null
+        val persons =
+            listOf(
+                Person(
+                    firstname = "Roy",
+                    lastname = "Jensen",
+                    email = "roy@jensen-industries.co.uk",
+                    position = "",
+                    number = null,
+                    user = null,
+                ),
+                Person(
+                    firstname = "Rob",
+                    lastname = "Jansen",
+                    email = "rob@jansen-industries.co.uk",
+                    position = "",
+                    number = null,
+                    user = null,
+                ),
             )
-        )
 
         repository.saveAll(persons)
 
@@ -98,24 +100,25 @@ class PersonRepositoryTest(
 
     @Test
     fun `should find person by lastname`() {
-        val persons = listOf(
-            Person(
-                firstname = "Roy",
-                lastname = "Jensen",
-                email = "roy@jensen-industries.co.uk",
-                position = "",
-                number = null,
-                user = null
-            ),
-            Person(
-                firstname = "Rob",
-                lastname = "Jansen",
-                email = "rob@jansen-industries.co.uk",
-                position = "",
-                number = null,
-                user = null
+        val persons =
+            listOf(
+                Person(
+                    firstname = "Roy",
+                    lastname = "Jensen",
+                    email = "roy@jensen-industries.co.uk",
+                    position = "",
+                    number = null,
+                    user = null,
+                ),
+                Person(
+                    firstname = "Rob",
+                    lastname = "Jansen",
+                    email = "rob@jansen-industries.co.uk",
+                    position = "",
+                    number = null,
+                    user = null,
+                ),
             )
-        )
 
         repository.saveAll(persons)
 
@@ -134,24 +137,25 @@ class PersonRepositoryTest(
 
     @Test
     fun `should find person by full name`() {
-        val persons = listOf(
-            Person(
-                firstname = "Roy",
-                lastname = "Jensen",
-                email = "roy@jensen-industries.co.uk",
-                position = "",
-                number = null,
-                user = null
-            ),
-            Person(
-                firstname = "Rob",
-                lastname = "Jansen",
-                email = "rob@jansen-industries.co.uk",
-                position = "",
-                number = null,
-                user = null
+        val persons =
+            listOf(
+                Person(
+                    firstname = "Roy",
+                    lastname = "Jensen",
+                    email = "roy@jensen-industries.co.uk",
+                    position = "",
+                    number = null,
+                    user = null,
+                ),
+                Person(
+                    firstname = "Rob",
+                    lastname = "Jansen",
+                    email = "rob@jansen-industries.co.uk",
+                    position = "",
+                    number = null,
+                    user = null,
+                ),
             )
-        )
 
         repository.saveAll(persons)
 

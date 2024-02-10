@@ -3,9 +3,9 @@ package community.flock.eco.workday.utils
 import community.flock.eco.workday.model.WorkDay
 import java.time.LocalDate
 import java.time.temporal.WeekFields
-import java.util.*
 
 data class WorkWeekDay(val date: LocalDate, val value: Double)
+
 fun WorkDay.toWorkWeeks(): Map<Int, List<WorkWeekDay>> {
     val workWeeks = mutableMapOf<Int, MutableList<WorkWeekDay>>()
     if (days != null) {

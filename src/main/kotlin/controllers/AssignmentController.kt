@@ -38,16 +38,15 @@ class AssignmentController(
     private val userService: UserService,
     private val assignmentService: AssignmentService,
     private val projectService: ProjectService,
-    private val workDayService: WorkDayService
+    private val workDayService: WorkDayService,
 ) {
-
     @GetMapping
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
     fun findAll(
         @RequestParam personId: UUID?,
         @RequestParam projectCode: String?,
         page: Pageable,
-        principal: Principal
+        principal: Principal,
     ): ResponseEntity<List<AssignmentWithHours>> =
         principal.findUser()
             ?.let { user ->
@@ -57,10 +56,11 @@ class AssignmentController(
                     else -> assignmentService.findAllByPersonUserCode(user.code, page).map { it.toDto() }
                 }.let {
                     it.map { assignment ->
-                        if (user.isAdmin())
+                        if (user.isAdmin()) {
                             assignment
-                        else
+                        } else {
                             assignment.copy(hourlyRate = 0.0)
+                        }
                     }
                 }
             }
@@ -70,29 +70,38 @@ class AssignmentController(
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
     fun findAllByToAfterOrToNull(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate,
-        page: Pageable
-    ): ResponseEntity<List<Assignment>> =
-        assignmentService.findAllByToAfterOrToNull(to, page).toResponse()
+        page: Pageable,
+    ): ResponseEntity<List<Assignment>> = assignmentService.findAllByToAfterOrToNull(to, page).toResponse()
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
-    fun findByCode(@PathVariable code: String, principal: Principal): ResponseEntity<Assignment> =
+    fun findByCode(
+        @PathVariable code: String,
+        principal: Principal,
+    ): ResponseEntity<Assignment> =
         principal.findUser()
             ?.let { user ->
                 val assignment = assignmentService.findByCode(code)
-                if (user.isAllowedToEdit()) assignment
-                else assignment?.copy(hourlyRate = 0.0)
+                if (user.isAllowedToEdit()) {
+                    assignment
+                } else {
+                    assignment?.copy(hourlyRate = 0.0)
+                }
             }.toResponse()
 
     @PostMapping
     @PreAuthorize("hasAuthority('AssignmentAuthority.WRITE')")
-    fun post(@RequestBody form: AssignmentForm, principal: Principal) = principal
+    fun post(
+        @RequestBody form: AssignmentForm,
+        principal: Principal,
+    ) = principal
         .findUser()
         ?.let { user ->
-            val personCode = when {
-                user.isAdmin() -> form.personId
-                else -> UUID.fromString(user.code)
-            }
+            val personCode =
+                when {
+                    user.isAdmin() -> form.personId
+                    else -> UUID.fromString(user.code)
+                }
             assignmentService.create(form.copy(personId = personCode))
         }
         ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
@@ -102,7 +111,7 @@ class AssignmentController(
     fun put(
         @PathVariable code: String,
         @RequestBody form: AssignmentForm,
-        principal: Principal
+        principal: Principal,
     ) = principal
         .findUser()
         ?.let {
@@ -113,45 +122,45 @@ class AssignmentController(
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('AssignmentAuthority.ADMIN')")
-    fun delete(@PathVariable code: String, principal: Principal) =
-        principal
-            .findUser()
-            ?.let {
-                assignmentService
-                    .deleteByCode(code)
-                    .toResponse()
-            }
-            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+    fun delete(
+        @PathVariable code: String,
+        principal: Principal,
+    ) = principal
+        .findUser()
+        ?.let {
+            assignmentService
+                .deleteByCode(code)
+                .toResponse()
+        }
+        ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
 
-    private fun Principal.findUser(): User? = userService
-        .findByCode(this.name)
+    private fun Principal.findUser(): User? =
+        userService
+            .findByCode(this.name)
 
-    private fun User.isAdmin(): Boolean = this
-        .authorities
-        .contains(AssignmentAuthority.ADMIN.toName())
+    private fun User.isAdmin(): Boolean =
+        this
+            .authorities
+            .contains(AssignmentAuthority.ADMIN.toName())
 
-    private fun User.isAllowedToEdit(): Boolean = this
-        .authorities
-        .contains(AssignmentAuthority.WRITE.toName())
+    private fun User.isAllowedToEdit(): Boolean =
+        this
+            .authorities
+            .contains(AssignmentAuthority.WRITE.toName())
 
     data class AssignmentWithHours(
         val id: Long = 0,
         val code: String,
-
         val role: String? = null,
-
         val from: LocalDate,
         val to: LocalDate?,
-
         val hourlyRate: Double,
         val hoursPerWeek: Int,
-
         val client: Client,
         val person: Person,
         val project: Project? = null,
-
         val totalHours: Int,
-        val totalCosts: Double
+        val totalCosts: Double,
     )
 
     fun Assignment.toDto(): AssignmentWithHours {
@@ -170,7 +179,7 @@ class AssignmentController(
             person = person,
             project = project,
             totalHours = totalHours,
-            totalCosts = totalCosts
+            totalCosts = totalCosts,
         )
     }
 }

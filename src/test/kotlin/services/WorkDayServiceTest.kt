@@ -27,37 +27,37 @@ import kotlin.test.assertNull
 @ActiveProfiles(profiles = ["test"])
 class WorkDayServiceTest(
     @Autowired private val workDayService: WorkDayService,
-    @Autowired private val createHelper: CreateHelper
+    @Autowired private val createHelper: CreateHelper,
 ) {
-
     @Test
     fun `creat update delete workday`() {
-
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val client = createHelper.createClient()
         val person = createHelper.createPerson()
         val assignment = createHelper.createAssignment(client, person, from, to)
 
-        val createForm = WorkDayForm(
-            from = from,
-            to = to,
-            assignmentCode = assignment.code,
-            hours = 50.0,
-            sheets = listOf()
-        )
+        val createForm =
+            WorkDayForm(
+                from = from,
+                to = to,
+                assignmentCode = assignment.code,
+                hours = 50.0,
+                sheets = listOf(),
+            )
 
         val created = workDayService.create(createForm)
         assertNotNull(created.id)
         assertEquals(50.0, created.hours)
 
-        val updateForm = WorkDayForm(
-            from = from,
-            to = to,
-            assignmentCode = assignment.code,
-            hours = 25.0,
-            sheets = listOf()
-        )
+        val updateForm =
+            WorkDayForm(
+                from = from,
+                to = to,
+                assignmentCode = assignment.code,
+                hours = 25.0,
+                sheets = listOf(),
+            )
         val updated = workDayService.update(created.code, updateForm)
         assertNotNull(updated.id)
         assertEquals(25.0, updated.hours)

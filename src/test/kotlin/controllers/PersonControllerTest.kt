@@ -67,56 +67,61 @@ class PersonControllerTest {
     }
 
     private fun createActiveAndInactivePerson() {
-        val activeUserForm = PersonForm(
-            firstname = "Morris",
-            lastname = "Moss",
-            email = "morris@moss.com",
-            position = "",
-            number = null,
-            userCode = null,
-            active = true
-        )
+        val activeUserForm =
+            PersonForm(
+                firstname = "Morris",
+                lastname = "Moss",
+                email = "morris@moss.com",
+                position = "",
+                number = null,
+                userCode = null,
+                active = true,
+            )
 
         personService.create(activeUserForm)
 
-        val inactiveUserForm = PersonForm(
-            firstname = "Pieter",
-            lastname = "Post",
-            email = "pieter@post.nl",
-            position = "",
-            number = null,
-            userCode = null,
-            active = false
-        )
+        val inactiveUserForm =
+            PersonForm(
+                firstname = "Pieter",
+                lastname = "Post",
+                email = "pieter@post.nl",
+                position = "",
+                number = null,
+                userCode = null,
+                active = false,
+            )
 
         personService.create(inactiveUserForm)
     }
 
-    fun createUser() = UserAccountPasswordForm(
-        email = UUID.randomUUID().toString(),
-        name = "Administrator",
-        authorities = setOf(
-            "PersonAuthority.ADMIN",
-            "PersonAuthority.READ",
-            "PersonAuthority.WRITE"
-        ),
-        password = "admin"
-    )
-        .run { userAccountService.createUserAccountPassword(this) }
-        .run { UserSecurityService.UserSecurityPassword(this) }
-        .run { user(this) }
+    fun createUser() =
+        UserAccountPasswordForm(
+            email = UUID.randomUUID().toString(),
+            name = "Administrator",
+            authorities =
+                setOf(
+                    "PersonAuthority.ADMIN",
+                    "PersonAuthority.READ",
+                    "PersonAuthority.WRITE",
+                ),
+            password = "admin",
+        )
+            .run { userAccountService.createUserAccountPassword(this) }
+            .run { UserSecurityService.UserSecurityPassword(this) }
+            .run { user(this) }
 
     @Test
     fun `should create a valid person via POST-method`() {
-        val personForm = PersonForm(
-            firstname = "Morris",
-            lastname = "Moss",
-            email = "",
-            position = "",
-            number = null,
-            userCode = null,
-            active = true
-        )
+        val personForm =
+            PersonForm(
+                firstname = "Morris",
+                lastname = "Moss",
+                email = "",
+                position = "",
+                number = null,
+                userCode = null,
+                active = true,
+            )
 
         val user = createUser()
 
@@ -125,7 +130,7 @@ class PersonControllerTest {
                 .with(user)
                 .content(mapper.writeValueAsString(personForm))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -139,27 +144,28 @@ class PersonControllerTest {
 
     @Test
     fun `should get a person by code via GET-method`() {
-        /* DRY-Block */
-        val personForm = PersonForm(
-            firstname = "Morris",
-            lastname = "Moss",
-            email = "",
-            position = "",
-            number = null,
-            userCode = null,
-            active = true
-        )
+        // DRY-Block
+        val personForm =
+            PersonForm(
+                firstname = "Morris",
+                lastname = "Moss",
+                email = "",
+                position = "",
+                number = null,
+                userCode = null,
+                active = true,
+            )
 
         val user = createUser()
 
         // need this user to compare generated fields
         // create a person so one can query that person via the PersonCode
-        var person: JsonNode? = null
+        var person: JsonNode?
         mvc.perform(
             post(baseUrl).with(user)
                 .content(mapper.writeValueAsString(personForm))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andReturn()
             .response
@@ -167,12 +173,12 @@ class PersonControllerTest {
             .apply { person = mapper.readTree(this) }
 
         fun person(key: String): String = person!!.get(key).textValue()
-        /* DRY-Block */
+        // DRY-Block
 
         mvc.perform(
             get("$baseUrl/${person("uuid")}")
                 .with(user)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -185,25 +191,26 @@ class PersonControllerTest {
 
     @Test
     fun `should update a valid person correctly via PUT-method`() {
-        /* DRY-Block */
-        val personForm = PersonForm(
-            firstname = "Morris",
-            lastname = "Moss",
-            email = "",
-            position = "",
-            number = null,
-            userCode = null,
-            active = true
-        )
+        // DRY-Block
+        val personForm =
+            PersonForm(
+                firstname = "Morris",
+                lastname = "Moss",
+                email = "",
+                position = "",
+                number = null,
+                userCode = null,
+                active = true,
+            )
 
         // need this user to compare generated fields
-        var person: JsonNode? = null
+        var person: JsonNode?
         val user = createUser()
         mvc.perform(
             post(baseUrl).with(user)
                 .content(mapper.writeValueAsString(personForm))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andReturn()
             .response
@@ -211,24 +218,25 @@ class PersonControllerTest {
             .apply { person = mapper.readTree(this) }
 
         fun person(key: String): String = person!!.get(key).textValue()
-        /* DRY-Block */
+        // DRY-Block
 
-        val personUpdate = PersonForm(
-            firstname = "Morris",
-            lastname = "Moss",
-            email = "morris@reynholm-industires.co.uk",
-            position = "",
-            number = null,
-            userCode = null,
-            active = true
-        )
+        val personUpdate =
+            PersonForm(
+                firstname = "Morris",
+                lastname = "Moss",
+                email = "morris@reynholm-industires.co.uk",
+                position = "",
+                number = null,
+                userCode = null,
+                active = true,
+            )
 
         mvc.perform(
             put("$baseUrl/${person("uuid")}")
                 .with(user)
                 .content(mapper.writeValueAsString(personUpdate))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -244,26 +252,27 @@ class PersonControllerTest {
 
     @Test
     fun `should send a valid delete request to remove a person via DELETE-method`() {
-        /* DRY-Block */
-        val personForm = PersonForm(
-            firstname = "Morris",
-            lastname = "Moss",
-            email = "",
-            position = "",
-            number = null,
-            userCode = null,
-            active = true
-        )
+        // DRY-Block
+        val personForm =
+            PersonForm(
+                firstname = "Morris",
+                lastname = "Moss",
+                email = "",
+                position = "",
+                number = null,
+                userCode = null,
+                active = true,
+            )
 
         // need this user to compare generated fields
         // create a person so one can query that person via the PersonCode
-        var person: JsonNode? = null
+        var person: JsonNode?
         val user = createUser()
         mvc.perform(
             post(baseUrl).with(user)
                 .content(mapper.writeValueAsString(personForm))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andReturn()
             .response
@@ -275,7 +284,7 @@ class PersonControllerTest {
         mvc.perform(
             get("$baseUrl/${person("uuid")}")
                 .with(user)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -284,32 +293,32 @@ class PersonControllerTest {
             .andExpect(jsonPath("\$.uuid").value(person("uuid")))
             .andExpect(jsonPath("\$.firstname").value(person("firstname")))
             .andExpect(jsonPath("\$.lastname").value(person("lastname")))
-        /* DRY-Block */
+        // DRY-Block
 
         mvc.perform(
             delete("$baseUrl/${person("uuid")}")
                 .with(user)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isNoContent)
 
-        /* DRY-Bock */
+        // DRY-Bock
         mvc.perform(get("$baseUrl/${person("uuid")}").with(user).accept(APPLICATION_JSON))
             .andExpect(status().isNotFound)
-        /* DRY-Bock */
+        // DRY-Bock
     }
 
     @Test
     fun `should return an error while trying to get a non-existing person via GET-request`() {
         val user = createUser()
-        /* DRY-Bock */
+        // DRY-Bock
         mvc.perform(
             get("$baseUrl/3b7ab8e2-aeeb-4228-98d8-bd22fa141caa")
                 .with(user)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isNotFound)
-        /* DRY-Bock */
+        // DRY-Bock
     }
 
     @Test
@@ -337,11 +346,12 @@ class PersonControllerTest {
     }
 
     // *-- utility functions --*
-    private fun findUser(email: String) = user(
-        userAccountService
-            .findUserAccountPasswordByUserEmail(email)
-            ?.let { UserSecurityService.UserSecurityPassword(it) }
-    )
+    private fun findUser(email: String) =
+        user(
+            userAccountService
+                .findUserAccountPasswordByUserEmail(email)
+                ?.let { UserSecurityService.UserSecurityPassword(it) },
+        )
 
     @Test
     fun `expect to retrieve only active users with active=true query param`() {
@@ -350,14 +360,14 @@ class PersonControllerTest {
         mvc.perform(
             get("$baseUrl?active=true")
                 .with(user)
-                .accept("application/json")
+                .accept("application/json"),
         )
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath(
                     "$.*.active",
-                    Matchers.everyItem(Matchers.`is`(true))
-                )
+                    Matchers.everyItem(Matchers.`is`(true)),
+                ),
             )
     }
 }

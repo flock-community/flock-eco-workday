@@ -12,11 +12,9 @@ import java.time.LocalDate
 @Component
 @Import(CreateHelper::class)
 class DataHelper(
-    val createHelper: CreateHelper
+    val createHelper: CreateHelper,
 ) {
-
     fun createAssignmentData(): MutableMap<String, Assignment> {
-
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2021, 12, 31)
 
@@ -41,7 +39,6 @@ class DataHelper(
     }
 
     fun createContractExternalData(): MutableMap<String, Contract> {
-
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2021, 12, 31)
 
@@ -66,7 +63,6 @@ class DataHelper(
     }
 
     fun createContractInternalData(): MutableMap<String, Contract> {
-
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2021, 12, 31)
 
@@ -86,7 +82,6 @@ class DataHelper(
     }
 
     fun createSickDayData(): MutableMap<String, SickDay> {
-
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 5)
 
@@ -104,7 +99,6 @@ class DataHelper(
     }
 
     fun createHoliDayData(): MutableMap<String, LeaveDay> {
-
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 5)
 
@@ -122,7 +116,6 @@ class DataHelper(
     }
 
     fun createWorkDayData(): MutableMap<String, WorkDay> {
-
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 5)
 

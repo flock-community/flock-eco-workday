@@ -15,27 +15,33 @@ import javax.persistence.EntityListeners
 data class ContractService(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
-
     override val from: LocalDate,
     override val to: LocalDate? = null,
-
     val monthlyCosts: Double,
-    val description: String
+    val description: String,
 ) : Contract(id, code, from, to, null, ContractType.SERVICE) {
-    override fun totalCostsInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
+    override fun totalCostsInPeriod(
+        from: LocalDate,
+        to: LocalDate,
+    ): BigDecimal {
         TODO("Not yet implemented")
     }
 
-    override fun totalDaysInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
+    override fun totalDaysInPeriod(
+        from: LocalDate,
+        to: LocalDate,
+    ): BigDecimal {
         TODO("Not yet implemented")
     }
 
-    override fun equals(obj: Any?) = super.equals(obj)
+    override fun equals(other: Any?) = super.equals(other)
+
     override fun hashCode(): Int = super.hashCode()
 
-    fun totalCostInPeriod(yearMonth: YearMonth): BigDecimal = this
-        .toDateRangeInPeriod(yearMonth)
-        .map { this.monthlyCosts.toBigDecimal() }
-        .sum()
-        .divide(yearMonth.lengthOfMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
+    fun totalCostInPeriod(yearMonth: YearMonth): BigDecimal =
+        this
+            .toDateRangeInPeriod(yearMonth)
+            .map { this.monthlyCosts.toBigDecimal() }
+            .sum()
+            .divide(yearMonth.lengthOfMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
 }

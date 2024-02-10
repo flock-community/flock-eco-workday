@@ -15,20 +15,19 @@ import javax.servlet.http.HttpSession
 @RestController
 @RequestMapping("/api/invoices")
 class InvoiceController(
-    private val invoiceService: InvoiceService
+    private val invoiceService: InvoiceService,
 ) {
     @GetMapping
     @PreAuthorize("hasAuthority('InvoiceAuthority.READ')")
-    fun getInvoiceAll(
-        pageable: Pageable
-    ) = invoiceService.findAll(pageable)
-        .toResponse()
+    fun getInvoiceAll(pageable: Pageable) =
+        invoiceService.findAll(pageable)
+            .toResponse()
 
     @PostMapping("upload_invoice")
     @PreAuthorize("hasAuthority('InvoiceAuthority.WRITE')")
     fun uploadToExactonline(
         httpsSession: HttpSession,
-        @RequestBody body: UploadInvoice
+        @RequestBody body: UploadInvoice,
     ) = invoiceService
         .uploadExactonline(httpsSession, body.id)
         .toResponse()

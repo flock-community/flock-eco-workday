@@ -18,7 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 class WebSecurityConfig : WebSecurityConfigurerAdapter() {
-
     @Autowired
     lateinit var userAuthorityService: UserAuthorityService
 
@@ -30,17 +29,6 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Value("\${flock.eco.workday.login:TEST}")
     lateinit var loginType: String
-
-    private val SWAGGER_WHITELIST = arrayOf(
-        "/swagger-ui/",
-        "/swagger-resources",
-        "/swagger-resources/**",
-        "/v2/api-docs"
-    )
-
-    private val EXT_WHITELIST = arrayOf(
-        "/api/ext/calendar/**"
-    )
 
     override fun configure(http: HttpSecurity) {
         userAuthorityService.addAuthority(LeaveDayAuthority::class.java)
@@ -70,17 +58,33 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         http
             .cors()
         http
-            .addFilterBefore(GoogleTokenFilter(userAccountService), UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(GoogleTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
 
-        when (loginType.toUpperCase()) {
+        when (loginType.uppercase()) {
             "GOOGLE" ->
                 userSecurityService.googleLogin(http)
                     .and()
                     .defaultSuccessUrl("/", true)
                     .and()
                     .logout().logoutSuccessUrl("/")
+
             "DATABASE" -> userSecurityService.databaseLogin(http).loginPage("/").loginProcessingUrl("/login")
             else -> userSecurityService.testLogin(http).loginPage("/").loginProcessingUrl("/login")
         }
+    }
+
+    companion object {
+        private val SWAGGER_WHITELIST =
+            arrayOf(
+                "/swagger-ui/",
+                "/swagger-resources",
+                "/swagger-resources/**",
+                "/v2/api-docs",
+            )
+
+        private val EXT_WHITELIST =
+            arrayOf(
+                "/api/ext/calendar/**",
+            )
     }
 }

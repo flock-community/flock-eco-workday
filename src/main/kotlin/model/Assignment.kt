@@ -14,29 +14,22 @@ import javax.persistence.ManyToOne
 @Entity
 @EntityListeners(EventEntityListeners::class)
 data class Assignment(
-
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
-
     val role: String? = null,
-
     override val from: LocalDate,
     override val to: LocalDate?,
-
     override val hourlyRate: Double,
     override val hoursPerWeek: Int,
-
     @ManyToOne
     val client: Client,
-
     @ManyToOne
     val person: Person,
-
     @ManyToOne
     @JsonIgnoreProperties("assignments")
-    val project: Project? = null
-
+    val project: Project? = null,
 ) : Hourly, Period, AbstractCodeEntity(id, code) {
-    override fun equals(obj: Any?) = super.equals(obj)
+    override fun equals(other: Any?) = super.equals(other)
+
     override fun hashCode(): Int = super.hashCode()
 }

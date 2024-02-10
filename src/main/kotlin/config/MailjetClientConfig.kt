@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus
 
 @Configuration
 class MailjetClientConfig {
-
     @Bean
     @Profile("!test & !develop")
     fun mailjetClient(mailjetClientProperties: MailjetClientProperties) =
@@ -22,17 +21,16 @@ class MailjetClientConfig {
             ClientOptions.builder()
                 .apiKey(mailjetClientProperties.apiKey)
                 .apiSecretKey(mailjetClientProperties.apiSecretKey)
-                .build()
+                .build(),
         )
 
     @Bean
     @Profile("test", "develop")
-    fun dummyMailjetClient(): MailjetClient =
-        DummyMailjetClient()
+    fun dummyMailjetClient(): MailjetClient = DummyMailjetClient()
 }
 
 class DummyMailjetClient : MailjetClient(
-    ClientOptions.builder().build()
+    ClientOptions.builder().build(),
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -52,6 +50,8 @@ class DummyMailjetClient : MailjetClient(
         MailjetResponse(HttpStatus.OK.value(), "{}")
             .also { logRequest(request, HttpMethod.PUT) }
 
-    fun logRequest(request: MailjetRequest?, method: HttpMethod) =
-        logger.debug("Received $method, request = $request")
+    fun logRequest(
+        request: MailjetRequest?,
+        method: HttpMethod,
+    ) = logger.debug("Received $method, request = $request")
 }

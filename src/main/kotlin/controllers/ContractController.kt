@@ -31,15 +31,15 @@ import java.util.UUID
 @RequestMapping("/api")
 class ContractController(
     private val userService: UserService,
-    private val contractService: ContractService
+    private val contractService: ContractService,
 ) {
-
     @GetMapping("/contracts")
     @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
-    fun findAll(page: Pageable): ResponseEntity<List<Contract>> = contractService
-        .findAll(page)
-        .sortedBy { it.to }
-        .toResponse()
+    fun findAll(page: Pageable): ResponseEntity<List<Contract>> =
+        contractService
+            .findAll(page)
+            .sortedBy { it.to }
+            .toResponse()
 
     @GetMapping("/contracts", params = ["to"])
     @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
@@ -55,18 +55,19 @@ class ContractController(
     fun findAllByToBetween(
         page: Pageable,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) start: LocalDate?,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) end: LocalDate?
-    ): ResponseEntity<List<Contract>> = contractService
-        .findAllByToBetween(start, end)
-        .sortedByDescending { it.to }
-        .toResponse()
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) end: LocalDate?,
+    ): ResponseEntity<List<Contract>> =
+        contractService
+            .findAllByToBetween(start, end)
+            .sortedByDescending { it.to }
+            .toResponse()
 
     @GetMapping("/contracts", params = ["personId"])
     @PreAuthorize("hasAuthority('ContractAuthority.READ')")
     fun findAllByPersonCode(
         @RequestParam(required = false) personId: UUID?,
         page: Pageable,
-        principal: Principal
+        principal: Principal,
     ): ResponseEntity<List<Contract>> =
         principal.findUser()
             ?.let { user ->
@@ -79,38 +80,51 @@ class ContractController(
 
     @GetMapping("/contracts/{code}")
     @PreAuthorize("hasAuthority('ContractAuthority.READ')")
-    fun findByCode(@PathVariable code: String): ResponseEntity<Contract> = contractService
-        .findByCode(code)
-        .toResponse()
+    fun findByCode(
+        @PathVariable code: String,
+    ): ResponseEntity<Contract> =
+        contractService
+            .findByCode(code)
+            .toResponse()
 
     @PostMapping("/contracts-internal")
     @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun postInternal(@RequestBody form: ContractInternalForm, principal: Principal) = principal
+    fun postInternal(
+        @RequestBody form: ContractInternalForm,
+        principal: Principal,
+    ) = principal
         .findUser()
         ?.let { person ->
-            val personCode = when {
-                person.isAdmin() -> form.personId
-                else -> UUID.fromString(person.code)
-            }
+            val personCode =
+                when {
+                    person.isAdmin() -> form.personId
+                    else -> UUID.fromString(person.code)
+                }
             contractService.create(form.copy(personId = personCode))
         }
         .toResponse()
 
     @PostMapping("/contracts-external")
     @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun postExternal(@RequestBody form: ContractExternalForm) = contractService
+    fun postExternal(
+        @RequestBody form: ContractExternalForm,
+    ) = contractService
         .create(form)
         .toResponse()
 
     @PostMapping("/contracts-management")
     @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun postManagement(@RequestBody form: ContractManagementForm) = contractService
+    fun postManagement(
+        @RequestBody form: ContractManagementForm,
+    ) = contractService
         .create(form)
         .toResponse()
 
     @PostMapping("/contracts-service")
     @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun postService(@RequestBody form: ContractServiceForm) = contractService
+    fun postService(
+        @RequestBody form: ContractServiceForm,
+    ) = contractService
         .create(form)
         .toResponse()
 
@@ -119,7 +133,7 @@ class ContractController(
     fun putInternal(
         @PathVariable code: String,
         @RequestBody form: ContractInternalForm,
-        principal: Principal
+        principal: Principal,
     ) = contractService
         .update(code, form)
         .toResponse()
@@ -129,7 +143,7 @@ class ContractController(
     fun putExternal(
         @PathVariable code: String,
         @RequestBody form: ContractExternalForm,
-        principal: Principal
+        principal: Principal,
     ) = contractService
         .update(code, form)
         .toResponse()
@@ -139,7 +153,7 @@ class ContractController(
     fun putManagement(
         @PathVariable code: String,
         @RequestBody form: ContractManagementForm,
-        principal: Principal
+        principal: Principal,
     ) = contractService
         .update(code, form)
         .toResponse()
@@ -149,22 +163,27 @@ class ContractController(
     fun putService(
         @PathVariable code: String,
         @RequestBody form: ContractServiceForm,
-        principal: Principal
+        principal: Principal,
     ) = contractService
         .update(code, form)
         .toResponse()
 
     @DeleteMapping("/contracts/{code}")
     @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
-    fun delete(@PathVariable code: String, principal: Principal) = contractService
+    fun delete(
+        @PathVariable code: String,
+        principal: Principal,
+    ) = contractService
         .deleteByCode(code)
         .toResponse()
         .toResponse()
 
-    private fun Principal.findUser(): User? = userService
-        .findByCode(this.name)
+    private fun Principal.findUser(): User? =
+        userService
+            .findByCode(this.name)
 
-    private fun User.isAdmin(): Boolean = this
-        .authorities
-        .contains(ContractAuthority.ADMIN.toName())
+    private fun User.isAdmin(): Boolean =
+        this
+            .authorities
+            .contains(ContractAuthority.ADMIN.toName())
 }

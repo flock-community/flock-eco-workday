@@ -5,6 +5,9 @@ package community.flock.eco.workday.utils
  * @param end <code>Int</code> range end. default 10
  * @return random generated number from range
  */
-fun randomNumber(start: Int = 1, end: Int = 10): Int {
+fun randomNumber(
+    start: Int = 1,
+    end: Int = 10,
+): Int {
     return (start..end).shuffled().first()
 }

@@ -4,7 +4,10 @@ import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.WorkDayForm
-import community.flock.eco.workday.model.*
+import community.flock.eco.workday.model.Assignment
+import community.flock.eco.workday.model.Status
+import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.model.WorkDaySheet
 import community.flock.eco.workday.repository.WorkDayRepository
 import community.flock.eco.workday.services.email.WorkdayEmailService
 import org.springframework.beans.factory.annotation.Value
@@ -22,24 +25,35 @@ class WorkDayService(
     private val assignmentService: AssignmentService,
     private val entityManager: EntityManager,
     private val emailService: WorkdayEmailService,
-    @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String
+    @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String,
 ) {
+    fun findByCode(code: String): WorkDay? =
+        workDayRepository
+            .findByCode(code)
+            .toNullable()
 
-    fun findByCode(code: String): WorkDay? = workDayRepository
-        .findByCode(code)
-        .toNullable()
+    fun findAllByPersonUuid(personCode: UUID) =
+        workDayRepository
+            .findAllByAssignmentPersonUuid(personCode)
 
-    fun findAllByPersonUuid(personCode: UUID) = workDayRepository
-        .findAllByAssignmentPersonUuid(personCode)
-
-    fun findAllByPersonUuid(personCode: UUID, pageable: Pageable) = workDayRepository
+    fun findAllByPersonUuid(
+        personCode: UUID,
+        pageable: Pageable,
+    ) = workDayRepository
         .findAllByAssignmentPersonUuid(personCode, pageable)
 
-    fun findAllByPersonUserCode(userCode: String, pageable: Pageable) = workDayRepository
+    fun findAllByPersonUserCode(
+        userCode: String,
+        pageable: Pageable,
+    ) = workDayRepository
         .findAllByAssignmentPersonUserCode(userCode, pageable)
 
-    fun findAllActive(from: LocalDate, to: LocalDate): Iterable<WorkDay> {
-        val query = "SELECT it FROM WorkDay it LEFT JOIN FETCH it.days WHERE it.from <= :to AND (it.to is null OR it.to >= :from)"
+    fun findAllActive(
+        from: LocalDate,
+        to: LocalDate,
+    ): Iterable<WorkDay> {
+        val query =
+            "SELECT it FROM WorkDay it LEFT JOIN FETCH it.days WHERE it.from <= :to AND (it.to is null OR it.to >= :from)"
         return entityManager
             .createQuery(query, WorkDay::class.java)
             .setParameter("from", from)
@@ -48,8 +62,19 @@ class WorkDayService(
             .toSet()
     }
 
-    fun findAllActiveByPerson(from: LocalDate, to: LocalDate, personCode: UUID): Iterable<WorkDay> {
-        val query = "SELECT it FROM WorkDay it LEFT JOIN FETCH it.days WHERE it.from <= :to AND (it.to is null OR it.to >= :from) AND it.assignment.person.uuid = :personCode"
+    fun findAllActiveByPerson(
+        from: LocalDate,
+        to: LocalDate,
+        personCode: UUID,
+    ): Iterable<WorkDay> {
+        val query =
+            """SELECT it
+                |FROM WorkDay it
+                |LEFT JOIN FETCH it.days
+                |WHERE it.from <= :to
+                |AND (it.to is null OR it.to >= :from)
+                |AND it.assignment.person.uuid = :personCode
+            """.trimMargin()
         return entityManager
             .createQuery(query, WorkDay::class.java)
             .setParameter("from", from)
@@ -61,15 +86,19 @@ class WorkDayService(
 
     fun findAllByStatus(status: Status) = workDayRepository.findAllByStatus(status)
 
-    fun create(form: WorkDayForm): WorkDay = form.copy(status = Status.REQUESTED)
-        .validate()
-        .consume()
-        .save()
-        .also {
-            emailService.sendNotification(it)
-        }
+    fun create(form: WorkDayForm): WorkDay =
+        form.copy(status = Status.REQUESTED)
+            .validate()
+            .consume()
+            .save()
+            .also {
+                emailService.sendNotification(it)
+            }
 
-    fun update(workDayCode: String, form: WorkDayForm): WorkDay {
+    fun update(
+        workDayCode: String,
+        form: WorkDayForm,
+    ): WorkDay {
         val currentWorkday = workDayRepository.findByCode(workDayCode).toNullable()
         return currentWorkday
             .run {
@@ -103,31 +132,32 @@ class WorkDayService(
     @Transactional
     fun deleteByCode(code: String) = workDayRepository.deleteByCode(code)
 
-    fun getTotalHoursByAssignment(assignment: Assignment) =
-        workDayRepository.getTotalHoursByAssignment(assignment)
+    fun getTotalHoursByAssignment(assignment: Assignment) = workDayRepository.getTotalHoursByAssignment(assignment)
 
-    private fun WorkDayForm.validate() = apply {
-        val daysBetween = ChronoUnit.DAYS.between(this.from, this.to) + 1
-        if (this.hours < 0) {
-            throw error("Hours cannot have negative value")
-        }
-        if (this.days?.any { it < 0 } == true) {
-            throw error("Days cannot have negative value")
-        }
-        if (this.days != null) {
-            if (this.days.size.toLong() != daysBetween) {
-                throw error("amount of days ($daysBetween) not equal to period (${this.days.size})")
+    private fun WorkDayForm.validate() =
+        apply {
+            val daysBetween = ChronoUnit.DAYS.between(this.from, this.to) + 1
+            if (this.hours < 0) {
+                error("Hours cannot have negative value")
             }
-            if (this.days.sum() != this.hours) {
-                throw error("Total hour does not match sum: ${this.days.sum()} hours: ${this.hours}")
+            if (this.days?.any { it < 0 } == true) {
+                error("Days cannot have negative value")
+            }
+            if (this.days != null) {
+                if (this.days.size.toLong() != daysBetween) {
+                    error("amount of days ($daysBetween) not equal to period (${this.days.size})")
+                }
+                if (this.days.sum() != this.hours) {
+                    error("Total hour does not match sum: ${this.days.sum()} hours: ${this.hours}")
+                }
             }
         }
-    }
 
     private fun WorkDayForm.consume(it: WorkDay? = null): WorkDay {
-        val assignment = assignmentService
-            .findByCode(this.assignmentCode)
-            ?: throw error("Cannot find assignment: ${this.assignmentCode}")
+        val assignment =
+            assignmentService
+                .findByCode(this.assignmentCode)
+                ?: error("Cannot find assignment: ${this.assignmentCode}")
 
         return WorkDay(
             id = it?.id ?: 0L,
@@ -138,12 +168,13 @@ class WorkDayService(
             hours = this.hours,
             days = this.days,
             status = this.status,
-            sheets = this.sheets.map {
-                WorkDaySheet(
-                    name = it.name,
-                    file = it.file
-                )
-            }
+            sheets =
+                this.sheets.map {
+                    WorkDaySheet(
+                        name = it.name,
+                        file = it.file,
+                    )
+                },
         )
     }
 

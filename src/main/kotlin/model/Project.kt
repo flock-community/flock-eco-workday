@@ -15,11 +15,10 @@ data class Project(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     override val id: Long = 0,
-
     override val code: String = UUID.randomUUID().toString(),
-
     val name: String,
 ) : AbstractCodeEntity(id, code) {
-    override fun equals(obj: Any?) = super.equals(obj)
+    override fun equals(other: Any?) = super.equals(other)
+
     override fun hashCode(): Int = super.hashCode()
 }
