@@ -7,15 +7,12 @@ import community.flock.eco.workday.graphql.kotlin.TravelExpenseInput
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.mappers.CostExpenseMapper
 import community.flock.eco.workday.mappers.TravelExpenseMapper
-import community.flock.eco.workday.model.Expense
 import community.flock.eco.workday.services.CostExpenseService
 import community.flock.eco.workday.services.DocumentService
 import community.flock.eco.workday.services.ExpenseService
 import community.flock.eco.workday.services.TravelExpenseService
-import community.flock.eco.workday.services.isUser
 import org.springframework.boot.web.server.MimeMappings
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -30,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.server.ResponseStatusException
 import java.util.UUID
 
 @RestController
@@ -158,13 +154,6 @@ private fun Authentication.isAdmin(): Boolean =
     this.authorities
         .map { it.authority }
         .contains(ExpenseAuthority.ADMIN.toName())
-
-private fun Expense.applyAuthentication(authentication: Authentication) =
-    apply {
-        if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has not access to expenses: ${this.id}")
-        }
-    }
 
 private fun getMediaType(name: String): MediaType {
     val extension = java.io.File(name).extension.lowercase()

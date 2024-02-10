@@ -17,6 +17,4 @@ data class Project(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
     val name: String,
-) : AbstractCodeEntity(id, code) {
-    override fun equals(obj: Any?) = super.equals(obj)
-}
+) : AbstractCodeEntity(id, code)

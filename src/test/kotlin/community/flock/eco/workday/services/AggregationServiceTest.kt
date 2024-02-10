@@ -333,7 +333,7 @@ class AggregationServiceTest(
     ) {
         val days = input.map { it * 8.0 }
         val hours = days.sum()
-        createHelper.createWorkDay(assignment, from, to, hours, days)
+        this.createWorkDay(assignment, from, to, hours, days)
     }
 
     @Test

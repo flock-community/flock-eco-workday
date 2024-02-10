@@ -34,8 +34,6 @@ data class ContractService(
         TODO("Not yet implemented")
     }
 
-    override fun equals(obj: Any?) = super.equals(obj)
-
     fun totalCostInPeriod(yearMonth: YearMonth): BigDecimal =
         this
             .toDateRangeInPeriod(yearMonth)

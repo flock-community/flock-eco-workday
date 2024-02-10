@@ -5,12 +5,10 @@ import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.forms.LeaveDayForm
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.model.LeaveDay
-import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.services.LeaveDayService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.isUser
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -105,19 +103,6 @@ class LeaveDayController(
         apply {
             if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
                 throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
-            }
-        }
-
-    private fun LeaveDay.applyAllowedToCreate(
-        form: LeaveDayForm,
-        authentication: Authentication,
-    ): LeaveDay =
-        apply {
-            if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
-                throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change workday")
-            }
-            if (form.status !== this.status && !authentication.isAdmin()) {
-                throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
             }
         }
 }

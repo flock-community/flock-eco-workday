@@ -5,7 +5,6 @@ import community.flock.eco.workday.authorities.WorkDayAuthority
 import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.model.WorkDay
-import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.WorkDayService
 import community.flock.eco.workday.services.isUser
 import org.springframework.data.domain.PageRequest
@@ -33,7 +32,6 @@ import java.util.UUID
 @RequestMapping("/api/workdays")
 class WorkdayController(
     private val service: WorkDayService,
-    private val personService: PersonService,
 ) {
     @GetMapping(params = ["personId"])
     @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")

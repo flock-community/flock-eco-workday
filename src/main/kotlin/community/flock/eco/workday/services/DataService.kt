@@ -1,6 +1,5 @@
 package community.flock.eco.workday.services
 
-import community.flock.eco.workday.interfaces.filterInRange
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.Contract
 import community.flock.eco.workday.model.Event
@@ -41,16 +40,6 @@ class DataService(
         contractService.findAllActive(from, to),
     )
 
-    fun findAllData(personId: UUID) =
-        Data(
-            sickDayService.findAllByPersonUuid(personId),
-            leaveDayService.findAllByPersonUuid(personId),
-            workDayService.findAllByPersonUuid(personId),
-            eventService.findAllByPersonUuid(personId),
-            assignmentService.findAllByPersonUuid(personId),
-            contractService.findAllByPersonUuid(personId),
-        )
-
     fun findAllData(
         from: LocalDate,
         to: LocalDate,
@@ -64,13 +53,3 @@ class DataService(
         contractService.findAllActiveByPerson(from, to, personId),
     )
 }
-
-fun Data.filterInRange(date: LocalDate): Data =
-    Data(
-        sickDay.filterInRange(date),
-        leaveDay.filterInRange(date),
-        workDay.filterInRange(date),
-        eventDay.filterInRange(date),
-        assignment.filterInRange(date),
-        contract.filterInRange(date),
-    )

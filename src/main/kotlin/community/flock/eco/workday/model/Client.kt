@@ -12,6 +12,4 @@ data class Client(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
     val name: String,
-) : AbstractCodeEntity(id, code) {
-    override fun equals(other: Any?) = super.equals(other)
-}
+) : AbstractCodeEntity(id, code)
