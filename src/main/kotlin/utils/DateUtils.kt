@@ -9,26 +9,30 @@ import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 
 object DateUtils {
-
     // TODO Dit gaat niet werken wanneer 'to' null is throw exception
-    fun dateRange(from: LocalDate, to: LocalDate?) = (0..ChronoUnit.DAYS.between(from, to))
+    fun dateRange(
+        from: LocalDate,
+        to: LocalDate?,
+    ) = (0..ChronoUnit.DAYS.between(from, to))
         .map { from.plusDays(it) }
 
-    fun LocalDate.isWorkingDay() = listOf(
-        DayOfWeek.MONDAY,
-        DayOfWeek.TUESDAY,
-        DayOfWeek.WEDNESDAY,
-        DayOfWeek.THURSDAY,
-        DayOfWeek.FRIDAY
-    ).contains(this.dayOfWeek)
+    fun LocalDate.isWorkingDay() =
+        listOf(
+            DayOfWeek.MONDAY,
+            DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY,
+            DayOfWeek.THURSDAY,
+            DayOfWeek.FRIDAY,
+        ).contains(this.dayOfWeek)
 
     fun YearMonth.toDateRange() = dateRange(this.atDay(1), this.atEndOfMonth())
 
     fun YearMonth.toPeriod() = FromToPeriod(this.atDay(1), this.atEndOfMonth())
 
-    fun List<LocalDate>.filterInPeriod(period: Period) = this
-        .filter { period.from <= it }
-        .filter { period.to?.let { to -> to >= it } ?: true }
+    fun List<LocalDate>.filterInPeriod(period: Period) =
+        this
+            .filter { period.from <= it }
+            .filter { period.to?.let { to -> to >= it } ?: true }
 
     fun YearMonth.countWorkDaysInMonth(): Int {
         val from = this.atDay(1)

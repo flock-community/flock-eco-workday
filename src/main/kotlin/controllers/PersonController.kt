@@ -33,52 +33,67 @@ import java.util.UUID
 @RequestMapping("/api/persons")
 class PersonController(
     private val service: PersonService,
-    private val userService: UserService
+    private val userService: UserService,
 ) {
-
     @GetMapping("/me")
-    fun findByMe(authentication: Authentication): ResponseEntity<Person> = service
-        .findByUserCode(authentication.name)
-        .toResponse()
+    fun findByMe(authentication: Authentication): ResponseEntity<Person> =
+        service
+            .findByUserCode(authentication.name)
+            .toResponse()
 
     @GetMapping
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
-    fun findAll(pageable: Pageable, principal: Principal, @RequestParam active: Boolean?): ResponseEntity<List<Person>> {
-        val page = active
-            ?.let { service.findAllByActive(pageable, active) }
-            ?: service.findAll(pageable)
+    fun findAll(
+        pageable: Pageable,
+        principal: Principal,
+        @RequestParam active: Boolean?,
+    ): ResponseEntity<List<Person>> {
+        val page =
+            active
+                ?.let { service.findAllByActive(pageable, active) }
+                ?: service.findAll(pageable)
         return page.toResponse()
     }
 
     @GetMapping("/{uuid}")
     @PreAuthorize("hasAuthority('PersonAuthority.READ')")
-    fun findByUui(@PathVariable uuid: UUID, principal: Principal): ResponseEntity<Person> = principal
-        .findUser()
-        ?.let {
-            when {
-                it.isAdmin() -> service.findByUuid(uuid)?.toResponse()
-                else -> service.findByUserCode(it.code)?.toResponse()
+    fun findByUui(
+        @PathVariable uuid: UUID,
+        principal: Principal,
+    ): ResponseEntity<Person> =
+        principal
+            .findUser()
+            ?.let {
+                when {
+                    it.isAdmin() -> service.findByUuid(uuid)?.toResponse()
+                    else -> service.findByUserCode(it.code)?.toResponse()
+                }
+                    ?: throw ResponseStatusException(NOT_FOUND, "No Item found with this PersonUui")
             }
-                ?: throw ResponseStatusException(NOT_FOUND, "No Item found with this PersonUui")
-        }
-        ?: throw ResponseStatusException(UNAUTHORIZED)
+            ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @GetMapping(params = ["search"])
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
-    fun findAllByFullName(pageable: Pageable, @RequestParam search: String) =
-        service
-            .findAllByFullName(pageable, search)
-            .toResponse()
+    fun findAllByFullName(
+        pageable: Pageable,
+        @RequestParam search: String,
+    ) = service
+        .findAllByFullName(pageable, search)
+        .toResponse()
 
     @PostMapping
     @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
-    fun post(@RequestBody form: PersonForm, principal: Principal) = principal
+    fun post(
+        @RequestBody form: PersonForm,
+        principal: Principal,
+    ) = principal
         .findUser()
         ?.let { user ->
-            val userUui = when {
-                user.isAdmin() -> null
-                else -> user.code
-            }
+            val userUui =
+                when {
+                    user.isAdmin() -> null
+                    else -> user.code
+                }
             form.copy(userCode = userUui)
                 .let { service.create(it) }
         }
@@ -90,45 +105,49 @@ class PersonController(
     fun put(
         @PathVariable code: UUID,
         @RequestBody form: PersonForm,
-        principal: Principal
+        principal: Principal,
     ) = principal
         .findUser()
         ?.let {
-            val userCode = when {
-                it.isAdmin() -> form.userCode
-                else -> it.code
-            }
+            val userCode =
+                when {
+                    it.isAdmin() -> form.userCode
+                    else -> it.code
+                }
             form.copy(userCode = userCode)
                 .let {
                     service.update(code, form)
                 }
                 ?.toResponse()
                 ?: throw ResponseStatusException(
-                    BAD_REQUEST, "Cannot perform PUT on given item. PersonUui cannot be found. Use POST Method"
+                    BAD_REQUEST, "Cannot perform PUT on given item. PersonUui cannot be found. Use POST Method",
                 )
         }
         ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @DeleteMapping("/{personId}")
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
-    fun delete(@PathVariable personId: UUID, principal: Principal) =
-        principal
-            .findUser()
-            ?.let {
-                service
-                    .deleteByUuid(personId)
-                    .toResponse()
-            }
-            ?: throw ResponseStatusException(UNAUTHORIZED)
+    fun delete(
+        @PathVariable personId: UUID,
+        principal: Principal,
+    ) = principal
+        .findUser()
+        ?.let {
+            service
+                .deleteByUuid(personId)
+                .toResponse()
+        }
+        ?: throw ResponseStatusException(UNAUTHORIZED)
 
     @GetMapping("/specialDates")
     @PreAuthorize("hasAuthority('PersonAuthority.READ')")
     fun specialDates(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) start: LocalDate,
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) end: LocalDate
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) end: LocalDate,
     ) = service.findAllPersonEvents(start, end)
 
     // *-- utility functions --*
+
     /**
      * add findUser() function to Principal
      * @return <code>User?</code> a user if found with given user code in the db

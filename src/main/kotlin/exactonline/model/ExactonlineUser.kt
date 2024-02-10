@@ -14,5 +14,5 @@ data class ExactonlineUser(
     val firstName: String,
     val middleName: String?,
     val lastName: String,
-    val email: String
+    val email: String,
 )

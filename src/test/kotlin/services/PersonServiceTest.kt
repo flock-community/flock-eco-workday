@@ -31,15 +31,16 @@ class PersonServiceTest {
     fun `find person events when birthday is in next year`() {
         val start = LocalDate.of(2022, Month.DECEMBER, 1)
         val end = LocalDate.of(2023, Month.JANUARY, 31)
-        val person = Person(
-            firstname = "john",
-            lastname = "doe",
-            email = "john@doe",
-            position = "Software engineer",
-            number = null,
-            user = null,
-            birthdate = LocalDate.of(1985, Month.JANUARY, 1)
-        )
+        val person =
+            Person(
+                firstname = "john",
+                lastname = "doe",
+                email = "john@doe",
+                position = "Software engineer",
+                number = null,
+                user = null,
+                birthdate = LocalDate.of(1985, Month.JANUARY, 1),
+            )
 
         every { repository.findAllByActive(Pageable.unpaged(), true) } returns PageImpl(listOf(person))
 
@@ -52,15 +53,16 @@ class PersonServiceTest {
     fun `find person events same year`() {
         val start = LocalDate.of(2022, Month.DECEMBER, 1)
         val end = LocalDate.of(2022, Month.DECEMBER, 31)
-        val person = Person(
-            firstname = "john",
-            lastname = "doe",
-            email = "john@doe",
-            position = "Software engineer",
-            number = null,
-            user = null,
-            birthdate = LocalDate.of(1985, Month.DECEMBER, 15)
-        )
+        val person =
+            Person(
+                firstname = "john",
+                lastname = "doe",
+                email = "john@doe",
+                position = "Software engineer",
+                number = null,
+                user = null,
+                birthdate = LocalDate.of(1985, Month.DECEMBER, 15),
+            )
 
         every { repository.findAllByActive(Pageable.unpaged(), true) } returns PageImpl(listOf(person))
 

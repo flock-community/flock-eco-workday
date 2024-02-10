@@ -17,41 +17,30 @@ import javax.persistence.OneToOne
 
 @Entity
 data class Person(
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long = 0,
-
     @Column(name = "code")
     val uuid: UUID = UUID.randomUUID(),
-
     val firstname: String,
     val lastname: String,
     val email: String,
     val position: String,
     val number: String?,
-
     val birthdate: LocalDate? = null,
     val joinDate: LocalDate? = null,
-
     val active: Boolean = true,
     val lastActiveAt: Instant? = null,
-
     val reminders: Boolean = false,
     val receiveEmail: Boolean = true,
-
     val shoeSize: String? = null,
     val shirtSize: String? = null,
-
     val googleDriveId: String? = null,
-
     @OneToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)
-    val user: User?
-
+    val user: User?,
 ) {
-
     fun getFullName(): String {
         return "$firstname $lastname"
     }
@@ -60,11 +49,11 @@ data class Person(
         return Objects.hashCode(uuid)
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj) return true
-        if (obj == null) return false
-        if (javaClass != obj.javaClass) return false
-        val other = obj as Person
-        return Objects.equals(uuid, other.uuid)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null) return false
+        if (javaClass != other.javaClass) return false
+        val otherPerson = other as Person
+        return Objects.equals(uuid, otherPerson.uuid)
     }
 }

@@ -11,7 +11,10 @@ import java.time.format.DateTimeFormatter
 class LeaveDayEmailService(private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
     private val log: Logger = LoggerFactory.getLogger(LeaveDayEmailService::class.java)
 
-    fun sendUpdate(old: LeaveDay, new: LeaveDay) {
+    fun sendUpdate(
+        old: LeaveDay,
+        new: LeaveDay,
+    ) {
         val recipient = new.person
 
         var subject = "Update in Leave Day."
@@ -28,8 +31,11 @@ class LeaveDayEmailService(private val emailService: EmailService, private val m
 
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
         emailService.sendEmailMessage(
-            recipient.receiveEmail, recipient.email, subject, templateVariables,
-            mailjetTemplateProperties.updateTemplateId
+            recipient.receiveEmail,
+            recipient.email,
+            subject,
+            templateVariables,
+            mailjetTemplateProperties.updateTemplateId,
         )
     }
 
@@ -38,15 +44,17 @@ class LeaveDayEmailService(private val emailService: EmailService, private val m
         val employee = leaveDay.person
 
         val subject = "Update in Leave Day."
-        val emailMessage = "Er is een update van ${employee.firstname} in de Leave Day aanvraag" +
-            " (van: ${leaveDay.from.format(timeDateFormat)} tot: ${leaveDay.to.format(timeDateFormat)})."
+        val emailMessage =
+            "Er is een update van ${employee.firstname} in de Leave Day aanvraag" +
+                " (van: ${leaveDay.from.format(timeDateFormat)} tot: ${leaveDay.to.format(timeDateFormat)})."
         val templateVariables = emailService.createTemplateVariables(employee.firstname, emailMessage)
 
         log.info("Email generated for LeaveDay notification for ${employee.email}")
 
         emailService.sendEmailNotification(
-            subject, templateVariables,
-            mailjetTemplateProperties.notificationTemplateId
+            subject,
+            templateVariables,
+            mailjetTemplateProperties.notificationTemplateId,
         )
     }
 }

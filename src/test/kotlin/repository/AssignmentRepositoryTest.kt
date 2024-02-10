@@ -30,9 +30,8 @@ class AssignmentRepositoryTest(
     @Autowired private val personRepository: PersonRepository,
     @Autowired private val projectRepository: ProjectRepository,
     @Autowired private val clientRepository: ClientRepository,
-    @Autowired private val repository: AssignmentRepository
+    @Autowired private val repository: AssignmentRepository,
 ) {
-
     private final val assignmentCode1 = UUID.randomUUID()
     private final val assignmentCode2 = UUID.randomUUID()
     private final val assignmentCode3 = UUID.randomUUID()
@@ -41,40 +40,44 @@ class AssignmentRepositoryTest(
     private final val projectCode = UUID.randomUUID()
 
     fun loadData() {
-        val client = clientRepository.save(
-            Client(
-                code = UUID.randomUUID().toString(),
-                name = "Test Client"
+        val client =
+            clientRepository.save(
+                Client(
+                    code = UUID.randomUUID().toString(),
+                    name = "Test Client",
+                ),
             )
-        )
-        val person1 = personRepository.save(
-            Person(
-                uuid = personCode1,
-                firstname = "Denholm",
-                lastname = "Reynholm",
-                email = "denholm@reynholm-industries.co.uk",
-                position = "Chief Executive Officer",
-                number = null,
-                user = null
+        val person1 =
+            personRepository.save(
+                Person(
+                    uuid = personCode1,
+                    firstname = "Denholm",
+                    lastname = "Reynholm",
+                    email = "denholm@reynholm-industries.co.uk",
+                    position = "Chief Executive Officer",
+                    number = null,
+                    user = null,
+                ),
             )
-        )
-        val person2 = personRepository.save(
-            Person(
-                uuid = personCode2,
-                firstname = "Denholm",
-                lastname = "Reynholm",
-                email = "denholm@reynholm-industries.co.uk",
-                position = "Chief Executive Officer",
-                number = null,
-                user = null
+        val person2 =
+            personRepository.save(
+                Person(
+                    uuid = personCode2,
+                    firstname = "Denholm",
+                    lastname = "Reynholm",
+                    email = "denholm@reynholm-industries.co.uk",
+                    position = "Chief Executive Officer",
+                    number = null,
+                    user = null,
+                ),
             )
-        )
-        val project = projectRepository.save(
-            Project(
-                code = projectCode.toString(),
-                name = "Project 1"
+        val project =
+            projectRepository.save(
+                Project(
+                    code = projectCode.toString(),
+                    name = "Project 1",
+                ),
             )
-        )
         repository.save(
             Assignment(
                 code = assignmentCode1.toString(),
@@ -84,7 +87,7 @@ class AssignmentRepositoryTest(
                 hoursPerWeek = 36,
                 client = client,
                 person = person1,
-            )
+            ),
         )
         repository.save(
             Assignment(
@@ -95,8 +98,8 @@ class AssignmentRepositoryTest(
                 hoursPerWeek = 36,
                 client = client,
                 person = person2,
-                project = project
-            )
+                project = project,
+            ),
         )
         repository.save(
             Assignment(
@@ -107,8 +110,8 @@ class AssignmentRepositoryTest(
                 hoursPerWeek = 36,
                 client = client,
                 person = person2,
-                project = project
-            )
+                project = project,
+            ),
         )
     }
 

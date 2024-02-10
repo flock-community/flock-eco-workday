@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class ApplicationConstants {
-
     @Value("\${workday.average_sick_days}")
     lateinit var averageSickDays: String
 

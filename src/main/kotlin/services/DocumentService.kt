@@ -9,7 +9,7 @@ import java.util.UUID
 
 @Service
 class DocumentService(
-    @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String
+    @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String,
 ) {
     companion object {
         val storage = StorageOptions.getDefaultInstance().service

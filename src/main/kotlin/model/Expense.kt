@@ -15,24 +15,18 @@ import javax.persistence.ManyToOne
 
 @Entity
 @Inheritance(
-    strategy = InheritanceType.JOINED
+    strategy = InheritanceType.JOINED,
 )
 @EntityListeners(EventEntityListeners::class)
 abstract class Expense(
-
     @Id
     open val id: UUID = UUID.randomUUID(),
-
     open val date: LocalDate = LocalDate.now(),
     open val description: String? = null,
-
     @ManyToOne
     open val person: Person,
-
     @Enumerated(EnumType.STRING)
     override val status: Status = Status.REQUESTED,
-
     @Enumerated(EnumType.STRING)
-    open val type: ExpenseType
-
+    open val type: ExpenseType,
 ) : Approve

@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service
 class CostExpenseMailService(private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
     private val log: Logger = LoggerFactory.getLogger(CostExpenseMailService::class.java)
 
-    fun sendUpdate(old: CostExpense, new: CostExpense) {
+    fun sendUpdate(
+        old: CostExpense,
+        new: CostExpense,
+    ) {
         val recipient = new.person
 
         var subject = "Update in CostExpense!"
@@ -27,8 +30,11 @@ class CostExpenseMailService(private val emailService: EmailService, private val
 
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
         emailService.sendEmailMessage(
-            recipient.receiveEmail, recipient.email, subject, templateVariables,
-            mailjetTemplateProperties.updateTemplateId
+            recipient.receiveEmail,
+            recipient.email,
+            subject,
+            templateVariables,
+            mailjetTemplateProperties.updateTemplateId,
         )
     }
 
@@ -42,8 +48,9 @@ class CostExpenseMailService(private val emailService: EmailService, private val
         log.info("Email generated for CostExpense notification for ${employee.email}")
 
         emailService.sendEmailNotification(
-            subject, templateVariables,
-            mailjetTemplateProperties.notificationTemplateId
+            subject,
+            templateVariables,
+            mailjetTemplateProperties.notificationTemplateId,
         )
     }
 }

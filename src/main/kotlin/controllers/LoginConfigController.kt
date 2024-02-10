@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/login")
 class LoginConfigController {
-
     data class LoginType(
-        val type: String
+        val type: String,
     )
 
     @Value("\${flock.eco.workday.login:TEST}")

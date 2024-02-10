@@ -15,31 +15,40 @@ class EmailService(private val emailSendService: MailjetService, private val not
         recipientEmail: String,
         emailSubject: String,
         templateVariables: JSONObject,
-        templateId: Int
+        templateId: Int,
     ) {
         if (!personReceiveEmail) {
             log.info("Dit not send generated email because of the receiveEmail setting.")
         } else {
             emailSendService.sendEmailMessage(
                 EmailMessageProperties(
-                    recipientEmail, emailSubject, templateVariables,
-                    templateId
-                )
+                    recipientEmail,
+                    emailSubject,
+                    templateVariables,
+                    templateId,
+                ),
             )
         }
     }
 
-    fun sendEmailNotification(emailSubject: String, templateVariables: JSONObject, templateId: Int) {
+    fun sendEmailNotification(
+        emailSubject: String,
+        templateVariables: JSONObject,
+        templateId: Int,
+    ) {
         sendEmailMessage(
-            true, notificationProperties.recipient, emailSubject,
-            templateVariables, templateId
+            true,
+            notificationProperties.recipient,
+            emailSubject,
+            templateVariables,
+            templateId,
         )
     }
 
     fun createTemplateVariables(
         salutation: String,
         emailMessage: String,
-        url: String = "https://workday.flock.community"
+        url: String = "https://workday.flock.community",
     ): JSONObject {
         return JSONObject()
             .put("recipient_salutation", salutation)

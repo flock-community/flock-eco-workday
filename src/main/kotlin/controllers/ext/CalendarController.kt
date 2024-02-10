@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/ext/calendar")
 class CalendarController(
     private val calendarService: CalendarService,
-    private val calendarProperties: CalendarProperties
+    private val calendarProperties: CalendarProperties,
 ) {
     @GetMapping("calendar.ics", produces = ["text/calendar"])
-    fun get(@RequestParam token: String): ResponseEntity<String> =
+    fun get(
+        @RequestParam token: String,
+    ): ResponseEntity<String> =
         if (token == calendarProperties.token) {
             ResponseEntity.ok(calendarService.getCalendar().serialize())
         } else {

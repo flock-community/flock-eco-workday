@@ -8,23 +8,18 @@ import community.flock.eco.workday.interfaces.Approve
 import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.model.Status
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 data class SickDayForm(
-
     @JsonDeserialize(using = LocalDateDeserializer::class)
     @JsonSerialize(using = LocalDateSerializer::class)
     override val from: LocalDate,
-
     @JsonDeserialize(using = LocalDateDeserializer::class)
     @JsonSerialize(using = LocalDateSerializer::class)
     override val to: LocalDate,
-
     override val hours: Double,
     override val days: List<Double>,
     override val status: Status = Status.REQUESTED,
-
     val description: String? = null,
-    val personId: UUID
-
+    val personId: UUID,
 ) : Dayly, Approve

@@ -6,18 +6,17 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 
 class ContractInternalTest : ContractAbstract() {
-
     @Test
     fun `total cost for internal contract when it is within request date range `() {
-
         val contractStart = LocalDate.of(2021, 12, 1)
         val contractEnd = LocalDate.of(2021, 12, 15)
 
         val periodStart = LocalDate.of(2021, 12, 1)
         val periodEnd = LocalDate.of(2021, 12, 10)
 
-        val cost = createContractInternal(contractStart, contractEnd, 3000.0)
-            .totalCostsInPeriod(periodStart, periodEnd)
+        val cost =
+            createContractInternal(contractStart, contractEnd, 3000.0)
+                .totalCostsInPeriod(periodStart, periodEnd)
         assertEquals(BigDecimal("967.7419354839"), cost)
     }
 
@@ -29,8 +28,9 @@ class ContractInternalTest : ContractAbstract() {
         val periodStart = LocalDate.of(2021, 12, 1)
         val periodEnd = LocalDate.of(2021, 12, 31)
 
-        val cost = createContractInternal(contractStart, contractEnd, 1234.56)
-            .totalCostsInPeriod(periodStart, periodEnd)
+        val cost =
+            createContractInternal(contractStart, contractEnd, 1234.56)
+                .totalCostsInPeriod(periodStart, periodEnd)
 
         assertEquals(BigDecimal("677.0167741935"), cost)
     }
@@ -43,8 +43,9 @@ class ContractInternalTest : ContractAbstract() {
         val periodStart = LocalDate.of(2021, 11, 1)
         val periodEnd = LocalDate.of(2022, 1, 15)
 
-        val cost = createContractInternal(contractStart, contractEnd, 3000.0)
-            .totalCostsInPeriod(periodStart, periodEnd)
+        val cost =
+            createContractInternal(contractStart, contractEnd, 3000.0)
+                .totalCostsInPeriod(periodStart, periodEnd)
 
         assertEquals(BigDecimal("4451.6129032258"), cost)
     }
@@ -57,8 +58,9 @@ class ContractInternalTest : ContractAbstract() {
         val periodStart = LocalDate.of(2021, 11, 1)
         val periodEnd = LocalDate.of(2022, 1, 15)
 
-        val cost = createContractInternal(contractStart, contractEnd, 3000.0)
-            .totalCostsInPeriod(periodStart, periodEnd)
+        val cost =
+            createContractInternal(contractStart, contractEnd, 3000.0)
+                .totalCostsInPeriod(periodStart, periodEnd)
 
         assertEquals(BigDecimal("4451.6129032258"), cost)
     }
@@ -72,8 +74,9 @@ class ContractInternalTest : ContractAbstract() {
         val periodStart = LocalDate.of(2021, 1, 1)
         val periodEnd = LocalDate.of(2022, 1, 15)
 
-        val cost = createContractInternal(contractStart, contractEnd, 41985.58)
-            .totalCostsInPeriod(periodStart, periodEnd)
+        val cost =
+            createContractInternal(contractStart, contractEnd, 41985.58)
+                .totalCostsInPeriod(periodStart, periodEnd)
 
         assertEquals(BigDecimal("62301.1832258065"), cost)
     }
@@ -86,8 +89,9 @@ class ContractInternalTest : ContractAbstract() {
         val periodStart = LocalDate.of(2021, 12, 16)
         val periodEnd = LocalDate.of(2022, 12, 31)
 
-        val cost = createContractInternal(contractStart, contractEnd, 41985.58)
-            .totalCostsInPeriod(periodStart, periodEnd)
+        val cost =
+            createContractInternal(contractStart, contractEnd, 41985.58)
+                .totalCostsInPeriod(periodStart, periodEnd)
 
         assertEquals(BigDecimal("0"), cost)
     }
@@ -100,8 +104,9 @@ class ContractInternalTest : ContractAbstract() {
         val periodStart = LocalDate.of(2021, 12, 1)
         val periodEnd = LocalDate.of(2021, 12, 31)
 
-        val cost = createContractInternal(contractStart, contractEnd, 41985.58)
-            .totalCostsInPeriod(periodStart, periodEnd)
+        val cost =
+            createContractInternal(contractStart, contractEnd, 41985.58)
+                .totalCostsInPeriod(periodStart, periodEnd)
 
         assertEquals(BigDecimal("41985.5800000000"), cost)
     }
@@ -115,8 +120,9 @@ class ContractInternalTest : ContractAbstract() {
         val periodStart = LocalDate.of(2021, 12, 1)
         val periodEnd = LocalDate.of(2021, 12, 2)
 
-        val cost = createContractInternal(contractStart, contractEnd, 3100.0)
-            .totalCostsInPeriod(periodStart, periodEnd)
+        val cost =
+            createContractInternal(contractStart, contractEnd, 3100.0)
+                .totalCostsInPeriod(periodStart, periodEnd)
 
         assertEquals(BigDecimal("200.0000000000"), cost)
     }

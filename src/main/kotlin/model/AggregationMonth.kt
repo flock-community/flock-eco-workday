@@ -18,5 +18,5 @@ data class AggregationMonth(
     val actualCostContractService: BigDecimal,
     val actualRevenueInternal: BigDecimal,
     val actualRevenueExternal: BigDecimal,
-    val actualRevenueManagement: BigDecimal
+    val actualRevenueManagement: BigDecimal,
 )

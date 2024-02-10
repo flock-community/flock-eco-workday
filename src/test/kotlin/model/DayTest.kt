@@ -7,7 +7,6 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 
 class DayTest {
-
     val startDate = LocalDate.of(2021, 12, 1)
     val endDate = LocalDate.of(2021, 12, 5)
 

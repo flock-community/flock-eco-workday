@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class SwaggerConfig {
-
     @Bean
     fun api(): GroupedOpenApi {
         return GroupedOpenApi.builder()

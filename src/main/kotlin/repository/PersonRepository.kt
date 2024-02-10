@@ -12,11 +12,23 @@ import java.util.UUID
 @Repository
 interface PersonRepository : PagingAndSortingRepository<Person, Long> {
     fun findByUuid(uuid: UUID): Optional<Person>
+
     fun findByUserCode(userCode: String): Optional<Person>
+
     fun existsByUuid(uuid: UUID): Boolean
+
     fun deleteByUuid(uuid: UUID): Unit
+
     fun findByUuidIn(userUuid: List<UUID>): Iterable<Person>
-    fun findAllByActive(pageable: Pageable, active: Boolean): Page<Person>
+
+    fun findAllByActive(
+        pageable: Pageable,
+        active: Boolean,
+    ): Page<Person>
+
     @Query("SELECT p FROM Person p WHERE LOWER(CONCAT(p.firstname, ' ', p.lastname)) LIKE LOWER(CONCAT('%', ?1, '%'))")
-    fun findAllByFullName(pageable: Pageable, search: String): Page<Person>
+    fun findAllByFullName(
+        pageable: Pageable,
+        search: String,
+    ): Page<Person>
 }

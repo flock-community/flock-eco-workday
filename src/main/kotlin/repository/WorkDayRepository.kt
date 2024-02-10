@@ -15,12 +15,25 @@ import java.util.UUID
 @Repository
 interface WorkDayRepository : PagingAndSortingRepository<WorkDay, Long> {
     fun findByCode(code: String): Optional<WorkDay>
+
     fun deleteByCode(code: String)
+
     fun findAllByAssignmentPersonUuid(personCode: UUID): Iterable<WorkDay>
-    fun findAllByAssignmentPersonUuid(personCode: UUID, pageable: Pageable): Page<WorkDay>
-    fun findAllByAssignmentPersonUserCode(userCode: String, pageable: Pageable): Page<WorkDay>
+
+    fun findAllByAssignmentPersonUuid(
+        personCode: UUID,
+        pageable: Pageable,
+    ): Page<WorkDay>
+
+    fun findAllByAssignmentPersonUserCode(
+        userCode: String,
+        pageable: Pageable,
+    ): Page<WorkDay>
+
     fun findAllByStatus(status: Status): Iterable<WorkDay>
 
     @Query(value = "SELECT COALESCE(SUM(w.hours), 0) FROM WorkDay w WHERE w.assignment = :assignment ")
-    fun getTotalHoursByAssignment(@Param("assignment") assignment: Assignment): Int
+    fun getTotalHoursByAssignment(
+        @Param("assignment") assignment: Assignment,
+    ): Int
 }

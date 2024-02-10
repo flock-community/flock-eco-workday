@@ -18,26 +18,27 @@ class CalendarServiceTest {
 
     @Test
     fun `Fetch holidays from repository and build calendar`() {
-        val holidays = listOf(
-            LeaveDay(
-                description = "description-1",
-                hours = 8.0,
-                person = aPerson(),
-                type = HOLIDAY,
-                status = APPROVED,
-                from = LocalDate.of(2023, 3, 3),
-                to = LocalDate.of(2023, 3, 4)
-            ),
-            LeaveDay(
-                description = "description-2",
-                hours = 8.0,
-                person = aPerson(),
-                type = HOLIDAY,
-                status = APPROVED,
-                from = LocalDate.of(2023, 3, 7),
-                to = LocalDate.of(2023, 3, 10)
+        val holidays =
+            listOf(
+                LeaveDay(
+                    description = "description-1",
+                    hours = 8.0,
+                    person = aPerson(),
+                    type = HOLIDAY,
+                    status = APPROVED,
+                    from = LocalDate.of(2023, 3, 3),
+                    to = LocalDate.of(2023, 3, 4),
+                ),
+                LeaveDay(
+                    description = "description-2",
+                    hours = 8.0,
+                    person = aPerson(),
+                    type = HOLIDAY,
+                    status = APPROVED,
+                    from = LocalDate.of(2023, 3, 7),
+                    to = LocalDate.of(2023, 3, 10),
+                ),
             )
-        )
 
         every { leaveDayRepository.findAllByStatusAndType(APPROVED, HOLIDAY) }
             .returns(holidays)

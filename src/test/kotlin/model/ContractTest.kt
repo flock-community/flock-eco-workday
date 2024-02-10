@@ -6,7 +6,6 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 
 class ContractTest : ContractAbstract() {
-
     @Test
     fun `sum hours with two contracts in the same month`() {
         val startDateFirstContract = LocalDate.of(2020, 10, 27)

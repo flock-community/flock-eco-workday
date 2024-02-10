@@ -33,84 +33,94 @@ class TodoController(
     private val leaveDayService: LeaveDayService,
     private val sickDayService: SickDayService,
     private val workDayService: WorkDayService,
-    private val expenseService: ExpenseService
+    private val expenseService: ExpenseService,
 ) {
     @GetMapping
     @PreAuthorize("hasAuthority('TodoAuthority.READ')")
-    fun getTodoAll(
-        authentication: Authentication
-    ) = mapOf<Authority, List<Todo>>(
-        LeaveDayAuthority.READ to findLeaveDayTodo(),
-        SickdayAuthority.READ to findSickDayTodo(),
-        WorkDayAuthority.READ to findWorkDayTodo(),
-        ExpenseAuthority.READ to findExpenseTodo()
-    )
-        .filter { authentication.hasAuthority(it.key) }
-        .flatMap { it.value }
-        .sortedWith(compareBy({ it.personName }, { it.type }))
+    fun getTodoAll(authentication: Authentication) =
+        mapOf<Authority, List<Todo>>(
+            LeaveDayAuthority.READ to findLeaveDayTodo(),
+            SickdayAuthority.READ to findSickDayTodo(),
+            WorkDayAuthority.READ to findWorkDayTodo(),
+            ExpenseAuthority.READ to findExpenseTodo(),
+        )
+            .filter { authentication.hasAuthority(it.key) }
+            .flatMap { it.value }
+            .sortedWith(compareBy({ it.personName }, { it.type }))
 
-    fun findLeaveDayTodo() = leaveDayService
-        .findAllByStatus(Status.REQUESTED)
-        .map { it.mapTodo() }
+    fun findLeaveDayTodo() =
+        leaveDayService
+            .findAllByStatus(Status.REQUESTED)
+            .map { it.mapTodo() }
 
-    fun findSickDayTodo() = sickDayService
-        .findAllByStatus(Status.REQUESTED)
-        .map { it.mapTodo() }
+    fun findSickDayTodo() =
+        sickDayService
+            .findAllByStatus(Status.REQUESTED)
+            .map { it.mapTodo() }
 
-    fun findWorkDayTodo() = workDayService
-        .findAllByStatus(Status.REQUESTED)
-        .map { it.mapTodo() }
+    fun findWorkDayTodo() =
+        workDayService
+            .findAllByStatus(Status.REQUESTED)
+            .map { it.mapTodo() }
 
-    fun findExpenseTodo() = expenseService
-        .findAllByStatus(Status.REQUESTED)
-        .map { it.mapTodo() }
+    fun findExpenseTodo() =
+        expenseService
+            .findAllByStatus(Status.REQUESTED)
+            .map { it.mapTodo() }
 
     fun Person.fullName() = "$firstname $lastname"
 
-    fun LeaveDay.mapTodo() = Todo(
-        id = UUID.fromString(code),
-        type = when (type) {
-            LeaveDayType.HOLIDAY -> TodoType.HOLIDAY
-            LeaveDayType.PLUSDAY -> TodoType.PLUSDAY
-            LeaveDayType.PAID_PARENTAL_LEAVE -> TodoType.PAID_PARENTAL_LEAVE
-            LeaveDayType.UNPAID_PARENTAL_LEAVE -> TodoType.UNPAID_PARENTAL_LEAVE
-        },
-        personId = person.uuid,
-        personName = person.fullName(),
-        description = "$from - $to"
-    )
+    fun LeaveDay.mapTodo() =
+        Todo(
+            id = UUID.fromString(code),
+            type =
+                when (type) {
+                    LeaveDayType.HOLIDAY -> TodoType.HOLIDAY
+                    LeaveDayType.PLUSDAY -> TodoType.PLUSDAY
+                    LeaveDayType.PAID_PARENTAL_LEAVE -> TodoType.PAID_PARENTAL_LEAVE
+                    LeaveDayType.UNPAID_PARENTAL_LEAVE -> TodoType.UNPAID_PARENTAL_LEAVE
+                },
+            personId = person.uuid,
+            personName = person.fullName(),
+            description = "$from - $to",
+        )
 
-    fun SickDay.mapTodo() = Todo(
-        id = UUID.fromString(code),
-        type = TodoType.SICKDAY,
-        personId = person.uuid,
-        personName = person.fullName(),
-        description = "$from - $to"
-    )
+    fun SickDay.mapTodo() =
+        Todo(
+            id = UUID.fromString(code),
+            type = TodoType.SICKDAY,
+            personId = person.uuid,
+            personName = person.fullName(),
+            description = "$from - $to",
+        )
 
-    fun WorkDay.mapTodo() = Todo(
-        id = UUID.fromString(code),
-        type = TodoType.WORKDAY,
-        personId = assignment.person.uuid,
-        personName = assignment.person.fullName(),
-        description = "$from - $to"
-    )
+    fun WorkDay.mapTodo() =
+        Todo(
+            id = UUID.fromString(code),
+            type = TodoType.WORKDAY,
+            personId = assignment.person.uuid,
+            personName = assignment.person.fullName(),
+            description = "$from - $to",
+        )
 
-    fun Expense.mapTodo() = Todo(
-        id = id,
-        type = TodoType.EXPENSE,
-        personId = person.uuid,
-        personName = person.fullName(),
-        description = "$description : ${getAmount()}"
-    )
+    fun Expense.mapTodo() =
+        Todo(
+            id = id,
+            type = TodoType.EXPENSE,
+            personId = person.uuid,
+            personName = person.fullName(),
+            description = "$description : ${getAmount()}",
+        )
 
-    fun Authentication.hasAuthority(authority: Authority) = this.authorities
-        .map { it.authority }
-        .contains(authority.toName())
+    fun Authentication.hasAuthority(authority: Authority) =
+        this.authorities
+            .map { it.authority }
+            .contains(authority.toName())
 }
 
-private fun Expense.getAmount(): String = when (this) {
-    is CostExpense -> amount.toString()
-    is TravelExpense -> "$distance / $allowance"
-    else -> "-"
-}
+private fun Expense.getAmount(): String =
+    when (this) {
+        is CostExpense -> amount.toString()
+        is TravelExpense -> "$distance / $allowance"
+        else -> "-"
+    }

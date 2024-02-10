@@ -6,10 +6,10 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Component
 class ExactonlineInvoiceClient(
-    private val exactonlineProperties: ExactonlineProperties
+    exactonlineProperties: ExactonlineProperties,
 ) {
-
-    val client: WebClient = WebClient.builder()
-        .baseUrl(exactonlineProperties.requestUri)
-        .build()
+    val client: WebClient =
+        WebClient.builder()
+            .baseUrl(exactonlineProperties.requestUri)
+            .build()
 }

@@ -9,26 +9,27 @@ import java.time.YearMonth
 import kotlin.test.assertEquals
 
 class DateUtilsTest {
-
     @Test
     fun `creates date range between two dates`() {
         val result = dateRange(LocalDate.of(2021, 12, 8), LocalDate.of(2021, 12, 12))
-        val expected = listOf(
-            LocalDate.of(2021, 12, 8),
-            LocalDate.of(2021, 12, 9),
-            LocalDate.of(2021, 12, 10),
-            LocalDate.of(2021, 12, 11),
-            LocalDate.of(2021, 12, 12)
-        )
+        val expected =
+            listOf(
+                LocalDate.of(2021, 12, 8),
+                LocalDate.of(2021, 12, 9),
+                LocalDate.of(2021, 12, 10),
+                LocalDate.of(2021, 12, 11),
+                LocalDate.of(2021, 12, 12),
+            )
         assertEquals(result, expected)
     }
 
     @Test
     fun `creates date range between the same date`() {
         val result = dateRange(LocalDate.of(2021, 12, 8), LocalDate.of(2021, 12, 8))
-        val expected = listOf(
-            LocalDate.of(2021, 12, 8),
-        )
+        val expected =
+            listOf(
+                LocalDate.of(2021, 12, 8),
+            )
         assertEquals(result, expected)
     }
 

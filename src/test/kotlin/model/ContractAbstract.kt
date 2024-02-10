@@ -8,19 +8,25 @@ import java.time.LocalDate
 import java.util.UUID
 
 abstract class ContractAbstract {
-    private val testPerson = Person(
-        id = 0,
-        uuid = UUID.randomUUID(),
-        firstname = "Test",
-        lastname = "Test",
-        email = "test@test.test",
-        position = "Hm",
-        number = null,
-        reminders = false,
-        user = null
-    )
+    private val testPerson =
+        Person(
+            id = 0,
+            uuid = UUID.randomUUID(),
+            firstname = "Test",
+            lastname = "Test",
+            email = "test@test.test",
+            position = "Hm",
+            number = null,
+            reminders = false,
+            user = null,
+        )
 
-    fun createContractExternal(startDate: LocalDate, endDate: LocalDate? = null, hourlyRate: Double, hoursPerWeek: Int): ContractExternal {
+    fun createContractExternal(
+        startDate: LocalDate,
+        endDate: LocalDate? = null,
+        hourlyRate: Double,
+        hoursPerWeek: Int,
+    ): ContractExternal {
         return ContractExternal(
             id = 1L,
             code = UUID.randomUUID().toString(),
@@ -33,18 +39,26 @@ abstract class ContractAbstract {
         )
     }
 
-    fun createContractManagement(startDate: LocalDate, endDate: LocalDate? = null, salary: Double): ContractManagement {
+    fun createContractManagement(
+        startDate: LocalDate,
+        endDate: LocalDate? = null,
+        salary: Double,
+    ): ContractManagement {
         return ContractManagement(
             id = 1L,
             code = UUID.randomUUID().toString(),
             person = testPerson,
             from = startDate,
             to = endDate,
-            monthlyFee = salary
+            monthlyFee = salary,
         )
     }
 
-    fun createContractInternal(startDate: LocalDate, endDate: LocalDate? = null, salary: Double): ContractInternal {
+    fun createContractInternal(
+        startDate: LocalDate,
+        endDate: LocalDate? = null,
+        salary: Double,
+    ): ContractInternal {
         return ContractInternal(
             id = 1L,
             code = UUID.randomUUID().toString(),
@@ -54,7 +68,7 @@ abstract class ContractAbstract {
             monthlySalary = salary,
             hoursPerWeek = 36,
             holidayHours = 30,
-            billable = true
+            billable = true,
         )
     }
 }

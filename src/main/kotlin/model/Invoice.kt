@@ -12,19 +12,15 @@ import javax.persistence.Id
 @Entity
 @EntityListeners(EventEntityListeners::class)
 data class Invoice(
-
     @Id
     val id: UUID = UUID.randomUUID(),
     val description: String,
     val reference: UUID,
     val amount: Double,
-
     @Enumerated(EnumType.STRING)
     val type: InvoiceType,
     @Enumerated(EnumType.STRING)
     val status: InvoiceStatus,
-
     @ElementCollection
-    val documents: List<Document> = listOf()
-
+    val documents: List<Document> = listOf(),
 )

@@ -20,27 +20,19 @@ import javax.persistence.ManyToOne
 @EntityListeners(EventEntityListeners::class)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 class SickDay(
-
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
-
     override val from: LocalDate = LocalDate.now(),
     override val to: LocalDate = LocalDate.now(),
-
     override val hours: Double,
-
     @ElementCollection
     override val days: List<Double>? = null,
-
     val description: String? = null,
-
     @Enumerated(EnumType.STRING)
     override val status: Status,
-
     @ManyToOne
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "uuid")
     @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty("personId")
-    val person: Person
-
+    val person: Person,
 ) : Day(id, code, from, to, hours, days), Approve

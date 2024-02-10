@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.security.Principal
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/events")
@@ -39,22 +39,22 @@ class EventController(
     private val eventService: EventService,
     private val eventRatingService: EventRatingService,
     private val userService: UserService,
-    private val personService: PersonService
+    private val personService: PersonService,
 ) {
-
     @GetMapping()
     @PreAuthorize("hasAuthority('EventAuthority.READ')")
-    fun getAll(authentication: Authentication) = eventService
-        .findAll(Sort.by("from"))
-        .filter { it.isAuthenticated(authentication) }
-        .toResponse()
+    fun getAll(authentication: Authentication) =
+        eventService
+            .findAll(Sort.by("from"))
+            .filter { it.isAuthenticated(authentication) }
+            .toResponse()
 
     @GetMapping("/upcoming")
     @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
     fun getUpcoming(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fromDate: LocalDate,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) toDate: LocalDate,
-        principal: Principal
+        principal: Principal,
     ): ResponseEntity<List<Event>> =
         principal.findUser()
             ?.let { user ->
@@ -65,47 +65,47 @@ class EventController(
             }
             .toResponse()
 
-    @GetMapping("/{code}")
     // @PreAuthorize("hasAuthority('EventAuthority.READ')")
+    @GetMapping("/{code}")
     fun findByCode(
         @PathVariable code: String,
-        authentication: Authentication?
+        authentication: Authentication?,
     ) = eventService
         .findByCode(code)
         ?.applyAuthentication(authentication)
         .toResponse()
 
-    @GetMapping("/{code}/ratings")
     // @PreAuthorize("hasAuthority('EventAuthority.READ')")
+    @GetMapping("/{code}/ratings")
     fun findEventRatings(
         @PathVariable code: String,
-        authentication: Authentication?
+        authentication: Authentication?,
     ) = eventRatingService
         .findByEventCode(code)
         .filter { it.isAuthenticated(authentication) }
         .sortedBy { it.person.lastname }
         .toResponse()
 
-    @PostMapping("/{code}/ratings")
     // @PreAuthorize("hasAuthority('EventAuthority.WRITE')")
+    @PostMapping("/{code}/ratings")
     fun postRating(
         @PathVariable code: String,
         @RequestBody form: EventRatingForm,
-        authentication: Authentication?
+        authentication: Authentication?,
     ) = eventRatingService
         .create(
             EventRatingForm(
                 eventCode = code,
                 personId = form.personId,
-                rating = form.rating
-            )
+                rating = form.rating,
+            ),
         )
         .toResponse()
 
     @PostMapping
     @PreAuthorize("hasAuthority('EventAuthority.WRITE')")
     fun post(
-        @RequestBody form: EventForm
+        @RequestBody form: EventForm,
     ) = eventService
         .create(form)
         .toResponse()
@@ -115,7 +115,7 @@ class EventController(
     fun put(
         @PathVariable code: String,
         @RequestBody form: EventForm,
-        authentication: Authentication
+        authentication: Authentication,
     ) = eventService
         .update(code, form)
         .toResponse()
@@ -124,18 +124,18 @@ class EventController(
     @PreAuthorize("hasAuthority('EventAuthority.WRITE')")
     fun delete(
         @PathVariable code: String,
-        authentication: Authentication
+        authentication: Authentication,
     ) = eventService.findByCode(code)
         ?.applyAuthentication(authentication)
         ?.run { eventService.deleteByCode(this.code) }
         .toResponse()
 
-    @DeleteMapping("/{eventCode}/ratings/{personId}")
     // @PreAuthorize("hasAuthority('EventAuthority.WRITE')")
+    @DeleteMapping("/{eventCode}/ratings/{personId}")
     fun deleteRatings(
         @PathVariable eventCode: String,
         @PathVariable personId: UUID,
-        authentication: Authentication
+        authentication: Authentication,
     ) = eventRatingService.deleteByEventCodeAndPersonUuid(eventCode, personId)
         .toResponse()
 
@@ -143,10 +143,11 @@ class EventController(
     @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
     fun subscribeToEvent(
         @PathVariable eventCode: String,
-        authentication: Authentication
+        authentication: Authentication,
     ): Event {
-        val person = personService.findByUserCode(authentication.name)
-            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        val person =
+            personService.findByUserCode(authentication.name)
+                ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
 
         return eventService.subscribeToEvent(eventCode, person)
     }
@@ -155,35 +156,48 @@ class EventController(
     @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
     fun unsubscribeFromEvent(
         @PathVariable eventCode: String,
-        authentication: Authentication
+        authentication: Authentication,
     ): Event {
-        val person = personService.findByUserCode(authentication.name)
-            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        val person =
+            personService.findByUserCode(authentication.name)
+                ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
 
         return eventService.unsubscribeFromEvent(eventCode, person)
     }
 
-    private fun Authentication.isAdmin(): Boolean = this.authorities
-        .map { it.authority }.contains(EventAuthority.ADMIN.toName())
+    private fun Authentication.isAdmin(): Boolean =
+        this.authorities
+            .map { it.authority }.contains(EventAuthority.ADMIN.toName())
 
-    private fun Event.isAuthenticated(authentication: Authentication?) = authentication?.isAdmin() == true || this.persons.any { it.isUser(authentication?.name) }
-    private fun Event.applyAuthentication(authentication: Authentication?) = apply {
-        if (!this.isAuthenticated(authentication)) {
-            throw ResponseStatusException(UNAUTHORIZED, "User has not access to event")
+    private fun Event.isAuthenticated(authentication: Authentication?) =
+        authentication?.isAdmin() == true ||
+            this.persons.any {
+                it.isUser(authentication?.name)
+            }
+
+    private fun Event.applyAuthentication(authentication: Authentication?) =
+        apply {
+            if (!this.isAuthenticated(authentication)) {
+                throw ResponseStatusException(UNAUTHORIZED, "User has not access to event")
+            }
         }
-    }
 
-    private fun EventRating.isAuthenticated(authentication: Authentication?) = authentication?.isAdmin() == true || this.person.isUser(authentication?.name)
-    private fun EventRating.applyAuthentication(authentication: Authentication?) = apply {
-        if (!this.isAuthenticated(authentication)) {
-            throw ResponseStatusException(UNAUTHORIZED, "User has not access to event rating")
+    private fun EventRating.isAuthenticated(authentication: Authentication?) =
+        authentication?.isAdmin() == true || this.person.isUser(authentication?.name)
+
+    private fun EventRating.applyAuthentication(authentication: Authentication?) =
+        apply {
+            if (!this.isAuthenticated(authentication)) {
+                throw ResponseStatusException(UNAUTHORIZED, "User has not access to event rating")
+            }
         }
-    }
 
-    private fun Principal.findUser(): User? = userService
-        .findByCode(this.name)
+    private fun Principal.findUser(): User? =
+        userService
+            .findByCode(this.name)
 
-    private fun User.isAdmin(): Boolean = this
-        .authorities
-        .contains(EventAuthority.ADMIN.toName())
+    private fun User.isAdmin(): Boolean =
+        this
+            .authorities
+            .contains(EventAuthority.ADMIN.toName())
 }

@@ -5,5 +5,5 @@ import community.flock.eco.core.authorities.Authority
 enum class ExactonlineAuthority : Authority {
     READ,
     WRITE,
-    ADMIN
+    ADMIN,
 }

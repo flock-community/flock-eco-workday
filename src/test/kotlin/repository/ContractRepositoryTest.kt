@@ -27,25 +27,26 @@ import kotlin.test.assertEquals
 @ActiveProfiles(profiles = ["test"])
 class ContractRepositoryTest(
     @Autowired private val contractRepository: ContractRepository,
-    @Autowired private val createHelper: CreateHelper
+    @Autowired private val createHelper: CreateHelper,
 ) {
-
     @Test
     fun `create and update internal contract`() {
         val person = createHelper.createPerson("Hello", "Bye")
-        val new = ContractInternal(
-            person = person,
-            from = LocalDate.of(2020, 1, 1),
-            hoursPerWeek = 40,
-            monthlySalary = 500.0,
-            holidayHours = 192,
-        )
+        val new =
+            ContractInternal(
+                person = person,
+                from = LocalDate.of(2020, 1, 1),
+                hoursPerWeek = 40,
+                monthlySalary = 500.0,
+                holidayHours = 192,
+            )
         val saved = contractRepository.save(new)
-        val update = saved.copy(
-            to = LocalDate.of(2020, 6, 1),
-            hoursPerWeek = 80,
-            monthlySalary = 1000.0
-        )
+        val update =
+            saved.copy(
+                to = LocalDate.of(2020, 6, 1),
+                hoursPerWeek = 80,
+                monthlySalary = 1000.0,
+            )
         val updated = contractRepository.save(update)
 
         assertEquals(saved.id, updated.id)
@@ -60,18 +61,20 @@ class ContractRepositoryTest(
     @Test
     fun `create and update external contract`() {
         val person = createHelper.createPerson("Hello", "Bye")
-        val new = ContractExternal(
-            person = person,
-            from = LocalDate.of(2020, 1, 1),
-            hoursPerWeek = 40,
-            hourlyRate = 500.0
-        )
+        val new =
+            ContractExternal(
+                person = person,
+                from = LocalDate.of(2020, 1, 1),
+                hoursPerWeek = 40,
+                hourlyRate = 500.0,
+            )
         val saved = contractRepository.save(new)
-        val update = saved.copy(
-            to = LocalDate.of(2020, 6, 1),
-            hoursPerWeek = 80,
-            hourlyRate = 1000.0
-        )
+        val update =
+            saved.copy(
+                to = LocalDate.of(2020, 6, 1),
+                hoursPerWeek = 80,
+                hourlyRate = 1000.0,
+            )
         val updated = contractRepository.save(update)
 
         assertEquals(saved.id, updated.id)

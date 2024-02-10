@@ -6,5 +6,5 @@ enum class EventAuthority : Authority {
     READ,
     SUBSCRIBE,
     WRITE,
-    ADMIN
+    ADMIN,
 }

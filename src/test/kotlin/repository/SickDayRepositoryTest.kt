@@ -27,9 +27,8 @@ import javax.transaction.Transactional
 @ActiveProfiles(profiles = ["test"])
 class SickDayRepositoryTest(
     @Autowired private val personRepository: PersonRepository,
-    @Autowired private val repository: SickdayRepository
+    @Autowired private val repository: SickdayRepository,
 ) {
-
     init {
         personRepository.save(
             Person(
@@ -38,8 +37,8 @@ class SickDayRepositoryTest(
                 email = "denholm@reynholm-industries.co.uk",
                 position = "Chief Executive Officer",
                 number = null,
-                user = null
-            )
+                user = null,
+            ),
         )
     }
 
@@ -47,14 +46,15 @@ class SickDayRepositoryTest(
         val person: Person = personRepository.findAll().first()
         val from = LocalDate.of(1970, 1, 1)
 
-        val sickDay = SickDay(
-            hours = 8.0,
-            person = person,
-            from = from,
-            to = LocalDate.of(1970, 1, 6),
-            days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
-            status = Status.REQUESTED
-        )
+        val sickDay =
+            SickDay(
+                hours = 8.0,
+                person = person,
+                from = from,
+                to = LocalDate.of(1970, 1, 6),
+                days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
+                status = Status.REQUESTED,
+            )
 
         repository.save(sickDay)
 
@@ -89,7 +89,6 @@ class SickDayRepositoryTest(
         val from = LocalDate.of(1970, 1, 1)
 
         for (i in 1..5) {
-
             sickDayList.add(
                 SickDay(
                     hours = i * 8.0,
@@ -97,8 +96,8 @@ class SickDayRepositoryTest(
                     from = from,
                     to = LocalDate.of(1970, 1, i),
                     days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
-                    status = Status.REQUESTED
-                )
+                    status = Status.REQUESTED,
+                ),
             )
         }
 

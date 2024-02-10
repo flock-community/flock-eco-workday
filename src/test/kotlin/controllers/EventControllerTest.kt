@@ -34,7 +34,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 @SpringBootTest(classes = [Application::class, AppTestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -71,28 +71,34 @@ class EventControllerTest() {
     @Autowired
     private lateinit var personService: PersonService
 
-    fun createUser(authorities: Set<String>) = UserAccountPasswordForm(
-        email = UUID.randomUUID().toString(),
-        name = "Administrator",
-        authorities = authorities,
-        password = "admin"
-    )
-        .run { userAccountService.createUserAccountPassword(this) }
-        .run { UserSecurityService.UserSecurityPassword(this) }
+    fun createUser(authorities: Set<String>) =
+        UserAccountPasswordForm(
+            email = UUID.randomUUID().toString(),
+            name = "Administrator",
+            authorities = authorities,
+            password = "admin",
+        )
+            .run { userAccountService.createUserAccountPassword(this) }
+            .run { UserSecurityService.UserSecurityPassword(this) }
 
-    fun createPerson(userCode: String) = PersonForm(
-        email = "piet@flock",
-        firstname = "Piet",
-        lastname = "Flock",
-        position = "Software engineer",
-        userCode = userCode,
-        number = null,
-        active = true
-    ).run {
-        personService.create(this)
-    } ?: error("Cannot create person")
+    fun createPerson(userCode: String) =
+        PersonForm(
+            email = "piet@flock",
+            firstname = "Piet",
+            lastname = "Flock",
+            position = "Software engineer",
+            userCode = userCode,
+            number = null,
+            active = true,
+        ).run {
+            personService.create(this)
+        } ?: error("Cannot create person")
 
-    fun createEvent(from: LocalDate, to: LocalDate, ids: List<UUID> = listOf()) = EventForm(
+    fun createEvent(
+        from: LocalDate,
+        to: LocalDate,
+        ids: List<UUID> = listOf(),
+    ) = EventForm(
         description = "Henk",
         from = from,
         to = to,
@@ -118,17 +124,17 @@ class EventControllerTest() {
         mvc.perform(
             get("$baseUrl/upcoming?fromDate=2023-01-01&toDate=2023-03-01")
                 .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(
                 content().json(
                     """
-                [{"description":"Henk","id":${event.id},"code":"${event.code}","from":"2023-02-02","to":"2023-02-03",
-                  "hours":16.0,"costs":200.0,"days":[8.0,8.0],"persons":[]}]
-                    """.trimIndent()
-                )
+                    [{"description":"Henk","id":${event.id},"code":"${event.code}","from":"2023-02-02","to":"2023-02-03",
+                      "hours":16.0,"costs":200.0,"days":[8.0,8.0],"persons":[]}]
+                    """.trimIndent(),
+                ),
             )
     }
 
@@ -139,7 +145,7 @@ class EventControllerTest() {
         mvc.perform(
             get("$baseUrl/upcoming?fromDate=2023-01-01&toDate=2023-12-31")
                 .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -153,7 +159,7 @@ class EventControllerTest() {
         mvc.perform(
             get("$baseUrl/upcoming?fromDate=2023-01-01&toDate=2023-12-31")
                 .with(SecurityMockMvcRequestPostProcessors.user(createUser(userAuthorities)))
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -169,7 +175,7 @@ class EventControllerTest() {
         mvc.perform(
             put("$baseUrl/${event.code}/subscribe")
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -181,15 +187,17 @@ class EventControllerTest() {
         val user = createUser(userAuthorities)
         val person01 = createPerson(user.account.user.code)
         val person02 = createPerson("")
-        val event = createEvent(
-            LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3),
-            listOf(person01.uuid, person02.uuid)
-        )
+        val event =
+            createEvent(
+                LocalDate.of(2023, 2, 2),
+                LocalDate.of(2023, 2, 3),
+                listOf(person01.uuid, person02.uuid),
+            )
 
         mvc.perform(
             put("$baseUrl/${event.code}/unsubscribe")
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -206,7 +214,7 @@ class EventControllerTest() {
         mvc.perform(
             put("$baseUrl/${event.code}/unsubscribe")
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isForbidden)
     }

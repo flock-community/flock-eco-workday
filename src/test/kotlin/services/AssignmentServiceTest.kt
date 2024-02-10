@@ -28,12 +28,10 @@ import kotlin.test.assertTrue
 @ActiveProfiles(profiles = ["test"])
 class AssignmentServiceTest(
     @Autowired val assignmentService: AssignmentService,
-    @Autowired val dataHelper: DataHelper
+    @Autowired val dataHelper: DataHelper,
 ) {
-
     @Test
     fun `find all active assignments`() {
-
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2021, 12, 31)
 

@@ -13,21 +13,17 @@ import javax.persistence.ManyToOne
 @EntityListeners(EventEntityListeners::class)
 @IdClass(EventRatingId::class)
 class EventRating(
-
     @Id
     @ManyToOne
     @JsonIgnore
     val event: Event,
-
     @Id
     @ManyToOne
     val person: Person,
-
-    val rating: Int
-
+    val rating: Int,
 )
 
 data class EventRatingId(
     var event: Long? = null,
-    var person: Long? = null
+    var person: Long? = null,
 ) : Serializable

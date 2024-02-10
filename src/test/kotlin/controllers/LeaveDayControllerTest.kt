@@ -42,7 +42,7 @@ class LeaveDayControllerTest(
     @Autowired private val mvc: MockMvc,
     @Autowired private val mapper: ObjectMapper,
     @Autowired private val createHelper: CreateHelper,
-    @Autowired private val leaveDayService: LeaveDayService
+    @Autowired private val leaveDayService: LeaveDayService,
 ) {
     private val baseUrl: String = "/api/leave-days"
 
@@ -51,7 +51,6 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should get a holiday via GET-method`() {
-
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
@@ -61,22 +60,23 @@ class LeaveDayControllerTest(
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = LeaveDayForm(
-            from = from,
-            to = to,
-            days = days,
-            hours = hours,
-            personId = person.uuid,
-            description = description,
-            status = status
-        )
+        val createForm =
+            LeaveDayForm(
+                from = from,
+                to = to,
+                days = days,
+                hours = hours,
+                personId = person.uuid,
+                description = description,
+                status = status,
+            )
 
         val created = leaveDayService.create(createForm)
 
         mvc.perform(
             get("$baseUrl/${created.code}")
                 .with(user(CreateHelper.UserSecurity(user)))
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -91,7 +91,6 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should create a valid holiday via POST-method with status REQUESTED`() {
-
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
@@ -101,22 +100,23 @@ class LeaveDayControllerTest(
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = LeaveDayForm(
-            from = from,
-            to = to,
-            days = days,
-            hours = hours,
-            personId = person.uuid,
-            description = description,
-            status = status
-        )
+        val createForm =
+            LeaveDayForm(
+                from = from,
+                to = to,
+                days = days,
+                hours = hours,
+                personId = person.uuid,
+                description = description,
+                status = status,
+            )
 
         mvc.perform(
-            post("$baseUrl")
+            post(baseUrl)
                 .with(user(CreateHelper.UserSecurity(user)))
                 .content(mapper.writeValueAsString(createForm))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -131,7 +131,6 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should update a existing holiday via PUT-Method`() {
-
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
@@ -142,15 +141,16 @@ class LeaveDayControllerTest(
         val status = Status.REQUESTED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = LeaveDayForm(
-            from = from,
-            to = to,
-            days = days,
-            hours = hours,
-            personId = person.uuid,
-            description = description,
-            status = status
-        )
+        val createForm =
+            LeaveDayForm(
+                from = from,
+                to = to,
+                days = days,
+                hours = hours,
+                personId = person.uuid,
+                description = description,
+                status = status,
+            )
 
         val created = leaveDayService.create(createForm)
 
@@ -161,7 +161,7 @@ class LeaveDayControllerTest(
                 .with(user(CreateHelper.UserSecurity(user)))
                 .content(mapper.writeValueAsString(updatedCreateForm))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -176,7 +176,6 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should not be allowed to update status field existing holiday via PUT-Method`() {
-
         val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
@@ -187,15 +186,16 @@ class LeaveDayControllerTest(
         val updatedStatus = Status.APPROVED
         val person = createHelper.createPerson("john", "doe", user.code)
 
-        val createForm = LeaveDayForm(
-            from = from,
-            to = to,
-            days = days,
-            hours = hours,
-            personId = person.uuid,
-            description = description,
-            status = status
-        )
+        val createForm =
+            LeaveDayForm(
+                from = from,
+                to = to,
+                days = days,
+                hours = hours,
+                personId = person.uuid,
+                description = description,
+                status = status,
+            )
 
         val created = leaveDayService.create(createForm)
 
@@ -206,7 +206,7 @@ class LeaveDayControllerTest(
                 .with(user(CreateHelper.UserSecurity(user)))
                 .content(mapper.writeValueAsString(updatedCreateForm))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isForbidden)
 
@@ -215,7 +215,6 @@ class LeaveDayControllerTest(
 
     @Test
     fun `admin can update status field existing holiday via PUT-Method`() {
-
         val admin = createHelper.createUser(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
@@ -226,15 +225,16 @@ class LeaveDayControllerTest(
         val updatedStatus = Status.APPROVED
         val person = createHelper.createPerson("john", "doe", admin.code)
 
-        val createForm = LeaveDayForm(
-            from = from,
-            to = to,
-            days = days,
-            hours = hours,
-            personId = person.uuid,
-            description = description,
-            status = status
-        )
+        val createForm =
+            LeaveDayForm(
+                from = from,
+                to = to,
+                days = days,
+                hours = hours,
+                personId = person.uuid,
+                description = description,
+                status = status,
+            )
 
         val created = leaveDayService.create(createForm)
 
@@ -245,7 +245,7 @@ class LeaveDayControllerTest(
                 .with(user(CreateHelper.UserSecurity(admin)))
                 .content(mapper.writeValueAsString(updatedCreateForm))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -263,18 +263,18 @@ class LeaveDayControllerTest(
         val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
-        val updatedStatus = Status.APPROVED
         val person = createHelper.createPerson("john", "doe", admin.code)
 
-        val createForm = LeaveDayForm(
-            from = from,
-            to = to,
-            days = days,
-            hours = hours,
-            personId = person.uuid,
-            description = description,
-            status = status
-        )
+        val createForm =
+            LeaveDayForm(
+                from = from,
+                to = to,
+                days = days,
+                hours = hours,
+                personId = person.uuid,
+                description = description,
+                status = status,
+            )
 
         val created = leaveDayService.create(createForm)
 
@@ -282,7 +282,7 @@ class LeaveDayControllerTest(
             delete("$baseUrl/${created.code}")
                 .with(user(CreateHelper.UserSecurity(admin)))
                 .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
+                .accept(APPLICATION_JSON),
         )
             .andExpect(status().isNoContent)
 

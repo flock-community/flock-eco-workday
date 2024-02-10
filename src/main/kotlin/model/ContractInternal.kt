@@ -8,7 +8,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.YearMonth
-import java.util.*
+import java.util.UUID
 import javax.persistence.Entity
 import javax.persistence.EntityListeners
 
@@ -17,39 +17,43 @@ import javax.persistence.EntityListeners
 data class ContractInternal(
     override val id: Long = 0,
     override val code: String = UUID.randomUUID().toString(),
-
     override val person: Person,
-
     override val from: LocalDate,
     override val to: LocalDate? = null,
-
     override val monthlySalary: Double,
     override val hoursPerWeek: Int,
-
     val holidayHours: Int,
-    val billable: Boolean = true
-
+    val billable: Boolean = true,
 ) : Monthly, Contract(id, code, from, to, person, ContractType.INTERNAL) {
-    override fun totalCostsInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
+    override fun totalCostsInPeriod(
+        from: LocalDate,
+        to: LocalDate,
+    ): BigDecimal {
         return totalCostInPeriod(from, to, monthlySalary)
     }
 
-    override fun totalDaysInPeriod(from: LocalDate, to: LocalDate): BigDecimal {
+    override fun totalDaysInPeriod(
+        from: LocalDate,
+        to: LocalDate,
+    ): BigDecimal {
         return totalDaysInPeriod(from, to, hoursPerWeek)
     }
 
-    override fun equals(obj: Any?) = super.equals(obj)
+    override fun equals(other: Any?) = super.equals(other)
+
     override fun hashCode(): Int = super.hashCode()
 
-    fun totalCostInPeriod(yearMonth: YearMonth): BigDecimal = this
-        .toDateRangeInPeriod(yearMonth)
-        .map { this.monthlySalary.toBigDecimal() }
-        .sum()
-        .divide(yearMonth.lengthOfMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
+    fun totalCostInPeriod(yearMonth: YearMonth): BigDecimal =
+        this
+            .toDateRangeInPeriod(yearMonth)
+            .map { this.monthlySalary.toBigDecimal() }
+            .sum()
+            .divide(yearMonth.lengthOfMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
 
-    fun totalLeaveDayHoursInPeriod(period: Period): BigDecimal = this
-        .toDateRangeInPeriod(period)
-        .sumOf { this.holidayHours }
-        .toBigDecimal()
-        .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
+    fun totalLeaveDayHoursInPeriod(period: Period): BigDecimal =
+        this
+            .toDateRangeInPeriod(period)
+            .sumOf { this.holidayHours }
+            .toBigDecimal()
+            .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
 }

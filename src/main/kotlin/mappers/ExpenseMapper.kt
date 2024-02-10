@@ -11,39 +11,48 @@ import org.springframework.stereotype.Component
 
 @Component
 class TravelExpenseMapper(
-    private val personService: PersonService
+    private val personService: PersonService,
 ) {
-    fun consume(input: TravelExpenseInput, id: UUID? = null) = TravelExpense(
+    fun consume(
+        input: TravelExpenseInput,
+        id: UUID? = null,
+    ) = TravelExpense(
         id = id ?: UUID.randomUUID(),
         date = input.date,
         description = input.description,
         distance = input.distance.toString().toDouble(),
         allowance = input.allowance.toString().toDouble(),
         status = input.status,
-        person = personService
-            .findByUuid(input.personId)
-            ?: error("Cannot find person")
+        person =
+            personService
+                .findByUuid(input.personId)
+                ?: error("Cannot find person"),
     )
 }
 
 @Component
 class CostExpenseMapper(
-    private val personService: PersonService
+    private val personService: PersonService,
 ) {
-    fun consume(input: CostExpenseInput, id: UUID? = null) = CostExpense(
+    fun consume(
+        input: CostExpenseInput,
+        id: UUID? = null,
+    ) = CostExpense(
         id = id ?: UUID.randomUUID(),
         date = input.date,
         description = input.description,
         amount = input.amount.toString().toDouble(),
-        files = input.files.map {
-            Document(
-                name = it.name,
-                file = it.file
-            )
-        },
+        files =
+            input.files.map {
+                Document(
+                    name = it.name,
+                    file = it.file,
+                )
+            },
         status = input.status,
-        person = personService
-            .findByUuid(input.personId)
-            ?: error("Cannot find person")
+        person =
+            personService
+                .findByUuid(input.personId)
+                ?: error("Cannot find person"),
     )
 }

@@ -18,27 +18,27 @@ data class StoreObject(
     val refreshToken: String,
     val expiresIn: Long,
     val division: Int,
-    val timestamp: LocalDateTime
+    val timestamp: LocalDateTime,
 )
 
 @Service
 class ExactonlineAuthenticationService(
     private val authenticationClient: ExactonlineAuthenticationClient,
     private val userClient: ExactonlineUserClient,
-    private val exactonlineProperties: ExactonlineProperties
+    private val exactonlineProperties: ExactonlineProperties,
 ) {
-
     val sessionKeyToken = "EXACTONLINE_TOKEN"
     val sessionKeyRedirect = "EXACTONLINE_REDIRECT"
 
-    fun authorizationUrl(): UriComponents = UriComponentsBuilder
-        .fromUriString(exactonlineProperties.requestUri)
-        .path("/api/oauth2/auth")
-        .queryParam("client_id", exactonlineProperties.clientId)
-        .queryParam("redirect_uri", exactonlineProperties.redirectUri)
-        .queryParam("response_type", "code")
-        .queryParam("force_login", 0)
-        .build()
+    fun authorizationUrl(): UriComponents =
+        UriComponentsBuilder
+            .fromUriString(exactonlineProperties.requestUri)
+            .path("/api/oauth2/auth")
+            .queryParam("client_id", exactonlineProperties.clientId)
+            .queryParam("redirect_uri", exactonlineProperties.redirectUri)
+            .queryParam("response_type", "code")
+            .queryParam("force_login", 0)
+            .build()
 
     fun accessToken(session: HttpSession): Mono<ExactonlineRequestObject> {
         val store = session.getAttribute(sessionKeyToken) as StoreObject?
@@ -56,7 +56,10 @@ class ExactonlineAuthenticationService(
         return Mono.empty()
     }
 
-    private fun storeObject(session: HttpSession, body: ObjectNode): Mono<StoreObject> {
+    private fun storeObject(
+        session: HttpSession,
+        body: ObjectNode,
+    ): Mono<StoreObject> {
         val accessToken = body.get("access_token").asText()
         return userClient.getCurrentMe(accessToken)
             .map {
@@ -65,7 +68,7 @@ class ExactonlineAuthenticationService(
                     refreshToken = body.get("refresh_token").asText(),
                     expiresIn = body.get("expires_in").asLong(),
                     division = it.currentDivision,
-                    timestamp = LocalDateTime.now()
+                    timestamp = LocalDateTime.now(),
                 )
             }
             .doOnNext {
@@ -73,14 +76,22 @@ class ExactonlineAuthenticationService(
             }
     }
 
-    fun authenticate(session: HttpSession, code: String): Mono<StoreObject> = authenticationClient
-        .token(code)
-        .bodyToMono(ObjectNode::class.java)
-        .flatMap { storeObject(session, it) }
+    fun authenticate(
+        session: HttpSession,
+        code: String,
+    ): Mono<StoreObject> =
+        authenticationClient
+            .token(code)
+            .bodyToMono(ObjectNode::class.java)
+            .flatMap { storeObject(session, it) }
 
-    fun getRedirectUri(session: HttpSession) = session
-        .getAttribute(sessionKeyRedirect) as URI?
+    fun getRedirectUri(session: HttpSession) =
+        session
+            .getAttribute(sessionKeyRedirect) as URI?
 
-    fun storeRedirectUri(session: HttpSession, uri: URI) = session
+    fun storeRedirectUri(
+        session: HttpSession,
+        uri: URI,
+    ) = session
         .setAttribute(sessionKeyRedirect, uri)
 }

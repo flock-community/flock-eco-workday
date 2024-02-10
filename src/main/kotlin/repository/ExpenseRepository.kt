@@ -13,8 +13,16 @@ import java.util.UUID
 
 @Repository
 interface ExpenseRepository : PagingAndSortingRepository<Expense, UUID> {
-    fun findAllByPersonUuid(personUuid: UUID, pageable: Pageable): Page<Expense>
-    fun findAllByPersonUserCode(personCode: String, pageable: Pageable): Page<Expense>
+    fun findAllByPersonUuid(
+        personUuid: UUID,
+        pageable: Pageable,
+    ): Page<Expense>
+
+    fun findAllByPersonUserCode(
+        personCode: String,
+        pageable: Pageable,
+    ): Page<Expense>
+
     fun findAllByStatus(status: Status): Iterable<Expense>
 }
 

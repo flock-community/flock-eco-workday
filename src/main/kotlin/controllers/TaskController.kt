@@ -14,9 +14,8 @@ import java.time.YearMonth
 class TaskController(
     private val aggregationService: AggregationService,
     private val personService: PersonService,
-    private val emailService: WorkdayEmailService
+    private val emailService: WorkdayEmailService,
 ) {
-
     @GetMapping("/reminder")
     fun reminder() {
         val yearMonth = YearMonth.now().minusMonths(1)
@@ -27,6 +26,8 @@ class TaskController(
             .filter { it.workDays == BigDecimal.ZERO }
             .mapNotNull { personService.findByUuid(it.id) }
             .filter { it.reminders }
-            .forEach { emailService.sendReminder(it); }
+            .forEach {
+                emailService.sendReminder(it)
+            }
     }
 }

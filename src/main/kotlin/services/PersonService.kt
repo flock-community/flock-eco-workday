@@ -16,13 +16,14 @@ import java.util.UUID
 @Service
 class PersonService(
     private val repository: PersonRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
     private fun Person.render(form: PersonForm): Person {
-        val user = when (form.userCode) {
-            is String -> userRepository.findByCode(form.userCode).toNullable()
-            else -> null
-        }
+        val user =
+            when (form.userCode) {
+                is String -> userRepository.findByCode(form.userCode).toNullable()
+                else -> null
+            }
 
         return Person(
             id = this.id,
@@ -54,59 +55,77 @@ class PersonService(
             // When the entity is (made) active, last active at is not relevant
             // If it is set, clear it
             true -> null
-            false -> when (this.active) {
-                // Form entity is inactive, but saved entity is active, which means the
-                // entity is made inactive in this request
-                true -> Instant.now()
-                // Saved entity was already inactive, don't update last active at
-                // Other properties could be updated, but as long as the person stays
-                // inactive, we should keep the last active at
-                false -> this.lastActiveAt
-            }
+            false ->
+                when (this.active) {
+                    // Form entity is inactive, but saved entity is active, which means the
+                    // entity is made inactive in this request
+                    true -> Instant.now()
+                    // Saved entity was already inactive, don't update last active at
+                    // Other properties could be updated, but as long as the person stays
+                    // inactive, we should keep the last active at
+                    false -> this.lastActiveAt
+                }
         }
 
     private fun Person.save(): Person = repository.save(this)
 
-    fun findAll(pageable: Pageable): Page<Person> = repository
-        .findAll(pageable)
+    fun findAll(pageable: Pageable): Page<Person> =
+        repository
+            .findAll(pageable)
 
-    fun findAllByActive(pageable: Pageable, active: Boolean): Page<Person> = repository
-        .findAllByActive(pageable, active)
+    fun findAllByActive(
+        pageable: Pageable,
+        active: Boolean,
+    ): Page<Person> =
+        repository
+            .findAllByActive(pageable, active)
 
-    fun findByUuid(code: UUID): Person? = repository
-        .findByUuid(code)
-        .toNullable()
+    fun findByUuid(code: UUID): Person? =
+        repository
+            .findByUuid(code)
+            .toNullable()
 
-    fun findByUserCode(userCode: String) = repository
-        .findByUserCode(userCode)
-        .toNullable()
+    fun findByUserCode(userCode: String) =
+        repository
+            .findByUserCode(userCode)
+            .toNullable()
 
-    fun findByPersonCodeIdIn(personCodes: List<UUID>) = repository
-        .findByUuidIn(personCodes)
+    fun findByPersonCodeIdIn(personCodes: List<UUID>) =
+        repository
+            .findByUuidIn(personCodes)
 
-    fun findAllByFullName(pageable: Pageable, search: String) = repository
+    fun findAllByFullName(
+        pageable: Pageable,
+        search: String,
+    ) = repository
         .findAllByFullName(pageable, search)
 
-    fun findAllPersonEvents(start: LocalDate, end: LocalDate): List<PersonEvent> =
+    fun findAllPersonEvents(
+        start: LocalDate,
+        end: LocalDate,
+    ): List<PersonEvent> =
         with(repository.findAllByActive(Pageable.unpaged(), active = true)) {
-            val birthdays = this
-                .filter { it.birthdate?.isBetweenIgnoreYear(start, end) ?: false }
-                .map { PersonEvent(it, PersonEvent.EventType.BIRTHDAY, it.birthdate!!) }
-            val joinDays = this
-                .filter { it.joinDate?.isBetweenIgnoreYear(start, end) ?: false }
-                .map { PersonEvent(it, PersonEvent.EventType.JOIN_DAY, it.joinDate!!) }
+            val birthdays =
+                this
+                    .filter { it.birthdate?.isBetweenIgnoreYear(start, end) ?: false }
+                    .map { PersonEvent(it, PersonEvent.EventType.BIRTHDAY, it.birthdate!!) }
+            val joinDays =
+                this
+                    .filter { it.joinDate?.isBetweenIgnoreYear(start, end) ?: false }
+                    .map { PersonEvent(it, PersonEvent.EventType.JOIN_DAY, it.joinDate!!) }
 
             birthdays.plus(joinDays).sortedBy { it.eventDate.withYear(1970) }
         }
 
     fun create(form: PersonForm): Person? {
-        val user = when (form.userCode) {
-            is String ->
-                userRepository
-                    .findByCode(form.userCode)
-                    .toNullable()
-            else -> null
-        }
+        val user =
+            when (form.userCode) {
+                is String ->
+                    userRepository
+                        .findByCode(form.userCode)
+                        .toNullable()
+                else -> null
+            }
 
         return Person(
             firstname = form.firstname,
@@ -120,12 +139,14 @@ class PersonService(
             active = form.active,
             lastActiveAt = if (form.active) null else Instant.now(),
             reminders = form.reminders,
-            receiveEmail = form.receiveEmail
+            receiveEmail = form.receiveEmail,
         ).save()
     }
 
-    fun update(code: UUID, form: PersonForm): Person? =
-        findByUuid(code)?.render(form)?.save()
+    fun update(
+        code: UUID,
+        form: PersonForm,
+    ): Person? = findByUuid(code)?.render(form)?.save()
 
     @Transactional
     fun deleteByUuid(uuid: UUID) = repository.deleteByUuid(uuid)
@@ -133,7 +154,10 @@ class PersonService(
 
 fun Person.isUser(userCode: String?) = this.user?.code == userCode
 
-fun LocalDate.isBetweenIgnoreYear(start: LocalDate, end: LocalDate): Boolean {
+fun LocalDate.isBetweenIgnoreYear(
+    start: LocalDate,
+    end: LocalDate,
+): Boolean {
     var nextDate = this.withYear(start.year)
     if (nextDate.isBefore(start)) nextDate = nextDate.plusYears(1)
     return (nextDate.isAfter(start) || nextDate.isEqual(start)) && nextDate.isBefore(end)
@@ -142,9 +166,10 @@ fun LocalDate.isBetweenIgnoreYear(start: LocalDate, end: LocalDate): Boolean {
 data class PersonEvent(
     val person: Person,
     val eventType: EventType,
-    val eventDate: LocalDate
+    val eventDate: LocalDate,
 ) {
     enum class EventType {
-        JOIN_DAY, BIRTHDAY
+        JOIN_DAY,
+        BIRTHDAY,
     }
 }

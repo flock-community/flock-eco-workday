@@ -27,25 +27,24 @@ import kotlin.test.assertNotNull
 @ActiveProfiles(profiles = ["test"])
 class EventRepositoryTest(
     @Autowired private val eventRepository: EventRepository,
-    @Autowired private val createHelper: CreateHelper
+    @Autowired private val createHelper: CreateHelper,
 ) {
-
     @Test
     fun `create update delete`() {
-
         val person1 = createHelper.createPerson()
         val person2 = createHelper.createPerson()
 
-        val event = Event(
-            description = "Nieuwjaarsdag",
-            from = LocalDate.now(),
-            to = LocalDate.now().plusDays(5),
-            hours = 40.0,
-            days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
-            persons = listOf(person1, person2),
-            costs = 538.38,
-            type = EventType.GENERAL_EVENT
-        )
+        val event =
+            Event(
+                description = "Nieuwjaarsdag",
+                from = LocalDate.now(),
+                to = LocalDate.now().plusDays(5),
+                hours = 40.0,
+                days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
+                persons = listOf(person1, person2),
+                costs = 538.38,
+                type = EventType.GENERAL_EVENT,
+            )
 
         val created = eventRepository.save(event)
         assertNotNull(created.id)

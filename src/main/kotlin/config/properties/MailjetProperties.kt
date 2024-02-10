@@ -17,5 +17,5 @@ data class MailjetClientProperties(
 data class MailjetTemplateProperties(
     val reminderTemplateId: Int,
     val updateTemplateId: Int,
-    val notificationTemplateId: Int
+    val notificationTemplateId: Int,
 )

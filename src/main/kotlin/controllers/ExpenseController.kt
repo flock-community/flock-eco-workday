@@ -13,6 +13,7 @@ import community.flock.eco.workday.services.DocumentService
 import community.flock.eco.workday.services.ExpenseService
 import community.flock.eco.workday.services.TravelExpenseService
 import community.flock.eco.workday.services.isUser
+import org.springframework.boot.web.server.MimeMappings
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -36,14 +37,14 @@ import java.util.UUID
 @RequestMapping("/api/expenses")
 class ExpenseController(
     private val documentService: DocumentService,
-    private val expenseService: ExpenseService
+    private val expenseService: ExpenseService,
 ) {
     @GetMapping(params = ["personId"])
     @PreAuthorize("hasAuthority('ExpenseAuthority.READ')")
     fun getExpenseAll(
         @RequestParam personId: UUID,
         authentication: Authentication,
-        pageable: Pageable
+        pageable: Pageable,
     ) = when {
         authentication.isAdmin() -> expenseService.findAllByPersonUuid(personId, pageable)
         else -> expenseService.findAllByPersonUserCode(authentication.name, pageable)
@@ -53,7 +54,7 @@ class ExpenseController(
     @GetMapping("{id}")
     fun getExpenseById(
         @PathVariable id: UUID,
-        authentication: Authentication
+        authentication: Authentication,
     ) = expenseService
         .findById(id)
         .toResponse()
@@ -61,7 +62,7 @@ class ExpenseController(
     @DeleteMapping("{id}")
     fun deleteExpenseById(
         @PathVariable id: UUID,
-        authentication: Authentication
+        authentication: Authentication,
     ) = expenseService
         .deleteById(id)
         .toResponse()
@@ -71,7 +72,7 @@ class ExpenseController(
     fun getFiles(
         @PathVariable file: UUID,
         @PathVariable name: String,
-        authentication: Authentication
+        authentication: Authentication,
     ) = documentService.readDocument(file)
         .run {
             ResponseEntity
@@ -84,7 +85,7 @@ class ExpenseController(
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
     fun postFiles(
         @RequestParam("file") file: MultipartFile,
-        authentication: Authentication
+        authentication: Authentication,
     ) = documentService
         .storeDocument(file.bytes)
         .toResponse()
@@ -95,13 +96,13 @@ class ExpenseController(
 class TravelExpenseController(
     private val service: TravelExpenseService,
     private val mapper: TravelExpenseMapper,
-    private val expenseService: ExpenseService
+    private val expenseService: ExpenseService,
 ) {
     @PostMapping
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
     fun postTravelExpense(
         @RequestBody input: TravelExpenseInput,
-        authentication: Authentication
+        authentication: Authentication,
     ) = input
         .run { mapper.consume(this) }
         .run { service.create(this) }
@@ -112,7 +113,7 @@ class TravelExpenseController(
     fun putTravelExpense(
         @PathVariable id: UUID,
         @RequestBody input: TravelExpenseInput,
-        authentication: Authentication
+        authentication: Authentication,
     ) = input
         .run { expenseService.findById(id) }
         ?.applyAllowedToUpdate(input.status, authentication.isAdmin())
@@ -126,13 +127,13 @@ class TravelExpenseController(
 class CostExpenseController(
     private val service: CostExpenseService,
     private val mapper: CostExpenseMapper,
-    private val expenseService: ExpenseService
+    private val expenseService: ExpenseService,
 ) {
     @PostMapping
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
     fun postCostExpense(
         @RequestBody input: CostExpenseInput,
-        authentication: Authentication
+        authentication: Authentication,
     ) = input
         .run { mapper.consume(this) }
         .run { service.create(this) }
@@ -143,7 +144,7 @@ class CostExpenseController(
     fun putCostExpense(
         @PathVariable id: UUID,
         @RequestBody input: CostExpenseInput,
-        authentication: Authentication
+        authentication: Authentication,
     ) = input
         .run { expenseService.findById(id) }
         ?.applyAllowedToUpdate(input.status, authentication.isAdmin())
@@ -152,18 +153,20 @@ class CostExpenseController(
         .toResponse()
 }
 
-private fun Authentication.isAdmin(): Boolean = this.authorities
-    .map { it.authority }
-    .contains(ExpenseAuthority.ADMIN.toName())
+private fun Authentication.isAdmin(): Boolean =
+    this.authorities
+        .map { it.authority }
+        .contains(ExpenseAuthority.ADMIN.toName())
 
-private fun Expense.applyAuthentication(authentication: Authentication) = apply {
-    if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
-        throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has not access to expenses: ${this.id}")
+private fun Expense.applyAuthentication(authentication: Authentication) =
+    apply {
+        if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User has not access to expenses: ${this.id}")
+        }
     }
-}
 
 private fun getMediaType(name: String): MediaType {
-    val extension = java.io.File(name).extension.toLowerCase()
-    val mime = org.springframework.boot.web.server.MimeMappings.DEFAULT.get(extension)
+    val extension = java.io.File(name).extension.lowercase()
+    val mime = MimeMappings.DEFAULT.get(extension)
     return MediaType.parseMediaType(mime)
 }

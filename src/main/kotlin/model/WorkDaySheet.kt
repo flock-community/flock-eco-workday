@@ -6,5 +6,5 @@ import javax.persistence.Embeddable
 @Embeddable
 class WorkDaySheet(
     val name: String,
-    val file: UUID
+    val file: UUID,
 )

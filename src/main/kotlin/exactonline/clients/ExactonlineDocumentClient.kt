@@ -15,43 +15,51 @@ import java.util.UUID
 
 @Component
 class ExactonlineDocumentClient(
-    private val exactonlineProperties: ExactonlineProperties
+    exactonlineProperties: ExactonlineProperties,
 ) {
+    val client: WebClient =
+        WebClient.builder()
+            .baseUrl(exactonlineProperties.requestUri)
+            .build()
 
-    val client: WebClient = WebClient.builder()
-        .baseUrl(exactonlineProperties.requestUri)
-        .build()
-
-    fun postDocument(requestObject: ExactonlineRequestObject, document: ExactonlineDocument): Mono<ExactonlineDocument> = client
-        .post()
-        .uri("/api/v1/${requestObject.division}/documents/Documents")
-        .header("authorization", "Bearer ${requestObject.accessToken}")
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            Mono.just(
-                mapOf(
-                    "Subject" to document.subject,
-                    "Type" to document.type.id
-                )
-            ),
-            Map::class.java
-        )
-        .accept(MediaType.APPLICATION_JSON)
-        .retrieve()
-        .bodyToMono(ObjectNode::class.java)
-        .map { it.get("d") }
-        .map { document ->
-            ExactonlineDocument(
-                id = document.get("ID").asText().let { UUID.fromString(it) },
-                subject = document.get("Subject").asText(),
-                type = document.get("Type").asText(null)
-                    ?.let { it.toInt() }
-                    ?.let { id -> ExactonlineDocumentType.values().find { it.id == id } }
-                    ?: error("Cannot find ExactonlineDocumentType")
+    fun postDocument(
+        requestObject: ExactonlineRequestObject,
+        document: ExactonlineDocument,
+    ): Mono<ExactonlineDocument> =
+        client
+            .post()
+            .uri("/api/v1/${requestObject.division}/documents/Documents")
+            .header("authorization", "Bearer ${requestObject.accessToken}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(
+                Mono.just(
+                    mapOf(
+                        "Subject" to document.subject,
+                        "Type" to document.type.id,
+                    ),
+                ),
+                Map::class.java,
             )
-        }
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .bodyToMono(ObjectNode::class.java)
+            .map { it.get("d") }
+            .map { node ->
+                ExactonlineDocument(
+                    id = node.get("ID").asText().let { UUID.fromString(it) },
+                    subject = node.get("Subject").asText(),
+                    type =
+                        node.get("Type").asText(null)
+                            ?.let { it.toInt() }
+                            ?.let { id -> ExactonlineDocumentType.values().find { it.id == id } }
+                            ?: error("Cannot find ExactonlineDocumentType"),
+                )
+            }
 
-    fun postDocumentAttachment(requestObject: ExactonlineRequestObject, attachment: ExactonlineDocumentAttachment) = client
+    fun postDocumentAttachment(
+        requestObject: ExactonlineRequestObject,
+        attachment: ExactonlineDocumentAttachment,
+    ) = client
         .post()
         .uri("/api/v1/${requestObject.division}/documents/DocumentAttachments")
         .header("authorization", "Bearer ${requestObject.accessToken}")
@@ -61,10 +69,10 @@ class ExactonlineDocumentClient(
                 mapOf(
                     "Attachment" to Base64.getEncoder().encodeToString(attachment.attachment),
                     "Document" to attachment.document,
-                    "FileName" to attachment.fileName
-                )
+                    "FileName" to attachment.fileName,
+                ),
             ),
-            Map::class.java
+            Map::class.java,
         )
         .accept(MediaType.APPLICATION_JSON)
         .retrieve()

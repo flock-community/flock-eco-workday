@@ -25,30 +25,31 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import java.util.*
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/leave-days")
 class LeaveDayController(
     private val service: LeaveDayService,
-    private val personService: PersonService
+    private val personService: PersonService,
 ) {
     @GetMapping(params = ["personId"])
     @PreAuthorize("hasAuthority('LeaveDayAuthority.READ')")
     fun getAll(
         @RequestParam personId: UUID,
         authentication: Authentication,
-        pageable: Pageable
-    ): ResponseEntity<List<LeaveDay>> = when {
-        authentication.isAdmin() -> service.findAllByPersonUuid(personId, pageable)
-        else -> service.findAllByPersonUserCode(authentication.name, pageable)
-    }.toResponse()
+        pageable: Pageable,
+    ): ResponseEntity<List<LeaveDay>> =
+        when {
+            authentication.isAdmin() -> service.findAllByPersonUuid(personId, pageable)
+            else -> service.findAllByPersonUserCode(authentication.name, pageable)
+        }.toResponse()
 
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('LeaveDayAuthority.READ')")
     fun findByCode(
         @PathVariable code: String,
-        authentication: Authentication
+        authentication: Authentication,
     ) = service
         .findByCode(code)
         ?.applyAuthentication(authentication)
@@ -58,7 +59,7 @@ class LeaveDayController(
     @PreAuthorize("hasAuthority('LeaveDayAuthority.WRITE')")
     fun post(
         @RequestBody form: LeaveDayForm,
-        authentication: Authentication
+        authentication: Authentication,
     ) = service
         .create(form.setPersonCode(authentication))
         .toResponse()
@@ -68,18 +69,17 @@ class LeaveDayController(
     fun put(
         @PathVariable code: String,
         @RequestBody form: LeaveDayForm,
-        authentication: Authentication
-    ) =
-        service.findByCode(code)
-            ?.applyAuthentication(authentication)
-            ?.applyAllowedToUpdate(form.status, authentication.isAdmin())
-            ?.run { service.update(code, form) }
+        authentication: Authentication,
+    ) = service.findByCode(code)
+        ?.applyAuthentication(authentication)
+        ?.applyAllowedToUpdate(form.status, authentication.isAdmin())
+        ?.run { service.update(code, form) }
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('LeaveDayAuthority.WRITE')")
     fun delete(
         @PathVariable code: String,
-        authentication: Authentication
+        authentication: Authentication,
     ) = service.findByCode(code)
         ?.applyAuthentication(authentication)
         ?.run { service.deleteByCode(this.code) }
@@ -96,22 +96,28 @@ class LeaveDayController(
             ?: throw ResponseStatusException(UNAUTHORIZED, "User is not linked to person")
     }
 
-    private fun Authentication.isAdmin(): Boolean = this.authorities
-        .map { it.authority }
-        .contains(LeaveDayAuthority.ADMIN.toName())
+    private fun Authentication.isAdmin(): Boolean =
+        this.authorities
+            .map { it.authority }
+            .contains(LeaveDayAuthority.ADMIN.toName())
 
-    private fun LeaveDay.applyAuthentication(authentication: Authentication) = apply {
-        if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
-            throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
+    private fun LeaveDay.applyAuthentication(authentication: Authentication) =
+        apply {
+            if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
+                throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
+            }
         }
-    }
 
-    private fun LeaveDay.applyAllowedToCreate(form: LeaveDayForm, authentication: Authentication): LeaveDay = apply {
-        if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change workday")
+    private fun LeaveDay.applyAllowedToCreate(
+        form: LeaveDayForm,
+        authentication: Authentication,
+    ): LeaveDay =
+        apply {
+            if (this.status !== Status.REQUESTED && !authentication.isAdmin()) {
+                throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change workday")
+            }
+            if (form.status !== this.status && !authentication.isAdmin()) {
+                throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
+            }
         }
-        if (form.status !== this.status && !authentication.isAdmin()) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
-        }
-    }
 }

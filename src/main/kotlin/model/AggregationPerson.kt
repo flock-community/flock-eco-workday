@@ -2,7 +2,7 @@ package community.flock.eco.workday.model
 
 import community.flock.eco.workday.graphql.kotlin.AggregationPersonClientRevenueOverview
 import java.math.BigDecimal
-import java.util.*
+import java.util.UUID
 
 data class AggregationPerson(
     val id: UUID,
@@ -18,5 +18,5 @@ data class AggregationPerson(
     val paidParentalLeaveUsed: BigDecimal,
     val unpaidParentalLeaveUsed: BigDecimal,
     val revenue: AggregationPersonClientRevenueOverview? = null,
-    val cost: BigDecimal? = null
+    val cost: BigDecimal? = null,
 )
