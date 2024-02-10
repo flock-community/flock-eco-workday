@@ -13,9 +13,8 @@ import java.time.LocalDate
 class LoadEventData(
     private val loadData: LoadData,
     loadPersonData: LoadPersonData,
-    private val service: EventService
+    private val service: EventService,
 ) {
-
     final val now: LocalDate = LocalDate.now().withDayOfMonth(1)
     final val data: MutableList<Event> = mutableListOf()
 
@@ -30,7 +29,7 @@ class LoadEventData(
                     hours = 8.0,
                     personIds = loadPersonData.data.map { it.uuid },
                     costs = 1000.0,
-                    type = EventType.GENERAL_EVENT
+                    type = EventType.GENERAL_EVENT,
                 ),
                 EventForm(
                     description = "Flock. Hack Day",
@@ -40,7 +39,7 @@ class LoadEventData(
                     hours = 8.0,
                     personIds = loadPersonData.data.map { it.uuid },
                     costs = 1000.0,
-                    type = EventType.FLOCK_HACK_DAY
+                    type = EventType.FLOCK_HACK_DAY,
                 ),
                 EventForm(
                     description = "Flock. Community Day",
@@ -50,7 +49,7 @@ class LoadEventData(
                     hours = 8.0,
                     personIds = loadPersonData.data.map { it.uuid },
                     costs = 1000.0,
-                    type = EventType.FLOCK_COMMUNITY_DAY
+                    type = EventType.FLOCK_COMMUNITY_DAY,
                 ),
                 EventForm(
                     description = "Conference",
@@ -60,8 +59,8 @@ class LoadEventData(
                     hours = 24.0,
                     personIds = loadPersonData.data.take(2).map { it.uuid },
                     costs = 1000.0,
-                    type = EventType.CONFERENCE
-                )
+                    type = EventType.CONFERENCE,
+                ),
             )
                 .map { it.create() }
                 .let { data.addAll(it) }

@@ -7,17 +7,16 @@ import community.flock.eco.workday.services.WorkDayService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadWorkDayData(
-        private val loadData: LoadData,
-        loadPersonData: LoadPersonData,
-        loadAssignmentData: LoadAssignmentData,
-        private val workDayService: WorkDayService
+    private val loadData: LoadData,
+    private val workDayService: WorkDayService,
+    loadAssignmentData: LoadAssignmentData,
 ) {
-    val now = LocalDate.now()
+    val now: LocalDate = LocalDate.now()
     val data: MutableSet<WorkDay> = mutableSetOf()
 
     /**
@@ -37,29 +36,30 @@ class LoadWorkDayData(
     init {
         val now = LocalDate.now()
         loadAssignmentData.data
-                .map { assignment ->
-                    (1..12)
-                            .map {
-                                WorkDayForm(
-                                        from = now.withMonth(it).withDayOfMonth(1),
-                                        to = now.withMonth(it).withDayOfMonth(1).plusDays(9),
-                                        hours = 80.0,
-                                        days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
-                                        assignmentCode = assignment.code,
-                                        sheets = listOf(
-                                                WorkDaySheetForm(
-                                                        name = "File1.jpg",
-                                                        file = UUID.randomUUID()
-                                                ),
-                                                WorkDaySheetForm(
-                                                        name = "File2.pdf",
-                                                        file = UUID.randomUUID()
-                                                )
-                                        )
-                                )
-                            }
-                }
-                .flatten()
-                .forEach { it.create() }
+            .map { assignment ->
+                (1..12)
+                    .map {
+                        WorkDayForm(
+                            from = now.withMonth(it).withDayOfMonth(1),
+                            to = now.withMonth(it).withDayOfMonth(1).plusDays(9),
+                            hours = 80.0,
+                            days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
+                            assignmentCode = assignment.code,
+                            sheets =
+                                listOf(
+                                    WorkDaySheetForm(
+                                        name = "File1.jpg",
+                                        file = UUID.randomUUID(),
+                                    ),
+                                    WorkDaySheetForm(
+                                        name = "File2.pdf",
+                                        file = UUID.randomUUID(),
+                                    ),
+                                ),
+                        )
+                    }
+            }
+            .flatten()
+            .forEach { it.create() }
     }
 }

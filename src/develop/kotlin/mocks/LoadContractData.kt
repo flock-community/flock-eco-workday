@@ -1,6 +1,11 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.workday.model.*
+import community.flock.eco.workday.model.Contract
+import community.flock.eco.workday.model.ContractExternal
+import community.flock.eco.workday.model.ContractInternal
+import community.flock.eco.workday.model.ContractManagement
+import community.flock.eco.workday.model.ContractService
+import community.flock.eco.workday.model.ContractType
 import community.flock.eco.workday.repository.ContractRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
@@ -9,11 +14,10 @@ import java.time.LocalDate
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadContractData(
-        private val loadData: LoadData,
-        private val contractRepository: ContractRepository,
-        private val loadPersonData: LoadPersonData
+    private val loadData: LoadData,
+    private val contractRepository: ContractRepository,
+    private val loadPersonData: LoadPersonData,
 ) {
-
     final val now: LocalDate = LocalDate.now().withDayOfMonth(1)
     val data: MutableSet<Contract> = mutableSetOf()
 
@@ -33,40 +37,50 @@ class LoadContractData(
         }
     }
 
-    private fun create(email: String, type: ContractType, from: LocalDate, to: LocalDate? = null) = when (type) {
-        ContractType.INTERNAL -> ContractInternal(
+    private fun create(
+        email: String,
+        type: ContractType,
+        from: LocalDate,
+        to: LocalDate? = null,
+    ) = when (type) {
+        ContractType.INTERNAL ->
+            ContractInternal(
                 person = loadPersonData.findPersonByUserEmail(email),
                 hoursPerWeek = 32,
                 monthlySalary = 6000.0,
                 holidayHours = 192,
                 from = from,
-                to = to
-        )
+                to = to,
+            )
 
-        ContractType.EXTERNAL -> ContractExternal(
+        ContractType.EXTERNAL ->
+            ContractExternal(
                 person = loadPersonData.findPersonByUserEmail(email),
                 hoursPerWeek = 40,
                 hourlyRate = 80.0,
                 from = from,
-                to = to
-        )
+                to = to,
+            )
 
-        ContractType.MANAGEMENT -> ContractManagement(
+        ContractType.MANAGEMENT ->
+            ContractManagement(
                 person = loadPersonData.findPersonByUserEmail(email),
                 monthlyFee = 5000.0,
                 from = from,
-                to = to
-        )
+                to = to,
+            )
 
-        ContractType.SERVICE -> ContractService(
+        ContractType.SERVICE ->
+            ContractService(
                 description = "Description",
                 monthlyCosts = 150.0,
                 from = from,
-                to = to
-        )
+                to = to,
+            )
     }.save()
 
-    private fun Contract.save(): Contract = contractRepository
+    private fun Contract.save(): Contract =
+        contractRepository
             .save(this)
             .also { data.add(it) }
 }

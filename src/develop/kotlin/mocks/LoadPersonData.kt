@@ -13,9 +13,9 @@ import java.time.Period
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadPersonData(
-        private val loadData: LoadData,
-        userData: LoadUserData,
-        private val repository: PersonRepository
+    private val loadData: LoadData,
+    userData: LoadUserData,
+    private val repository: PersonRepository,
 ) {
     val data: MutableSet<Person> = mutableSetOf()
 
@@ -23,19 +23,22 @@ class LoadPersonData(
      * add save() func to model Person
      * call the PersonRepository´s save function passing the Person
      */
-    fun Person.save(): Person = repository
-        .save(this)
-        .also {
-            data.add(it)
-        }
+    fun Person.save(): Person =
+        repository
+            .save(this)
+            .also {
+                data.add(it)
+            }
 
-    fun findPersonByUserEmail(email: String): Person = data
-        .find { it.user?.email == email }
-        ?: error("Cannot find Client")
+    fun findPersonByUserEmail(email: String): Person =
+        data
+            .find { it.user?.email == email }
+            ?: error("Cannot find Client")
 
-    fun findPersonByUserCode(code: String): Person = data
-        .find { it.user?.code == code }
-        ?: error("Cannot find Person")
+    fun findPersonByUserCode(code: String): Person =
+        data
+            .find { it.user?.code == code }
+            ?: error("Cannot find Person")
 
     /**
      * createPerson() func
