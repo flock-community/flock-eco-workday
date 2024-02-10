@@ -3,7 +3,6 @@ import { Dayjs } from "dayjs";
 import { Status } from "../../models/Status";
 import { Person } from "../../clients/PersonClient";
 import { FlockEvent } from "../../clients/EventClient";
-import { DMY_DATE } from "../../clients/util/DateFormats";
 
 function getMonthStringFromDate(date: Dayjs): string {
   return date.format("MMMM");

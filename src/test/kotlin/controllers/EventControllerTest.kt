@@ -100,7 +100,7 @@ class EventControllerTest() {
         days = listOf(8.0, 8.0),
         costs = 200.0,
         personIds = ids,
-        EventType.GENERAL_EVENT
+        type = EventType.GENERAL_EVENT,
     )
         .run { eventService.create(this) }
 

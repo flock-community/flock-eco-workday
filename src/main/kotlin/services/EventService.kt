@@ -68,7 +68,7 @@ class EventService(
             ?.run {
                 copy(persons = persons.filter { it.uuid != person.uuid }.plus(person))
                     .run { eventRepository.save(this) }
-            } ?: error("Cannot subscribe to Event: ${eventCode}")
+            } ?: error("Cannot subscribe to Event: $eventCode")
     }
 
     fun unsubscribeFromEvent(eventCode: String, person: Person): Event {
@@ -76,7 +76,7 @@ class EventService(
             ?.run {
                 copy(persons = persons.filter { it.uuid != person.uuid })
                     .run { eventRepository.save(this) }
-            } ?: error("Cannot unsubscribe from Event: ${eventCode}")
+            } ?: error("Cannot unsubscribe from Event: $eventCode")
     }
 
     @Transactional
