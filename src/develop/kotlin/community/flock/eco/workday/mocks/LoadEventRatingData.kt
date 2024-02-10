@@ -12,10 +12,10 @@ import java.time.LocalDate
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadEventRatingData(
-    private val loadData: LoadData,
+    private val service: EventRatingService,
+    loadData: LoadData,
     loadPersonData: LoadPersonData,
     loadEventData: LoadEventData,
-    private val service: EventRatingService,
 ) {
     final val now: LocalDate = LocalDate.now().withDayOfMonth(1)
     val data: MutableSet<EventRating> = mutableSetOf()

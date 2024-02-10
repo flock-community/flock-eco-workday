@@ -13,12 +13,12 @@ import java.time.LocalDate
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadExpensesData(
-    private val loadData: LoadData,
     private val loadPersonData: LoadPersonData,
     private val travelExpenseService: TravelExpenseService,
     private val costExpenseService: CostExpenseService,
+    loadData: LoadData,
 ) {
-    val now = LocalDate.now()
+    val now: LocalDate = LocalDate.now()
     val data: MutableList<Expense> = mutableListOf()
 
     init {

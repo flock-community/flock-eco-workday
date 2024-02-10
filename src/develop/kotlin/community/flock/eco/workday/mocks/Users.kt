@@ -1,4 +1,4 @@
-package mocks
+package community.flock.eco.workday.mocks
 
 import java.time.LocalDate
 

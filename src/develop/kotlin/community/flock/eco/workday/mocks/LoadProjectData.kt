@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadProjectData(
-    private val loadData: LoadData,
     val projectRepository: ProjectRepository,
+    loadData: LoadData,
 ) {
     val projects: MutableMap<String, Project> = mutableMapOf()
 

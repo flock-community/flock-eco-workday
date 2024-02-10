@@ -9,11 +9,11 @@ import java.time.LocalDate
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadAssignmentData(
-    private val loadData: LoadData,
     private val loadClientData: LoadClientData,
     private val assignmentRepository: AssignmentRepository,
     private val loadPersonData: LoadPersonData,
     private val loadProjectData: LoadProjectData,
+    loadData: LoadData,
 ) {
     final val now: LocalDate = LocalDate.now().withDayOfMonth(1)
 
