@@ -5,7 +5,7 @@ import {
   validateResponse,
 } from "@flock-community/flock-eco-core";
 import dayjs, { Dayjs } from "dayjs";
-import {DMY_DATE} from "./util/DateFormats";
+import { DMY_DATE } from "./util/DateFormats";
 
 const path = "/api/events";
 
@@ -51,10 +51,10 @@ export type FlockEventRequest = {
 };
 
 export enum EventType {
-  CONFERENCE = 'CONFERENCE',
-  FLOCK_COMMUNITY_DAY = 'FLOCK_COMMUNITY_DAY',
-  FLOCK_HACK_DAY = 'FLOCK_HACK_DAY',
-  GENERAL_EVENT = 'GENERAL_EVENT'
+  CONFERENCE = "CONFERENCE",
+  FLOCK_COMMUNITY_DAY = "FLOCK_COMMUNITY_DAY",
+  FLOCK_HACK_DAY = "FLOCK_HACK_DAY",
+  GENERAL_EVENT = "GENERAL_EVENT",
 }
 
 const internalize = (it) => ({
@@ -106,39 +106,44 @@ const deleteRatings = (eventCode, personId) => {
 
 const getUpcoming = (from: Dayjs, to: Dayjs): Promise<FlockEvent[]> => {
   const opts = {
-    method: "GET"
-  }
-  return fetch(`${path}/upcoming?fromDate=${from.toISOString().substring(0, 10)}&toDate=${to.toISOString().substring(0, 10)}`, opts)
+    method: "GET",
+  };
+  return fetch(
+    `${path}/upcoming?fromDate=${from
+      .toISOString()
+      .substring(0, 10)}&toDate=${to.toISOString().substring(0, 10)}`,
+    opts
+  )
     .then(validateResponse)
     .catch(checkResponse)
     .then((res) => res?.body.map(internalize));
-}
+};
 
 const subscribeToEvent = (event: FlockEvent) => {
   const opts = {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-    }
-  }
+    },
+  };
   return fetch(`${path}/${event.code}/subscribe`, opts)
     .then(validateResponse)
     .catch(checkResponse)
     .then((res) => internalize(res));
-}
+};
 
 const unsubscribeFromEvent = (event: FlockEvent) => {
   const opts = {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-    }
-  }
+    },
+  };
   return fetch(`${path}/${event.code}/unsubscribe`, opts)
     .then(validateResponse)
     .catch(checkResponse)
     .then((res) => internalize(res));
-}
+};
 
 export const EventClient = {
   ...internalizingClient,
@@ -147,5 +152,5 @@ export const EventClient = {
   deleteRatings,
   getUpcoming,
   subscribeToEvent,
-  unsubscribeFromEvent
+  unsubscribeFromEvent,
 };

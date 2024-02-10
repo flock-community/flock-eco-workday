@@ -1,48 +1,48 @@
-import {Meta, StoryObj} from "@storybook/react";
-import {EventList} from "../../../main/react/components/upcoming-events/EventList";
+import { Meta, StoryObj } from "@storybook/react";
+import { EventList } from "../../../main/react/components/upcoming-events/EventList";
 import dayjs from "dayjs";
 
 const meta: Meta<typeof EventList> = {
   component: EventList,
   args: {
-    events: []
-  }
-}
+    events: [],
+  },
+};
 
 export default meta;
 type Story = StoryObj<typeof EventList>;
 
-export const noData: Story = {}
+export const noData: Story = {};
 
 export const withData: Story = {
   args: {
     events: [
       {
-        description: 'Super nice event that takes place!',
+        description: "Super nice event that takes place!",
         id: 2712,
-        code: 'event-code',
+        code: "event-code",
         from: dayjs(),
-        to: dayjs().add(1, 'day'),
+        to: dayjs().add(1, "day"),
         hours: 16,
         days: [8, 8],
         persons: [],
         costs: 1200,
       },
       {
-        description: 'Smashing Conference - Freiburg',
+        description: "Smashing Conference - Freiburg",
         id: 2712,
-        code: 'event-code',
+        code: "event-code",
         from: dayjs(),
-        to: dayjs().add(4, 'day'),
+        to: dayjs().add(4, "day"),
         hours: 36,
         days: [8, 8, 4, 8, 8],
         persons: [],
         costs: 1200,
       },
       {
-        description: 'FLock Hack Day - Flock HQ.',
+        description: "FLock Hack Day - Flock HQ.",
         id: 2712,
-        code: 'event-code',
+        code: "event-code",
         from: dayjs(),
         to: dayjs(),
         hours: 8,
@@ -51,9 +51,9 @@ export const withData: Story = {
         costs: 1200,
       },
       {
-        description: 'FLock Hack Day - Flock HQ.',
+        description: "FLock Hack Day - Flock HQ.",
         id: 2712,
-        code: 'event-code',
+        code: "event-code",
         from: dayjs(),
         to: dayjs(),
         hours: 8,
@@ -62,16 +62,16 @@ export const withData: Story = {
         costs: 1200,
       },
       {
-        description: 'Random event- Flock HQ.',
+        description: "Random event- Flock HQ.",
         id: 2712,
-        code: 'event-code',
+        code: "event-code",
         from: dayjs(),
         to: dayjs(),
         hours: 8,
         days: [8],
         persons: [],
         costs: 1200,
-      }
-    ]
-  }
-}
+      },
+    ],
+  },
+};

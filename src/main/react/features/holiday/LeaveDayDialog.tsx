@@ -146,8 +146,12 @@ export function LeaveDayDialog({
                   >
                     <MenuItem value={Types.HOLIDAY}>Holiday</MenuItem>
                     <MenuItem value={Types.PLUSDAY}>Plus Day</MenuItem>
-                    <MenuItem value={Types.PAID_PARENTAL_LEAVE}>Paid Parental Leave</MenuItem>
-                    <MenuItem value={Types.UNPAID_PARENTAL_LEAVE}>Unpaid Parental Leave</MenuItem>
+                    <MenuItem value={Types.PAID_PARENTAL_LEAVE}>
+                      Paid Parental Leave
+                    </MenuItem>
+                    <MenuItem value={Types.UNPAID_PARENTAL_LEAVE}>
+                      Unpaid Parental Leave
+                    </MenuItem>
                   </Select>
                 </Grid>
               </UserAuthorityUtil>

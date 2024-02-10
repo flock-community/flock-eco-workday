@@ -1,12 +1,12 @@
 // Deps
 import React from "react";
-import {makeStyles} from "@material-ui/core/styles";
-import {Pagination} from "@material-ui/lab";
+import { makeStyles } from "@material-ui/core/styles";
+import { Pagination } from "@material-ui/lab";
 
 interface FlockPaginationProps {
   currentPage: number;
   numberOfItems: number;
-  itemsPerPage: number,
+  itemsPerPage: number;
   changePageCb: (pageNumber: number) => void;
 }
 
@@ -19,11 +19,11 @@ const useStyles = makeStyles({
 });
 
 export const FlockPagination: React.FC<FlockPaginationProps> = ({
-                                                                  currentPage,
-                                                                  numberOfItems,
-                                                                  itemsPerPage,
-                                                                  changePageCb,
-                                                                }) => {
+  currentPage,
+  numberOfItems,
+  itemsPerPage,
+  changePageCb,
+}) => {
   const handleChangePage = (
     event: React.ChangeEvent<unknown>,
     value: number

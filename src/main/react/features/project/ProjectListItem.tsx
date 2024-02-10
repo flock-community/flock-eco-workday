@@ -18,7 +18,7 @@ export default function ProjectListItem({ project, editProject }) {
 
   const projectHeader = (
     <TableRow>
-      <TableCell width={'50px'}>
+      <TableCell width={"50px"}>
         <IconButton onClick={toggleShowAssignments}>
           {showAssignments ? (
             <KeyboardArrowUpIcon />
@@ -28,7 +28,7 @@ export default function ProjectListItem({ project, editProject }) {
         </IconButton>
       </TableCell>
       <TableCell>{project.name}</TableCell>
-      <TableCell align="right" width={'50px'}>
+      <TableCell align="right" width={"50px"}>
         <IconButton onClick={handleEdit}>
           <CreateIcon />
         </IconButton>

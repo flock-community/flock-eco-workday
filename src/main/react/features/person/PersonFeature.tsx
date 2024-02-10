@@ -3,5 +3,5 @@ import { PersonRouter } from "./PersonRouter";
 import { Container } from "@material-ui/core";
 
 export const PersonFeature = () => {
-  return ( <PersonRouter /> );
+  return <PersonRouter />;
 };

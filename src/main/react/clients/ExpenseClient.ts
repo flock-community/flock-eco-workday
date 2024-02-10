@@ -1,7 +1,12 @@
 import dayjs from "dayjs";
 import InternalizingClient from "../utils/InternalizingClient";
-import {ISO_8601_DATE} from "./util/DateFormats";
-import {CostExpense, Expense, ExpenseType, TravelExpense} from "../models/Expense";
+import { ISO_8601_DATE } from "./util/DateFormats";
+import {
+  CostExpense,
+  Expense,
+  ExpenseType,
+  TravelExpense,
+} from "../models/Expense";
 
 const internalize = (it) => ({
   ...it,
@@ -25,32 +30,42 @@ export const EXPENSE_PAGE_SIZE: number = 5;
 
 // TODO: Deprecated method, should use findAllByPersonIdNEW (https://flock.atlassian.net/browse/WRK-176)
 const findAllByPersonId = (personId, page, pageSize = EXPENSE_PAGE_SIZE) =>
-    resourceClient.queryByPage(
-        {
-          page,
-          size: pageSize,
-          sort: "date,desc",
-        },
-        {
-          personId,
-        }
-    );
+  resourceClient.queryByPage(
+    {
+      page,
+      size: pageSize,
+      sort: "date,desc",
+    },
+    {
+      personId,
+    }
+  );
 
 // TODO: should replace findAllByPersonId. When it does rename back to findAllByPersonId. (https://flock.atlassian.net/browse/WRK-176)
-const findAllByPersonIdNEW = async (personId: string, page: number, pageSize: number | null = EXPENSE_PAGE_SIZE): Promise<{ count: number, list: Expense[] }> => {
+const findAllByPersonIdNEW = async (
+  personId: string,
+  page: number,
+  pageSize: number | null = EXPENSE_PAGE_SIZE
+): Promise<{ count: number; list: Expense[] }> => {
   const listOfExpenseObjects: Expense[] = [];
-  const resultPromise = await resourceClient.queryByPage({
-        page, size: pageSize ?? undefined, sort: "date,desc", },
-        { personId }
+  const resultPromise = await resourceClient.queryByPage(
+    {
+      page,
+      size: pageSize ?? undefined,
+      sort: "date,desc",
+    },
+    { personId }
   );
   resultPromise.list.map((expenseJson) => {
     listOfExpenseObjects.push(
-        expenseJson.type === ExpenseType.TRAVEL ? TravelExpense.fromJson(expenseJson) : CostExpense.fromJson(expenseJson)
+      expenseJson.type === ExpenseType.TRAVEL
+        ? TravelExpense.fromJson(expenseJson)
+        : CostExpense.fromJson(expenseJson)
     );
   });
 
   return { count: listOfExpenseObjects.length, list: listOfExpenseObjects };
-}
+};
 
 const post = (type, item) => {
   const serialized = serialize(item);
@@ -83,5 +98,5 @@ export const ExpenseClient = {
   post,
   put,
   findAllByPersonId,
-  findAllByPersonIdNEW
+  findAllByPersonIdNEW,
 };

@@ -94,7 +94,9 @@ export default function NonProductiveHours({
         <TableCell>Unpaid Parental Leave</TableCell>
         {days.map((day, index) => (
           <TableCell key={index}>
-            {day.unpaidParentalLeaveHours > 0.0 ? day.unpaidParentalLeaveHours : ""}
+            {day.unpaidParentalLeaveHours > 0.0
+              ? day.unpaidParentalLeaveHours
+              : ""}
           </TableCell>
         ))}
       </TableRow>

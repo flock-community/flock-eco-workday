@@ -18,9 +18,9 @@ export function GrossMarginTable({ year }: GrossMarginTableProps) {
 
   useEffect(() => {
     const date = new Date();
-    AggregationClient.totalPerPersonByYear(
-      year || date.getFullYear()
-    ).then((res) => setState(res));
+    AggregationClient.totalPerPersonByYear(year || date.getFullYear()).then(
+      (res) => setState(res)
+    );
   }, [year]);
 
   if (!state) return <AlignedLoader />;

@@ -26,9 +26,8 @@ export default function AssignmentReportTable({
   from,
   to,
 }: AssignmentReportTableProps) {
-  const [clientHourOverviewState, setClientHourOverviewState] = useState<
-    AggregationClientPersonAssignmentOverview[]
-  >();
+  const [clientHourOverviewState, setClientHourOverviewState] =
+    useState<AggregationClientPersonAssignmentOverview[]>();
   const [dayRange, setDayRange] = useState<string[]>();
 
   const classes = useStyles();

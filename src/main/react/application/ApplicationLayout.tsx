@@ -65,7 +65,7 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
 
   return (
     <>
-      <AppBar className={classes.navBar +' full-width'}>
+      <AppBar className={classes.navBar + " full-width"}>
         <Toolbar>
           <IconButton
             className={classes.menuButton}
@@ -109,7 +109,9 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
               open={state.anchorEl != null}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose} disabled>Profile</MenuItem>
+              <MenuItem onClick={handleClose} disabled>
+                Profile
+              </MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>

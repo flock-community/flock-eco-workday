@@ -6,12 +6,16 @@ import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/co
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import {EventClient, FlockEvent, FlockEventRequest} from "../../clients/EventClient";
+import {
+  EventClient,
+  FlockEvent,
+  FlockEventRequest,
+} from "../../clients/EventClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { EVENT_FORM_ID, EventForm } from "./EventForm";
 import { schema } from "../workday/WorkDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import {DialogFooter, DialogHeader} from "../../components/dialog";
+import { DialogFooter, DialogHeader } from "../../components/dialog";
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
@@ -39,7 +43,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         EventClient.get(code).then((res) => {
           setState({
             ...res,
-            personIds: res.persons.map((it) => it.uuid) ?? []
+            personIds: res.persons.map((it) => it.uuid) ?? [],
           });
         });
       } else {
@@ -56,7 +60,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         ...it,
         from: it.from.format(ISO_8601_DATE),
         to: it.to.format(ISO_8601_DATE),
-        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0)
+        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
       }).then((res) => {
         onComplete?.(res);
       });
@@ -65,7 +69,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         ...it,
         from: it.from.format(ISO_8601_DATE),
         to: it.to.format(ISO_8601_DATE),
-        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0)
+        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
       }).then((res) => {
         onComplete?.(res);
       });

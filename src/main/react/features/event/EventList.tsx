@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {Box, Card, Chip, Typography} from "@material-ui/core";
+import { Box, Card, Chip, Typography } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import { EventClient, FlockEvent } from "../../clients/EventClient";
 import { isDefined } from "../../utils/validation";
-import {EventTypeMapping} from "../../utils/mappings";
+import { EventTypeMapping } from "../../utils/mappings";
 
 type EventListProps = {
   refresh: boolean;
@@ -29,9 +29,16 @@ export function EventList({ refresh, onClickRow }: EventListProps) {
       <Grid key={`workday-list-item-${item.id}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>
           <CardContent>
-            <Box style={{display: 'flex', alignItems: 'center', gap: '.5rem'}}>
+            <Box
+              style={{ display: "flex", alignItems: "center", gap: ".5rem" }}
+            >
               <Typography variant="h6">{item.description}</Typography>
-              <Chip label={EventTypeMapping[item.type]} size={'small'} color={"primary"} variant="outlined"/>
+              <Chip
+                label={EventTypeMapping[item.type]}
+                size={"small"}
+                color={"primary"}
+                variant="outlined"
+              />
             </Box>
             <Typography>
               Period: {item.from.format("DD-MM-YYYY")} -{" "}
@@ -41,7 +48,8 @@ export function EventList({ refresh, onClickRow }: EventListProps) {
               Aantal dagen: {item.to.diff(item.from, "days") + 1}
             </Typography>
             <Typography>Aantal uren: {item.hours}</Typography>
-            <Typography>Totale kosten: {" "}
+            <Typography>
+              Totale kosten:{" "}
               {item.costs.toLocaleString("nl-NL", {
                 style: "currency",
                 currency: "EUR",

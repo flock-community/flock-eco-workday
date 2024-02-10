@@ -24,7 +24,12 @@ const useStyles = makeStyles({
   },
 });
 
-export function PeriodInputField({name, from, to, reset}: PeriodInputFieldProps) {
+export function PeriodInputField({
+  name,
+  from,
+  to,
+  reset,
+}: PeriodInputFieldProps) {
   const classes = useStyles();
 
   const render = ({ field: { value }, form: { setFieldValue } }) => {

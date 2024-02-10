@@ -1,6 +1,6 @@
 import Typography from "@material-ui/core/Typography";
 import React from "react";
-import {Contract} from "../../clients/ContractClient";
+import { Contract } from "../../clients/ContractClient";
 import {
   Card,
   CardContent,
@@ -12,17 +12,17 @@ import {
 } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
-import {DMY_DATE} from "../../clients/util/DateFormats";
+import { DMY_DATE } from "../../clients/util/DateFormats";
 
 type ContractsEndingProps = {
   withinNWeeks: number;
-  contracts: Contract[]
+  contracts: Contract[];
 };
 
 export default function ContractsEnding({
-  withinNWeeks, contracts
+  withinNWeeks,
+  contracts,
 }: ContractsEndingProps) {
-
   const noContent = (
     <Typography variant="caption">
       No contracts ending within {withinNWeeks} weeks

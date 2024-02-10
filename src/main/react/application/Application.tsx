@@ -53,7 +53,7 @@ export const Application = () => {
   }, [status]);
 
   if (status == null) {
-    return <AlignedLoader/>;
+    return <AlignedLoader />;
   }
 
   return (
@@ -111,10 +111,12 @@ const RenderAuthenticated = () => {
 };
 
 const RenderUnauthenticated = () => {
-  return <>
-    <Box className={'full-width'} style={{'--row-gap': 0}}>
-      <Redirect to="/auth" exact/>
-      <Route path="/auth" exact component={LoginFeature}/>
-    </Box>
-  </>
+  return (
+    <>
+      <Box className={"full-width"} style={{ "--row-gap": 0 }}>
+        <Redirect to="/auth" exact />
+        <Route path="/auth" exact component={LoginFeature} />
+      </Box>
+    </>
+  );
 };

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from "@storybook/react";
 import ContractsEnding from "../../../main/react/components/contracts/ContractsEnding";
 import dayjs from "dayjs";
 
@@ -26,17 +26,17 @@ const meta: Meta<typeof ContractsEnding> = {
           shoeSize: "36,5",
           shirtSize: "M",
           user: "4dbc2ac4-fc48-4511-a189-bf0d79f7e898",
-          fullName: "Bert Muppets"
+          fullName: "Bert Muppets",
         },
         from: dayjs("2022-10-16"),
         to: dayjs("2023-11-24"),
         hourlyRate: 80.0,
         hoursPerWeek: 40,
         billable: true,
-        type: "EXTERNAL"
-      }
-    ]
-  }
+        type: "EXTERNAL",
+      },
+    ],
+  },
 };
 
 export default meta;
@@ -68,21 +68,21 @@ export const within6weeks: Story = {
           shoeSize: "36,5",
           shirtSize: "M",
           user: "4dbc2ac4-fc48-4511-a189-bf0d79f7e898",
-          fullName: "Bert Muppets"
+          fullName: "Bert Muppets",
         },
         from: dayjs("2022-10-16"),
         to: dayjs("2023-11-24"),
         hourlyRate: 80.0,
         hoursPerWeek: 40,
         billable: true,
-        type: "EXTERNAL"
-      }
-    ]
-  }
+        type: "EXTERNAL",
+      },
+    ],
+  },
 };
 
 export const noData: Story = {
   args: {
-    contracts: []
-  }
+    contracts: [],
+  },
 };
