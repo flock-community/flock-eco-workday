@@ -87,7 +87,7 @@ export type PersonHolidayDetails = {
   totalHoursAvailable: number;
   totalHoursUsed: number;
   totalHoursRemaining: number;
-}
+};
 
 export const leaveDayReportMe = (year): Promise<AggregationLeaveDay> => {
   const opts = {

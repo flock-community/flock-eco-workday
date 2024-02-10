@@ -1,48 +1,90 @@
-import {CostExpense, TravelExpense} from "../../models/Expense";
-import {Dayjs} from "dayjs";
-import {Status} from "../../models/Status";
-import {Person} from "../../clients/PersonClient";
-import {FlockEvent} from "../../clients/EventClient";
-import {DMY_DATE} from "../../clients/util/DateFormats";
+import { CostExpense, TravelExpense } from "../../models/Expense";
+import { Dayjs } from "dayjs";
+import { Status } from "../../models/Status";
+import { Person } from "../../clients/PersonClient";
+import { FlockEvent } from "../../clients/EventClient";
+import { DMY_DATE } from "../../clients/util/DateFormats";
 
 function getMonthStringFromDate(date: Dayjs): string {
-    return date.format('MMMM');
+  return date.format("MMMM");
 }
 
-export function createTestCostExpense(id: string, date: Dayjs, status: Status = Status.REQUESTED, amount: number = 120): CostExpense {
-    const dateMonth = getMonthStringFromDate(date);
-    return new CostExpense(id, date, `Cost expense ${dateMonth}`, {} as Person, status, amount, []);
+export function createTestCostExpense(
+  id: string,
+  date: Dayjs,
+  status: Status = Status.REQUESTED,
+  amount: number = 120
+): CostExpense {
+  const dateMonth = getMonthStringFromDate(date);
+  return new CostExpense(
+    id,
+    date,
+    `Cost expense ${dateMonth}`,
+    {} as Person,
+    status,
+    amount,
+    []
+  );
 }
 
-export function createTestTravelExpense(id: string, date: Dayjs, status: Status = Status.REQUESTED,
-                                        distance: number = 120, allowance: number = 0.23): TravelExpense {
-    const dateMonth = getMonthStringFromDate(date);
-    return new TravelExpense(id, date, `Travel expense ${dateMonth}`, {} as Person, status, [], allowance, distance);
+export function createTestTravelExpense(
+  id: string,
+  date: Dayjs,
+  status: Status = Status.REQUESTED,
+  distance: number = 120,
+  allowance: number = 0.23
+): TravelExpense {
+  const dateMonth = getMonthStringFromDate(date);
+  return new TravelExpense(
+    id,
+    date,
+    `Travel expense ${dateMonth}`,
+    {} as Person,
+    status,
+    [],
+    allowance,
+    distance
+  );
 }
 
-export function createTestFlockEvent(description: string, from: Dayjs, to: Dayjs, hours: number, days: number[]): FlockEvent {
+export function createTestFlockEvent(
+  description: string,
+  from: Dayjs,
+  to: Dayjs,
+  hours: number,
+  days: number[]
+): FlockEvent {
   return {
     description,
     id: 1909,
-    code: 'event-code',
+    code: "event-code",
     from,
     to,
     hours: hours,
     days: days,
     persons: [],
-    costs: 0.0
-  }
+    costs: 0.0,
+  };
 }
 
 export function createTestOneDayFlockEvent(date: Dayjs): FlockEvent {
-  return createTestFlockEvent('Single day Flock Event', date, date, 8, [8]);
+  return createTestFlockEvent("Single day Flock Event", date, date, 8, [8]);
 }
 
-export function createTestMultiDayFlockEvent(from: Dayjs, to: Dayjs): FlockEvent {
+export function createTestMultiDayFlockEvent(
+  from: Dayjs,
+  to: Dayjs
+): FlockEvent {
   let daysArray: number[] = [];
-  const daysBetween = to.diff(from, 'days');
+  const daysBetween = to.diff(from, "days");
   for (let idx = 0; idx < daysBetween; idx++) {
     daysArray.push(8);
   }
-  return createTestFlockEvent('Multiple days Flock Event', from, to, daysBetween * 8, daysArray);
+  return createTestFlockEvent(
+    "Multiple days Flock Event",
+    from,
+    to,
+    daysBetween * 8,
+    daysArray
+  );
 }

@@ -1,17 +1,27 @@
 import React from "react";
-import {Card, CardContent, CardHeader, TableBody, TableCell, TableContainer, TableHead,} from "@material-ui/core";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import TableRow from "@material-ui/core/TableRow";
 import Table from "@material-ui/core/Table";
-import {PersonEvent, PersonEventType,} from "../../clients/PersonEventClient";
+import { PersonEvent, PersonEventType } from "../../clients/PersonEventClient";
 
 type PersonEventsProps = {
   withinNWeeks: number;
   personEvents: PersonEvent[];
 };
 
-export default function PersonEvents({ withinNWeeks, personEvents }: PersonEventsProps) {
-
+export default function PersonEvents({
+  withinNWeeks,
+  personEvents,
+}: PersonEventsProps) {
   const noContent = (
     <Typography variant="caption">
       No person events within {withinNWeeks} weeks

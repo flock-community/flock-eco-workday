@@ -1,5 +1,5 @@
-import {MissingHoursDetailDialog} from "../../../main/react/components/missing-hours-card/MissingHoursDetailDialog";
-import {Meta, StoryObj} from "@storybook/react";
+import { MissingHoursDetailDialog } from "../../../main/react/components/missing-hours-card/MissingHoursDetailDialog";
+import { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof MissingHoursDetailDialog> = {
   component: MissingHoursDetailDialog,
@@ -22,27 +22,27 @@ const meta: Meta<typeof MissingHoursDetailDialog> = {
       paidParentalLeaveUsed: 16,
       unpaidParentalLeaveUsed: 16,
       revenue: {},
-      cost: 0
-    }
-  }
-}
+      cost: 0,
+    },
+  },
+};
 
 export default meta;
 type Story = StoryObj<typeof MissingHoursDetailDialog>;
 
 export const noData: Story = {
   args: {
-    item: undefined
-  }
-}
+    item: undefined,
+  },
+};
 
-export const withMissingHoursData: Story = {}
+export const withMissingHoursData: Story = {};
 
 export const withoutMissingHoursData: Story = {
   args: {
     item: {
       ...meta.args?.item,
-      workDays: 212
-    }
-  }
-}
+      workDays: 212,
+    },
+  },
+};

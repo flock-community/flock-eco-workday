@@ -9,8 +9,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import dayjs from "dayjs";
 import DayjsUtils from "@date-io/dayjs";
-import {LEAVE_DAY_DIALOG_FORM_ID} from "./LeaveDayDialog";
-import {StatusSelect} from "../../components/status/StatusSelect";
+import { LEAVE_DAY_DIALOG_FORM_ID } from "./LeaveDayDialog";
+import { StatusSelect } from "../../components/status/StatusSelect";
 
 export const HOLIDAY_FORM_ID = "holiday-form-id";
 

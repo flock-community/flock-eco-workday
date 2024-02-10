@@ -1,18 +1,18 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
 import Grid from "@material-ui/core/Grid";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import {TextField} from "formik-material-ui";
+import { TextField } from "formik-material-ui";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PersonSelectorField } from "../../components/fields/PersonSelectorField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
 import { mutatePeriod } from "../period/Period";
 import dayjs from "dayjs";
 import DayjsUtils from "@date-io/dayjs";
-import {EventTypeSelect} from "./EventTypeSelect";
-import {EventTypeMappingToBillable} from "../../utils/mappings";
+import { EventTypeSelect } from "./EventTypeSelect";
+import { EventTypeMappingToBillable } from "../../utils/mappings";
 
 export const EVENT_FORM_ID = "event-form";
 
@@ -27,7 +27,6 @@ const schema = Yup.object().shape({
   costs: Yup.number().required().min(0).default(0),
   type: Yup.string().required("Field required").default("GENERAL_EVENT"),
 });
-
 
 /**
  * @return {null}
@@ -45,7 +44,7 @@ export function EventForm({ value, onSubmit }) {
     });
   };
 
-  const renderForm = ({values, setFieldValue}) => {
+  const renderForm = ({ values, setFieldValue }) => {
     const [resetHours, setResetHours] = useState<boolean>(false);
 
     const handleEventTypeChange = (newValue) => {
@@ -76,10 +75,13 @@ export function EventForm({ value, onSubmit }) {
               />
             </Grid>
             <Grid item xs={12}>
-              <PersonSelectorField name="personIds" multiple fullWidth/>
+              <PersonSelectorField name="personIds" multiple fullWidth />
             </Grid>
-            <Grid item xs={12} style={{marginTop: '1rem'}}>
-              <EventTypeSelect value={values.type} onChange={handleEventTypeChange}/>
+            <Grid item xs={12} style={{ marginTop: "1rem" }}>
+              <EventTypeSelect
+                value={values.type}
+                onChange={handleEventTypeChange}
+              />
             </Grid>
             <Grid item xs={6}>
               <DatePickerField
@@ -98,7 +100,12 @@ export function EventForm({ value, onSubmit }) {
               />
             </Grid>
             <Grid item xs={12}>
-              <PeriodInputField name="days" from={values.from} to={values.to} reset={resetHours}/>
+              <PeriodInputField
+                name="days"
+                from={values.from}
+                to={values.to}
+                reset={resetHours}
+              />
             </Grid>
           </Grid>
         </MuiPickersUtilsProvider>

@@ -69,7 +69,7 @@ export const internalize = (json: PersonRaw): Person => ({
   ...json,
   birthdate: json.birthdate ? dayjs(json.birthdate, ISO_8601_DATE) : null,
   joinDate: json.joinDate ? dayjs(json.joinDate, ISO_8601_DATE) : null,
-  lastActiveAt: new Date(json.lastActiveAt)
+  lastActiveAt: new Date(json.lastActiveAt),
 });
 
 const internalizingClient = InternalizingClient<

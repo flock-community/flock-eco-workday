@@ -1,7 +1,6 @@
-
 export enum Status {
-    REQUESTED = 'REQUESTED',
-    REJECTED = 'REJECTED',
-    APPROVED = 'APPROVED',
-    DONE = 'DONE'
+  REQUESTED = "REQUESTED",
+  REJECTED = "REJECTED",
+  APPROVED = "APPROVED",
+  DONE = "DONE",
 }
