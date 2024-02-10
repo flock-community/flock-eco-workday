@@ -22,7 +22,7 @@ class ExactonlineAuthenticationController(
     private val divisionClient: ExactonlineDivisionClient,
 ) {
     @GetMapping("status")
-    fun getStatus(httpSession: HttpSession): Mono<Map<String, Any?>> =
+    fun getStatus(httpSession: HttpSession): Mono<Map<String, Any>> =
         exactonlineAuthenticationService
             .accessToken(httpSession)
             .flatMap { requestObject ->
@@ -38,7 +38,7 @@ class ExactonlineAuthenticationController(
                     }
             }
             .defaultIfEmpty(
-                mapOf<String, Any?>(
+                mapOf<String, Any>(
                     "active" to false,
                 ),
             )

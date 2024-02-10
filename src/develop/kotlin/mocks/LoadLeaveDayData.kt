@@ -6,17 +6,16 @@ import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.services.LeaveDayService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
-import java.time.LocalDate
 import java.time.DayOfWeek
+import java.time.LocalDate
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadLeaveDayData(
-        private val loadData: LoadData,
-        loadPersonData: LoadPersonData,
-        private val leaveDayService: LeaveDayService
+    private val loadData: LoadData,
+    loadPersonData: LoadPersonData,
+    private val leaveDayService: LeaveDayService,
 ) {
-
     final val now: LocalDate = LocalDate.now().withDayOfYear(1).withDayOfMonth(1)
 
     init {
@@ -39,7 +38,7 @@ class LoadLeaveDayData(
                 to = now.plusYears(i.toLong()).plusDays(random + 5),
                 days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
                 hours = 48.0,
-                personId = it.uuid
+                personId = it.uuid,
             ).create()
         }
     }
@@ -56,7 +55,7 @@ class LoadLeaveDayData(
                 to = date,
                 days = listOf(8.0),
                 hours = 8.0,
-                personId = it.uuid
+                personId = it.uuid,
             ).create()
         }
     }
@@ -69,7 +68,7 @@ class LoadLeaveDayData(
                 val startOfMonth: LocalDate = LocalDate.now().withMonth(monthIdx).withDayOfMonth(1)
                 val endOfMonth: LocalDate = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth())
                 var days: List<Double> = ArrayList()
-                for (dayIdx in 1 ..startOfMonth.lengthOfMonth()) {
+                for (dayIdx in 1..startOfMonth.lengthOfMonth()) {
                     days += if (LocalDate.now().withMonth(monthIdx).withDayOfMonth(dayIdx).dayOfWeek === DayOfWeek.WEDNESDAY) 4.0 else 0.0
                 }
 
@@ -80,7 +79,7 @@ class LoadLeaveDayData(
                     to = endOfMonth,
                     days = days,
                     hours = days.reduce { acc, curr -> acc + curr },
-                    personId = it.uuid
+                    personId = it.uuid,
                 ).create()
             }
         }
@@ -94,7 +93,7 @@ class LoadLeaveDayData(
                 val startOfMonth: LocalDate = LocalDate.now().withMonth(monthIdx).withDayOfMonth(1)
                 val endOfMonth: LocalDate = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth())
                 var days: List<Double> = ArrayList()
-                for (dayIdx in 1 ..startOfMonth.lengthOfMonth()) {
+                for (dayIdx in 1..startOfMonth.lengthOfMonth()) {
                     days += if (LocalDate.now().withMonth(monthIdx).withDayOfMonth(dayIdx).dayOfWeek === DayOfWeek.FRIDAY) 8.0 else 0.0
                 }
 
@@ -105,7 +104,7 @@ class LoadLeaveDayData(
                     to = endOfMonth,
                     days = days,
                     hours = days.reduce { acc, curr -> acc + curr },
-                    personId = it.uuid
+                    personId = it.uuid,
                 ).create()
             }
         }

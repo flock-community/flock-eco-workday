@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadClientData(
-        private val loadData: LoadData,
-        private val clientRepository: ClientRepository
+    private val loadData: LoadData,
+    private val clientRepository: ClientRepository,
 ) {
     val data: MutableSet<Client> = mutableSetOf()
 
@@ -22,17 +22,20 @@ class LoadClientData(
         }
     }
 
-    private final fun create(name: String) = Client(
-        code = name.lowercase().replace(" ", "_"),
-        name = name
-    )
+    private final fun create(name: String) =
+        Client(
+            code = name.lowercase().replace(" ", "_"),
+            name = name,
+        )
             .save()
 
-    fun Client.save(): Client = clientRepository
+    fun Client.save(): Client =
+        clientRepository
             .save(this)
             .also { data.add(it) }
 
-    fun findClientByCode(code: String): Client = data
+    fun findClientByCode(code: String): Client =
+        data
             .find { it.code == code }
             ?: error("Cannot find Client")
 }

@@ -13,12 +13,11 @@ import java.time.LocalDate
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadExpensesData(
-        private val loadData: LoadData,
-        private val loadPersonData: LoadPersonData,
-        private val travelExpenseService: TravelExpenseService,
-        private val costExpenseService: CostExpenseService
+    private val loadData: LoadData,
+    private val loadPersonData: LoadPersonData,
+    private val travelExpenseService: TravelExpenseService,
+    private val costExpenseService: CostExpenseService,
 ) {
-
     val now = LocalDate.now()
     val data: MutableList<Expense> = mutableListOf()
 
@@ -26,38 +25,43 @@ class LoadExpensesData(
         loadData.loadWhenEmpty {
             // To get some variety in the list sizes of expenses, the number of
             // expense sets (one of each type) is based on the list index
-            loadPersonData.data.forEachIndexed() { index, person ->
+            loadPersonData.data.forEachIndexed { index, person ->
                 createExpenses(person, index)
             }
         }
     }
 
-    private fun createExpenses(person: Person, sets: Int) {
+    private fun createExpenses(
+        person: Person,
+        sets: Int,
+    ) {
         for (i in 1..sets) {
             TravelExpense(
-                    date = now.plusDays(i.toLong()),
-                    description = "Travel expense description $i",
-                    person = person,
-                    distance = 100.0,
-                    allowance = 0.19
+                date = now.plusDays(i.toLong()),
+                description = "Travel expense description $i",
+                person = person,
+                distance = 100.0,
+                allowance = 0.19,
             )
-                    .save()
-                    .apply { data.add(this) }
+                .save()
+                .apply { data.add(this) }
 
             CostExpense(
-                    date = now.plusDays(i.toLong()),
-                    description = "Cost expense description $i",
-                    person = person,
-                    amount = 50.0
+                date = now.plusDays(i.toLong()),
+                description = "Cost expense description $i",
+                person = person,
+                amount = 50.0,
             )
-                    .save()
-                    .apply { data.add(this) }
+                .save()
+                .apply { data.add(this) }
         }
     }
 
-    private fun TravelExpense.save() = travelExpenseService
+    private fun TravelExpense.save() =
+        travelExpenseService
             .create(this)
 
-    private fun CostExpense.save() = costExpenseService
+    private fun CostExpense.save() =
+        costExpenseService
             .create(this)
 }

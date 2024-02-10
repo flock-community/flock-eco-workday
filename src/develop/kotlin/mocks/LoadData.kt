@@ -7,11 +7,10 @@ import org.springframework.stereotype.Component
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
 class LoadData(
-        private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
     fun loadWhenEmpty(block: () -> Unit) {
-
-        if(load == null){
+        if (load == null) {
             load = userRepository.count() == 0L
         }
 
@@ -20,7 +19,7 @@ class LoadData(
         }
     }
 
-    companion object{
-        var load:Boolean? = null
+    companion object {
+        var load: Boolean? = null
     }
 }
