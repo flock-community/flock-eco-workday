@@ -146,7 +146,7 @@ class EventController(
         authentication: Authentication
     ): Event {
         val person = personService.findByUserCode(authentication.name)
-            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN);
+            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
 
         return eventService.subscribeToEvent(eventCode, person)
     }
@@ -158,7 +158,7 @@ class EventController(
         authentication: Authentication
     ): Event {
         val person = personService.findByUserCode(authentication.name)
-            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN);
+            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
 
         return eventService.unsubscribeFromEvent(eventCode, person)
     }
