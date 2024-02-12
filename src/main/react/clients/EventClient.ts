@@ -116,7 +116,7 @@ const getUpcoming = (from: Dayjs, to: Dayjs): Promise<FlockEvent[]> => {
 
 const subscribeToEvent = (event: FlockEvent) => {
   const opts = {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     }
@@ -129,7 +129,7 @@ const subscribeToEvent = (event: FlockEvent) => {
 
 const unsubscribeFromEvent = (event: FlockEvent) => {
   const opts = {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     }
