@@ -28,7 +28,7 @@ export function ClientList(props) {
   useEffect(() => {
     ClientClient.findAllByPage({
       page: 0,
-      size: 10,
+      size: 100,
       sort: "name,asc",
     }).then((res) => setList(res.list));
   }, [reload]);
