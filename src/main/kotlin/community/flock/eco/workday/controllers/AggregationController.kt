@@ -219,7 +219,7 @@ private fun AggregationClientPersonAssignmentItem.produce() =
 
 private fun AggregationPerson.produce() =
     AggregationPersonApi(
-        id = id.produce(),
+        id = id.produce().value,
         name = name,
         contractTypes = contractTypes.toList(),
         sickDays = sickDays.produce(),
@@ -273,6 +273,6 @@ private fun BigDecimal.produce(): Double = toDouble()
 
 private fun Float.produce(): Double = toDouble()
 
-private fun Int.produce(): Double = toDouble()
+private fun Int.produce(): Long = toLong()
 
 private fun AggregationIdentifier.produce() = AggregationIdentifierApi(id, name)

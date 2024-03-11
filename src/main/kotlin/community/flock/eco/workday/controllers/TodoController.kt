@@ -1,9 +1,9 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.authorities.Authority
+import community.flock.eco.workday.api.GetTodoAllEndpoint
 import community.flock.eco.workday.api.Todo
-import community.flock.eco.workday.api.TodoType
-import community.flock.eco.workday.api.validate
+import community.flock.eco.workday.api.TodoTodoType
 import community.flock.eco.workday.authorities.ExpenseAuthority
 import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
@@ -23,31 +23,46 @@ import community.flock.eco.workday.services.SickDayService
 import community.flock.eco.workday.services.WorkDayService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
-import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 import community.flock.eco.workday.api.UUID as UUIDApi
 
 @RestController
-@RequestMapping("/api/todos")
+@RequestMapping
 class TodoController(
     private val leaveDayService: LeaveDayService,
     private val sickDayService: SickDayService,
     private val workDayService: WorkDayService,
     private val expenseService: ExpenseService,
-) {
-    @GetMapping
+) : GetTodoAllEndpoint {
+    @RequestMapping(
+        GetTodoAllEndpoint.PATH,
+//        method = [RequestMethod.valueOf(GetTodoAllEndpoint.METHOD)]
+        method = [RequestMethod.GET],
+    )
     @PreAuthorize("hasAuthority('TodoAuthority.READ')")
-    fun getTodoAll(authentication: Authentication): List<Todo> =
-        mapOf<Authority, List<Todo>>(
+    suspend fun getTodoAll(authentication: Authentication): Any {
+        return when (val todoAll = getTodoAll(GetTodoAllEndpoint.RequestUnit())) {
+            is GetTodoAllEndpoint.Response200ApplicationJson -> todoAll.content.body
+            is GetTodoAllEndpoint.Response500TextPlain -> todoAll.content.body
+        }
+    }
+
+    override suspend fun getTodoAll(request: GetTodoAllEndpoint.Request<*>): GetTodoAllEndpoint.Response<*> {
+        val auth = SecurityContextHolder.getContext().authentication
+        return mapOf<Authority, List<Todo>>(
             LeaveDayAuthority.READ to findLeaveDayTodo(),
             SickdayAuthority.READ to findSickDayTodo(),
             WorkDayAuthority.READ to findWorkDayTodo(),
             ExpenseAuthority.READ to findExpenseTodo(),
         )
-            .filter { authentication.hasAuthority(it.key) }
+            .filter { auth.hasAuthority(it.key) }
             .flatMap { it.value }
             .sortedWith(compareBy({ it.personName }, { it.todoType }))
+            .let { GetTodoAllEndpoint.Response200ApplicationJson(emptyMap(), it) }
+    }
 
     fun findLeaveDayTodo() =
         leaveDayService
@@ -82,16 +97,16 @@ class TodoController(
 
     private fun LeaveDayType.produce() =
         when (this) {
-            LeaveDayType.HOLIDAY -> TodoType.HOLIDAY
-            LeaveDayType.PLUSDAY -> TodoType.PLUSDAY
-            LeaveDayType.PAID_PARENTAL_LEAVE -> TodoType.PAID_PARENTAL_LEAVE
-            LeaveDayType.UNPAID_PARENTAL_LEAVE -> TodoType.UNPAID_PARENTAL_LEAVE
+            LeaveDayType.HOLIDAY -> TodoTodoType.HOLIDAY
+            LeaveDayType.PLUSDAY -> TodoTodoType.PLUSDAY
+            LeaveDayType.PAID_PARENTAL_LEAVE -> TodoTodoType.PAID_PARENTAL_LEAVE
+            LeaveDayType.UNPAID_PARENTAL_LEAVE -> TodoTodoType.UNPAID_PARENTAL_LEAVE
         }
 
     fun SickDay.mapTodo() =
         Todo(
             id = UUIDApi(code).also(UUIDApi::validate),
-            todoType = TodoType.SICKDAY,
+            todoType = TodoTodoType.SICKDAY,
             personId = UUIDApi(person.uuid.toString()).also(UUIDApi::validate),
             personName = person.fullName(),
             description = "$from - $to",
@@ -100,7 +115,7 @@ class TodoController(
     fun WorkDay.mapTodo() =
         Todo(
             id = UUIDApi(code).also(UUIDApi::validate),
-            todoType = TodoType.WORKDAY,
+            todoType = TodoTodoType.WORKDAY,
             personId = UUIDApi(assignment.person.uuid.toString()).also(UUIDApi::validate),
             personName = assignment.person.fullName(),
             description = "$from - $to",
@@ -109,7 +124,7 @@ class TodoController(
     fun Expense.mapTodo() =
         Todo(
             id = UUIDApi(id.toString()).also(UUIDApi::validate),
-            todoType = TodoType.EXPENSE,
+            todoType = TodoTodoType.EXPENSE,
             personId = UUIDApi(person.uuid.toString()).also(UUIDApi::validate),
             personName = person.fullName(),
             description = "$description : ${getAmount()}",

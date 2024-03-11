@@ -3446,6 +3446,7 @@
       },
       "TravelExpenseInput": {
         "type": "object",
+        "required": ["personId", "description", "date", "status"],
         "properties": {
           "personId": {
             "$ref": "#/components/schemas/UUID"
@@ -3496,6 +3497,7 @@
       },
       "CostExpenseFile": {
         "type": "object",
+        "required": ["name", "file"],
         "properties": {
           "name": {
             "type": "string"
@@ -3507,6 +3509,7 @@
       },
       "Expense": {
         "type": "object",
+        "required": ["id", "personId"],
         "properties": {
           "id": {
             "type": "string"
@@ -3551,6 +3554,7 @@
       },
       "CostExpenseFileInput": {
         "type": "object",
+        "required": ["name", "file"],
         "properties": {
           "name": {
             "type": "string"
@@ -3562,6 +3566,7 @@
       },
       "CostExpenseInput": {
         "type": "object",
+        "required": ["personId", "status", "files"],
         "properties": {
           "personId": {
             "$ref": "#/components/schemas/UUID"

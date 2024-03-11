@@ -125,6 +125,9 @@
                 <configuration>
                     <args>
                         <arg>-Xjsr305=strict</arg>
+                        <arg>-Xcontext-receivers</arg>
+
+
                     </args>
                     <compilerPlugins>
                         <plugin>jpa</plugin>
@@ -199,9 +202,10 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <input>${project.basedir}/src/main/wirespec</input>
+                            <input>${project.basedir}/src/main/openapi/openapispec.json</input>
                             <output>${project.build.directory}/generated-sources</output>
                             <packageName>community.flock.eco.workday.api</packageName>
+                            <format>OpenApiV3</format>
                             <languages>
                                 <language>Kotlin</language>
                             </languages>

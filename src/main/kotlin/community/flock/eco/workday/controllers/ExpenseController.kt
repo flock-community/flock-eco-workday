@@ -4,10 +4,10 @@ import community.flock.eco.core.utils.toResponse
 import community.flock.eco.workday.api.CostExpenseDetails
 import community.flock.eco.workday.api.CostExpenseFile
 import community.flock.eco.workday.api.CostExpenseInput
-import community.flock.eco.workday.api.ExpenseType
+import community.flock.eco.workday.api.ExpenseExpenseType
+import community.flock.eco.workday.api.ExpenseStatus
 import community.flock.eco.workday.api.TravelExpenseDetails
 import community.flock.eco.workday.api.TravelExpenseInput
-import community.flock.eco.workday.api.validate
 import community.flock.eco.workday.authorities.ExpenseAuthority
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.mappers.CostExpenseMapper
@@ -43,7 +43,6 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
 import community.flock.eco.workday.api.Expense as ExpenseApi
-import community.flock.eco.workday.api.Status as StatusApi
 import community.flock.eco.workday.api.UUID as UUIDApi
 
 @RestController
@@ -137,7 +136,7 @@ private fun CostExpense.produce() =
         description = description ?: "",
         date = date.toString(),
         status = status.produce(),
-        expenseType = ExpenseType.COST,
+        expenseType = ExpenseExpenseType.COST,
         costDetails =
             CostExpenseDetails(
                 amount = amount,
@@ -193,7 +192,7 @@ private fun TravelExpense.produce(): ExpenseApi =
         description = description ?: "",
         date = date.toString(),
         status = status.produce(),
-        expenseType = ExpenseType.TRAVEL,
+        expenseType = ExpenseExpenseType.TRAVEL,
         travelDetails =
             TravelExpenseDetails(
                 distance = distance,
@@ -201,12 +200,12 @@ private fun TravelExpense.produce(): ExpenseApi =
             ),
     )
 
-private fun Status.produce() =
+private fun Status.produce(): ExpenseStatus =
     when (this) {
-        REQUESTED -> StatusApi.REQUESTED
-        APPROVED -> StatusApi.APPROVED
-        REJECTED -> StatusApi.REJECTED
-        DONE -> StatusApi.DONE
+        REQUESTED -> ExpenseStatus.REQUESTED
+        APPROVED -> ExpenseStatus.APPROVED
+        REJECTED -> ExpenseStatus.REJECTED
+        DONE -> ExpenseStatus.DONE
     }
 
 @RestController

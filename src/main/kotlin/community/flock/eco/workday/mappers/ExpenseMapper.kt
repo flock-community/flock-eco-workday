@@ -1,7 +1,9 @@
 package community.flock.eco.workday.mappers
 
 import community.flock.eco.workday.api.CostExpenseInput
+import community.flock.eco.workday.api.CostExpenseInputStatus
 import community.flock.eco.workday.api.TravelExpenseInput
+import community.flock.eco.workday.api.TravelExpenseInputStatus
 import community.flock.eco.workday.model.CostExpense
 import community.flock.eco.workday.model.Document
 import community.flock.eco.workday.model.Status
@@ -10,7 +12,6 @@ import community.flock.eco.workday.services.PersonService
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.util.UUID
-import community.flock.eco.workday.api.Status as StatusApi
 
 @Component
 class TravelExpenseMapper(
@@ -60,10 +61,18 @@ class CostExpenseMapper(
     )
 }
 
-fun StatusApi.consume(): Status =
+fun TravelExpenseInputStatus.consume(): Status =
     when (this) {
-        StatusApi.REQUESTED -> Status.REQUESTED
-        StatusApi.APPROVED -> Status.APPROVED
-        StatusApi.REJECTED -> Status.REJECTED
-        StatusApi.DONE -> Status.DONE
+        TravelExpenseInputStatus.REQUESTED -> Status.REQUESTED
+        TravelExpenseInputStatus.APPROVED -> Status.APPROVED
+        TravelExpenseInputStatus.REJECTED -> Status.REJECTED
+        TravelExpenseInputStatus.DONE -> Status.DONE
+    }
+
+fun CostExpenseInputStatus.consume(): Status =
+    when (this) {
+        CostExpenseInputStatus.REQUESTED -> Status.REQUESTED
+        CostExpenseInputStatus.APPROVED -> Status.APPROVED
+        CostExpenseInputStatus.REJECTED -> Status.REJECTED
+        CostExpenseInputStatus.DONE -> Status.DONE
     }
