@@ -1,12 +1,13 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.core.authorities.Authority
+import community.flock.eco.workday.api.Todo
+import community.flock.eco.workday.api.TodoType
+import community.flock.eco.workday.api.validate
 import community.flock.eco.workday.authorities.ExpenseAuthority
 import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
 import community.flock.eco.workday.authorities.WorkDayAuthority
-import community.flock.eco.workday.graphql.kotlin.Todo
-import community.flock.eco.workday.graphql.kotlin.TodoType
 import community.flock.eco.workday.model.CostExpense
 import community.flock.eco.workday.model.Expense
 import community.flock.eco.workday.model.LeaveDay
@@ -25,7 +26,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
+import community.flock.eco.workday.api.UUID as UUIDApi
 
 @RestController
 @RequestMapping("/api/todos")
@@ -37,7 +38,7 @@ class TodoController(
 ) {
     @GetMapping
     @PreAuthorize("hasAuthority('TodoAuthority.READ')")
-    fun getTodoAll(authentication: Authentication) =
+    fun getTodoAll(authentication: Authentication): List<Todo> =
         mapOf<Authority, List<Todo>>(
             LeaveDayAuthority.READ to findLeaveDayTodo(),
             SickdayAuthority.READ to findSickDayTodo(),
@@ -46,7 +47,7 @@ class TodoController(
         )
             .filter { authentication.hasAuthority(it.key) }
             .flatMap { it.value }
-            .sortedWith(compareBy({ it.personName }, { it.type }))
+            .sortedWith(compareBy({ it.personName }, { it.todoType }))
 
     fun findLeaveDayTodo() =
         leaveDayService
@@ -72,42 +73,44 @@ class TodoController(
 
     fun LeaveDay.mapTodo() =
         Todo(
-            id = UUID.fromString(code),
-            type =
-                when (type) {
-                    LeaveDayType.HOLIDAY -> TodoType.HOLIDAY
-                    LeaveDayType.PLUSDAY -> TodoType.PLUSDAY
-                    LeaveDayType.PAID_PARENTAL_LEAVE -> TodoType.PAID_PARENTAL_LEAVE
-                    LeaveDayType.UNPAID_PARENTAL_LEAVE -> TodoType.UNPAID_PARENTAL_LEAVE
-                },
-            personId = person.uuid,
+            id = UUIDApi(code).also(UUIDApi::validate),
+            todoType = type.produce(),
+            personId = UUIDApi(person.uuid.toString()).also(UUIDApi::validate),
             personName = person.fullName(),
             description = "$from - $to",
         )
 
+    private fun LeaveDayType.produce() =
+        when (this) {
+            LeaveDayType.HOLIDAY -> TodoType.HOLIDAY
+            LeaveDayType.PLUSDAY -> TodoType.PLUSDAY
+            LeaveDayType.PAID_PARENTAL_LEAVE -> TodoType.PAID_PARENTAL_LEAVE
+            LeaveDayType.UNPAID_PARENTAL_LEAVE -> TodoType.UNPAID_PARENTAL_LEAVE
+        }
+
     fun SickDay.mapTodo() =
         Todo(
-            id = UUID.fromString(code),
-            type = TodoType.SICKDAY,
-            personId = person.uuid,
+            id = UUIDApi(code).also(UUIDApi::validate),
+            todoType = TodoType.SICKDAY,
+            personId = UUIDApi(person.uuid.toString()).also(UUIDApi::validate),
             personName = person.fullName(),
             description = "$from - $to",
         )
 
     fun WorkDay.mapTodo() =
         Todo(
-            id = UUID.fromString(code),
-            type = TodoType.WORKDAY,
-            personId = assignment.person.uuid,
+            id = UUIDApi(code).also(UUIDApi::validate),
+            todoType = TodoType.WORKDAY,
+            personId = UUIDApi(assignment.person.uuid.toString()).also(UUIDApi::validate),
             personName = assignment.person.fullName(),
             description = "$from - $to",
         )
 
     fun Expense.mapTodo() =
         Todo(
-            id = id,
-            type = TodoType.EXPENSE,
-            personId = person.uuid,
+            id = UUIDApi(id.toString()).also(UUIDApi::validate),
+            todoType = TodoType.EXPENSE,
+            personId = UUIDApi(person.uuid.toString()).also(UUIDApi::validate),
             personName = person.fullName(),
             description = "$description : ${getAmount()}",
         )

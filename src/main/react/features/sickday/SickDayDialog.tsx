@@ -9,6 +9,7 @@ import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { schemaSickDayForm, SICKDAY_FORM_ID, SickDayForm } from "./SickDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import { TransitionProps } from "@material-ui/core/transitions";
 
 type SickDayDialogProps = {
   personFullName: string;
@@ -108,8 +109,10 @@ export function SickDayDialog({
         fullScreen
         open={open}
         onClose={handleClose}
-        TransitionComponent={TransitionSlider}
-        TransitionProps={{ direction: "right" }}
+        TransitionComponent={
+          TransitionSlider as React.ComponentType<TransitionProps>
+        }
+        TransitionProps={{ direction: "right" } as TransitionProps}
       >
         <DialogHeader
           icon={<HealingIcon />}

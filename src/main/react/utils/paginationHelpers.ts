@@ -1,22 +1,19 @@
-import { GroupedItemProps } from "../types";
+import { GroupedTodos } from "../types";
+import { Todo } from "../wirespec/Models";
 
-export const getItemsPerPage = (
-  data: GroupedItemProps,
+export const getItemsPerPage: (
+  data: GroupedTodos,
   page: number,
   pageSize: number
-) => {
-  return data.items.slice(page * pageSize, page * pageSize + pageSize);
-};
+) => Todo[] = (data: GroupedTodos, page: number, pageSize: number) =>
+  data.todos.slice(page * pageSize, page * pageSize + pageSize);
 
-export const getPaginatedTabs = (
-  data: GroupedItemProps[],
+export const getPaginatedTabs: (
+  data: GroupedTodos[],
   page: number,
   pageSize: number
-) => {
-  return data.map((item) => {
-    return {
-      type: item.type,
-      items: getItemsPerPage(item, page, pageSize),
-    };
-  });
-};
+) => GroupedTodos[] = (data: GroupedTodos[], page: number, pageSize: number) =>
+  data.map((item) => ({
+    todoType: item.todoType,
+    todos: getItemsPerPage(item, page, pageSize),
+  }));

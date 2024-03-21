@@ -5,12 +5,13 @@ import { Box, Card, CardHeader } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 
 // Types
-import { StatusProps, InputItemProps } from "../../types";
+import { StatusProps } from "../../types";
+import { Todo } from "../../wirespec/Models";
 
 export function TodoFeature() {
   const [refresh, setRefresh] = useState(false);
 
-  const handleItemClick = (status: StatusProps, item: InputItemProps) => {
+  const handleItemClick = (status: StatusProps, item: Todo) => {
     updateStatus(status, item).then(() => {
       setRefresh(!refresh);
     });

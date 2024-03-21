@@ -33,7 +33,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 type HolidayCardProps = {
-  item: PersonHolidayDetails;
+  item?: PersonHolidayDetails;
 };
 
 export function HolidayCard({ item }: HolidayCardProps) {
@@ -85,11 +85,15 @@ export function HolidayCard({ item }: HolidayCardProps) {
         </CardContent>
       </Card>
 
-      <HolidayDetailDialog
-        open={leaveDayDetailsOpen}
-        item={leaveDayDetailsItem}
-        onComplete={handleCloseLeaveDayDetailDialog}
-      />
+      {leaveDayDetailsItem !== undefined ? (
+        <HolidayDetailDialog
+          open={leaveDayDetailsOpen}
+          item={leaveDayDetailsItem}
+          onComplete={handleCloseLeaveDayDetailDialog}
+        />
+      ) : (
+        <></>
+      )}
     </>
   );
 }

@@ -39,7 +39,8 @@ export function HomeFeature() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [flockEvents, setFlockEvents] = useState<FlockEvent[]>([]);
 
-  const hasAccess = status?.authorities?.length > 0;
+  const hasAccess =
+    status?.authorities !== undefined && status?.authorities?.length > 0;
 
   const showContractsEnding =
     status?.authorities?.includes("ContractAuthority.ADMIN") ?? false;

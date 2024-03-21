@@ -1,8 +1,42 @@
 package community.flock.eco.workday.model
 
-import community.flock.eco.workday.graphql.kotlin.AggregationPersonClientRevenueOverview
 import java.math.BigDecimal
 import java.util.UUID
+
+data class AggregationPersonClientRevenueOverview(
+    val clients: List<AggregationPersonClientRevenueItem>,
+    val total: BigDecimal,
+)
+
+data class AggregationPersonClientRevenueItem(
+    val client: AggregationIdentifier,
+    val revenue: BigDecimal,
+)
+
+data class AggregationClientPersonOverview(
+    val client: AggregationIdentifier,
+    val aggregationPerson: List<AggregationClientPersonItem>,
+    val totals: List<Float>,
+)
+
+data class AggregationClientPersonItem(
+    val person: AggregationIdentifier,
+    val hours: List<Float>,
+    val total: Float,
+)
+
+data class AggregationClientPersonAssignmentItem(
+    val person: AggregationIdentifier,
+    val assignment: AggregationIdentifier,
+    val hours: List<Float>,
+    val total: Float,
+)
+
+data class AggregationClientPersonAssignmentOverview(
+    val client: AggregationIdentifier,
+    val aggregationPersonAssignment: List<AggregationClientPersonAssignmentItem>,
+    val totals: List<Float>,
+)
 
 data class AggregationPerson(
     val id: UUID,

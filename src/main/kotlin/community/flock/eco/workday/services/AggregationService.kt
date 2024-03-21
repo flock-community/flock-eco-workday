@@ -1,21 +1,20 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.ApplicationConstants
-import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonAssignmentItem
-import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonAssignmentOverview
-import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonItem
-import community.flock.eco.workday.graphql.kotlin.AggregationClientPersonOverview
-import community.flock.eco.workday.graphql.kotlin.AggregationIdentifier
-import community.flock.eco.workday.graphql.kotlin.AggregationPersonClientRevenueItem
-import community.flock.eco.workday.graphql.kotlin.AggregationPersonClientRevenueOverview
-import community.flock.eco.workday.interfaces.Dayly
 import community.flock.eco.workday.interfaces.Period
 import community.flock.eco.workday.interfaces.filterInRange
 import community.flock.eco.workday.interfaces.inRange
 import community.flock.eco.workday.model.AggregationClient
+import community.flock.eco.workday.model.AggregationClientPersonAssignmentItem
+import community.flock.eco.workday.model.AggregationClientPersonAssignmentOverview
+import community.flock.eco.workday.model.AggregationClientPersonItem
+import community.flock.eco.workday.model.AggregationClientPersonOverview
+import community.flock.eco.workday.model.AggregationIdentifier
 import community.flock.eco.workday.model.AggregationLeaveDay
 import community.flock.eco.workday.model.AggregationMonth
 import community.flock.eco.workday.model.AggregationPerson
+import community.flock.eco.workday.model.AggregationPersonClientRevenueItem
+import community.flock.eco.workday.model.AggregationPersonClientRevenueOverview
 import community.flock.eco.workday.model.Assignment
 import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
@@ -670,13 +669,6 @@ class AggregationService(
             }
             .toList()
 
-    private fun List<AggregationClientPersonItem>.sumWorkDayHoursWithSameIndexes() =
-        this
-            .map { it.hours }
-            .reduce { acc, list ->
-                acc.zip(list) { a, b -> a + b }
-            }
-
     private fun List<Day>.totalHoursInPeriod(
         from: LocalDate,
         to: LocalDate,
@@ -770,16 +762,6 @@ private fun <T : Period> Iterable<T>.sumAmount(yearMonth: YearMonth) =
 private fun Iterable<Assignment>.sumAssignmentHoursPerWeek() =
     this
         .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.hoursPerWeek.toBigDecimal() }
-
-private fun Iterable<WorkDay>.sumAmount() =
-    this
-        .fold(BigDecimal.ZERO) { acc, cur -> acc + (cur.hours * cur.assignment.hourlyRate).toBigDecimal() }
-
-fun Map.Entry<YearMonth, Iterable<Data>>.actualTotalHours(transform: Data.() -> Iterable<Dayly>): BigDecimal =
-    value
-        .flatMap(transform)
-        .map { it.totalHoursInPeriod(key) }
-        .sum()
 
 private fun <A, B> cartesianProducts(
     a_s: Iterable<A>,

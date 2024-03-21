@@ -1,6 +1,7 @@
-node_modules/**/*
-src/main/webapp/**/*
-src/main/resources/**/*
+node_modules
+src/main/webapp
+src/main/resources
+src/main/react/wirespec
 target/**/*
 *.properties
 *.snap

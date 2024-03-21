@@ -8,8 +8,8 @@ import TableCell from "@material-ui/core/TableCell";
 import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
 import { makeStyles } from "@material-ui/core/styles";
 import AssignmentReportTableRow from "./AssignmentReportTableRow";
-import { AggregationClientPersonAssignmentOverview } from "../../../graphql/aggregation";
 import { Dayjs } from "dayjs";
+import { AggregationClientPersonAssignmentOverview } from "../../../wirespec/Models";
 
 const useStyles = makeStyles({
   tableContainer: {

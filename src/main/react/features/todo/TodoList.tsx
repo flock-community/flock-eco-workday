@@ -17,17 +17,13 @@ import { groupByType } from "../../utils/groupByType";
 import { getPaginatedTabs } from "../../utils/paginationHelpers";
 
 // Types
-import {
-  InputItemProps,
-  GroupedItemProps,
-  StatusProps,
-  typeProp,
-} from "../../types";
+import { GroupedTodos, StatusProps, TypeProp } from "../../types";
+import { Todo } from "../../wirespec/Models";
 
 // @todo make this a global PAGE_SIZE constants
 const TODO_PAGE_SIZE = 5;
 
-const typeToPath = (type: typeProp) => {
+const typeToPath = (type: TypeProp) => {
   switch (type) {
     case "WORKDAY":
       return "workdays";
@@ -45,58 +41,56 @@ const typeToPath = (type: typeProp) => {
 };
 
 type TodoListProps = {
-  onItemClick: (status: StatusProps, item: InputItemProps) => void;
+  onItemClick: (status: StatusProps, item: Todo) => void;
   refresh: boolean;
 };
 
 export function TodoList({ onItemClick, refresh }: TodoListProps) {
   const history = useHistory();
 
-  const [list, setList] = useState<GroupedItemProps[]>();
+  const [list, setList] = useState<GroupedTodos[]>();
   const [page, setPage] = useState(0);
   const [itemCount, setItemCount] = useState(-1);
   const [selectedTab, setSelectedTab] = useState(0);
-  const [paginatedItems, setPaginatedItems] = useState<GroupedItemProps[]>([]);
+  const [paginatedItems, setPaginatedItems] = useState<GroupedTodos[]>([]);
 
   const handlePageChange = (value: number) => {
     setPage(value);
     setPaginatedItems(
-      getPaginatedTabs(list as GroupedItemProps[], value, TODO_PAGE_SIZE)
+      getPaginatedTabs(list as GroupedTodos[], value, TODO_PAGE_SIZE)
     );
   };
 
   useEffect(() => {
     TodoClient.all().then((res) => {
-      const todoItems = res.body as InputItemProps[];
-      const groupedTodoItems = groupByType(todoItems);
-      setList(groupedTodoItems);
+      const groupedTodos = groupByType(res);
+      setList(groupedTodos);
 
-      setItemCount(groupByType(todoItems)[selectedTab].items.length);
+      setPageCount(
+        Math.ceil(groupedTodos[selectedTab].todos.length / TODO_PAGE_SIZE)
+      );
     });
   }, [refresh]);
 
   useEffect(() => {
     if (!list) return;
-    setItemCount(list[selectedTab].items.length);
-    setPaginatedItems(getPaginatedTabs(list, 0, TODO_PAGE_SIZE));
+    setItemCount(list[selectedTab].todos.length);
+    setPaginatedItems(getPaginatedTabs(list, page, TODO_PAGE_SIZE));
+  }, [list, page]);
+
+  useEffect(() => {
     setPage(0);
   }, [selectedTab]);
 
-  useEffect(() => {
-    if (!list) return;
-    setPaginatedItems(getPaginatedTabs(list, page, TODO_PAGE_SIZE));
-  }, [list]);
-
-  const handleStatusChange =
-    (item: InputItemProps) => (status: StatusProps) => {
-      onItemClick(status, item);
-    };
-
-  const handleCardClick = (item: InputItemProps) => () => {
-    history.push(`/${typeToPath(item.type)}?personId=${item.personId}`);
+  const handleStatusChange = (item: Todo) => (status: StatusProps) => {
+    onItemClick(status, item);
   };
 
-  function renderItem(item: InputItemProps, key: Number) {
+  const handleCardClick = (item: Todo) => () => {
+    history.push(`/${typeToPath(item.todoType)}?personId=${item.personId}`);
+  };
+
+  function renderItem(item: Todo, key: Number) {
     return (
       <Grid item xs={12} key={`todo-list-item-${key}`}>
         <Card>
@@ -106,7 +100,7 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
                 {item.personName}
               </Link>
             }
-            subheader={`${item.type}: ${item.description}`}
+            subheader={`${item.todoType}: ${item.description}`}
             action={
               <StatusMenu
                 onChange={handleStatusChange(item)}

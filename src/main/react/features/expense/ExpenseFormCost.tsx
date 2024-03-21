@@ -9,12 +9,13 @@ import * as Yup from "yup";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
 import dayjs from "dayjs";
+import { CostExpense } from "../../models/Expense";
 
 export const EXPENSE_COST_FORM_ID = "cost-expense-form";
 
 type ExpenseFormCostProps = {
   value: any;
-  onSubmit: (item: any) => void;
+  onSubmit: (item: CostExpense) => void;
 };
 
 export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {

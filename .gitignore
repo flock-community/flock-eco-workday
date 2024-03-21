@@ -46,3 +46,6 @@ coverage
 .env
 
 .husky
+
+/src/main/react/wirespec/
+
