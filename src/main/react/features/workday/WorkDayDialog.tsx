@@ -23,7 +23,7 @@ type ExportStatusProps = {
 const useStyles = makeStyles((theme) => ({
   dialogContent: {
     margin: "auto",
-    maxWidth: 768 // should be a decent medium-sized breakpoint
+    maxWidth: 768, // should be a decent medium-sized breakpoint
   },
   exportSnackBar: {
     display: "flex",
@@ -33,11 +33,11 @@ const useStyles = makeStyles((theme) => ({
     border: "2px solid",
     borderColor: theme.palette.success["600"],
     borderRadius: "5px",
-    backgroundColor: theme.palette.success["200"]
+    backgroundColor: theme.palette.success["200"],
   },
   exportMessage: {
-    marginRight: "0.5rem"
-  }
+    marginRight: "0.5rem",
+  },
 }));
 
 export function WorkDayDialog({ personFullName, open, code, onComplete }) {
@@ -48,7 +48,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
   const [state, setState] = useState<any>(null);
   const [exportLink, setExportLink] = useState<ExportStatusProps>({
     loading: false,
-    link: null
+    link: null,
   });
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
             days: res.days,
             hours: res.hours,
             status: res.status,
-            sheets: res.sheets
+            sheets: res.sheets,
           });
         });
       } else {
@@ -84,23 +84,21 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
         : it.hours,
       assignmentCode: it.assignmentCode,
       status: it.status,
-      sheets: it.sheets
+      sheets: it.sheets,
     };
     if (code) {
-      return WorkDayClient.put(code, body)
-        .then((res) => {
-          if (isDefined(onComplete)) {
-            setProcessing(false)
-            onComplete(res);
-          }
-          setState(null);
-
-        });
+      return WorkDayClient.put(code, body).then((res) => {
+        if (isDefined(onComplete)) {
+          setProcessing(false);
+          onComplete(res);
+        }
+        setState(null);
+      });
     } else {
       return WorkDayClient.post(body).then((res) => {
         if (isDefined(onComplete)) onComplete(res);
         setState(null);
-        setProcessing(false)
+        setProcessing(false);
       });
     }
   };
@@ -129,11 +127,11 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
   const handleExport =
     code && UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN")
       ? async () => {
-        setExportLink({ loading: true, link: null });
-        const response = await ExportClient().exportWorkday(code);
-        setExportLink({ loading: false, link: response.link });
-        setProcessing(true);
-      }
+          setExportLink({ loading: true, link: null });
+          const response = await ExportClient().exportWorkday(code);
+          setExportLink({ loading: false, link: response.link });
+          setProcessing(true);
+        }
       : null;
 
   const headline = UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN")
@@ -143,7 +141,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
   function clearExportLink() {
     setExportLink({
       loading: false,
-      link: null
+      link: null,
     });
   }
 

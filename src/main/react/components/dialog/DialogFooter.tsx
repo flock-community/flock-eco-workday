@@ -12,7 +12,7 @@ export function DialogFooter({
   disableDelete = false,
   disableEdit = false,
   processingExport = false,
-  processing = false
+  processing = false,
 }) {
   return (
     <DialogActions>
@@ -30,12 +30,14 @@ export function DialogFooter({
           <Box ml="0.5rem">Export</Box>
         </Button>
       )}
-      <Button
-        onClick={onClose}
-        disabled={processing}>Cancel</Button>
-      {onDelete && !disableDelete && <Button
-        onClick={onDelete}
-        disabled={processing}>Delete</Button>}
+      <Button onClick={onClose} disabled={processing}>
+        Cancel
+      </Button>
+      {onDelete && !disableDelete && (
+        <Button onClick={onDelete} disabled={processing}>
+          Delete
+        </Button>
+      )}
       {!disableEdit && (
         <Button
           type="submit"

@@ -40,7 +40,7 @@ export function LeaveDayList({
     if (personId) {
       setLoading(true);
       LeaveDayClient.findAllByPersonId(personId, page).then(
-        ({ list, count}: { list: DayProps[]; count: number }) => {
+        ({ list, count }: { list: DayProps[]; count: number }) => {
           setList(list);
           setCount(count);
           setLoading(false);
