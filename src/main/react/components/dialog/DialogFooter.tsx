@@ -12,11 +12,12 @@ export function DialogFooter({
   disableDelete = false,
   disableEdit = false,
   processingExport = false,
+  processing = false
 }) {
   return (
     <DialogActions>
       {onExport && (
-        <Button disabled={processingExport} onClick={onExport}>
+        <Button disabled={processing || processingExport} onClick={onExport}>
           {!processingExport ? (
             <img
               width="16px"
@@ -29,8 +30,12 @@ export function DialogFooter({
           <Box ml="0.5rem">Export</Box>
         </Button>
       )}
-      <Button onClick={onClose}>Cancel</Button>
-      {onDelete && !disableDelete && <Button onClick={onDelete}>Delete</Button>}
+      <Button
+        onClick={onClose}
+        disabled={processing}>Cancel</Button>
+      {onDelete && !disableDelete && <Button
+        onClick={onDelete}
+        disabled={processing}>Delete</Button>}
       {!disableEdit && (
         <Button
           type="submit"
@@ -38,6 +43,7 @@ export function DialogFooter({
           color="primary"
           onClick={onSubmit}
           variant="contained"
+          disabled={processing}
         >
           Save
         </Button>

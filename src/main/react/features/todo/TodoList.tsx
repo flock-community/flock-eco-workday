@@ -50,7 +50,7 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
 
   const [list, setList] = useState<GroupedTodos[]>();
   const [page, setPage] = useState(0);
-  const [itemCount, setItemCount] = useState(-1);
+  const [count, setCount] = useState(-1);
   const [selectedTab, setSelectedTab] = useState(0);
   const [paginatedItems, setPaginatedItems] = useState<GroupedTodos[]>([]);
 
@@ -65,16 +65,12 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
     TodoClient.all().then((res) => {
       const groupedTodos = groupByType(res);
       setList(groupedTodos);
-
-      setPageCount(
-        Math.ceil(groupedTodos[selectedTab].todos.length / TODO_PAGE_SIZE)
-      );
     });
   }, [refresh]);
 
   useEffect(() => {
     if (!list) return;
-    setItemCount(list[selectedTab].todos.length);
+    setCount(list[selectedTab].todos.length);
     setPaginatedItems(getPaginatedTabs(list, page, TODO_PAGE_SIZE));
   }, [list, page]);
 
@@ -137,7 +133,7 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}
-          numberOfItems={itemCount}
+          numberOfItems={count}
           itemsPerPage={TODO_PAGE_SIZE}
           changePageCb={handlePageChange}
         />
