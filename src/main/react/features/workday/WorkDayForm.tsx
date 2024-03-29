@@ -6,7 +6,6 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Switch from "@material-ui/core/Switch";
 import { ButtonGroup, Typography } from "@material-ui/core";
 import { TextField } from "formik-material-ui";
-import * as PropTypes from "prop-types";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
 import { isDefined } from "../../utils/validation";
@@ -20,6 +19,7 @@ import { DatePreset, datePresets } from "../../utils/DatePreset";
 import dayjs from "dayjs";
 import DayjsUtils from "@date-io/dayjs";
 import { StatusSelect } from "../../components/status/StatusSelect";
+import PropTypes from "prop-types";
 
 export const WORKDAY_FORM_ID = "work-day-form";
 
@@ -50,9 +50,9 @@ export function WorkDayForm({ value, onSubmit }) {
     setDaysSwitch(!value.days);
   }, [value]);
 
-  const handleSubmit = (data) => {
-    if (isDefined(onSubmit))
-      onSubmit({
+  const handleSubmit = (data: any) => {
+    if (isDefined(onSubmit)) {
+      return onSubmit({
         assignmentCode: data.assignmentCode,
         from: data.from,
         to: data.to,
@@ -61,6 +61,9 @@ export function WorkDayForm({ value, onSubmit }) {
         status: data.status,
         sheets: data.sheets,
       });
+    } else {
+      return Promise.resolve();
+    }
   };
 
   const handleSwitchChange = (ev) => {
@@ -137,7 +140,7 @@ export function WorkDayForm({ value, onSubmit }) {
     </>
   );
 
-  const renderForm = ({ values, setFieldValue }) => {
+  const renderForm = ({ values, setFieldValue, isSubmitting }) => {
     const handleStatusChange = (newValue) => {
       setFieldValue("status", newValue);
     };

@@ -7,6 +7,8 @@ import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.WorkDayService
 import community.flock.eco.workday.services.isUser
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -33,6 +35,8 @@ import java.util.UUID
 class WorkdayController(
     private val service: WorkDayService,
 ) {
+    private val log: Logger = LoggerFactory.getLogger(WorkdayController::class.java)
+
     @GetMapping(params = ["personId"])
     @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")
     fun getAll(

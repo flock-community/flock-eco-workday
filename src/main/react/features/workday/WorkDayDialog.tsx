@@ -85,12 +85,19 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
       sheets: it.sheets,
     };
     if (code) {
-      WorkDayClient.put(code, body).then((res) => {
-        if (isDefined(onComplete)) onComplete(res);
-        setState(null);
-      });
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          console.log("Waited enough");
+          resolve("tada");
+        }, 1000);
+      })
+        .then((_) => WorkDayClient.put(code, body))
+        .then((res) => {
+          if (isDefined(onComplete)) onComplete(res);
+          setState(null);
+        });
     } else {
-      WorkDayClient.post(body).then((res) => {
+      return WorkDayClient.post(body).then((res) => {
         if (isDefined(onComplete)) onComplete(res);
         setState(null);
       });
