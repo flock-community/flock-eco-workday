@@ -18,7 +18,7 @@ import { getPaginatedTabs } from "../../utils/paginationHelpers";
 
 // Types
 import { GroupedTodos, StatusProps, TypeProp } from "../../types";
-import { Todo } from "../../wirespec/Models";
+import { Todo, TodoType } from "../../wirespec/Models";
 
 // @todo make this a global PAGE_SIZE constants
 const TODO_PAGE_SIZE = 5;
@@ -30,13 +30,17 @@ const typeToPath = (type: TypeProp) => {
     case "SICKDAY":
       return "sickdays";
     case "PLUSDAY":
-      return "holidays";
+      return "leave-days";
     case "HOLIDAY":
-      return "holidays";
+      return "leave-days";
+    case "PAID_PARENTAL_LEAVE":
+      return "leave-days";
+    case "UNPAID_PARENTAL_LEAVE":
+      return "leave-days";
     case "EXPENSE":
       return "expenses";
     default:
-      return null;
+      throw new Error(`Cannot map todo type to path: ${type}`)
   }
 };
 
@@ -82,8 +86,20 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
     onItemClick(status, item);
   };
 
+  const mapTodoType: Record<TodoType, string> = {
+    "WORKDAY": "",
+    "SICKDAY": "",
+    "HOLIDAY": "",
+    "PAID_PARENTAL_LEAVE": "",
+    "UNPAID_PARENTAL_LEAVE": "",
+    "EXPENSE": "",
+    "PLUSDAY": ""
+  };
   const handleCardClick = (item: Todo) => () => {
-    history.push(`/${typeToPath(item.todoType)}?personId=${item.personId}`);
+    console.log(item);
+    // @ts-ignore
+    // TODO: Add Wirespec Jackson module
+    history.push(`/${typeToPath(item.todoType)}?personId=${item.personId.value}`);
   };
 
   function renderItem(item: Todo, key: Number) {

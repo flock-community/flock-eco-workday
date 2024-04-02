@@ -71,7 +71,7 @@ export function HolidayCard({ item }: HolidayCardProps) {
         style={{ borderRadius: 0, cursor: "pointer" }}
         onClick={() => openLeaveDayDetailsDialog()}
       >
-        <CardHeader title={"Holidays"} />
+        <CardHeader title={"Leave days"} />
         <CardContent className={classes.containerWrapper}>
           <div className={classes.hoursLeftWrapper}>
             <span>You have</span>

@@ -128,7 +128,7 @@ export function LeaveDayDialog({
       >
         <DialogHeader
           icon={<HolidayIcon />}
-          headline="Holidays"
+          headline="Leave days"
           subheadline="Have the best time of your life, beside working for Flock."
           onClose={handleClose}
         />
