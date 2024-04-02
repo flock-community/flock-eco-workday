@@ -40,7 +40,7 @@ const typeToPath = (type: TypeProp) => {
     case "EXPENSE":
       return "expenses";
     default:
-      throw new Error(`Cannot map todo type to path: ${type}`)
+      throw new Error(`Cannot map todo type to path: ${type}`);
   }
 };
 
@@ -87,19 +87,21 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
   };
 
   const mapTodoType: Record<TodoType, string> = {
-    "WORKDAY": "",
-    "SICKDAY": "",
-    "HOLIDAY": "",
-    "PAID_PARENTAL_LEAVE": "",
-    "UNPAID_PARENTAL_LEAVE": "",
-    "EXPENSE": "",
-    "PLUSDAY": ""
+    WORKDAY: "",
+    SICKDAY: "",
+    HOLIDAY: "",
+    PAID_PARENTAL_LEAVE: "",
+    UNPAID_PARENTAL_LEAVE: "",
+    EXPENSE: "",
+    PLUSDAY: "",
   };
   const handleCardClick = (item: Todo) => () => {
     console.log(item);
     // @ts-ignore
     // TODO: Add Wirespec Jackson module
-    history.push(`/${typeToPath(item.todoType)}?personId=${item.personId.value}`);
+    history.push(
+      `/${typeToPath(item.todoType)}?personId=${item.personId.value}`
+    );
   };
 
   function renderItem(item: Todo, key: Number) {
