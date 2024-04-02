@@ -73,7 +73,7 @@ export default function NonProductiveHours({
       </TableRow>
       <TableRow className={classes.row}>
         <TableCell />
-        <TableCell>Holidays</TableCell>
+        <TableCell>Leave days</TableCell>
         {days.map((day, index) => (
           <TableCell key={index}>
             {day.holidayHours > 0.0 ? day.holidayHours : ""}
