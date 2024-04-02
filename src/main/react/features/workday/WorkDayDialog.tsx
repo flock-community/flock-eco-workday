@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
 export function WorkDayDialog({ personFullName, open, code, onComplete }) {
   const classes = useStyles();
   const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const [processing, setProcessing] = useState<boolean>(false);
 
   const [state, setState] = useState<any>(null);
   const [exportLink, setExportLink] = useState<ExportStatusProps>({
@@ -73,6 +74,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
   }, [open, code]);
 
   const handleSubmit = (it) => {
+    setProcessing(true);
     const body = {
       from: it.from.format(ISO_8601_DATE),
       to: it.to.format(ISO_8601_DATE),
@@ -85,14 +87,18 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
       sheets: it.sheets,
     };
     if (code) {
-      WorkDayClient.put(code, body).then((res) => {
-        if (isDefined(onComplete)) onComplete(res);
+      return WorkDayClient.put(code, body).then((res) => {
+        if (isDefined(onComplete)) {
+          setProcessing(false);
+          onComplete(res);
+        }
         setState(null);
       });
     } else {
-      WorkDayClient.post(body).then((res) => {
+      return WorkDayClient.post(body).then((res) => {
         if (isDefined(onComplete)) onComplete(res);
         setState(null);
+        setProcessing(false);
       });
     }
   };
@@ -101,6 +107,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
     WorkDayClient.delete(code).then(() => {
       if (isDefined(onComplete)) onComplete();
       setOpenDelete(false);
+      setProcessing(true);
     });
   };
 
@@ -123,6 +130,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
           setExportLink({ loading: true, link: null });
           const response = await ExportClient().exportWorkday(code);
           setExportLink({ loading: false, link: response.link });
+          setProcessing(true);
         }
       : null;
 
@@ -181,6 +189,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
             state.status !== "REQUESTED"
           }
           processingExport={exportLink.loading}
+          processing={processing}
         />
       </Dialog>
       <ConfirmDialog

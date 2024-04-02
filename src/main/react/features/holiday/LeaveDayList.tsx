@@ -31,6 +31,7 @@ export function LeaveDayList({
   const [list, setList] = useState<DayProps[]>([]);
   const [update] = useState(refresh);
   const [page, setPage] = useState(0);
+  const [count, setCount] = useState(-1);
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles(loading);
@@ -39,8 +40,9 @@ export function LeaveDayList({
     if (personId) {
       setLoading(true);
       LeaveDayClient.findAllByPersonId(personId, page).then(
-        (res: { list: DayProps[]; count: number }) => {
-          setList(res.list);
+        ({ list, count }: { list: DayProps[]; count: number }) => {
+          setList(list);
+          setCount(count);
           setLoading(false);
         }
       );
@@ -80,7 +82,7 @@ export function LeaveDayList({
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}
-          numberOfItems={list.length}
+          numberOfItems={count}
           itemsPerPage={LEAVE_DAY_PAGE_SIZE}
           changePageCb={setPage}
         />

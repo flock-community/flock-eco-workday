@@ -26,6 +26,7 @@ export function SickDayList({
 }: DayListProps) {
   const [list, setList] = useState<DayProps[]>([]);
   const [page, setPage] = useState(0);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles(loading);
@@ -34,8 +35,9 @@ export function SickDayList({
     if (personId) {
       setLoading(true);
       SickDayClient.findAllByPersonId(personId, page).then(
-        (res: { list: DayProps[]; count: number }) => {
-          setList(res.list);
+        ({ list, count }: { list: DayProps[]; count: number }) => {
+          setList(list);
+          setCount(count);
           setLoading(false);
         }
       );
@@ -75,7 +77,7 @@ export function SickDayList({
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}
-          numberOfItems={list.length}
+          numberOfItems={count}
           itemsPerPage={SICKDAY_PAGE_SIZE}
           changePageCb={setPage}
         />

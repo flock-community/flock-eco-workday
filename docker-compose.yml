@@ -2,9 +2,48 @@ version: "3.9"
 services:
   workday:
     image: gcr.io/flock-eco/flock-eco-workday-develop:latest
-    ports:
-      - "8080:8080"
+    deploy:
+      mode: replicated
+      replicas: 3
+    #    ports:
+    #      - "8080"
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/application_default_credentials.json
     volumes:
       - $HOME/.config/gcloud/application_default_credentials.json:/tmp/keys/application_default_credentials.json:ro
+    labels:
+      - "traefik.http.services.workday.loadbalancer.server.port=8080"
+      - "traefik.enable=true"
+      - "traefik.http.routers.workday-workday.rule=Host(`localhost`)"
+      - "traefik.http.routers.workday-workday.entrypoints=web"
+
+  postgresql:
+    image: postgres:11.18-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+    command: postgres -c max_connections=50
+
+  whoami:
+    image: "traefik/whoami"
+    container_name: "simple-service"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+
+  reverse-proxy:
+    image: traefik
+    command:
+      # Enables the web UI and tells Traefik to listen to docker
+      - "--api.insecure=true"
+      - --providers.docker
+      - --tracing.instana.logLevel="DEBUG"
+      - --accesslog
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80" # The HTTP port
+      - "8080:8080" # The Web UI (enabled by --api)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # So that Traefik can listen to the Docker events

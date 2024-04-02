@@ -28,6 +28,7 @@ const useStyles = makeStyles({
 export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
   const [items, setItems] = useState<(CostExpense | TravelExpense)[]>([]);
   const [page, setPage] = useState(0);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles(loading);
@@ -37,6 +38,7 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
 
     ExpenseClient.findAllByPersonId(personId, page).then((res) => {
       setItems(res.list);
+      setCount(res.count);
       setLoading(false);
     });
   };
@@ -127,7 +129,7 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}
-          numberOfItems={items.length}
+          numberOfItems={count}
           itemsPerPage={EXPENSE_PAGE_SIZE}
           changePageCb={setPage}
         />

@@ -35,6 +35,7 @@ export function WorkDayList({
 }: DayListProps) {
   const [list, setList] = useState<DayProps[]>([]);
   const [page, setPage] = useState(0);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles(loading);
@@ -44,6 +45,7 @@ export function WorkDayList({
     WorkDayClient.findAllByPersonUuid(personId, page).then(
       (res: { list: DayProps[]; count: number }) => {
         setList(res.list);
+        setCount(res.count);
         setLoading(false);
       }
     );
@@ -99,7 +101,7 @@ export function WorkDayList({
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}
-          numberOfItems={list.length}
+          numberOfItems={count}
           itemsPerPage={WORK_DAY_PAGE_SIZE}
           changePageCb={setPage}
         />
