@@ -92,7 +92,10 @@ const internalizeCost = (it: ExpenseApi): CostExpense => {
     expenseType: ExpenseType.COST,
     status: internalizeStatus(it.status),
     amount: costDetails.amount,
-    files: costDetails.files,
+    files: costDetails.files.map((it) => ({
+      fileId: it.file.value,
+      name: it.name,
+    })),
   };
 };
 
@@ -117,7 +120,10 @@ const internalizeTravel = (it: ExpenseApi): TravelExpense => {
 const serializeCost = (it: CostExpense): CostExpenseInput => ({
   amount: it.amount,
   description: it.description,
-  files: it.files,
+  files: it.files.map((it) => ({
+    file: { value: it.fileId },
+    name: it.name,
+  })),
   status: it.status,
   personId: { value: it.person.uuid },
   date: it.date.format(ISO_8601_DATE),

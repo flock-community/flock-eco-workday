@@ -15,10 +15,15 @@ export class Expense {
     public person: Person,
     public status: Status,
     public amount: number,
-    public files: any[],
+    public files: ExpenseFile[],
     public expenseType: ExpenseType
   ) {}
 }
+
+export type ExpenseFile = {
+  name: string;
+  fileId: string;
+};
 
 export class CostExpense extends Expense {
   constructor(
