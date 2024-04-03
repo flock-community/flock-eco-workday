@@ -95,11 +95,11 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
             {item.files &&
               item.files.map((file) => (
                 <ListItem
-                  key={file.file}
+                  key={file.fileId}
                   button
                   component="a"
                   target="_blank"
-                  href={`/api/expenses/files/${file.file}/${file.name}`}
+                  href={`/api/expenses/files/${file.fileId}/${file.name}`}
                   onClick={(event) => event.stopPropagation()}
                 >
                   <ListItemText primary={file.name} />

@@ -69,6 +69,7 @@ export function ExpenseDialog({
           type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
         status: Status.REQUESTED,
         date: it.date,
+        files: it.files,
       }).then((res: CostExpense | TravelExpense) => {
         onComplete?.(res);
       });
