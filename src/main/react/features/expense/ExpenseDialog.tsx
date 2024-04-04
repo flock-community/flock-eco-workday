@@ -81,6 +81,7 @@ export function ExpenseDialog({
         person: emptyPersonWithUUID(personId!),
         status: Status.REQUESTED,
         date: it.date,
+        files: it.files,
       }).then((res: CostExpense | TravelExpense) => {
         onComplete?.(res);
       });
