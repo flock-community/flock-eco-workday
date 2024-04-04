@@ -64,7 +64,7 @@ export function ExpenseDialog({
     if (id) {
       ExpenseClient.put(id, {
         ...it,
-        person: emptyPersonWithUUID({ value: personId! }),
+        person: emptyPersonWithUUID(personId!),
         expenseType:
           type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
         status: Status.REQUESTED,
@@ -78,7 +78,7 @@ export function ExpenseDialog({
         ...it,
         expenseType:
           type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
-        person: emptyPersonWithUUID({ value: personId! }),
+        person: emptyPersonWithUUID(personId!),
         status: Status.REQUESTED,
         date: it.date,
       }).then((res: CostExpense | TravelExpense) => {

@@ -2,6 +2,7 @@ package community.flock.eco.workday
 
 import community.flock.eco.feature.user.UserConfiguration
 import community.flock.eco.workday.config.MailjetClientConfig
+import community.flock.eco.workday.config.WirespecConfiguration
 import community.flock.eco.workday.config.properties.PropertyConfig
 import community.flock.eco.workday.exactonline.ExactonlineConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -27,5 +28,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     ApplicationConstants::class,
     PropertyConfig::class,
     MailjetClientConfig::class,
+    WirespecConfiguration::class,
 )
 class ApplicationConfiguration

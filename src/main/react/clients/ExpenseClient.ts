@@ -48,7 +48,7 @@ const internalizeStatus = (status: StatusApi): Status => {
 
 //TODO ensure wirespec exposes types from generated Typescript files
 export const emptyPersonWithUUID = (personId: UUID) => ({
-  uuid: personId.value,
+  uuid: personId,
   id: 0,
   email: "",
   firstname: "",
@@ -93,7 +93,7 @@ const internalizeCost = (it: ExpenseApi): CostExpense => {
     status: internalizeStatus(it.status),
     amount: costDetails.amount,
     files: costDetails.files.map((it) => ({
-      fileId: it.file.value,
+      fileId: it.file,
       name: it.name,
     })),
   };
@@ -121,11 +121,11 @@ const serializeCost = (it: CostExpense): CostExpenseInput => ({
   amount: it.amount,
   description: it.description,
   files: it.files.map((it) => ({
-    file: { value: it.fileId },
+    file: it.fileId,
     name: it.name,
   })),
   status: it.status,
-  personId: { value: it.person.uuid },
+  personId: it.person.uuid,
   date: it.date.format(ISO_8601_DATE),
 });
 
@@ -133,7 +133,7 @@ const serializeTravel = (it: TravelExpense): TravelExpenseInput => ({
   allowance: it.allowance,
   description: it.description,
   distance: it.distance,
-  personId: { value: it.person.uuid },
+  personId: it.person.uuid,
   status: externalizeStatus(it.status),
   date: it.date.format(ISO_8601_DATE),
 });

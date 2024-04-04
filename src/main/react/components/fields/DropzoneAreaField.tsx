@@ -1,6 +1,5 @@
 import { Field } from "formik";
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import { DropzoneArea } from "material-ui-dropzone";
 
 import List from "@material-ui/core/List";

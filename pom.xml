@@ -17,7 +17,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
+        <kotlin.version>1.9.22</kotlin.version>
         <gpg.skip>true</gpg.skip>
+        <wirespec.version>0.8.51</wirespec.version>
     </properties>
 
     <dependencies>
@@ -78,6 +80,11 @@
             <groupId>com.mailjet</groupId>
             <artifactId>mailjet-client</artifactId>
             <version>5.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>community.flock.wirespec.integration</groupId>
+            <artifactId>jackson-jvm</artifactId>
+            <version>${wirespec.version}</version>
         </dependency>
 
         <!-- Google API-->
@@ -185,7 +192,7 @@
             <plugin>
                 <groupId>community.flock.wirespec.plugin.maven</groupId>
                 <artifactId>wirespec-maven-plugin</artifactId>
-                <version>0.8.51</version>
+                <version>${wirespec.version}</version>
                 <executions>
                     <execution>
                         <id>kotlin</id>
