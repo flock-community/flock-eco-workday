@@ -8,8 +8,8 @@ import { Status } from "../../models/Status";
 import { StatusProps } from "../../types";
 
 const updateStatusWorkDay = async (id: UUID, status: Status) => {
-  const res = await WorkDayClient.get(id.value);
-  await WorkDayClient.put(id.value, {
+  const res = await WorkDayClient.get(id);
+  await WorkDayClient.put(id, {
     ...res,
     assignmentCode: res.assignment.code,
     status,
@@ -19,8 +19,8 @@ const updateStatusWorkDay = async (id: UUID, status: Status) => {
 };
 
 const updateStatusSickDay = async (id: UUID, status: Status) => {
-  const res = await SickDayClient.get(id.value);
-  await SickDayClient.put(id.value, {
+  const res = await SickDayClient.get(id);
+  await SickDayClient.put(id, {
     ...res,
     status,
     from: res.from.format(ISO_8601_DATE),
@@ -29,8 +29,8 @@ const updateStatusSickDay = async (id: UUID, status: Status) => {
 };
 
 const updateStatusLeaveDay = async (id: UUID, status: Status) => {
-  const res = await LeaveDayClient.get(id.value);
-  await LeaveDayClient.put(id.value, {
+  const res = await LeaveDayClient.get(id);
+  await LeaveDayClient.put(id, {
     ...res,
     status,
     from: res.from.format(ISO_8601_DATE),
@@ -52,8 +52,8 @@ const convertStatus = (status: StatusProps): Status => {
   }
 };
 const updateStatusExpense = async (id: UUID, status: Status) => {
-  const res = await ExpenseClient.get(id.value);
-  await ExpenseClient.put(id.value, {
+  const res = await ExpenseClient.get(id);
+  await ExpenseClient.put(id, {
     ...res,
     status,
   });

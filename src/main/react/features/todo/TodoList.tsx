@@ -96,11 +96,7 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
     PLUSDAY: "",
   };
   const handleCardClick = (item: Todo) => () => {
-    history.push(
-      // @ts-ignore
-      // TODO: Add Wirespec Jackson module
-      `/${typeToPath(item.todoType)}?personId=${item.personId.value}`
-    );
+    history.push(`/${typeToPath(item.todoType)}?personId=${item.personId}`);
   };
 
   function renderItem(item: Todo, key: Number) {

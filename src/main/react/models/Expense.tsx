@@ -22,7 +22,7 @@ export class Expense {
 
 export type ExpenseFile = {
   name: string;
-  fileId: string;
+  file: string;
 };
 
 export class CostExpense extends Expense {
@@ -33,7 +33,7 @@ export class CostExpense extends Expense {
     person: Person,
     status: Status,
     amount: number,
-    files: any[]
+    files: ExpenseFile[]
   ) {
     super(
       id,
@@ -67,7 +67,7 @@ export class TravelExpense extends Expense {
     description: string,
     person: Person,
     status: Status,
-    files: any[],
+    files: ExpenseFile[],
     public allowance: number,
     public distance: number
   ) {
