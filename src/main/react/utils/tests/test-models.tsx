@@ -63,7 +63,7 @@ export function createTestFlockEvent(
     days: days,
     persons: [],
     costs: 0.0,
-    type: EventType.GENERAL_EVENT
+    type: EventType.GENERAL_EVENT,
   };
 }
 

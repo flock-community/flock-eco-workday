@@ -3,9 +3,11 @@ import { Field, FieldProps } from "formik";
 import { ClientSelector } from "../selector/ClientSelector";
 
 export function ClientSelectorField({ name, ...props }) {
-
   return (
-    <Field id={name} name={name} render={({
+    <Field
+      id={name}
+      name={name}
+      render={({
         field: { value },
         form: { touched, errors, setFieldValue, setFieldTouched },
       }: FieldProps<string>) => (
@@ -18,7 +20,7 @@ export function ClientSelectorField({ name, ...props }) {
           error={touched[name] && errors[name]}
           {...props}
         />
-      )}>
-    </Field>
+      )}
+    ></Field>
   );
 }

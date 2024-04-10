@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient";
-import {User} from '@flock-community/flock-eco-feature-user/src/main/react/graphql/user'
+import { User } from "@flock-community/flock-eco-feature-user/src/main/react/graphql/user";
 import {
   Card,
   CardContent,
   Select,
   MenuItem,
   FormControl,
-  InputLabel
+  InputLabel,
 } from "@material-ui/core";
 
 export function UserSelector(props) {

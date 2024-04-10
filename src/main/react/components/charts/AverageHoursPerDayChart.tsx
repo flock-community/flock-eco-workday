@@ -38,8 +38,11 @@ export function AverageHoursPerDayChart({
         <XAxis dataKey="yearMonth" />
         <YAxis />
         <Tooltip
-          // @ts-ignore
-          formatter={(value) => new Intl.NumberFormat("en").format(value)}
+          formatter={(value) =>
+            typeof value === "number"
+              ? new Intl.NumberFormat("en").format(value)
+              : value
+          }
         />
         <Legend />
         <Bar stackId="forcast" dataKey="forecastHoursGross" fill="#1de8b5" />

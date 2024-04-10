@@ -85,7 +85,11 @@ export function DashboardLeaveDayChart() {
           <Cell fill={"#9e9e9e"} />
           <Cell fill={"#ef5350"} />
         </Pie>
-        <Tooltip formatter={(value) => typeof(value) === 'number' ? value.toFixed(1) : value} />
+        <Tooltip
+          formatter={(value) =>
+            typeof value === "number" ? value.toFixed(1) : value
+          }
+        />
       </PieChart>
     </ResponsiveContainer>
   );

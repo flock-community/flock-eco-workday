@@ -113,7 +113,7 @@ const RenderAuthenticated = () => {
 const RenderUnauthenticated = () => {
   return (
     <>
-      <Box className={"full-width"} style={{ "rowGap": 0 }}>
+      <Box className={"full-width"} style={{ rowGap: 0 }}>
         <Redirect to="/auth" exact />
         <Route path="/auth" exact component={LoginFeature} />
       </Box>

@@ -113,8 +113,8 @@ const getUpcoming = (from: Dayjs, to: Dayjs): Promise<FlockEvent[]> => {
       .substring(0, 10)}&toDate=${to.toISOString().substring(0, 10)}`,
     opts
   )
-    .then(it => validateResponse<Event[]>(it))
-    .then(it => checkResponse(it))
+    .then((it) => validateResponse<Event[]>(it))
+    .then((it) => checkResponse(it))
     .then((res) => res?.body.map(internalize));
 };
 

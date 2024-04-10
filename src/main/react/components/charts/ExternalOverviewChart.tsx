@@ -51,8 +51,11 @@ export function ExternalOverviewChart({ year }: ExternalOverviewChartProps) {
         />
 
         <Tooltip
-          // @ts-ignore
-          formatter={(value) => new Intl.NumberFormat("en").format(value)}
+          formatter={(value) =>
+            typeof value === "number"
+              ? new Intl.NumberFormat("en").format(value)
+              : value
+          }
         />
         <Legend />
 

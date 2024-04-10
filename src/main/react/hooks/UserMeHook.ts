@@ -4,8 +4,8 @@ import { useLoginStatus } from "./StatusHook";
 import { User } from "@flock-community/flock-eco-feature-user/src/main/react/graphql/user";
 
 let loading = false;
-let store:User | null = null;
-const listeners: ((it:any) => void)[] = [];
+let store: User | null = null;
+const listeners: ((it: any) => void)[] = [];
 
 function update(it) {
   store = it;
@@ -13,7 +13,7 @@ function update(it) {
   listeners.forEach((func) => func(it));
 }
 
-export function useUserMe():[User, (userId:string) => void] {
+export function useUserMe(): [User, (userId: string) => void] {
   const status = useLoginStatus();
 
   const [state, setState] = useState<User | null>(store);
@@ -35,7 +35,7 @@ export function useUserMe():[User, (userId:string) => void] {
     };
   }, [status]);
 
-  const handleUser = (userId:string) => {
+  const handleUser = (userId: string) => {
     if (userId !== null) {
       UserClient.findUsersMe().then(update);
     } else {
