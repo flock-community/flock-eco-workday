@@ -3,7 +3,7 @@ import { UserClient } from "../clients/UserClient";
 
 const DEFAULT = "LOADING";
 let store = { type: DEFAULT };
-const listeners = [];
+const listeners:((it:any) => void)[] = [];
 
 function update(it) {
   store = it;

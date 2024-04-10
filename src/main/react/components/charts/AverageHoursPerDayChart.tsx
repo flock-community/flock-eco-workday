@@ -38,6 +38,7 @@ export function AverageHoursPerDayChart({
         <XAxis dataKey="yearMonth" />
         <YAxis />
         <Tooltip
+          // @ts-ignore
           formatter={(value) => new Intl.NumberFormat("en").format(value)}
         />
         <Legend />

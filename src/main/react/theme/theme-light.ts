@@ -11,6 +11,7 @@ export const themeLight = createTheme({
     secondary: blueGrey,
     success: green,
     error: red,
+    // @ts-ignore
     done: "hotpink",
   },
   overrides: {
@@ -23,6 +24,7 @@ export const themeLight = createTheme({
       variant: "contained",
       color: "primary",
     },
+    // @ts-ignore
     link: {
       "&::after": {
         content: '""',

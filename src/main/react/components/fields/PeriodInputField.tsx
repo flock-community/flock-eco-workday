@@ -15,7 +15,7 @@ type PeriodInputFieldProps = {
   name: string;
   from: dayjs.Dayjs;
   to: dayjs.Dayjs;
-  reset: boolean;
+  reset?: boolean;
 };
 
 const useStyles = makeStyles({

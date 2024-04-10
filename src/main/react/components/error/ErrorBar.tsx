@@ -10,7 +10,7 @@ export function ErrorBar({ children }) {
 
   return (
     <Snackbar open={children.open}>
-      <Alert open={children.open} severity="error">
+      <Alert severity="error">
         An error has occurred: {children.message}
       </Alert>
     </Snackbar>

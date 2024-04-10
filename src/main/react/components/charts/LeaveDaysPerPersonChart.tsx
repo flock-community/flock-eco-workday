@@ -56,6 +56,7 @@ export function LeaveDaysPerPersonChart({
         <XAxis type="number" />
         <YAxis type="category" dataKey="name" width={150} />
         <Tooltip
+          // @ts-ignore
           formatter={(value) => new Intl.NumberFormat("en").format(value)}
         />
         <Legend />

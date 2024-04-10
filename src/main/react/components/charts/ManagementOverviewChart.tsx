@@ -53,6 +53,7 @@ export function ManagementOverviewChart({
         />
 
         <Tooltip
+          // @ts-ignore
           formatter={(value) => new Intl.NumberFormat("en").format(value)}
         />
         <Legend />

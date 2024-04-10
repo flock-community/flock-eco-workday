@@ -1,4 +1,4 @@
-import NonInternalizingClient from "../utils/NonInternalizingClient.ts";
+import NonInternalizingClient from "../utils/NonInternalizingClient";
 
 const path = "/api/exactonline";
 const resourceClient = NonInternalizingClient(path);

@@ -5,7 +5,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { ExactonlineClient } from "../../clients/ExactonlineClient";
 
 export function ExactonlineListAccounts() {
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<any>([]);
 
   useEffect(() => {
     ExactonlineClient.accounts().then((accounts) => {

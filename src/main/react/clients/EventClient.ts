@@ -5,7 +5,6 @@ import {
   validateResponse,
 } from "@flock-community/flock-eco-core";
 import dayjs, { Dayjs } from "dayjs";
-import { DMY_DATE } from "./util/DateFormats";
 
 const path = "/api/events";
 
@@ -114,8 +113,8 @@ const getUpcoming = (from: Dayjs, to: Dayjs): Promise<FlockEvent[]> => {
       .substring(0, 10)}&toDate=${to.toISOString().substring(0, 10)}`,
     opts
   )
-    .then(validateResponse)
-    .catch(checkResponse)
+    .then(it => validateResponse<Event[]>(it))
+    .then(it => checkResponse(it))
     .then((res) => res?.body.map(internalize));
 };
 

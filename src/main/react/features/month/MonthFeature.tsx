@@ -92,6 +92,7 @@ export function MonthFeature() {
           <XAxis type="number" />
           <YAxis type="category" dataKey="name" width={150} />
           <Tooltip
+            // @ts-ignore
             formatter={(value) => new Intl.NumberFormat().format(value)}
           />
           <Legend />

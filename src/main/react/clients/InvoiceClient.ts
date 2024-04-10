@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
-import InternalizingClient from "../utils/InternalizingClient.ts";
-import NonInternalizingClient from "../utils/NonInternalizingClient.ts";
+import InternalizingClient from "../utils/InternalizingClient";
+import NonInternalizingClient from "../utils/NonInternalizingClient";
 
 const internalize = (it) => ({
   ...it,

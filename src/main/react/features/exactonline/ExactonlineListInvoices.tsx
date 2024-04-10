@@ -12,7 +12,7 @@ import PublishIcon from "@material-ui/icons/Publish";
 import { InvoiceClient } from "../../clients/InvoiceClient";
 
 export function ExactonlineListInvoices() {
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<any>([]);
 
   useEffect(() => {
     InvoiceClient.all().then((accounts) => {

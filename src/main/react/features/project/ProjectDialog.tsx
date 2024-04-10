@@ -58,10 +58,7 @@ export default function ProjectDialog({
     <Dialog
       fullScreen
       open={open}
-      // @ts-ignore
       TransitionComponent={TransitionSlider}
-      // @ts-ignore
-      TransitionProps={{ direction: "right" }}
     >
       <DialogTitle>Project form</DialogTitle>
       <DialogContent>

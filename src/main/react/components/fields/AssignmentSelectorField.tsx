@@ -24,6 +24,7 @@ export const AssignmentSelectorField = ({
           onChange={(userCode) => {
             setFieldValue(name, userCode);
           }}
+          // @ts-ignore
           error={touched[name] && errors[name]}
         />
       )}

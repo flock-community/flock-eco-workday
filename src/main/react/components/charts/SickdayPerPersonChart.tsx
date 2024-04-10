@@ -21,9 +21,8 @@ export function SickdayPerPersonChart({ year }: SickdayPerPersonChartProps) {
 
   useEffect(() => {
     const date = new Date();
-    AggregationClient.totalPerPersonByYear(year || date.getFullYear()).then(
-      (res) => setState(res.filter((it) => it.sickDays > 0))
-    );
+    AggregationClient.totalPerPersonByYear(year || date.getFullYear())
+      .then((res) => setState(res.filter((it) => it.sickDays > 0)));
   }, [year]);
 
   if (!state) return <AlignedLoader />;
@@ -37,6 +36,7 @@ export function SickdayPerPersonChart({ year }: SickdayPerPersonChartProps) {
         <XAxis type="number" dataKey="sickDays" />
         <YAxis type="category" dataKey="name" width={150} />
         <Tooltip
+          // @ts-ignore
           formatter={(value) => new Intl.NumberFormat("en").format(value)}
         />
         <Legend />
