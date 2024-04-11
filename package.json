@@ -2,7 +2,6 @@
   "name": "flock-eco-workday",
   "main": "index.js",
   "scripts": {
-    "compile": "tsc",
     "format": "prettier --write './src/main/react/**/*.{js,jsx,ts,tsx}'",
     "lint": "concurrently \"echo Not running eslint yet\" \"npm run lint:prettier\"",
     "lint:fix": "concurrently \"echo Not running eslint yet\" \"npm run lint:prettier:fix\"",
@@ -12,7 +11,7 @@
     "lint:prettier:fix": "prettier --write './src/{main/react,storybook}/**/*.{js,jsx,ts,tsx}'",
     "start": "npm run start:local",
     "start:local": "webpack-dev-server --mode development --env.proxy local",
-    "build": "webpack --mode production ./src/main/react",
+    "build": "tsc && webpack --mode production ./src/main/react",
     "storybook": "sb dev",
     "test": "jest",
     "test:tdd": "nodemon -w ./src -e js --exec npm test",
