@@ -55,14 +55,7 @@ export default function ProjectDialog({
   }, [project]);
 
   return (
-    <Dialog
-      fullScreen
-      open={open}
-      // @ts-ignore
-      TransitionComponent={TransitionSlider}
-      // @ts-ignore
-      TransitionProps={{ direction: "right" }}
-    >
+    <Dialog fullScreen open={open} TransitionComponent={TransitionSlider}>
       <DialogTitle>Project form</DialogTitle>
       <DialogContent>
         <ProjectForm projectCode={project?.code} onSubmit={handleSubmit} />

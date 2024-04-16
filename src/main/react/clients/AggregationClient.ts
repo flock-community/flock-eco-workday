@@ -32,7 +32,7 @@ export const totalPerPersonByYear = (year) => {
     method: "GET",
   };
   return fetch(`${path}/total-per-person?year=${year}`, opts)
-    .then(validateResponse)
+    .then(validateResponse<any[]>)
     .then(checkResponse)
     .then((res) => res.body);
 };

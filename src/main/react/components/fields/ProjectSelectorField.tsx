@@ -14,6 +14,7 @@ export function ProjectSelectorField({ name, onRefresh, refresh, ...props }) {
           value={value}
           onBlur={() => setFieldTouched(name, true)}
           onChange={(userCode) => setFieldValue(name, userCode)}
+          // @ts-ignore
           error={touched[name] && errors[name]}
           onRefresh={onRefresh}
           refresh={refresh}

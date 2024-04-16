@@ -97,10 +97,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         fullScreen
         open={open}
         onClose={handleClose}
-        // @ts-ignore
         TransitionComponent={TransitionSlider}
-        // @ts-ignore
-        TransitionProps={{ direction: "right" }}
       >
         <DialogHeader
           icon={<EventIcon />}

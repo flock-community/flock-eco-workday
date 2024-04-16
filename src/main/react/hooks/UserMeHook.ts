@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient.ts";
+import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient";
 import { useLoginStatus } from "./StatusHook";
+import { User } from "@flock-community/flock-eco-feature-user/src/main/react/graphql/user";
 
 let loading = false;
-let store = null;
-const listeners = [];
+let store: User | null = null;
+const listeners: ((it: any) => void)[] = [];
 
 function update(it) {
   store = it;
@@ -12,10 +13,10 @@ function update(it) {
   listeners.forEach((func) => func(it));
 }
 
-export function useUserMe() {
+export function useUserMe(): [User, (userId: string) => void] {
   const status = useLoginStatus();
 
-  const [state, setState] = useState(store);
+  const [state, setState] = useState<User | null>(store);
 
   useEffect(() => {
     if (store === null && !loading) {
@@ -34,7 +35,7 @@ export function useUserMe() {
     };
   }, [status]);
 
-  const handleUser = (userId) => {
+  const handleUser = (userId: string) => {
     if (userId !== null) {
       UserClient.findUsersMe().then(update);
     } else {

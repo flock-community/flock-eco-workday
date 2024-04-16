@@ -43,7 +43,6 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
       open={open}
       onClose={onClose}
       TransitionComponent={TransitionSlider}
-      TransitionProps={{ direction: "right" }}
     >
       <DialogHeader
         icon={<PersonAdd />}

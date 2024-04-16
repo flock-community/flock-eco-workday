@@ -1,7 +1,7 @@
 import {
   checkResponse,
   validateResponse,
-} from "@flock-community/flock-eco-core/src/main/react/clients/utils.ts";
+} from "@flock-community/flock-eco-core/src/main/react/clients/utils";
 
 const path = "/login";
 

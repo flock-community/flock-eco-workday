@@ -120,10 +120,7 @@ export function ExpenseDialog({
         fullScreen
         open={open}
         onClose={handleClose}
-        // @ts-ignore
         TransitionComponent={TransitionSlider}
-        // @ts-ignore
-        TransitionProps={{ direction: "right" }}
       >
         <DialogHeader
           icon={<WorkIcon />}

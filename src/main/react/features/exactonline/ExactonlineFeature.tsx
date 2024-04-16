@@ -9,6 +9,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import { ExactonlineClient } from "../../clients/ExactonlineClient";
 import { ExactonlineListInvoices } from "./ExactonlineListInvoices";
+import { Status } from "../../wirespec/Models";
 
 const useStyles = makeStyles({
   root: {
@@ -22,7 +23,7 @@ const useStyles = makeStyles({
 export function ExactonlineFeature() {
   const classes = useStyles();
 
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState<any>(null);
 
   useEffect(() => {
     ExactonlineClient.status().then((it) => setStatus(it));

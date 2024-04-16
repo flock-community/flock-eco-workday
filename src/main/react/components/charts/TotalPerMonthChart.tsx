@@ -79,7 +79,11 @@ export function TotalPerMonthChart({ year }: TotalPerMonthChartProps) {
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip
-          formatter={(value) => new Intl.NumberFormat("en").format(value)}
+          formatter={(value) =>
+            typeof value === "number"
+              ? new Intl.NumberFormat("en").format(value)
+              : value
+          }
         />
         <Legend />
 

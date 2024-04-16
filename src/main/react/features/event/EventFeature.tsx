@@ -22,7 +22,7 @@ export function EventFeature() {
     setOpen(true);
   }
 
-  function handleClickRow(item: Event) {
+  function handleClickRow(item: FlockEvent) {
     setState(item);
     setOpen(true);
   }

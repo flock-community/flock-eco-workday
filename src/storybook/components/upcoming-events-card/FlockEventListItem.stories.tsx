@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 const meta: Meta<typeof EventListItem> = {
   component: EventListItem,
   args: {
+    // @ts-ignore
     event: {
       description: "Super nice event that takes place!",
       id: 2712,
@@ -25,6 +26,7 @@ type Story = StoryObj<typeof EventListItem>;
 export const withDateRange: Story = {};
 export const withSingleDate: Story = {
   args: {
+    // @ts-ignore
     event: {
       description: "Super nice event that takes place!",
       id: 2712,

@@ -7,9 +7,9 @@ import { WorkDayDialog } from "../../features/workday/WorkDayDialog";
 import { addError } from "../../hooks/ErrorHook";
 import { LeaveDayDialog } from "../../features/holiday/LeaveDayDialog";
 import { ExpenseDialog } from "../../features/expense/ExpenseDialog";
-import { ExpenseType } from "../../features/expense/ExpenseType";
 import { Cloud } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
+import { ExpenseType } from "../../models/Expense";
 
 const useStyles = makeStyles({
   containerWrapper: {

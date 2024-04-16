@@ -8,7 +8,7 @@ import { EventTypeMapping } from "../../utils/mappings";
 
 type EventListProps = {
   refresh: boolean;
-  onClickRow: (item: any) => void;
+  onClickRow: (item: FlockEvent) => void;
 };
 
 export function EventList({ refresh, onClickRow }: EventListProps) {

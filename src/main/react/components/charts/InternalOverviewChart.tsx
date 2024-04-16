@@ -28,7 +28,7 @@ export function InternalOverviewChart({ year }: InternalOverviewChartProps) {
 
   if (!state) return <AlignedLoader />;
 
-  const data =
+  const data: any[] =
     state &&
     state.map((it) => ({
       name: it.yearMonth,
@@ -51,7 +51,11 @@ export function InternalOverviewChart({ year }: InternalOverviewChartProps) {
         />
 
         <Tooltip
-          formatter={(value) => new Intl.NumberFormat("en").format(value)}
+          formatter={(value) =>
+            typeof value === "number"
+              ? new Intl.NumberFormat("en").format(value)
+              : value
+          }
         />
         <Legend />
 

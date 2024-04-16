@@ -7,7 +7,8 @@ import {
   createTestTravelExpense,
 } from "../utils/tests/test-models";
 
-var isBetween = require("dayjs/plugin/isBetween");
+import isBetween from "dayjs/plugin/isBetween";
+
 dayjs.extend(isBetween);
 
 describe("useExpenseFiltersHook", () => {
@@ -146,7 +147,7 @@ describe("useExpenseFiltersHook", () => {
       const daysAgo = today.subtract(lastNumberOfDays, "days");
       const result = getRecentExpenses([testExpense005], lastNumberOfDays);
       expect(result.length).toBe(1);
-      expect(result[0].date.isBetween(today, daysAgo, "days", []));
+      expect(result[0].date.isBetween(today, daysAgo, "days"));
     });
 
     it("should return item when date is equal to today", () => {
@@ -158,7 +159,7 @@ describe("useExpenseFiltersHook", () => {
         lastNumberOfDays
       );
       expect(result.length).toBe(1);
-      expect(result[0].date.isBetween(today, daysAgo, "days", []));
+      expect(result[0].date.isBetween(today, daysAgo, "days"));
     });
 
     it("should not return item if the expense date is equal to numberOfDays + 1", () => {

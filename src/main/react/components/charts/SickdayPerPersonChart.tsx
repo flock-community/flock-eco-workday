@@ -37,7 +37,11 @@ export function SickdayPerPersonChart({ year }: SickdayPerPersonChartProps) {
         <XAxis type="number" dataKey="sickDays" />
         <YAxis type="category" dataKey="name" width={150} />
         <Tooltip
-          formatter={(value) => new Intl.NumberFormat("en").format(value)}
+          formatter={(value) =>
+            typeof value === "number"
+              ? new Intl.NumberFormat("en").format(value)
+              : value
+          }
         />
         <Legend />
         <Bar dataKey="sickDays" fill="#3f51b5" />

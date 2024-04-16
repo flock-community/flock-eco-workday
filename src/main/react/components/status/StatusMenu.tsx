@@ -31,8 +31,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   buttonDone: {
+    // @ts-ignore
     backgroundColor: theme.palette.done,
     "&:disabled": {
+      // @ts-ignore
       backgroundColor: theme.palette.done,
     },
   },
@@ -79,6 +81,7 @@ export function StatusMenu({ onChange, disabled, value }) {
   };
 
   return (
+    // @ts-ignore
     <div className={classes.status}>
       <Button
         aria-haspopup="true"

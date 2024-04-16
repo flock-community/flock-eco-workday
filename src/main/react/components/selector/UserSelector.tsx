@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient.ts";
+import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient";
+import { User } from "@flock-community/flock-eco-feature-user/src/main/react/graphql/user";
 import {
   Card,
   CardContent,
+  Select,
+  MenuItem,
   FormControl,
   InputLabel,
-  MenuItem,
-  Select,
 } from "@material-ui/core";
 
 export function UserSelector(props) {
   const { embedded, onChange, label, selectedItem } = props;
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [selected, setSelected] = useState("");
 
   useEffect(() => {
