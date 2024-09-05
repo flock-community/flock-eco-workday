@@ -21,7 +21,8 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
   const grid = calcGrid(period);
 
   const totalHoursForPeriod = period.days?.reduce(
-    (previous, current) => previous + current
+    (previous, current) => previous + current,
+    0
   );
 
   return (
