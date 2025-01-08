@@ -8,15 +8,21 @@ interface Approve {
     val status: Status
 }
 
-fun Approve.applyAllowedToUpdate(
+fun <T : Approve> T.applyAllowedToUpdate(
     status: Status,
     isAdmin: Boolean,
-) {
+) = apply {
     if (this.status !== Status.REQUESTED && !isAdmin) {
-        throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status")
+        throw ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "User is not allowed to change status",
+        )
     }
     if (status !== this.status && !isAdmin) {
-        throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change status field")
+        throw ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "User is not allowed to change status field",
+        )
     }
     if (status !== this.status && !StatusTransition.check(this.status, status)) {
         throw ResponseStatusException(HttpStatus.FORBIDDEN, "This status change is not allowed")

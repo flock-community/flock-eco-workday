@@ -81,7 +81,13 @@ class WorkdayController(
     ) = service.findByCode(code)
         ?.applyAuthentication(authentication)
         ?.applyAllowedToUpdate(form.status, authentication.isAdmin())
-        ?.run { service.update(code, form) }
+        ?.run {
+            service.update(
+                workDayCode = code,
+                form = form,
+                isOwnWorkDay = isOwnWorkDay(authentication),
+            )
+        }
         .toResponse()
 
     @DeleteMapping("/{code}")
@@ -125,10 +131,15 @@ class WorkdayController(
 
     private fun WorkDay.applyAuthentication(authentication: Authentication) =
         apply {
-            if (!(authentication.isAdmin() || this.assignment.person.isUser(authentication.name))) {
-                throw ResponseStatusException(UNAUTHORIZED, "User has not access to workday: ${this.code}")
+            if (!authentication.isAdmin() && !isOwnWorkDay(authentication)) {
+                throw ResponseStatusException(
+                    UNAUTHORIZED,
+                    "User has not access to workday: ${this.code}",
+                )
             }
         }
+
+    private fun WorkDay.isOwnWorkDay(authentication: Authentication) = assignment.person.isUser(authentication.name)
 
     private fun getMediaType(name: String): MediaType {
         val extension = java.io.File(name).extension.lowercase()

@@ -99,6 +99,7 @@ class WorkDayService(
     fun update(
         workDayCode: String,
         form: WorkDayForm,
+        isOwnWorkDay: Boolean,
     ): WorkDay {
         val currentWorkday = workDayRepository.findByCode(workDayCode).toNullable()
         return currentWorkday
@@ -109,7 +110,9 @@ class WorkDayService(
                     .save()
             }
             .also {
-                emailService.sendUpdate(currentWorkday!!, it)
+                if (!isOwnWorkDay) {
+                    emailService.sendUpdate(it)
+                }
             }
     }
 
