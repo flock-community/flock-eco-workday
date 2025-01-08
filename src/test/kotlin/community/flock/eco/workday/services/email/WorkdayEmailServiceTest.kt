@@ -24,8 +24,8 @@ class WorkdayEmailServiceTest {
             WorkDay(
                 5,
                 hours = 40.0,
-                from = LocalDate.parse("2024-01-01"),
-                to = LocalDate.parse("2024-01-31"),
+                from = LocalDate.of(2024, 1, 1),
+                to = LocalDate.of(2024, 1, 31),
                 assignment = anAssignment(),
                 status = Status.REQUESTED,
                 sheets =
