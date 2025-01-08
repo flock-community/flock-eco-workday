@@ -1,13 +1,14 @@
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { ExpensesCard } from "./ExpensesCard.tsx";
+import { ExpensesCard } from "./ExpensesCard";
 import {
   createTestCostExpense,
   createTestTravelExpense,
 } from "../../utils/tests/test-models";
 import dayjs from "dayjs";
 import { Status } from "../../models/Status";
+import { CostExpense, TravelExpense } from "../../models/Expense";
 
 describe("ExpensesCard", () => {
   const testExpense001 = createTestCostExpense("item-01", dayjs());
@@ -36,7 +37,7 @@ describe("ExpensesCard", () => {
     Status.REJECTED
   );
 
-  const expenses = [
+  const expenses: (CostExpense | TravelExpense)[] = [
     testExpense001,
     testExpense002,
     testExpense003,
@@ -50,7 +51,7 @@ describe("ExpensesCard", () => {
   });
 
   describe("without expenses", () => {
-    let expenseCardElement;
+    let expenseCardElement: HTMLElement | null;
     beforeEach(() => {
       render(<ExpensesCard items={[]} />);
       expenseCardElement = screen.queryByTestId("expenses-card");
@@ -69,7 +70,7 @@ describe("ExpensesCard", () => {
   });
 
   describe("with expenses", () => {
-    let expenseCardElement;
+    let expenseCardElement: HTMLElement | null;
     beforeEach(() => {
       render(<ExpensesCard items={expenses} />);
       expenseCardElement = screen.queryByTestId("expenses-card");
