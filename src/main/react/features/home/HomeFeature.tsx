@@ -22,10 +22,8 @@ import { ExpensesCard } from "../../components/expenses-card/ExpensesCard";
 import { ExpenseClient } from "../../clients/ExpenseClient";
 import { useLoginStatus } from "../../hooks/StatusHook";
 import { Expense } from "../../models/Expense";
-import { UpcomingEventsCard } from "../../components/upcoming-events/UpcomingEventsCard";
 import { EventClient, FlockEvent } from "../../clients/EventClient";
-import { handleEventToggle, isPersonAttending } from "../../utils/EventUtils";
-import { Person } from "../../clients/PersonClient";
+import { subscribeToEvent, unsubscribeFromEvent } from "../../utils/EventUtils";
 
 export function HomeFeature() {
   const [user] = useUserMe();
@@ -83,7 +81,9 @@ export function HomeFeature() {
   };
 
   const eventToggled = (event: FlockEvent, isPresent: boolean) => {
-    handleEventToggle(event, isPresent).then(() => fetchEvents());
+    (isPresent ? subscribeToEvent(event) : unsubscribeFromEvent(event)).then(
+      () => fetchEvents()
+    );
   };
 
   return (
@@ -128,12 +128,13 @@ export function HomeFeature() {
 
           <div className={"gid-auto-fit"}>
             <ExpensesCard items={expenses} />
-            <UpcomingEventsCard
-              items={flockEvents}
-              onEventToggle={(event, isPresent) =>
-                eventToggled(event, isPresent)
-              }
-            />
+            {/* TODO: Enable upcoming events again when feature is finished, er remove completely */}
+            {/*<UpcomingEventsCard*/}
+            {/*  items={flockEvents}*/}
+            {/*  onEventToggle={(event, isPresent) =>*/}
+            {/*     eventToggled(event, isPresent)*/}
+            {/*   }*/}
+            {/* />*/}
           </div>
         </section>
       )}
