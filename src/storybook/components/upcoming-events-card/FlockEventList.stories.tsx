@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { EventList } from "../../../main/react/components/upcoming-events/EventList";
 import dayjs from "dayjs";
+import { EventType } from "../../../main/react/clients/EventClient";
 
 const meta: Meta<typeof EventList> = {
   component: EventList,
@@ -20,6 +21,7 @@ export const withData: Story = {
       {
         description: "Super nice event that takes place!",
         id: 2712,
+        type: EventType.GENERAL_EVENT,
         code: "event-code",
         from: dayjs(),
         to: dayjs().add(1, "day"),
@@ -31,6 +33,7 @@ export const withData: Story = {
       {
         description: "Smashing Conference - Freiburg",
         id: 2712,
+        type: EventType.GENERAL_EVENT,
         code: "event-code",
         from: dayjs(),
         to: dayjs().add(4, "day"),
@@ -42,6 +45,7 @@ export const withData: Story = {
       {
         description: "FLock Hack Day - Flock HQ.",
         id: 2712,
+        type: EventType.GENERAL_EVENT,
         code: "event-code",
         from: dayjs(),
         to: dayjs(),
@@ -53,6 +57,7 @@ export const withData: Story = {
       {
         description: "FLock Hack Day - Flock HQ.",
         id: 2712,
+        type: EventType.GENERAL_EVENT,
         code: "event-code",
         from: dayjs(),
         to: dayjs(),
@@ -64,6 +69,7 @@ export const withData: Story = {
       {
         description: "Random event- Flock HQ.",
         id: 2712,
+        type: EventType.GENERAL_EVENT,
         code: "event-code",
         from: dayjs(),
         to: dayjs(),

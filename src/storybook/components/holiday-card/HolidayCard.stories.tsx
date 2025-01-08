@@ -25,6 +25,6 @@ export const withDefaultHours: Story = {};
 
 export const noData: Story = {
   args: {
-    item: {},
+    item: undefined,
   },
 };

@@ -41,6 +41,7 @@ export const themeLight = createTheme({
 export const highLightClass = makeStyles((theme) => ({
   highlight: {
     position: "relative",
+    fontFamily: theme.typography.fontFamily,
     "&::before": {
       content: '""',
       backgroundColor: theme.palette.primary.main,

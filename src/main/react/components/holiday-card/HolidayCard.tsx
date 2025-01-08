@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader } from "@material-ui/core";
+import { Card, CardContent, CardHeader, Typography } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { PersonHolidayDetails } from "../../clients/AggregationClient";
 import { hoursFormatter } from "../../utils/Hours";
@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "baseline",
+    alignItems: "center",
     "@container (max-width: 500px)": {
       flexDirection: "column",
       alignItems: "center",
@@ -74,13 +74,13 @@ export function HolidayCard({ item }: HolidayCardProps) {
         <CardHeader title={"Leave days"} />
         <CardContent className={classes.containerWrapper}>
           <div className={classes.hoursLeftWrapper}>
-            <span>You have</span>
+            <Typography variant="body1">You have</Typography>
             <div className={classes.hoursLeft}>
               <span className={highLightClasses.highlight}>
                 {hoursFormatter.format(available)}
               </span>
             </div>
-            <span>hours left</span>
+            <Typography variant="body1">hours left</Typography>
           </div>
         </CardContent>
       </Card>
