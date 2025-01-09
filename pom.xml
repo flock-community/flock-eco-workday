@@ -20,6 +20,7 @@
         <kotlin.version>1.9.22</kotlin.version>
         <gpg.skip>true</gpg.skip>
         <wirespec.version>0.8.51</wirespec.version>
+        <npm.ci.skip>false</npm.ci.skip>
     </properties>
 
     <dependencies>
@@ -333,6 +334,7 @@
                                 </goals>
                                 <configuration>
                                     <arguments>ci</arguments>
+                                    <skip>${npm.ci.skip}</skip>
                                 </configuration>
                             </execution>
                             <execution>
