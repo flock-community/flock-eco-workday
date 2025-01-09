@@ -10,6 +10,8 @@ import { CssBaseline, ThemeProvider } from '@material-ui/core';
 import { withThemeFromJSXProvider } from '@storybook/addon-themes';
 import { themeLight } from '../src/main/react/theme/theme-light';
 import { darkTheme } from './themes';
+import { MemoryRouter } from "react-router";
+import React from "react";
 
 /* snipped for brevity */
 
@@ -22,4 +24,11 @@ export const decorators = [
     defaultTheme: 'light',
     Provider: ThemeProvider,
     GlobalStyles: CssBaseline,
-  })];
+  }),
+    (Story) => (
+      <MemoryRouter initialEntries={['/']}>
+        <Story />
+        </MemoryRouter>
+    ),
+
+  ];

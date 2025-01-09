@@ -1,14 +1,13 @@
-import { FlockEvent, EventClient } from "../clients/EventClient";
+import { EventClient, FlockEvent } from "../clients/EventClient";
 
-export const handleEventToggle = (
-  event: FlockEvent,
-  isPresent: boolean
+export const subscribeToEvent = (event: FlockEvent): Promise<FlockEvent> => {
+  return EventClient.subscribeToEvent(event);
+};
+
+export const unsubscribeFromEvent = (
+  event: FlockEvent
 ): Promise<FlockEvent> => {
-  if (isPresent) {
-    return EventClient.subscribeToEvent(event);
-  } else {
-    return EventClient.unsubscribeFromEvent(event);
-  }
+  return EventClient.unsubscribeFromEvent(event);
 };
 
 export const isPersonAttending = (

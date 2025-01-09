@@ -1,14 +1,26 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { EventListItem } from "../../../main/react/components/upcoming-events/EventListItem";
 import dayjs from "dayjs";
+import { EventType } from "../../../main/react/clients/EventClient";
 
 const meta: Meta<typeof EventListItem> = {
   component: EventListItem,
+  parameters: {
+    reactRouter: {
+      routePath: "/users/:userId",
+      routeParams: { userId: "42" },
+      routeHandle: "Profile",
+      searchParams: { tab: "activityLog" },
+      routeState: { fromPage: "homePage" },
+    },
+  },
+
   args: {
-    // @ts-ignore
+    onEventToggle: (x, y) => {},
     event: {
       description: "Super nice event that takes place!",
       id: 2712,
+      type: EventType.GENERAL_EVENT,
       code: "event-code",
       from: dayjs(),
       to: dayjs().add(1, "day"),
@@ -26,10 +38,10 @@ type Story = StoryObj<typeof EventListItem>;
 export const withDateRange: Story = {};
 export const withSingleDate: Story = {
   args: {
-    // @ts-ignore
     event: {
       description: "Super nice event that takes place!",
       id: 2712,
+      type: EventType.GENERAL_EVENT,
       code: "event-code",
       from: dayjs(),
       to: dayjs(),
