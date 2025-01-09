@@ -8,13 +8,11 @@ on:
     branches:
       - master
 
-
 jobs:
   build-deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -34,7 +32,7 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: '16'
+          node-version: "16"
 
       - uses: actions/cache@v2
         with:
@@ -50,7 +48,7 @@ jobs:
           restore-keys: ${{ runner.os }}-node-
 
       - name: Build and Deploy
-        run: ./mvnw -B compile -P frontend jib:build -Djib.to.image=gcr.io/flock-eco/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
+        run: ./mvnw -B compile -P frontend jib:build -Djib.to.image=eu.gcr.io/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
 
       - name: Build and Deploy Development version
-        run: ./mvnw -B compile -P develop -P frontend jib:build -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=gcr.io/flock-eco/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
+        run: ./mvnw -B compile -P develop -P frontend jib:build -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
