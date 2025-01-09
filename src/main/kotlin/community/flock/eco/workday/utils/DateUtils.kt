@@ -6,6 +6,7 @@ import community.flock.eco.workday.services.countWorkDaysInPeriod
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 object DateUtils {
@@ -45,4 +46,8 @@ object DateUtils {
         val to = YearMonth.of(this.year, this.month).atEndOfMonth()
         return countWorkDaysInPeriod(from, to)
     }
+
+    val humanReadableDateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+
+    fun LocalDate.toHumanReadable() = format(humanReadableDateFormat)
 }

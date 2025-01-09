@@ -1,72 +1,64 @@
 package community.flock.eco.workday.services
 
-import community.flock.eco.workday.ApplicationConfiguration
-import community.flock.eco.workday.config.AppTestConfig
-import community.flock.eco.workday.forms.WorkDayForm
-import community.flock.eco.workday.helpers.CreateHelper
+import community.flock.eco.workday.forms.aWorkDayForm
+import community.flock.eco.workday.model.Assignment
+import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.model.aWorkDay
+import community.flock.eco.workday.model.anAssignment
+import community.flock.eco.workday.repository.WorkDayRepository
+import community.flock.eco.workday.services.email.WorkdayEmailService
+import io.mockk.Called
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.test.context.ActiveProfiles
-import java.time.LocalDate
-import javax.transaction.Transactional
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
+import java.util.Optional
+import javax.persistence.EntityManager
 
-@SpringBootTest(classes = [ApplicationConfiguration::class, AppTestConfig::class])
-@AutoConfigureTestDatabase
-@AutoConfigureDataJpa
-@AutoConfigureWebClient
-@Transactional
-@Import(CreateHelper::class)
-@ActiveProfiles(profiles = ["test"])
-class WorkDayServiceTest(
-    @Autowired private val workDayService: WorkDayService,
-    @Autowired private val createHelper: CreateHelper,
-) {
-    @Test
-    fun `creat update delete workday`() {
-        val from = LocalDate.of(2020, 1, 1)
-        val to = LocalDate.of(2020, 3, 31)
-        val client = createHelper.createClient()
-        val person = createHelper.createPerson()
-        val assignment = createHelper.createAssignment(client, person, from, to)
+private const val BUCKET_NAME = "some-bucket-name"
 
-        val createForm =
-            WorkDayForm(
-                from = from,
-                to = to,
-                assignmentCode = assignment.code,
-                hours = 50.0,
-                sheets = listOf(),
-            )
+class WorkDayServiceTest {
+    private val workDayRepository: WorkDayRepository = mockk()
+    private val assignmentService: AssignmentService = mockk()
+    private val emailService: WorkdayEmailService = mockk()
+    private val entityManager: EntityManager = mockk()
 
-        val created = workDayService.create(createForm)
-        assertNotNull(created.id)
-        assertEquals(50.0, created.hours)
+    private val service =
+        WorkDayService(
+            workDayRepository,
+            assignmentService,
+            entityManager,
+            emailService,
+            BUCKET_NAME,
+        )
 
-        val updateForm =
-            WorkDayForm(
-                from = from,
-                to = to,
-                assignmentCode = assignment.code,
-                hours = 25.0,
-                sheets = listOf(),
-            )
-        val updated = workDayService.update(created.code, updateForm)
-        assertNotNull(updated.id)
-        assertEquals(25.0, updated.hours)
-        assertEquals(created.code, updated.code)
+    @Nested
+    inner class Notifications {
+        private val assignment: Assignment = anAssignment()
+        private val workDay: WorkDay = aWorkDay(assignment)
+        private val form = aWorkDayForm()
+        private val workDayCode = workDay.code
 
-        assertNotNull(workDayService.findByCode(created.code))
+        @BeforeEach
+        fun beforeEach() {
+            every { workDayRepository.findByCode(workDayCode) } returns Optional.of(workDay)
+            every { assignmentService.findByCode(form.assignmentCode) } returns assignment
+            every { workDayRepository.save(workDay) } returns workDay
+            every { emailService.sendUpdate(workDay) } returns Unit
+        }
 
-        workDayService.deleteByCode(created.code)
+        @Test
+        fun `Do not send notification when updating own work day`() {
+            service.update(workDayCode, form, true)
+            verify { emailService wasNot Called }
+        }
 
-        assertNull(workDayService.findByCode(created.code))
+        @Test
+        fun `Send notification when updating someone else's work day`() {
+            service.update(workDayCode, form, false)
+            verify { emailService.sendUpdate(workDay) }
+        }
     }
 }

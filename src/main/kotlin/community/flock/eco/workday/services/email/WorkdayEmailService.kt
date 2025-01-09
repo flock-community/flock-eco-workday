@@ -4,6 +4,7 @@ import community.flock.eco.workday.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.utils.DateUtils.toHumanReadable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.i18n.LocaleContextHolder
@@ -12,28 +13,40 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 
 @Service
-class WorkdayEmailService(private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
+class WorkdayEmailService(
+    private val emailService: EmailService,
+    private val mailjetTemplateProperties: MailjetTemplateProperties,
+) {
     private val log: Logger = LoggerFactory.getLogger(WorkdayEmailService::class.java)
 
-    fun sendUpdate(
-        old: WorkDay,
-        new: WorkDay,
-    ) {
-        val recipient = new.assignment.person
+    fun sendUpdate(workDay: WorkDay) {
+        val recipient = workDay.assignment.person
 
-        var subject = "Update in Workday."
-        var emailMessage = "Er is een update in Workday."
+        val subject =
+            "Workday update (${workDay.from.toHumanReadable()} t/m ${workDay.to.toHumanReadable()} bij ${workDay.assignment.client.name})"
 
-        if (old.status !== new.status) {
-            subject = "Status update in Workday!"
-            emailMessage = "De status van je Workday is veranderd.\n\n" +
-                "Vorige status: ${old.status}.\n" +
-                "Nieuwe status: ${new.status}."
-        }
+        val project = workDay.assignment.project?.name?.replaceFirstChar { it.uppercase() } ?: "-"
+
+        val emailMessage =
+            """
+            Je workday is bijgewerkt.
+
+            Klant: ${workDay.assignment.client.name}
+            Rol: ${workDay.assignment.role ?: "-"}
+            Project: $project
+
+            Van: ${workDay.from.toHumanReadable()}
+            Tot en met: ${workDay.to.toHumanReadable()}
+
+            Totaal aantal gewerkte uren: ${workDay.hours}
+
+            Status: ${workDay.status}
+            """.trimIndent()
 
         log.info("Email generated for workday update for ${recipient.email}")
 
-        val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
+        val templateVariables =
+            emailService.createTemplateVariables(recipient.firstname, emailMessage)
         emailService.sendEmailMessage(
             recipient.receiveEmail,
             recipient.email,
