@@ -49,8 +49,18 @@ jobs:
           node-version: 16
           cache: "npm"
 
+      - name: Ktlint
+        run: ./mvnw -B ktlint:check
+
+      - run: npm ci
+      - name: Eslint / prettier
+        run: npm run lint
+
+      - name: Full build
+        run: ./mvnw -B package
+
       - name: Build and Deploy
-        run: ./mvnw -B compile -P frontend jib:build -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
+        run: ./mvnw -B compile jib:build -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
 
       - name: Build and Deploy Development version
-        run: ./mvnw -B compile -P develop -P frontend jib:build -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
+        run: ./mvnw -B compile jib:build -Pdevelop,frontend -Dnpm.ci.skip -Dnpm.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
