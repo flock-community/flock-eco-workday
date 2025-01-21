@@ -7,9 +7,8 @@ import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.model.LeaveDay
 import community.flock.eco.workday.services.LeaveDayService
 import community.flock.eco.workday.services.PersonService
-import community.flock.eco.workday.services.isUser
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpStatus.UNAUTHORIZED
+import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
@@ -71,7 +70,13 @@ class LeaveDayController(
     ) = service.findByCode(code)
         ?.applyAuthentication(authentication)
         ?.applyAllowedToUpdate(form.status, authentication.isAdmin())
-        ?.run { service.update(code, form) }
+        ?.run {
+            service.update(
+                code = code,
+                form = form,
+                isUpdatedByOwner = authentication.isOwnerOf(this),
+            )
+        }
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('LeaveDayAuthority.WRITE')")
@@ -91,18 +96,20 @@ class LeaveDayController(
             ?.let {
                 this.copy(personId = it.uuid)
             }
-            ?: throw ResponseStatusException(UNAUTHORIZED, "User is not linked to person")
+            ?: throw ResponseStatusException(FORBIDDEN, "User is not linked to person")
     }
+
+    private fun LeaveDay.applyAuthentication(authentication: Authentication) =
+        apply {
+            if (!(authentication.isAdmin() || authentication.isOwnerOf(this))) {
+                throw ResponseStatusException(FORBIDDEN, "User has no access to object")
+            }
+        }
 
     private fun Authentication.isAdmin(): Boolean =
         this.authorities
             .map { it.authority }
             .contains(LeaveDayAuthority.ADMIN.toName())
 
-    private fun LeaveDay.applyAuthentication(authentication: Authentication) =
-        apply {
-            if (!(authentication.isAdmin() || this.person.isUser(authentication.name))) {
-                throw ResponseStatusException(UNAUTHORIZED, "User has not access to object")
-            }
-        }
+    private fun Authentication.isOwnerOf(leaveDay: LeaveDay) = isAssociatedWith(leaveDay.person)
 }

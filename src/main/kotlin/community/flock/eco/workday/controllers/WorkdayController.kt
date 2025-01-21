@@ -6,13 +6,12 @@ import community.flock.eco.workday.forms.WorkDayForm
 import community.flock.eco.workday.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.services.WorkDayService
-import community.flock.eco.workday.services.isUser
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.http.HttpStatus.UNAUTHORIZED
+import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -85,7 +84,7 @@ class WorkdayController(
             service.update(
                 workDayCode = code,
                 form = form,
-                isOwnWorkDay = isOwnWorkDay(authentication),
+                isUpdatedByOwner = authentication.isOwnerOf(this),
             )
         }
         .toResponse()
@@ -124,26 +123,26 @@ class WorkdayController(
         .uploadSheet(file.bytes)
         .toResponse()
 
-    private fun Authentication.isAdmin(): Boolean =
-        this.authorities
-            .map { it.authority }
-            .contains(WorkDayAuthority.ADMIN.toName())
-
-    private fun WorkDay.applyAuthentication(authentication: Authentication) =
-        apply {
-            if (!authentication.isAdmin() && !isOwnWorkDay(authentication)) {
-                throw ResponseStatusException(
-                    UNAUTHORIZED,
-                    "User has not access to workday: ${this.code}",
-                )
-            }
-        }
-
-    private fun WorkDay.isOwnWorkDay(authentication: Authentication) = assignment.person.isUser(authentication.name)
-
     private fun getMediaType(name: String): MediaType {
         val extension = java.io.File(name).extension.lowercase()
         val mime = org.springframework.boot.web.server.MimeMappings.DEFAULT.get(extension)
         return MediaType.parseMediaType(mime)
     }
+
+    private fun WorkDay.applyAuthentication(authentication: Authentication) =
+        apply {
+            if (!authentication.isAdmin() && !authentication.isOwnerOf(this)) {
+                throw ResponseStatusException(
+                    FORBIDDEN,
+                    "User has not access to workday: ${this.code}",
+                )
+            }
+        }
+
+    private fun Authentication.isAdmin(): Boolean =
+        this.authorities
+            .map { it.authority }
+            .contains(WorkDayAuthority.ADMIN.toName())
+
+    private fun Authentication.isOwnerOf(workDay: WorkDay) = isAssociatedWith(workDay.assignment.person)
 }

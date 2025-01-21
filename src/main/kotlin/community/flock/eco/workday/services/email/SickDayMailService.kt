@@ -10,13 +10,12 @@ import java.time.format.DateTimeFormatter
 
 @Service
 class SickDayMailService(
-    private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties
+    private val emailService: EmailService,
+    private val mailjetTemplateProperties: MailjetTemplateProperties,
 ) {
     private val log: Logger = LoggerFactory.getLogger(SickDayMailService::class.java)
 
-    fun sendUpdate(
-        sickDay: SickDay,
-    ) {
+    fun sendUpdate(sickDay: SickDay) {
         val recipient = sickDay.person
 
         val subject = "SickDay update - ${sickDay.description ?: "ziek"}"

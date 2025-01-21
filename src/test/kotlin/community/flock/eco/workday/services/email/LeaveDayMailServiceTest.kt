@@ -28,8 +28,8 @@ class LeaveDayMailServiceTest {
                 person = aPerson(),
                 status = Status.REQUESTED,
                 code = UUID.randomUUID().toString(),
-                from = LocalDate.of(2028,9,12),
-                to = LocalDate.of(2028,10,2),
+                from = LocalDate.of(2028, 9, 12),
+                to = LocalDate.of(2028, 10, 2),
                 hours = 66.6,
                 days = emptyList(),
                 type = LeaveDayType.UNPAID_PARENTAL_LEAVE,
@@ -72,4 +72,3 @@ class LeaveDayMailServiceTest {
         }
     }
 }
-

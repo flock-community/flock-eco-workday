@@ -10,13 +10,11 @@ import org.springframework.stereotype.Service
 @Service
 class TravelExpenseMailService(
     private val emailService: EmailService,
-    private val mailjetTemplateProperties: MailjetTemplateProperties
+    private val mailjetTemplateProperties: MailjetTemplateProperties,
 ) {
     private val log: Logger = LoggerFactory.getLogger(TravelExpenseMailService::class.java)
 
-    fun sendUpdate(
-        expense: TravelExpense,
-    ) {
+    fun sendUpdate(expense: TravelExpense) {
         val recipient = expense.person
 
         val subject = "Reiskostenvergoeding update - ${expense.description ?: "beschrijving onbekend"}!"

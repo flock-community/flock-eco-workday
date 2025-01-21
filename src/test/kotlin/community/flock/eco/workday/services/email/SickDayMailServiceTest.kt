@@ -35,15 +35,15 @@ class SickDayMailServiceTest {
 
         val expectedEmailMessage =
             """
-           <p>Je ziekteverzuim voor 'Ziek, zwak en misselijk' is bijgewerkt.<p>
+            <p>Je ziekteverzuim voor 'Ziek, zwak en misselijk' is bijgewerkt.<p>
 
-           <ul>
-               <li>Omschrijving: Ziek, zwak en misselijk</li>
-               <li>Van: 13-02-2025</li>
-               <li>Tot en met: 13-02-2025</li>
-               <li>Total aantal verzuimuren: 12.0</li>
-               <li>Status: REQUESTED</li>
-           </ul>
+            <ul>
+                <li>Omschrijving: Ziek, zwak en misselijk</li>
+                <li>Van: 13-02-2025</li>
+                <li>Tot en met: 13-02-2025</li>
+                <li>Total aantal verzuimuren: 12.0</li>
+                <li>Status: REQUESTED</li>
+            </ul>
             """.trimIndent()
 
         val templateVariables = JSONObject()
