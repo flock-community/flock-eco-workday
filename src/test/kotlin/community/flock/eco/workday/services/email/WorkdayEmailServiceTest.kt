@@ -36,18 +36,17 @@ class WorkdayEmailServiceTest {
 
         val expectedEmailMessage =
             """
-            Je workday is bijgewerkt.
+            <p>Je workday bij DHL is bijgewerkt.<p>
 
-            Klant: DHL
-            Rol: -
-            Project: -
-
-            Van: 01-01-2024
-            Tot en met: 31-01-2024
-
-            Totaal aantal gewerkte uren: 40.0
-
-            Status: REQUESTED
+            <ul>
+                <li>Klant: DHL</li>
+                <li>Rol: -</li>
+                <li>Project: -</li>
+                <li>Van: 01-01-2024</li>
+                <li>Tot en met: 31-01-2024</li>
+                <li>Totaal aantal gewerkte uren: 40.0</li>
+                <li>Status: REQUESTED</li>
+            </ul>
             """.trimIndent()
         val templateVariables = JSONObject()
         every {

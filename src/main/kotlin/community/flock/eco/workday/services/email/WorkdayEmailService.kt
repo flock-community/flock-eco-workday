@@ -29,18 +29,17 @@ class WorkdayEmailService(
 
         val emailMessage =
             """
-            Je workday is bijgewerkt.
+            <p>Je workday bij ${workDay.assignment.client.name} is bijgewerkt.<p>
 
-            Klant: ${workDay.assignment.client.name}
-            Rol: ${workDay.assignment.role ?: "-"}
-            Project: $project
-
-            Van: ${workDay.from.toHumanReadable()}
-            Tot en met: ${workDay.to.toHumanReadable()}
-
-            Totaal aantal gewerkte uren: ${workDay.hours}
-
-            Status: ${workDay.status}
+            <ul>
+                <li>Klant: ${workDay.assignment.client.name}</li>
+                <li>Rol: ${workDay.assignment.role ?: "-"}</li>
+                <li>Project: $project</li>
+                <li>Van: ${workDay.from.toHumanReadable()}</li>
+                <li>Tot en met: ${workDay.to.toHumanReadable()}</li>
+                <li>Totaal aantal gewerkte uren: ${workDay.hours}</li>
+                <li>Status: ${workDay.status}</li>
+            </ul>
             """.trimIndent()
 
         log.info("Email generated for workday update for ${recipient.email}")
