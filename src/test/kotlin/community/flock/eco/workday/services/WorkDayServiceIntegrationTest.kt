@@ -62,7 +62,7 @@ class WorkDayServiceIntegrationTest(
             workDayService.update(
                 workDayCode = created.code,
                 form = updateForm,
-                isOwnWorkDay = false,
+                isUpdatedByOwner = false,
             )
         assertNotNull(updated.id)
         assertEquals(25.0, updated.hours)

@@ -92,6 +92,7 @@ class SickDayService(
     fun update(
         code: String,
         form: SickDayForm,
+        isUpdatedByOwner: Boolean,
     ): SickDay {
         val currentSickDay = repository.findByCode(code).toNullable()
         return currentSickDay
@@ -101,7 +102,11 @@ class SickDayService(
                     .consume(this)
                     .save()
             }
-            .also { emailService.sendUpdate(it) }
+            .also {
+                if (!isUpdatedByOwner) {
+                    emailService.sendUpdate(it)
+                }
+            }
     }
 
     @Transactional

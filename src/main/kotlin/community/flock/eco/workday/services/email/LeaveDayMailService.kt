@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter
 @Service
 class LeaveDayMailService(
     private val emailService: EmailService,
-    private val mailjetTemplateProperties: MailjetTemplateProperties
+    private val mailjetTemplateProperties: MailjetTemplateProperties,
 ) {
     private val log: Logger = LoggerFactory.getLogger(LeaveDayMailService::class.java)
 

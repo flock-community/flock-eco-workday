@@ -76,12 +76,17 @@ class CostExpenseService(
     fun update(
         id: UUID,
         input: CostExpense,
+        isUpdatedByOwner: Boolean,
     ): CostExpense? {
         val currentExpense = costExpenseRepository.findById(id).toNullable()
         return currentExpense
             ?.let { costExpenseRepository.save(input) }
             ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
-            ?.also { costExpenseMailService.sendUpdate(it) }
+            ?.also {
+                if (!isUpdatedByOwner) {
+                    costExpenseMailService.sendUpdate(it)
+                }
+            }
     }
 }
 
@@ -102,11 +107,16 @@ class TravelExpenseService(
     fun update(
         id: UUID,
         input: TravelExpense,
+        isUpdatedByOwner: Boolean,
     ): TravelExpense? {
         val currentExpense = travelExpenseRepository.findById(id).toNullable()
         return currentExpense
             ?.let { travelExpenseRepository.save(input) }
             ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
-            ?.also { travelExpenseMailService.sendUpdate(it) }
+            ?.also {
+                if (!isUpdatedByOwner) {
+                    travelExpenseMailService.sendUpdate(it)
+                }
+            }
     }
 }

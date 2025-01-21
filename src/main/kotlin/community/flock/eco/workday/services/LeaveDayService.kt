@@ -91,6 +91,7 @@ class LeaveDayService(
     fun update(
         code: String,
         form: LeaveDayForm,
+        isUpdatedByOwner: Boolean,
     ): LeaveDay {
         val currentLeaveDay = leaveDayRepository.findByCode(code).toNullable()
         return currentLeaveDay
@@ -101,7 +102,9 @@ class LeaveDayService(
                     .save()
             }
             .also {
-                emailService.sendUpdate(it)
+                if (!isUpdatedByOwner) {
+                    emailService.sendUpdate(it)
+                }
             }
     }
 
