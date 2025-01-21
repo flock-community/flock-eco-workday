@@ -81,7 +81,7 @@ class CostExpenseService(
         return currentExpense
             ?.let { costExpenseRepository.save(input) }
             ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
-            ?.also { costExpenseMailService.sendUpdate(currentExpense, it) }
+            ?.also { costExpenseMailService.sendUpdate(it) }
     }
 }
 
@@ -107,6 +107,6 @@ class TravelExpenseService(
         return currentExpense
             ?.let { travelExpenseRepository.save(input) }
             ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
-            ?.also { travelExpenseMailService.sendUpdate(currentExpense, it) }
+            ?.also { travelExpenseMailService.sendUpdate(it) }
     }
 }

@@ -2,39 +2,46 @@ package community.flock.eco.workday.services.email
 
 import community.flock.eco.workday.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.model.TravelExpense
+import community.flock.eco.workday.utils.DateUtils.toHumanReadable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class TravelExpenseMailService(private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
+class TravelExpenseMailService(
+    private val emailService: EmailService,
+    private val mailjetTemplateProperties: MailjetTemplateProperties
+) {
     private val log: Logger = LoggerFactory.getLogger(TravelExpenseMailService::class.java)
 
     fun sendUpdate(
-        old: TravelExpense,
-        new: TravelExpense,
+        expense: TravelExpense,
     ) {
-        val recipient = new.person
+        val recipient = expense.person
 
-        var subject = "Update in TravelExpense."
-        var emailMessage = "Er is een update in TravelExpense."
+        val subject = "Reiskostenvergoeding update - ${expense.description ?: "beschrijving onbekend"}!"
+        val emailMessage =
+            """
+            <p>Je reiskostenvergoeding voor '${expense.description ?: "onbekend"}' is bijgewerkt.<p>
 
-        if (old.status !== new.status) {
-            subject = "Status update in TravelExpense!"
-            emailMessage = "De status van je TravelExpense is veranderd.\n\n" +
-                "vorige status: ${old.status}.\n" +
-                "nieuwe status: ${new.status}."
-        }
+            <ul>
+                <li>Beschrijving: ${expense.description}</li>
+                <li>Datum van uitgifte: ${expense.date.toHumanReadable()}</li>
+                <li>Afstand: ${expense.distance}</li>
+                <li>Kilometervergoeding: ${expense.allowance}</li>
+                <li>Status: ${expense.status}</li>
+            </ul>
+            """.trimIndent()
 
         log.info("Email generated for TravelExpense update for ${recipient.email}")
 
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
         emailService.sendEmailMessage(
-            recipient.receiveEmail,
-            recipient.email,
-            subject,
-            templateVariables,
-            mailjetTemplateProperties.updateTemplateId,
+            personReceiveEmail = recipient.receiveEmail,
+            recipientEmail = recipient.email,
+            emailSubject = subject,
+            templateVariables = templateVariables,
+            templateId = mailjetTemplateProperties.updateTemplateId,
         )
     }
 

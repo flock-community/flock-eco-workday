@@ -47,7 +47,7 @@ object DateUtils {
         return countWorkDaysInPeriod(from, to)
     }
 
-    val humanReadableDateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+    val humanReadableDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
-    fun LocalDate.toHumanReadable() = format(humanReadableDateFormat)
+    fun LocalDate.toHumanReadable(): String = format(humanReadableDateFormat)
 }

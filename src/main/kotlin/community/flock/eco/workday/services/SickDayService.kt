@@ -6,7 +6,7 @@ import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.SickDay
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.repository.SickdayRepository
-import community.flock.eco.workday.services.email.SickDayEmailService
+import community.flock.eco.workday.services.email.SickDayMailService
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,7 +19,7 @@ class SickDayService(
     private val repository: SickdayRepository,
     private val personService: PersonService,
     private val entityManager: EntityManager,
-    private val emailService: SickDayEmailService,
+    private val emailService: SickDayMailService,
 ) {
     fun findAll(pageable: Pageable) =
         repository
@@ -101,7 +101,7 @@ class SickDayService(
                     .consume(this)
                     .save()
             }
-            .also { emailService.sendUpdate(currentSickDay!!, it) }
+            .also { emailService.sendUpdate(it) }
     }
 
     @Transactional

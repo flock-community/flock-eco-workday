@@ -2,40 +2,46 @@ package community.flock.eco.workday.services.email
 
 import community.flock.eco.workday.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.model.LeaveDay
+import community.flock.eco.workday.utils.DateUtils.toHumanReadable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.format.DateTimeFormatter
 
 @Service
-class LeaveDayEmailService(private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
-    private val log: Logger = LoggerFactory.getLogger(LeaveDayEmailService::class.java)
+class LeaveDayMailService(
+    private val emailService: EmailService,
+    private val mailjetTemplateProperties: MailjetTemplateProperties
+) {
+    private val log: Logger = LoggerFactory.getLogger(LeaveDayMailService::class.java)
 
-    fun sendUpdate(
-        old: LeaveDay,
-        new: LeaveDay,
-    ) {
-        val recipient = new.person
+    fun sendUpdate(leaveDay: LeaveDay) {
+        val recipient = leaveDay.person
 
-        var subject = "Update in Leave Day."
-        var emailMessage = "Er is een update in Leave Day."
+        val subject = "Leave Day update - ${leaveDay.description}"
+        val emailMessage =
+            """
+            <p>Je verlof voor '${leaveDay.description}' is bijgewerkt.<p>
 
-        if (old.status !== new.status) {
-            subject = "Status update in Leave Day."
-            emailMessage = "De status van je Leave Day is veranderd.\n\n" +
-                "vorige status: ${old.status}.\n" +
-                "nieuwe status: ${new.status}."
-        }
+            <ul>
+                <li>Omschrijving: ${leaveDay.description}</li>
+                <li>Type: ${leaveDay.type}</li>
+                <li>Van: ${leaveDay.from.toHumanReadable()}</li>
+                <li>Tot en met: ${leaveDay.to.toHumanReadable()}</li>
+                <li>Totaal aantal verlofuren: ${leaveDay.hours}</li>
+                <li>Status: ${leaveDay.status}</li>
+            </ul>
+            """.trimIndent()
 
         log.info("Email generated for LeaveDay update for ${recipient.email}")
 
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
         emailService.sendEmailMessage(
-            recipient.receiveEmail,
-            recipient.email,
-            subject,
-            templateVariables,
-            mailjetTemplateProperties.updateTemplateId,
+            personReceiveEmail = recipient.receiveEmail,
+            recipientEmail = recipient.email,
+            emailSubject = subject,
+            templateVariables = templateVariables,
+            templateId = mailjetTemplateProperties.updateTemplateId,
         )
     }
 
