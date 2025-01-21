@@ -2,39 +2,44 @@ package community.flock.eco.workday.services.email
 
 import community.flock.eco.workday.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.model.CostExpense
+import community.flock.eco.workday.utils.DateUtils.toHumanReadable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class CostExpenseMailService(private val emailService: EmailService, private val mailjetTemplateProperties: MailjetTemplateProperties) {
+class CostExpenseMailService(
+    private val emailService: EmailService,
+    private val mailjetTemplateProperties: MailjetTemplateProperties
+) {
     private val log: Logger = LoggerFactory.getLogger(CostExpenseMailService::class.java)
 
     fun sendUpdate(
-        old: CostExpense,
-        new: CostExpense,
+        expense: CostExpense,
     ) {
-        val recipient = new.person
+        val recipient = expense.person
 
-        var subject = "Update in CostExpense!"
-        var emailMessage = "Er is een update in CostExpense."
+        val subject = "Declaratie update - ${expense.description ?: "beschrijving onbekend"}!"
+        val emailMessage =
+            """
+            <p>Je declaratie voor '${expense.description ?: "onbekend"}' is bijgewerkt.<p>
 
-        if (old.status !== new.status) {
-            subject = "Status update in CostExpense!"
-            emailMessage = "De status van je CostExpense is veranderd.\n\n" +
-                "vorige status: ${old.status}.\n" +
-                "nieuwe status: ${new.status}."
-        }
-
+            <ul>
+                <li>Beschrijving: ${expense.description}</li>
+                <li>Kosten gemaakt op: ${expense.date.toHumanReadable()}</li>
+                <li>Bedrag: ${expense.amount}</li>
+                <li>Status: ${expense.status}</li>
+            </ul>
+            """.trimIndent()
         log.info("Email generated for CostExpense update for ${recipient.email}")
 
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
         emailService.sendEmailMessage(
-            recipient.receiveEmail,
-            recipient.email,
-            subject,
-            templateVariables,
-            mailjetTemplateProperties.updateTemplateId,
+            personReceiveEmail = recipient.receiveEmail,
+            recipientEmail = recipient.email,
+            emailSubject = subject,
+            templateVariables = templateVariables,
+            templateId = mailjetTemplateProperties.updateTemplateId,
         )
     }
 
