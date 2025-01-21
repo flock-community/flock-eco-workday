@@ -188,8 +188,14 @@ class TravelExpenseController(
         expenseService.findById(id)
             ?.applyAuthentication(authentication)
             ?.applyAllowedToUpdate(input.status.consume(), authentication.isAdmin())
-            .run { mapper.consume(input, id) }
-            .run { service.update(id, this) }
+            ?.run {
+                val updatedExpense = mapper.consume(input, id)
+                service.update(
+                    id = id,
+                    input = updatedExpense,
+                    isUpdatedByOwner = authentication.isOwnerOf(this),
+                )
+            }
             ?.produce()
             .toResponse()
 }
@@ -246,8 +252,14 @@ class CostExpenseController(
         expenseService.findById(id)
             ?.applyAuthentication(authentication)
             ?.applyAllowedToUpdate(input.status.consume(), authentication.isAdmin())
-            .run { mapper.consume(input, id) }
-            .run { service.update(id, this) }
+            ?.run {
+                val consume = mapper.consume(input, id)
+                service.update(
+                    id = id,
+                    input = consume,
+                    isUpdatedByOwner = authentication.isOwnerOf(this),
+                )
+            }
             ?.produce()
             .toResponse()
 }
