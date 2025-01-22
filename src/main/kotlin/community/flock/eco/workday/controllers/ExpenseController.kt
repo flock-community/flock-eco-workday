@@ -15,6 +15,7 @@ import community.flock.eco.workday.mappers.TravelExpenseMapper
 import community.flock.eco.workday.mappers.consume
 import community.flock.eco.workday.model.CostExpense
 import community.flock.eco.workday.model.Document
+import community.flock.eco.workday.model.Expense
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.Status.APPROVED
 import community.flock.eco.workday.model.Status.DONE
@@ -27,6 +28,7 @@ import community.flock.eco.workday.services.ExpenseService
 import community.flock.eco.workday.services.TravelExpenseService
 import org.springframework.boot.web.server.MimeMappings
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -41,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.server.ResponseStatusException
 import java.util.UUID
 import community.flock.eco.workday.api.Expense as ExpenseApi
 import community.flock.eco.workday.api.Status as StatusApi
@@ -73,12 +76,14 @@ class ExpenseController(
             .toResponse()
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAuthority('ExpenseAuthority.READ')")
     fun getExpenseById(
         @PathVariable id: UUID,
         authentication: Authentication,
     ): ResponseEntity<ExpenseApi> =
         expenseService
             .findById(id)
+            ?.applyAuthentication(authentication)
             ?.let {
                 when (it) {
                     is TravelExpense -> it.produce()
@@ -89,12 +94,15 @@ class ExpenseController(
             .toResponse()
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
     fun deleteExpenseById(
         @PathVariable id: UUID,
         authentication: Authentication,
     ): ResponseEntity<ExpenseApi> =
         expenseService
-            .deleteById(id)
+            .findById(id)
+            ?.applyAuthentication(authentication)
+            ?.run { expenseService.deleteById(id) }
             ?.let {
                 when (it) {
                     is TravelExpense -> it.produce()
@@ -177,8 +185,8 @@ class TravelExpenseController(
         @RequestBody input: TravelExpenseInput,
         authentication: Authentication,
     ): ResponseEntity<ExpenseApi> =
-        input
-            .run { expenseService.findById(id) }
+        expenseService.findById(id)
+            ?.applyAuthentication(authentication)
             ?.applyAllowedToUpdate(input.status.consume(), authentication.isAdmin())
             .run { mapper.consume(input, id) }
             .run { service.update(id, this) }
@@ -235,8 +243,8 @@ class CostExpenseController(
         @RequestBody input: CostExpenseInput,
         authentication: Authentication,
     ): ResponseEntity<ExpenseApi> =
-        input
-            .run { expenseService.findById(id) }
+        expenseService.findById(id)
+            ?.applyAuthentication(authentication)
             ?.applyAllowedToUpdate(input.status.consume(), authentication.isAdmin())
             .run { mapper.consume(input, id) }
             .run { service.update(id, this) }
@@ -244,10 +252,22 @@ class CostExpenseController(
             .toResponse()
 }
 
+private fun Expense.applyAuthentication(authentication: Authentication) =
+    apply {
+        if (!authentication.isAdmin() && !authentication.isOwnerOf(this)) {
+            throw ResponseStatusException(
+                FORBIDDEN,
+                "User has no access to expense: $id",
+            )
+        }
+    }
+
 private fun Authentication.isAdmin(): Boolean =
     this.authorities
         .map { it.authority }
         .contains(ExpenseAuthority.ADMIN.toName())
+
+private fun Authentication.isOwnerOf(expense: Expense) = isAssociatedWith(expense.person)
 
 private fun getMediaType(name: String): MediaType {
     val extension = java.io.File(name).extension.lowercase()
