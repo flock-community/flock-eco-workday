@@ -33,15 +33,17 @@ class TravelExpenseMailServiceTest {
 
         val expectedEmailMessage =
             """
-            <p>Je reiskostenvergoeding voor 'Taxirit naar hoofdkantoor Coolblue' is bijgewerkt.<p>
-
-            <ul>
-                <li>Beschrijving: Taxirit naar hoofdkantoor Coolblue</li>
-                <li>Datum van uitgifte: 13-02-2025</li>
-                <li>Afstand: 12.34</li>
-                <li>Kilometervergoeding: 0.33</li>
-                <li>Status: REQUESTED</li>
-            </ul>
+            <p>Your travel expense for 'Taxirit naar hoofdkantoor Coolblue' has been updated.<p>
+            <div>
+                <p>Travel expense state:</p>
+                <ul>
+                    <li>Description: Taxirit naar hoofdkantoor Coolblue</li>
+                    <li>Issue date: 13-02-2025</li>
+                    <li>Distance: 12.34</li>
+                    <li>Allowance: 0.33</li>
+                    <li>Status: REQUESTED</li>
+                </ul>
+            </div>
             """.trimIndent()
         val templateVariables = JSONObject()
         every {
@@ -60,7 +62,7 @@ class TravelExpenseMailServiceTest {
             emailService.sendEmailMessage(
                 travelExpense.person.receiveEmail,
                 travelExpense.person.email,
-                "Reiskostenvergoeding update - Taxirit naar hoofdkantoor Coolblue!",
+                "Travel expense update: Taxirit naar hoofdkantoor Coolblue",
                 templateVariables,
                 templateId,
             )

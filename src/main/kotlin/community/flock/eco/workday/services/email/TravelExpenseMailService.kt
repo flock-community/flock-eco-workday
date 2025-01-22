@@ -17,19 +17,12 @@ class TravelExpenseMailService(
     fun sendUpdate(expense: TravelExpense) {
         val recipient = expense.person
 
-        val subject = "Reiskostenvergoeding update - ${expense.description ?: "beschrijving onbekend"}!"
+        val subject = "Travel expense update: ${expense.description ?: "description unknown"}"
         val emailMessage =
             """
-            <p>Je reiskostenvergoeding voor '${expense.description ?: "onbekend"}' is bijgewerkt.<p>
-
-            <ul>
-                <li>Beschrijving: ${expense.description}</li>
-                <li>Datum van uitgifte: ${expense.date.toHumanReadable()}</li>
-                <li>Afstand: ${expense.distance}</li>
-                <li>Kilometervergoeding: ${expense.allowance}</li>
-                <li>Status: ${expense.status}</li>
-            </ul>
-            """.trimIndent()
+            |<p>Your travel expense for '${expense.description ?: "unknown"}' has been updated.<p>
+            |${expense.html()}
+            """.trimMargin()
 
         log.info("Email generated for TravelExpense update for ${recipient.email}")
 
@@ -46,8 +39,12 @@ class TravelExpenseMailService(
     fun sendNotification(expense: TravelExpense) {
         val employee = expense.person
 
-        val subject = "Update in TravelExpense."
-        val emailMessage = "Er is een TravelExpense door ${employee.firstname} toegevoegd."
+        val subject = "Travel expense update for ${employee.firstname}"
+        val emailMessage =
+            """
+            |<p>A travel expense has been added for ${employee.firstname}.</p>
+            |${expense.html()}
+            """.trimMargin()
         val templateVariables = emailService.createTemplateVariables(employee.firstname, emailMessage)
 
         log.info("Email generated for TravelExpense notification for ${employee.email}")
@@ -58,4 +55,19 @@ class TravelExpenseMailService(
             mailjetTemplateProperties.notificationTemplateId,
         )
     }
+
+    private fun TravelExpense.html() =
+        // language=html
+        """
+        |<div>
+        |    <p>Travel expense state:</p>
+        |    <ul>
+        |        <li>Description: $description</li>
+        |        <li>Issue date: ${date.toHumanReadable()}</li>
+        |        <li>Distance: $distance</li>
+        |        <li>Allowance: $allowance</li>
+        |        <li>Status: $status</li>
+        |    </ul>
+        |</div>
+        """.trimMargin()
 }

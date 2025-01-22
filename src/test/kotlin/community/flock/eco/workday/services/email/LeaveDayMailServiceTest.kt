@@ -37,16 +37,18 @@ class LeaveDayMailServiceTest {
 
         val expectedEmailMessage =
             """
-            <p>Je verlof voor 'Papadagen voor de win' is bijgewerkt.<p>
-
-            <ul>
-                <li>Omschrijving: Papadagen voor de win</li>
-                <li>Type: UNPAID_PARENTAL_LEAVE</li>
-                <li>Van: 12-09-2028</li>
-                <li>Tot en met: 02-10-2028</li>
-                <li>Totaal aantal verlofuren: 66.6</li>
-                <li>Status: REQUESTED</li>
-            </ul>
+            <p>Your leave day from 12-09-2028 to 02-10-2028 has been updated.</p>
+            <div>
+                <p>Leave day state:</p>
+                <ul>
+                    <li>Description: Papadagen voor de win</li>
+                    <li>Type: UNPAID_PARENTAL_LEAVE</li>
+                    <li>From: 12-09-2028</li>
+                    <li>Up to and including: 02-10-2028</li>
+                    <li>Total leave hours: 66.6</li>
+                    <li>Status: REQUESTED</li>
+                </ul>
+            </div>
             """.trimIndent()
         val templateVariables = JSONObject()
         every {
@@ -65,7 +67,7 @@ class LeaveDayMailServiceTest {
             emailService.sendEmailMessage(
                 leaveDay.person.receiveEmail,
                 leaveDay.person.email,
-                "Leave Day update - Papadagen voor de win",
+                "Leave day update: 12-09-2028 to 02-10-2028 - Papadagen voor de win",
                 templateVariables,
                 templateId,
             )

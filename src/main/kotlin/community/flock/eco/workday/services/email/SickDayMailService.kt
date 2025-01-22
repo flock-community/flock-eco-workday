@@ -6,7 +6,6 @@ import community.flock.eco.workday.utils.DateUtils.toHumanReadable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.time.format.DateTimeFormatter
 
 @Service
 class SickDayMailService(
@@ -18,19 +17,15 @@ class SickDayMailService(
     fun sendUpdate(sickDay: SickDay) {
         val recipient = sickDay.person
 
-        val subject = "SickDay update - ${sickDay.description ?: "ziek"}"
+        val subject =
+            "Sick day update: " +
+                "${sickDay.from.toHumanReadable()} to ${sickDay.to.toHumanReadable()} " +
+                "- ${sickDay.description ?: "no description"}"
         val emailMessage =
             """
-            <p>Je ziekteverzuim voor '${sickDay.description ?: "geen omschrijving"}' is bijgewerkt.<p>
-
-            <ul>
-                <li>Omschrijving: ${sickDay.description}</li>
-                <li>Van: ${sickDay.from.toHumanReadable()}</li>
-                <li>Tot en met: ${sickDay.to.toHumanReadable()}</li>
-                <li>Total aantal verzuimuren: ${sickDay.hours}</li>
-                <li>Status: ${sickDay.status}</li>
-            </ul>
-            """.trimIndent()
+            |<p>Your sick day from ${sickDay.from.toHumanReadable()} to ${sickDay.to.toHumanReadable()} has been updated.<p>
+            |${sickDay.html()}
+            """.trimMargin()
 
         log.info("Email generated for SickDay update for ${recipient.email}")
 
@@ -45,13 +40,15 @@ class SickDayMailService(
     }
 
     fun sendNotification(sickDay: SickDay) {
-        val timeDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy")
         val employee = sickDay.person
 
-        val subject = "Update in SickDay."
+        val subject = "Sick day update for ${employee.firstname}"
         val emailMessage =
-            "Er is een update van ${employee.firstname} in de SickDay aanvraag." +
-                " (van: ${sickDay.from.format(timeDateFormat)} tot: ${sickDay.to.format(timeDateFormat)})."
+            """
+                |<p>A sick day has been added for ${employee.firstname}.</p>
+                |${sickDay.html()}
+            """.trimMargin()
+
         val templateVariables = emailService.createTemplateVariables(employee.firstname, emailMessage)
 
         log.info("Email generated for SickDay notification for ${employee.email}")
@@ -62,4 +59,19 @@ class SickDayMailService(
             mailjetTemplateProperties.notificationTemplateId,
         )
     }
+
+    private fun SickDay.html() =
+        // language=html
+        """
+        |<div>
+        |    <p>Sick day state:</p>
+        |    <ul>
+        |        <li>Description: $description</li>
+        |        <li>From: ${from.toHumanReadable()}</li>
+        |        <li>Up to and including: ${to.toHumanReadable()}</li>
+        |        <li>Total absence hours: $hours</li>
+        |        <li>Status: $status</li>
+        |    </ul>
+        |</div>
+        """.trimMargin()
 }
