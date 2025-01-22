@@ -98,18 +98,11 @@ class ExpenseController(
     fun deleteExpenseById(
         @PathVariable id: UUID,
         authentication: Authentication,
-    ): ResponseEntity<ExpenseApi> =
+    ): ResponseEntity<Unit> =
         expenseService
             .findById(id)
             ?.applyAuthentication(authentication)
             ?.run { expenseService.deleteById(id) }
-            ?.let {
-                when (it) {
-                    is TravelExpense -> it.produce()
-                    is CostExpense -> it.produce()
-                    else -> error("Unsupported expense type")
-                }
-            }
             .toResponse()
 
     @GetMapping("/files/{file}/{name}")

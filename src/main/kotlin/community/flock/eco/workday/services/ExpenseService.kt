@@ -16,6 +16,7 @@ import community.flock.eco.workday.services.email.TravelExpenseMailService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.UUID
 import javax.transaction.Transactional
@@ -53,10 +54,13 @@ class ExpenseService(
     @Transactional
     fun deleteById(id: UUID) =
         expenseRepository
-            .findById(id)
-            .toNullable()
-            ?.also { expenseRepository.delete(it) }
-            ?.also { applicationEventPublisher.publishEvent(DeleteExpenseEvent(it)) }
+            .findByIdOrNull(id)
+            ?.run {
+                expenseRepository.delete(this)
+                    // TODO: nobody listens to this event, can we remove?
+                    //  especially since 'this' is removed from the hibernate cache
+                    .also { applicationEventPublisher.publishEvent(DeleteExpenseEvent(this)) }
+            }
 }
 
 @Service
