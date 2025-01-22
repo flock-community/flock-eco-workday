@@ -17,18 +17,13 @@ class CostExpenseMailService(
     fun sendUpdate(expense: CostExpense) {
         val recipient = expense.person
 
-        val subject = "Declaratie update - ${expense.description ?: "beschrijving onbekend"}!"
+        val subject = "Cost expense update: ${expense.description ?: "description unknown"}"
         val emailMessage =
             """
-            <p>Je declaratie voor '${expense.description ?: "onbekend"}' is bijgewerkt.<p>
+            |<p>Your cost expense for '${expense.description ?: "unknown"}' has been updated.<p>
+            |${expense.html()}
+            """.trimMargin()
 
-            <ul>
-                <li>Beschrijving: ${expense.description}</li>
-                <li>Kosten gemaakt op: ${expense.date.toHumanReadable()}</li>
-                <li>Bedrag: ${expense.amount}</li>
-                <li>Status: ${expense.status}</li>
-            </ul>
-            """.trimIndent()
         log.info("Email generated for CostExpense update for ${recipient.email}")
 
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
@@ -44,8 +39,13 @@ class CostExpenseMailService(
     fun sendNotification(expense: CostExpense) {
         val employee = expense.person
 
-        val subject = "Update in CostExpense."
-        val emailMessage = "Er is een CostExpense door ${employee.firstname} toegevoegd."
+        val subject = "Cost expense update for ${employee.firstname}"
+        val emailMessage =
+            """
+            |<p>A cost expense has been added for ${employee.firstname}.</p>
+            |${expense.html()}
+            """.trimMargin()
+
         val templateVariables = emailService.createTemplateVariables(employee.firstname, emailMessage)
 
         log.info("Email generated for CostExpense notification for ${employee.email}")
@@ -56,4 +56,18 @@ class CostExpenseMailService(
             mailjetTemplateProperties.notificationTemplateId,
         )
     }
+
+    private fun CostExpense.html() =
+        // language=html
+        """
+        |<div>
+        |    <p>Cost expense state:</p>
+        |    <ul>
+        |        <li>Description: $description</li>
+        |        <li>Incurred on: ${date.toHumanReadable()}</li>
+        |        <li>Amount: €$amount</li>
+        |        <li>Status: $status</li>
+        |    </ul>
+        |</div>
+        """.trimMargin()
 }

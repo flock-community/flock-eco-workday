@@ -35,11 +35,11 @@ class WorkdayEmailService(
         val templateVariables =
             emailService.createTemplateVariables(recipient.firstname, emailMessage)
         emailService.sendEmailMessage(
-            recipient.receiveEmail,
-            recipient.email,
-            subject,
-            templateVariables,
-            mailjetTemplateProperties.updateTemplateId,
+            personReceiveEmail = recipient.receiveEmail,
+            recipientEmail = recipient.email,
+            emailSubject = subject,
+            templateVariables = templateVariables,
+            templateId = mailjetTemplateProperties.updateTemplateId,
         )
     }
 
@@ -88,6 +88,7 @@ class WorkdayEmailService(
     }
 
     private fun WorkDay.html() =
+        // language=html
         """
         |<div>
         |    <p>Workday state</p>

@@ -33,14 +33,16 @@ class CostExpenseMailServiceTest {
 
         val expectedEmailMessage =
             """
-            <p>Je declaratie voor 'Aankoop ergonomische hagelslag' is bijgewerkt.<p>
-
-            <ul>
-                <li>Beschrijving: Aankoop ergonomische hagelslag</li>
-                <li>Kosten gemaakt op: 13-02-2025</li>
-                <li>Bedrag: 43.21</li>
-                <li>Status: REQUESTED</li>
-            </ul>
+            <p>Your cost expense for 'Aankoop ergonomische hagelslag' has been updated.<p>
+            <div>
+                <p>Cost expense state:</p>
+                <ul>
+                    <li>Description: Aankoop ergonomische hagelslag</li>
+                    <li>Incurred on: 13-02-2025</li>
+                    <li>Amount: €43.21</li>
+                    <li>Status: REQUESTED</li>
+                </ul>
+            </div>
             """.trimIndent()
         val templateVariables = JSONObject()
         every {
@@ -59,7 +61,7 @@ class CostExpenseMailServiceTest {
             emailService.sendEmailMessage(
                 costExpense.person.receiveEmail,
                 costExpense.person.email,
-                "Declaratie update - Aankoop ergonomische hagelslag!",
+                "Cost expense update: Aankoop ergonomische hagelslag",
                 templateVariables,
                 templateId,
             )
