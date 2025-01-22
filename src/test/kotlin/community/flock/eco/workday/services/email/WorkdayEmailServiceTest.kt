@@ -18,36 +18,39 @@ class WorkdayEmailServiceTest {
 
     private val service = WorkdayEmailService(emailService, mailjetTemplateProperties)
 
+    private val aWorkday =
+        WorkDay(
+            5,
+            hours = 40.0,
+            from = LocalDate.of(2024, 1, 1),
+            to = LocalDate.of(2024, 1, 31),
+            assignment = anAssignment(),
+            status = Status.REQUESTED,
+            sheets =
+                listOf(
+                    aWorkDaySheet(),
+                ),
+        )
+
     @Test
     fun `Send email`() {
-        val workDay =
-            WorkDay(
-                5,
-                hours = 40.0,
-                from = LocalDate.of(2024, 1, 1),
-                to = LocalDate.of(2024, 1, 31),
-                assignment = anAssignment(),
-                status = Status.REQUESTED,
-                sheets =
-                    listOf(
-                        aWorkDaySheet(),
-                    ),
-            )
+        val workDay = aWorkday
 
         val expectedEmailMessage =
             """
-            Je workday is bijgewerkt.
-
-            Klant: DHL
-            Rol: -
-            Project: -
-
-            Van: 01-01-2024
-            Tot en met: 31-01-2024
-
-            Totaal aantal gewerkte uren: 40.0
-
-            Status: REQUESTED
+            <p>Your workday at DHL has been updated.<p>
+            <div>
+                <p>Workday state</p>
+                <ul>
+                    <li>Client: DHL</li>
+                    <li>Role: -</li>
+                    <li>Project: -</li>
+                    <li>From: 01-01-2024</li>
+                    <li>Up to and including: 31-01-2024</li>
+                    <li>Total worked hours: 40.0</li>
+                    <li>Status: REQUESTED</li>
+                </ul>
+            </div>
             """.trimIndent()
         val templateVariables = JSONObject()
         every {
@@ -66,7 +69,48 @@ class WorkdayEmailServiceTest {
             emailService.sendEmailMessage(
                 workDay.assignment.person.receiveEmail,
                 workDay.assignment.person.email,
-                "Workday update (01-01-2024 t/m 31-01-2024 bij DHL)",
+                "Workday update: 01-01-2024 to 31-01-2024 at DHL",
+                templateVariables,
+                templateId,
+            )
+        }
+    }
+
+    @Test
+    fun `Send notification`() {
+        val workDay = aWorkday
+        val expectedEmailMessage =
+            """
+            <p>There is an update from Henk regarding the hours worked in January.</p>
+            <div>
+                <p>Workday state</p>
+                <ul>
+                    <li>Client: DHL</li>
+                    <li>Role: -</li>
+                    <li>Project: -</li>
+                    <li>From: 01-01-2024</li>
+                    <li>Up to and including: 31-01-2024</li>
+                    <li>Total worked hours: 40.0</li>
+                    <li>Status: REQUESTED</li>
+                </ul>
+            </div>
+            """.trimIndent()
+        val templateVariables = JSONObject()
+        every {
+            emailService.createTemplateVariables(
+                workDay.assignment.person.firstname,
+                expectedEmailMessage,
+            )
+        }.returns(templateVariables)
+
+        val templateId = 3
+        every { mailjetTemplateProperties.notificationTemplateId }.returns(templateId)
+
+        service.sendNotification(workDay)
+
+        verify {
+            emailService.sendEmailNotification(
+                "Workday update for Henk (DHL) in January",
                 templateVariables,
                 templateId,
             )
