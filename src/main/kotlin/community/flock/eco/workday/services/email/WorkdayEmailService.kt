@@ -23,26 +23,14 @@ class WorkdayEmailService(
         val recipient = workDay.assignment.person
 
         val subject =
-            "Workday update (${workDay.from.toHumanReadable()} t/m ${workDay.to.toHumanReadable()} bij ${workDay.assignment.client.name})"
-
-        val project = workDay.assignment.project?.name?.replaceFirstChar { it.uppercase() } ?: "-"
-
+            "Workday update: ${workDay.from.toHumanReadable()} to ${workDay.to.toHumanReadable()} at ${workDay.assignment.client.name}"
         val emailMessage =
             """
-            <p>Je workday bij ${workDay.assignment.client.name} is bijgewerkt.<p>
+            |<p>Your workday at ${workDay.assignment.client.name} has been updated.<p>
+            |${workDay.html()}
+            """.trimMargin()
 
-            <ul>
-                <li>Klant: ${workDay.assignment.client.name}</li>
-                <li>Rol: ${workDay.assignment.role ?: "-"}</li>
-                <li>Project: $project</li>
-                <li>Van: ${workDay.from.toHumanReadable()}</li>
-                <li>Tot en met: ${workDay.to.toHumanReadable()}</li>
-                <li>Totaal aantal gewerkte uren: ${workDay.hours}</li>
-                <li>Status: ${workDay.status}</li>
-            </ul>
-            """.trimIndent()
-
-        log.info("Email generated for workday update for ${recipient.email}")
+        log.info("Email generated for workday update to ${recipient.email}")
 
         val templateVariables =
             emailService.createTemplateVariables(recipient.firstname, emailMessage)
@@ -60,11 +48,15 @@ class WorkdayEmailService(
             val employee = workDay.assignment.person
             val month = YearMonth.from(workDay.from).month.getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
 
-            val subject = "Update in Workday."
-            val emailMessage = "Er is een update van ${employee.firstname} in uren van $month."
+            val subject = "Workday update for ${employee.firstname} (${workDay.assignment.client.name}) in $month"
+            val emailMessage =
+                """
+                |<p>There is an update from ${employee.firstname} regarding the hours worked in $month.</p>
+                |${workDay.html()}
+                """.trimMargin()
             val templateVariables = emailService.createTemplateVariables(employee.firstname, emailMessage)
 
-            log.info("Email generated for workday notification for ${employee.email}")
+            log.info("Email generated for workday notification (to notification email)")
 
             emailService.sendEmailNotification(
                 subject,
@@ -84,7 +76,7 @@ class WorkdayEmailService(
                 "Please submit your hours in the Workday App."
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
 
-        log.info("Email generated for workday reminder for ${recipient.email}")
+        log.info("Email generated for workday reminder to ${recipient.email}")
 
         emailService.sendEmailMessage(
             recipient.receiveEmail,
@@ -94,4 +86,20 @@ class WorkdayEmailService(
             mailjetTemplateProperties.reminderTemplateId,
         )
     }
+
+    private fun WorkDay.html() =
+        """
+        |<div>
+        |    <p>Workday state</p>
+        |    <ul>
+        |        <li>Client: ${assignment.client.name}</li>
+        |        <li>Role: ${assignment.role ?: "-"}</li>
+        |        <li>Project: ${assignment.project?.name ?: "-"}</li>
+        |        <li>From: ${from.toHumanReadable()}</li>
+        |        <li>Up to and including: ${to.toHumanReadable()}</li>
+        |        <li>Total worked hours: $hours</li>
+        |        <li>Status: $status</li>
+        |    </ul>
+        |</div>
+        """.trimMargin()
 }
