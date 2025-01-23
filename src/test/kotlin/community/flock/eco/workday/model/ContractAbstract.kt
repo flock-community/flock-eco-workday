@@ -64,6 +64,7 @@ abstract class ContractAbstract {
             monthlySalary = salary,
             hoursPerWeek = 36,
             holidayHours = 30,
+            hackHours = 12,
             billable = true,
         )
     }

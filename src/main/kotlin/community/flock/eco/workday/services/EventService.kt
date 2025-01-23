@@ -4,7 +4,9 @@ import community.flock.eco.core.utils.toNullable
 import community.flock.eco.workday.forms.EventForm
 import community.flock.eco.workday.interfaces.validate
 import community.flock.eco.workday.model.Event
+import community.flock.eco.workday.model.EventType.FLOCK_HACK_DAY
 import community.flock.eco.workday.model.Person
+import community.flock.eco.workday.repository.EventProjection
 import community.flock.eco.workday.repository.EventRatingRepository
 import community.flock.eco.workday.repository.EventRepository
 import org.springframework.data.domain.Sort
@@ -30,6 +32,13 @@ class EventService(
             .findAllByPersonsIsEmptyOrPersonsUuid(personCode)
 
     fun findByCode(code: String) = eventRepository.findByCode(code).toNullable()
+
+    fun findAllHackDaysOf(year: Int): Iterable<EventProjection> =
+        eventRepository.findAllByTypeIsAndFromBetween(
+            type = FLOCK_HACK_DAY,
+            from = LocalDate.of(year, 1, 1),
+            to = LocalDate.of(year, 12, 31),
+        )
 
     fun findAllActive(
         from: LocalDate,

@@ -11,5 +11,6 @@ data class ContractInternalForm(
     override val from: LocalDate,
     override val to: LocalDate?,
     val holidayHours: Int,
+    val hackHours: Int,
     val billable: Boolean,
 ) : Period

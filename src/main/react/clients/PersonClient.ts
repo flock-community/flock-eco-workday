@@ -23,6 +23,13 @@ export type Person = {
   googleDriveId: string;
 };
 
+export type PersonLight = {
+  uuid: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+};
+
 export type PersonRaw = {
   uuid: string;
   email: string;

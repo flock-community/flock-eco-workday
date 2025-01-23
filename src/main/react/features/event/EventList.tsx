@@ -2,13 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Box, Card, Chip, Typography } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
-import { EventClient, FlockEvent } from "../../clients/EventClient";
+import {
+  EventClient,
+  FlockEvent,
+  FullFlockEvent,
+} from "../../clients/EventClient";
 import { isDefined } from "../../utils/validation";
 import { EventTypeMapping } from "../../utils/mappings";
 
 type EventListProps = {
   refresh: boolean;
-  onClickRow: (item: FlockEvent) => void;
+  onClickRow: (item: FullFlockEvent) => void;
 };
 
 export function EventList({ refresh, onClickRow }: EventListProps) {
@@ -18,13 +22,13 @@ export function EventList({ refresh, onClickRow }: EventListProps) {
     EventClient.all().then((res) => setState(res));
   }, [refresh]);
 
-  function handleClickRow(item) {
+  function handleClickRow(item: FullFlockEvent) {
     return () => {
       if (isDefined(onClickRow)) onClickRow(item);
     };
   }
 
-  function renderItem(item: FlockEvent) {
+  function renderItem(item: FullFlockEvent) {
     return (
       <Grid key={`workday-list-item-${item.id}`} item xs={12}>
         <Card onClick={handleClickRow(item)}>

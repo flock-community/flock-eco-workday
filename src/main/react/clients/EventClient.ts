@@ -1,4 +1,4 @@
-import { Person } from "./PersonClient";
+import { Person, PersonLight } from "./PersonClient";
 import InternalizingClient from "../utils/InternalizingClient";
 import {
   checkResponse,
@@ -12,7 +12,17 @@ const path = "/api/events";
 // the react Event
 export type FlockEvent = {
   description: string;
+  code: string;
+  from: Dayjs;
+  to: Dayjs;
+  hours: number;
+  persons: PersonLight[];
+  type: EventType;
+};
+
+export type FullFlockEvent = {
   id: number;
+  description: string;
   code: string;
   from: Dayjs;
   to: Dayjs;
@@ -20,6 +30,16 @@ export type FlockEvent = {
   days: number[];
   persons: Person[];
   costs: number;
+  type: EventType;
+};
+
+type FlockEventRawProjection = {
+  description: string;
+  code: string;
+  from: string;
+  to: string;
+  hours: number;
+  persons: PersonLight[];
   type: EventType;
 };
 
@@ -56,17 +76,34 @@ export enum EventType {
   GENERAL_EVENT = "GENERAL_EVENT",
 }
 
-const internalize = (it) => ({
-  ...it,
+const internalize = (it: FlockEventRaw): FlockEvent => ({
+  description: it.description,
+  code: it.code,
   from: dayjs(it.from),
   to: dayjs(it.to),
+  hours: it.hours,
+  persons: it.persons,
+  type: it.type,
+});
+
+const internalizeFull = (it: FlockEventRaw): FullFlockEvent => ({
+  description: it.description,
+  code: it.code,
+  from: dayjs(it.from),
+  to: dayjs(it.to),
+  hours: it.hours,
+  persons: it.persons,
+  type: it.type,
+  id: it.id,
+  days: it.days,
+  costs: it.costs,
 });
 
 const internalizingClient = InternalizingClient<
   FlockEventRequest,
   FlockEventRaw,
-  FlockEvent
->(path, internalize);
+  FullFlockEvent
+>(path, internalizeFull);
 
 // TODO: Rating type
 const getRatings = (id) => {
@@ -103,17 +140,12 @@ const deleteRatings = (eventCode, personId) => {
     .then((res) => res?.body);
 };
 
-const getUpcoming = (from: Dayjs, to: Dayjs): Promise<FlockEvent[]> => {
+const getHackDays = (year: number): Promise<FlockEvent[]> => {
   const opts = {
     method: "GET",
   };
-  return fetch(
-    `${path}/upcoming?fromDate=${from
-      .toISOString()
-      .substring(0, 10)}&toDate=${to.toISOString().substring(0, 10)}`,
-    opts
-  )
-    .then((it) => validateResponse<Event[]>(it))
+  return fetch(`${path}/hack-days?year=${year}`, opts)
+    .then((it) => validateResponse<FlockEventRawProjection[]>(it))
     .then((it) => checkResponse(it))
     .then((res) => res?.body.map(internalize));
 };
@@ -126,9 +158,9 @@ const subscribeToEvent = (event: FlockEvent) => {
     },
   };
   return fetch(`${path}/${event.code}/subscribe`, opts)
-    .then(validateResponse)
-    .catch(checkResponse)
-    .then((res) => internalize(res));
+    .then(validateResponse<FlockEventRaw>)
+    .then((it) => checkResponse(it))
+    .then((res) => internalize(res.body));
 };
 
 const unsubscribeFromEvent = (event: FlockEvent) => {
@@ -139,9 +171,9 @@ const unsubscribeFromEvent = (event: FlockEvent) => {
     },
   };
   return fetch(`${path}/${event.code}/unsubscribe`, opts)
-    .then(validateResponse)
-    .catch(checkResponse)
-    .then((res) => internalize(res));
+    .then(validateResponse<FlockEventRaw>)
+    .then((it) => checkResponse(it))
+    .then((res) => internalize(res.body));
 };
 
 export const EventClient = {
@@ -149,7 +181,7 @@ export const EventClient = {
   getRatings,
   postRatings,
   deleteRatings,
-  getUpcoming,
+  getHackDays,
   subscribeToEvent,
   unsubscribeFromEvent,
 };

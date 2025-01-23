@@ -110,6 +110,7 @@ class CreateHelper(
         hoursPerWeek: Int = 40,
         billable: Boolean = true,
         holidayHours: Int = 192,
+        hackHours: Int = 160,
     ) = ContractInternalForm(
         personId = person.uuid,
         monthlySalary = monthlySalary,
@@ -118,6 +119,7 @@ class CreateHelper(
         to = to,
         billable = billable,
         holidayHours = holidayHours,
+        hackHours = hackHours,
     ).run {
         contractService.create(this)
     } ?: error("Cannot create internal contract")

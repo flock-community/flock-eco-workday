@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-025-contract-internal-hackdays
+      author: jvandis
+      changes:
+        - addColumn:
+            tableName: contract_internal
+            columns:
+              - column:
+                  name: hack_hours
+                  type: integer
+                  defaultValue: "0"

@@ -1,75 +1,78 @@
 databaseChangeLog:
   - include:
-    - file: flock-eco-feature-user-master.yaml
+      file: flock-eco-feature-user-master.yaml
   - include:
-    - file: db.changelog-001-init.yaml
+      file: db.changelog-001-init.yaml
       relativeToChangelogFile: true
   - include:
-    - file: db.changelog-002-expenses.yaml
+      file: db.changelog-002-expenses.yaml
       relativeToChangelogFile: true
   - include:
-    - file: db.changelog-003-float-hours.yaml
+      file: db.changelog-003-float-hours.yaml
       relativeToChangelogFile: true
   - include:
-    - file: db.changelog-004-non-bilable-contract.yaml
+      file: db.changelog-004-non-bilable-contract.yaml
       relativeToChangelogFile: true
   - include:
-    - file: db.changelog-005-plus-holiday.yaml
+      file: db.changelog-005-plus-holiday.yaml
       relativeToChangelogFile: true
   - include:
-    - file: db.changelog-006-person-code-uuid.yaml
+      file: db.changelog-006-person-code-uuid.yaml
       relativeToChangelogFile: true
   - include:
-      - file: db.changelog-007-person-reminders.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-007-person-reminders.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-008-work-day-updates.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-008-work-day-updates.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-009-contract-internal-holidays.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-009-contract-internal-holidays.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-010-jdbc-session.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-010-jdbc-session.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-011-from-to-indexes.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-011-from-to-indexes.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-012-person-indexes.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-012-person-indexes.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-013-person-deleted.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-013-person-deleted.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-014-project.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-014-project.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-015-rm-person-updates.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-015-rm-person-updates.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-016-person-birthdate-join-date.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-016-person-birthdate-join-date.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-017-person-shoe-and-shirt-size.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-017-person-shoe-and-shirt-size.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-018-update-status-approved-to-done.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-018-update-status-approved-to-done.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-019-rename-table-holiday-to-leaveday.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-019-rename-table-holiday-to-leaveday.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-020-update-authorities-holiday-to-leaveday.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-020-update-authorities-holiday-to-leaveday.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-021-person-receive-email.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-021-person-receive-email.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-022-person-google-drive-id.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-022-person-google-drive-id.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-023-event-add-costs.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-023-event-add-costs.yaml
+      relativeToChangelogFile: true
   - include:
-      - file: db.changelog-024-event-add-type.yaml
-        relativeToChangelogFile: true
+      file: db.changelog-024-event-add-type.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-025-contract-internal-hackdays.yaml
+      relativeToChangelogFile: true
