@@ -215,7 +215,7 @@ private fun AggregationLeaveDay.produce() =
 private fun PersonHolidayDetails.produce() =
     PersonHolidayDetailsApi(
         name = name,
-        holidayHoursFromContract = holidayHoursDone.produce(),
+        holidayHoursFromContract = holidayHoursFromContract.produce(),
         plusHours = plusHours.produce(),
         holidayHoursDone = holidayHoursDone.produce(),
         holidayHoursApproved = holidayHoursApproved.produce(),
