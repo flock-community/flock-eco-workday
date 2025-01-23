@@ -3,6 +3,7 @@ package community.flock.eco.workday.model
 import community.flock.eco.core.events.EventEntityListeners
 import community.flock.eco.core.model.AbstractCodeEntity
 import community.flock.eco.workday.interfaces.Dayly
+import org.hibernate.annotations.BatchSize
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.ElementCollection
@@ -27,5 +28,6 @@ data class Event(
     @ElementCollection
     override val days: List<Double>? = null,
     @ManyToMany
+    @BatchSize(size = 50)
     val persons: List<Person>,
 ) : Dayly, AbstractCodeEntity(id, code)

@@ -173,15 +173,16 @@ class ContractService(
     private fun ContractInternalForm.internalize(it: ContractInternal? = null) =
         ContractInternal(
             id = it?.id ?: 0,
-            from = this.from,
-            to = this.to,
-            billable = this.billable,
-            monthlySalary = this.monthlySalary,
-            hoursPerWeek = this.hoursPerWeek,
-            holidayHours = this.holidayHours,
+            from = from,
+            to = to,
+            billable = billable,
+            monthlySalary = monthlySalary,
+            hoursPerWeek = hoursPerWeek,
+            holidayHours = holidayHours,
+            hackHours = hackHours,
             person =
                 it?.person
-                    ?: this.personId.let { personRepository.findByUuid(it).toNullable() }
+                    ?: personId.let { personRepository.findByUuid(it).toNullable() }
                     ?: error("Cannot find Person"),
         )
 
