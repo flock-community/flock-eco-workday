@@ -5,11 +5,13 @@ import community.flock.eco.workday.model.AggregationClient
 import community.flock.eco.workday.model.AggregationClientPersonAssignmentItem
 import community.flock.eco.workday.model.AggregationClientPersonAssignmentOverview
 import community.flock.eco.workday.model.AggregationClientPersonOverview
+import community.flock.eco.workday.model.AggregationHackDay
 import community.flock.eco.workday.model.AggregationIdentifier
 import community.flock.eco.workday.model.AggregationLeaveDay
 import community.flock.eco.workday.model.AggregationMonth
 import community.flock.eco.workday.model.AggregationPerson
 import community.flock.eco.workday.model.AggregationPersonClientRevenueItem
+import community.flock.eco.workday.model.PersonHackdayDetails
 import community.flock.eco.workday.model.PersonHolidayDetails
 import community.flock.eco.workday.services.AggregationService
 import community.flock.eco.workday.services.PersonService
@@ -32,12 +34,14 @@ import community.flock.eco.workday.api.AggregationClientPersonAssignmentItem as 
 import community.flock.eco.workday.api.AggregationClientPersonAssignmentOverview as AggregationClientPersonAssignmentOverviewApi
 import community.flock.eco.workday.api.AggregationClientPersonItem as AggregationClientPersonItemApi
 import community.flock.eco.workday.api.AggregationClientPersonOverview as AggregationClientPersonOverviewApi
+import community.flock.eco.workday.api.AggregationHackDay as AggregationHackDayApi
 import community.flock.eco.workday.api.AggregationIdentifier as AggregationIdentifierApi
 import community.flock.eco.workday.api.AggregationLeaveDay as AggregationLeaveDayApi
 import community.flock.eco.workday.api.AggregationPerson as AggregationPersonApi
 import community.flock.eco.workday.api.AggregationPersonClientRevenueItem as AggregationPersonClientRevenueItemApi
 import community.flock.eco.workday.api.AggregationPersonClientRevenueOverview as AggregationPersonClientRevenueOverviewApi
 import community.flock.eco.workday.api.NonProductiveHours as NonProductiveHoursApi
+import community.flock.eco.workday.api.PersonHackdayDetails as PersonHackdayDetailsApi
 import community.flock.eco.workday.api.PersonHolidayDetails as PersonHolidayDetailsApi
 
 @RestController
@@ -108,6 +112,12 @@ class AggregationController(
         return aggregationService.leaveDayReport(year).map { it.produce() }
     }
 
+    @GetMapping("/hack-day-report", params = ["year"])
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    fun hackDayReportByYear(
+        @RequestParam year: Int,
+    ): List<AggregationHackDayApi> = aggregationService.hackdayReport(year).map { it.produce() }
+
     // TODO: refactor the leave-day-report-me into new endpoint: holiday-details-me
     @GetMapping("/leave-day-report-me", params = ["year"])
     @PreAuthorize("isAuthenticated()")
@@ -169,7 +179,28 @@ class AggregationController(
             personService.findByUserCode(authentication.name) ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
         return aggregationService.getHolidayDetailsMe(year, person).produce()
     }
+
+    @GetMapping("/hackday-details-me", params = ["year"])
+    @PreAuthorize("isAuthenticated()")
+    fun hackdayDetailsMeYear(
+        authentication: Authentication,
+        @RequestParam year: Int,
+    ): PersonHackdayDetailsApi {
+        val person =
+            personService.findByUserCode(authentication.name) ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        return aggregationService.getHackdayDetailsMe(
+            year = year,
+            person = person,
+        ).produce()
+    }
 }
+
+private fun AggregationHackDay.produce() =
+    AggregationHackDayApi(
+        name = name,
+        contractHours = contractHours.produce(),
+        hackHoursUsed = usedHours.produce(),
+    )
 
 private fun AggregationLeaveDay.produce() =
     AggregationLeaveDayApi(
@@ -191,6 +222,14 @@ private fun PersonHolidayDetails.produce() =
         holidayHoursRequested = holidayHoursRequested.produce(),
         totalHoursAvailable = totalHoursAvailable.produce(),
         totalHoursUsed = totalHoursUsed.produce(),
+        totalHoursRemaining = totalHoursRemaining.produce(),
+    )
+
+private fun PersonHackdayDetails.produce() =
+    PersonHackdayDetailsApi(
+        name = name,
+        hackHoursFromContract = hackHoursFromContract.produce(),
+        hackHoursUsed = hackHoursUsed.produce(),
         totalHoursRemaining = totalHoursRemaining.produce(),
     )
 

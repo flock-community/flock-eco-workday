@@ -103,6 +103,19 @@ type PersonHolidayDetails{
     totalHoursRemaining: Number
 }
 
+type PersonHackdayDetails{
+    name: String,
+    hackHoursFromContract: Number,
+    hackHoursUsed: Number,
+    totalHoursRemaining: Number
+}
+
+type AggregationHackDay {
+    name: String,
+    contractHours: Number,
+    hackHoursUsed: Number
+}
+
 type AggregationLeaveDay {
     name: String,
     contractHours: Number,

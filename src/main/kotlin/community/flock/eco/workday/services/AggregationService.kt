@@ -9,6 +9,7 @@ import community.flock.eco.workday.model.AggregationClientPersonAssignmentItem
 import community.flock.eco.workday.model.AggregationClientPersonAssignmentOverview
 import community.flock.eco.workday.model.AggregationClientPersonItem
 import community.flock.eco.workday.model.AggregationClientPersonOverview
+import community.flock.eco.workday.model.AggregationHackDay
 import community.flock.eco.workday.model.AggregationIdentifier
 import community.flock.eco.workday.model.AggregationLeaveDay
 import community.flock.eco.workday.model.AggregationMonth
@@ -20,8 +21,10 @@ import community.flock.eco.workday.model.ContractExternal
 import community.flock.eco.workday.model.ContractInternal
 import community.flock.eco.workday.model.ContractManagement
 import community.flock.eco.workday.model.Day
+import community.flock.eco.workday.model.EventType
 import community.flock.eco.workday.model.LeaveDayType
 import community.flock.eco.workday.model.Person
+import community.flock.eco.workday.model.PersonHackdayDetails
 import community.flock.eco.workday.model.PersonHolidayDetails
 import community.flock.eco.workday.model.Status
 import community.flock.eco.workday.model.WorkDay
@@ -123,6 +126,29 @@ class AggregationService(
         )
     }
 
+    fun getHackdayDetailsMe(
+        year: Int,
+        person: Person,
+    ): PersonHackdayDetails {
+        val from = YearMonth.of(year, 1).atDay(1)
+        val to = YearMonth.of(year, 12).atEndOfMonth()
+        val period = FromToPeriod(from, to)
+        val data = dataService.findAllData(from, to, person.uuid)
+        return PersonHackdayDetails(
+            name = person.getFullName(),
+            hackHoursFromContract =
+                data.contract
+                    .filterIsInstance<ContractInternal>()
+                    .map { it.totalHackDayHoursInPeriod(period) }
+                    .sum(),
+            hackHoursUsed =
+                data.eventDay
+                    .filter { it.type == EventType.FLOCK_HACK_DAY }
+                    .sumOf { it.hours }
+                    .toBigDecimal(),
+        )
+    }
+
     fun leaveDayReport(year: Int): List<AggregationLeaveDay> {
         val from = YearMonth.of(year, 1).atDay(1)
         val to = YearMonth.of(year, 12).atEndOfMonth()
@@ -156,6 +182,31 @@ class AggregationService(
                         all.leaveDay
                             .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
                             .totalHoursInPeriod(from, to),
+                )
+            }
+    }
+
+    fun hackdayReport(year: Int): List<AggregationHackDay> {
+        val from = YearMonth.of(year, 1).atDay(1)
+        val to = YearMonth.of(year, 12).atEndOfMonth()
+        val period = FromToPeriod(from, to)
+        val all = dataService.findAllData(from, to)
+        return all.allPersons()
+            .map { person ->
+                AggregationHackDay(
+                    name = person.getFullName(),
+                    contractHours =
+                        all.contract
+                            .filterIsInstance<ContractInternal>()
+                            .filter { it.person == person }
+                            .map { it.totalHackDayHoursInPeriod(period) }
+                            .sum(),
+                    usedHours =
+                        all.eventDay
+                            .filter { it.type == EventType.FLOCK_HACK_DAY }
+                            .filter { person in it.persons }
+                            .sumOf { it.hours }
+                            .toBigDecimal(),
                 )
             }
     }

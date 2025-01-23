@@ -2,7 +2,11 @@ import { CostExpense, TravelExpense } from "../../models/Expense";
 import { Dayjs } from "dayjs";
 import { Status } from "../../models/Status";
 import { Person } from "../../clients/PersonClient";
-import { EventType, FlockEvent } from "../../clients/EventClient";
+import {
+  EventType,
+  FlockEvent,
+  FullFlockEvent,
+} from "../../clients/EventClient";
 
 function getMonthStringFromDate(date: Dayjs): string {
   return date.format("MMMM");
@@ -52,7 +56,7 @@ export function createTestFlockEvent(
   to: Dayjs,
   hours: number,
   days: number[]
-): FlockEvent {
+): FullFlockEvent {
   return {
     description,
     id: 1909,

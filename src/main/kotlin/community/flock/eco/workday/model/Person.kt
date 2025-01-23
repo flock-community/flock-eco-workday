@@ -57,3 +57,16 @@ data class Person(
         return Objects.equals(uuid, otherPerson.uuid)
     }
 }
+
+/**
+ * Minimal person projection which is typically more than enough to work with
+ */
+interface PersonProjection {
+    fun getUuid(): UUID
+
+    fun getFirstname(): String
+
+    fun getLastname(): String
+
+    fun getEmail(): String
+}

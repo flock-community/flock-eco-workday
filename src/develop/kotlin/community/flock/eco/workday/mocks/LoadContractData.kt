@@ -49,6 +49,7 @@ class LoadContractData(
                 hoursPerWeek = 32,
                 monthlySalary = 6000.0,
                 holidayHours = 192,
+                hackHours = 160,
                 from = from,
                 to = to,
             )

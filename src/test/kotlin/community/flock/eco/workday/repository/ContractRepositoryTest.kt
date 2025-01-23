@@ -39,6 +39,7 @@ class ContractRepositoryTest(
                 hoursPerWeek = 40,
                 monthlySalary = 500.0,
                 holidayHours = 192,
+                hackHours = 160,
             )
         val saved = contractRepository.save(new)
         val update =

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Card from "@material-ui/core/Card";
 import { Box, CardContent, MenuItem, Select } from "@material-ui/core";
 import CardHeader from "@material-ui/core/CardHeader";
+import { HackDaysPerPersonChart } from "../../components/charts/HackDaysPerPersonChart";
 import { LeaveDaysPerPersonChart } from "../../components/charts/LeaveDaysPerPersonChart";
 import { SickdayPerPersonChart } from "../../components/charts/SickdayPerPersonChart";
 import { RevenuePerClientTable } from "../../components/charts/RevenuePerClientTable";
@@ -100,6 +101,13 @@ export function DashboardFeature() {
         <CardHeader title="Leave Days" />
         <CardContent>
           <LeaveDaysPerPersonChart year={year} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader title="Hack Days budget" />
+        <CardContent>
+          <HackDaysPerPersonChart year={year} />
         </CardContent>
       </Card>
 

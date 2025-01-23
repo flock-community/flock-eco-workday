@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
 
 type FlockEventListItemProps = {
   event: FlockEvent;
-  onEventToggle: (FlockEvent, boolean) => void;
+  onEventToggle: (flockEvent: FlockEvent, isSubscribed: boolean) => void;
 };
 
 export function EventListItem({
@@ -37,7 +37,7 @@ export function EventListItem({
   }, [event]);
 
   const initDateString = (): void => {
-    if (event.days.length === 1) {
+    if (event.from.isSame(event.to, "day")) {
       setDateString(`date: ${event.from.format(DMY_DATE)}`);
     } else {
       setDateString(

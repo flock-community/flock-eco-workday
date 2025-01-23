@@ -98,6 +98,7 @@ class EventControllerTest() {
         from: LocalDate,
         to: LocalDate,
         ids: List<UUID> = listOf(),
+        type: EventType = EventType.GENERAL_EVENT,
     ) = EventForm(
         description = "Henk",
         from = from,
@@ -106,7 +107,7 @@ class EventControllerTest() {
         days = listOf(8.0, 8.0),
         costs = 200.0,
         personIds = ids,
-        type = EventType.GENERAL_EVENT,
+        type = type,
     )
         .run { eventService.create(this) }
 
@@ -116,13 +117,13 @@ class EventControllerTest() {
     }
 
     @Test
-    fun `should get upcoming events`() {
-        val event = createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3))
-        createEvent(LocalDate.of(2023, 4, 2), LocalDate.of(2023, 4, 3))
-        createEvent(LocalDate.of(2023, 6, 2), LocalDate.of(2023, 6, 3))
+    fun `should get hack-day events`() {
+        val event = createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3), type = EventType.FLOCK_HACK_DAY)
+        createEvent(LocalDate.of(2024, 4, 2), LocalDate.of(2024, 4, 3), type = EventType.FLOCK_HACK_DAY)
+        createEvent(LocalDate.of(2023, 6, 2), LocalDate.of(2023, 6, 3), type = EventType.FLOCK_COMMUNITY_DAY)
 
         mvc.perform(
-            get("$baseUrl/upcoming?fromDate=2023-01-01&toDate=2023-03-01")
+            get("$baseUrl/hack-days?year=2023")
                 .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
                 .accept(MediaType.APPLICATION_JSON),
         )
@@ -130,40 +131,20 @@ class EventControllerTest() {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(
                 content().json(
+                    // language=json
                     """
-                    [{"description":"Henk","id":${event.id},"code":"${event.code}","from":"2023-02-02","to":"2023-02-03",
-                      "hours":16.0,"costs":200.0,"days":[8.0,8.0],"persons":[]}]
+                    [
+                      {
+                        "description": "Henk",
+                        "code": "${event.code}",
+                        "from": "2023-02-02",
+                        "to": "2023-02-03",
+                        "persons": []
+                      }
+                    ]
                     """.trimIndent(),
                 ),
             )
-    }
-
-    @Test
-    fun `as Admin costs should be visible when getting upcoming events`() {
-        val event = createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3))
-
-        mvc.perform(
-            get("$baseUrl/upcoming?fromDate=2023-01-01&toDate=2023-12-31")
-                .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
-                .accept(MediaType.APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].costs").value(event.costs))
-    }
-
-    @Test
-    fun `as costs should not be visible when getting upcoming events`() {
-        createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3))
-
-        mvc.perform(
-            get("$baseUrl/upcoming?fromDate=2023-01-01&toDate=2023-12-31")
-                .with(SecurityMockMvcRequestPostProcessors.user(createUser(userAuthorities)))
-                .accept(MediaType.APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].costs").value(0.0))
     }
 
     @Test

@@ -23,6 +23,7 @@ data class ContractInternal(
     override val monthlySalary: Double,
     override val hoursPerWeek: Int,
     val holidayHours: Int,
+    val hackHours: Int,
     val billable: Boolean = true,
 ) : Monthly, Contract(id, code, from, to, person, ContractType.INTERNAL) {
     override fun totalCostsInPeriod(
@@ -50,6 +51,12 @@ data class ContractInternal(
         this
             .toDateRangeInPeriod(period)
             .sumOf { this.holidayHours }
+            .toBigDecimal()
+            .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
+
+    fun totalHackDayHoursInPeriod(period: Period): BigDecimal =
+        this.toDateRangeInPeriod(period)
+            .sumOf { this.hackHours }
             .toBigDecimal()
             .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
 }

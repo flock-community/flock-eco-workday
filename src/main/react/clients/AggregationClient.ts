@@ -7,6 +7,8 @@ import { ISO_8601_DATE } from "./util/DateFormats";
 import {
   AggregationClientPersonAssignmentOverview,
   AggregationClientPersonOverview,
+  PersonHackdayDetails as PersonHackdayDetailsApi,
+  AggregationHackDay as AggregationHackDayApi,
 } from "../wirespec/Models";
 
 const path = "/api/aggregations";
@@ -77,6 +79,18 @@ export type AggregationLeaveDay = {
   unpaidParentalLeaveHours: number;
 };
 
+export type PersonHackdayDetails = {
+  name: String;
+  hackHoursFromContract: number;
+  hackHoursUsed: number;
+  totalHoursRemaining: number;
+};
+
+export type AggregationHackDay = {
+  name: string;
+  contractHours: number;
+  hackHoursUsed: number;
+};
 export type PersonHolidayDetails = {
   name: String;
   holidayHoursFromContract: number;
@@ -88,6 +102,15 @@ export type PersonHolidayDetails = {
   totalHoursUsed: number;
   totalHoursRemaining: number;
 };
+
+const internalizePersonHackdayDetails: (
+  api: PersonHackdayDetailsApi
+) => PersonHackdayDetails = (api) => ({
+  name: api.name,
+  hackHoursFromContract: api.hackHoursFromContract,
+  hackHoursUsed: api.hackHoursUsed,
+  totalHoursRemaining: api.totalHoursRemaining,
+});
 
 export const leaveDayReportMe = (year): Promise<AggregationLeaveDay> => {
   const opts = {
@@ -109,6 +132,16 @@ export const holidayDetailsMeYear = (year): Promise<PersonHolidayDetails> => {
     .then((res) => res.body);
 };
 
+export const hackdayDetailsMeYear = (year): Promise<PersonHackdayDetails> => {
+  const opts = {
+    method: "GET",
+  };
+  return fetch(`${path}/hackday-details-me?year=${year}`, opts)
+    .then((res) => validateResponse<PersonHackdayDetailsApi>(res))
+    .then(checkResponse)
+    .then((res) => internalizePersonHackdayDetails(res.body));
+};
+
 export const totalPerMonthByYear = (year) => {
   const opts = {
     method: "GET",
@@ -125,6 +158,16 @@ export const leaveDayReportByYear = (year): Promise<AggregationLeaveDay[]> => {
   };
   return fetch(`${path}/leave-day-report?year=${year}`, opts)
     .then((res) => validateResponse<AggregationLeaveDay[]>(res))
+    .then(checkResponse)
+    .then((res) => res.body);
+};
+
+export const hackDayReportByYear = (year): Promise<AggregationHackDay[]> => {
+  const opts = {
+    method: "GET",
+  };
+  return fetch(`${path}/hack-day-report?year=${year}`, opts)
+    .then((res) => validateResponse<AggregationHackDayApi[]>(res))
     .then(checkResponse)
     .then((res) => res.body);
 };
@@ -159,5 +202,7 @@ export const AggregationClient = {
   totalPerPersonMe,
   leaveDayReportMe,
   leaveDayReportByYear,
+  hackDayReportByYear,
   holidayDetailsMeYear,
+  hackdayDetailsMeYear,
 };

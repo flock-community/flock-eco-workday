@@ -8,12 +8,12 @@ import community.flock.eco.workday.forms.EventForm
 import community.flock.eco.workday.forms.EventRatingForm
 import community.flock.eco.workday.model.Event
 import community.flock.eco.workday.model.EventRating
+import community.flock.eco.workday.repository.EventProjection
 import community.flock.eco.workday.services.EventRatingService
 import community.flock.eco.workday.services.EventService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.isUser
 import org.springframework.data.domain.Sort
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.security.Principal
-import java.time.LocalDate
 import java.util.UUID
 
 @RestController
@@ -49,20 +48,15 @@ class EventController(
             .filter { it.isAuthenticated(authentication) }
             .toResponse()
 
-    @GetMapping("/upcoming")
+    @GetMapping("/hack-days")
     @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
-    fun getUpcoming(
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fromDate: LocalDate,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) toDate: LocalDate,
+    fun getHackDays(
+        @RequestParam year: Int,
         principal: Principal,
-    ): ResponseEntity<List<Event>> =
-        principal.findUser()
-            ?.let { user ->
-                eventService
-                    .findAllActive(fromDate, toDate)
-                    .sortedBy { it.from }
-                    .map { event -> if (user.isAdmin()) event else event.copy(costs = 0.0) }
-            }
+    ): ResponseEntity<List<EventProjection>> =
+        eventService
+            .findAllHackDaysOf(year)
+            .sortedBy { it.getFrom() }
             .toResponse()
 
     // @PreAuthorize("hasAuthority('EventAuthority.READ')")

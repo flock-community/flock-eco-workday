@@ -22,8 +22,7 @@ import { ExpensesCard } from "../../components/expenses-card/ExpensesCard";
 import { ExpenseClient } from "../../clients/ExpenseClient";
 import { useLoginStatus } from "../../hooks/StatusHook";
 import { Expense } from "../../models/Expense";
-import { EventClient, FlockEvent } from "../../clients/EventClient";
-import { subscribeToEvent, unsubscribeFromEvent } from "../../utils/EventUtils";
+import { HackdayCard } from "../../components/hackday-card/HackdayCard";
 
 export function HomeFeature() {
   const [user] = useUserMe();
@@ -34,8 +33,8 @@ export function HomeFeature() {
   const [totalPerPersonMe, setTotalPerPersonMe] = useState<any>(undefined);
   const [personHolidayDetails, setPersonHolidayDetails] =
     useState<PersonHolidayDetails>();
+
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [flockEvents, setFlockEvents] = useState<FlockEvent[]>([]);
 
   const hasAccess =
     status?.authorities !== undefined && status?.authorities?.length > 0;
@@ -69,22 +68,8 @@ export function HomeFeature() {
       ExpenseClient.findAllByPersonIdNEW(status?.personId, 0, null).then(
         (res) => setExpenses(res.list)
       );
-      fetchEvents();
     }
   }, [status]);
-
-  const fetchEvents = () => {
-    EventClient.getUpcoming(
-      dayjs(),
-      dayjs().add(1, "month").endOf("month")
-    ).then((res) => setFlockEvents(res));
-  };
-
-  const eventToggled = (event: FlockEvent, isPresent: boolean) => {
-    (isPresent ? subscribeToEvent(event) : unsubscribeFromEvent(event)).then(
-      () => fetchEvents()
-    );
-  };
 
   return (
     <div
@@ -122,19 +107,13 @@ export function HomeFeature() {
           <QuickLinks />
 
           <div className={"gid-auto-fit"}>
-            <MissingHoursCard totalPerPersonMe={totalPerPersonMe} />
             <HolidayCard item={personHolidayDetails} />
+            <HackdayCard />
           </div>
 
           <div className={"gid-auto-fit"}>
+            <MissingHoursCard totalPerPersonMe={totalPerPersonMe} />
             <ExpensesCard items={expenses} />
-            {/* TODO: Enable upcoming events again when feature is finished, er remove completely */}
-            {/*<UpcomingEventsCard*/}
-            {/*  items={flockEvents}*/}
-            {/*  onEventToggle={(event, isPresent) =>*/}
-            {/*     eventToggled(event, isPresent)*/}
-            {/*   }*/}
-            {/* />*/}
           </div>
         </section>
       )}
