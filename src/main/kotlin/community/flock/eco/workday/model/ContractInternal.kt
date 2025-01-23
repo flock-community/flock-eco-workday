@@ -29,27 +29,21 @@ data class ContractInternal(
     override fun totalCostsInPeriod(
         from: LocalDate,
         to: LocalDate,
-    ): BigDecimal {
-        return totalCostInPeriod(from, to, monthlySalary)
-    }
+    ): BigDecimal = totalCostInPeriod(from, to, monthlySalary)
 
     override fun totalDaysInPeriod(
         from: LocalDate,
         to: LocalDate,
-    ): BigDecimal {
-        return totalDaysInPeriod(from, to, hoursPerWeek)
-    }
+    ): BigDecimal = totalDaysInPeriod(from, to, hoursPerWeek)
 
     fun totalCostInPeriod(yearMonth: YearMonth): BigDecimal =
-        this
-            .toDateRangeInPeriod(yearMonth)
-            .map { this.monthlySalary.toBigDecimal() }
+        toDateRangeInPeriod(yearMonth)
+            .map { monthlySalary.toBigDecimal() }
             .sum()
             .divide(yearMonth.lengthOfMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
 
     fun totalLeaveDayHoursInPeriod(period: Period): BigDecimal =
-        this
-            .toDateRangeInPeriod(period)
+        this.toDateRangeInPeriod(period)
             .sumOf { this.holidayHours }
             .toBigDecimal()
             .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)

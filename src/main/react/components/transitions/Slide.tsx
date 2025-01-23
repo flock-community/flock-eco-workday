@@ -1,6 +1,12 @@
-import React, { forwardRef } from "react";
+import React from "react";
 import { Slide } from "@material-ui/core";
+import { TransitionProps } from "@material-ui/core/transitions";
 
-const TransitionSlider = (props) => <Slide direction="right" {...props} />;
-
-export { TransitionSlider };
+export const TransitionSlider = React.forwardRef(
+  (
+    props: TransitionProps & {
+      children: React.ReactElement<any, any>;
+    },
+    ref: React.Ref<unknown>
+  ) => <Slide direction="right" ref={ref} {...props} />
+);

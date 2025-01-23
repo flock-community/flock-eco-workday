@@ -29,8 +29,7 @@ const useStyles = makeStyles({
 export function QuickLinks() {
   const classes = useStyles();
 
-  const [person, setPerson] = usePerson();
-  const [value, setValue] = useState<any>();
+  const [person] = usePerson();
   const [workDayOpen, setWorkDayOpen] = useState(false);
   const [leaveDayOpen, setLeaveDayOpen] = useState(false);
   const [travelExpenseOpen, setTravelExpenseOpen] = useState(false);
@@ -40,45 +39,20 @@ export function QuickLinks() {
     if (person === null) {
       addError("No person selected");
     } else {
-      setValue(undefined);
       setWorkDayOpen(true);
     }
   };
 
-  const handleCLoseWorkdayDialog = () => {
-    setWorkDayOpen(false);
-    setValue(undefined);
-  };
+  const handleCloseWorkdayDialog = () => setWorkDayOpen(false);
 
-  const openAddLeaveDay = () => {
-    setValue(undefined);
-    setLeaveDayOpen(true);
-  };
+  const openAddLeaveDay = () => setLeaveDayOpen(true);
+  const handleCompleteLeaveDayDialog = () => setLeaveDayOpen(false);
 
-  const handleCompleteLeaveDayDialog = () => {
-    setLeaveDayOpen(false);
-    setValue(undefined);
-  };
+  const openAddTravelExpense = () => setTravelExpenseOpen(true);
+  const handleCompleteTravelExpenseDialog = () => setTravelExpenseOpen(false);
 
-  const openAddTravelExpense = () => {
-    setValue(undefined);
-    setTravelExpenseOpen(true);
-  };
-
-  const handleCompleteTravelExpenseDialog = () => {
-    setValue(undefined);
-    setTravelExpenseOpen(false);
-  };
-
-  const openAddCostExpense = () => {
-    setValue(undefined);
-    setCostExpenseOpen(true);
-  };
-
-  const handleCompleteCostExpenseDialog = () => {
-    setValue(undefined);
-    setCostExpenseOpen(false);
-  };
+  const openAddCostExpense = () => setCostExpenseOpen(true);
+  const handleCompleteCostExpenseDialog = () => setCostExpenseOpen(false);
 
   return (
     <>
@@ -133,12 +107,12 @@ export function QuickLinks() {
       <WorkDayDialog
         personFullName={person?.fullName}
         open={workDayOpen}
-        code={value?.code}
-        onComplete={handleCLoseWorkdayDialog}
+        code={undefined}
+        onComplete={handleCloseWorkdayDialog}
       />
       <LeaveDayDialog
         open={leaveDayOpen}
-        code={value?.code}
+        code={undefined}
         personId={person?.uuid}
         onComplete={handleCompleteLeaveDayDialog}
       />

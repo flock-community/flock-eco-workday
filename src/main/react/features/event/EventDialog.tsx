@@ -6,11 +6,7 @@ import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/co
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import {
-  EventClient,
-  FlockEvent,
-  FlockEventRequest,
-} from "../../clients/EventClient";
+import { EventClient, FlockEventRequest } from "../../clients/EventClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { EVENT_FORM_ID, EventForm } from "./EventForm";
 import { schema } from "../workday/WorkDayForm";

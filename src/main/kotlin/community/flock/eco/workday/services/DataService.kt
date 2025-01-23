@@ -32,12 +32,12 @@ class DataService(
         from: LocalDate,
         to: LocalDate,
     ) = Data(
-        sickDayService.findAllActive(from, to),
-        leaveDayService.findAllActive(from, to),
-        workDayService.findAllActive(from, to),
-        eventService.findAllActive(from, to),
-        assignmentService.findAllActive(from, to),
-        contractService.findAllActive(from, to),
+        sickDay = sickDayService.findAllActive(from, to),
+        leaveDay = leaveDayService.findAllActive(from, to),
+        workDay = workDayService.findAllActive(from, to),
+        eventDay = eventService.findAllActive(from, to),
+        assignment = assignmentService.findAllActive(from, to),
+        contract = contractService.findAllActive(from, to),
     )
 
     fun findAllData(
@@ -45,11 +45,11 @@ class DataService(
         to: LocalDate,
         personId: UUID,
     ) = Data(
-        sickDayService.findAllActiveByPerson(from, to, personId),
-        leaveDayService.findAllActiveByPerson(from, to, personId),
-        workDayService.findAllActiveByPerson(from, to, personId),
-        eventService.findAllActiveByPerson(from, to, personId),
-        assignmentService.findAllActiveByPerson(from, to, personId),
-        contractService.findAllActiveByPerson(from, to, personId),
+        sickDay = sickDayService.findAllActiveByPerson(from, to, personId),
+        leaveDay = leaveDayService.findAllActiveByPerson(from, to, personId),
+        workDay = workDayService.findAllActiveByPerson(from, to, personId),
+        eventDay = eventService.findAllActiveByPerson(from, to, personId),
+        assignment = assignmentService.findAllActiveByPerson(from, to, personId),
+        contract = contractService.findAllActiveByPerson(from, to, personId),
     )
 }
