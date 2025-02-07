@@ -139,6 +139,7 @@ private fun CostExpense.produce() =
         date = date.toString(),
         status = status.produce(),
         expenseType = ExpenseType.COST,
+        travelDetails = null,
         costDetails =
             CostExpenseDetails(
                 amount = amount,
@@ -201,6 +202,7 @@ private fun TravelExpense.produce(): ExpenseApi =
         date = date.toString(),
         status = status.produce(),
         expenseType = ExpenseType.TRAVEL,
+        costDetails = null,
         travelDetails =
             TravelExpenseDetails(
                 distance = distance,
