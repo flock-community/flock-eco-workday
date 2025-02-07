@@ -19,7 +19,7 @@
         <java.version>17</java.version>
         <kotlin.version>1.9.22</kotlin.version>
         <gpg.skip>true</gpg.skip>
-        <wirespec.version>0.8.51</wirespec.version>
+        <wirespec.version>0.11.2</wirespec.version>
         <npm.ci.skip>false</npm.ci.skip>
     </properties>
 
@@ -198,7 +198,7 @@
                     <execution>
                         <id>kotlin</id>
                         <goals>
-                            <goal>generate</goal>
+                            <goal>compile</goal>
                         </goals>
                         <configuration>
                             <input>${project.basedir}/src/main/wirespec</input>
