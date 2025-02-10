@@ -9,7 +9,8 @@ import community.flock.eco.workday.model.Person
 import community.flock.eco.workday.repository.EventProjection
 import community.flock.eco.workday.repository.EventRatingRepository
 import community.flock.eco.workday.repository.EventRepository
-import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -25,7 +26,7 @@ class EventService(
 ) {
     fun findAll(): Iterable<Event> = eventRepository.findAll()
 
-    fun findAll(sort: Sort): Iterable<Event> = eventRepository.findAll(sort)
+    fun findAll(pageable: Pageable): Page<Event> = eventRepository.findAll(pageable)
 
     fun findAllByPersonUuid(personCode: UUID) =
         eventRepository
