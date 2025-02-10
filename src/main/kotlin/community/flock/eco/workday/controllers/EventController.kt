@@ -42,21 +42,24 @@ class EventController(
 ) {
     @GetMapping()
     @PreAuthorize("hasAuthority('EventAuthority.READ')")
-    fun getAll(authentication: Authentication,
-               pageable: Pageable) =
-        eventService
-            .findAll(pageable)
-            .map {
-                if (!it.isAuthenticated(authentication)) {
-                    it.copy(
-                        description = "N/A - ${it.description}",
-                        costs = 0.00,
-                        days = null,
-                        persons = listOf(),
-                    )
-                } else it
+    fun getAll(
+        authentication: Authentication,
+        pageable: Pageable,
+    ) = eventService
+        .findAll(pageable)
+        .map {
+            if (!it.isAuthenticated(authentication)) {
+                it.copy(
+                    description = "N/A - ${it.description}",
+                    costs = 0.00,
+                    days = null,
+                    persons = listOf(),
+                )
+            } else {
+                it
             }
-            .toResponse()
+        }
+        .toResponse()
 
     @GetMapping("/hack-days")
     @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")

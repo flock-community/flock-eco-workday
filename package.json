@@ -2,6 +2,7 @@
   "name": "flock-eco-workday",
   "main": "index.js",
   "scripts": {
+    "clean": "npx --yes rimraf ./src/main/react/wirespec",
     "format": "prettier --write './src/main/react/**/*.{js,jsx,ts,tsx}'",
     "lint": "concurrently \"echo Not running eslint yet\" \"npm run lint:prettier\"",
     "lint:fix": "concurrently \"echo Not running eslint yet\" \"npm run lint:prettier:fix\"",
