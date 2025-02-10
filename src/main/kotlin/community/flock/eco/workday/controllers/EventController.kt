@@ -13,7 +13,7 @@ import community.flock.eco.workday.services.EventRatingService
 import community.flock.eco.workday.services.EventService
 import community.flock.eco.workday.services.PersonService
 import community.flock.eco.workday.services.isUser
-import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
@@ -42,10 +42,20 @@ class EventController(
 ) {
     @GetMapping()
     @PreAuthorize("hasAuthority('EventAuthority.READ')")
-    fun getAll(authentication: Authentication) =
+    fun getAll(authentication: Authentication,
+               pageable: Pageable) =
         eventService
-            .findAll(Sort.by("from"))
-            .filter { it.isAuthenticated(authentication) }
+            .findAll(pageable)
+            .map {
+                if (!it.isAuthenticated(authentication)) {
+                    it.copy(
+                        description = "N/A - ${it.description}",
+                        costs = 0.00,
+                        days = null,
+                        persons = listOf(),
+                    )
+                } else it
+            }
             .toResponse()
 
     @GetMapping("/hack-days")
@@ -164,10 +174,7 @@ class EventController(
             .map { it.authority }.contains(EventAuthority.ADMIN.toName())
 
     private fun Event.isAuthenticated(authentication: Authentication?) =
-        authentication?.isAdmin() == true ||
-            this.persons.any {
-                it.isUser(authentication?.name)
-            }
+        authentication?.isAdmin() == true || persons.any { it.isUser(authentication?.name) }
 
     private fun Event.applyAuthentication(authentication: Authentication?) =
         apply {

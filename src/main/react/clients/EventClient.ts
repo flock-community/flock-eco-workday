@@ -99,11 +99,21 @@ const internalizeFull = (it: FlockEventRaw): FullFlockEvent => ({
   costs: it.costs,
 });
 
+export const EVENT_PAGE_SIZE: number = 10;
+
 const internalizingClient = InternalizingClient<
   FlockEventRequest,
   FlockEventRaw,
   FullFlockEvent
 >(path, internalizeFull);
+
+const getAll = (page: number, pageSize = EVENT_PAGE_SIZE) => {
+  return internalizingClient.findAllByPage({
+    page,
+    size: pageSize,
+    sort: "from,desc",
+  });
+};
 
 // TODO: Rating type
 const getRatings = (id) => {
@@ -178,6 +188,7 @@ const unsubscribeFromEvent = (event: FlockEvent) => {
 
 export const EventClient = {
   ...internalizingClient,
+  getAll,
   getRatings,
   postRatings,
   deleteRatings,
