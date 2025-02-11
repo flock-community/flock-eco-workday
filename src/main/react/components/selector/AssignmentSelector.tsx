@@ -42,7 +42,7 @@ export function AssignmentSelector({
     if (!personId) return;
 
     AssignmentClient.findAllByPersonId(personId, "all").then((res) =>
-      setItems(res)
+      setItems(res.list)
     );
   }, []);
 

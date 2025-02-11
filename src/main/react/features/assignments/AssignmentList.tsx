@@ -8,19 +8,14 @@ import {
   AssignmentClient,
 } from "../../clients/AssignmentClient";
 import { isDefined } from "../../utils/validation";
-import { Pagination } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 const useStyles = makeStyles({
   list: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
-  pagination: {
-    "& .MuiPagination-ul": {
-      justifyContent: "right",
-    },
-  },
 });
 
 type AssignmentListProps = {
@@ -35,24 +30,20 @@ export function AssignmentList({
   personId,
   onItemClick,
   disableEdit,
-}: AssignmentListProps) {
+}: Readonly<AssignmentListProps>) {
   const [items, setItems] = useState<any[]>([]);
   const [page, setPage] = useState(0);
-  const [pageCount, setPageCount] = useState(-1);
+  const [count, setCount] = useState(-1);
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles(loading);
-
-  const handleChangePage = (event: object, paginationComponentPage: number) =>
-    // Client page is 0-based, pagination component is 1-based
-    setPage(paginationComponentPage - 1);
 
   useEffect(() => {
     if (personId) {
       setLoading(true);
       AssignmentClient.findAllByPersonId(personId, page).then((res) => {
         setItems(res.list);
-        setPageCount(Math.ceil(res.count / ASSIGNMENT_PAGE_SIZE));
+        setCount(res.count);
         setLoading(false);
       });
     } else {
@@ -107,14 +98,11 @@ export function AssignmentList({
         ))}
       </Grid>
       <Box mt={2}>
-        <Pagination
-          className={classes.pagination}
-          count={pageCount}
-          // Client page is 0-based, pagination component is 1-based
-          page={page + 1}
-          onChange={handleChangePage}
-          shape="rounded"
-          size="small"
+        <FlockPagination
+          currentPage={page + 1}
+          numberOfItems={count}
+          itemsPerPage={ASSIGNMENT_PAGE_SIZE}
+          changePageCb={setPage}
         />
       </Box>
     </>

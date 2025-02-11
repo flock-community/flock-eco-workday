@@ -72,7 +72,13 @@ const internalizingClient = InternalizingClient<
 
 export const ASSIGNMENT_PAGE_SIZE = 5;
 
-const findAllByPersonId = (personId: string, page: number | "all") => {
+const findAllByPersonId: (
+  personId: string,
+  page: number | "all"
+) => Promise<{
+  list: Assignment[];
+  count: number;
+}> = (personId: string, page: number | "all") => {
   if (page === "all") {
     return findAllByPersonIdUnpaged(personId);
   }
@@ -90,9 +96,9 @@ const findAllByPersonId = (personId: string, page: number | "all") => {
 };
 
 const findAllByPersonIdUnpaged = (personId: string) =>
-  internalizingClient.query({
-    personId,
-  });
+  internalizingClient
+    .query({ personId })
+    .then((list) => ({ list: list, count: list.length }));
 
 const findAllByProject = (project: Project) =>
   internalizingClient.query({ projectCode: project.code });

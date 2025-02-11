@@ -3,24 +3,47 @@ import { Box, Card, Chip, Typography } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import {
+  EVENT_PAGE_SIZE,
   EventClient,
   FlockEvent,
   FullFlockEvent,
 } from "../../clients/EventClient";
 import { isDefined } from "../../utils/validation";
 import { EventTypeMapping } from "../../utils/mappings";
+import { makeStyles } from "@material-ui/core/styles";
+import { FlockPagination } from "../../components/pagination/FlockPagination";
+
+const useStyles = makeStyles({
+  list: (loading) => ({
+    opacity: loading ? 0.5 : 1,
+  }),
+});
 
 type EventListProps = {
   refresh: boolean;
   onClickRow: (item: FullFlockEvent) => void;
 };
 
-export function EventList({ refresh, onClickRow }: EventListProps) {
-  const [state, setState] = useState<FlockEvent[]>([]);
+export const EventList = ({
+  refresh,
+  onClickRow,
+}: Readonly<EventListProps>) => {
+  const [items, setItems] = useState<FlockEvent[]>([]);
+  const [page, setPage] = useState(0);
+  const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const classes = useStyles(loading);
 
   useEffect(() => {
-    EventClient.all().then((res) => setState(res));
-  }, [refresh]);
+    setLoading(true);
+
+    EventClient.getAll(page).then((res) => {
+      setItems(res.list);
+      setCount(res.count);
+      setLoading(false);
+    });
+  }, [refresh, page]);
 
   function handleClickRow(item: FullFlockEvent) {
     return () => {
@@ -61,7 +84,7 @@ export function EventList({ refresh, onClickRow }: EventListProps) {
             </Typography>
             <Typography>
               {item.persons
-                .sort((a, b) => (a.lastname > b.lastname ? 1 : -1))
+                .toSorted((a, b) => (a.lastname > b.lastname ? 1 : -1))
                 .map((person) => `${person.firstname} ${person.lastname}`)
                 .join(",")}
             </Typography>
@@ -71,19 +94,31 @@ export function EventList({ refresh, onClickRow }: EventListProps) {
     );
   }
 
-  if (state.length === 0) {
+  if (items.length === 0) {
     return (
       <Card>
         <CardContent>
-          <Typography>No events</Typography>
+          <Grid container spacing={1} className={classes.list}>
+            <Typography>No events</Typography>
+          </Grid>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Grid container spacing={1}>
-      {state.map(renderItem)}
-    </Grid>
+    <>
+      <Grid container spacing={1} className={classes.list}>
+        {items.map(renderItem)}
+      </Grid>
+      <Box mt={2}>
+        <FlockPagination
+          currentPage={page + 1}
+          numberOfItems={count}
+          itemsPerPage={EVENT_PAGE_SIZE}
+          changePageCb={setPage}
+        />
+      </Box>
+    </>
   );
-}
+};

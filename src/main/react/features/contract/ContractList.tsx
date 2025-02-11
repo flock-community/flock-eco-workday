@@ -9,18 +9,13 @@ import {
   ContractClient,
 } from "../../clients/ContractClient";
 import { ContractType } from "./ContractType";
-import { Pagination } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
+import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 const useStyles = makeStyles({
   list: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
-  pagination: {
-    "& .MuiPagination-ul": {
-      justifyContent: "right",
-    },
-  },
 });
 
 type ContractListProps = {
@@ -32,24 +27,20 @@ export function ContractList({
   reload,
   personId,
   onItemClick,
-}: ContractListProps) {
+}: Readonly<ContractListProps>) {
   const [items, setItems] = useState<any[]>([]);
   const [page, setPage] = useState(0);
-  const [pageCount, setPageCount] = useState(-1);
+  const [count, setCount] = useState(-1);
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles(loading);
-
-  const handleChangePage = (event: object, paginationComponentPage: number) =>
-    // Client page is 0-based, pagination component is 1-based
-    setPage(paginationComponentPage - 1);
 
   useEffect(() => {
     if (personId) {
       setLoading(true);
       ContractClient.findAllByPersonId(personId, page).then((res) => {
         setItems(res.list);
-        setPageCount(Math.ceil(res.count / CONTRACT_PAGE_SIZE));
+        setCount(res.count);
         setLoading(false);
       });
     }
@@ -104,14 +95,11 @@ export function ContractList({
         ))}
       </Grid>
       <Box mt={2}>
-        <Pagination
-          className={classes.pagination}
-          count={pageCount}
-          // Client page is 0-based, pagination component is 1-based
-          page={page + 1}
-          onChange={handleChangePage}
-          shape="rounded"
-          size="small"
+        <FlockPagination
+          currentPage={page + 1}
+          numberOfItems={count}
+          itemsPerPage={CONTRACT_PAGE_SIZE}
+          changePageCb={setPage}
         />
       </Box>
     </>
