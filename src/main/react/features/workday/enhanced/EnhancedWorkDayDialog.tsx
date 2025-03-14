@@ -131,8 +131,10 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
         while (currentDate.isSameOrBefore(endDate, 'day')) {
           days.push({
             date: currentDate.format('YYYY-MM-DD'),
-            hours: leaveDay.hours || 8, // Default to 8 hours if not specified
-            description: leaveDay.description
+            // Ensure leave hours are capped at 8
+            hours: Math.min(leaveDay.hours || 8, 8),
+            description: leaveDay.description,
+            status: leaveDay.status
           });
           currentDate = currentDate.add(1, 'day');
         }
@@ -140,11 +142,21 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
         return days;
       });
 
-      // Group leave days by date and take only the first leave day for each date
+      // Group leave days by date
       const leaveDaysMap = new Map<string, LeaveData>();
       formattedLeaveDays.forEach(leaveDay => {
-        if (!leaveDaysMap.has(leaveDay.date)) {
-          leaveDaysMap.set(leaveDay.date, leaveDay);
+        const dateKey = leaveDay.date;
+        if (!leaveDaysMap.has(dateKey)) {
+          leaveDaysMap.set(dateKey, leaveDay);
+        } else {
+          // If there's already an entry for this date, don't add a duplicate
+          // Just update status to APPROVED if any of the entries are approved
+          if (leaveDay.status === 'APPROVED' && leaveDaysMap.get(dateKey).status !== 'APPROVED') {
+            leaveDaysMap.set(dateKey, {
+              ...leaveDaysMap.get(dateKey),
+              status: 'APPROVED'
+            });
+          }
         }
       });
 
@@ -166,8 +178,10 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
         while (currentDate.isSameOrBefore(endDate, 'day')) {
           days.push({
             date: currentDate.format('YYYY-MM-DD'),
-            hours: sickDay.hours || 8, // Default to 8 hours if not specified
-            description: sickDay.description
+            // Ensure sick hours are capped at 8
+            hours: Math.min(sickDay.hours || 8, 8),
+            description: sickDay.description,
+            status: sickDay.status
           });
           currentDate = currentDate.add(1, 'day');
         }
@@ -175,11 +189,21 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
         return days;
       });
 
-      // Group sick days by date and take only the first sick day for each date
+      // Group sick days by date
       const sickDaysMap = new Map<string, SickData>();
       formattedSickDays.forEach(sickDay => {
-        if (!sickDaysMap.has(sickDay.date)) {
-          sickDaysMap.set(sickDay.date, sickDay);
+        const dateKey = sickDay.date;
+        if (!sickDaysMap.has(dateKey)) {
+          sickDaysMap.set(dateKey, sickDay);
+        } else {
+          // If there's already an entry for this date, don't add a duplicate
+          // Just update status to APPROVED if any of the entries are approved
+          if (sickDay.status === 'APPROVED' && sickDaysMap.get(dateKey).status !== 'APPROVED') {
+            sickDaysMap.set(dateKey, {
+              ...sickDaysMap.get(dateKey),
+              status: 'APPROVED'
+            });
+          }
         }
       });
 
