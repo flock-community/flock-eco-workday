@@ -43,31 +43,32 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const monthTotal = calculateMonthTotal(updatedCalendarData);
 
   // Calculate totals for events, sick days, and leave days for the month
+  // Use the actual hours provided in each data item
   const eventHours = events
     .filter(e => {
       const eventDate = dayjs(e.date);
       return eventDate.month() === currentMonth.month() && eventDate.year() === currentMonth.year();
     })
-    .reduce((sum, event) => sum + (event.hours || 8), 0);
+    .reduce((sum, event) => sum + (Number(event.hours) || 8), 0);
 
   const sickHours = sickData
     .filter(s => {
       const sickDate = dayjs(s.date);
       return sickDate.month() === currentMonth.month() && sickDate.year() === currentMonth.year();
     })
-    .reduce((sum, sick) => sum + (sick.hours || 8), 0);
+    .reduce((sum, sick) => sum + (Number(sick.hours) || 8), 0);
 
   const leaveHours = leaveData
     .filter(l => {
       const leaveDate = dayjs(l.date);
       return leaveDate.month() === currentMonth.month() && leaveDate.year() === currentMonth.year();
     })
-    .reduce((sum, leave) => sum + (leave.hours || 8), 0);
+    .reduce((sum, leave) => sum + (Number(leave.hours) || 8), 0);
 
   // Listen for changes to state to force re-render for totals
   useEffect(() => {
     setUpdateKey(prev => prev + 1);
-  }, [state]);
+  }, [state, events, leaveData, sickData]); // Also listen for changes to these arrays
 
   // Check if there are hours in the weekend days and show them automatically
   useEffect(() => {
@@ -240,7 +241,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
             return (
               <CalendarDay
-                key={`${dayIndex}-${day.hours}`}
+                key={`${dayIndex}-${day.hours}-${updateKey}`}
                 day={day}
                 state={state}
                 events={dateEvents}

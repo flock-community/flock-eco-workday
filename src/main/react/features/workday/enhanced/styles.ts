@@ -102,6 +102,7 @@ export const useStyles = makeStyles((theme) => ({
     borderBottom: `1px solid ${theme.palette.grey[300]}`,
     fontWeight: "bold",
   },
+  // Event indicator - bottom right
   eventIndicator: {
     position: "absolute",
     bottom: "2px",
@@ -116,10 +117,11 @@ export const useStyles = makeStyles((theme) => ({
     color: "black",
     fontWeight: "bold",
   },
+  // Vacation indicator - bottom left
   vacationIndicator: {
     position: "absolute",
     bottom: "2px",
-    right: "24px",
+    left: "2px",
     width: "20px",
     height: "20px",
     display: "flex",
@@ -130,6 +132,7 @@ export const useStyles = makeStyles((theme) => ({
     color: "white",
     fontWeight: "bold",
   },
+  // Sick indicator - top right
   sickIndicator: {
     position: "absolute",
     top: "2px",
