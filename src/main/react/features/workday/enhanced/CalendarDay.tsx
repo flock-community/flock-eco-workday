@@ -32,6 +32,11 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
   const hasLeaveData = leaveData && leaveData.length > 0;
   const hasSickData = sickData && sickData.length > 0;
 
+  // Get the actual hours (or default to 8 only if hours is not provided)
+  const eventHours = hasEvent ? (events[0].hours || 8) : 0;
+  const leaveHours = hasLeaveData ? (leaveData[0].hours || 8) : 0;
+  const sickHours = hasSickData ? (sickData[0].hours || 8) : 0;
+
   // Get status for leave days and sick days (approved or not)
   const leaveApproved = hasLeaveData && leaveData[0].status === 'APPROVED';
   const sickApproved = hasSickData && sickData[0].status === 'APPROVED';
@@ -98,35 +103,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
         </span>
       )}
 
-      {/* Event Indicator - Always with border */}
-      {hasEvent && (
-        <div
-          className={classes.eventIndicator}
-          style={{
-            backgroundColor: EVENT_COLOR,
-            border: `2px solid ${EVENT_COLOR}`
-          }}
-          title={events[0].description || "Event"}
-        >
-          8
-        </div>
-      )}
-
-      {/* Vacation Indicator - Always with border */}
-      {hasLeaveData && (
-        <div
-          className={classes.vacationIndicator}
-          style={leaveApproved ?
-            { backgroundColor: VACATION_COLOR, border: `2px solid ${VACATION_COLOR}` } :
-            { border: `2px solid ${VACATION_COLOR}`, color: VACATION_COLOR, backgroundColor: 'transparent' }
-          }
-          title={`${leaveData[0].description || "Vacation"} (${leaveApproved ? 'Approved' : 'Pending'})`}
-        >
-          8
-        </div>
-      )}
-
-      {/* Sickness Indicator - Always with border */}
+      {/* Sick indicator - top right */}
       {hasSickData && (
         <div
           className={classes.sickIndicator}
@@ -136,7 +113,35 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
           }
           title={`${sickData[0].description || "Sick"} (${sickApproved ? 'Approved' : 'Pending'})`}
         >
-          8
+          {sickHours}
+        </div>
+      )}
+
+      {/* Event indicator - bottom right */}
+      {hasEvent && (
+        <div
+          className={classes.eventIndicator}
+          style={{
+            backgroundColor: EVENT_COLOR,
+            border: `2px solid ${EVENT_COLOR}`
+          }}
+          title={events[0].description || "Event"}
+        >
+          {eventHours}
+        </div>
+      )}
+
+      {/* Vacation indicator - bottom left */}
+      {hasLeaveData && (
+        <div
+          className={classes.vacationIndicator}
+          style={leaveApproved ?
+            { backgroundColor: VACATION_COLOR, border: `2px solid ${VACATION_COLOR}` } :
+            { border: `2px solid ${VACATION_COLOR}`, color: VACATION_COLOR, backgroundColor: 'transparent' }
+          }
+          title={`${leaveData[0].description || "Vacation"} (${leaveApproved ? 'Approved' : 'Pending'})`}
+        >
+          {leaveHours}
         </div>
       )}
     </div>
