@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
-import { Card, CardContent, CardHeader } from "@material-ui/core";
+import { Card, CardContent, CardHeader, FormControlLabel, Switch } from "@material-ui/core";
 import { WorkDayDialog } from "./WorkDayDialog";
+import { EnhancedWorkDayDialog } from "./enhanced/EnhancedWorkDayDialog";
 import { WorkDayList } from "./WorkDayList";
 import { ApplicationContext } from "../../application/ApplicationContext";
 import { WorkDayClient } from "../../clients/WorkDayClient";
@@ -18,6 +19,7 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
   const [refresh, setRefresh] = useState(false);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<any>();
+  const [useEnhancedUI, setUseEnhancedUI] = useState(false);
   const { authorities } = useContext(ApplicationContext);
 
   function handleCompleteDialog() {
@@ -51,15 +53,33 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
     }).then(() => setRefresh(!refresh));
   }
 
+  function handleToggleUI() {
+    setUseEnhancedUI(!useEnhancedUI);
+  }
+
   return (
     <>
       <Card>
         <CardHeader
           title="Work days"
           action={
-            <Button onClick={handleClickAdd}>
-              <AddIcon /> Add
-            </Button>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={useEnhancedUI}
+                    onChange={handleToggleUI}
+                    name="useEnhancedUI"
+                    color="primary"
+                  />
+                }
+                label="Enhanced Calendar UI"
+                style={{ marginRight: 16 }}
+              />
+              <Button onClick={handleClickAdd}>
+                <AddIcon /> Add
+              </Button>
+            </div>
           }
         />
         <CardContent>
@@ -71,12 +91,21 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
           />
         </CardContent>
       </Card>
-      <WorkDayDialog
-        personFullName={person.fullName}
-        open={open}
-        code={value?.code}
-        onComplete={handleCompleteDialog}
-      />
+      {useEnhancedUI ? (
+        <EnhancedWorkDayDialog
+          personFullName={person.fullName}
+          open={open}
+          code={value?.code}
+          onComplete={handleCompleteDialog}
+        />
+      ) : (
+        <WorkDayDialog
+          personFullName={person.fullName}
+          open={open}
+          code={value?.code}
+          onComplete={handleCompleteDialog}
+        />
+      )}
     </>
   );
 }
