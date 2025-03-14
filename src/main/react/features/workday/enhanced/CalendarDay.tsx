@@ -27,17 +27,15 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(hours.toString());
 
-  // Only take the first event/leave/sick data for this day to avoid duplicates
-  const hasEvent = events && events.length > 0;
-  const hasLeaveData = leaveData && leaveData.length > 0;
-  const hasSickData = sickData && sickData.length > 0;
+  // Only consider events, leave and sick data if the day is in the current month
+  const hasEvent = isCurrentMonth && events && events.length > 0;
+  const hasLeaveData = isCurrentMonth && leaveData && leaveData.length > 0;
+  const hasSickData = isCurrentMonth && sickData && sickData.length > 0;
 
   // Get the actual hours (or default to 8 only if hours is not provided)
   const eventHours = hasEvent ? (events[0].hours || 8) : 0;
-
-  // For leave and sick, cap at 8 hours maximum
-  const leaveHours = hasLeaveData ? Math.min(Number(leaveData[0].hours) || 8, 8) : 0;
-  const sickHours = hasSickData ? Math.min(Number(sickData[0].hours) || 8, 8) : 0;
+  const leaveHours = hasLeaveData ? (leaveData[0].hours || 8) : 0;
+  const sickHours = hasSickData ? (sickData[0].hours || 8) : 0;
 
   // Get status for leave days and sick days (approved or not)
   const leaveApproved = hasLeaveData && leaveData[0].status === 'APPROVED';
@@ -105,7 +103,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
         </span>
       )}
 
-      {/* Sick indicator - top right */}
+      {/* Sick indicator - top right - only show for current month days */}
       {hasSickData && (
         <div
           className={classes.sickIndicator}
@@ -119,7 +117,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
         </div>
       )}
 
-      {/* Event indicator - bottom right */}
+      {/* Event indicator - bottom right - only show for current month days */}
       {hasEvent && (
         <div
           className={classes.eventIndicator}
@@ -133,7 +131,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
         </div>
       )}
 
-      {/* Vacation indicator - bottom left */}
+      {/* Vacation indicator - bottom left - only show for current month days */}
       {hasLeaveData && (
         <div
           className={classes.vacationIndicator}
