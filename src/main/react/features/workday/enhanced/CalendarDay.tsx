@@ -1,0 +1,144 @@
+import React, { useState } from "react";
+import { Typography, TextField } from "@material-ui/core";
+import { useStyles } from "./styles";
+import { CalendarDay as CalendarDayType, WorkDayState, EventData, LeaveData, SickData } from "./types";
+import { EVENT_COLOR, VACATION_COLOR, SICKNESS_COLOR } from "./types";
+
+interface CalendarDayProps {
+  day: CalendarDayType;
+  state: WorkDayState | null;
+  events: EventData[];
+  leaveData: LeaveData[];
+  sickData: SickData[];
+  onHoursChange: (date: any, hours: number, type?: string) => void;
+}
+
+export const CalendarDay: React.FC<CalendarDayProps> = ({
+  day,
+  state,
+  events,
+  leaveData,
+  sickData,
+  onHoursChange
+}) => {
+  const classes = useStyles();
+  const { date, dayOfMonth, isCurrentMonth, hours, isSelected } = day;
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [inputValue, setInputValue] = useState(hours.toString());
+
+  // Only take the first event/leave/sick data for this day to avoid duplicates
+  const hasEvent = events && events.length > 0;
+  const hasLeaveData = leaveData && leaveData.length > 0;
+  const hasSickData = sickData && sickData.length > 0;
+
+  // Get status for leave days and sick days (approved or not)
+  const leaveApproved = hasLeaveData && leaveData[0].status === 'APPROVED';
+  const sickApproved = hasSickData && sickData[0].status === 'APPROVED';
+
+  const handleClick = () => {
+    if (state && isCurrentMonth) {
+      // Start editing mode with current value, not defaulting to 0
+      setInputValue(hours.toString());
+      setIsEditing(true);
+    }
+  };
+
+  const handleChange = (e) => {
+    // Allow only numbers
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    setInputValue(value);
+  };
+
+  const handleBlur = () => {
+    setIsEditing(false);
+    // Convert to number and update hours
+    const newHours = inputValue === '' ? 0 : parseInt(inputValue, 10);
+    if (newHours !== hours) {
+      onHoursChange(date, newHours);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleBlur();
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+      setInputValue(hours.toString());
+    }
+  };
+
+  return (
+    <div
+      className={`${classes.dayCell} ${isSelected ? classes.dayCellSelected : ''}`}
+      onClick={handleClick}
+    >
+      <span className={classes.dayNumber}>{dayOfMonth}</span>
+
+      {isEditing ? (
+        <TextField
+          autoFocus
+          value={inputValue}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className={classes.hoursInput}
+          inputProps={{
+            style: {
+              textAlign: 'center',
+              fontSize: '1.5rem',
+              width: '30px',
+            }
+          }}
+        />
+      ) : (
+        <span className={classes.hoursDisplay}>
+          {isCurrentMonth ? (hours === 0 ? '-' : hours) : ''}
+        </span>
+      )}
+
+      {/* Event Indicator - Always with border */}
+      {hasEvent && (
+        <div
+          className={classes.eventIndicator}
+          style={{
+            backgroundColor: EVENT_COLOR,
+            border: `2px solid ${EVENT_COLOR}`
+          }}
+          title={events[0].description || "Event"}
+        >
+          8
+        </div>
+      )}
+
+      {/* Vacation Indicator - Always with border */}
+      {hasLeaveData && (
+        <div
+          className={classes.vacationIndicator}
+          style={leaveApproved ?
+            { backgroundColor: VACATION_COLOR, border: `2px solid ${VACATION_COLOR}` } :
+            { border: `2px solid ${VACATION_COLOR}`, color: VACATION_COLOR, backgroundColor: 'transparent' }
+          }
+          title={`${leaveData[0].description || "Vacation"} (${leaveApproved ? 'Approved' : 'Pending'})`}
+        >
+          8
+        </div>
+      )}
+
+      {/* Sickness Indicator - Always with border */}
+      {hasSickData && (
+        <div
+          className={classes.sickIndicator}
+          style={sickApproved ?
+            { backgroundColor: SICKNESS_COLOR, border: `2px solid ${SICKNESS_COLOR}` } :
+            { border: `2px solid ${SICKNESS_COLOR}`, color: SICKNESS_COLOR, backgroundColor: 'transparent' }
+          }
+          title={`${sickData[0].description || "Sick"} (${sickApproved ? 'Approved' : 'Pending'})`}
+        >
+          8
+        </div>
+      )}
+    </div>
+  );
+};
