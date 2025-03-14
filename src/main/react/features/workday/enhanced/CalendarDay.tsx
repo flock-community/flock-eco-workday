@@ -34,8 +34,10 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
 
   // Get the actual hours (or default to 8 only if hours is not provided)
   const eventHours = hasEvent ? (events[0].hours || 8) : 0;
-  const leaveHours = hasLeaveData ? (leaveData[0].hours || 8) : 0;
-  const sickHours = hasSickData ? (sickData[0].hours || 8) : 0;
+
+  // For leave and sick, cap at 8 hours maximum
+  const leaveHours = hasLeaveData ? Math.min(Number(leaveData[0].hours) || 8, 8) : 0;
+  const sickHours = hasSickData ? Math.min(Number(sickData[0].hours) || 8, 8) : 0;
 
   // Get status for leave days and sick days (approved or not)
   const leaveApproved = hasLeaveData && leaveData[0].status === 'APPROVED';
