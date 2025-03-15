@@ -21,6 +21,13 @@ interface CalendarGridProps {
   onQuickFill: (hours: number) => void;
 }
 
+// Interface for free day settings
+interface FreeDaySettings {
+  enabled: boolean;
+  frequency: string; // 'every', 'odd', 'even'
+  dayOfWeek: number; // 0-6, where 0 is Sunday, 1 is Monday, etc.
+}
+
 export const CalendarGrid: React.FC<CalendarGridProps> = ({
   currentMonth,
   state,
@@ -36,6 +43,20 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const classes = useStyles();
   // Add a local state to force re-renders when data changes
   const [updateKey, setUpdateKey] = useState(0);
+
+  // Free day settings state
+  const [freeDaySettings, setFreeDaySettings] = useState<FreeDaySettings>(() => {
+    // Try to load from localStorage
+    const savedSettings = localStorage.getItem('freeDaySettings');
+    if (savedSettings) {
+      return JSON.parse(savedSettings);
+    }
+    return {
+      enabled: false,
+      frequency: 'every',
+      dayOfWeek: 5 // Default to Friday
+    };
+  });
 
   // Get calendar data
   const calendarData = generateCalendarData(currentMonth, showWeekends);
@@ -69,6 +90,11 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   useEffect(() => {
     setUpdateKey(prev => prev + 1);
   }, [state, events, leaveData, sickData]); // Also listen for changes to these arrays
+
+  // Save free day settings to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('freeDaySettings', JSON.stringify(freeDaySettings));
+  }, [freeDaySettings]);
 
   // Check if there are hours in the weekend days and show them automatically
   useEffect(() => {
@@ -135,6 +161,128 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     onDayHoursChange(date, hours, type);
     // Force a re-render to update totals
     setUpdateKey(prev => prev + 1);
+  };
+
+  // Check if a date is a free day according to settings
+  const isFreeDayDate = (date: dayjs.Dayjs): boolean => {
+    if (!freeDaySettings.enabled) return false;
+
+    // Check if the day of the week matches
+    if (date.day() !== freeDaySettings.dayOfWeek) return false;
+
+    // Handle frequency
+    if (freeDaySettings.frequency === 'every') {
+      return true;
+    } else if (freeDaySettings.frequency === 'odd') {
+      const weekNumber = date.week();
+      return weekNumber % 2 !== 0;
+    } else if (freeDaySettings.frequency === 'even') {
+      const weekNumber = date.week();
+      return weekNumber % 2 === 0;
+    }
+
+    return false;
+  };
+
+  // Enhanced quick fill
+  const handleEnhancedQuickFill = (hours: number) => {
+    if (!state || !state.days) return;
+
+    const newDays = [...state.days];
+
+    for (let i = 0; i < newDays.length; i++) {
+      const currentDate = state.from.add(i, 'day');
+      const formattedDate = currentDate.format('YYYY-MM-DD');
+      const dayOfWeek = currentDate.day();
+
+      // Skip weekend days (Saturday = 6, Sunday = 0)
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        newDays[i] = 0;
+        continue;
+      }
+
+      // Skip if it's a free day
+      if (isFreeDayDate(currentDate)) {
+        newDays[i] = 0;
+        continue;
+      }
+
+      // Check if it's an event, leave, or sick day
+      const eventDay = events.find(e => e.date === formattedDate);
+      const leaveDay = leaveData.find(l => l.date === formattedDate);
+      const sickDay = sickData.find(s => s.date === formattedDate);
+
+      if (eventDay || leaveDay || sickDay) {
+        // Get the current hours for this special day
+        const eventHours = eventDay ? Number(eventDay.hours) || 0 : 0;
+        const leaveHours = leaveDay ? Number(leaveDay.hours) || 0 : 0;
+        const sickHours = sickDay ? Number(sickDay.hours) || 0 : 0;
+
+        // Calculate the existing hours (take the max of the overlapping events)
+        const existingHours = Math.max(eventHours, leaveHours, sickHours);
+
+        // If existing hours are less than the filling value, add the remaining hours
+        if (existingHours < hours) {
+          newDays[i] = hours - existingHours;
+        } else {
+          newDays[i] = 0;
+        }
+      } else {
+        // Regular day
+        newDays[i] = hours;
+      }
+    }
+
+    // Update the state through the parent component
+    onQuickFill(hours);
+
+    // If we have the state object, we need to update it with our custom logic
+    if (state && state.days) {
+      const newState = { ...state, days: newDays };
+      // We need to force the state update in the parent component
+      if (typeof onDayHoursChange === 'function') {
+        // Update the first day to trigger a state update
+        // This is a bit of a hack, but it works to force the parent to update
+        const firstDate = state.from;
+        const firstDayHours = newDays[0];
+        onDayHoursChange(firstDate, firstDayHours);
+
+        // Update the rest of the days
+        for (let i = 1; i < newDays.length; i++) {
+          const date = state.from.add(i, 'day');
+          onDayHoursChange(date, newDays[i]);
+        }
+      }
+    }
+  };
+
+  // Toggle weekend visibility
+  const handleToggleWeekends = (event) => {
+    setShowWeekends(event.target.checked);
+  };
+
+  // Handle free day checkbox change
+  const handleFreeDayToggle = (event) => {
+    setFreeDaySettings({
+      ...freeDaySettings,
+      enabled: event.target.checked
+    });
+  };
+
+  // Handle free day frequency change
+  const handleFrequencyChange = (event) => {
+    setFreeDaySettings({
+      ...freeDaySettings,
+      frequency: event.target.value
+    });
+  };
+
+  // Handle day of week change
+  const handleDayOfWeekChange = (event) => {
+    setFreeDaySettings({
+      ...freeDaySettings,
+      dayOfWeek: parseInt(event.target.value)
+    });
   };
 
   const dayHeaders = ['Ma', 'Di', 'Wo', 'Do', 'Vr'];
@@ -205,12 +353,54 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         <Button variant="outlined" onClick={() => onQuickFill(0)} style={{ marginRight: 8 }}>
           0
         </Button>
-        <Button variant="outlined" onClick={() => onQuickFill(8)} style={{ marginRight: 8 }}>
+        <Button variant="outlined" onClick={() => handleEnhancedQuickFill(8)} style={{ marginRight: 8 }}>
           8
         </Button>
-        <Button variant="outlined" onClick={() => onQuickFill(9)} style={{ marginRight: 8 }}>
+        <Button variant="outlined" onClick={() => handleEnhancedQuickFill(9)} style={{ marginRight: 8 }}>
           9
         </Button>
+
+        {/* Free day settings */}
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={freeDaySettings.enabled}
+              onChange={handleFreeDayToggle}
+              name="enableFreeDay"
+              color="primary"
+            />
+          }
+          label="Vrije dag"
+          style={{ marginLeft: 16 }}
+        />
+
+        {freeDaySettings.enabled && (
+          <>
+            <Select
+              value={freeDaySettings.frequency}
+              onChange={handleFrequencyChange}
+              style={{ marginLeft: 8, marginRight: 8 }}
+            >
+              <MenuItem value="every">Elke week</MenuItem>
+              <MenuItem value="odd">Oneven weken</MenuItem>
+              <MenuItem value="even">Even weken</MenuItem>
+            </Select>
+
+            <Select
+              value={freeDaySettings.dayOfWeek}
+              onChange={handleDayOfWeekChange}
+              style={{ marginLeft: 8 }}
+            >
+              <MenuItem value={1}>Maandag</MenuItem>
+              <MenuItem value={2}>Dinsdag</MenuItem>
+              <MenuItem value={3}>Woensdag</MenuItem>
+              <MenuItem value={4}>Donderdag</MenuItem>
+              <MenuItem value={5}>Vrijdag</MenuItem>
+              <MenuItem value={6}>Zaterdag</MenuItem>
+              <MenuItem value={0}>Zondag</MenuItem>
+            </Select>
+          </>
+        )}
       </div>
 
       {/* Day headers */}
@@ -264,8 +454,50 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         </Typography>
         <div>
           <Button variant="outlined" className={classes.fillButton} onClick={() => onQuickFill(0)}>0</Button>
-          <Button variant="outlined" className={classes.fillButton} onClick={() => onQuickFill(8)}>8</Button>
-          <Button variant="outlined" className={classes.fillButton} onClick={() => onQuickFill(9)}>9</Button>
+          <Button variant="outlined" className={classes.fillButton} onClick={() => handleEnhancedQuickFill(8)}>8</Button>
+          <Button variant="outlined" className={classes.fillButton} onClick={() => handleEnhancedQuickFill(9)}>9</Button>
+
+          {/* Free day settings */}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={freeDaySettings.enabled}
+                onChange={handleFreeDayToggle}
+                name="enableFreeDay"
+                color="primary"
+              />
+            }
+            label="Vrije dag"
+            style={{ marginLeft: 16 }}
+          />
+
+          {freeDaySettings.enabled && (
+            <>
+              <Select
+                value={freeDaySettings.frequency}
+                onChange={handleFrequencyChange}
+                style={{ marginLeft: 8, marginRight: 8 }}
+              >
+                <MenuItem value="every">Elke week</MenuItem>
+                <MenuItem value="odd">Oneven weken</MenuItem>
+                <MenuItem value="even">Even weken</MenuItem>
+              </Select>
+
+              <Select
+                value={freeDaySettings.dayOfWeek}
+                onChange={handleDayOfWeekChange}
+                style={{ marginLeft: 8 }}
+              >
+                <MenuItem value={1}>Maandag</MenuItem>
+                <MenuItem value={2}>Dinsdag</MenuItem>
+                <MenuItem value={3}>Woensdag</MenuItem>
+                <MenuItem value={4}>Donderdag</MenuItem>
+                <MenuItem value={5}>Vrijdag</MenuItem>
+                <MenuItem value={6}>Zaterdag</MenuItem>
+                <MenuItem value={0}>Zondag</MenuItem>
+              </Select>
+            </>
+          )}
         </div>
       </div>
 
