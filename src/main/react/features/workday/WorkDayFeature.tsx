@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { Card, CardContent, CardHeader, FormControlLabel, Switch } from "@material-ui/core";
+import React, { useContext, useState, useEffect } from "react";
+import { Card, CardContent, CardHeader } from "@material-ui/core";
 import { WorkDayDialog } from "./WorkDayDialog";
 import { EnhancedWorkDayDialog } from "./enhanced/EnhancedWorkDayDialog";
 import { WorkDayList } from "./WorkDayList";
@@ -10,6 +10,8 @@ import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import { Person } from "../../clients/PersonClient";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import EnhancedUiToggle from "../../components/preferences/EnhancedUiToggle";
+import { isEnhancedUiEnabled, setEnhancedUiEnabled } from "../../utils/UiPreferences";
 
 type WorkDayFeatureProps = {
   person: Person;
@@ -21,6 +23,12 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
   const [value, setValue] = useState<any>();
   const [useEnhancedUI, setUseEnhancedUI] = useState(false);
   const { authorities } = useContext(ApplicationContext);
+
+  // Initialize enhanced UI setting from localStorage
+  useEffect(() => {
+    const storedValue = isEnhancedUiEnabled(false);
+    setUseEnhancedUI(storedValue);
+  }, []);
 
   function handleCompleteDialog() {
     setRefresh(!refresh);
@@ -53,8 +61,9 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
     }).then(() => setRefresh(!refresh));
   }
 
-  function handleToggleUI() {
-    setUseEnhancedUI(!useEnhancedUI);
+  function handleToggleUI(enabled: boolean) {
+    setUseEnhancedUI(enabled);
+    setEnhancedUiEnabled(enabled);
   }
 
   return (
@@ -64,19 +73,12 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
           title="Work days"
           action={
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={useEnhancedUI}
-                    onChange={handleToggleUI}
-                    name="useEnhancedUI"
-                    color="primary"
-                  />
-                }
+              <EnhancedUiToggle
+                onChange={handleToggleUI}
                 label="Enhanced Calendar UI"
-                style={{ marginRight: 16 }}
+                tooltipText="Enable the modern calendar view with improved visualization features"
               />
-              <Button onClick={handleClickAdd}>
+              <Button onClick={handleClickAdd} style={{ marginLeft: 16 }}>
                 <AddIcon /> Add
               </Button>
             </div>
