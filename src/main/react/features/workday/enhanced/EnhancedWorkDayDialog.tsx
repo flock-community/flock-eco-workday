@@ -51,6 +51,8 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     loading: false,
     link: null,
   });
+  // Key for forcing re-renders
+  const [updateCounter, setUpdateCounter] = useState(0);
 
   // Use the person hook to get the current person
   const [person] = usePerson();
@@ -443,15 +445,18 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     setState(newState);
   };
 
-  // Quick fill options
+  // Extremely simple quick fill implementation
   const handleQuickFill = (hours) => {
     if (!state || !state.days) return;
 
-    const newDays = [...state.days].map(() => hours);
+    // Just fill all days with the specified hours
     setState({
       ...state,
-      days: newDays,
+      days: Array(state.days.length).fill(hours)
     });
+
+    // Force update to trigger a complete re-render
+    setUpdateCounter(prev => prev + 1);
   };
 
   // Toggle weekend visibility
@@ -495,6 +500,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
               <Grid item xs={12}>
                 <CalendarGrid
+                  key={`calendar-grid-${updateCounter}`}
                   currentMonth={currentMonth}
                   state={state}
                   events={events}

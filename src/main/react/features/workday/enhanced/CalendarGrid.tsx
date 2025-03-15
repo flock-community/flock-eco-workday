@@ -55,7 +55,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 }) => {
   const classes = useStyles();
   // Add a local state to force re-renders when data changes
-  const [updateKey, setUpdateKey] = useState(0);
+  const [updateKey, setUpdateKey] = useState(Date.now());
   // Multiple month periods
   const [monthPeriods, setMonthPeriods] = useState<MonthPeriod[]>([]);
 
@@ -106,50 +106,13 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
   // Listen for changes to state to force re-render for totals
   useEffect(() => {
-    setUpdateKey(prev => prev + 1);
-  }, [state, events, leaveData, sickData, monthPeriods]);
+    setUpdateKey(Date.now());
+  }, [state, events, leaveData, sickData, monthPeriods, showWeekends]);
 
   // Save free day settings to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('freeDaySettings', JSON.stringify(freeDaySettings));
   }, [freeDaySettings]);
-
-  // Check if there are hours in the weekend days and show them automatically
-  useEffect(() => {
-    if (!showWeekends && state && state.days) {
-      // Get the current month's start and end dates
-      const startOfMonth = currentMonth.startOf('month');
-      const endOfMonth = currentMonth.endOf('month');
-
-      // Check each day in the period
-      let dayIndex = 0;
-      let currentDate = state.from;
-      let hasWeekendHours = false;
-
-      while (currentDate.isSameOrBefore(state.to, 'day') && dayIndex < state.days.length) {
-        // Check if the day is in a weekend (6 = Saturday, 0 = Sunday)
-        const dayOfWeek = currentDate.day();
-        if ((dayOfWeek === 6 || dayOfWeek === 0) && state.days[dayIndex] > 0) {
-          hasWeekendHours = true;
-          break;
-        }
-
-        currentDate = currentDate.add(1, 'day');
-        dayIndex++;
-      }
-
-      // If weekend hours found, show weekends automatically
-      if (hasWeekendHours && !showWeekends) {
-        // Create synthetic event to call the toggle function
-        const syntheticEvent = {
-          target: {
-            checked: true
-          }
-        };
-        onToggleWeekends(syntheticEvent);
-      }
-    }
-  }, [state, currentMonth, showWeekends, onToggleWeekends]);
 
   const handleCurrentMonth = () => {
     const today = dayjs().startOf('month');
@@ -260,12 +223,18 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const handleDayHoursChange = (date, hours, type = 'regular') => {
     onDayHoursChange(date, hours, type);
     // Force a re-render to update totals
-    setUpdateKey(prev => prev + 1);
+    setUpdateKey(Date.now());
   };
 
-  // Apply quick fill to all days
+  // Simple fill button handler - just passes to parent and forces rerender
   const handleQuickFill = (hours) => {
+    // Call the parent function to update the state
     onQuickFill(hours);
+
+    // Force component to fully re-render with new state after a brief delay
+    setTimeout(() => {
+      setUpdateKey(Date.now());
+    }, 100);
   };
 
   // Check if a date is a free day according to settings
@@ -287,11 +256,6 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     }
 
     return false;
-  };
-
-  // Toggle weekend visibility
-  const handleToggleWeekends = (event) => {
-    setShowWeekends(event.target.checked);
   };
 
   // Handle free day checkbox change
@@ -523,7 +487,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         const safeMonthValue = month.date.format('YYYY-MM-01');
 
         return (
-          <Paper key={month.id} style={{ marginBottom: 24, padding: 16 }}>
+          <Paper key={`${month.id}-${updateKey}`} style={{ marginBottom: 24, padding: 16 }}>
             <div className={classes.monthHeaderRow}>
               {/* Month selector and week toggles in same row */}
               <div className={classes.monthSelectorContainer}>
@@ -559,7 +523,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
                   return (
                     <Chip
-                      key={`${month.id}-week-${weekNumber}`}
+                      key={`${month.id}-week-${weekNumber}-${updateKey}`}
                       label={weekNumber}
                       color={isSelected ? "primary" : "default"}
                       onClick={() => handleToggleWeek(month.id, weekNumber)}
@@ -608,7 +572,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                     <Typography variant="subtitle2">Week</Typography>
                   </div>
                   {dayHeaders.map((day, index) => (
-                    <div key={index} className={classes.dayHeader}>
+                    <div key={`${index}-${updateKey}`} className={classes.dayHeader}>
                       <Typography variant="subtitle1">{day}</Typography>
                     </div>
                   ))}
@@ -619,7 +583,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
                 {/* Calendar weeks - only show selected weeks */}
                 {updatedCalendarData.map((week, weekIndex) => (
-                  <div key={`${month.id}-week-${weekIndex}`} className={classes.weekRow}>
+                  <div key={`${month.id}-week-${weekIndex}-${updateKey}`} className={classes.weekRow}>
                     <div className={classes.weekNumberCell}>
                       <Typography variant="body1">{week.weekNumber}</Typography>
                     </div>
@@ -630,7 +594,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
                       return (
                         <CalendarDay
-                          key={`${month.id}-day-${dayIndex}`}
+                          key={`${month.id}-day-${dayIndex}-${updateKey}`}
                           day={day}
                           state={state}
                           events={dateEvents}
