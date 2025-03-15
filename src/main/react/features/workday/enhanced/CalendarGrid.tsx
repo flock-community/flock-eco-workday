@@ -184,27 +184,24 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     return false;
   };
 
-  // Enhanced quick fill
+  // Enhanced quick fill that respects free days, weekends, and special days
   const handleEnhancedQuickFill = (hours: number) => {
     if (!state || !state.days) return;
 
-    const newDays = [...state.days];
-
-    for (let i = 0; i < newDays.length; i++) {
+    // Create a new days array based on our rules
+    const newDays = state.days.map((_, i) => {
       const currentDate = state.from.add(i, 'day');
       const formattedDate = currentDate.format('YYYY-MM-DD');
       const dayOfWeek = currentDate.day();
 
       // Skip weekend days (Saturday = 6, Sunday = 0)
       if (dayOfWeek === 0 || dayOfWeek === 6) {
-        newDays[i] = 0;
-        continue;
+        return 0;
       }
 
       // Skip if it's a free day
       if (isFreeDayDate(currentDate)) {
-        newDays[i] = 0;
-        continue;
+        return 0;
       }
 
       // Check if it's an event, leave, or sick day
@@ -223,36 +220,36 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
         // If existing hours are less than the filling value, add the remaining hours
         if (existingHours < hours) {
-          newDays[i] = hours - existingHours;
+          return hours - existingHours;
         } else {
-          newDays[i] = 0;
+          return 0;
         }
-      } else {
-        // Regular day
-        newDays[i] = hours;
       }
+
+      // Regular day
+      return hours;
+    });
+
+    // Update the state with the new days array
+    if (state) {
+      setState({
+        ...state,
+        days: newDays
+      });
     }
+  };
 
-    // Update the state through the parent component
-    onQuickFill(hours);
+  // Function to manually set the state
+  const setState = (newState: WorkDayState) => {
+    // This is a way to directly update the parent component's state
+    if (newState.days && state && state.days) {
+      // Update the form state directly - workaround
+      Object.keys(state).forEach(key => {
+        state[key] = newState[key];
+      });
 
-    // If we have the state object, we need to update it with our custom logic
-    if (state && state.days) {
-      const newState = { ...state, days: newDays };
-      // We need to force the state update in the parent component
-      if (typeof onDayHoursChange === 'function') {
-        // Update the first day to trigger a state update
-        // This is a bit of a hack, but it works to force the parent to update
-        const firstDate = state.from;
-        const firstDayHours = newDays[0];
-        onDayHoursChange(firstDate, firstDayHours);
-
-        // Update the rest of the days
-        for (let i = 1; i < newDays.length; i++) {
-          const date = state.from.add(i, 'day');
-          onDayHoursChange(date, newDays[i]);
-        }
-      }
+      // Force re-render
+      setUpdateKey(prev => prev + 1);
     }
   };
 
@@ -347,60 +344,6 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
           }
           label="Toon weekend dagen"
         />
-      </div>
-
-      <div className={classes.quickFillButtons}>
-        <Button variant="outlined" onClick={() => onQuickFill(0)} style={{ marginRight: 8 }}>
-          0
-        </Button>
-        <Button variant="outlined" onClick={() => handleEnhancedQuickFill(8)} style={{ marginRight: 8 }}>
-          8
-        </Button>
-        <Button variant="outlined" onClick={() => handleEnhancedQuickFill(9)} style={{ marginRight: 8 }}>
-          9
-        </Button>
-
-        {/* Free day settings */}
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={freeDaySettings.enabled}
-              onChange={handleFreeDayToggle}
-              name="enableFreeDay"
-              color="primary"
-            />
-          }
-          label="Vrije dag"
-          style={{ marginLeft: 16 }}
-        />
-
-        {freeDaySettings.enabled && (
-          <>
-            <Select
-              value={freeDaySettings.frequency}
-              onChange={handleFrequencyChange}
-              style={{ marginLeft: 8, marginRight: 8 }}
-            >
-              <MenuItem value="every">Elke week</MenuItem>
-              <MenuItem value="odd">Oneven weken</MenuItem>
-              <MenuItem value="even">Even weken</MenuItem>
-            </Select>
-
-            <Select
-              value={freeDaySettings.dayOfWeek}
-              onChange={handleDayOfWeekChange}
-              style={{ marginLeft: 8 }}
-            >
-              <MenuItem value={1}>Maandag</MenuItem>
-              <MenuItem value={2}>Dinsdag</MenuItem>
-              <MenuItem value={3}>Woensdag</MenuItem>
-              <MenuItem value={4}>Donderdag</MenuItem>
-              <MenuItem value={5}>Vrijdag</MenuItem>
-              <MenuItem value={6}>Zaterdag</MenuItem>
-              <MenuItem value={0}>Zondag</MenuItem>
-            </Select>
-          </>
-        )}
       </div>
 
       {/* Day headers */}
