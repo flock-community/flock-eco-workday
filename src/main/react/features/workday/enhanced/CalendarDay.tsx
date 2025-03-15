@@ -74,9 +74,14 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
     }
   };
 
+  // Determine cell class based on current month and selection status
+  const cellClassName = `${classes.dayCell}
+    ${isSelected ? classes.dayCellSelected : ''}
+    ${!isCurrentMonth ? classes.dayCellNotCurrentMonth : ''}`;
+
   return (
     <div
-      className={`${classes.dayCell} ${isSelected ? classes.dayCellSelected : ''}`}
+      className={cellClassName}
       onClick={handleClick}
     >
       <span className={classes.dayNumber}>{dayOfMonth}</span>

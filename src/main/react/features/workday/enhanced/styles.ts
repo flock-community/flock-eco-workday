@@ -71,6 +71,13 @@ export const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.grey[200],
     },
   },
+  dayCellNotCurrentMonth: {
+    backgroundColor: "white",
+    cursor: "default",
+    "&:hover": {
+      backgroundColor: "white",
+    },
+  },
   dayCellSelected: {
     border: `2px solid ${theme.palette.primary.main}`,
   },
