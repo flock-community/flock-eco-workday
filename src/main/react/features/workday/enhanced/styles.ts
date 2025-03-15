@@ -22,11 +22,63 @@ export const useStyles = makeStyles((theme) => ({
     width: "100%",
     marginTop: theme.spacing(2),
   },
-  calendarHeader: {
+  freeDaySettings: {
+    marginBottom: theme.spacing(2),
+    padding: theme.spacing(2),
+  },
+  dateRangeHeader: {
+    padding: theme.spacing(1, 2),
+    marginBottom: theme.spacing(3),
+    backgroundColor: theme.palette.grey[100],
+    border: `1px solid ${theme.palette.grey[300]}`,
+    borderRadius: 4,
+  },
+  freeDayRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: theme.spacing(2),
+  },
+  weekendToggle: {
+    marginLeft: 'auto',
+  },
+  monthHeaderRow: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: theme.spacing(2),
+    flexWrap: "wrap",
+  },
+  monthSelectorContainer: {
+    display: "flex",
+    alignItems: "center",
+  },
+  weekToggleContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: theme.spacing(1),
+  },
+  weekChip: {
+    minWidth: "40px",
+    margin: "4px",
+  },
+  legendAndButtonRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  addMonthButton: {
+    padding: `${theme.spacing(1)}px ${theme.spacing(3)}px`,
+  },
+  monthSelector: {
+    fontSize: '1rem',
+    '& .MuiSelect-select': {
+      fontSize: '1rem',
+      fontWeight: 'bold',
+      padding: '10px 12px'
+    }
   },
   yearSelector: {
     minWidth: 100,
@@ -157,8 +209,7 @@ export const useStyles = makeStyles((theme) => ({
   summaryRow: {
     display: "flex",
     alignItems: "center",
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
+    flexWrap: "wrap",
   },
   summaryItem: {
     display: "flex",

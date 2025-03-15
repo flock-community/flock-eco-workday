@@ -484,7 +484,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
                 />
               </Grid>
 
-              <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
+              <UserAuthorityUtil has="WorkDayAuthority.ADMIN">
                 <Grid item xs={12}>
                   <StatusSelect
                     value={values.status}
@@ -539,7 +539,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
           onClose={handleClose}
         />
         <DialogContent className={classes.dialogContent}>
-          <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
+          <UserAuthorityUtil has="WorkDayAuthority.ADMIN">
             <Box my="1rem">
               <Typography variant={"h5"} component={"h2"}>
                 {personFullName}
