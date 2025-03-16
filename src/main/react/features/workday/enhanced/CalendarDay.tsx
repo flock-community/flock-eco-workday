@@ -104,7 +104,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
         />
       ) : (
         <span className={classes.hoursDisplay}>
-          {isCurrentMonth ? (hours === 0 ? '-' : hours) : ''}
+          {isCurrentMonth && hours > 0 ? hours : ''}
         </span>
       )}
 
