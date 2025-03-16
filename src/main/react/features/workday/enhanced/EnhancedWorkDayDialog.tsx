@@ -562,80 +562,115 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     return date.diff(state.from, 'day');
   };
 
-  // Improved quick fill - skips weekends, free days, and handles special hours
+  // Improved quick fill - now expands the date range to include the entire month if needed
   const handleQuickFill = (targetHours) => {
-    if (!state || !state.days || !currentMonth) return;
+    if (!state || !currentMonth) return;
 
-    // Store the visible month to ensure we only fill visible days
-    const visibleMonth = currentMonth;
-
-    // Create a new days array with the same length as the original
-    const newDays = [...state.days];
+    // Clone the current state to avoid direct mutation
+    const newState = { ...state };
 
     // Get the start and end of the visible month
-    const startOfMonth = visibleMonth.startOf('month');
-    const endOfMonth = visibleMonth.endOf('month');
+    const startOfMonth = currentMonth.startOf('month');
+    const endOfMonth = currentMonth.endOf('month');
 
-    // Get the start and end dates of the workday
-    const workdayStart = state.from;
-    const workdayEnd = state.to;
+    // Determine if we need to expand the date range to include the entire visible month
+    let newFrom = newState.from;
+    let newTo = newState.to;
+    let daysChanged = false;
 
-    // Find the overlap between the visible month and the workday date range
-    const fillStartDate = workdayStart.isAfter(startOfMonth) ? workdayStart : startOfMonth;
-    const fillEndDate = workdayEnd.isBefore(endOfMonth) ? workdayEnd : endOfMonth;
-
-    // Only proceed if there's an overlap
-    if (fillStartDate.isAfter(fillEndDate)) {
-      console.log("No overlap between visible month and workday range");
-      return;
+    // If the current workday range doesn't cover the entire visible month,
+    // expand it to include the entire month
+    if (startOfMonth.isBefore(newState.from)) {
+      newFrom = startOfMonth;
+      daysChanged = true;
     }
 
-    // Calculate the day index range to fill
-    const startDayIndex = getDayIndex(fillStartDate);
-    const endDayIndex = getDayIndex(fillEndDate);
+    if (endOfMonth.isAfter(newState.to)) {
+      newTo = endOfMonth;
+      daysChanged = true;
+    }
 
-    // Loop through each day in the overlap range
-    for (let i = startDayIndex; i <= endDayIndex; i++) {
-      if (i < 0 || i >= newDays.length) continue; // Skip invalid indices
+    // If we expanded the date range, we need to rebuild the days array
+    let newDays;
+    if (daysChanged) {
+      // Calculate the new day count
+      const newDayCount = newTo.diff(newFrom, 'day') + 1;
 
-      const currentDate = state.from.add(i, 'day');
+      // Create a new days array filled with zeros
+      newDays = Array(newDayCount).fill(0);
 
-      // Skip weekend days
-      if (isWeekend(currentDate)) {
-        newDays[i] = 0;
-        continue;
-      }
+      // Copy existing days data to the correct position in the new array
+      if (newState.days) {
+        const offset = newFrom.diff(newState.from, 'day');
 
-      // Skip free days
-      if (isFreeDayDate(currentDate)) {
-        newDays[i] = 0;
-        continue;
-      }
-
-      // Calculate special hours for this day
-      const eventHrs = getEventHours(currentDate);
-      const leaveHrs = getLeaveHours(currentDate);
-      const sickHrs = getSickHours(currentDate);
-      const totalSpecialHours = eventHrs + leaveHrs + sickHrs;
-
-      // If there are special hours, handle them appropriately
-      if (totalSpecialHours > 0) {
-        // If special hours already exceed or equal the target, set to 0
-        if (totalSpecialHours >= targetHours) {
-          newDays[i] = 0;
-        } else {
-          // Otherwise, fill the remaining hours up to the target
-          newDays[i] = targetHours - totalSpecialHours;
+        for (let i = 0; i < newState.days.length; i++) {
+          const newIndex = i - offset;
+          if (newIndex >= 0 && newIndex < newDays.length) {
+            newDays[newIndex] = newState.days[i];
+          }
         }
-      } else {
-        // Regular day with no special events, use the target hours
-        newDays[i] = targetHours;
       }
+
+      // Update the state with the new range and days
+      newState.from = newFrom;
+      newState.to = newTo;
+      newState.days = newDays;
+    } else {
+      // If we didn't expand the date range, just use the existing days array
+      newDays = [...newState.days];
+    }
+
+    // Now fill in the hours for each workday in the visible month
+    const fillStartDate = startOfMonth;
+    const fillEndDate = endOfMonth;
+
+    // Loop through each day in the visible month
+    let currentDate = fillStartDate.clone();
+    while (currentDate.isSameOrBefore(fillEndDate, 'day')) {
+      // Check if the date is within the workday range
+      if (currentDate.isBetween(newState.from, newState.to, 'day', '[]')) {
+        // Get the index of this day in the days array
+        const dayIndex = currentDate.diff(newState.from, 'day');
+
+        // Skip weekend days
+        if (isWeekend(currentDate)) {
+          newDays[dayIndex] = 0;
+        }
+        // Skip free days
+        else if (isFreeDayDate(currentDate)) {
+          newDays[dayIndex] = 0;
+        }
+        // Handle normal workdays
+        else {
+          // Calculate special hours for this day
+          const eventHrs = getEventHours(currentDate);
+          const leaveHrs = getLeaveHours(currentDate);
+          const sickHrs = getSickHours(currentDate);
+          const totalSpecialHours = eventHrs + leaveHrs + sickHrs;
+
+          // If there are special hours, handle them appropriately
+          if (totalSpecialHours > 0) {
+            // If special hours already exceed or equal the target, set to 0
+            if (totalSpecialHours >= targetHours) {
+              newDays[dayIndex] = 0;
+            } else {
+              // Otherwise, fill the remaining hours up to the target
+              newDays[dayIndex] = targetHours - totalSpecialHours;
+            }
+          } else {
+            // Regular day with no special events, use the target hours
+            newDays[dayIndex] = targetHours;
+          }
+        }
+      }
+
+      // Move to the next day
+      currentDate = currentDate.add(1, 'day');
     }
 
     // Update the state with the new days array
     setState({
-      ...state,
+      ...newState,
       days: newDays
     });
 
