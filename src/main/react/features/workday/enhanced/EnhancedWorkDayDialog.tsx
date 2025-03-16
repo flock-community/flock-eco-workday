@@ -42,8 +42,8 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   const [processing, setProcessing] = useState<boolean>(false);
   const [showWeekends, setShowWeekends] = useState<boolean>(false);
 
-  // Initialize with the current month
-  const [currentMonth, setCurrentMonth] = useState<dayjs.Dayjs>(dayjs());
+  // Initialize with null to ensure we set it properly when data loads
+  const [currentMonth, setCurrentMonth] = useState<dayjs.Dayjs | null>(null);
   const [state, setState] = useState<WorkDayState | null>(null);
   const [events, setEvents] = useState<EventData[]>([]);
   const [leaveData, setLeaveData] = useState<LeaveData[]>([]);
@@ -54,8 +54,9 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   });
   // Force re-render without recreating components
   const [renderTrigger, setRenderTrigger] = useState(0);
-  // Flag to track if we're in edit mode
-  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+
+  // Track the previous code value to detect changes
+  const [prevCode, setPrevCode] = useState<string | undefined>(undefined);
 
   // Use the person hook to get the current person
   const [person] = usePerson();
@@ -82,7 +83,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
   // Function to fetch events, leave days, and sick days for the current month
   const fetchAdditionalData = async (personId: string) => {
-    if (!personId) return;
+    if (!personId || !currentMonth) return;
 
     try {
       // Fetch all events
@@ -219,21 +220,31 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     }
   };
 
-  // Reset state when dialog opens/closes
+  // Reset dialog state when it closes
   useEffect(() => {
     if (!open) {
-      // Reset the editing state when dialog is closed
-      setIsEditMode(false);
+      // Reset everything when dialog closes
+      setState(null);
+      setPrevCode(undefined);
     }
   }, [open]);
 
-  // Load data when dialog opens
+  // Complete reset when code changes
+  useEffect(() => {
+    if (code !== prevCode) {
+      // Code has changed, reset the state
+      setState(null);
+      setCurrentMonth(null);
+
+      // Update the previous code
+      setPrevCode(code);
+    }
+  }, [code, prevCode]);
+
+  // Load data when dialog opens or code changes
   useEffect(() => {
     if (open) {
       if (code) {
-        // Set edit mode flag to true for existing workdays
-        setIsEditMode(true);
-
         WorkDayClient.get(code).then((res) => {
           const workDayState = {
             assignmentCode: res.assignment.code,
@@ -248,13 +259,15 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
           setState(workDayState);
 
-          // When opening an existing workday, set the month view to the workday's month
-          // This ensures we're showing the month of the workday being edited
+          // When editing an existing workday, set the calendar to its month
           setCurrentMonth(res.from);
 
           // Fetch additional data if we have a person ID
           if (person?.uuid) {
-            fetchAdditionalData(person.uuid);
+            // We'll wait for currentMonth to be updated in the next render cycle
+            setTimeout(() => {
+              fetchAdditionalData(person.uuid);
+            }, 0);
           }
         });
       } else {
@@ -265,20 +278,21 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
         // Fetch additional data if we have a person ID
         if (person?.uuid) {
-          fetchAdditionalData(person.uuid);
+          // We'll wait for currentMonth to be updated in the next render cycle
+          setTimeout(() => {
+            fetchAdditionalData(person.uuid);
+          }, 0);
         }
       }
-    } else {
-      setState(null);
     }
   }, [open, code, person]);
 
   // Refetch additional data when month changes
   useEffect(() => {
-    if (person?.uuid) {
+    if (person?.uuid && currentMonth) {
       fetchAdditionalData(person.uuid);
     }
-  }, [currentMonth]);
+  }, [currentMonth, person]);
 
   // Handle form submission
   const handleSubmit = (it) => {
@@ -536,6 +550,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
   // Date is within the current visible month
   const isInCurrentVisibleMonth = (date) => {
+    if (!currentMonth) return false;
     const startOfMonth = currentMonth.startOf('month');
     const endOfMonth = currentMonth.endOf('month');
     return date.isBetween(startOfMonth, endOfMonth, 'day', '[]');
@@ -549,7 +564,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
   // Improved quick fill - skips weekends, free days, and handles special hours
   const handleQuickFill = (targetHours) => {
-    if (!state || !state.days) return;
+    if (!state || !state.days || !currentMonth) return;
 
     // Store the visible month to ensure we only fill visible days
     const visibleMonth = currentMonth;
@@ -635,7 +650,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
   // Render the form elements (assignment, status, etc.)
   const renderFormFields = () => {
-    if (!state) return null;
+    if (!state || !currentMonth) return null;
 
     return (
       <Formik
