@@ -42,6 +42,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   const [processing, setProcessing] = useState<boolean>(false);
   const [showWeekends, setShowWeekends] = useState<boolean>(false);
 
+  // Initialize with the current month
   const [currentMonth, setCurrentMonth] = useState<dayjs.Dayjs>(dayjs());
   const [state, setState] = useState<WorkDayState | null>(null);
   const [events, setEvents] = useState<EventData[]>([]);
@@ -53,6 +54,8 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   });
   // Force re-render without recreating components
   const [renderTrigger, setRenderTrigger] = useState(0);
+  // Flag to track if we're in edit mode
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
 
   // Use the person hook to get the current person
   const [person] = usePerson();
@@ -216,10 +219,21 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     }
   };
 
+  // Reset state when dialog opens/closes
+  useEffect(() => {
+    if (!open) {
+      // Reset the editing state when dialog is closed
+      setIsEditMode(false);
+    }
+  }, [open]);
+
   // Load data when dialog opens
   useEffect(() => {
     if (open) {
       if (code) {
+        // Set edit mode flag to true for existing workdays
+        setIsEditMode(true);
+
         WorkDayClient.get(code).then((res) => {
           const workDayState = {
             assignmentCode: res.assignment.code,
@@ -234,7 +248,8 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
           setState(workDayState);
 
-          // Set current month to match the start date of the workday
+          // When opening an existing workday, set the month view to the workday's month
+          // This ensures we're showing the month of the workday being edited
           setCurrentMonth(res.from);
 
           // Fetch additional data if we have a person ID
@@ -244,6 +259,9 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
         });
       } else {
         setState(schema.cast());
+
+        // For new workdays, use the current month
+        setCurrentMonth(dayjs());
 
         // Fetch additional data if we have a person ID
         if (person?.uuid) {
