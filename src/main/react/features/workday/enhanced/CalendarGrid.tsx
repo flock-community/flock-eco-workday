@@ -24,6 +24,7 @@ interface CalendarGridProps {
   onDateRangeChange?: (from: dayjs.Dayjs, to: dayjs.Dayjs) => void;
   values?: any;
   setFieldValue?: (field: string, value: any) => void;
+  renderTrigger?: number; // Added to trigger re-render without recreating component
 }
 
 // Interface for free day settings
@@ -51,11 +52,12 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   onToggleWeekends,
   onDayHoursChange,
   onQuickFill,
-  onDateRangeChange
+  onDateRangeChange,
+  renderTrigger = 0 // Default to 0 if not provided
 }) => {
   const classes = useStyles();
   // Add a local state to force re-renders when data changes
-  const [updateKey, setUpdateKey] = useState(Date.now());
+  const [updateKey, setUpdateKey] = useState(0);
   // Multiple month periods
   const [monthPeriods, setMonthPeriods] = useState<MonthPeriod[]>([]);
 
@@ -107,7 +109,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   // Listen for changes to state to force re-render for totals
   useEffect(() => {
     setUpdateKey(Date.now());
-  }, [state, events, leaveData, sickData, monthPeriods, showWeekends]);
+  }, [state, events, leaveData, sickData, monthPeriods, showWeekends, renderTrigger]);
 
   // Save free day settings to localStorage whenever they change
   useEffect(() => {
@@ -134,6 +136,18 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     setMonthPeriods(prev => prev.map(month => {
       if (month.id === monthId) {
         const newDateObj = dayjs(newDate).startOf('month');
+
+        // Save the new selected month to localStorage for quick fill
+        try {
+          localStorage.setItem('selectedMonth', newDateObj.format('YYYY-MM-DD'));
+        } catch (e) {
+          console.error('Failed to save selected month', e);
+        }
+
+        // Also update the parent component's currentMonth state
+        // This ensures that quick fill operations know which month to target
+        onMonthChange(newDateObj);
+
         return {
           ...month,
           date: newDateObj,
@@ -197,6 +211,13 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       }
       return month;
     }));
+
+    // Save selected weeks to localStorage
+    try {
+      localStorage.setItem('monthPeriods', JSON.stringify(monthPeriods));
+    } catch (e) {
+      console.error('Failed to save month periods', e);
+    }
   };
 
   // Generate selectors for months
@@ -228,13 +249,21 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
   // Simple fill button handler - just passes to parent and forces rerender
   const handleQuickFill = (hours) => {
+    // Save current selected month to localStorage before filling
+    try {
+      const selectedMonth = monthPeriods[0]?.date;
+      if (selectedMonth) {
+        localStorage.setItem('selectedMonth', selectedMonth.format('YYYY-MM-DD'));
+      }
+    } catch (e) {
+      console.error('Failed to save selected month', e);
+    }
+
     // Call the parent function to update the state
     onQuickFill(hours);
 
-    // Force component to fully re-render with new state after a brief delay
-    setTimeout(() => {
-      setUpdateKey(Date.now());
-    }, 100);
+    // Force component to re-render with new state
+    setUpdateKey(Date.now());
   };
 
   // Check if a date is a free day according to settings

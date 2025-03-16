@@ -51,8 +51,8 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     loading: false,
     link: null,
   });
-  // Key for forcing re-renders
-  const [updateCounter, setUpdateCounter] = useState(0);
+  // Force re-render without recreating components
+  const [renderTrigger, setRenderTrigger] = useState(0);
 
   // Use the person hook to get the current person
   const [person] = usePerson();
@@ -221,7 +221,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     if (open) {
       if (code) {
         WorkDayClient.get(code).then((res) => {
-          setState({
+          const workDayState = {
             assignmentCode: res.assignment.code,
             from: res.from,
             to: res.to,
@@ -230,9 +230,11 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
             status: res.status,
             sheets: res.sheets,
             personId: person?.uuid
-          });
+          };
 
-          // Set current month to match the loaded data
+          setState(workDayState);
+
+          // Set current month to match the start date of the workday
           setCurrentMonth(res.from);
 
           // Fetch additional data if we have a person ID
@@ -445,18 +447,167 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     setState(newState);
   };
 
-  // Extremely simple quick fill implementation
-  const handleQuickFill = (hours) => {
+  // Helper function to check if a date is a weekend day
+  const isWeekend = (date) => {
+    const day = date.day();
+    return day === 0 || day === 6; // 0 = Sunday, 6 = Saturday
+  };
+
+  // Helper function to check if a date is a free day based on settings
+  const isFreeDayDate = (date) => {
+    // Get the free day settings from localStorage
+    const freeDaySettingsStr = localStorage.getItem('freeDaySettings');
+    if (!freeDaySettingsStr) return false;
+
+    try {
+      const freeDaySettings = JSON.parse(freeDaySettingsStr);
+      if (!freeDaySettings.enabled) return false;
+
+      // Check if the day of the week matches
+      if (date.day() !== freeDaySettings.dayOfWeek) return false;
+
+      // Handle frequency
+      if (freeDaySettings.frequency === 'every') {
+        return true;
+      } else if (freeDaySettings.frequency === 'odd') {
+        const weekNumber = date.week();
+        return weekNumber % 2 !== 0;
+      } else if (freeDaySettings.frequency === 'even') {
+        const weekNumber = date.week();
+        return weekNumber % 2 === 0;
+      }
+    } catch (e) {
+      console.error("Error parsing free day settings:", e);
+      return false;
+    }
+
+    return false;
+  };
+
+  // Helper function to get event hours for a date
+  const getEventHours = (date) => {
+    const formattedDate = date.format('YYYY-MM-DD');
+    const event = events.find(e => e.date === formattedDate);
+    return event ? Number(event.hours) || 0 : 0;
+  };
+
+  // Helper function to get leave hours for a date
+  const getLeaveHours = (date) => {
+    const formattedDate = date.format('YYYY-MM-DD');
+    const leave = leaveData.find(l => l.date === formattedDate);
+    return leave ? Number(leave.hours) || 0 : 0;
+  };
+
+  // Helper function to get sick hours for a date
+  const getSickHours = (date) => {
+    const formattedDate = date.format('YYYY-MM-DD');
+    const sick = sickData.find(s => s.date === formattedDate);
+    return sick ? Number(sick.hours) || 0 : 0;
+  };
+
+  // Helper function to get total special hours (events, leave, sick) for a date
+  const getSpecialHours = (date) => {
+    return getEventHours(date) + getLeaveHours(date) + getSickHours(date);
+  };
+
+  // Function to determine if a date is in the workday date range
+  const isInWorkdayRange = (date) => {
+    if (!state || !state.from || !state.to) return false;
+    return date.isBetween(state.from, state.to, 'day', '[]');
+  };
+
+  // Date is within the current visible month
+  const isInCurrentVisibleMonth = (date) => {
+    const startOfMonth = currentMonth.startOf('month');
+    const endOfMonth = currentMonth.endOf('month');
+    return date.isBetween(startOfMonth, endOfMonth, 'day', '[]');
+  };
+
+  // Find the index of a date in the days array
+  const getDayIndex = (date) => {
+    if (!state || !state.from) return -1;
+    return date.diff(state.from, 'day');
+  };
+
+  // Improved quick fill - skips weekends, free days, and handles special hours
+  const handleQuickFill = (targetHours) => {
     if (!state || !state.days) return;
 
-    // Just fill all days with the specified hours
+    // Store the visible month to ensure we only fill visible days
+    const visibleMonth = currentMonth;
+
+    // Create a new days array with the same length as the original
+    const newDays = [...state.days];
+
+    // Get the start and end of the visible month
+    const startOfMonth = visibleMonth.startOf('month');
+    const endOfMonth = visibleMonth.endOf('month');
+
+    // Get the start and end dates of the workday
+    const workdayStart = state.from;
+    const workdayEnd = state.to;
+
+    // Find the overlap between the visible month and the workday date range
+    const fillStartDate = workdayStart.isAfter(startOfMonth) ? workdayStart : startOfMonth;
+    const fillEndDate = workdayEnd.isBefore(endOfMonth) ? workdayEnd : endOfMonth;
+
+    // Only proceed if there's an overlap
+    if (fillStartDate.isAfter(fillEndDate)) {
+      console.log("No overlap between visible month and workday range");
+      return;
+    }
+
+    // Calculate the day index range to fill
+    const startDayIndex = getDayIndex(fillStartDate);
+    const endDayIndex = getDayIndex(fillEndDate);
+
+    // Loop through each day in the overlap range
+    for (let i = startDayIndex; i <= endDayIndex; i++) {
+      if (i < 0 || i >= newDays.length) continue; // Skip invalid indices
+
+      const currentDate = state.from.add(i, 'day');
+
+      // Skip weekend days
+      if (isWeekend(currentDate)) {
+        newDays[i] = 0;
+        continue;
+      }
+
+      // Skip free days
+      if (isFreeDayDate(currentDate)) {
+        newDays[i] = 0;
+        continue;
+      }
+
+      // Calculate special hours for this day
+      const eventHrs = getEventHours(currentDate);
+      const leaveHrs = getLeaveHours(currentDate);
+      const sickHrs = getSickHours(currentDate);
+      const totalSpecialHours = eventHrs + leaveHrs + sickHrs;
+
+      // If there are special hours, handle them appropriately
+      if (totalSpecialHours > 0) {
+        // If special hours already exceed or equal the target, set to 0
+        if (totalSpecialHours >= targetHours) {
+          newDays[i] = 0;
+        } else {
+          // Otherwise, fill the remaining hours up to the target
+          newDays[i] = targetHours - totalSpecialHours;
+        }
+      } else {
+        // Regular day with no special events, use the target hours
+        newDays[i] = targetHours;
+      }
+    }
+
+    // Update the state with the new days array
     setState({
       ...state,
-      days: Array(state.days.length).fill(hours)
+      days: newDays
     });
 
-    // Force update to trigger a complete re-render
-    setUpdateCounter(prev => prev + 1);
+    // Force a re-render without changing the component key
+    setRenderTrigger(prev => prev + 1);
   };
 
   // Toggle weekend visibility
@@ -500,7 +651,8 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
               <Grid item xs={12}>
                 <CalendarGrid
-                  key={`calendar-grid-${updateCounter}`}
+                  // Don't use a key that changes with every render, as this recreates the component
+                  // and loses internal state like the selected month
                   currentMonth={currentMonth}
                   state={state}
                   events={events}
@@ -514,6 +666,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
                   onDateRangeChange={handleDateRangeChange}
                   values={values}
                   setFieldValue={setFieldValue}
+                  renderTrigger={renderTrigger} // Pass this to force re-render without recreating
                 />
               </Grid>
 
