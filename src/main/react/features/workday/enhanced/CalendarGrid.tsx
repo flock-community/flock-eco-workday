@@ -20,7 +20,7 @@ interface CalendarGridProps {
   onMonthChange: (month: dayjs.Dayjs) => void;
   onToggleWeekends: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onDayHoursChange: (date: any, hours: number, type?: string) => void;
-  onQuickFill: (hours: number) => void;
+  onQuickFill: (hours: number, targetMonth?: dayjs.Dayjs) => void;
   onDateRangeChange?: (from: dayjs.Dayjs, to: dayjs.Dayjs) => void;
   values?: any;
   setFieldValue?: (field: string, value: any) => void;
@@ -133,21 +133,11 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
   // Month period management
   const handleMonthChange = (monthId: string, newDate: string) => {
+    const newDateObj = dayjs(newDate).startOf('month');
+
+    // Update our internal month periods state
     setMonthPeriods(prev => prev.map(month => {
       if (month.id === monthId) {
-        const newDateObj = dayjs(newDate).startOf('month');
-
-        // Save the new selected month to localStorage for quick fill
-        try {
-          localStorage.setItem('selectedMonth', newDateObj.format('YYYY-MM-DD'));
-        } catch (e) {
-          console.error('Failed to save selected month', e);
-        }
-
-        // Also update the parent component's currentMonth state
-        // This ensures that quick fill operations know which month to target
-        onMonthChange(newDateObj);
-
         return {
           ...month,
           date: newDateObj,
@@ -156,6 +146,17 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       }
       return month;
     }));
+
+    // Update the parent component's currentMonth state
+    onMonthChange(newDateObj);
+
+    // Also update the workday date range to match the new month's range
+    // This is the key fix - we adjust the workday date range to the new month's range
+    if (onDateRangeChange) {
+      const startOfMonth = newDateObj.startOf('month');
+      const endOfMonth = newDateObj.endOf('month');
+      onDateRangeChange(startOfMonth, endOfMonth);
+    }
   };
 
   const handleAddMonth = () => {
@@ -247,20 +248,17 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     setUpdateKey(Date.now());
   };
 
-  // Simple fill button handler - just passes to parent and forces rerender
-  const handleQuickFill = (hours) => {
-    // Save current selected month to localStorage before filling
-    try {
-      const selectedMonth = monthPeriods[0]?.date;
-      if (selectedMonth) {
-        localStorage.setItem('selectedMonth', selectedMonth.format('YYYY-MM-DD'));
-      }
-    } catch (e) {
-      console.error('Failed to save selected month', e);
+  // Simple fill button handler - now with month-specific targeting
+  const handleQuickFill = (hours, monthId) => {
+    // Find the specific month to fill
+    const targetMonthObj = monthPeriods.find(m => m.id === monthId);
+    if (!targetMonthObj) {
+      console.error('Could not find target month for filling');
+      return;
     }
 
-    // Call the parent function to update the state
-    onQuickFill(hours);
+    // Pass the specific month date to the parent handler
+    onQuickFill(hours, targetMonthObj.date);
 
     // Force component to re-render with new state
     setUpdateKey(Date.now());
@@ -572,7 +570,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                 variant="outlined"
                 className={classes.fillButton}
                 style={{ marginRight: 8 }}
-                onClick={() => handleQuickFill(0)}
+                onClick={() => handleQuickFill(0, month.id)}
               >
                 0
               </Button>
@@ -580,14 +578,14 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                 variant="outlined"
                 className={classes.fillButton}
                 style={{ marginRight: 8 }}
-                onClick={() => handleQuickFill(8)}
+                onClick={() => handleQuickFill(8, month.id)}
               >
                 8
               </Button>
               <Button
                 variant="outlined"
                 className={classes.fillButton}
-                onClick={() => handleQuickFill(9)}
+                onClick={() => handleQuickFill(9, month.id)}
               >
                 9
               </Button>
