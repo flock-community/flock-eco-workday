@@ -443,8 +443,8 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     }
   };
 
-  // Handle date range change
-  const handleDateRangeChange = (from, to) => {
+  // Handle date range change with resetDays parameter
+  const handleDateRangeChange = (from, to, resetDays = false) => {
     if (!state) return;
 
     // Clone the current state to avoid direct mutation
@@ -455,20 +455,27 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
     // Create a new days array or use the existing one
     let newDays;
-    if (newState.days) {
-      // If the range is reduced, truncate the array
-      if (newDayCount <= newState.days.length) {
-        newDays = newState.days.slice(0, newDayCount);
-      } else {
-        // If the range is expanded, add zeros for the new days
-        newDays = [...newState.days];
-        while (newDays.length < newDayCount) {
-          newDays.push(0);
-        }
-      }
-    } else {
-      // If no days array exists, create a new one filled with zeros
+
+    if (resetDays) {
+      // If resetDays is true, create a completely new days array filled with zeros
+      // This will clear any existing hours data when switching months
       newDays = Array(newDayCount).fill(0);
+    } else {
+      if (newState.days) {
+        // If the range is reduced, truncate the array
+        if (newDayCount <= newState.days.length) {
+          newDays = newState.days.slice(0, newDayCount);
+        } else {
+          // If the range is expanded, add zeros for the new days
+          newDays = [...newState.days];
+          while (newDays.length < newDayCount) {
+            newDays.push(0);
+          }
+        }
+      } else {
+        // If no days array exists, create a new one filled with zeros
+        newDays = Array(newDayCount).fill(0);
+      }
     }
 
     // Update the state with the new range and days

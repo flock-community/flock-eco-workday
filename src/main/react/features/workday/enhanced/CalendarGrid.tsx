@@ -21,7 +21,7 @@ interface CalendarGridProps {
   onToggleWeekends: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onDayHoursChange: (date: any, hours: number, type?: string) => void;
   onQuickFill: (hours: number, targetMonth?: dayjs.Dayjs) => void;
-  onDateRangeChange?: (from: dayjs.Dayjs, to: dayjs.Dayjs) => void;
+  onDateRangeChange?: (from: dayjs.Dayjs, to: dayjs.Dayjs, resetDays?: boolean) => void;
   values?: any;
   setFieldValue?: (field: string, value: any) => void;
   renderTrigger?: number; // Added to trigger re-render without recreating component
@@ -152,10 +152,11 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
     // Also update the workday date range to match the new month's range
     // This is the key fix - we adjust the workday date range to the new month's range
+    // and reset the days array when switching months
     if (onDateRangeChange) {
       const startOfMonth = newDateObj.startOf('month');
       const endOfMonth = newDateObj.endOf('month');
-      onDateRangeChange(startOfMonth, endOfMonth);
+      onDateRangeChange(startOfMonth, endOfMonth, true);
     }
   };
 
