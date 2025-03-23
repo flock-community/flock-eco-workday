@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Typography, FormControlLabel, Checkbox, IconButton, Button, Select, MenuItem, Grid, Divider, Paper } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -21,6 +21,8 @@ interface CalendarGridProps {
   onQuickFill: (hours: number, targetMonth?: dayjs.Dayjs) => void;
   onDateRangeChange?: (from: dayjs.Dayjs, to: dayjs.Dayjs, resetDays?: boolean) => void;
   onSelectedWeeksChange?: (weeks: number[]) => void;
+  initialMonths?: dayjs.Dayjs[]; // NEW: Optional prop for initial months
+  onMonthsChange?: (months: dayjs.Dayjs[]) => void; // NEW: Optional callback for month changes
   values?: any;
   setFieldValue?: (field: string, value: any) => void;
   renderTrigger?: number;
@@ -52,6 +54,8 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   onQuickFill,
   onDateRangeChange,
   onSelectedWeeksChange,
+  initialMonths,
+  onMonthsChange,
   values,
   setFieldValue,
   renderTrigger = 0
@@ -59,6 +63,13 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const classes = useStyles();
   const [updateKey, setUpdateKey] = useState(0);
   const [monthPeriods, setMonthPeriods] = useState<MonthPeriod[]>([]);
+  
+  // Track initialization state to prevent double initialization
+  const initializedRef = useRef(false);
+  // Track month changes to prevent infinite loops
+  const reportedMonthsRef = useRef<string>("");
+  // For debugging
+  const logRef = useRef(false);
 
   // Free day settings state
   const [freeDaySettings, setFreeDaySettings] = useState<FreeDaySettings>(() => {
@@ -94,19 +105,90 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     return Array.from(weeks).sort((a, b) => a - b);
   };
 
-  // Initialize month periods when currentMonth changes
+  // Initialize month periods based on initialMonths or currentMonth
   useEffect(() => {
-    if (!currentMonth) return;
-
-    // Initialize with a single month period
-    if (monthPeriods.length === 0) {
+    // Skip if already initialized or no months available
+    if (initializedRef.current) return;
+    
+    if (!logRef.current) {
+      console.log("CalendarGrid initializing with months:", 
+                  initialMonths ? initialMonths.map(m => m.format('YYYY-MM')) : 'none',
+                  "Current month:", currentMonth ? currentMonth.format('YYYY-MM') : 'none');
+      logRef.current = true;
+    }
+    
+    // Make sure we have data to initialize with
+    if (initialMonths && initialMonths.length > 0) {
+      // Initialize from provided initial months - ensure each month is a new dayjs instance
+      const newMonthPeriods = initialMonths.map((month, index) => ({
+        id: `month-${Date.now()}-${index}`,
+        date: dayjs(month).startOf('month')
+      }));
+      
+      // Check if we actually have any months
+      if (newMonthPeriods.length > 0) {
+        setMonthPeriods(newMonthPeriods);
+        initializedRef.current = true;
+        console.log("Initialized with", newMonthPeriods.length, "months from initialMonths");
+        return;
+      }
+    }
+    
+    // Fall back to currentMonth if no initialMonths provided or they were empty
+    if (currentMonth && monthPeriods.length === 0) {
       const newId = `month-${Date.now()}`;
       setMonthPeriods([{
         id: newId,
-        date: currentMonth.startOf('month')
+        date: dayjs(currentMonth).startOf('month')
       }]);
+      initializedRef.current = true;
+      console.log("Initialized with current month fallback");
+      return;
     }
-  }, [currentMonth, monthPeriods.length]);
+    
+    // If we still don't have anything, but we have a state with from/to dates
+    if (monthPeriods.length === 0 && state && state.from && state.to) {
+      // Try to extract months from the state's date range
+      const months = [];
+      let current = dayjs(state.from).startOf('month');
+      const end = dayjs(state.to).endOf('month');
+      
+      // Add all months in the date range
+      while (current.isSameOrBefore(end, 'month')) {
+        months.push(dayjs(current));
+        current = current.add(1, 'month');
+      }
+      
+      if (months.length > 0) {
+        const newMonthPeriods = months.map((month, index) => ({
+          id: `month-${Date.now()}-${index}`,
+          date: month
+        }));
+        
+        setMonthPeriods(newMonthPeriods);
+        initializedRef.current = true;
+        console.log("Initialized with", newMonthPeriods.length, "months from state date range");
+        return;
+      }
+    }
+  }, [initialMonths, currentMonth, monthPeriods.length, state]);
+
+  // Notify parent component of month changes, but only when they actually change
+  // and avoid infinite loops by using a ref to track the last reported state
+  useEffect(() => {
+    if (!onMonthsChange || monthPeriods.length === 0) return;
+    
+    // Create a string representation of the current months to compare with previous
+    const monthsString = monthPeriods.map(p => p.date.format('YYYY-MM')).join(',');
+    
+    // Only report changes if the months have actually changed
+    if (reportedMonthsRef.current !== monthsString) {
+      // Create completely new dayjs instances for each month to prevent reference issues
+      const months = monthPeriods.map(period => dayjs(period.date));
+      onMonthsChange(months);
+      reportedMonthsRef.current = monthsString;
+    }
+  }, [monthPeriods, onMonthsChange]);
 
   // Notify parent of all weeks to include for saving
   useEffect(() => {
@@ -127,7 +209,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   // Force re-render on data changes
   useEffect(() => {
     setUpdateKey(prev => prev + 1);
-  }, [state, events, leaveData, sickData, monthPeriods, showWeekends, renderTrigger]);
+  }, [state, events, leaveData, sickData, showWeekends, renderTrigger]);
 
   // Save free day settings
   useEffect(() => {
@@ -138,8 +220,18 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     }
   }, [freeDaySettings]);
 
+  // Reset the initialization flag when key props change
+  useEffect(() => {
+    // If initialMonths change, we should re-initialize
+    return () => {
+      initializedRef.current = false;
+      logRef.current = false;
+    };
+  }, []);
+
   // Month selection handlers
   const handleYearMonthChange = (monthId: string, year: number, month: number) => {
+    // Create a completely new dayjs object to avoid reference issues
     const newDate = dayjs().year(year).month(month).startOf('month');
 
     // Update month periods
@@ -147,14 +239,11 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       if (period.id === monthId) {
         return {
           ...period,
-          date: newDate
+          date: dayjs(newDate) // Create new instance to prevent reference issues
         };
       }
       return period;
     }));
-
-    // Just update the current month in view, don't modify date range
-    onMonthChange(newDate);
   };
 
   // Add new month
@@ -162,7 +251,8 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     if (monthPeriods.length === 0) return;
 
     const lastMonth = monthPeriods[monthPeriods.length - 1];
-    const newDate = lastMonth.date.add(1, 'month').startOf('month');
+    // Create a new completely independent dayjs object
+    const newDate = dayjs(lastMonth.date).add(1, 'month').startOf('month');
     const newId = `month-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
     setMonthPeriods(prev => [
@@ -172,8 +262,6 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         date: newDate
       }
     ]);
-
-    // Don't change the current month when adding a new month
   };
 
   // Remove month
@@ -190,10 +278,20 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     setUpdateKey(prev => prev + 1);
   };
 
-  // Direct quick fill implementation to avoid timing issues
-  const handleQuickFill = (monthDate, hours) => {
-    // Just directly call onQuickFill with both params
-    onQuickFill(hours, monthDate);
+  // Quick fill hours for a specific month
+  const handleQuickFill = (hours, monthId) => {
+    // Find the month period by ID
+    const monthPeriod = monthPeriods.find(period => period.id === monthId);
+    
+    if (!monthPeriod) return;
+    
+    // Get the month date from the period
+    const targetMonth = monthPeriod.date.clone();
+    
+    // Call the parent component's onQuickFill with the target month
+    onQuickFill(hours, targetMonth);
+    
+    // Force re-render after filling
     setUpdateKey(prev => prev + 1);
   };
 
@@ -428,9 +526,6 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         const monthTotal = calculateMonthTotal(updatedCalendarData);
         const currentYear = month.date.year();
         const currentMonthIndex = month.date.month();
-        const isCurrentMonth = currentMonth &&
-                              month.date.month() === currentMonth.month() &&
-                              month.date.year() === currentMonth.year();
 
         return (
           <Paper
@@ -440,16 +535,6 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
             <div className={classes.monthHeaderRow}>
               {/* Month selector */}
               <div className={classes.monthSelectorContainer}>
-                {/* Current month indicator */}
-                {isCurrentMonth && (
-                  <Typography
-                    variant="body2"
-                    style={{ marginRight: 8, fontStyle: 'italic', color: '#555' }}
-                  >
-                    Current
-                  </Typography>
-                )}
-
                 {/* Year selector */}
                 <Select
                   value={currentYear}
@@ -494,7 +579,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                 variant="outlined"
                 className={classes.fillButton}
                 style={{ marginRight: 8 }}
-                onClick={() => handleQuickFill(month.date, 0)}
+                onClick={() => handleQuickFill(0, month.id)}
               >
                 0
               </Button>
@@ -502,14 +587,14 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                 variant="outlined"
                 className={classes.fillButton}
                 style={{ marginRight: 8 }}
-                onClick={() => handleQuickFill(month.date, 8)}
+                onClick={() => handleQuickFill(8, month.id)}
               >
                 8
               </Button>
               <Button
                 variant="outlined"
                 className={classes.fillButton}
-                onClick={() => handleQuickFill(month.date, 9)}
+                onClick={() => handleQuickFill(9, month.id)}
               >
                 9
               </Button>
