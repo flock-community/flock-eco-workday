@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Box, Dialog, DialogContent, Divider, Grid } from "@material-ui/core";
 import WorkIcon from "@material-ui/icons/Work";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
@@ -36,6 +36,34 @@ dayjs.extend(weekOfYear);
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrBefore);
 
+// Helper function to get unique months in a date range
+const getUniqueMonthsInRange = (from, to) => {
+  if (!from || !to) return [];
+  
+  const months = [];
+  // Create a new dayjs object to avoid mutation issues
+  let currentDate = dayjs(from).startOf('month');
+  const endDate = dayjs(to).endOf('month');
+  
+  // Ensure the month keys are distinct - format them to year-month
+  const uniqueMonths = new Set();
+  
+  while (currentDate.isSameOrBefore(endDate, 'month')) {
+    const monthKey = currentDate.format('YYYY-MM');
+    
+    if (!uniqueMonths.has(monthKey)) {
+      uniqueMonths.add(monthKey);
+      // Create a new instance for each month to avoid reference issues
+      months.push(dayjs(currentDate));
+    }
+    
+    // Move to the next month
+    currentDate = currentDate.add(1, 'month');
+  }
+  
+  return months;
+};
+
 export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }: WorkDayProps) {
   const classes = useStyles();
   const [openDelete, setOpenDelete] = useState<boolean>(false);
@@ -48,6 +76,8 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   const [events, setEvents] = useState<EventData[]>([]);
   const [leaveData, setLeaveData] = useState<LeaveData[]>([]);
   const [sickData, setSickData] = useState<SickData[]>([]);
+  // NEW: Add state to track all displayed months - using useRef to prevent render loops
+  const initialMonthsRef = useRef<dayjs.Dayjs[]>([]);
   const [exportLink, setExportLink] = useState<ExportStatusProps>({
     loading: false,
     link: null,
@@ -63,6 +93,9 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
   // Use the person hook to get the current person
   const [person] = usePerson();
+  
+  // For debugging
+  const logRef = useRef(false);
 
   // Helper function to fetch all pages of data
   const fetchAllPages = async (fetchFn, pageSize) => {
@@ -229,6 +262,8 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
       // Reset everything when dialog closes
       setState(null);
       setPrevCode(undefined);
+      initialMonthsRef.current = [];
+      logRef.current = false;
     }
   }, [open]);
 
@@ -238,6 +273,8 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
       // Code has changed, reset the state
       setState(null);
       setCurrentMonth(null);
+      initialMonthsRef.current = [];
+      logRef.current = false;
 
       // Update the previous code
       setPrevCode(code);
@@ -262,8 +299,23 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
           setState(workDayState);
 
-          // When editing an existing workday, set the calendar to its month
-          setCurrentMonth(res.from);
+          // When editing an existing workday, determine all months in the range
+          const allMonths = getUniqueMonthsInRange(res.from, res.to);
+          
+          // Debug logging - only do once
+          if (!logRef.current) {
+            console.log("Loading existing workday with range:", 
+                        res.from.format('YYYY-MM-DD'), "to", 
+                        res.to.format('YYYY-MM-DD'));
+            console.log("Detected months:", allMonths.map(m => m.format('YYYY-MM')));
+            logRef.current = true;
+          }
+          
+          // Set the first month as current and all months as displayed
+          if (allMonths.length > 0) {
+            setCurrentMonth(allMonths[0]);
+            initialMonthsRef.current = allMonths;
+          }
 
           // Fetch additional data if we have a person ID
           if (person?.uuid) {
@@ -277,7 +329,9 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
         setState(schema.cast());
 
         // For new workdays, use the current month
-        setCurrentMonth(dayjs());
+        const now = dayjs();
+        setCurrentMonth(now);
+        initialMonthsRef.current = [now.startOf('month')];
 
         // Fetch additional data if we have a person ID
         if (person?.uuid) {
@@ -608,23 +662,26 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     return date.diff(state.from, 'day');
   };
 
-  // Improved quick fill - now expands the date range to include the entire month if needed
-  const handleQuickFill = (targetHours) => {
-    if (!state || !currentMonth) return;
+  // Improved quick fill - now supports targeting a specific month
+  const handleQuickFill = (targetHours, targetMonth) => {
+    if (!state) return;
 
     // Clone the current state to avoid direct mutation
     const newState = { ...state };
 
-    // Get the start and end of the visible month
-    const startOfMonth = currentMonth.startOf('month');
-    const endOfMonth = currentMonth.endOf('month');
+    // Get the start and end of the target month, or use current month if not specified
+    const monthDate = targetMonth || currentMonth;
+    if (!monthDate) return;
 
-    // Determine if we need to expand the date range to include the entire visible month
+    const startOfMonth = monthDate.startOf('month');
+    const endOfMonth = monthDate.endOf('month');
+
+    // Determine if we need to expand the date range to include the target month
     let newFrom = newState.from;
     let newTo = newState.to;
     let daysChanged = false;
 
-    // If the current workday range doesn't cover the entire visible month,
+    // If the current workday range doesn't cover the target month,
     // expand it to include the entire month
     if (startOfMonth.isBefore(newState.from)) {
       newFrom = startOfMonth;
@@ -663,16 +720,18 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
       newState.days = newDays;
     } else {
       // If we didn't expand the date range, just use the existing days array
-      newDays = [...newState.days];
+      newDays = [...(newState.days || [])];
+      
+      // If days array is empty, initialize it
+      if (newDays.length === 0) {
+        const newDayCount = newTo.diff(newFrom, 'day') + 1;
+        newDays = Array(newDayCount).fill(0);
+      }
     }
 
-    // Now fill in the hours for each workday in the visible month
-    const fillStartDate = startOfMonth;
-    const fillEndDate = endOfMonth;
-
-    // Loop through each day in the visible month
-    let currentDate = fillStartDate.clone();
-    while (currentDate.isSameOrBefore(fillEndDate, 'day')) {
+    // Now fill in the hours for each workday in the target month
+    let currentDate = startOfMonth.clone();
+    while (currentDate.isSameOrBefore(endOfMonth, 'day')) {
       // Check if the date is within the workday range
       if (currentDate.isBetween(newState.from, newState.to, 'day', '[]')) {
         // Get the index of this day in the days array
@@ -680,11 +739,15 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
         // Skip weekend days
         if (isWeekend(currentDate)) {
-          newDays[dayIndex] = 0;
+          if (dayIndex >= 0 && dayIndex < newDays.length) {
+            newDays[dayIndex] = 0;
+          }
         }
         // Skip free days
         else if (isFreeDayDate(currentDate)) {
-          newDays[dayIndex] = 0;
+          if (dayIndex >= 0 && dayIndex < newDays.length) {
+            newDays[dayIndex] = 0;
+          }
         }
         // Handle normal workdays
         else {
@@ -694,18 +757,20 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
           const sickHrs = getSickHours(currentDate);
           const totalSpecialHours = eventHrs + leaveHrs + sickHrs;
 
-          // If there are special hours, handle them appropriately
-          if (totalSpecialHours > 0) {
-            // If special hours already exceed or equal the target, set to 0
-            if (totalSpecialHours >= targetHours) {
-              newDays[dayIndex] = 0;
+          if (dayIndex >= 0 && dayIndex < newDays.length) {
+            // If there are special hours, handle them appropriately
+            if (totalSpecialHours > 0) {
+              // If special hours already exceed or equal the target, set to 0
+              if (totalSpecialHours >= targetHours) {
+                newDays[dayIndex] = 0;
+              } else {
+                // Otherwise, fill the remaining hours up to the target
+                newDays[dayIndex] = targetHours - totalSpecialHours;
+              }
             } else {
-              // Otherwise, fill the remaining hours up to the target
-              newDays[dayIndex] = targetHours - totalSpecialHours;
+              // Regular day with no special events, use the target hours
+              newDays[dayIndex] = targetHours;
             }
-          } else {
-            // Regular day with no special events, use the target hours
-            newDays[dayIndex] = targetHours;
           }
         }
       }
@@ -729,9 +794,22 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     setShowWeekends(event.target.checked);
   };
 
+  // Handle updates to month list from CalendarGrid
+  // This is disconnected to prevent infinite loops - we only save internally and don't react to this
+  const handleMonthsChange = useCallback((months: dayjs.Dayjs[]) => {
+    // Just update our ref but don't trigger any re-renders
+    // We will use this data when saving the form
+    // Do nothing - we don't need to update state here
+  }, []);
+
   // Render the form elements (assignment, status, etc.)
   const renderFormFields = () => {
     if (!state || !currentMonth) return null;
+
+    // Force initialMonthsRef to have at least one month
+    if (initialMonthsRef.current.length === 0 && currentMonth) {
+      initialMonthsRef.current = [currentMonth.startOf('month')];
+    }
 
     return (
       <Formik
@@ -779,9 +857,11 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
                   onQuickFill={handleQuickFill}
                   onDateRangeChange={handleDateRangeChange}
                   onSelectedWeeksChange={handleSelectedWeeksChange}
+                  initialMonths={initialMonthsRef.current}
+                  onMonthsChange={handleMonthsChange}
                   values={values}
                   setFieldValue={setFieldValue}
-                  renderTrigger={renderTrigger} // Pass this to force re-render without recreating
+                  renderTrigger={renderTrigger}
                 />
               </Grid>
 
