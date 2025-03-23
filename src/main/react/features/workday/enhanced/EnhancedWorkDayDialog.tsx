@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Box, Dialog, DialogContent, Divider, Grid } from "@material-ui/core";
 import WorkIcon from "@material-ui/icons/Work";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
@@ -57,6 +57,9 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
   // Track the previous code value to detect changes
   const [prevCode, setPrevCode] = useState<string | undefined>(undefined);
+
+  // NEW: Add state to track selected weeks across all month periods
+  const [selectedWeeks, setSelectedWeeks] = useState<number[]>([]);
 
   // Use the person hook to get the current person
   const [person] = usePerson();
@@ -294,16 +297,52 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     }
   }, [currentMonth, person]);
 
+  // NEW: Update selected weeks - use useCallback to prevent infinite loops
+  const handleSelectedWeeksChange = useCallback((weeks: number[]) => {
+    setSelectedWeeks(weeks);
+  }, []);
+
   // Handle form submission
   const handleSubmit = (it) => {
     setProcessing(true);
+
+    // Clone the days array to avoid modifying the original
+    let processedDays = it.days ? [...it.days] : null;
+
+    // NEW: Filter out hours from days in disabled weeks
+    if (processedDays && processedDays.length > 0) {
+      // Create an array to track whether each day should be included
+      const includeDayFlags = Array(processedDays.length).fill(false);
+
+      // For each day, determine if it belongs to a selected week
+      for (let i = 0; i < processedDays.length; i++) {
+        const dayDate = it.from.clone().add(i, 'day');
+        const weekNumber = dayDate.isoWeek();
+
+        // If the week is selected, this day should be included
+        if (selectedWeeks.includes(weekNumber)) {
+          includeDayFlags[i] = true;
+        }
+      }
+
+      // Now zero out the hours for days in disabled weeks
+      for (let i = 0; i < processedDays.length; i++) {
+        if (!includeDayFlags[i]) {
+          processedDays[i] = 0;
+        }
+      }
+    }
+
+    // Calculate total hours only from selected days
+    const totalHours = processedDays
+      ? processedDays.reduce((acc, cur) => acc + parseFloat(cur || 0), 0)
+      : it.hours;
+
     const body = {
       from: it.from.format(ISO_8601_DATE),
       to: it.to.format(ISO_8601_DATE),
-      days: it.days ? it.days : null,
-      hours: it.days
-        ? it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0)
-        : it.hours,
+      days: processedDays ? processedDays : null,
+      hours: totalHours,
       assignmentCode: it.assignmentCode,
       status: it.status,
       sheets: it.sheets
@@ -739,6 +778,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
                   onDayHoursChange={handleDayHoursChange}
                   onQuickFill={handleQuickFill}
                   onDateRangeChange={handleDateRangeChange}
+                  onSelectedWeeksChange={handleSelectedWeeksChange}
                   values={values}
                   setFieldValue={setFieldValue}
                   renderTrigger={renderTrigger} // Pass this to force re-render without recreating

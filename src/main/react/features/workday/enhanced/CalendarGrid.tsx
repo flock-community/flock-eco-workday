@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Typography, FormControlLabel, Checkbox, IconButton, Button, Select, MenuItem, Grid, Divider, Paper, Chip } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -22,6 +22,7 @@ interface CalendarGridProps {
   onDayHoursChange: (date: any, hours: number, type?: string) => void;
   onQuickFill: (hours: number, targetMonth?: dayjs.Dayjs) => void;
   onDateRangeChange?: (from: dayjs.Dayjs, to: dayjs.Dayjs, resetDays?: boolean) => void;
+  onSelectedWeeksChange?: (weeks: number[]) => void; // NEW: Callback to track selected weeks
   values?: any;
   setFieldValue?: (field: string, value: any) => void;
   renderTrigger?: number; // Added to trigger re-render without recreating component
@@ -53,6 +54,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   onDayHoursChange,
   onQuickFill,
   onDateRangeChange,
+  onSelectedWeeksChange, // NEW: Accept the callback
   renderTrigger = 0 // Default to 0 if not provided
 }) => {
   const classes = useStyles();
@@ -60,13 +62,19 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const [updateKey, setUpdateKey] = useState(0);
   // Multiple month periods
   const [monthPeriods, setMonthPeriods] = useState<MonthPeriod[]>([]);
+  // Track if we're currently changing months to avoid infinite loops
+  const [isChangingMonth, setIsChangingMonth] = useState(false);
 
   // Free day settings state
   const [freeDaySettings, setFreeDaySettings] = useState<FreeDaySettings>(() => {
     // Try to load from localStorage
     const savedSettings = localStorage.getItem('freeDaySettings');
     if (savedSettings) {
-      return JSON.parse(savedSettings);
+      try {
+        return JSON.parse(savedSettings);
+      } catch (e) {
+        console.error("Error parsing free day settings:", e);
+      }
     }
     return {
       enabled: false,
@@ -77,6 +85,8 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
   // Helper to get week numbers for a month
   const getWeeksInMonth = (date: dayjs.Dayjs): number[] => {
+    if (!date) return [];
+
     const startOfMonth = date.startOf('month');
     const endOfMonth = date.endOf('month');
 
@@ -94,7 +104,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
   // Initialize with a single month period based on currentMonth
   useEffect(() => {
-    if (monthPeriods.length === 0) {
+    if (currentMonth && monthPeriods.length === 0) {
       // Ensure we use the start of the month to avoid date selection issues
       const firstOfMonth = currentMonth.startOf('month');
       const weeksInMonth = getWeeksInMonth(firstOfMonth);
@@ -104,16 +114,39 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         selectedWeeks: weeksInMonth // Select all weeks by default
       }]);
     }
-  }, [currentMonth]);
+  }, [currentMonth, monthPeriods.length]);
+
+  // Stabilize the notify function to avoid re-renders
+  const notifySelectedWeeksChange = useCallback(() => {
+    if (!onSelectedWeeksChange) return;
+
+    // Get all selected weeks from all month periods
+    const allSelectedWeeks = monthPeriods.reduce((acc, month) => {
+      return [...acc, ...month.selectedWeeks];
+    }, [] as number[]);
+
+    // Notify parent component
+    onSelectedWeeksChange(allSelectedWeeks);
+  }, [monthPeriods, onSelectedWeeksChange]);
+
+  // NEW: Notify parent component when selected weeks change
+  // Separate from the function definition to control when it runs
+  useEffect(() => {
+    notifySelectedWeeksChange();
+  }, [notifySelectedWeeksChange]);
 
   // Listen for changes to state to force re-render for totals
   useEffect(() => {
-    setUpdateKey(Date.now());
+    setUpdateKey(prev => prev + 1);
   }, [state, events, leaveData, sickData, monthPeriods, showWeekends, renderTrigger]);
 
   // Save free day settings to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('freeDaySettings', JSON.stringify(freeDaySettings));
+    try {
+      localStorage.setItem('freeDaySettings', JSON.stringify(freeDaySettings));
+    } catch (e) {
+      console.error("Error saving free day settings:", e);
+    }
   }, [freeDaySettings]);
 
   const handleCurrentMonth = () => {
@@ -133,31 +166,42 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
   // Month period management
   const handleMonthChange = (monthId: string, newDate: string) => {
-    const newDateObj = dayjs(newDate).startOf('month');
+    if (isChangingMonth) return; // Prevent re-entry
 
-    // Update our internal month periods state
+    setIsChangingMonth(true); // Set flag to prevent loops
+
+    const newDateObj = dayjs(newDate).startOf('month');
+    const weeksInNewMonth = getWeeksInMonth(newDateObj);
+
+    // Batch state updates
     setMonthPeriods(prev => prev.map(month => {
       if (month.id === monthId) {
         return {
           ...month,
           date: newDateObj,
-          selectedWeeks: getWeeksInMonth(newDateObj) // Reset to all weeks when changing month
+          selectedWeeks: weeksInNewMonth // Reset to all weeks when changing month
         };
       }
       return month;
     }));
 
-    // Update the parent component's currentMonth state
-    onMonthChange(newDateObj);
+    // Updating parent state needs to be delayed to avoid React batching issues
+    setTimeout(() => {
+      try {
+        // Update the parent component's currentMonth state
+        onMonthChange(newDateObj);
 
-    // Also update the workday date range to match the new month's range
-    // This is the key fix - we adjust the workday date range to the new month's range
-    // and reset the days array when switching months
-    if (onDateRangeChange) {
-      const startOfMonth = newDateObj.startOf('month');
-      const endOfMonth = newDateObj.endOf('month');
-      onDateRangeChange(startOfMonth, endOfMonth, true);
-    }
+        // Also update the workday date range to match the new month's range
+        if (onDateRangeChange) {
+          const startOfMonth = newDateObj.startOf('month');
+          const endOfMonth = newDateObj.endOf('month');
+          onDateRangeChange(startOfMonth, endOfMonth, true);
+        }
+      } finally {
+        // Make sure we reset the flag even if there's an error
+        setIsChangingMonth(false);
+      }
+    }, 10);
   };
 
   const handleAddMonth = () => {
@@ -246,7 +290,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const handleDayHoursChange = (date, hours, type = 'regular') => {
     onDayHoursChange(date, hours, type);
     // Force a re-render to update totals
-    setUpdateKey(Date.now());
+    setUpdateKey(prev => prev + 1);
   };
 
   // Simple fill button handler - now with month-specific targeting
@@ -262,7 +306,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     onQuickFill(hours, targetMonthObj.date);
 
     // Force component to re-render with new state
-    setUpdateKey(Date.now());
+    setUpdateKey(prev => prev + 1);
   };
 
   // Check if a date is a free day according to settings
