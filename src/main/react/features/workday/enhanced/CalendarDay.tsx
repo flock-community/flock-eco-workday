@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Typography, TextField } from "@material-ui/core";
 import { useStyles } from "./styles";
 import { CalendarDay as CalendarDayType, WorkDayState, EventData, LeaveData, SickData } from "./types";
-import { EVENT_COLOR, VACATION_COLOR, SICKNESS_COLOR } from "./types";
+import { EVENT_COLOR, VACATION_COLOR, SICKNESS_COLOR, OVERLAP_COLOR } from "./types";
 
 interface CalendarDayProps {
   day: CalendarDayType;
@@ -10,6 +10,7 @@ interface CalendarDayProps {
   events: EventData[];
   leaveData: LeaveData[];
   sickData: SickData[];
+  overlapData?: { hours: number, description?: string }[];
   onHoursChange: (date: any, hours: number, type?: string) => void;
 }
 
@@ -19,6 +20,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
   events,
   leaveData,
   sickData,
+  overlapData = [],
   onHoursChange
 }) => {
   const classes = useStyles();
@@ -31,11 +33,13 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
   const hasEvent = isCurrentMonth && events && events.length > 0;
   const hasLeaveData = isCurrentMonth && leaveData && leaveData.length > 0;
   const hasSickData = isCurrentMonth && sickData && sickData.length > 0;
+  const hasOverlap = isCurrentMonth && overlapData && overlapData.length > 0;
 
   // Get the actual hours (or default to 8 only if hours is not provided)
   const eventHours = hasEvent ? (events[0].hours || 8) : 0;
   const leaveHours = hasLeaveData ? (leaveData[0].hours || 8) : 0;
   const sickHours = hasSickData ? (sickData[0].hours || 8) : 0;
+  const overlapHours = hasOverlap ? (overlapData[0].hours || 0) : 0;
 
   // Get status for leave days and sick days (approved or not)
   const leaveApproved = hasLeaveData && leaveData[0].status === 'APPROVED';
@@ -147,6 +151,17 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
           title={`${leaveData[0].description || "Vacation"} (${leaveApproved ? 'Approved' : 'Pending'})`}
         >
           {leaveHours}
+        </div>
+      )}
+
+      {/* Overlap indicator - top left - only show for current month days */}
+      {hasOverlap && (
+        <div
+          className={classes.overlapIndicator}
+          style={{ border: `2px solid ${OVERLAP_COLOR}`, color: OVERLAP_COLOR }}
+          title={overlapData[0].description || "Overlapping workday"}
+        >
+          {overlapHours}
         </div>
       )}
     </div>

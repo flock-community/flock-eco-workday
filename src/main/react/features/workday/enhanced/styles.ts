@@ -205,6 +205,23 @@ export const useStyles = makeStyles((theme) => ({
     color: "white",
     fontWeight: "bold",
   },
+  // Overlap indicator - top right, next to sick indicator
+  overlapIndicator: {
+    position: "absolute",
+    top: "2px",
+    right: "25px",
+    width: "20px",
+    height: "20px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "4px",
+    fontSize: "0.7rem",
+    color: "black",
+    fontWeight: "bold",
+    border: "2px solid #9CA3AF",
+    backgroundColor: "transparent",
+  },
   summaryRow: {
     display: "flex",
     alignItems: "center",

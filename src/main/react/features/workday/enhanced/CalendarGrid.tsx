@@ -4,7 +4,7 @@ import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useStyles } from "./styles";
 import { CalendarDay } from "./CalendarDay";
-import { EVENT_COLOR, SICKNESS_COLOR, VACATION_COLOR, WorkDayState } from "./types";
+import { EVENT_COLOR, SICKNESS_COLOR, VACATION_COLOR, OVERLAP_COLOR, WorkDayState } from "./types";
 import { calculateWeekTotal, generateCalendarData, updateCalendarWithState, calculateMonthTotal } from "./calendarUtils";
 import dayjs from "dayjs";
 
@@ -26,6 +26,7 @@ interface CalendarGridProps {
   values?: any;
   setFieldValue?: (field: string, value: any) => void;
   renderTrigger?: number;
+  overlappingWorkdays?: WorkDayState[]; // Workdays that might overlap with the current one
 }
 
 // Interface for free day settings
@@ -58,7 +59,8 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   onMonthsChange,
   values,
   setFieldValue,
-  renderTrigger = 0
+  renderTrigger = 0,
+  overlappingWorkdays = []
 }) => {
   const classes = useStyles();
   const [updateKey, setUpdateKey] = useState(0);
@@ -472,6 +474,40 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     return sickData.filter(sick => sick.date === formattedDate);
   };
 
+  // Function to detect overlapping workdays
+  const getOverlappingWorkdaysForDate = (date: dayjs.Dayjs) => {
+    if (!state || overlappingWorkdays.length === 0) return [];
+    
+    const overlaps = [];
+    
+    overlappingWorkdays.forEach(workday => {
+      // Skip if it's the same workday as current state
+      if (workday === state) return;
+      
+      // Check if the date is within this workday's range
+      if (workday.from && workday.to && workday.days && 
+          date.isBetween(workday.from, workday.to, 'day', '[]')) {
+        
+        // Calculate the index in the days array
+        const dayIndex = date.diff(workday.from, 'day');
+        
+        // Only add if the index is valid and hours > 0
+        if (dayIndex >= 0 && dayIndex < workday.days.length && workday.days[dayIndex] > 0) {
+          // Format the date period for the tooltip
+          const fromDate = workday.from.format('DD/MM/YYYY');
+          const toDate = workday.to.format('DD/MM/YYYY');
+          
+          overlaps.push({
+            hours: workday.days[dayIndex],
+            description: `Overlapping workday (${fromDate} - ${toDate})`
+          });
+        }
+      }
+    });
+    
+    return overlaps;
+  };
+
   // Calculate special hours (events, leave, sick)
   const calculateSpecialHours = (dataArray) => {
     let total = 0;
@@ -493,10 +529,38 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     return total;
   };
 
+  // Calculate overlapping hours for the current month periods
+  const calculateOverlappingHours = () => {
+    if (!state || overlappingWorkdays.length === 0) return 0;
+    
+    let total = 0;
+    
+    monthPeriods.forEach(month => {
+      const startOfMonth = month.date.startOf('month');
+      const endOfMonth = month.date.endOf('month');
+      
+      // Loop through each day in the month
+      let currentDay = startOfMonth;
+      while (currentDay.isSameOrBefore(endOfMonth)) {
+        const overlaps = getOverlappingWorkdaysForDate(currentDay);
+        
+        // Sum up hours from all overlaps for this day
+        overlaps.forEach(overlap => {
+          total += overlap.hours;
+        });
+        
+        currentDay = currentDay.add(1, 'day');
+      }
+    });
+    
+    return total;
+  };
+
   // Calculate totals
   const eventHours = calculateSpecialHours(events);
   const sickHours = calculateSpecialHours(sickData);
   const leaveHours = calculateSpecialHours(leaveData);
+  const overlapHours = calculateOverlappingHours();
 
   const calculateGrandTotal = () => {
     let total = 0;
@@ -726,6 +790,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                         events={getEventsForDate(day.date)}
                         leaveData={getLeaveDataForDate(day.date)}
                         sickData={getSickDataForDate(day.date)}
+                        overlapData={getOverlappingWorkdaysForDate(day.date)}
                         onHoursChange={handleDayHoursChange}
                       />
                     ))}
@@ -755,27 +820,51 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       {/* Legend and add month button */}
       <div className={classes.legendAndButtonRow}>
         <div className={classes.summaryRow}>
-          <div className={classes.summaryItem}>
-            <div className={classes.summaryColor} style={{ backgroundColor: SICKNESS_COLOR }}></div>
-            <Typography variant="body2" className={classes.summaryText}>Ziekte</Typography>
-            <div className={classes.summaryHours}>
-              <Typography variant="body2">{sickHours}</Typography>
+          {sickHours > 0 && (
+            <div className={classes.summaryItem}>
+              <div className={classes.summaryColor} style={{ backgroundColor: SICKNESS_COLOR }}></div>
+              <Typography variant="body2" className={classes.summaryText}>Ziekte</Typography>
+              <div className={classes.summaryHours}>
+                <Typography variant="body2">{sickHours}</Typography>
+              </div>
             </div>
-          </div>
-          <div className={classes.summaryItem}>
-            <div className={classes.summaryColor} style={{ backgroundColor: EVENT_COLOR }}></div>
-            <Typography variant="body2" className={classes.summaryText}>Event</Typography>
-            <div className={classes.summaryHours}>
-              <Typography variant="body2">{eventHours}</Typography>
+          )}
+          
+          {eventHours > 0 && (
+            <div className={classes.summaryItem}>
+              <div className={classes.summaryColor} style={{ backgroundColor: EVENT_COLOR }}></div>
+              <Typography variant="body2" className={classes.summaryText}>Event</Typography>
+              <div className={classes.summaryHours}>
+                <Typography variant="body2">{eventHours}</Typography>
+              </div>
             </div>
-          </div>
-          <div className={classes.summaryItem}>
-            <div className={classes.summaryColor} style={{ backgroundColor: VACATION_COLOR }}></div>
-            <Typography variant="body2" className={classes.summaryText}>Verlof</Typography>
-            <div className={classes.summaryHours}>
-              <Typography variant="body2">{leaveHours}</Typography>
+          )}
+          
+          {leaveHours > 0 && (
+            <div className={classes.summaryItem}>
+              <div className={classes.summaryColor} style={{ backgroundColor: VACATION_COLOR }}></div>
+              <Typography variant="body2" className={classes.summaryText}>Verlof</Typography>
+              <div className={classes.summaryHours}>
+                <Typography variant="body2">{leaveHours}</Typography>
+              </div>
             </div>
-          </div>
+          )}
+          
+          {overlapHours > 0 && (
+            <div className={classes.summaryItem}>
+              <div 
+                className={classes.summaryColor} 
+                style={{ 
+                  backgroundColor: 'transparent', 
+                  border: `2px solid ${OVERLAP_COLOR}`
+                }}
+              ></div>
+              <Typography variant="body2" className={classes.summaryText}>Overlappend</Typography>
+              <div className={classes.summaryHours}>
+                <Typography variant="body2">{overlapHours}</Typography>
+              </div>
+            </div>
+          )}
         </div>
 
         <Button

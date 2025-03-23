@@ -63,3 +63,4 @@ export type SickData = {
 export const EVENT_COLOR = "#FDE047"; // Yellow
 export const VACATION_COLOR = "#38BDF8"; // Blue
 export const SICKNESS_COLOR = "#B91C1C"; // Red
+export const OVERLAP_COLOR = "#9CA3AF"; // Grey for overlapping workdays
