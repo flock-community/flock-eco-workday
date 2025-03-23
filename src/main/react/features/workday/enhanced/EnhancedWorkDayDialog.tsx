@@ -300,21 +300,30 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
           setState(workDayState);
 
           // When editing an existing workday, determine all months in the range
-          const allMonths = getUniqueMonthsInRange(res.from, res.to);
+          // Extract all months from the state's date range
+          const months = [];
+          let current = dayjs(res.from).startOf('month');
+          const end = dayjs(res.to).endOf('month');
+          
+          // Add all months in the date range
+          while (current.isSameOrBefore(end, 'month')) {
+            months.push(dayjs(current));
+            current = current.add(1, 'month');
+          }
           
           // Debug logging - only do once
           if (!logRef.current) {
             console.log("Loading existing workday with range:", 
                         res.from.format('YYYY-MM-DD'), "to", 
                         res.to.format('YYYY-MM-DD'));
-            console.log("Detected months:", allMonths.map(m => m.format('YYYY-MM')));
+            console.log("Detected months:", months.map(m => m.format('YYYY-MM')));
             logRef.current = true;
           }
           
           // Set the first month as current and all months as displayed
-          if (allMonths.length > 0) {
-            setCurrentMonth(allMonths[0]);
-            initialMonthsRef.current = allMonths;
+          if (months.length > 0) {
+            setCurrentMonth(months[0]);
+            initialMonthsRef.current = months;
           }
 
           // Fetch additional data if we have a person ID
@@ -539,12 +548,34 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   // Handle date range change with resetDays parameter
   const handleDateRangeChange = (from, to, resetDays = false) => {
     if (!state) return;
+    
+    console.log("Date range change:", 
+                from ? from.format('YYYY-MM-DD') : 'null', 
+                "to", 
+                to ? to.format('YYYY-MM-DD') : 'null');
+
+    // Validate inputs - ensure we have valid dates
+    if (!from || !to) {
+      console.error("Invalid date range:", from, to);
+      return;
+    }
+
+    // Ensure the range makes sense (from date is before or equal to to date)
+    if (from.isAfter(to)) {
+      console.error("Invalid date range: from date is after to date");
+      return;
+    }
 
     // Clone the current state to avoid direct mutation
     const newState = { ...state };
 
     // Calculate the new day count
     const newDayCount = to.diff(from, 'day') + 1;
+    
+    // Sanity check to prevent creating a huge array
+    if (newDayCount > 366) {
+      console.warn("Very large date range detected:", newDayCount, "days");
+    }
 
     // Create a new days array or use the existing one
     let newDays;
@@ -577,6 +608,22 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     newState.days = newDays;
 
     setState(newState);
+    
+    // Update the months if necessary
+    const allMonths = [];
+    let currentDate = dayjs(from).startOf('month');
+    const endDate = dayjs(to).endOf('month');
+    
+    while (currentDate.isSameOrBefore(endDate, 'month')) {
+      allMonths.push(dayjs(currentDate));
+      currentDate = currentDate.add(1, 'month');
+    }
+    
+    if (allMonths.length > 0) {
+      initialMonthsRef.current = allMonths;
+      console.log("Updated months based on new date range:", 
+                  allMonths.map(m => m.format('YYYY-MM')));
+    }
   };
 
   // Helper function to check if a date is a weekend day
@@ -648,9 +695,20 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     return date.isBetween(state.from, state.to, 'day', '[]');
   };
 
-  // Date is within the current visible month
+  // Check if a date is within any of the visible months
   const isInCurrentVisibleMonth = (date) => {
     if (!currentMonth) return false;
+    
+    // Check if we have multiple months through initialMonthsRef
+    if (initialMonthsRef.current.length > 0) {
+      return initialMonthsRef.current.some(month => {
+        const startOfMonth = month.startOf('month');
+        const endOfMonth = month.endOf('month');
+        return date.isBetween(startOfMonth, endOfMonth, 'day', '[]');
+      });
+    }
+    
+    // Fallback to just checking current month
     const startOfMonth = currentMonth.startOf('month');
     const endOfMonth = currentMonth.endOf('month');
     return date.isBetween(startOfMonth, endOfMonth, 'day', '[]');
@@ -795,11 +853,14 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   };
 
   // Handle updates to month list from CalendarGrid
-  // This is disconnected to prevent infinite loops - we only save internally and don't react to this
+  // This updates our reference to the current months without causing re-renders
   const handleMonthsChange = useCallback((months: dayjs.Dayjs[]) => {
-    // Just update our ref but don't trigger any re-renders
-    // We will use this data when saving the form
-    // Do nothing - we don't need to update state here
+    if (months && months.length > 0) {
+      // Create new dayjs instances to avoid reference issues
+      initialMonthsRef.current = months.map(m => dayjs(m));
+      console.log("Parent updated with months:", 
+                  initialMonthsRef.current.map(m => m.format('YYYY-MM')));
+    }
   }, []);
 
   // Render the form elements (assignment, status, etc.)
@@ -809,6 +870,34 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     // Force initialMonthsRef to have at least one month
     if (initialMonthsRef.current.length === 0 && currentMonth) {
       initialMonthsRef.current = [currentMonth.startOf('month')];
+    }
+    
+    // Check if period spans multiple months and ensure all months are included
+    if (state && state.from && state.to) {
+      const fromMonth = dayjs(state.from).startOf('month');
+      const toMonth = dayjs(state.to).startOf('month');
+      
+      // If from and to are in different months, make sure both are in initialMonthsRef
+      if (!fromMonth.isSame(toMonth, 'month') && initialMonthsRef.current.length < 2) {
+        console.log("Period spans multiple months:", 
+                    fromMonth.format('YYYY-MM'), 
+                    toMonth.format('YYYY-MM'));
+        
+        // Create a comprehensive list of all months in the range
+        const months = [];
+        let current = dayjs(fromMonth);
+        
+        while (current.isSameOrBefore(toMonth, 'month')) {
+          months.push(dayjs(current)); // Create new instance to avoid reference issues
+          current = current.add(1, 'month');
+        }
+        
+        // Update initialMonthsRef if we found multiple months
+        if (months.length > 1) {
+          console.log("Updating initialMonthsRef to include all", months.length, "months");
+          initialMonthsRef.current = months;
+        }
+      }
     }
 
     return (
