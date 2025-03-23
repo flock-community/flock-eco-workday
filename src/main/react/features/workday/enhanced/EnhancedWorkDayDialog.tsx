@@ -4,7 +4,7 @@ import WorkIcon from "@material-ui/icons/Work";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
-import { WorkDayClient } from "../../../clients/WorkDayClient";
+import { WorkDayClient, WORK_DAY_PAGE_SIZE } from "../../../clients/WorkDayClient";
 import { TransitionSlider } from "../../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../../components/dialog";
 import { schema, WORKDAY_FORM_ID } from "../WorkDayForm";
@@ -76,6 +76,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   const [events, setEvents] = useState<EventData[]>([]);
   const [leaveData, setLeaveData] = useState<LeaveData[]>([]);
   const [sickData, setSickData] = useState<SickData[]>([]);
+  const [overlappingWorkdays, setOverlappingWorkdays] = useState<WorkDayState[]>([]);
   // NEW: Add state to track all displayed months - using useRef to prevent render loops
   const initialMonthsRef = useRef<dayjs.Dayjs[]>([]);
   const [exportLink, setExportLink] = useState<ExportStatusProps>({
@@ -256,6 +257,48 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     }
   };
 
+  // Function to fetch overlapping workdays for the person
+  const fetchOverlappingWorkdays = async (personId: string, currentWorkdayCode?: string) => {
+    if (!personId) return;
+    
+    try {
+      // Fetch all workdays for the person
+      const allWorkdays = [];
+      let page = 0;
+      let hasMore = true;
+      
+      // Fetch all pages of workdays
+      while (hasMore) {
+        const response = await WorkDayClient.findAllByPersonUuid(personId, page);
+        if (response && response.list && response.list.length > 0) {
+          allWorkdays.push(...response.list);
+          hasMore = response.list.length === WORK_DAY_PAGE_SIZE;
+        } else {
+          hasMore = false;
+        }
+        page++;
+      }
+      
+      // Filter out the current workday and convert to WorkDayState format
+      const overlappingWorkdaysList = allWorkdays
+        .filter(workday => workday.code !== currentWorkdayCode) // exclude current workday
+        .map(workday => ({
+          assignmentCode: workday.assignment.code,
+          from: workday.from,
+          to: workday.to,
+          days: workday.days,
+          hours: workday.hours,
+          status: workday.status,
+          sheets: workday.sheets,
+          personId: personId
+        }));
+      
+      setOverlappingWorkdays(overlappingWorkdaysList);
+    } catch (error) {
+      console.error("Error fetching overlapping workdays:", error);
+    }
+  };
+
   // Reset dialog state when it closes
   useEffect(() => {
     if (!open) {
@@ -264,6 +307,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
       setPrevCode(undefined);
       initialMonthsRef.current = [];
       logRef.current = false;
+      setOverlappingWorkdays([]);
     }
   }, [open]);
 
@@ -331,6 +375,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
             // We'll wait for currentMonth to be updated in the next render cycle
             setTimeout(() => {
               fetchAdditionalData(person.uuid);
+              fetchOverlappingWorkdays(person.uuid, code);
             }, 0);
           }
         });
@@ -347,6 +392,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
           // We'll wait for currentMonth to be updated in the next render cycle
           setTimeout(() => {
             fetchAdditionalData(person.uuid);
+            fetchOverlappingWorkdays(person.uuid);
           }, 0);
         }
       }
@@ -962,6 +1008,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
                   values={values}
                   setFieldValue={setFieldValue}
                   renderTrigger={renderTrigger}
+                  overlappingWorkdays={overlappingWorkdays}
                 />
               </Grid>
 
