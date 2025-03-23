@@ -107,48 +107,18 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
   // Initialize month periods based on initialMonths or currentMonth
   useEffect(() => {
-    // Skip if already initialized or no months available
-    if (initializedRef.current) return;
-    
+    // Log changes in key inputs that would affect initialization
     if (!logRef.current) {
       console.log("CalendarGrid initializing with months:", 
                   initialMonths ? initialMonths.map(m => m.format('YYYY-MM')) : 'none',
-                  "Current month:", currentMonth ? currentMonth.format('YYYY-MM') : 'none');
+                  "Current month:", currentMonth ? currentMonth.format('YYYY-MM') : 'none',
+                  "State from/to:", state?.from?.format('YYYY-MM-DD'), "/", state?.to?.format('YYYY-MM-DD'));
       logRef.current = true;
     }
     
-    // Make sure we have data to initialize with
-    if (initialMonths && initialMonths.length > 0) {
-      // Initialize from provided initial months - ensure each month is a new dayjs instance
-      const newMonthPeriods = initialMonths.map((month, index) => ({
-        id: `month-${Date.now()}-${index}`,
-        date: dayjs(month).startOf('month')
-      }));
-      
-      // Check if we actually have any months
-      if (newMonthPeriods.length > 0) {
-        setMonthPeriods(newMonthPeriods);
-        initializedRef.current = true;
-        console.log("Initialized with", newMonthPeriods.length, "months from initialMonths");
-        return;
-      }
-    }
-    
-    // Fall back to currentMonth if no initialMonths provided or they were empty
-    if (currentMonth && monthPeriods.length === 0) {
-      const newId = `month-${Date.now()}`;
-      setMonthPeriods([{
-        id: newId,
-        date: dayjs(currentMonth).startOf('month')
-      }]);
-      initializedRef.current = true;
-      console.log("Initialized with current month fallback");
-      return;
-    }
-    
-    // If we still don't have anything, but we have a state with from/to dates
-    if (monthPeriods.length === 0 && state && state.from && state.to) {
-      // Try to extract months from the state's date range
+    // Get months from state date range if available
+    if (state && state.from && state.to) {
+      // Extract all months from the state's date range
       const months = [];
       let current = dayjs(state.from).startOf('month');
       const end = dayjs(state.to).endOf('month');
@@ -160,14 +130,49 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       }
       
       if (months.length > 0) {
-        const newMonthPeriods = months.map((month, index) => ({
+        // Only update if the months have actually changed
+        const newMonthsStr = months.map(m => m.format('YYYY-MM')).join(',');
+        const currentMonthsStr = monthPeriods.map(p => p.date.format('YYYY-MM')).join(',');
+        
+        if (newMonthsStr !== currentMonthsStr) {
+          const newMonthPeriods = months.map((month, index) => ({
+            id: `month-${Date.now()}-${index}`,
+            date: month
+          }));
+          
+          setMonthPeriods(newMonthPeriods);
+          initializedRef.current = true;
+          console.log("Updated with", newMonthPeriods.length, "months from state date range");
+          return;
+        }
+      }
+    }
+    
+    // If no state date range or no change detected, check initialMonths
+    if (!initializedRef.current) {
+      // Initialize from provided initial months if available
+      if (initialMonths && initialMonths.length > 0) {
+        console.log("Using initialMonths:", initialMonths.map(m => m.format('YYYY-MM')));
+        const newMonthPeriods = initialMonths.map((month, index) => ({
           id: `month-${Date.now()}-${index}`,
-          date: month
+          date: dayjs(month).startOf('month')
         }));
         
         setMonthPeriods(newMonthPeriods);
         initializedRef.current = true;
-        console.log("Initialized with", newMonthPeriods.length, "months from state date range");
+        console.log("Initialized with", newMonthPeriods.length, "months from initialMonths");
+        return;
+      }
+      
+      // Fall back to currentMonth if no initialMonths provided or they were empty
+      if (currentMonth && monthPeriods.length === 0) {
+        const newId = `month-${Date.now()}`;
+        setMonthPeriods([{
+          id: newId,
+          date: dayjs(currentMonth).startOf('month')
+        }]);
+        initializedRef.current = true;
+        console.log("Initialized with current month fallback");
         return;
       }
     }
@@ -183,6 +188,9 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     
     // Only report changes if the months have actually changed
     if (reportedMonthsRef.current !== monthsString) {
+      // Log the change for debugging
+      console.log("Months changed from", reportedMonthsRef.current, "to", monthsString);
+      
       // Create completely new dayjs instances for each month to prevent reference issues
       const months = monthPeriods.map(period => dayjs(period.date));
       onMonthsChange(months);
@@ -223,11 +231,23 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   // Reset the initialization flag when key props change
   useEffect(() => {
     // If initialMonths change, we should re-initialize
+    if (initialMonths && initialMonths.length > 0) {
+      // Create a string representation of initialMonths for comparison
+      const monthsString = initialMonths.map(m => m.format('YYYY-MM')).join(',');
+      const currentMonthsString = monthPeriods.map(p => p.date.format('YYYY-MM')).join(',');
+      
+      // Only re-initialize if the months have actually changed
+      if (monthsString !== currentMonthsString) {
+        initializedRef.current = false;
+        console.log("Reset initialization flag due to changed initialMonths");
+      }
+    }
+    
     return () => {
       initializedRef.current = false;
       logRef.current = false;
     };
-  }, []);
+  }, [initialMonths, monthPeriods]);
 
   // Month selection handlers
   const handleYearMonthChange = (monthId: string, year: number, month: number) => {
@@ -255,6 +275,24 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     const newDate = dayjs(lastMonth.date).add(1, 'month').startOf('month');
     const newId = `month-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
+    // Calculate the new date range to notify parent
+    if (onDateRangeChange && state) {
+      // Find earliest and latest dates in current months
+      let earliestDate = state.from;
+      let latestDate = state.to;
+      
+      // Check if the new month extends beyond the current range
+      const newMonthStart = newDate.startOf('month');
+      const newMonthEnd = newDate.endOf('month');
+      
+      // If the new month extends the range, update it
+      if (newMonthEnd.isAfter(latestDate)) {
+        console.log("Extending date range to include new month:", newMonthEnd.format('YYYY-MM-DD'));
+        onDateRangeChange(earliestDate, newMonthEnd, false);
+      }
+    }
+
+    // Add the new month to the periods
     setMonthPeriods(prev => [
       ...prev,
       {
@@ -262,6 +300,8 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         date: newDate
       }
     ]);
+    
+    console.log("Added new month:", newDate.format('YYYY-MM'));
   };
 
   // Remove month
@@ -337,27 +377,34 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const calculateTotalDateRange = () => {
     if (monthPeriods.length === 0) return null;
 
+    // Simple calculation based on month periods
     let earliestDate = null;
     let latestDate = null;
 
     monthPeriods.forEach(month => {
-      const monthCalendarData = generateCalendarData(month.date, true, false);
-
-      if (monthCalendarData.length > 0) {
-        monthCalendarData.forEach(week => {
-          week.days.forEach(day => {
-            if (day.isCurrentMonth) {
-              if (earliestDate === null || day.date.isBefore(earliestDate)) {
-                earliestDate = day.date;
-              }
-              if (latestDate === null || day.date.isAfter(latestDate)) {
-                latestDate = day.date;
-              }
-            }
-          });
-        });
+      // Get the first and last day of each month
+      const firstDay = month.date.startOf('month');
+      const lastDay = month.date.endOf('month');
+      
+      if (earliestDate === null || firstDay.isBefore(earliestDate)) {
+        earliestDate = firstDay;
+      }
+      
+      if (latestDate === null || lastDay.isAfter(latestDate)) {
+        latestDate = lastDay;
       }
     });
+    
+    // Handle case where state has a wider range than visible months
+    if (state && state.from && state.to) {
+      if (earliestDate === null || state.from.isBefore(earliestDate)) {
+        earliestDate = state.from;
+      }
+      
+      if (latestDate === null || state.to.isAfter(latestDate)) {
+        latestDate = state.to;
+      }
+    }
 
     return { earliestDate, latestDate };
   };
