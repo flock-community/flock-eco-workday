@@ -165,24 +165,27 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   };
 
   // Month period management
-  const handleMonthChange = (monthId: string, newDate: string) => {
+  // Modified to handle separate year and month selections
+  const handleYearMonthChange = (monthId: string, year: number, month: number) => {
     if (isChangingMonth) return; // Prevent re-entry
 
     setIsChangingMonth(true); // Set flag to prevent loops
 
-    const newDateObj = dayjs(newDate).startOf('month');
+    // Create a new date based on the selected year and month
+    // Month is 0-based in dayjs (0 = January, 11 = December)
+    const newDateObj = dayjs().year(year).month(month).startOf('month');
     const weeksInNewMonth = getWeeksInMonth(newDateObj);
 
     // Batch state updates
-    setMonthPeriods(prev => prev.map(month => {
-      if (month.id === monthId) {
+    setMonthPeriods(prev => prev.map(monthPeriod => {
+      if (monthPeriod.id === monthId) {
         return {
-          ...month,
+          ...monthPeriod,
           date: newDateObj,
           selectedWeeks: weeksInNewMonth // Reset to all weeks when changing month
         };
       }
-      return month;
+      return monthPeriod;
     }));
 
     // Updating parent state needs to be delayed to avoid React batching issues
@@ -266,24 +269,29 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     }
   };
 
+  // Generate selectors for years
+  const getYearOptions = () => {
+    const currentYear = dayjs().year();
+    // Generate options for 3 years before and after current year
+    return Array.from({ length: 7 }, (_, i) => currentYear - 3 + i);
+  };
+
   // Generate selectors for months
   const getMonthOptions = () => {
-    // Generate months for 1 year before and after current date
-    const options = [];
-    const rangeStart = dayjs().subtract(1, "year").startOf('month');
-    const rangeEnd = dayjs().add(1, "year").startOf('month');
-
-    let date = rangeStart;
-    while (date.isBefore(rangeEnd) || date.isSame(rangeEnd, 'month')) {
-      const label = date.format("MMMM YYYY");
-      options.push({
-        value: date.format("YYYY-MM-01"),
-        label
-      });
-      date = date.add(1, "month");
-    }
-
-    return options;
+    return [
+      { value: 0, label: "Januari" },
+      { value: 1, label: "Februari" },
+      { value: 2, label: "Maart" },
+      { value: 3, label: "April" },
+      { value: 4, label: "Mei" },
+      { value: 5, label: "Juni" },
+      { value: 6, label: "Juli" },
+      { value: 7, label: "Augustus" },
+      { value: 8, label: "September" },
+      { value: 9, label: "Oktober" },
+      { value: 10, label: "November" },
+      { value: 11, label: "December" }
+    ];
   };
 
   // Create a wrapper for onDayHoursChange to trigger re-render
@@ -461,6 +469,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     return grandTotal;
   };
 
+  const yearOptions = getYearOptions();
   const monthOptions = getMonthOptions();
   const dateRange = calculateTotalDateRange();
   const dateRangeText = dateRange && dateRange.earliestDate && dateRange.latestDate
@@ -555,24 +564,38 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         // Calculate total for this month
         const monthTotal = calculateMonthTotal(updatedCalendarData);
 
-        // Define a safe month value for the Select
-        const safeMonthValue = month.date.format('YYYY-MM-01');
+        // Get current year and month from the date
+        const currentYear = month.date.year();
+        const currentMonthIndex = month.date.month(); // 0-based index
 
         return (
           <Paper key={`${month.id}-${updateKey}`} style={{ marginBottom: 24, padding: 16 }}>
             <div className={classes.monthHeaderRow}>
               {/* Month selector and week toggles in same row */}
               <div className={classes.monthSelectorContainer}>
+                {/* Year selector */}
                 <Select
-                  value={safeMonthValue}
-                  onChange={(e) => handleMonthChange(month.id, e.target.value as string)}
-                  style={{ minWidth: 200 }}
-                  className={classes.monthSelector}
-                  renderValue={() => month.date.format('MMMM YYYY')}
+                  value={currentYear}
+                  onChange={(e) => handleYearMonthChange(month.id, e.target.value as number, currentMonthIndex)}
+                  className={classes.yearSelector}
                 >
-                  {monthOptions.map(option => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
+                  {yearOptions.map(year => (
+                    <MenuItem key={year} value={year}>
+                      {year}
+                    </MenuItem>
+                  ))}
+                </Select>
+
+                {/* Month selector */}
+                <Select
+                  value={currentMonthIndex}
+                  onChange={(e) => handleYearMonthChange(month.id, currentYear, e.target.value as number)}
+                  style={{ minWidth: 150, marginLeft: 8 }}
+                  className={classes.monthSelector}
+                >
+                  {monthOptions.map(month => (
+                    <MenuItem key={month.value} value={month.value}>
+                      {month.label}
                     </MenuItem>
                   ))}
                 </Select>
