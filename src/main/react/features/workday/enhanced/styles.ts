@@ -76,7 +76,6 @@ export const useStyles = makeStyles((theme) => ({
     fontSize: '1rem',
     '& .MuiSelect-select': {
       fontSize: '1rem',
-      fontWeight: 'bold',
       padding: '10px 12px'
     }
   },

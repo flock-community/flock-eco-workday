@@ -64,6 +64,14 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const [monthPeriods, setMonthPeriods] = useState<MonthPeriod[]>([]);
   // Track if we're currently changing months to avoid infinite loops
   const [isChangingMonth, setIsChangingMonth] = useState(false);
+  // Track previous month to detect changes
+  const [prevMonthKey, setPrevMonthKey] = useState<string | null>(null);
+  // Track if this is first load
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  // Track if this is a new workday
+  const [isNewWorkday, setIsNewWorkday] = useState(true);
+  // Track previous workday state to detect changes
+  const [prevWorkdayKey, setPrevWorkdayKey] = useState<string | null>(null);
 
   // Free day settings state
   const [freeDaySettings, setFreeDaySettings] = useState<FreeDaySettings>(() => {
@@ -102,19 +110,134 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     return Array.from(weeks);
   };
 
+  // Generate a unique key for the current workday state to track changes
+  const generateWorkdayKey = (state: WorkDayState | null) => {
+    if (!state) return null;
+
+    // Use date ranges and a sample of hours to create a unique key
+    const fromStr = state.from ? state.from.format('YYYY-MM-DD') : 'none';
+    const toStr = state.to ? state.to.format('YYYY-MM-DD') : 'none';
+    const hoursSample = state.days ? state.days.slice(0, 5).join(',') : 'none';
+
+    return `${fromStr}-${toStr}-${hoursSample}`;
+  };
+
+  // Check if a specific week has any hours logged
+  const hasHoursInWeek = (calendarWeek) => {
+    if (!state || !state.days || state.days.length === 0) return false;
+
+    for (const day of calendarWeek.days) {
+      if (day.isCurrentMonth) {
+        const dayIndex = day.date.diff(state.from, 'day');
+        if (dayIndex >= 0 && dayIndex < state.days.length && state.days[dayIndex] > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  // Filter weeks that have hours
+  const filterWeeksWithHours = (month) => {
+    const calendarData = generateCalendarData(month, showWeekends, false);
+    const weeksWithHours = calendarData
+      .filter(week => hasHoursInWeek(week))
+      .map(week => week.weekNumber);
+
+    return weeksWithHours.length > 0 ? weeksWithHours : getWeeksInMonth(month);
+  };
+
   // Initialize with a single month period based on currentMonth
   useEffect(() => {
     if (currentMonth && monthPeriods.length === 0) {
       // Ensure we use the start of the month to avoid date selection issues
       const firstOfMonth = currentMonth.startOf('month');
       const weeksInMonth = getWeeksInMonth(firstOfMonth);
+
       setMonthPeriods([{
         id: `month-${Date.now()}`,
         date: firstOfMonth,
-        selectedWeeks: weeksInMonth // Select all weeks by default
+        selectedWeeks: weeksInMonth // Start with all weeks selected
       }]);
     }
   }, [currentMonth, monthPeriods.length]);
+
+  // Detect if workday is new or existing and track changes
+  useEffect(() => {
+    if (state) {
+      // Check if this is a new workday (all hours are 0) or an existing one
+      const noHours = !state.days || state.days.every(hour => hour === 0);
+      setIsNewWorkday(noHours);
+
+      // Generate a key to track changes to the workday
+      const currentWorkdayKey = generateWorkdayKey(state);
+
+      // If the workday has changed (switching between different workdays)
+      if (prevWorkdayKey !== null && prevWorkdayKey !== currentWorkdayKey) {
+        // Reset month periods when workday changes
+        if (currentMonth) {
+          const monthStart = currentMonth.startOf('month');
+          setMonthPeriods([{
+            id: `month-${Date.now()}`,
+            date: monthStart,
+            selectedWeeks: getWeeksInMonth(monthStart)
+          }]);
+        }
+      }
+
+      // Update previous workday tracker
+      setPrevWorkdayKey(currentWorkdayKey);
+    }
+  }, [state, currentMonth, prevWorkdayKey]);
+
+  // Handle month change detection
+  useEffect(() => {
+    if (!currentMonth) return;
+
+    const currentMonthKey = currentMonth.format('YYYY-MM');
+
+    // If month has changed
+    if (prevMonthKey !== null && prevMonthKey !== currentMonthKey) {
+      // When switching months, always show all weeks
+      const weeksInMonth = getWeeksInMonth(currentMonth);
+
+      setMonthPeriods(prev => prev.map(month => ({
+        ...month,
+        date: currentMonth.startOf('month'),
+        selectedWeeks: weeksInMonth // Reset to all weeks when switching months
+      })));
+    }
+
+    // Update previous month tracker
+    setPrevMonthKey(currentMonthKey);
+  }, [currentMonth, prevMonthKey]);
+
+  // Filter weeks for existing workdays with hours
+  useEffect(() => {
+    // Only run this after initial load
+    if (isFirstLoad) {
+      setIsFirstLoad(false);
+      return;
+    }
+
+    // Skip for new workdays or month changes
+    if (isNewWorkday || isChangingMonth) return;
+
+    // Only apply for existing workdays with data
+    if (state && state.days && currentMonth && !isChangingMonth) {
+      // This is an existing workday with data
+      if (!isNewWorkday) {
+        // Filter weeks with hours
+        const weeksWithHours = filterWeeksWithHours(currentMonth);
+
+        // Update selected weeks
+        setMonthPeriods(prev => prev.map(month => ({
+          ...month,
+          selectedWeeks: weeksWithHours
+        })));
+      }
+    }
+  }, [state, currentMonth, isFirstLoad, isNewWorkday, isChangingMonth]);
 
   // Stabilize the notify function to avoid re-renders
   const notifySelectedWeeksChange = useCallback(() => {
@@ -129,8 +252,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     onSelectedWeeksChange(allSelectedWeeks);
   }, [monthPeriods, onSelectedWeeksChange]);
 
-  // NEW: Notify parent component when selected weeks change
-  // Separate from the function definition to control when it runs
+  // Notify parent component when selected weeks change
   useEffect(() => {
     notifySelectedWeeksChange();
   }, [notifySelectedWeeksChange]);
@@ -182,7 +304,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         return {
           ...monthPeriod,
           date: newDateObj,
-          selectedWeeks: weeksInNewMonth // Reset to all weeks when changing month
+          selectedWeeks: weeksInNewMonth // Always show all weeks for newly selected month
         };
       }
       return monthPeriod;
@@ -225,7 +347,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       {
         id: `month-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         date: newDate,
-        selectedWeeks: weeksInMonth // Select all weeks by default
+        selectedWeeks: weeksInMonth // Select all weeks for new month
       }
     ]);
   };
