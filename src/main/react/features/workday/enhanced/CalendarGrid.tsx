@@ -308,7 +308,44 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const handleRemoveMonth = (monthId: string) => {
     setMonthPeriods(prev => {
       if (prev.length <= 1) return prev;
-      return prev.filter(month => month.id !== monthId);
+      
+      // Filter out the month to be removed
+      const updatedMonths = prev.filter(month => month.id !== monthId);
+      
+      // After removing the month, calculate the new date range
+      if (updatedMonths.length > 0 && onDateRangeChange && state) {
+        // Find the earliest and latest dates in the remaining months
+        let earliestDate = null;
+        let latestDate = null;
+        
+        updatedMonths.forEach(month => {
+          const firstDay = month.date.startOf('month');
+          const lastDay = month.date.endOf('month');
+          
+          if (earliestDate === null || firstDay.isBefore(earliestDate)) {
+            earliestDate = firstDay;
+          }
+          
+          if (latestDate === null || lastDay.isAfter(latestDate)) {
+            latestDate = lastDay;
+          }
+        });
+        
+        // Notify parent of the new date range
+        if (earliestDate && latestDate) {
+          console.log("Month removed, updating date range:", 
+                      earliestDate.format('YYYY-MM-DD'), 
+                      "to", 
+                      latestDate.format('YYYY-MM-DD'));
+          
+          // Use setTimeout to avoid state update during render
+          setTimeout(() => {
+            onDateRangeChange(earliestDate, latestDate, false);
+          }, 0);
+        }
+      }
+      
+      return updatedMonths;
     });
   };
 
@@ -395,17 +432,27 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       }
     });
     
-    // Handle case where state has a wider range than visible months
-    if (state && state.from && state.to) {
-      if (earliestDate === null || state.from.isBefore(earliestDate)) {
-        earliestDate = state.from;
-      }
+    // When a month is removed, we should update the state's date range accordingly
+    // but only if there are months visible
+    if (earliestDate && latestDate && onDateRangeChange && state && state.from && state.to) {
+      // Check if the current range is different from the state's range
+      const stateStart = state.from;
+      const stateEnd = state.to;
       
-      if (latestDate === null || state.to.isAfter(latestDate)) {
-        latestDate = state.to;
+      const needsUpdate = (
+        (earliestDate.isAfter(stateStart) && monthPeriods.length > 0) || 
+        (latestDate.isBefore(stateEnd) && monthPeriods.length > 0)
+      );
+      
+      // If we need to update and we haven't just updated
+      if (needsUpdate) {
+        console.log("Date range needs updating based on visible months:", 
+                    earliestDate.format('YYYY-MM-DD'), 
+                    "to", 
+                    latestDate.format('YYYY-MM-DD'));
       }
     }
-
+    
     return { earliestDate, latestDate };
   };
 

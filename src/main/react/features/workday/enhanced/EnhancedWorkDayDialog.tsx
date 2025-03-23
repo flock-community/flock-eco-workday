@@ -586,14 +586,20 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
       newDays = Array(newDayCount).fill(0);
     } else {
       if (newState.days) {
-        // If the range is reduced, truncate the array
-        if (newDayCount <= newState.days.length) {
-          newDays = newState.days.slice(0, newDayCount);
-        } else {
-          // If the range is expanded, add zeros for the new days
-          newDays = [...newState.days];
-          while (newDays.length < newDayCount) {
-            newDays.push(0);
+        // Handle both range expansion and reduction
+        const oldDayCount = newState.days.length;
+        newDays = Array(newDayCount).fill(0);
+        
+        // Map days from old range to new range
+        const oldFrom = newState.from;
+        
+        for (let i = 0; i < newDayCount; i++) {
+          const newDate = from.clone().add(i, 'day');
+          const oldIndex = newDate.diff(oldFrom, 'day');
+          
+          // Only copy if the date was in the old range
+          if (oldIndex >= 0 && oldIndex < oldDayCount) {
+            newDays[i] = newState.days[oldIndex];
           }
         }
       } else {
@@ -860,8 +866,13 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
       initialMonthsRef.current = months.map(m => dayjs(m));
       console.log("Parent updated with months:", 
                   initialMonthsRef.current.map(m => m.format('YYYY-MM')));
+      
+      // If current month is not in the list, update it
+      if (currentMonth && !months.some(m => m.isSame(currentMonth, 'month'))) {
+        setCurrentMonth(months[0]);
+      }
     }
-  }, []);
+  }, [currentMonth]);
 
   // Render the form elements (assignment, status, etc.)
   const renderFormFields = () => {
