@@ -14,6 +14,7 @@ export function DatePickerField({ name, ...props }: DatePickerFieldProps) {
     <Field id={name} name={name}>
       {({ field: { value }, form: { setFieldValue, isSubmitting } }) => (
         <DatePicker
+          id={name}
           value={value}
           format={DMY_DATE}
           onChange={(it) => {

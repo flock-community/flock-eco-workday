@@ -48,10 +48,24 @@ export function QuickLinks() {
   const openAddLeaveDay = () => setLeaveDayOpen(true);
   const handleCompleteLeaveDayDialog = () => setLeaveDayOpen(false);
 
-  const openAddTravelExpense = () => setTravelExpenseOpen(true);
+  const openAddTravelExpense = () => {
+    if (person === null) {
+      addError("No person selected");
+    } else {
+      setTravelExpenseOpen(true);
+    }
+  };
+
   const handleCompleteTravelExpenseDialog = () => setTravelExpenseOpen(false);
 
-  const openAddCostExpense = () => setCostExpenseOpen(true);
+  const openAddCostExpense = () => {
+    if (person === null) {
+      addError("No person selected");
+    } else {
+      setCostExpenseOpen(true);
+    }
+  };
+
   const handleCompleteCostExpenseDialog = () => setCostExpenseOpen(false);
 
   return (
