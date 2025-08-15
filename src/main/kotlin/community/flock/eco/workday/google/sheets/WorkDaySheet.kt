@@ -26,7 +26,7 @@ private enum class Tag(val value: String) {
 class WorkDaySheet(
     private val drive: WorkdayGoogleDrive,
     private val sheets: WorkdayGoogleSheets,
-    @Value("\${google.drive.sheets.workday.templateId}") private val templateId: String,
+    private val templateId: String,
 ) {
     fun export(workday: WorkDay): String {
         val file = drive.cloneAndShareFile(templateId, buildFileName(workday))

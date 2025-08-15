@@ -7,7 +7,9 @@ export async function Given_I_am_logged_in_as_user(page, username: string) {
   await page.getByLabel('Password').fill(username);
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.waitForURL('http://localhost:3000/**');
-  const welcomeMessage = await page.getByRole('heading', { level: 2, name: `Hi, ${username}!` });
+  // Capitalize first letter for welcome message format
+  const capitalizedUsername = username.charAt(0).toUpperCase() + username.slice(1);
+  const welcomeMessage = await page.getByRole('heading', { level: 2, name: `Hi, ${capitalizedUsername}!` });
   await expect(welcomeMessage).toBeVisible();
 }
 
@@ -91,7 +93,7 @@ export async function Then_I_see_the_new_work_days_for_the_month_with_hours(page
 }
 
 export async function Then_the_timesheet_was_uploaded_to_backend(page) {
-  const request = await page.waitForRequest(request => 
+  const request = await page.waitForRequest(request =>
     request.url().includes('/api/workdays') && request.method() === 'POST'
   );
   expect(request.method()).toBe('POST');
@@ -131,4 +133,4 @@ export async function Then_I_see_the_expense_as(page, status: string, reason: st
 export async function When_I_select_the_assignment(page, assignmentText: string) {
   await page.getByLabel('Assignment').click();
   await page.getByRole('option', { name: new RegExp(assignmentText, 'i') }).click();
-} 
+}
