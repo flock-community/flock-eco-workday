@@ -61,31 +61,31 @@ export function ExpenseDialog({
   };
 
   const handleSubmit = (it: CostExpense | TravelExpense) => {
-      if (id) {
-        ExpenseClient.put(id, {
-          ...it,
+    if (id) {
+      ExpenseClient.put(id, {
+        ...it,
         person: emptyPersonWithUUID(personId!),
-          expenseType:
-            type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
-          status: Status.REQUESTED,
-          date: it.date,
-          files: it.files,
-        }).then((res: CostExpense | TravelExpense) => {
-          onComplete?.(res);
-        });
-      } else {
-        ExpenseClient.post({
-          ...it,
-          expenseType:
-            type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
+        expenseType:
+          type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
+        status: Status.REQUESTED,
+        date: it.date,
+        files: it.files,
+      }).then((res: CostExpense | TravelExpense) => {
+        onComplete?.(res);
+      });
+    } else {
+      ExpenseClient.post({
+        ...it,
+        expenseType:
+          type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
         person: emptyPersonWithUUID(personId!),
-          status: Status.REQUESTED,
-          date: it.date,
-          files: it.files,
-        }).then((res: CostExpense | TravelExpense) => {
-          onComplete?.(res);
-        });
-      }
+        status: Status.REQUESTED,
+        date: it.date,
+        files: it.files,
+      }).then((res: CostExpense | TravelExpense) => {
+        onComplete?.(res);
+      });
+    }
   };
 
   const handleDelete = () => {
