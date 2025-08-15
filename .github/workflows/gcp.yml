@@ -62,8 +62,8 @@ jobs:
       - name: Start backend server in background
         run: |
           echo "Starting backend server..."
-          # Use CI profile which has Google Drive integration disabled
-          ./mvnw -B compile spring-boot:run -Dspring-boot.run.profiles=ci -Pdevelop > backend.log 2>&1 &
+          # Use develop profile with ci addon (Google Drive integration disabled)
+          ./mvnw -B compile spring-boot:run -Dspring-boot.run.profiles=develop,ci -Pdevelop > backend.log 2>&1 &
           echo $! > backend.pid
           echo "Backend server started with PID $(cat backend.pid)"
 
