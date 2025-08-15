@@ -11,9 +11,7 @@ import com.google.api.services.sheets.v4.model.FindReplaceRequest
 import com.google.api.services.sheets.v4.model.Request
 import com.google.api.services.sheets.v4.model.ValueRange
 import com.google.auth.http.HttpCredentialsAdapter
-import org.springframework.stereotype.Component
 
-@Component
 class WorkdayGoogleSheets(
     credentialsProvider: CredentialsProvider,
 ) {
