@@ -60,11 +60,14 @@ jobs:
         run: npx -y playwright install --with-deps
 
       - name: Start backend server in background
-        env:
-          GOOGLE_SHEET_TEMPLATE_ID: "16dSJHdp-LphqhpodNPrpDCOJLSJmDEe-NNGiZR0lbqM"
         run: |
           echo "Starting backend server..."
-          ./mvnw -B compile spring-boot:run -Dspring-boot.run.profiles=develop -Pdevelop > backend.log 2>&1 &
+          # Start backend with isolated environment - no Google Cloud credentials
+          env -i \
+            PATH="$PATH" \
+            JAVA_HOME="$JAVA_HOME" \
+            GOOGLE_SHEET_TEMPLATE_ID="16dSJHdp-LphqhpodNPrpDCOJLSJmDEe-NNGiZR0lbqM" \
+            ./mvnw -B compile spring-boot:run -Dspring-boot.run.profiles=develop -Pdevelop > backend.log 2>&1 &
           echo $! > backend.pid
           echo "Backend server started with PID $(cat backend.pid)"
 
@@ -117,7 +120,7 @@ jobs:
         run: ./mvnw -B package
 
       - name: Build and Deploy
-        run: ./mvnw -B compile jib:build -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
+        run: ./mvnw -B clean compile jib:build -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
 
       - name: Build and Deploy Development version
         run: ./mvnw -B compile jib:build -Pdevelop,frontend -Dnpm.ci.skip -Dnpm.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
