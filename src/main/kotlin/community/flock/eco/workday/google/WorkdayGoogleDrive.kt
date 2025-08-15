@@ -9,9 +9,7 @@ import com.google.api.services.drive.model.Permission
 import com.google.auth.http.HttpCredentialsAdapter
 import community.flock.eco.feature.user.services.UserAccountService
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.stereotype.Component
 
-@Component
 class WorkdayGoogleDrive(
     credentialsProvider: CredentialsProvider,
     private val userAccountService: UserAccountService,

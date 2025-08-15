@@ -1,6 +1,7 @@
 package community.flock.eco.workday
 
 import community.flock.eco.feature.user.UserConfiguration
+import community.flock.eco.workday.config.GoogleDriveConfiguration
 import community.flock.eco.workday.config.MailjetClientConfig
 import community.flock.eco.workday.config.WirespecConfiguration
 import community.flock.eco.workday.config.properties.PropertyConfig
@@ -29,5 +30,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     PropertyConfig::class,
     MailjetClientConfig::class,
     WirespecConfiguration::class,
+    GoogleDriveConfiguration::class,
 )
 class ApplicationConfiguration

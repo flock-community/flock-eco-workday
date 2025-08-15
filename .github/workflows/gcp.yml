@@ -62,12 +62,8 @@ jobs:
       - name: Start backend server in background
         run: |
           echo "Starting backend server..."
-          # Start backend with isolated environment - no Google Cloud credentials
-          env -i \
-            PATH="$PATH" \
-            JAVA_HOME="$JAVA_HOME" \
-            GOOGLE_SHEET_TEMPLATE_ID="16dSJHdp-LphqhpodNPrpDCOJLSJmDEe-NNGiZR0lbqM" \
-            ./mvnw -B compile spring-boot:run -Dspring-boot.run.profiles=develop -Pdevelop > backend.log 2>&1 &
+          # Use CI profile which has Google Drive integration disabled
+          ./mvnw -B compile spring-boot:run -Dspring-boot.run.profiles=ci -Pdevelop > backend.log 2>&1 &
           echo $! > backend.pid
           echo "Backend server started with PID $(cat backend.pid)"
 

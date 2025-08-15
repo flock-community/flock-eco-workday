@@ -24,7 +24,6 @@ private enum class Tag(val value: String) {
     EXPORT_DATE("#{exportDate}"),
 }
 
-@Component
 class WorkDaySheet(
     private val drive: WorkdayGoogleDrive,
     private val sheets: WorkdayGoogleSheets,
