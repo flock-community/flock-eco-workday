@@ -64,14 +64,16 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                     .and()
                     .logout().logoutSuccessUrl("/")
 
-            "DATABASE" -> userSecurityService.databaseLogin(http)
-                .loginPage("/")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
-            else -> userSecurityService.testLogin(http)
-                .loginPage("/")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
+            "DATABASE" ->
+                userSecurityService.databaseLogin(http)
+                    .loginPage("/")
+                    .loginProcessingUrl("/login")
+                    .defaultSuccessUrl("/", true)
+            else ->
+                userSecurityService.testLogin(http)
+                    .loginPage("/")
+                    .loginProcessingUrl("/login")
+                    .defaultSuccessUrl("/", true)
         }
     }
 
