@@ -56,8 +56,62 @@ jobs:
       - name: Eslint / prettier
         run: npm run lint
 
-      - name: Playwright
+      - name: Install Playwright browsers
+        run: npx -y playwright install --with-deps
+
+      - name: Start backend server in background
+        env:
+          GOOGLE_SHEET_TEMPLATE_ID: "16dSJHdp-LphqhpodNPrpDCOJLSJmDEe-NNGiZR0lbqM"
+        run: |
+          echo "Starting backend server..."
+          ./mvnw -B compile spring-boot:run -Dspring-boot.run.profiles=develop -Pdevelop > backend.log 2>&1 &
+          echo $! > backend.pid
+          echo "Backend server started with PID $(cat backend.pid)"
+
+      - name: Wait for backend to be ready
+        run: |
+          echo "Waiting for backend to start..."
+          # First check if the port is open
+          timeout 300 bash -c 'until nc -z localhost 8080; do sleep 2; done'
+          echo "Backend port is open"
+          # Then check if health endpoint is available (fallback to basic port check)
+          timeout 60 bash -c 'until curl -s -f http://localhost:8080/actuator/health > /dev/null || curl -s -f http://localhost:8080 > /dev/null; do sleep 2; done'
+          echo "Backend is ready!"
+
+      - name: Run Playwright tests
         run: npm run test:e2e
+
+      - name: Show backend logs on failure
+        if: failure()
+        run: |
+          echo "=== Backend Server Logs ==="
+          if [ -f backend.log ]; then
+            tail -100 backend.log
+          else
+            echo "No backend.log file found"
+          fi
+
+      - name: Upload Playwright test results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+            backend.log
+          retention-days: 30
+
+      - name: Stop backend server
+        if: always()
+        run: |
+          if [ -f backend.pid ]; then
+            kill $(cat backend.pid) || true
+            rm backend.pid
+          fi
+          if [ -f backend.log ]; then
+            rm backend.log
+          fi
 
       - name: Full build
         run: ./mvnw -B package
