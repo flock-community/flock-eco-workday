@@ -5,7 +5,6 @@ import community.flock.eco.workday.google.WorkdayGoogleSheets
 import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.utils.toWorkWeeks
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
