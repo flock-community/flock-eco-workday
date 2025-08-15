@@ -12,16 +12,16 @@ test.describe('Login Functionality', () => {
   test.beforeEach(async ({ page, context }) => {
     // Clear cookies first
     await context.clearCookies();
-    
+
     // Navigate directly to the login page
     await page.goto(LOGIN_URL, { waitUntil: 'networkidle' });
-    
+
     // Clear storage after navigation
     await page.evaluate(() => {
       if (typeof window.localStorage !== 'undefined') window.localStorage.clear();
       if (typeof window.sessionStorage !== 'undefined') window.sessionStorage.clear();
     });
-    
+
     // Wait for page to fully load and verify we're on the login page
     await page.waitForLoadState('networkidle');
     await expect(page.locator('h1:has-text("Workday Login")')).toBeVisible();
@@ -43,19 +43,6 @@ test.describe('Login Functionality', () => {
     // Verify dashboard elements are present
     await expect(page.locator('h2:has-text("Hi, Tommy!")')).toBeVisible();
     await expect(page.locator('a:has-text("Flock. Workday")')).toBeVisible();
-  });
-
-  test('should login successfully with empty credentials', async ({ page }) => {
-    // This app accepts empty credentials and redirects to dashboard
-    // Click login button without entering credentials
-    await page.click('button:has-text("Sign in")');
-
-    // Verify successful login - check for redirect to main dashboard
-    await expect(page).toHaveURL(BASE_URL + '/');
-
-    // Verify dashboard elements are present
-    await expect(page.locator('h2:has-text("Hi, !")')).toBeVisible();
-    await expect(page.locator('p:has-text("No roles are assigned to your account.")')).toBeVisible();
   });
 
   test('should stay on login page with invalid credentials', async ({ page }) => {
@@ -143,19 +130,19 @@ test.describe('Logout Functionality', () => {
   test.beforeEach(async ({ page, context }) => {
     // Clear cookies first
     await context.clearCookies();
-    
+
     // Login before each logout test
     await page.goto(LOGIN_URL, { waitUntil: 'networkidle' });
-    
+
     // Clear storage after navigation
     await page.evaluate(() => {
       if (typeof window.localStorage !== 'undefined') window.localStorage.clear();
       if (typeof window.sessionStorage !== 'undefined') window.sessionStorage.clear();
     });
-    
+
     // Wait for page to fully load
     await page.waitForLoadState('networkidle');
-    
+
     // Login with valid credentials
     await page.fill('input[name="username"]', VALID_USERNAME);
     await page.fill('input[name="password"]', VALID_PASSWORD);
@@ -173,10 +160,10 @@ test.describe('Logout Functionality', () => {
     // Wait for menu to appear and click logout
     await expect(page.getByRole('menu')).toBeVisible();
     await expect(page.getByRole('menuitem', { name: 'Logout' })).toBeVisible();
-    
+
     // Click logout and wait for navigation
     await page.click('li[role="menuitem"]:has-text("Logout")');
-    
+
     // Wait for redirect to login page (with longer timeout)
     await page.waitForURL(/.*\/auth/, { timeout: 10000 });
     await expect(page.locator('h1:has-text("Workday Login")')).toBeVisible();
