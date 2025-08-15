@@ -56,6 +56,9 @@ jobs:
       - name: Eslint / prettier
         run: npm run lint
 
+      - name: Playwright
+        run: npm run test:e2e
+
       - name: Full build
         run: ./mvnw -B package
 
