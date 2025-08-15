@@ -9,10 +9,21 @@ const INVALID_USERNAME = 'invalid@example.com';
 const INVALID_PASSWORD = 'wrongpassword';
 
 test.describe('Login Functionality', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, context }) => {
+    // Clear cookies first
+    await context.clearCookies();
+    
     // Navigate directly to the login page
-    await page.goto(LOGIN_URL);
-    // Verify we're on the login page
+    await page.goto(LOGIN_URL, { waitUntil: 'networkidle' });
+    
+    // Clear storage after navigation
+    await page.evaluate(() => {
+      if (typeof window.localStorage !== 'undefined') window.localStorage.clear();
+      if (typeof window.sessionStorage !== 'undefined') window.sessionStorage.clear();
+    });
+    
+    // Wait for page to fully load and verify we're on the login page
+    await page.waitForLoadState('networkidle');
     await expect(page.locator('h1:has-text("Workday Login")')).toBeVisible();
   });
 
@@ -129,9 +140,22 @@ test.describe('Login Functionality', () => {
 
 // Additional test for logout functionality
 test.describe('Logout Functionality', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, context }) => {
+    // Clear cookies first
+    await context.clearCookies();
+    
     // Login before each logout test
-    await page.goto(LOGIN_URL);
+    await page.goto(LOGIN_URL, { waitUntil: 'networkidle' });
+    
+    // Clear storage after navigation
+    await page.evaluate(() => {
+      if (typeof window.localStorage !== 'undefined') window.localStorage.clear();
+      if (typeof window.sessionStorage !== 'undefined') window.sessionStorage.clear();
+    });
+    
+    // Wait for page to fully load
+    await page.waitForLoadState('networkidle');
+    
     // Login with valid credentials
     await page.fill('input[name="username"]', VALID_USERNAME);
     await page.fill('input[name="password"]', VALID_PASSWORD);
@@ -164,8 +188,11 @@ test.describe('Logout Functionality', () => {
 });
 
 // Test hooks for setup and cleanup
-test.afterEach(async ({ page }) => {
-  // Clean up after each test if needed
-  // await page.evaluate(() => localStorage.clear());
-  // await page.evaluate(() => sessionStorage.clear());
+test.afterEach(async ({ page, context }) => {
+  // Clean up after each test to ensure isolation
+  await context.clearCookies();
+  await page.evaluate(() => {
+    if (typeof window.localStorage !== 'undefined') window.localStorage.clear();
+    if (typeof window.sessionStorage !== 'undefined') window.sessionStorage.clear();
+  });
 });
