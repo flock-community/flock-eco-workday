@@ -97,9 +97,11 @@
   },
   "lint-staged": {
     "src/main/react/**/*.{js,jsx,tsx,ts}": [
+      "eslint --fix",
       "prettier --write"
     ],
     "src/storybook/**/*.{js,jsx,tsx,ts}": [
+      "eslint --fix",
       "prettier --write"
     ],
     "*.{yml,json,md,html}": [
