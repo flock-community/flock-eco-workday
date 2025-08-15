@@ -151,7 +151,7 @@ export function WorkDayForm({ value, onSubmit }) {
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <AssignmentSelectorField
-                id={'Assignment'}
+                id={"Assignment"}
                 fullWidth
                 name="assignmentCode"
                 label="Assignment"

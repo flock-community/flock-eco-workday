@@ -80,8 +80,16 @@ export function AssignmentSelector({
 
   return (
     <FormControl {...props} error={!!error}>
-      <InputLabel id="assignment-select-label" shrink>{label}</InputLabel>
-      <Select id="assignment-select" labelId="assignment-select-label" value={state || ""} displayEmpty onChange={handleChange}>
+      <InputLabel id="assignment-select-label" shrink>
+        {label}
+      </InputLabel>
+      <Select
+        id="assignment-select"
+        labelId="assignment-select-label"
+        value={state || ""}
+        displayEmpty
+        onChange={handleChange}
+      >
         <MenuItem value="">
           <em>None</em>
         </MenuItem>
