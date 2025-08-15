@@ -14,6 +14,19 @@ import {
 } from './steps/workdaySteps';
 
 test.describe('Workday scenarios', () => {
+  test.beforeEach(async ({ page, context }) => {
+    // Clear cookies first
+    await context.clearCookies();
+  });
+
+  test.afterEach(async ({ page, context }) => {
+    // Clean up after each test to ensure isolation
+    await context.clearCookies();
+    await page.evaluate(() => {
+      if (typeof window.localStorage !== 'undefined') window.localStorage.clear();
+      if (typeof window.sessionStorage !== 'undefined') window.sessionStorage.clear();
+    });
+  });
 
   test('Submitting worked hours', async ({ page }) => {
     await Given_I_am_logged_in_as_user(page, 'tommy');
