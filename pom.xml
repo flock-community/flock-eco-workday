@@ -90,6 +90,7 @@
 
     <modules>
         <module>workday-application</module>
+        <module>workday-core</module>
     </modules>
 
     <dependencyManagement>
@@ -302,9 +303,16 @@
         </dependencies>
     </dependencyManagement>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+        </dependency>
+    </dependencies>
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+
         <pluginManagement>
             <plugins>
                 <!-- Kotlin Maven Plugin -->

@@ -1,0 +1,15 @@
+type Query
+
+input Pageable {
+    page:Int
+    size:Int
+    sort:Sort
+}
+
+input Sort {
+    order:String
+    direction:Direction
+}
+
+enum Direction {ASC DESC}
+
