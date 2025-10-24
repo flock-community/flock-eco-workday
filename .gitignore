@@ -42,6 +42,8 @@ secrets.yml
 .gradletasknamecache
 .sts4-cache
 node_modules
+node
+workday-application/node
 coverage
 .env
 

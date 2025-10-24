@@ -21,7 +21,7 @@
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:report": "playwright show-report",
     "generate": "wirespec compile --input-dir ./src/main/wirespec --package wirespec --output-dir ./src/main/react --language TypeScript",
-    "prepare": "husky install && npm run generate"
+    "prepare": "cd .. && husky install && cd workday-application && npm run generate"
   },
   "author": "",
   "license": "ISC",
