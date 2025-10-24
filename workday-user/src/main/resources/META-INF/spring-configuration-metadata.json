@@ -1,0 +1,66 @@
+{
+  "groups": [
+    {
+      "name": "flock.eco.feature.user",
+      "type": "community.flock.eco.feature.user.UserProperties",
+      "sourceType": "community.flock.eco.feature.user.UserProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "flock.eco.feature.user.secretType",
+      "type": "community.flock.eco.feature.user.SecretType",
+      "description": "Secret type",
+      "sourceType": "community.flock.eco.feature.user.UserProperties"
+    },
+    {
+      "name": "flock.eco.feature.user.secretLength",
+      "type": "java.lang.Integer",
+      "description": "Secret length",
+      "sourceType": "community.flock.eco.feature.user.UserProperties"
+    },
+    {
+      "name": "flock.eco.feature.user.secretAlphabet",
+      "type": "java.lang.String",
+      "description": "Secret alphabet",
+      "sourceType": "community.flock.eco.feature.user.UserProperties"
+    },
+    {
+      "name": "flock.eco.feature.user.secretResetMailFrom",
+      "type": "java.lang.String",
+      "description": "Secret reset mail from",
+      "sourceType": "community.flock.eco.feature.user.UserProperties"
+    },
+    {
+      "name": "flock.eco.feature.user.secretResetMailSubject",
+      "type": "java.lang.String",
+      "description": "Secret reset mail subject",
+      "sourceType": "community.flock.eco.feature.user.UserProperties"
+    },
+    {
+      "name": "flock.eco.feature.user.secretResetMailMessage",
+      "type": "java.lang.String",
+      "description": "Secret reset mail message",
+      "sourceType": "community.flock.eco.feature.user.UserProperties"
+    }
+  ],
+  "hints": [
+    {
+      "name": "flock.eco.feature.user.secretType",
+      "values": [
+        {
+          "value": "NONE",
+          "description": "No secret"
+        },
+        {
+          "value": "GENERATED",
+          "description": "Generated secret"
+        },
+        {
+          "value": "CHOSEN",
+          "description": "Chosen secret"
+        }
+      ]
+    }
+  ]
+}

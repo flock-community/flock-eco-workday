@@ -1,0 +1,315 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1591541616322-0
+      author: Flock. eco
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          sequenceExists:
+            sequenceName: hibernate_sequence
+      changes:
+        - createSequence:
+            incrementBy: 1
+            sequenceName: hibernate_sequence
+            startValue: 1
+  - changeSet:
+      id: 1591541616322-1
+      author: Flock. eco
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          sequenceExists:
+            schemaName: public
+            sequenceName: hibernate_sequence
+      changes:
+        - createSequence:
+            incrementBy: 1
+            sequenceName: hibernate_sequence
+            startValue: 1
+  - changeSet:
+      id: 1591541616322-2
+      author: Flock. eco
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: group_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                  name: user_id
+                  type: BIGINT
+            tableName: group_users
+  - changeSet:
+      id: 1591541616322-3
+      author: Flock. eco
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: userPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: code
+                  type: VARCHAR(255)
+              - column:
+                  name: created
+                  type: TIMESTAMP
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: enabled
+                  type: BOOLEAN
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+            tableName: user
+  - changeSet:
+      id: 1591541616322-4
+      author: Flock. eco
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: user_accountPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: created
+                  type: TIMESTAMP
+              - column:
+                  name: user_id
+                  type: BIGINT
+            tableName: user_account
+  - changeSet:
+      id: 1591541616322-5
+      author: Flock. eco
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  name: key
+                  type: VARCHAR(255)
+              - column:
+                  name: label
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: user_account_keyPK
+                  name: id
+                  type: BIGINT
+            tableName: user_account_key
+  - changeSet:
+      id: 1591541616322-6
+      author: Flock. eco
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  name: provider
+                  type: INT
+              - column:
+                  name: reference
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: user_account_oauthPK
+                  name: id
+                  type: BIGINT
+            tableName: user_account_oauth
+  - changeSet:
+      id: 1591541616322-7
+      author: Flock. eco
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  name: reset_code
+                  type: VARCHAR(255)
+              - column:
+                  name: secret
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: user_account_passwordPK
+                  name: id
+                  type: BIGINT
+            tableName: user_account_password
+  - changeSet:
+      id: 1591541616322-8
+      author: Flock. eco
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: authorities
+                  type: VARCHAR(255)
+            tableName: user_authorities
+  - changeSet:
+      id: 1591541616322-9
+      author: Flock. eco
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: user_groupPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: code
+                  type: VARCHAR(255)
+              - column:
+                  name: created
+                  type: TIMESTAMP
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+            tableName: user_group
+  - changeSet:
+      id: 1591541616322-10
+      author: Flock. eco
+      changes:
+        - addUniqueConstraint:
+            columnNames: code
+            constraintName: UC_USERCODE_COL
+            tableName: user
+  - changeSet:
+      id: 1591541616322-11
+      author: Flock. eco
+      changes:
+        - addUniqueConstraint:
+            columnNames: email
+            constraintName: UC_USEREMAIL_COL
+            tableName: user
+  - changeSet:
+      id: 1591541616322-12
+      author: Flock. eco
+      changes:
+        - addUniqueConstraint:
+            columnNames: code
+            constraintName: UC_USER_GROUPCODE_COL
+            tableName: user_group
+  - changeSet:
+      id: 1591541616322-13
+      author: Flock. eco
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: group_id
+            baseTableName: group_users
+            constraintName: FK1rwnd0gvlkn6u391l0twnm5hm
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: user_group
+            validate: true
+  - changeSet:
+      id: 1591541616322-14
+      author: Flock. eco
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: user_account
+            constraintName: FK4qaqge5ewvmfuwsp5eddfr4r2
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: user
+            validate: true
+  - changeSet:
+      id: 1591541616322-15
+      author: Flock. eco
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: id
+            baseTableName: user_account_password
+            constraintName: FK9udo0mvingid3agkghix26xlj
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: user_account
+            validate: true
+  - changeSet:
+      id: 1591541616322-16
+      author: Flock. eco
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: id
+            baseTableName: user_account_key
+            constraintName: FKl7g38fpt4i23asmogb63jswrx
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: user_account
+            validate: true
+  - changeSet:
+      id: 1591541616322-17
+      author: Flock. eco
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: user_authorities
+            constraintName: FKmj13d0mnuj4cd8b6htotbf9mm
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: user
+            validate: true
+  - changeSet:
+      id: 1591541616322-18
+      author: Flock. eco
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: group_users
+            constraintName: FKnmmsdv4v8ylwiiy5jy1kvrs10
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: user
+            validate: true
+  - changeSet:
+      id: 1591541616322-19
+      author: Flock. eco
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: id
+            baseTableName: user_account_oauth
+            constraintName: FKyx12ke39c2ab0gcmihw5lfia
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: user_account
+            validate: true
+

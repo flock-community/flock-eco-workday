@@ -91,6 +91,7 @@
     <modules>
         <module>workday-application</module>
         <module>workday-core</module>
+        <module>workday-user</module>
     </modules>
 
     <dependencyManagement>
