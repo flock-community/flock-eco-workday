@@ -56,6 +56,9 @@ jobs:
       - name: Eslint / prettier
         run: npm run lint
 
+      - name: Full build
+        run: ./mvnw -B package
+
       - name: Install Playwright browsers
         run: npx -y playwright install --with-deps
 
@@ -111,9 +114,6 @@ jobs:
           if [ -f backend.log ]; then
             rm backend.log
           fi
-
-      - name: Full build
-        run: ./mvnw -B package
 
       - name: Build and Deploy
         run: ./mvnw -B clean compile jib:build -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
