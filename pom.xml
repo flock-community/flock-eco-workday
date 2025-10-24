@@ -85,6 +85,7 @@
         <!-- Other properties -->
         <gpg.skip>true</gpg.skip>
         <npm.ci.skip>false</npm.ci.skip>
+        <quality.skip>false</quality.skip>
     </properties>
 
     <modules>
