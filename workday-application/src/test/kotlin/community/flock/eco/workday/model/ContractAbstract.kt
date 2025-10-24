@@ -1,5 +1,9 @@
 package community.flock.eco.workday.model
 
+import community.flock.eco.workday.application.model.ContractExternal
+import community.flock.eco.workday.application.model.ContractInternal
+import community.flock.eco.workday.application.model.ContractManagement
+import community.flock.eco.workday.application.model.Person
 import java.time.LocalDate
 import java.util.UUID
 

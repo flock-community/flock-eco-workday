@@ -1,11 +1,11 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.workday.model.CostExpense
-import community.flock.eco.workday.model.Expense
-import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.model.TravelExpense
-import community.flock.eco.workday.services.CostExpenseService
-import community.flock.eco.workday.services.TravelExpenseService
+import community.flock.eco.workday.application.model.CostExpense
+import community.flock.eco.workday.application.model.Expense
+import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.model.TravelExpense
+import community.flock.eco.workday.application.services.CostExpenseService
+import community.flock.eco.workday.application.services.TravelExpenseService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.LocalDate

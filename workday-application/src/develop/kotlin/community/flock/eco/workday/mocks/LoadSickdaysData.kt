@@ -1,9 +1,9 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.workday.forms.SickDayForm
-import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.model.SickDay
-import community.flock.eco.workday.services.SickDayService
+import community.flock.eco.workday.application.forms.SickDayForm
+import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.model.SickDay
+import community.flock.eco.workday.application.services.SickDayService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.LocalDate

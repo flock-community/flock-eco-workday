@@ -1,5 +1,8 @@
 package community.flock.eco.workday.model
 
+import community.flock.eco.workday.application.model.Assignment
+import community.flock.eco.workday.application.model.Client
+import community.flock.eco.workday.application.model.Person
 import java.time.LocalDate
 
 fun anAssignment(

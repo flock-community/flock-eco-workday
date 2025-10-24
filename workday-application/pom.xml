@@ -16,14 +16,14 @@
 
     <dependencies>
 
-        <!-- Flock Eco (will be replaced with vendored modules in Phase 4) -->
+        <!-- Workday vendored modules -->
         <dependency>
-            <groupId>community.flock.flock-eco</groupId>
-            <artifactId>flock-eco-feature-user</artifactId>
+            <groupId>flock.community.eco.workday</groupId>
+            <artifactId>workday-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>community.flock.flock-eco</groupId>
-            <artifactId>flock-eco-cloud-stub</artifactId>
+            <groupId>flock.community.eco.workday</groupId>
+            <artifactId>workday-user</artifactId>
         </dependency>
 
         <!-- Spring Boot -->
@@ -183,7 +183,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.version}</version>
                 <configuration>
-                    <mainClass>community.flock.eco.workday.ApplicationKt</mainClass>
+                    <mainClass>community.flock.eco.workday.application.ApplicationKt</mainClass>
                 </configuration>
             </plugin>
 
@@ -226,7 +226,7 @@
                         <image>eclipse-temurin:17-jre</image>
                     </from>
                     <container>
-                        <mainClass>community.flock.eco.workday.ApplicationKt</mainClass>
+                        <mainClass>community.flock.eco.workday.application.ApplicationKt</mainClass>
                     </container>
                 </configuration>
             </plugin>

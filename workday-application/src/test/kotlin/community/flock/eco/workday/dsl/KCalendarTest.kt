@@ -1,8 +1,11 @@
 package community.flock.eco.workday.dsl
 
-import community.flock.eco.workday.model.LeaveDay
-import community.flock.eco.workday.model.LeaveDayType
-import community.flock.eco.workday.model.Status.APPROVED
+import community.flock.eco.workday.application.dsl.KCalendar
+import community.flock.eco.workday.application.dsl.KEvent
+import community.flock.eco.workday.application.dsl.toCalendar
+import community.flock.eco.workday.application.model.LeaveDay
+import community.flock.eco.workday.application.model.LeaveDayType
+import community.flock.eco.workday.application.model.Status.APPROVED
 import community.flock.eco.workday.model.aPerson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

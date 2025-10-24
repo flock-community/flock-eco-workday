@@ -1,7 +1,7 @@
 package community.flock.eco.workday.helpers
 
-import community.flock.eco.workday.model.ContractType
-import community.flock.eco.workday.model.Person
+import community.flock.eco.workday.application.model.ContractType
+import community.flock.eco.workday.application.model.Person
 import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
 import java.time.LocalDate

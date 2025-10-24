@@ -1,12 +1,12 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.workday.model.Contract
-import community.flock.eco.workday.model.ContractExternal
-import community.flock.eco.workday.model.ContractInternal
-import community.flock.eco.workday.model.ContractManagement
-import community.flock.eco.workday.model.ContractService
-import community.flock.eco.workday.model.ContractType
-import community.flock.eco.workday.repository.ContractRepository
+import community.flock.eco.workday.application.model.Contract
+import community.flock.eco.workday.application.model.ContractExternal
+import community.flock.eco.workday.application.model.ContractInternal
+import community.flock.eco.workday.application.model.ContractManagement
+import community.flock.eco.workday.application.model.ContractService
+import community.flock.eco.workday.application.model.ContractType
+import community.flock.eco.workday.application.repository.ContractRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.LocalDate

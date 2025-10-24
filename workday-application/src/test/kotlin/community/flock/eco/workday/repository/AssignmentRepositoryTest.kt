@@ -1,37 +1,29 @@
 package community.flock.eco.workday.repository
 
-import community.flock.eco.workday.ApplicationConfiguration
-import community.flock.eco.workday.config.AppTestConfig
-import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Client
-import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.model.Project
+import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.model.Assignment
+import community.flock.eco.workday.application.model.Client
+import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.model.Project
+import community.flock.eco.workday.application.repository.AssignmentRepository
+import community.flock.eco.workday.application.repository.ClientRepository
+import community.flock.eco.workday.application.repository.PersonRepository
+import community.flock.eco.workday.application.repository.ProjectRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
 import org.springframework.data.domain.Pageable
-import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
 import java.util.UUID
 import javax.transaction.Transactional
 
-@SpringBootTest(classes = [ApplicationConfiguration::class, AppTestConfig::class])
-@AutoConfigureTestDatabase
-@AutoConfigureDataJpa
-@Import(CreateHelper::class)
-@ActiveProfiles(profiles = ["test"])
 @Transactional
 class AssignmentRepositoryTest(
     @Autowired private val personRepository: PersonRepository,
     @Autowired private val projectRepository: ProjectRepository,
     @Autowired private val clientRepository: ClientRepository,
     @Autowired private val repository: AssignmentRepository,
-) {
+) : WorkdayIntegrationTest() {
     private final val assignmentCode1 = UUID.randomUUID()
     private final val assignmentCode2 = UUID.randomUUID()
     private final val assignmentCode3 = UUID.randomUUID()

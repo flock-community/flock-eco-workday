@@ -1,24 +1,16 @@
 package community.flock.eco.workday.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import community.flock.eco.workday.Application
-import community.flock.eco.workday.authorities.SickdayAuthority
-import community.flock.eco.workday.config.AppTestConfig
-import community.flock.eco.workday.forms.SickDayForm
+import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.authorities.SickdayAuthority
+import community.flock.eco.workday.application.forms.SickDayForm
+import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.application.services.SickDayService
 import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.services.SickDayService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -31,14 +23,7 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-@SpringBootTest(classes = [Application::class, AppTestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestDatabase
-@AutoConfigureDataJpa
-@AutoConfigureWebClient
-@AutoConfigureMockMvc
-@Import(CreateHelper::class)
-@ActiveProfiles(profiles = ["test"])
-class SickDayControllerTest {
+class SickDayControllerTest : WorkdayIntegrationTest() {
     private val baseUrl: String = "/api/sickdays"
 
     @Autowired

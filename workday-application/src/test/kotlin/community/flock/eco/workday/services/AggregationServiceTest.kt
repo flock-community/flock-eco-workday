@@ -1,23 +1,18 @@
 package community.flock.eco.workday.services
 
-import community.flock.eco.workday.ApplicationConfiguration
-import community.flock.eco.workday.config.AppTestConfig
+import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.interfaces.Period
+import community.flock.eco.workday.application.model.Assignment
+import community.flock.eco.workday.application.model.ContractType
+import community.flock.eco.workday.application.model.WorkDay
+import community.flock.eco.workday.application.services.AggregationService
+import community.flock.eco.workday.application.services.countWorkDaysInPeriod
+import community.flock.eco.workday.application.utils.DateUtils.countWorkDaysInMonth
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
 import community.flock.eco.workday.helpers.OrganisationHelper
-import community.flock.eco.workday.interfaces.Period
-import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.ContractType
-import community.flock.eco.workday.model.WorkDay
-import community.flock.eco.workday.utils.DateUtils.countWorkDaysInMonth
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.test.context.ActiveProfiles
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
@@ -25,19 +20,13 @@ import javax.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@SpringBootTest(classes = [ApplicationConfiguration::class, AppTestConfig::class])
-@AutoConfigureTestDatabase
-@AutoConfigureDataJpa
-@AutoConfigureWebClient
 @Transactional
-@Import(CreateHelper::class, DataHelper::class, OrganisationHelper::class)
-@ActiveProfiles(profiles = ["test"])
 class AggregationServiceTest(
     @Autowired val dataHelper: DataHelper,
     @Autowired val createHelper: CreateHelper,
     @Autowired val organisationHelper: OrganisationHelper,
     @Autowired val aggregationService: AggregationService,
-) {
+) : WorkdayIntegrationTest() {
     private val firstDayOfYear = LocalDate.of(2020, 1, 1)
     private val lastDayOfYear = LocalDate.of(2020, 12, 31)
 

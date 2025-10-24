@@ -1,8 +1,8 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.feature.user.model.User
-import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.repository.PersonRepository
+import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.repository.PersonRepository
+import community.flock.eco.workday.user.model.User
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.Instant

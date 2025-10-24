@@ -1,14 +1,14 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.core.authorities.Authority
-import community.flock.eco.feature.user.forms.UserAccountPasswordForm
-import community.flock.eco.feature.user.model.User
-import community.flock.eco.feature.user.services.UserAccountService
-import community.flock.eco.feature.user.services.UserAuthorityService
-import community.flock.eco.workday.authorities.ExpenseAuthority
-import community.flock.eco.workday.authorities.LeaveDayAuthority
-import community.flock.eco.workday.authorities.SickdayAuthority
-import community.flock.eco.workday.authorities.WorkDayAuthority
+import community.flock.eco.workday.application.authorities.ExpenseAuthority
+import community.flock.eco.workday.application.authorities.LeaveDayAuthority
+import community.flock.eco.workday.application.authorities.SickdayAuthority
+import community.flock.eco.workday.application.authorities.WorkDayAuthority
+import community.flock.eco.workday.core.authorities.Authority
+import community.flock.eco.workday.user.forms.UserAccountPasswordForm
+import community.flock.eco.workday.user.model.User
+import community.flock.eco.workday.user.services.UserAccountService
+import community.flock.eco.workday.user.services.UserAuthorityService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import community.flock.eco.workday.mocks.User as MockUser

@@ -1,12 +1,14 @@
 package community.flock.eco.workday.services
 
+import community.flock.eco.workday.application.model.Assignment
+import community.flock.eco.workday.application.model.WorkDay
+import community.flock.eco.workday.application.repository.WorkDayRepository
+import community.flock.eco.workday.application.services.AssignmentService
+import community.flock.eco.workday.application.services.WorkDayService
+import community.flock.eco.workday.application.services.email.WorkdayEmailService
 import community.flock.eco.workday.forms.aWorkDayForm
-import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.WorkDay
 import community.flock.eco.workday.model.aWorkDay
 import community.flock.eco.workday.model.anAssignment
-import community.flock.eco.workday.repository.WorkDayRepository
-import community.flock.eco.workday.services.email.WorkdayEmailService
 import io.mockk.Called
 import io.mockk.every
 import io.mockk.mockk

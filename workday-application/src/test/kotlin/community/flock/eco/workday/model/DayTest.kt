@@ -1,6 +1,7 @@
 package community.flock.eco.workday.model
 
-import community.flock.eco.workday.utils.DateUtils
+import community.flock.eco.workday.application.model.Day
+import community.flock.eco.workday.application.utils.DateUtils
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import kotlin.test.assertEquals

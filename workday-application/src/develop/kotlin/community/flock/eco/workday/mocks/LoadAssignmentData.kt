@@ -1,7 +1,7 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.repository.AssignmentRepository
+import community.flock.eco.workday.application.model.Assignment
+import community.flock.eco.workday.application.repository.AssignmentRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.LocalDate

@@ -1,5 +1,6 @@
 package community.flock.eco.workday.forms
 
+import community.flock.eco.workday.application.forms.WorkDayForm
 import java.time.LocalDate
 
 fun aWorkDayForm() =

@@ -1,8 +1,8 @@
 package community.flock.eco.workday.utils
 
-import community.flock.eco.workday.model.Day
-import community.flock.eco.workday.utils.NumericUtils.calculateRevenue
-import community.flock.eco.workday.utils.NumericUtils.sum
+import community.flock.eco.workday.application.model.Day
+import community.flock.eco.workday.application.utils.NumericUtils.calculateRevenue
+import community.flock.eco.workday.application.utils.NumericUtils.sum
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate

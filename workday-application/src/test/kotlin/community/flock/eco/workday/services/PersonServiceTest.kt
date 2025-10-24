@@ -1,8 +1,9 @@
 package community.flock.eco.workday.services
 
-import community.flock.eco.feature.user.repositories.UserRepository
-import community.flock.eco.workday.model.Person
-import community.flock.eco.workday.repository.PersonRepository
+import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.repository.PersonRepository
+import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.user.repositories.UserRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

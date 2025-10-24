@@ -1,6 +1,7 @@
 package community.flock.eco.workday.model
 
-import community.flock.eco.feature.user.model.User
+import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.user.model.User
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime

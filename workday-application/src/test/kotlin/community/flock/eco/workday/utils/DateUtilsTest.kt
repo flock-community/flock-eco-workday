@@ -1,8 +1,8 @@
 package community.flock.eco.workday.utils
 
-import community.flock.eco.workday.utils.DateUtils.countWorkDaysInMonth
-import community.flock.eco.workday.utils.DateUtils.dateRange
-import community.flock.eco.workday.utils.DateUtils.isWorkingDay
+import community.flock.eco.workday.application.utils.DateUtils.countWorkDaysInMonth
+import community.flock.eco.workday.application.utils.DateUtils.dateRange
+import community.flock.eco.workday.application.utils.DateUtils.isWorkingDay
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.YearMonth

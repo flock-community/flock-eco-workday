@@ -1,5 +1,7 @@
 package community.flock.eco.workday.model
 
+import community.flock.eco.workday.application.model.Client
+
 fun aClient() =
     Client(
         id = 5,

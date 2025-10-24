@@ -1,32 +1,22 @@
 package community.flock.eco.workday.controllers
 
-import community.flock.eco.feature.user.forms.UserAccountPasswordForm
-import community.flock.eco.feature.user.services.UserAccountService
-import community.flock.eco.feature.user.services.UserSecurityService
-import community.flock.eco.feature.user.services.UserService
-import community.flock.eco.workday.Application
-import community.flock.eco.workday.config.AppTestConfig
-import community.flock.eco.workday.forms.EventForm
-import community.flock.eco.workday.forms.PersonForm
-import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.model.EventType
-import community.flock.eco.workday.repository.EventRepository
-import community.flock.eco.workday.services.EventRatingService
-import community.flock.eco.workday.services.EventService
-import community.flock.eco.workday.services.PersonService
+import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.forms.EventForm
+import community.flock.eco.workday.application.forms.PersonForm
+import community.flock.eco.workday.application.model.EventType
+import community.flock.eco.workday.application.repository.EventRepository
+import community.flock.eco.workday.application.services.EventRatingService
+import community.flock.eco.workday.application.services.EventService
+import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.user.forms.UserAccountPasswordForm
+import community.flock.eco.workday.user.services.UserAccountService
+import community.flock.eco.workday.user.services.UserSecurityService
+import community.flock.eco.workday.user.services.UserService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
@@ -36,15 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 import java.util.UUID
 
-@SpringBootTest(classes = [Application::class, AppTestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestDatabase
-@AutoConfigureDataJpa
-@AutoConfigureWebClient
-@AutoConfigureMockMvc
-@Import(CreateHelper::class)
-@ActiveProfiles(profiles = ["test"])
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class EventControllerTest() {
+class EventControllerTest() : WorkdayIntegrationTest() {
     private val baseUrl: String = "/api/events"
     private val adminAuthorities =
         setOf("EventAuthority.READ", "EventAuthority.WRITE", "EventAuthority.SUBSCRIBE", "EventAuthority.ADMIN")

@@ -1,9 +1,9 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.workday.forms.EventForm
-import community.flock.eco.workday.model.Event
-import community.flock.eco.workday.model.EventType
-import community.flock.eco.workday.services.EventService
+import community.flock.eco.workday.application.forms.EventForm
+import community.flock.eco.workday.application.model.Event
+import community.flock.eco.workday.application.model.EventType
+import community.flock.eco.workday.application.services.EventService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.LocalDate

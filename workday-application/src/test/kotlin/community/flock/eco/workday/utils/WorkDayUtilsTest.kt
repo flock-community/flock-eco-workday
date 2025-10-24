@@ -1,8 +1,9 @@
 package community.flock.eco.workday.utils
 
-import community.flock.eco.workday.model.Assignment
-import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.model.WorkDay
+import community.flock.eco.workday.application.model.Assignment
+import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.application.model.WorkDay
+import community.flock.eco.workday.application.utils.toWorkWeeks
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import java.time.LocalDate

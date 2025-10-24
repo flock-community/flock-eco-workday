@@ -1,34 +1,22 @@
 package community.flock.eco.workday.repository
 
-import community.flock.eco.workday.ApplicationConfiguration
-import community.flock.eco.workday.config.AppTestConfig
+import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.model.ContractExternal
+import community.flock.eco.workday.application.model.ContractInternal
+import community.flock.eco.workday.application.model.ContractType
+import community.flock.eco.workday.application.repository.ContractRepository
 import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.model.ContractExternal
-import community.flock.eco.workday.model.ContractInternal
-import community.flock.eco.workday.model.ContractType
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
 import javax.transaction.Transactional
 import kotlin.test.assertEquals
 
-@SpringBootTest(classes = [ApplicationConfiguration::class, AppTestConfig::class])
-@AutoConfigureTestDatabase
-@AutoConfigureDataJpa
-@AutoConfigureWebClient
 @Transactional
-@Import(CreateHelper::class)
-@ActiveProfiles(profiles = ["test"])
 class ContractRepositoryTest(
     @Autowired private val contractRepository: ContractRepository,
     @Autowired private val createHelper: CreateHelper,
-) {
+) : WorkdayIntegrationTest() {
     @Test
     fun `create and update internal contract`() {
         val person = createHelper.createPerson("Hello", "Bye")

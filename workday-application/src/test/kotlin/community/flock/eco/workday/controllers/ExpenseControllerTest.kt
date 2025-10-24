@@ -1,33 +1,26 @@
 package community.flock.eco.workday.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import community.flock.eco.feature.user.model.User
-import community.flock.eco.workday.Application
+import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.api.CostExpenseFileInput
 import community.flock.eco.workday.api.CostExpenseInput
-import community.flock.eco.workday.authorities.ExpenseAuthority
-import community.flock.eco.workday.config.AppTestConfig
+import community.flock.eco.workday.application.authorities.ExpenseAuthority
+import community.flock.eco.workday.application.controllers.produce
+import community.flock.eco.workday.application.model.CostExpense
+import community.flock.eco.workday.application.model.Document
+import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.application.model.TravelExpense
+import community.flock.eco.workday.application.services.CostExpenseService
+import community.flock.eco.workday.application.services.TravelExpenseService
 import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.model.CostExpense
-import community.flock.eco.workday.model.Document
-import community.flock.eco.workday.model.Status
-import community.flock.eco.workday.model.TravelExpense
-import community.flock.eco.workday.services.CostExpenseService
-import community.flock.eco.workday.services.TravelExpenseService
+import community.flock.eco.workday.user.model.User
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
@@ -40,23 +33,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 import java.util.UUID
 
-@SpringBootTest(
-    classes = [Application::class, AppTestConfig::class],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-)
-@AutoConfigureTestDatabase
-@AutoConfigureDataJpa
-@AutoConfigureWebClient
-@AutoConfigureMockMvc
-@Import(CreateHelper::class)
-@ActiveProfiles(profiles = ["test"])
 class ExpenseControllerTest(
     @Autowired private val mvc: MockMvc,
     @Autowired private val mapper: ObjectMapper,
     @Autowired private val createHelper: CreateHelper,
     @Autowired private val costExpenseService: CostExpenseService,
     @Autowired private val travExpenseService: TravelExpenseService,
-) {
+) : WorkdayIntegrationTest() {
     @Autowired
     private lateinit var travelExpenseService: TravelExpenseService
     private val baseUrl: String = "/api/expenses"

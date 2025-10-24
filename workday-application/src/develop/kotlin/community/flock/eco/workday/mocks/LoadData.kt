@@ -1,6 +1,6 @@
 package community.flock.eco.workday.mocks
 
-import community.flock.eco.feature.user.repositories.UserRepository
+import community.flock.eco.workday.user.repositories.UserRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 

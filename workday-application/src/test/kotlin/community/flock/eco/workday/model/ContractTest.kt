@@ -1,5 +1,6 @@
 package community.flock.eco.workday.model
 
+import community.flock.eco.workday.application.model.sumHoursWithinAPeriod
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import kotlin.test.assertEquals

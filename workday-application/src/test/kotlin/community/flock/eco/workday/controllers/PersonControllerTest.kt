@@ -2,28 +2,18 @@ package community.flock.eco.workday.controllers
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import community.flock.eco.feature.user.forms.UserAccountPasswordForm
-import community.flock.eco.feature.user.services.UserAccountService
-import community.flock.eco.feature.user.services.UserSecurityService
-import community.flock.eco.workday.Application
-import community.flock.eco.workday.config.AppTestConfig
-import community.flock.eco.workday.forms.PersonForm
-import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.services.PersonService
+import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.forms.PersonForm
+import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.user.forms.UserAccountPasswordForm
+import community.flock.eco.workday.user.services.UserAccountService
+import community.flock.eco.workday.user.services.UserSecurityService
 import org.hamcrest.Matchers
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -35,15 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.UUID
 
-@SpringBootTest(classes = [Application::class, AppTestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestDatabase
-@AutoConfigureDataJpa
-@AutoConfigureWebClient
-@AutoConfigureMockMvc
-@Import(CreateHelper::class)
-@ActiveProfiles(profiles = ["test"])
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PersonControllerTest {
+class PersonControllerTest : WorkdayIntegrationTest() {
     private val baseUrl: String = "/api/persons"
 
     @Autowired
@@ -58,7 +40,7 @@ class PersonControllerTest {
     @Autowired
     private lateinit var personService: PersonService
 
-    @BeforeAll
+    @BeforeEach
     fun setUp() {
         createActiveAndInactivePerson()
     }

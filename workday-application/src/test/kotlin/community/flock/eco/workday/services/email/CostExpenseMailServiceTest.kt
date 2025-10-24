@@ -1,8 +1,10 @@
 package community.flock.eco.workday.services.email
 
-import community.flock.eco.workday.config.properties.MailjetTemplateProperties
-import community.flock.eco.workday.model.CostExpense
-import community.flock.eco.workday.model.Status
+import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
+import community.flock.eco.workday.application.model.CostExpense
+import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.application.services.email.CostExpenseMailService
+import community.flock.eco.workday.application.services.email.EmailService
 import community.flock.eco.workday.model.aPerson
 import io.mockk.every
 import io.mockk.mockk
