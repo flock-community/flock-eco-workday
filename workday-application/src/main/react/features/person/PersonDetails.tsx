@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { Box } from "@material-ui/core";
-import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import { Person, PersonClient } from "../../clients/PersonClient";
 import { PersonWidget } from "../../components/person-widget/PersonWidget";
-import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { PersonDialog } from "./PersonDialog";
 import { ContractFeature } from "../contract/ContractFeature";
 import { WorkDayFeature } from "../workday/WorkDayFeature";

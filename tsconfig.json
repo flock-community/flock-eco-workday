@@ -15,7 +15,19 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "baseUrl": ".",
+    "paths": {
+      "@workday-core": ["workday-core/src/main/react"],
+      "@workday-core/*": ["workday-core/src/main/react/*"],
+      "@workday-user": ["workday-user/src/main/react"],
+      "@workday-user/*": ["workday-user/src/main/react/*"]
+    }
   },
+  "include": [
+    "workday-application/src/main/react/**/*",
+    "workday-core/src/main/react/**/*",
+    "workday-user/src/main/react/**/*"
+  ],
   "exclude": ["node_modules"]
 }

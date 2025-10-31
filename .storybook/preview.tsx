@@ -8,7 +8,7 @@ import '@fontsource/material-icons';
 
 import { CssBaseline, ThemeProvider } from '@material-ui/core';
 import { withThemeFromJSXProvider } from '@storybook/addon-themes';
-import { themeLight } from '../src/main/react/theme/theme-light';
+import { themeLight } from '../workday-application/src/main/react/theme/theme-light';
 import { darkTheme } from './themes';
 import { MemoryRouter } from "react-router";
 import React from "react";

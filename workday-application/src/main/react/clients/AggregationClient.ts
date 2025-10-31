@@ -1,7 +1,7 @@
 import {
   checkResponse,
   validateResponse,
-} from "@flock-community/flock-eco-core";
+} from "@workday-core";
 import { Dayjs } from "dayjs";
 import { ISO_8601_DATE } from "./util/DateFormats";
 import {

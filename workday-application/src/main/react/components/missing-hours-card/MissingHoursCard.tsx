@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { MissingHoursDetailDialog } from "./MissingHoursDetailDialog";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";

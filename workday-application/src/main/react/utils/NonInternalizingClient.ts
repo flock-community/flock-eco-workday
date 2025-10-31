@@ -3,7 +3,7 @@ import {
   QueryParameters,
   ResourceClient,
   ValidResponse,
-} from "@flock-community/flock-eco-core";
+} from "@workday-core";
 
 // FIXME: Use the one in PageableClient
 interface Pageable {

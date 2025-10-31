@@ -9,7 +9,7 @@ import {
 } from "../../clients/AssignmentClient";
 import { isDefined } from "../../utils/validation";
 import { makeStyles } from "@material-ui/core/styles";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 const useStyles = makeStyles({

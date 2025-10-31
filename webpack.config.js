@@ -2,17 +2,17 @@ const path = require('path')
 const HtmlWebPackPlugin = require('html-webpack-plugin')
 
 const htmlPlugin = new HtmlWebPackPlugin({
-  template: path.join(process.cwd(), 'src/main/react/index.html'),
+  template: path.join(__dirname, 'workday-application/src/main/react/index.html'),
   filename: './index.html',
 })
 
 module.exports = {
-  entry: path.join(process.cwd(), 'src/main/react'),
+  entry: path.join(__dirname, 'workday-application/src/main/react'),
 
   output: {
     publicPath: '/',
     filename: '[name].[contenthash].js',
-    path: path.join(process.cwd(), 'target/classes/static'),
+    path: path.join(__dirname, 'workday-application/target/classes/static'),
   },
 
   devtool: 'eval-source-map',
@@ -21,7 +21,7 @@ module.exports = {
     rules: [
       {
         test: /\.(js|jsx|ts|tsx)$/,
-        exclude: /node_modules[\\\/](?!(@flock-community)[\\\/]).*/,
+        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -42,6 +42,11 @@ module.exports = {
 
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    alias: {
+      '@workday-core': path.resolve(__dirname, 'workday-core/src/main/react'),
+      '@workday-user': path.resolve(__dirname, 'workday-user/src/main/react'),
+    },
+    modules: [path.resolve(__dirname, 'node_modules'), 'node_modules'],
   },
 
   plugins: [htmlPlugin],

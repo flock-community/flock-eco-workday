@@ -6,7 +6,7 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Switch from "@material-ui/core/Switch";
 import { ButtonGroup, Typography } from "@material-ui/core";
 import { TextField } from "formik-material-ui";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
 import { isDefined } from "../../utils/validation";
 import { usePerson } from "../../hooks/PersonHook";

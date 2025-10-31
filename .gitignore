@@ -49,7 +49,7 @@ coverage
 
 .husky
 
-/src/main/react/wirespec/
+*/src/main/react/wirespec/
 
 # Ignore generated credentials from google-github-actions/auth
 gha-creds-*.json

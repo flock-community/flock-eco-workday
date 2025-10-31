@@ -12,10 +12,10 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
 import makeStyles from '@material-ui/core/styles/makeStyles'
-import {ConfirmDialog} from '../../../workday-core/src/main/react/components/ConfirmDialog'
+import {ConfirmDialog} from '@workday-core/components/ConfirmDialog'
 import {Snackbar} from '@material-ui/core'
 import {User} from '../graphql/user'
-import {DialogTitleClosable} from '../../../workday-core/src/main/react/components/DialogTitleClosable'
+import {DialogTitleClosable} from '@workday-core/components/DialogTitleClosable'
 
 const useStyles = makeStyles((theme) => ({
   root: {

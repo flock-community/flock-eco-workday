@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient";
+import UserClient from "@workday-user/user/UserClient";
 import { useLoginStatus } from "./StatusHook";
-import { User } from "@flock-community/flock-eco-feature-user/src/main/react/graphql/user";
+import { User } from "@workday-user/graphql/user";
 
 let loading = false;
 let store: User | null = null;

@@ -3,7 +3,7 @@ import { Dialog, DialogTitle } from "@material-ui/core";
 import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
-import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
 import { ClientClient } from "../../clients/ClientClient";
 import { CLIENT_FORM_ID, ClientForm } from "./ClientForm";

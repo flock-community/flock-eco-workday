@@ -5,7 +5,7 @@ import { Field, Form, Formik } from "formik";
 import Grid from "@material-ui/core/Grid";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { TextField } from "formik-material-ui";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
 import dayjs from "dayjs";

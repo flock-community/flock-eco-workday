@@ -1,7 +1,7 @@
 import {
   checkResponse,
   validateResponse,
-} from "@flock-community/flock-eco-core/src/main/react/clients/utils";
+} from "@workday-core/clients/utils";
 
 const path = "/bootstrap";
 

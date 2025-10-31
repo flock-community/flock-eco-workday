@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Box, Dialog, DialogContent, Divider } from "@material-ui/core";
 import HealingIcon from "@material-ui/icons/Healing";
-import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { SickDayClient } from "../../clients/SickDayClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";

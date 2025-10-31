@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Card, Typography } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import CardHeader from "@material-ui/core/CardHeader";
 import List from "@material-ui/core/List";
 import ListItemText from "@material-ui/core/ListItemText";

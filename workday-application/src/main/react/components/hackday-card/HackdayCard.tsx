@@ -7,7 +7,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { highLightClass } from "../../theme/theme-light";
 import { HackdayDetailDialog } from "./HackdayDetailDialog";
-import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { hoursFormatter } from "../../utils/Hours";
 import { EventClient, FlockEvent } from "../../clients/EventClient";
 import { subscribeToEvent, unsubscribeFromEvent } from "../../utils/EventUtils";

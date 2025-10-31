@@ -3,7 +3,7 @@ import { Box, Card, Link, Typography } from "@material-ui/core";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import CardHeader from "@material-ui/core/CardHeader";
-import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { useHistory } from "react-router-dom";
 import { TodoClient } from "../../clients/TodoClient";
 

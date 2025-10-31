@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Dialog, DialogContent, Divider } from "@material-ui/core";
 import WorkIcon from "@material-ui/icons/Work";
-import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
+import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
@@ -15,7 +15,7 @@ import {
 } from "../../clients/ExpenseClient";
 import { ExpenseFormTravel } from "./ExpenseFormTravel";
 import { ExpenseFormCost } from "./ExpenseFormCost";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import {
   CostExpense,
   Expense,

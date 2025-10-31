@@ -6,7 +6,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import IconButton from '@material-ui/core/IconButton'
 import AddIcon from '@material-ui/icons/Add'
 import {createStyles, makeStyles} from '@material-ui/core/styles'
-import {Search} from '../../../workday-core/src/main/react/components/Search'
+import {Search} from '@workday-core/components/Search'
 
 const useStyles = makeStyles((theme) =>
   createStyles({

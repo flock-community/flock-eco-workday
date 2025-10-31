@@ -6,10 +6,10 @@ import {
   Route,
   Switch,
 } from "react-router-dom";
-import { UserFeature } from "@flock-community/flock-eco-feature-user/src/main/react/user/UserFeature";
+import { UserFeature } from "@workday-user/user/UserFeature";
 import { Box } from "@material-ui/core";
 import ThemeProvider from "@material-ui/styles/ThemeProvider";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { ApplicationLayout } from "./ApplicationLayout";
 import { ApplicationDrawer } from "./ApplicationDrawer";
 import { HomeFeature } from "../features/home/HomeFeature";
@@ -32,7 +32,7 @@ import LeaveDayPage from "../features/holiday/LeaveDayPage";
 import ExpensePage from "../features/expense/ExpensePage";
 import WorkDayPage from "../features/workday/WorkDayPage";
 import SickDayPage from "../features/sickday/SickDayPage";
-import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import AssignmentReport from "../features/report/Assignment/AssignmentReport";
 import ContractOverview from "../features/report/ContractOverview/ContractOverview";
 import AssignmentOverview from "../features/report/AssignmentOverview/AssignmentOverview";

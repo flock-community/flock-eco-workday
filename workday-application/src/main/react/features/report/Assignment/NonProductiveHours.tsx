@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { TableCell } from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
-import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { Dayjs } from "dayjs";
 import { ISO_8601_DATE } from "../../../clients/util/DateFormats";
 

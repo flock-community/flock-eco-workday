@@ -3,7 +3,7 @@ import InternalizingClient from "../utils/InternalizingClient";
 import {
   checkResponse,
   validateResponse,
-} from "@flock-community/flock-eco-core";
+} from "@workday-core";
 import dayjs, { Dayjs } from "dayjs";
 
 const path = "/api/events";

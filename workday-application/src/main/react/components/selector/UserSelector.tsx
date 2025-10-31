@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import UserClient from "@flock-community/flock-eco-feature-user/src/main/react/user/UserClient";
-import { User } from "@flock-community/flock-eco-feature-user/src/main/react/graphql/user";
+import UserClient from "@workday-user/user/UserClient";
+import { User } from "@workday-user/graphql/user";
 import {
   Card,
   CardContent,

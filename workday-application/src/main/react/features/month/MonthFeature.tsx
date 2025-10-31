@@ -18,7 +18,7 @@ import {
 } from "recharts";
 import CardHeader from "@material-ui/core/CardHeader";
 import { AggregationClient } from "../../clients/AggregationClient";
-import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import Button from "@material-ui/core/Button";
 import { useHistory } from "react-router-dom";
 import dayjs from "dayjs";

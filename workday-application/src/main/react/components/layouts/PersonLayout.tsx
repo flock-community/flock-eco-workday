@@ -1,5 +1,5 @@
 import React from "react";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { PersonSelector } from "../selector";
 import { Box } from "@material-ui/core";
 import { usePerson } from "../../hooks/PersonHook";

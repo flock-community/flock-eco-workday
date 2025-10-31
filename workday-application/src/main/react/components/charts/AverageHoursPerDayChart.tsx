@@ -10,7 +10,7 @@ import {
   Bar,
 } from "recharts";
 import PropTypes from "prop-types";
-import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { AggregationClient } from "../../clients/AggregationClient";
 
 type AverageHoursPerDayChartProps = {

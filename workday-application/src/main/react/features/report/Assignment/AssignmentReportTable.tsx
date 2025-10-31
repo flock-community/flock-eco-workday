@@ -5,7 +5,7 @@ import { Box, TableBody, TableContainer } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
-import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { makeStyles } from "@material-ui/core/styles";
 import AssignmentReportTableRow from "./AssignmentReportTableRow";
 import { Dayjs } from "dayjs";

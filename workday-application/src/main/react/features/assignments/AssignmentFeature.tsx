@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@material-ui/core";
 import { Person } from "../../clients/PersonClient";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 
 type AssignmentFeatureProps = {
   person: Person;

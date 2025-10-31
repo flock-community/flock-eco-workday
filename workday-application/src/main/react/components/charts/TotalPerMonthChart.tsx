@@ -9,7 +9,7 @@ import {
   BarChart,
   Bar,
 } from "recharts";
-import { AlignedLoader } from "@flock-community/flock-eco-core/src/main/react/components/AlignedLoader";
+import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { AggregationClient } from "../../clients/AggregationClient";
 
 type TotalPerMonthChartProps = {

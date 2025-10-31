@@ -9,8 +9,8 @@ import {
 } from "@material-ui/core";
 import HolidayIcon from "@material-ui/icons/WbSunny";
 import Typography from "@material-ui/core/Typography";
-import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
-import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
+import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
+import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { LeaveDayClient } from "../../clients/LeaveDayClient";
 import { HolidayForm } from "./HolidayForm";
