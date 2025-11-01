@@ -9,8 +9,10 @@ describe("Expense model", () => {
       description: "Software license",
       person: {},
       status: "REQUESTED",
-      amount: 120,
-      files: [],
+      costDetails: {
+        amount: 120,
+        files: [],
+      },
       type: "COST",
     });
     expect(result).toBeDefined();
@@ -24,8 +26,10 @@ describe("Expense model", () => {
       description: "Travel Costs November",
       person: {},
       status: "REQUESTED",
-      allowance: 0.19,
-      distance: 100,
+      travelDetails: {
+        allowance: 0.19,
+        distance: 100,
+      },
       files: [],
       type: "TRAVEL",
     });
