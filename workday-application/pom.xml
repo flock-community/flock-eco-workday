@@ -105,6 +105,13 @@
             <artifactId>google-api-services-sheets</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+        </dependency>
+
+
         <!-- Other -->
         <dependency>
             <groupId>net.sf.biweekly</groupId>
@@ -127,12 +134,6 @@
             <artifactId>springmockk</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -183,6 +184,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.version}</version>
                 <configuration>
+                    <skip>false</skip>
                     <mainClass>community.flock.eco.workday.application.ApplicationKt</mainClass>
                 </configuration>
             </plugin>
@@ -222,34 +224,17 @@
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
+                    <skip>false</skip>
                     <from>
                         <image>eclipse-temurin:17-jre</image>
                     </from>
+                    <to>
+                        <image>eu.gcr.io/flock-community/flock-eco-workday</image>
+                    </to>
                     <container>
                         <mainClass>community.flock.eco.workday.application.ApplicationKt</mainClass>
                     </container>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-resource-database</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>add-resource</goal>
-                        </goals>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/src/main/database</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
@@ -277,38 +262,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>develop</id>
-            <dependencies>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>add-develop-sources</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>add-source</goal>
-                                </goals>
-                                <configuration>
-                                    <sources>
-                                        <source>src/develop/kotlin</source>
-                                    </sources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
         <profile>
             <id>frontend</id>
             <build>

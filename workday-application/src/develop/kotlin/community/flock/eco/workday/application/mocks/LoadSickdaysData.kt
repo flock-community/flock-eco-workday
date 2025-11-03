@@ -1,4 +1,4 @@
-package community.flock.eco.workday.mocks
+package community.flock.eco.workday.application.mocks
 
 import community.flock.eco.workday.application.forms.SickDayForm
 import community.flock.eco.workday.application.model.Person

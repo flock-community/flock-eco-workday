@@ -26,6 +26,27 @@ npm install
 Run `application` and `npm start`. Make sure you're using the correct node version. If you have nvm installed,
 run `nvm use` to set node to the version defined in .nvmrc
 
+### Run with docker locally
+
+Make sure to build the application with develop profile, and optionally with the frontend profile
+
+```bash
+./mvnw package -DskipTests -Pdevelop -Pfrontend
+```
+
+Then run a docker container. Be sure to include the GOOGLE_APPLICATION_CREDENTIALS to also use the Google Worksheet
+integration. Alternatively, you can disable the google feature with the `flock.eco.workday.google.enabled=false`
+property
+
+```bash
+ docker run --rm -it -p 8080:8080 \
+    -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/application_default_credentials.json \
+    -v $HOME/.config/gcloud/application_default_credentials.json:/tmp/keys/application_default_credentials.json:ro \
+    -e spring.profiles.active=develop \
+    eu.gcr.io/flock-community/flock-eco-workday:latest
+```
+
+
 ## Users
 
 | User                     | Password    | Role  |

@@ -1,4 +1,4 @@
-package community.flock.eco.workday.mocks
+package community.flock.eco.workday.application.mocks
 
 import community.flock.eco.workday.application.authorities.ExpenseAuthority
 import community.flock.eco.workday.application.authorities.LeaveDayAuthority
@@ -11,7 +11,7 @@ import community.flock.eco.workday.user.services.UserAccountService
 import community.flock.eco.workday.user.services.UserAuthorityService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
-import community.flock.eco.workday.mocks.User as MockUser
+import community.flock.eco.workday.application.mocks.User as MockUser
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])

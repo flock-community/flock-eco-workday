@@ -11,7 +11,7 @@
     "lint:prettier": "prettier --check './workday-application/src/{main/react,storybook}/**/*.{js,jsx,ts,tsx}'",
     "lint:prettier:fix": "prettier --write './workday-application/src/{main/react,storybook}/**/*.{js,jsx,ts,tsx}'",
     "start": "npm run start:local",
-    "start:local": "webpack-dev-server --mode development --env.proxy local",
+    "start:local": "webpack-dev-server --mode development --env proxy=local",
     "build": "NODE_OPTIONS=--openssl-legacy-provider tsc && NODE_OPTIONS=--openssl-legacy-provider webpack --mode production",
     "storybook": "sb dev",
     "test": "jest",

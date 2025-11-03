@@ -56,14 +56,47 @@ module.exports = {
     host: 'localhost',
     historyApiFallback: true,
     proxy: {
-      '/api/**': 'http://localhost:8080',
-      '/graphql': 'http://localhost:8080',
-      '/login': 'http://localhost:8080',
-      '/logout': 'http://localhost:8080',
-      '/bootstrap': 'http://localhost:8080',
-      '/tasks/*': 'http://localhost:8080',
-      '/export/*': 'http://localhost:8080',
-      '/oauth2/*': 'http://localhost:8080',
+      '/api/**': {
+        target: 'http://localhost:8080',
+        changeOrigin: false,
+        cookieDomainRewrite: 'localhost',
+      },
+      '/graphql': {
+        target: 'http://localhost:8080',
+        changeOrigin: false,
+        cookieDomainRewrite: 'localhost',
+      },
+      '/login': {
+        target: 'http://localhost:8080',
+        changeOrigin: false,
+        cookieDomainRewrite: 'localhost',
+      },
+      '/logout': {
+        target: 'http://localhost:8080',
+        changeOrigin: false,
+        cookieDomainRewrite: 'localhost',
+      },
+      '/bootstrap': {
+        target: 'http://localhost:8080',
+        changeOrigin: false,
+        cookieDomainRewrite: 'localhost',
+      },
+      '/tasks/*': {
+        target: 'http://localhost:8080',
+        changeOrigin: false,
+        cookieDomainRewrite: 'localhost',
+      },
+      '/export/*': {
+        target: 'http://localhost:8080',
+        changeOrigin: false,
+        cookieDomainRewrite: 'localhost',
+      },
+      '/oauth2/*': {
+        target: 'http://localhost:8080',
+        changeOrigin: false,
+        cookieDomainRewrite: 'localhost',
+      },
+      '/images/**': 'http://localhost:8080',
     },
   },
 }
