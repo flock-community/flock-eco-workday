@@ -5,6 +5,15 @@ export const useStyles = makeStyles((theme) => ({
     margin: "auto",
     maxWidth: 900,
   },
+  // Normalize typography across all nested components inside the dialog
+  typographyRoot: {
+    fontFamily: theme.typography.fontFamily,
+    fontSize: theme.typography.body1.fontSize,
+    lineHeight: (theme.typography.body1 as any).lineHeight || 1.5,
+    "& *, & .MuiTypography-root, & .MuiButton-root, & .MuiInputBase-root, & .MuiFormControlLabel-label, & .MuiChip-label": {
+      fontFamily: theme.typography.fontFamily,
+    },
+  },
   exportSnackBar: {
     display: "flex",
     justifyItems: "center",

@@ -364,7 +364,7 @@ export function EnhancedWorkDayDialog({
           subheadline="Add your workday."
           onClose={handleClose}
         />
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent className={`${classes.dialogContent} ${classes.typographyRoot}`}>
           <UserAuthorityUtil has="WorkDayAuthority.ADMIN">
             <Box my="1rem">
               <Typography variant={"h5"} component={"h2"}>
