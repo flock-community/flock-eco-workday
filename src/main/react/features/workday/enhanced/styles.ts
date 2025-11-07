@@ -169,6 +169,9 @@ export const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.grey[100],
     borderBottom: `1px solid ${theme.palette.grey[300]}`,
     fontWeight: "bold",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   // Event indicator - bottom right
   eventIndicator: {
