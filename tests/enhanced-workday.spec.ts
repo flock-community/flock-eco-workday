@@ -762,6 +762,124 @@ test.describe('Enhanced Workday Dialog', () => {
     await Then_I_see_day_with_hours(page, 24, 8);
   });
 
+  test('should allow editing empty first partial week in existing workday', async ({ page }) => {
+    await Given_I_am_logged_in_as_user(page, 'ernie');
+    await When_I_go_to_my_work_days(page);
+    await When_I_click_the_button(page, 'Add');
+    await When_I_select_the_assignment(page, 'Client D');
+
+    // Change to March 2025
+    await When_I_change_month_selector_to(page, 0, 2025, 2); // Month 2 = March (0-indexed)
+    await page.waitForTimeout(2000);
+
+    // Fill hours ONLY for days in March (not the partial week in February)
+    // Use quick fill which will fill March 3-31 (weekdays in March)
+    await When_I_use_quick_fill_with_hours(page, 8, 0);
+    await page.waitForTimeout(1000);
+
+    // Save the workday
+    await When_I_click_the_button(page, 'Save');
+    await page.waitForURL('**/workdays', { timeout: 10000 });
+
+    // Reopen the workday
+    await page.waitForTimeout(1000);
+    const firstRow = page.locator('table tbody tr').first();
+    await firstRow.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRow.click({ force: true, timeout: 30000 });
+
+    // Wait for dialog to open
+    await Then_I_see_the_calendar_grid(page);
+    await page.waitForTimeout(1000);
+
+    // Now try to add hours to Feb 24 (Monday in the first partial week)
+    // This week was NOT filled initially (state.from = March 3 or later)
+    await When_I_fill_hours_for_a_specific_day(page, 24, 7);
+
+    // Verify hours were set in the UI
+    await Then_I_see_day_with_hours(page, 24, 7);
+
+    // Save the workday again
+    await When_I_click_the_button(page, 'Save');
+    await page.waitForURL('**/workdays', { timeout: 10000 });
+
+    // Reopen once more to verify hours persisted
+    await page.waitForTimeout(1000);
+    const firstRowAgain = page.locator('table tbody tr').first();
+    await firstRowAgain.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRowAgain.click({ force: true, timeout: 30000 });
+
+    // Wait for dialog to open
+    await Then_I_see_the_calendar_grid(page);
+    await page.waitForTimeout(1000);
+
+    // Verify the hours are still there for Feb 24
+    await Then_I_see_day_with_hours(page, 24, 7);
+
+    // Also verify the March hours are still there (day 3 should still have 8 hours)
+    await Then_I_see_day_with_hours(page, 3, 8);
+  });
+
+  test('should allow re-setting hours in first week after clearing them', async ({ page }) => {
+    await Given_I_am_logged_in_as_user(page, 'ernie');
+    await When_I_go_to_my_work_days(page);
+    await When_I_click_the_button(page, 'Add');
+    await When_I_select_the_assignment(page, 'Client D');
+
+    // Change to January 2025 (starts Wednesday, first week includes Dec 30-31)
+    await When_I_change_month_selector_to(page, 0, 2025, 0); // Month 0 = January
+    await page.waitForTimeout(2000);
+
+    // Fill the entire month with 8 hours
+    await When_I_use_quick_fill_with_hours(page, 8, 0);
+    await page.waitForTimeout(1000);
+
+    // Now manually clear the first week (Jan 1-3, which are Wed-Fri)
+    await When_I_fill_hours_for_a_specific_day(page, 1, 0); // Wed Jan 1
+    await When_I_fill_hours_for_a_specific_day(page, 2, 0); // Thu Jan 2
+    await When_I_fill_hours_for_a_specific_day(page, 3, 0); // Fri Jan 3
+
+    // Save the workday
+    await When_I_click_the_button(page, 'Save');
+    await page.waitForURL('**/workdays', { timeout: 10000 });
+
+    // Reopen the workday
+    await page.waitForTimeout(1000);
+    const firstRow = page.locator('table tbody tr').first();
+    await firstRow.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRow.click({ force: true, timeout: 30000 });
+
+    // Wait for dialog to open
+    await Then_I_see_the_calendar_grid(page);
+    await page.waitForTimeout(1000);
+
+    // Verify days 1-3 are empty (0 hours)
+    // Empty days show no hours, so we can't verify with Then_I_see_day_with_hours
+    // Instead, try to set hours again
+
+    // Now try to set hours back for Jan 1 (Wednesday)
+    await When_I_fill_hours_for_a_specific_day(page, 1, 8);
+
+    // Verify hours were set
+    await Then_I_see_day_with_hours(page, 1, 8);
+
+    // Save again
+    await When_I_click_the_button(page, 'Save');
+    await page.waitForURL('**/workdays', { timeout: 10000 });
+
+    // Reopen to verify it persisted
+    await page.waitForTimeout(1000);
+    const firstRowAgain = page.locator('table tbody tr').first();
+    await firstRowAgain.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRowAgain.click({ force: true, timeout: 30000 });
+
+    // Wait for dialog
+    await Then_I_see_the_calendar_grid(page);
+    await page.waitForTimeout(1000);
+
+    // Verify Jan 1 still has 8 hours
+    await Then_I_see_day_with_hours(page, 1, 8);
+  });
+
   test('should not save hours when period is shortened by removing a month', async ({ page }) => {
     await Given_I_am_logged_in_as_user(page, 'ernie');
     await When_I_go_to_my_work_days(page);
