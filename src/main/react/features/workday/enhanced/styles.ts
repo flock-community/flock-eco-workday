@@ -142,6 +142,7 @@ export const useStyles = makeStyles((theme) => ({
   hoursDisplay: {
     fontSize: "1.5rem",
     fontWeight: "bold",
+    fontFamily: theme.typography.fontFamily,
   },
   hoursInput: {
     width: "40px",
