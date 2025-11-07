@@ -630,6 +630,7 @@ test.describe('Enhanced Workday Dialog', () => {
     await Then_I_see_the_total_hours_as(page, { exact: 0 });
   });
 
+
   test('should not save hours when period is shortened by removing a month', async ({ page }) => {
     await Given_I_am_logged_in_as_user(page, 'ernie');
     await When_I_go_to_my_work_days(page);

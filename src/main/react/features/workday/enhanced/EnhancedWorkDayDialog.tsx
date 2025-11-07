@@ -134,13 +134,20 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
         const endDate = event.to;
 
         let currentDate = startDate;
+        let dayIndex = 0;
         while (currentDate.isSameOrBefore(endDate, 'day')) {
+          // Use per-day hours from the days array if available, otherwise use total hours
+          const hoursForDay = event.days && event.days.length > dayIndex 
+            ? event.days[dayIndex] 
+            : event.hours;
+          
           days.push({
             date: currentDate.format('YYYY-MM-DD'),
-            hours: event.hours,
+            hours: hoursForDay,
             description: event.description
           });
           currentDate = currentDate.add(1, 'day');
+          dayIndex++;
         }
 
         return days;
