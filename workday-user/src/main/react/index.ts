@@ -1,8 +1,8 @@
 // User components and client
-export * from './user'
+export * from "./user";
 
 // User utilities
-export * from './user_utils'
+export * from "./user_utils";
 
 // GraphQL types
-export * from './graphql'
+export * from "./graphql";

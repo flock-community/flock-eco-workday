@@ -1,11 +1,11 @@
-import React from 'react'
-import {DialogTitle, IconButton, makeStyles, Theme} from '@material-ui/core'
+import React from "react";
+import { DialogTitle, IconButton, makeStyles, Theme } from "@material-ui/core";
 
-import Close from '@material-ui/icons/Close'
+import Close from "@material-ui/icons/Close";
 
 const useStyles = makeStyles((theme: Theme) => ({
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     right: theme.spacing(1),
     top: theme.spacing(1),
     color: theme.palette.grey[400],
@@ -13,17 +13,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   title: {
     color: theme.palette.common.black,
   },
-}))
+}));
 
 type DialogTitleClosableProps = {
-  onClose?: () => void
-}
+  onClose?: () => void;
+};
 
 export const DialogTitleClosable: React.FC<DialogTitleClosableProps> = ({
   onClose,
   children,
 }) => {
-  const classes = useStyles()
+  const classes = useStyles();
 
   return (
     <DialogTitle>
@@ -39,5 +39,5 @@ export const DialogTitleClosable: React.FC<DialogTitleClosableProps> = ({
         </IconButton>
       )}
     </DialogTitle>
-  )
-}
+  );
+};

@@ -1,12 +1,12 @@
-import React, {useState} from 'react'
-import Box from '@material-ui/core/Box'
-import Toolbar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography'
-import Tooltip from '@material-ui/core/Tooltip'
-import IconButton from '@material-ui/core/IconButton'
-import AddIcon from '@material-ui/icons/Add'
-import {createStyles, makeStyles} from '@material-ui/core/styles'
-import {Search} from '@workday-core/components/Search'
+import React, { useState } from "react";
+import Box from "@material-ui/core/Box";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import Tooltip from "@material-ui/core/Tooltip";
+import IconButton from "@material-ui/core/IconButton";
+import AddIcon from "@material-ui/icons/Add";
+import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { Search } from "@workday-core/components/Search";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -14,32 +14,36 @@ const useStyles = makeStyles((theme) =>
       paddingRight: theme.spacing(1),
     },
     spacer: {
-      flex: '1 1 100%',
+      flex: "1 1 100%",
     },
     actions: {
       color: theme.palette.text.secondary,
     },
     title: {
-      flex: '0 0 auto',
+      flex: "0 0 auto",
     },
-  }),
-)
+  })
+);
 
 type UserToolbarProps = {
-  search?: string
-  onAdd?: () => void
-  onSearchChange?: (search: string) => void
-}
+  search?: string;
+  onAdd?: () => void;
+  onSearchChange?: (search: string) => void;
+};
 
-export function UserToolbar({search, onAdd, onSearchChange}: UserToolbarProps) {
-  const classes = useStyles()
+export function UserToolbar({
+  search,
+  onAdd,
+  onSearchChange,
+}: UserToolbarProps) {
+  const classes = useStyles();
 
-  const [state, setState] = useState<string>(search)
+  const [state, setState] = useState<string>(search);
 
   const handleSearchChange = (search: string) => {
-    setState(search)
-    onSearchChange(search)
-  }
+    setState(search);
+    onSearchChange(search);
+  };
 
   return (
     <Toolbar>
@@ -62,5 +66,5 @@ export function UserToolbar({search, onAdd, onSearchChange}: UserToolbarProps) {
         </Box>
       )}
     </Toolbar>
-  )
+  );
 }

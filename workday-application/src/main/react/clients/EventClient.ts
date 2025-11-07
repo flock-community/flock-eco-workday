@@ -1,9 +1,6 @@
 import { Person, PersonLight } from "./PersonClient";
 import InternalizingClient from "../utils/InternalizingClient";
-import {
-  checkResponse,
-  validateResponse,
-} from "@workday-core";
+import { checkResponse, validateResponse } from "@workday-core";
 import dayjs, { Dayjs } from "dayjs";
 
 const path = "/api/events";

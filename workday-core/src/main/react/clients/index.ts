@@ -1,12 +1,12 @@
-import {PageableClient} from './PageableClient'
-import {ResourceClient} from './ResourceClient'
+import { PageableClient } from "./PageableClient";
+import { ResourceClient } from "./ResourceClient";
 import {
   ValidResponse,
   validateResponse,
   checkResponse,
   QueryParameters,
   toQueryString,
-} from './utils'
+} from "./utils";
 
 export {
   PageableClient,
@@ -14,6 +14,6 @@ export {
   validateResponse,
   checkResponse,
   toQueryString,
-}
+};
 
-export type {ValidResponse, QueryParameters}
+export type { ValidResponse, QueryParameters };

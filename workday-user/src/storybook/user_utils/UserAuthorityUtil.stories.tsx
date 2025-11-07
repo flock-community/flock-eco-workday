@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { UserAuthorityUtil } from '@workday-user';
+import type { Meta, StoryObj } from "@storybook/react";
+import { UserAuthorityUtil } from "@workday-user";
 
 const meta: Meta<typeof UserAuthorityUtil> = {
   component: UserAuthorityUtil,
-  title: 'User util/UserAuthorityUtil',
+  title: "User util/UserAuthorityUtil",
 };
 
 export default meta;

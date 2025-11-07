@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { UserForm } from '@workday-user';
-import { Button } from '@material-ui/core';
+import React, { useState } from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { UserForm } from "@workday-user";
+import { Button } from "@material-ui/core";
 
-const authorities = ['Auth.A', 'Auth.B'];
+const authorities = ["Auth.A", "Auth.B"];
 const value_a = {
-  name: 'a',
-  email: 'a@a.aa',
-  reference: 'a',
-  authorities: ['Auth.A'],
+  name: "a",
+  email: "a@a.aa",
+  reference: "a",
+  authorities: ["Auth.A"],
 };
 
 const value_b = {
-  name: 'b',
-  email: 'b@b.bb',
-  reference: 'b',
-  authorities: ['Auth.B'],
+  name: "b",
+  email: "b@b.bb",
+  reference: "b",
+  authorities: ["Auth.B"],
 };
 
 const meta: Meta<typeof UserForm> = {
   component: UserForm,
-  title: 'User/UserForm',
+  title: "User/UserForm",
 };
 
 export default meta;

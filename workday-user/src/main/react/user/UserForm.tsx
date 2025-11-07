@@ -1,39 +1,39 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from "react";
 
-import Grid from '@material-ui/core/Grid'
+import Grid from "@material-ui/core/Grid";
 
-import FormControl from '@material-ui/core/FormControl'
-import UserClient from './UserClient'
-import {Field, FieldArray, Form, Formik} from 'formik'
-import {Checkbox, TextField} from 'formik-material-ui'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import FormGroup from '@material-ui/core/FormGroup'
-import FormLabel from '@material-ui/core/FormLabel'
-import * as Yup from 'yup'
+import FormControl from "@material-ui/core/FormControl";
+import UserClient from "./UserClient";
+import { Field, FieldArray, Form, Formik } from "formik";
+import { Checkbox, TextField } from "formik-material-ui";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormLabel from "@material-ui/core/FormLabel";
+import * as Yup from "yup";
 
-export const USER_FORM_ID = 'user-form-id'
+export const USER_FORM_ID = "user-form-id";
 
 const init = {
-  name: '',
-  email: '',
+  name: "",
+  email: "",
   authorities: null,
-}
+};
 
 /**
  * @return {null}
  */
-export function UserForm({value, onSummit, ...props}) {
-  const [state, setState] = useState(init)
-  const [formRef, setFormRef] = useState(null)
-  const [authorities, setAuthorities] = useState(null)
+export function UserForm({ value, onSummit, ...props }) {
+  const [state, setState] = useState(init);
+  const [formRef, setFormRef] = useState(null);
+  const [authorities, setAuthorities] = useState(null);
 
   useEffect(() => {
     if (!props.authorities) {
-      UserClient.findAllAuthorities().then(setAuthorities)
+      UserClient.findAllAuthorities().then(setAuthorities);
     } else {
-      setAuthorities(props.authorities)
+      setAuthorities(props.authorities);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (value && authorities) {
@@ -41,16 +41,16 @@ export function UserForm({value, onSummit, ...props}) {
         ...init,
         ...value,
         authorities: authorities.map(
-          (it) => value.authorities.indexOf(it) >= 0,
+          (it) => value.authorities.indexOf(it) >= 0
         ),
-      })
+      });
     } else {
       setState({
         ...init,
         authorities: !authorities ? [] : authorities.map(() => false),
-      })
+      });
     }
-  }, [value, authorities])
+  }, [value, authorities]);
 
   const handleSubmit = (value) => {
     onSummit &&
@@ -59,19 +59,19 @@ export function UserForm({value, onSummit, ...props}) {
         authorities: authorities
           .map((it, index) => (value.authorities[index] ? it : null))
           .filter((it) => it !== null),
-      })
-  }
+      });
+  };
 
   const validation = Yup.object({
-    name: Yup.string().required('Name is required'),
+    name: Yup.string().required("Name is required"),
     email: Yup.string()
-      .required('Email is required')
-      .email('Enter a valid email'),
+      .required("Email is required")
+      .email("Enter a valid email"),
     authorities: Yup.array(),
-  })
+  });
 
   if (!authorities || authorities.length !== state.authorities.length)
-    return null
+    return null;
 
   return (
     <Formik
@@ -118,5 +118,5 @@ export function UserForm({value, onSummit, ...props}) {
         </Grid>
       </Form>
     </Formik>
-  )
+  );
 }

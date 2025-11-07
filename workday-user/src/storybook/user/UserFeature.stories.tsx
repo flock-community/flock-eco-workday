@@ -1,12 +1,12 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { UserFeature } from '@workday-user';
+import type { Meta, StoryObj } from "@storybook/react";
+import { UserFeature } from "@workday-user";
 
 const meta: Meta<typeof UserFeature> = {
   component: UserFeature,
-  title: 'User/UserFeature',
+  title: "User/UserFeature",
   decorators: [
     (Story) => (
-      <div style={{ height: '400px' }}>
+      <div style={{ height: "400px" }}>
         <Story />
       </div>
     ),

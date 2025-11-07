@@ -1,31 +1,31 @@
-import React from 'react'
+import React from "react";
 
-import Button from '@material-ui/core/Button'
+import Button from "@material-ui/core/Button";
 
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import IconButton from '@material-ui/core/IconButton'
-import CloseIcon from '@material-ui/icons/Close'
-import Typography from '@material-ui/core/Typography'
-import makeStyles from '@material-ui/core/styles/makeStyles'
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import Typography from "@material-ui/core/Typography";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const useStyles = makeStyles((theme) => ({
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     right: theme.spacing(1),
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
-}))
+}));
 
 type ConfirmDialogProps = {
-  open: boolean
-  onClose: () => void
-  onConfirm: () => void
-  children: React.ReactNode
-}
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  children: React.ReactNode;
+};
 
 export function ConfirmDialog({
   open,
@@ -33,18 +33,18 @@ export function ConfirmDialog({
   onConfirm,
   children,
 }: ConfirmDialogProps) {
-  const classes = useStyles()
+  const classes = useStyles();
 
   const handleClose = () => {
-    onClose && onClose()
-  }
+    onClose && onClose();
+  };
 
   const handleConfirm = () => {
-    onConfirm && onConfirm()
-  }
+    onConfirm && onConfirm();
+  };
 
   return (
-    <Dialog fullWidth maxWidth={'sm'} open={open} onClose={handleClose}>
+    <Dialog fullWidth maxWidth={"sm"} open={open} onClose={handleClose}>
       <DialogTitle disableTypography>
         <Typography variant="h6">Confirm</Typography>
         <IconButton
@@ -63,5 +63,5 @@ export function ConfirmDialog({
         </Button>
       </DialogActions>
     </Dialog>
-  )
+  );
 }

@@ -1,7 +1,4 @@
-import {
-  checkResponse,
-  validateResponse,
-} from "@workday-core/clients/utils";
+import { checkResponse, validateResponse } from "@workday-core/clients/utils";
 
 const path = "/login";
 

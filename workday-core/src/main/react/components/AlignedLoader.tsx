@@ -1,24 +1,24 @@
-import React from 'react'
-import {CircularProgress, Grid, Theme} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import React from "react";
+import { CircularProgress, Grid, Theme } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100%',
+    height: "100%",
   },
-}))
+}));
 
 type AlignedLoaderProps = {
-  height?: number
-}
+  height?: number;
+};
 
-export function AlignedLoader({height}: AlignedLoaderProps) {
-  const classes = useStyles()
+export function AlignedLoader({ height }: AlignedLoaderProps) {
+  const classes = useStyles();
 
   return (
     <Grid
       item
-      style={{height}}
+      style={{ height }}
       className={classes.root}
       container
       alignItems="center"
@@ -28,5 +28,5 @@ export function AlignedLoader({height}: AlignedLoaderProps) {
         <CircularProgress />
       </Grid>
     </Grid>
-  )
+  );
 }

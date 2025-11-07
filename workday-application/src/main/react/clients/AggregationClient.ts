@@ -1,7 +1,4 @@
-import {
-  checkResponse,
-  validateResponse,
-} from "@workday-core";
+import { checkResponse, validateResponse } from "@workday-core";
 import { Dayjs } from "dayjs";
 import { ISO_8601_DATE } from "./util/DateFormats";
 import {

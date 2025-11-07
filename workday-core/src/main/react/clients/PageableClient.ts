@@ -1,43 +1,43 @@
-import {QueryParameters, toQueryString, validateResponse} from './utils'
+import { QueryParameters, toQueryString, validateResponse } from "./utils";
 
 interface Page<T> {
-  list: T[]
-  count: number
+  list: T[];
+  count: number;
 }
 
 interface Pageable {
-  page: number
-  size: number
-  sort: string
+  page: number;
+  size: number;
+  sort: string;
 }
 
 export function PageableClient<T>(path: string) {
   const queryByPage = (
     pageable: Pageable,
-    queryParameters: QueryParameters,
+    queryParameters: QueryParameters
   ): Promise<Page<T>> => {
     const opts = {
-      method: 'GET',
-    }
+      method: "GET",
+    };
 
-    const query = toQueryString({...pageable, ...queryParameters})
+    const query = toQueryString({ ...pageable, ...queryParameters });
 
     return fetch(`${path}?${query}`, opts)
       .then((it) => validateResponse<T[]>(it))
       .then((it) => {
         if (it) {
-          const total = it?.headers.get('x-total')
+          const total = it?.headers.get("x-total");
           return {
             list: it.body,
             count: total ? parseInt(total, 10) : 0,
-          }
+          };
         } else {
-          throw new Error('List not found')
+          throw new Error("List not found");
         }
-      })
-  }
+      });
+  };
 
-  const findAllByPage = (pageable: Pageable) => queryByPage(pageable, {})
+  const findAllByPage = (pageable: Pageable) => queryByPage(pageable, {});
 
-  return {findAllByPage, queryByPage}
+  return { findAllByPage, queryByPage };
 }
