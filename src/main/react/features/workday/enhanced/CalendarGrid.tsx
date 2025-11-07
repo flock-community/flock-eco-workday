@@ -35,6 +35,18 @@ import {
   calculateMonthTotal,
 } from "./calendarUtils";
 import { useMonthPeriods } from "../hooks/useMonthPeriods";
+import {
+  calculateSpecialHours,
+  calculateOverlappingHours,
+  calculateGrandTotal,
+  calculateTotalDateRange,
+  getYearOptions,
+  getMonthOptions,
+  getEventsForDate,
+  getLeaveDataForDate,
+  getSickDataForDate,
+  getOverlappingWorkdaysForDate,
+} from "../utils/gridCalculations";
 import dayjs from "dayjs";
 
 interface CalendarGridProps {
@@ -184,220 +196,23 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     return false;
   };
 
-  // Calculate date range
-  const calculateTotalDateRange = () => {
-    if (monthPeriods.length === 0) return null;
-
-    // Simple calculation based on month periods
-    let earliestDate = null;
-    let latestDate = null;
-
-    monthPeriods.forEach((month) => {
-      // Get the first and last day of each month
-      const firstDay = month.date.startOf("month");
-      const lastDay = month.date.endOf("month");
-
-      if (earliestDate === null || firstDay.isBefore(earliestDate)) {
-        earliestDate = firstDay;
-      }
-
-      if (latestDate === null || lastDay.isAfter(latestDate)) {
-        latestDate = lastDay;
-      }
-    });
-
-    // When a month is removed, we should update the state's date range accordingly
-    // but only if there are months visible
-    if (
-      earliestDate &&
-      latestDate &&
-      onDateRangeChange &&
-      state &&
-      state.from &&
-      state.to
-    ) {
-      // Check if the current range is different from the state's range
-      const stateStart = state.from;
-      const stateEnd = state.to;
-
-      const needsUpdate =
-        (earliestDate.isAfter(stateStart) && monthPeriods.length > 0) ||
-        (latestDate.isBefore(stateEnd) && monthPeriods.length > 0);
-
-      // If we need to update and we haven't just updated
-      if (needsUpdate) {
-        console.log(
-          "Date range needs updating based on visible months:",
-          earliestDate.format("YYYY-MM-DD"),
-          "to",
-          latestDate.format("YYYY-MM-DD")
-        );
-      }
-    }
-
-    return { earliestDate, latestDate };
-  };
-
-  // Helper functions for displaying events/leave/sick data
-  const getEventsForDate = (date: dayjs.Dayjs) => {
-    const formattedDate = date.format("YYYY-MM-DD");
-    return events.filter((event) => event.date === formattedDate);
-  };
-
-  const getLeaveDataForDate = (date: dayjs.Dayjs) => {
-    const formattedDate = date.format("YYYY-MM-DD");
-    return leaveData.filter((leave) => leave.date === formattedDate);
-  };
-
-  const getSickDataForDate = (date: dayjs.Dayjs) => {
-    const formattedDate = date.format("YYYY-MM-DD");
-    return sickData.filter((sick) => sick.date === formattedDate);
-  };
-
-  // Function to detect overlapping workdays
-  const getOverlappingWorkdaysForDate = (date: dayjs.Dayjs) => {
-    if (!state || overlappingWorkdays.length === 0) return [];
-
-    const overlaps = [];
-
-    overlappingWorkdays.forEach((workday) => {
-      // Skip if it's the same workday as current state
-      if (workday === state) return;
-
-      // Check if the date is within this workday's range
-      if (
-        workday.from &&
-        workday.to &&
-        workday.days &&
-        date.isBetween(workday.from, workday.to, "day", "[]")
-      ) {
-        // Calculate the index in the days array
-        const dayIndex = date.diff(workday.from, "day");
-
-        // Only add if the index is valid and hours > 0
-        if (
-          dayIndex >= 0 &&
-          dayIndex < workday.days.length &&
-          workday.days[dayIndex] > 0
-        ) {
-          // Format the date period for the tooltip
-          const fromDate = workday.from.format("DD/MM/YYYY");
-          const toDate = workday.to.format("DD/MM/YYYY");
-
-          overlaps.push({
-            hours: workday.days[dayIndex],
-            description: `Overlapping workday (${fromDate} - ${toDate})`,
-          });
-        }
-      }
-    });
-
-    return overlaps;
-  };
-
-  // Calculate special hours (events, leave, sick)
-  const calculateSpecialHours = (dataArray) => {
-    let total = 0;
-
-    monthPeriods.forEach((month) => {
-      const startOfMonth = month.date.startOf("month");
-      const endOfMonth = month.date.endOf("month");
-
-      dataArray.forEach((item) => {
-        const itemDate = dayjs(item.date);
-
-        // Use isBetween with inclusive bounds to include first and last day of month
-        if (itemDate.isBetween(startOfMonth, endOfMonth, "day", "[]")) {
-          total += Number(item.hours) || 8;
-        }
-      });
-    });
-
-    return total;
-  };
-
-  // Calculate overlapping hours for the current month periods
-  const calculateOverlappingHours = () => {
-    if (!state || !state.from || !state.to || overlappingWorkdays.length === 0)
-      return 0;
-
-    let total = 0;
-
-    monthPeriods.forEach((month) => {
-      const startOfMonth = month.date.startOf("month");
-      const endOfMonth = month.date.endOf("month");
-
-      // Loop through each day in the month
-      let currentDay = startOfMonth;
-      while (currentDay.isSameOrBefore(endOfMonth)) {
-        // IMPORTANT FIX: Only count overlapping hours for days that are within the actual workday date range
-        // This prevents counting overlapping hours for days outside the current workday period
-        if (currentDay.isBetween(state.from, state.to, "day", "[]")) {
-          const overlaps = getOverlappingWorkdaysForDate(currentDay);
-
-          // Sum up hours from all overlaps for this day
-          overlaps.forEach((overlap) => {
-            total += overlap.hours;
-          });
-        }
-
-        currentDay = currentDay.add(1, "day");
-      }
-    });
-
-    return total;
-  };
-
-  // Calculate totals
-  const eventHours = calculateSpecialHours(events);
-  const sickHours = calculateSpecialHours(sickData);
-  const leaveHours = calculateSpecialHours(leaveData);
-  const overlapHours = calculateOverlappingHours();
-
-  const calculateGrandTotal = () => {
-    let total = 0;
-
-    monthPeriods.forEach((month) => {
-      const monthCalendarData = generateCalendarData(
-        month.date,
-        showWeekends,
-        false
-      );
-      const updatedCalendarData = updateCalendarWithState(
-        monthCalendarData,
-        state
-      );
-      total += calculateMonthTotal(updatedCalendarData);
-    });
-
-    return total;
-  };
-
-  const getYearOptions = () => {
-    const currentYear = dayjs().year();
-    return Array.from({ length: 7 }, (_, i) => currentYear - 3 + i);
-  };
-
-  const getMonthOptions = () => {
-    return [
-      { value: 0, label: "Januari" },
-      { value: 1, label: "Februari" },
-      { value: 2, label: "Maart" },
-      { value: 3, label: "April" },
-      { value: 4, label: "Mei" },
-      { value: 5, label: "Juni" },
-      { value: 6, label: "Juli" },
-      { value: 7, label: "Augustus" },
-      { value: 8, label: "September" },
-      { value: 9, label: "Oktober" },
-      { value: 10, label: "November" },
-      { value: 11, label: "December" },
-    ];
-  };
+  // Calculate totals using utility functions
+  const eventHours = calculateSpecialHours(events, monthPeriods);
+  const sickHours = calculateSpecialHours(sickData, monthPeriods);
+  const leaveHours = calculateSpecialHours(leaveData, monthPeriods);
+  const overlapHours = calculateOverlappingHours(
+    monthPeriods,
+    state,
+    overlappingWorkdays
+  );
 
   const yearOptions = getYearOptions();
   const monthOptions = getMonthOptions();
-  const dateRange = calculateTotalDateRange();
+  const dateRange = calculateTotalDateRange(
+    monthPeriods,
+    state,
+    onDateRangeChange
+  );
   const dateRangeText =
     dateRange && dateRange.earliestDate && dateRange.latestDate
       ? `${dateRange.earliestDate.format(
@@ -547,10 +362,14 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                         key={`${month.id}-day-${dayIndex}-${updateKey}`}
                         day={day}
                         state={state}
-                        events={getEventsForDate(day.date)}
-                        leaveData={getLeaveDataForDate(day.date)}
-                        sickData={getSickDataForDate(day.date)}
-                        overlapData={getOverlappingWorkdaysForDate(day.date)}
+                        events={getEventsForDate(day.date, events)}
+                        leaveData={getLeaveDataForDate(day.date, leaveData)}
+                        sickData={getSickDataForDate(day.date, sickData)}
+                        overlapData={getOverlappingWorkdaysForDate(
+                          day.date,
+                          state,
+                          overlappingWorkdays
+                        )}
                         onHoursChange={handleDayHoursChange}
                       />
                     ))}
@@ -586,7 +405,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         eventHours={eventHours}
         leaveHours={leaveHours}
         overlapHours={overlapHours}
-        grandTotal={calculateGrandTotal()}
+        grandTotal={calculateGrandTotal(monthPeriods, showWeekends, state)}
         monthCount={monthPeriods.length}
         onAddMonth={handleAddMonth}
         classes={{
