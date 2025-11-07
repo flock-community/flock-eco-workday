@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import community.flock.eco.feature.user.graphql.kotlin.UserGroup as UserGroupGraphql
 
 @RestController
 @RequestMapping("/api/user-groups")
@@ -32,7 +31,7 @@ class UserGroupController(
         page: Pageable,
     ) = userGroupRepository
         .findAllByNameIgnoreCaseContaining(search, page)
-        .map { it.toGraphql() }
+        .map { it.produce() }
         .toResponse()
 
     @GetMapping("/{code}")
@@ -42,7 +41,7 @@ class UserGroupController(
     ) = userGroupRepository
         .findByCode(code)
         .toNullable()
-        ?.toGraphql()
+        ?.produce()
         .toResponse()
 
     @PostMapping()
@@ -51,7 +50,7 @@ class UserGroupController(
         @RequestBody form: UserGroupForm,
     ) = userGroupService
         .create(form)
-        .toGraphql()
+        .produce()
         .toResponse()
 
     @PutMapping("/{code}")
@@ -61,7 +60,7 @@ class UserGroupController(
         @PathVariable code: String,
     ) = userGroupService
         .update(code, form)
-        ?.toGraphql()
+        ?.produce()
         .toResponse()
 
     @DeleteMapping("/{code}")
@@ -73,8 +72,8 @@ class UserGroupController(
         .toResponse()
 }
 
-fun UserGroup.toGraphql() =
-    UserGroupGraphql(
+fun UserGroup.produce() =
+    UserGroupResponse(
         id = code,
         name = name,
         users = users.map { it.code },

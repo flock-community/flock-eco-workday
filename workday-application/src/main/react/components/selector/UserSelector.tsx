@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import UserClient from "@workday-user/user/UserClient";
-import { User } from "@workday-user/graphql/user";
+import { User } from "@workday-user/user/response/user";
 import {
   Card,
   CardContent,

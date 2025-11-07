@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import UserClient from "@workday-user/user/UserClient";
 import { useLoginStatus } from "./StatusHook";
-import { User } from "@workday-user/graphql/user";
+import { User } from "@workday-user/user/response/user";
 
 let loading = false;
 let store: User | null = null;

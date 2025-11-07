@@ -61,11 +61,6 @@ module.exports = {
         changeOrigin: false,
         cookieDomainRewrite: 'localhost',
       },
-      '/graphql': {
-        target: 'http://localhost:8080',
-        changeOrigin: false,
-        cookieDomainRewrite: 'localhost',
-      },
       '/login': {
         target: 'http://localhost:8080',
         changeOrigin: false,

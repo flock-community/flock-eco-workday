@@ -1,7 +1,5 @@
 package community.flock.eco.workday.core.extentions
 
-import community.flock.eco.core.graphql.kotlin.Direction
-import community.flock.eco.core.graphql.kotlin.Pageable
 import community.flock.eco.workday.core.utils.toNullable
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort

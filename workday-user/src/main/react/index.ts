@@ -4,5 +4,5 @@ export * from "./user";
 // User utilities
 export * from "./user_utils";
 
-// GraphQL types
-export * from "./graphql";
+// User response types
+export * from "./user/response";

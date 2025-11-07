@@ -1,11 +1,5 @@
 package community.flock.eco.workday.user
 
-import community.flock.eco.feature.user.graphql.kotlin.User
-import community.flock.eco.feature.user.graphql.kotlin.UserAccount
-import community.flock.eco.feature.user.graphql.kotlin.UserAccountKey
-import community.flock.eco.feature.user.graphql.kotlin.UserAccountOauth
-import community.flock.eco.feature.user.graphql.kotlin.UserAccountPassword
-import community.flock.eco.workday.core.configurations.GraphqlConfiguration
 import community.flock.eco.workday.user.controllers.UserAccountController
 import community.flock.eco.workday.user.controllers.UserAuthorityController
 import community.flock.eco.workday.user.controllers.UserController
@@ -13,13 +7,11 @@ import community.flock.eco.workday.user.controllers.UserControllerAdvice
 import community.flock.eco.workday.user.controllers.UserGroupController
 import community.flock.eco.workday.user.controllers.UserStatusController
 import community.flock.eco.workday.user.filters.UserKeyTokenFilter
-import community.flock.eco.workday.user.resolvers.UserQueryResolver
 import community.flock.eco.workday.user.services.UserAccountService
 import community.flock.eco.workday.user.services.UserAuthorityService
 import community.flock.eco.workday.user.services.UserGroupService
 import community.flock.eco.workday.user.services.UserSecurityService
 import community.flock.eco.workday.user.services.UserService
-import graphql.kickstart.tools.SchemaParserDictionary
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -34,7 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder
 @EntityScan
 @EnableConfigurationProperties(UserProperties::class)
 @Import(
-    GraphqlConfiguration::class,
     UserControllerAdvice::class,
     UserController::class,
     UserGroupController::class,
@@ -46,22 +37,11 @@ import org.springframework.security.crypto.password.PasswordEncoder
     UserAccountService::class,
     UserAuthorityService::class,
     UserSecurityService::class,
-    UserQueryResolver::class,
     UserKeyTokenFilter::class,
 )
 class UserConfiguration {
     @Bean
     fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
-    }
-
-    @Bean
-    fun schemaParserDictionary(): SchemaParserDictionary {
-        return SchemaParserDictionary()
-            .add(User::class.java)
-            .add(UserAccount::class.java)
-            .add(UserAccountPassword::class.java)
-            .add(UserAccountOauth::class.java)
-            .add(UserAccountKey::class.java)
     }
 }
