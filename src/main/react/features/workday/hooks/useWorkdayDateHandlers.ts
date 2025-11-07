@@ -1,4 +1,4 @@
-import { useCallback, RefObject } from "react";
+import { useCallback, MutableRefObject } from "react";
 import dayjs from "dayjs";
 import {
   WorkDayState,
@@ -20,7 +20,7 @@ interface UseWorkdayDateHandlersParams {
   events: EventData[];
   leaveData: LeaveData[];
   sickData: SickData[];
-  initialMonthsRef: RefObject<dayjs.Dayjs[]>;
+  initialMonthsRef: MutableRefObject<dayjs.Dayjs[] | null>;
   onStateChange: (state: WorkDayState) => void;
   onCurrentMonthChange: (month: dayjs.Dayjs) => void;
   onShowWeekendsChange: (show: boolean) => void;

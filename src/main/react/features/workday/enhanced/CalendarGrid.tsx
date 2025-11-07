@@ -18,9 +18,9 @@ import { CalendarDay } from "./CalendarDay";
 import {
   FreeDaySettings,
   FreeDaySettingsValue,
-} from "../../components/FreeDaySettings";
-import { QuickFillButtons } from "../../components/QuickFillButtons";
-import { WorkdaySummary } from "../../components/WorkdaySummary";
+} from "../components/FreeDaySettings";
+import { QuickFillButtons } from "../components/QuickFillButtons";
+import { WorkdaySummary } from "../components/WorkdaySummary";
 import {
   EVENT_COLOR,
   SICKNESS_COLOR,
