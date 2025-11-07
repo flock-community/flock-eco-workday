@@ -54,3 +54,7 @@ gha-creds-*.json
 
 /playwright-report
 /test-results
+
+backend.log
+frontend.log
+.playwright-mcp
