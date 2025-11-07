@@ -56,6 +56,9 @@ jobs:
       - name: Eslint / prettier
         run: npm run lint
 
+      - name: Run npm tests
+        run: npm test
+
       - name: Full build
         run: ./mvnw -B package
 
@@ -76,7 +79,7 @@ jobs:
         run: |
           echo "Starting backend server..."
           # Use develop profile with ci addon (Google Drive integration disabled)
-          ./mvnw -B compile spring-boot:run -Dspring-boot.run.profiles=develop,ci -Pdevelop > backend.log 2>&1 &
+          ./mvnw -B compile spring-boot:run -DskipTests -Dspring-boot.run.profiles=develop,ci -Pdevelop > backend.log 2>&1 &
           echo $! > backend.pid
           echo "Backend server started with PID $(cat backend.pid)"
 
@@ -126,7 +129,7 @@ jobs:
           fi
 
       - name: Build and Deploy
-        run: ./mvnw -B clean package jib:build -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
+        run: ./mvnw -B clean package jib:build -DskipTests -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
 
       - name: Build and Deploy Development version
-        run: ./mvnw -B package jib:build -Pdevelop,frontend -Dnpm.ci.skip -Dnpm.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
+        run: ./mvnw -B package jib:build -DskipTests -Pdevelop,frontend -Dnpm.ci.skip -Dnpm.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
