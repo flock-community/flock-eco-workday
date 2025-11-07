@@ -861,6 +861,23 @@ test.describe('Enhanced Workday Dialog', () => {
 
     // Verify the total increased (Jan 1 now has 8 hours)
     await Then_I_see_the_total_hours_as(page, { minimum: 150 }); // Should have ~170 hours now
+
+    // Save again
+    await When_I_click_the_button(page, 'Save');
+    await page.waitForURL('**/workdays', { timeout: 10000 });
+
+    // Reopen to verify it persisted
+    await page.waitForTimeout(1000);
+    const firstRowAgain = page.locator('table tbody tr').first();
+    await firstRowAgain.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRowAgain.click({ force: true, timeout: 30000 });
+
+    // Wait for dialog
+    await Then_I_see_the_calendar_grid(page);
+    await page.waitForTimeout(1000);
+
+    // Verify Jan 1 still has 8 hours after reopening
+    await Then_I_see_the_total_hours_as(page, { minimum: 150 });
   });
 
   test('should have correct days array after reopening with cleared first days', async ({ page }) => {

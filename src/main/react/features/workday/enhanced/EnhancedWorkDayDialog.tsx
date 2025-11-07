@@ -145,11 +145,21 @@ export function EnhancedWorkDayDialog({
       try {
         if (code) {
           const res = await WorkDayClient.get(code);
+          
+          // Ensure days array is the correct length
+          const expectedDayCount = res.to.diff(res.from, "day") + 1;
+          let days = res.days || [];
+          
+          // If days array is shorter than expected, pad it with zeros
+          if (days.length < expectedDayCount) {
+            days = [...days, ...Array(expectedDayCount - days.length).fill(0)];
+          }
+          
           const workDayState = {
             assignmentCode: res.assignment.code,
             from: res.from,
             to: res.to,
-            days: res.days,
+            days: days,
             hours: res.hours,
             status: res.status,
             sheets: res.sheets,
