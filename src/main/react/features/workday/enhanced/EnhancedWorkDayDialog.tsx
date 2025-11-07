@@ -37,40 +37,20 @@ import {
 } from "./types";
 import { usePerson } from "../../../hooks/PersonHook";
 import { useWorkdayData } from "../hooks/useWorkdayData";
+import {
+  isWeekend,
+  isFreeDayDate,
+  getEventHours,
+  getLeaveHours,
+  getSickHours,
+  getSpecialHours,
+} from "../utils/workdayHelpers";
 
 // Extend dayjs with needed plugins
 dayjs.extend(isoWeek);
 dayjs.extend(weekOfYear);
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrBefore);
-
-// Helper function to get unique months in a date range
-const getUniqueMonthsInRange = (from, to) => {
-  if (!from || !to) return [];
-
-  const months = [];
-  // Create a new dayjs object to avoid mutation issues
-  let currentDate = dayjs(from).startOf("month");
-  const endDate = dayjs(to).endOf("month");
-
-  // Ensure the month keys are distinct - format them to year-month
-  const uniqueMonths = new Set();
-
-  while (currentDate.isSameOrBefore(endDate, "month")) {
-    const monthKey = currentDate.format("YYYY-MM");
-
-    if (!uniqueMonths.has(monthKey)) {
-      uniqueMonths.add(monthKey);
-      // Create a new instance for each month to avoid reference issues
-      months.push(dayjs(currentDate));
-    }
-
-    // Move to the next month
-    currentDate = currentDate.add(1, "month");
-  }
-
-  return months;
-};
 
 export function EnhancedWorkDayDialog({
   personFullName,
@@ -510,69 +490,6 @@ export function EnhancedWorkDayDialog({
     }
   };
 
-  // Helper function to check if a date is a weekend day
-  const isWeekend = (date: dayjs.Dayjs): boolean => {
-    const day = date.day();
-    return day === 0 || day === 6; // 0 = Sunday, 6 = Saturday
-  };
-
-  // Helper function to check if a date is a free day based on settings
-  const isFreeDayDate = (date: dayjs.Dayjs): boolean => {
-    // Get the free day settings from localStorage
-    const freeDaySettingsStr = localStorage.getItem("freeDaySettings");
-    if (!freeDaySettingsStr) return false;
-
-    try {
-      const freeDaySettings = JSON.parse(freeDaySettingsStr);
-      if (!freeDaySettings.enabled) return false;
-
-      // Check if the day of the week matches
-      if (date.day() !== freeDaySettings.dayOfWeek) return false;
-
-      // Handle frequency
-      if (freeDaySettings.frequency === "every") {
-        return true;
-      } else if (freeDaySettings.frequency === "odd") {
-        const weekNumber = date.week();
-        return weekNumber % 2 !== 0;
-      } else if (freeDaySettings.frequency === "even") {
-        const weekNumber = date.week();
-        return weekNumber % 2 === 0;
-      }
-    } catch (e) {
-      console.error("Error parsing free day settings:", e);
-      return false;
-    }
-
-    return false;
-  };
-
-  // Helper function to get event hours for a date
-  const getEventHours = (date: dayjs.Dayjs): number => {
-    const formattedDate = date.format("YYYY-MM-DD");
-    const event = events.find((e) => e.date === formattedDate);
-    return event ? Number(event.hours) || 0 : 0;
-  };
-
-  // Helper function to get leave hours for a date
-  const getLeaveHours = (date: dayjs.Dayjs): number => {
-    const formattedDate = date.format("YYYY-MM-DD");
-    const leave = leaveData.find((l) => l.date === formattedDate);
-    return leave ? Number(leave.hours) || 0 : 0;
-  };
-
-  // Helper function to get sick hours for a date
-  const getSickHours = (date: dayjs.Dayjs): number => {
-    const formattedDate = date.format("YYYY-MM-DD");
-    const sick = sickData.find((s) => s.date === formattedDate);
-    return sick ? Number(sick.hours) || 0 : 0;
-  };
-
-  // Helper function to get total special hours (events, leave, sick) for a date
-  const getSpecialHours = (date: dayjs.Dayjs): number => {
-    return getEventHours(date) + getLeaveHours(date) + getSickHours(date);
-  };
-
   // Function to determine if a date is in the workday date range
   const isInWorkdayRange = (date: dayjs.Dayjs): boolean => {
     if (!state || !state.from || !state.to) return false;
@@ -694,9 +611,9 @@ export function EnhancedWorkDayDialog({
         // Handle normal workdays
         else {
           // Calculate special hours for this day
-          const eventHrs = getEventHours(currentDate);
-          const leaveHrs = getLeaveHours(currentDate);
-          const sickHrs = getSickHours(currentDate);
+          const eventHrs = getEventHours(currentDate, events);
+          const leaveHrs = getLeaveHours(currentDate, leaveData);
+          const sickHrs = getSickHours(currentDate, sickData);
           const totalSpecialHours = eventHrs + leaveHrs + sickHrs;
 
           if (dayIndex >= 0 && dayIndex < newDays.length) {
