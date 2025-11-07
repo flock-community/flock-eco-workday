@@ -19,19 +19,28 @@ export function usePerson(): [Person | null, (personId: string) => void] {
 
   useEffect(() => {
     const listener = (it: SetStateAction<Person | null>) => setState(it);
-    if (store === null && listeners.length === 0) {
-      if (status && status.isLoggedIn) {
-        PersonClient.me().then(update);
-      }
+
+    // Fetch person data if needed
+    if (store === null && status && status.isLoggedIn) {
+      PersonClient.me().then(update);
     }
+
+    // Check for personId in URL params
     const params = new URLSearchParams(location.search);
     const personId = params.get("personId");
     if (personId) {
       PersonClient.get(personId).then(update);
     }
+
+    // Add listener
     listeners.push(listener);
+
+    // Cleanup - properly remove listener
     return () => {
-      listeners.filter((it) => it !== listener);
+      const index = listeners.indexOf(listener);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
     };
   }, [status, location]);
 

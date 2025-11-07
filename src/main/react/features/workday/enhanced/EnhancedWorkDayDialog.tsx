@@ -83,8 +83,6 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     loading: false,
     link: null,
   });
-  // Force re-render without recreating components
-  const [renderTrigger, setRenderTrigger] = useState(0);
 
   // Track the previous code value to detect changes
   const [prevCode, setPrevCode] = useState<string | undefined>(undefined);
@@ -327,9 +325,12 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
   // Load data when dialog opens or code changes
   useEffect(() => {
-    if (open) {
-      if (code) {
-        WorkDayClient.get(code).then((res) => {
+    if (!open) return;
+
+    const loadWorkday = async () => {
+      try {
+        if (code) {
+          const res = await WorkDayClient.get(code);
           const workDayState = {
             assignmentCode: res.assignment.code,
             from: res.from,
@@ -348,22 +349,22 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
           const months = [];
           let current = dayjs(res.from).startOf('month');
           const end = dayjs(res.to).endOf('month');
-          
+
           // Add all months in the date range
           while (current.isSameOrBefore(end, 'month')) {
             months.push(dayjs(current));
             current = current.add(1, 'month');
           }
-          
+
           // Debug logging - only do once
           if (!logRef.current) {
-            console.log("Loading existing workday with range:", 
-                        res.from.format('YYYY-MM-DD'), "to", 
+            console.log("Loading existing workday with range:",
+                        res.from.format('YYYY-MM-DD'), "to",
                         res.to.format('YYYY-MM-DD'));
             console.log("Detected months:", months.map(m => m.format('YYYY-MM')));
             logRef.current = true;
           }
-          
+
           // Set the first month as current and all months as displayed
           if (months.length > 0) {
             setCurrentMonth(months[0]);
@@ -372,31 +373,41 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
           // Fetch additional data if we have a person ID
           if (person?.uuid) {
-            // We'll wait for currentMonth to be updated in the next render cycle
-            setTimeout(() => {
-              fetchAdditionalData(person.uuid);
-              fetchOverlappingWorkdays(person.uuid, code);
-            }, 0);
+            await Promise.all([
+              fetchAdditionalData(person.uuid),
+              fetchOverlappingWorkdays(person.uuid, code)
+            ]);
           }
-        });
-      } else {
-        setState(schema.cast());
+        } else {
+          // For new workdays, initialize with current person
+          const now = dayjs();
+          const initialState = {
+            ...schema.cast(),
+            from: now,  // Ensure from is a Dayjs object, not Date
+            to: now,    // Ensure to is a Dayjs object, not Date
+            personId: person?.uuid || null
+          };
+          setState(initialState);
 
-        // For new workdays, use the current month
-        const now = dayjs();
-        setCurrentMonth(now);
-        initialMonthsRef.current = [now.startOf('month')];
+          // For new workdays, use the current month
+          setCurrentMonth(now);
+          initialMonthsRef.current = [now.startOf('month')];
 
-        // Fetch additional data if we have a person ID
-        if (person?.uuid) {
-          // We'll wait for currentMonth to be updated in the next render cycle
-          setTimeout(() => {
-            fetchAdditionalData(person.uuid);
-            fetchOverlappingWorkdays(person.uuid);
-          }, 0);
+          // Fetch additional data if we have a person ID
+          if (person?.uuid) {
+            await Promise.all([
+              fetchAdditionalData(person.uuid),
+              fetchOverlappingWorkdays(person.uuid)
+            ]);
+          }
         }
+      } catch (error) {
+        console.error("Error loading workday data:", error);
+        // TODO: Add user-facing error message
       }
-    }
+    };
+
+    loadWorkday();
   }, [open, code, person]);
 
   // Refetch additional data when month changes
@@ -519,7 +530,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   }
 
   // Update hours for a specific day
-  const handleDayHoursChange = (date, hours, type = 'regular') => {
+  const handleDayHoursChange = (date: dayjs.Dayjs, hours: number, type: string = 'regular') => {
     if (!state) return;
 
     // Clone the current state to avoid direct mutation
@@ -592,7 +603,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   };
 
   // Handle date range change with resetDays parameter
-  const handleDateRangeChange = (from, to, resetDays = false) => {
+  const handleDateRangeChange = (from: dayjs.Dayjs, to: dayjs.Dayjs, resetDays: boolean = false) => {
     if (!state) return;
     
     console.log("Date range change:", 
@@ -679,13 +690,13 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   };
 
   // Helper function to check if a date is a weekend day
-  const isWeekend = (date) => {
+  const isWeekend = (date: dayjs.Dayjs): boolean => {
     const day = date.day();
     return day === 0 || day === 6; // 0 = Sunday, 6 = Saturday
   };
 
   // Helper function to check if a date is a free day based on settings
-  const isFreeDayDate = (date) => {
+  const isFreeDayDate = (date: dayjs.Dayjs): boolean => {
     // Get the free day settings from localStorage
     const freeDaySettingsStr = localStorage.getItem('freeDaySettings');
     if (!freeDaySettingsStr) return false;
@@ -716,39 +727,39 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   };
 
   // Helper function to get event hours for a date
-  const getEventHours = (date) => {
+  const getEventHours = (date: dayjs.Dayjs): number => {
     const formattedDate = date.format('YYYY-MM-DD');
     const event = events.find(e => e.date === formattedDate);
     return event ? Number(event.hours) || 0 : 0;
   };
 
   // Helper function to get leave hours for a date
-  const getLeaveHours = (date) => {
+  const getLeaveHours = (date: dayjs.Dayjs): number => {
     const formattedDate = date.format('YYYY-MM-DD');
     const leave = leaveData.find(l => l.date === formattedDate);
     return leave ? Number(leave.hours) || 0 : 0;
   };
 
   // Helper function to get sick hours for a date
-  const getSickHours = (date) => {
+  const getSickHours = (date: dayjs.Dayjs): number => {
     const formattedDate = date.format('YYYY-MM-DD');
     const sick = sickData.find(s => s.date === formattedDate);
     return sick ? Number(sick.hours) || 0 : 0;
   };
 
   // Helper function to get total special hours (events, leave, sick) for a date
-  const getSpecialHours = (date) => {
+  const getSpecialHours = (date: dayjs.Dayjs): number => {
     return getEventHours(date) + getLeaveHours(date) + getSickHours(date);
   };
 
   // Function to determine if a date is in the workday date range
-  const isInWorkdayRange = (date) => {
+  const isInWorkdayRange = (date: dayjs.Dayjs): boolean => {
     if (!state || !state.from || !state.to) return false;
     return date.isBetween(state.from, state.to, 'day', '[]');
   };
 
   // Check if a date is within any of the visible months
-  const isInCurrentVisibleMonth = (date) => {
+  const isInCurrentVisibleMonth = (date: dayjs.Dayjs): boolean => {
     if (!currentMonth) return false;
     
     // Check if we have multiple months through initialMonthsRef
@@ -767,13 +778,13 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   };
 
   // Find the index of a date in the days array
-  const getDayIndex = (date) => {
+  const getDayIndex = (date: dayjs.Dayjs): number => {
     if (!state || !state.from) return -1;
     return date.diff(state.from, 'day');
   };
 
   // Improved quick fill - now supports targeting a specific month
-  const handleQuickFill = (targetHours, targetMonth) => {
+  const handleQuickFill = (targetHours: number, targetMonth?: dayjs.Dayjs) => {
     if (!state) return;
 
     // Clone the current state to avoid direct mutation
@@ -894,13 +905,10 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
       ...newState,
       days: newDays
     });
-
-    // Force a re-render without changing the component key
-    setRenderTrigger(prev => prev + 1);
   };
 
   // Toggle weekend visibility
-  const handleToggleWeekends = (event) => {
+  const handleToggleWeekends = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowWeekends(event.target.checked);
   };
 
@@ -923,6 +931,15 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   // Render the form elements (assignment, status, etc.)
   const renderFormFields = () => {
     if (!state || !currentMonth) return null;
+
+    // Show loading message if person is not loaded yet or doesn't have uuid
+    if (!person || !person.uuid) {
+      return (
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+          <Typography>Loading...</Typography>
+        </Box>
+      );
+    }
 
     // Force initialMonthsRef to have at least one month
     if (initialMonthsRef.current.length === 0 && currentMonth) {
@@ -1007,7 +1024,6 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
                   onMonthsChange={handleMonthsChange}
                   values={values}
                   setFieldValue={setFieldValue}
-                  renderTrigger={renderTrigger}
                   overlappingWorkdays={overlappingWorkdays}
                 />
               </Grid>

@@ -59,6 +59,15 @@ export type SickData = {
   status?: string;
 };
 
+// Period type for PeriodSelector
+export type Period = {
+  id: string;
+  viewType: 'month' | 'week';
+  date: dayjs.Dayjs;
+  from: dayjs.Dayjs;
+  to: dayjs.Dayjs;
+};
+
 // Define the color codes for different types of days
 export const EVENT_COLOR = "#FDE047"; // Yellow
 export const VACATION_COLOR = "#38BDF8"; // Blue

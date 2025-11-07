@@ -35,16 +35,24 @@ export function AssignmentSelector({
   to,
   ...props
 }: AssignmentSelectorProps) {
-  const [items, setItems] = useState<Assignment[]>();
+  const [items, setItems] = useState<Assignment[]>([]);
   const [state, setState] = useState(value);
 
   useEffect(() => {
-    if (!personId) return;
+    console.log('[AssignmentSelector] useEffect triggered. personId:', personId);
+    if (!personId) {
+      console.log('[AssignmentSelector] No personId, skipping fetch');
+      return;
+    }
 
-    AssignmentClient.findAllByPersonId(personId, "all").then((res) =>
-      setItems(res.list)
-    );
-  }, []);
+    console.log('[AssignmentSelector] Fetching assignments for personId:', personId);
+    AssignmentClient.findAllByPersonId(personId, "all").then((res) => {
+      console.log('[AssignmentSelector] Received assignments:', res.list);
+      setItems(res.list);
+    }).catch(err => {
+      console.error('[AssignmentSelector] Error fetching assignments:', err);
+    });
+  }, [personId]);
 
   useEffect(() => {
     setState(value);
@@ -75,8 +83,6 @@ export function AssignmentSelector({
       </MenuItem>
     );
   }
-
-  if (!items) return null;
 
   return (
     <FormControl {...props} error={!!error}>

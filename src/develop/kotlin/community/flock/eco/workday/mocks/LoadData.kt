@@ -10,12 +10,19 @@ class LoadData(
     private val userRepository: UserRepository,
 ) {
     fun loadWhenEmpty(block: () -> Unit) {
+        println("[LoadData] loadWhenEmpty called. Current load value: $load")
         if (load == null) {
-            load = userRepository.count() == 0L
+            val userCount = userRepository.count()
+            load = userCount == 0L
+            println("[LoadData] load was null. userRepository.count() = $userCount, setting load = $load")
         }
 
         if (load == true) {
+            println("[LoadData] load == true, running block")
             block()
+            println("[LoadData] block completed")
+        } else {
+            println("[LoadData] load == $load, NOT running block")
         }
     }
 

@@ -3,10 +3,18 @@ import dayjs from 'dayjs';
 
 export async function Given_I_am_logged_in_as_user(page, username: string) {
   await page.goto('http://localhost:3000/auth');
+
+  // Enable enhanced UI BEFORE login using the correct localStorage key format
+  // The app uses LocalStorageManager with prefix 'flock-app-' and namespaced keys 'ui.enhancedUiEnabled'
+  await page.evaluate(() => {
+    localStorage.setItem('flock-app-ui.enhancedUiEnabled', JSON.stringify(true));
+  });
+
   await page.getByLabel('Username').fill(`${username}@sesam.straat`);
   await page.getByLabel('Password').fill(username);
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.waitForURL('http://localhost:3000/**');
+
   // Capitalize first letter for welcome message format
   const capitalizedUsername = username.charAt(0).toUpperCase() + username.slice(1);
   const welcomeMessage = await page.getByRole('heading', { level: 2, name: `Hi, ${capitalizedUsername}!` });
@@ -15,6 +23,12 @@ export async function Given_I_am_logged_in_as_user(page, username: string) {
 
 export async function When_I_go_to_my_work_days(page) {
   await page.goto('http://localhost:3000/workdays');
+
+  // Wait for the page to fully load with enhanced UI setting
+  await page.waitForLoadState('networkidle');
+
+  // Verify enhanced UI toggle is present (indicates WorkDayFeature loaded)
+  await page.waitForTimeout(500); // Small delay to ensure React state has updated
 }
 
 export async function Then_I_see_a_list_of_the_hours_I_have_submitted_as_for(page, role: string, client: string) {
@@ -131,6 +145,9 @@ export async function Then_I_see_the_expense_as(page, status: string, reason: st
 }
 
 export async function When_I_select_the_assignment(page, assignmentText: string) {
-  await page.getByLabel('Assignment').click();
+  // Wait for the Assignment field to be visible (may take time to load)
+  const assignmentField = page.getByLabel('Assignment');
+  await assignmentField.waitFor({ state: 'visible', timeout: 10000 });
+  await assignmentField.click();
   await page.getByRole('option', { name: new RegExp(assignmentText, 'i') }).click();
 }

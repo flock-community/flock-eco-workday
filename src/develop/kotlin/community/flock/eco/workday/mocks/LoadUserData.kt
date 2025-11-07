@@ -5,6 +5,7 @@ import community.flock.eco.feature.user.forms.UserAccountPasswordForm
 import community.flock.eco.feature.user.model.User
 import community.flock.eco.feature.user.services.UserAccountService
 import community.flock.eco.feature.user.services.UserAuthorityService
+import community.flock.eco.workday.authorities.AssignmentAuthority
 import community.flock.eco.workday.authorities.ExpenseAuthority
 import community.flock.eco.workday.authorities.LeaveDayAuthority
 import community.flock.eco.workday.authorities.SickdayAuthority
@@ -24,6 +25,8 @@ class LoadUserData(
 
     val workerRoles =
         setOf(
+            AssignmentAuthority.READ,
+            AssignmentAuthority.WRITE,
             LeaveDayAuthority.READ,
             LeaveDayAuthority.WRITE,
             SickdayAuthority.READ,
