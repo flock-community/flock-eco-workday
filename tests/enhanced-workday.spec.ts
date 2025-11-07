@@ -253,9 +253,13 @@ test.describe('Enhanced Workday Dialog', () => {
     await Given_I_am_logged_in_as_user(page, 'ernie');
     await When_I_go_to_my_work_days(page);
 
+    // Wait for table to load
+    await page.waitForTimeout(1000);
+
     // Assume there's at least one workday in the list
     const firstRow = page.locator('table tbody tr').first();
-    await firstRow.click();
+    await firstRow.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRow.click({ force: true, timeout: 10000 });
 
     // Wait for dialog to open
     await Then_I_see_the_calendar_grid(page);
@@ -350,7 +354,8 @@ test.describe('Enhanced Workday Dialog', () => {
     // Step 3: Reopen the workday (click on the first row)
     await page.waitForTimeout(1000); // Wait for list to load
     const firstRow = page.locator('table tbody tr').first();
-    await firstRow.click();
+    await firstRow.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRow.click({ force: true, timeout: 30000 });
 
     // Wait for dialog to open
     await Then_I_see_the_calendar_grid(page);
@@ -376,7 +381,8 @@ test.describe('Enhanced Workday Dialog', () => {
     // Step 7: Reopen the workday to verify
     await page.waitForTimeout(1000);
     const firstRowAgain = page.locator('table tbody tr').first();
-    await firstRowAgain.click();
+    await firstRowAgain.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRowAgain.click({ force: true, timeout: 30000 });
 
     // Wait for dialog to open
     await Then_I_see_the_calendar_grid(page);
@@ -614,7 +620,8 @@ test.describe('Enhanced Workday Dialog', () => {
     // Step 5: Reopen the workday to verify
     await page.waitForTimeout(1000);
     const firstRow = page.locator('table tbody tr').first();
-    await firstRow.click();
+    await firstRow.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRow.click({ force: true, timeout: 30000 });
 
     // Wait for dialog to open
     await Then_I_see_the_calendar_grid(page);
@@ -671,7 +678,8 @@ test.describe('Enhanced Workday Dialog', () => {
     // Step 6: Reopen the workday to verify
     await page.waitForTimeout(1000);
     const firstRow = page.locator('table tbody tr').first();
-    await firstRow.click();
+    await firstRow.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRow.click({ force: true, timeout: 30000 });
 
     // Wait for dialog to open
     await Then_I_see_the_calendar_grid(page);

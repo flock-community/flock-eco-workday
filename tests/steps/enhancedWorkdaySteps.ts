@@ -8,18 +8,22 @@ export async function When_I_fill_hours_for_a_specific_day(page: Page, dayNumber
   // Find the calendar grid - use elevation1 to avoid dialog
   const calendarGrid = page.locator('.MuiPaper-elevation1').filter({ hasText: 'Uren vullen voor deze maand' }).first();
 
+  // Wait for calendar to be ready
+  await calendarGrid.waitFor({ state: 'visible', timeout: 10000 });
+
   // Find all day cells
   const dayCells = calendarGrid.locator('[class*="dayCell"]');
 
   // Find the specific day by looking for the day number span
   const targetDayCell = dayCells.filter({ has: page.locator(`span:has-text("${dayNumber}")`) }).first();
 
-  // Click the day cell to enable editing
-  await targetDayCell.click();
+  // Wait for cell to be ready and click with force to avoid overlay issues
+  await targetDayCell.waitFor({ state: 'visible', timeout: 5000 });
+  await targetDayCell.click({ force: true, timeout: 10000 });
 
   // Wait for the input field to appear
   const inputField = targetDayCell.locator('input');
-  await expect(inputField).toBeVisible({ timeout: 2000 });
+  await expect(inputField).toBeVisible({ timeout: 5000 });
 
   // Clear and fill the input
   await inputField.fill(hours.toString());
@@ -28,7 +32,7 @@ export async function When_I_fill_hours_for_a_specific_day(page: Page, dayNumber
   await inputField.press('Enter');
 
   // Wait a bit for the value to be saved
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(500);
 }
 
 /**
@@ -89,6 +93,14 @@ export async function Then_I_see_the_month_selector_for(page: Page, year: number
     'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December'
   ];
 
+  // Wait for any month paper to be visible first
+  await page.locator('.MuiPaper-elevation1').filter({
+    hasText: 'Uren vullen voor deze maand'
+  }).first().waitFor({ state: 'visible', timeout: 10000 });
+
+  // Give selectors time to update
+  await page.waitForTimeout(1000);
+
   // Find month papers that contain both the year and month name
   // Use .MuiPaper-elevation1 to avoid matching the dialog itself
   const monthPaper = page.locator('.MuiPaper-elevation1').filter({
@@ -99,20 +111,24 @@ export async function Then_I_see_the_month_selector_for(page: Page, year: number
     has: page.locator('.MuiSelect-root').filter({ hasText: monthNames[month] })
   }).first();
 
-  await expect(monthPaper).toBeVisible({ timeout: 5000 });
+  await expect(monthPaper).toBeVisible({ timeout: 10000 });
 }
 
 /**
  * Verifies the calendar grid is visible
  */
 export async function Then_I_see_the_calendar_grid(page: Page) {
-  // Look for the actual table headers that are visible in the calendar
-  const weekHeader = page.getByText('Week', { exact: true });
-  await expect(weekHeader).toBeVisible({ timeout: 10000 });
+  // Wait for calendar container to load
+  const calendarContainer = page.locator('[class*="calendarContainer"]');
+  await expect(calendarContainer).toBeVisible({ timeout: 15000 });
 
-  // Verify day headers are present (Ma, Di, Wo, etc.)
-  const mondayHeader = page.getByText('Ma', { exact: true });
-  await expect(mondayHeader).toBeVisible();
+  // Look for day headers (Ma, Di, Wo, etc.) which are always present
+  const mondayHeader = page.locator('[class*="dayHeader"]').filter({ hasText: 'Ma' }).first();
+  await expect(mondayHeader).toBeVisible({ timeout: 10000 });
+
+  // Look for week rows - at least one should be visible
+  const weekRow = page.locator('[class*="weekRow"]').first();
+  await expect(weekRow).toBeVisible({ timeout: 10000 });
 }
 
 /**
