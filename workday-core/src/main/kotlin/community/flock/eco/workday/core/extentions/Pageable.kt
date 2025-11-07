@@ -1,10 +1,5 @@
 package community.flock.eco.workday.core.extentions
 
-/**
- * This is generated code
- * DO NOT MODIFY
- * It will be overwritten
- */
 data class Pageable(
     val page: Int?,
     val size: Int?,
