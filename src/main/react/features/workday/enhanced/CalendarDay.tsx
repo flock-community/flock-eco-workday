@@ -57,8 +57,9 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
   const sickApproved = hasSickData && sickData[0].status === "APPROVED";
 
   const handleClick = () => {
-    if (state && isCurrentMonth) {
-      // Start editing mode with current value, not defaulting to 0
+    if (state) {
+      // Allow editing any day shown in the calendar, not just current month days
+      // This enables setting hours for days in partial weeks at month boundaries
       setInputValue(hours.toString());
       setIsEditing(true);
     }

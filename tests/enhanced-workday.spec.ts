@@ -706,6 +706,62 @@ test.describe('Enhanced Workday Dialog', () => {
     await Then_I_see_the_month_selector_for(page, prevYear, targetMonth);
   });
 
+  test('should save hours in empty first week of month after reopening', async ({ page }) => {
+    await Given_I_am_logged_in_as_user(page, 'ernie');
+    await When_I_go_to_my_work_days(page);
+    await When_I_click_the_button(page, 'Add');
+    await When_I_select_the_assignment(page, 'Client D');
+
+    // Change to March 2025 - starts on Saturday March 1
+    // The first ISO week (Mon-Sun) is Feb 24-Mar 2
+    // Calendar will show: Mon Feb 24, Tue Feb 25, Wed Feb 26, Thu Feb 27, Fri Feb 28, Sat Mar 1, Sun Mar 2
+    // (or without weekends: Mon Feb 24-Fri Feb 28 in the first week row)
+    await When_I_change_month_selector_to(page, 0, 2025, 2); // Month 2 = March (0-indexed)
+    await page.waitForTimeout(2000);
+
+    // Verify calendar is visible
+    await Then_I_see_the_calendar_grid(page);
+
+    // Don't fill any hours - just save with the date range (March 1-31)
+    await When_I_click_the_button(page, 'Save');
+    await page.waitForURL('**/workdays', { timeout: 10000 });
+
+    // Reopen the workday
+    await page.waitForTimeout(1000);
+    const firstRow = page.locator('table tbody tr').first();
+    await firstRow.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRow.click({ force: true, timeout: 30000 });
+
+    // Wait for dialog to open
+    await Then_I_see_the_calendar_grid(page);
+    await page.waitForTimeout(1000);
+
+    // Try to fill hours for February 24 (Monday in the first visible week, but BEFORE March)
+    // This is day 24 of February, which appears in the calendar's first week
+    // The bug: these days are visible but clicking them doesn't save because they're outside state.from/state.to
+    await When_I_fill_hours_for_a_specific_day(page, 24, 8);
+
+    // Verify hours were set in the UI
+    await Then_I_see_day_with_hours(page, 24, 8);
+
+    // Save the workday again
+    await When_I_click_the_button(page, 'Save');
+    await page.waitForURL('**/workdays', { timeout: 10000 });
+
+    // Reopen once more to verify hours persisted
+    await page.waitForTimeout(1000);
+    const firstRowAgain = page.locator('table tbody tr').first();
+    await firstRowAgain.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRowAgain.click({ force: true, timeout: 30000 });
+
+    // Wait for dialog to open
+    await Then_I_see_the_calendar_grid(page);
+    await page.waitForTimeout(1000);
+
+    // Verify the hours are still there for Feb 24
+    await Then_I_see_day_with_hours(page, 24, 8);
+  });
+
   test('should not save hours when period is shortened by removing a month', async ({ page }) => {
     await Given_I_am_logged_in_as_user(page, 'ernie');
     await When_I_go_to_my_work_days(page);
