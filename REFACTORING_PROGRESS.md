@@ -54,12 +54,24 @@ Split the large enhanced workday dialog files (1000+ lines) into smaller, more m
 
 **Impact:** EnhancedWorkDayDialog.tsx: 875 → 773 lines (-102 lines)
 
+#### Step 4: Extract Date Handlers ✅
+**File Created:** `src/main/react/features/workday/hooks/useWorkdayDateHandlers.ts`
+
+**Extracted Handlers:**
+- `handleDayHoursChange` - Update hours for specific days
+- `handleDateRangeChange` - Change workday date range
+- `handleQuickFill` - Fill multiple days with preset hours
+- `handleToggleWeekends` - Toggle weekend visibility
+- `handleMonthsChange` - Update displayed months
+
+**Impact:** EnhancedWorkDayDialog.tsx: 773 → 424 lines (-349 lines)
+
 ### Overall Impact
 
 **EnhancedWorkDayDialog.tsx:**
 - **Before:** 1,122 lines
-- **After:** 773 lines
-- **Reduction:** -349 lines (31% reduction)
+- **After:** 424 lines  
+- **Reduction:** -698 lines (62% reduction)
 
 **CalendarGrid.tsx:**
 - **Current:** 1,059 lines
@@ -71,20 +83,21 @@ Split the large enhanced workday dialog files (1000+ lines) into smaller, more m
 src/main/react/features/workday/
 ├── hooks/
 │   ├── useWorkdayData.ts (331 lines) ✅
-│   └── useWorkdayFormHandlers.ts (168 lines) ✅
+│   ├── useWorkdayFormHandlers.ts (168 lines) ✅
+│   └── useWorkdayDateHandlers.ts (392 lines) ✅
 ├── utils/
 │   └── workdayHelpers.ts (128 lines) ✅
 └── enhanced/
-    ├── EnhancedWorkDayDialog.tsx (773 lines) ⚠️ In Progress
-    ├── CalendarGrid.tsx (1059 lines) ⚠️ Pending
+    ├── EnhancedWorkDayDialog.tsx (424 lines) ✅ DONE!
+    ├── CalendarGrid.tsx (1059 lines) ⚠️ Ready for refactoring
     └── ... (other files)
 ```
 
 ## Remaining Steps (4-11)
 
-### Step 4: Extract Date Handlers (Pending)
-- Create `useWorkdayDateHandlers.ts`
-- Extract: handleDayHoursChange, handleDateRangeChange, handleQuickFill, handleToggleWeekends, handleMonthsChange
+### Step 4: Extract Date Handlers ✅ DONE
+- ✅ Created `useWorkdayDateHandlers.ts`
+- ✅ Extracted: handleDayHoursChange, handleDateRangeChange, handleQuickFill, handleToggleWeekends, handleMonthsChange
 
 ### Step 5: Extract Free Day Settings Component (Pending)
 - Create `FreeDaySettings.tsx`
@@ -125,7 +138,7 @@ src/main/react/features/workday/
 
 ## Test Results
 
-**After Steps 0-3:**
+**After Steps 0-4:**
 - ✅ No new test failures introduced
 - ⚠️ Pre-existing test failures (unrelated to refactoring):
   - 2 Expense model tests (pre-existing)
