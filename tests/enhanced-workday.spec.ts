@@ -669,6 +669,43 @@ test.describe('Enhanced Workday Dialog', () => {
   });
 
 
+  test('should change year and month via selectors', async ({ page }) => {
+    await Given_I_am_logged_in_as_user(page, 'ernie');
+    await When_I_go_to_my_work_days(page);
+    await When_I_click_the_button(page, 'Add');
+    await When_I_select_the_assignment(page, 'Client D');
+
+    // Wait for initial calendar load
+    await Then_I_see_the_calendar_grid(page);
+
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
+    // Change to a different month (3 months ahead)
+    const targetMonth = (currentMonth + 3) % 12;
+    const targetYear = currentMonth + 3 >= 12 ? currentYear + 1 : currentYear;
+
+    // Change the month selector
+    await When_I_change_month_selector_to(page, 0, targetYear, targetMonth);
+
+    // Wait for calendar to update
+    await page.waitForTimeout(2000);
+
+    // Verify the month changed by checking the selector displays the new values
+    await Then_I_see_the_month_selector_for(page, targetYear, targetMonth);
+
+    // Now try changing the year to previous year
+    const prevYear = currentYear - 1;
+    await When_I_change_month_selector_to(page, 0, prevYear, targetMonth);
+
+    // Wait for calendar to update
+    await page.waitForTimeout(2000);
+
+    // Verify the year changed
+    await Then_I_see_the_month_selector_for(page, prevYear, targetMonth);
+  });
+
   test('should not save hours when period is shortened by removing a month', async ({ page }) => {
     await Given_I_am_logged_in_as_user(page, 'ernie');
     await When_I_go_to_my_work_days(page);

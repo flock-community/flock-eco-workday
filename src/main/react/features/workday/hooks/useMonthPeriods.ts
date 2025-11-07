@@ -221,8 +221,8 @@ export const useMonthPeriods = ({
       const newDate = dayjs().year(year).month(month).startOf("month");
 
       // Update month periods
-      setMonthPeriods((prev) =>
-        prev.map((period) => {
+      setMonthPeriods((prev) => {
+        const updatedPeriods = prev.map((period) => {
           if (period.id === monthId) {
             return {
               ...period,
@@ -230,10 +230,47 @@ export const useMonthPeriods = ({
             };
           }
           return period;
-        })
-      );
+        });
+
+        // After updating the month, calculate the new date range and notify parent
+        if (onDateRangeChange && updatedPeriods.length > 0) {
+          // Find the earliest and latest dates in the updated periods
+          let earliestDate = null;
+          let latestDate = null;
+
+          updatedPeriods.forEach((period) => {
+            const firstDay = period.date.startOf("month");
+            const lastDay = period.date.endOf("month");
+
+            if (earliestDate === null || firstDay.isBefore(earliestDate)) {
+              earliestDate = firstDay;
+            }
+
+            if (latestDate === null || lastDay.isAfter(latestDate)) {
+              latestDate = lastDay;
+            }
+          });
+
+          // Notify parent of the new date range
+          if (earliestDate && latestDate) {
+            console.log(
+              "Month/year changed, updating date range:",
+              earliestDate.format("YYYY-MM-DD"),
+              "to",
+              latestDate.format("YYYY-MM-DD")
+            );
+
+            // Delay the state update to next tick to avoid update during render
+            queueMicrotask(() => {
+              onDateRangeChange(earliestDate, latestDate, true); // Reset days when changing month
+            });
+          }
+        }
+
+        return updatedPeriods;
+      });
     },
-    []
+    [onDateRangeChange]
   );
 
   // Add new month
