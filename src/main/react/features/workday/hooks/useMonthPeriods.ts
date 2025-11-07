@@ -204,28 +204,15 @@ export const useMonthPeriods = ({
 
   // Reset the initialization flag when key props change
   useEffect(() => {
-    // If initialMonths change, we should re-initialize
-    if (initialMonths && initialMonths.length > 0) {
-      // Create a string representation of initialMonths for comparison
-      const monthsString = initialMonths
-        .map((m) => m.format("YYYY-MM"))
-        .join(",");
-      const currentMonthsString = monthPeriods
-        .map((p) => p.date.format("YYYY-MM"))
-        .join(",");
-
-      // Only re-initialize if the months have actually changed
-      if (monthsString !== currentMonthsString) {
-        initializedRef.current = false;
-        console.log("Reset initialization flag due to changed initialMonths");
-      }
-    }
-
     return () => {
+      // Only reset on unmount
       initializedRef.current = false;
       logRef.current = false;
     };
-  }, [initialMonths, monthPeriods]);
+  }, []);
+  // Removed initialMonths and monthPeriods from dependencies
+  // This effect should only run on mount/unmount
+  // Re-initialization is handled by the main init effect when initialMonths/state changes
 
   // Month selection handlers
   const handleYearMonthChange = useCallback(
@@ -300,7 +287,7 @@ export const useMonthPeriods = ({
         const updatedMonths = prev.filter((month) => month.id !== monthId);
 
         // After removing the month, calculate the new date range
-        if (updatedMonths.length > 0 && onDateRangeChange && state) {
+        if (updatedMonths.length > 0 && onDateRangeChange) {
           // Find the earliest and latest dates in the remaining months
           let earliestDate = null;
           let latestDate = null;
@@ -319,7 +306,7 @@ export const useMonthPeriods = ({
           });
 
           // Notify parent of the new date range
-          if (earliestDate && latestDate && onDateRangeChange) {
+          if (earliestDate && latestDate) {
             console.log(
               "Month removed, updating date range:",
               earliestDate.format("YYYY-MM-DD"),
@@ -337,7 +324,7 @@ export const useMonthPeriods = ({
         return updatedMonths;
       });
     },
-    [onDateRangeChange, state]
+    [onDateRangeChange]
   );
 
   return {
