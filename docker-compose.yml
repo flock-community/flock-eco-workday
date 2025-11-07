@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   workday:
-    image: gcr.io/flock-eco/flock-eco-workday-develop:latest
+    image: eu.gcr.io/flock-community/flock-eco-workday-develop:latest
     deploy:
       mode: replicated
       replicas: 3

@@ -3,137 +3,500 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>community.flock.flock-eco</groupId>
-        <artifactId>flock-eco-application-parent</artifactId>
-        <version>2.8.1</version>
-    </parent>
-
     <groupId>flock.community.eco.workday</groupId>
-    <artifactId>flock-eco-workday</artifactId>
+    <artifactId>flock-eco-workday-parent</artifactId>
     <version>develop-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Flock Eco Workday Parent</name>
+    <description>Parent POM for Flock Eco Workday multi-module project</description>
+
+    <url>https://github.com/flock-community/flock-eco-workday</url>
+
+    <licenses>
+        <license>
+            <name>The MIT License</name>
+            <url>https://github.com/flock-community/flock-eco-workday</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Willem Veelenturf</name>
+            <email>willem.veelenturf@flock.community</email>
+        </developer>
+        <developer>
+            <name>Julius van Dis</name>
+            <email>julius.van.dis@flock.community</email>
+        </developer>
+    </developers>
 
     <properties>
+        <!-- Build Configuration -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
         <kotlin.version>1.9.22</kotlin.version>
-        <gpg.skip>true</gpg.skip>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <dokka.skip>true</dokka.skip>
+        <!-- Framework Versions -->
+        <spring.boot.version>2.6.2</spring.boot.version>
+        <spring.cloud.gcp.version>3.0.0</spring.cloud.gcp.version>
+
+        <!-- Library Versions -->
+        <jackson.version>2.13.1</jackson.version>
+        <liquibase.version>3.9.0</liquibase.version>
+        <h2.version>1.4.200</h2.version>
         <wirespec.version>0.11.2</wirespec.version>
+        <spring.boot.graphql.version>12.0.0</spring.boot.graphql.version>
+
+        <!-- Utility Library Versions -->
+        <commons-lang3.version>3.7</commons-lang3.version>
+        <reflections.version>0.9.11</reflections.version>
+        <mockk.version>1.12.2</mockk.version>
+        <springmockk.version>3.1.1</springmockk.version>
+        <springdoc.version>1.6.6</springdoc.version>
+        <mockito.version>4.2.0</mockito.version>
+        <javax-mail.version>1.4.7</javax-mail.version>
+
+        <!-- Workday-Specific -->
+        <mailjet.version>5.1.1</mailjet.version>
+        <google-api-drive.version>v3-rev20220709-1.32.1</google-api-drive.version>
+        <google-api-sheets.version>v4-rev20220620-1.32.1</google-api-sheets.version>
+        <biweekly.version>0.6.7</biweekly.version>
+
+        <!-- Plugin Versions -->
+        <kotlin-maven-plugin.version>${kotlin.version}</kotlin-maven-plugin.version>
+        <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
+        <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
+        <ktlint-maven-plugin.version>3.0.0</ktlint-maven-plugin.version>
+        <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+        <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+        <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
+        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
+        <appengine-maven-plugin.version>2.2.0</appengine-maven-plugin.version>
+
+        <!-- Node/npm versions for frontend -->
+        <node.version>v18.20.4</node.version>
+        <npm.version>10.8.2</npm.version>
+
+        <!-- Other properties -->
+        <gpg.skip>true</gpg.skip>
         <npm.ci.skip>false</npm.ci.skip>
+        <quality.skip>false</quality.skip>
     </properties>
 
+    <modules>
+        <module>workday-application</module>
+        <module>workday-core</module>
+        <module>workday-user</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring Boot BOM -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Spring Cloud GCP BOM -->
+            <dependency>
+                <groupId>com.google.cloud</groupId>
+                <artifactId>spring-cloud-gcp-dependencies</artifactId>
+                <version>${spring.cloud.gcp.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Kotlin -->
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-reflect</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+
+            <!-- Jackson -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-kotlin</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+
+            <!-- GraphQl -->
+            <dependency>
+                <groupId>com.graphql-java-kickstart</groupId>
+                <artifactId>graphql-spring-boot-starter</artifactId>
+                <version>${spring.boot.graphql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.graphql-java-kickstart</groupId>
+                <artifactId>graphql-spring-boot-starter-test</artifactId>
+                <version>${spring.boot.graphql.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.graphql-java-kickstart</groupId>
+                <artifactId>graphql-spring-boot-test-autoconfigure</artifactId>
+                <version>7.0.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.graphql-java-kickstart</groupId>
+                <artifactId>graphiql-spring-boot-starter</artifactId>
+                <version>11.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.graphql-java-kickstart</groupId>
+                <artifactId>graphql-java-tools</artifactId>
+                <version>12.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.graphql-java</groupId>
+                <artifactId>graphql-java</artifactId>
+                <version>17.3</version>
+            </dependency>
+            <dependency>
+                <groupId>com.graphql-java</groupId>
+                <artifactId>graphql-java-extended-scalars</artifactId>
+                <version>17.0</version>
+            </dependency>
+
+            <!-- Database -->
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.liquibase.ext</groupId>
+                <artifactId>liquibase-hibernate5</artifactId>
+                <version>${liquibase.version}</version>
+            </dependency>
+
+            <!-- Utilities -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.reflections</groupId>
+                <artifactId>reflections</artifactId>
+                <version>${reflections.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>${javax-mail.version}</version>
+            </dependency>
+
+            <!-- API Documentation -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+
+            <!-- TODO: update this version. It is now managed by the gcp dependencies -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>
+                <version>1.2.8.RELEASE</version>
+            </dependency>
+
+            <!-- Testing -->
+            <dependency>
+                <groupId>io.mockk</groupId>
+                <artifactId>mockk</artifactId>
+                <version>${mockk.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.ninja-squad</groupId>
+                <artifactId>springmockk</artifactId>
+                <version>${springmockk.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Workday-Specific Dependencies -->
+            <dependency>
+                <groupId>com.mailjet</groupId>
+                <artifactId>mailjet-client</artifactId>
+                <version>${mailjet.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>community.flock.wirespec.integration</groupId>
+                <artifactId>jackson-jvm</artifactId>
+                <version>${wirespec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.apis</groupId>
+                <artifactId>google-api-services-drive</artifactId>
+                <version>${google-api-drive.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.apis</groupId>
+                <artifactId>google-api-services-sheets</artifactId>
+                <version>${google-api-sheets.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.biweekly</groupId>
+                <artifactId>biweekly</artifactId>
+                <version>${biweekly.version}</version>
+            </dependency>
+
+            <!-- Inter-module dependencies (will be used by workday-application) -->
+            <dependency>
+                <groupId>flock.community.eco.workday</groupId>
+                <artifactId>workday-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>flock.community.eco.workday</groupId>
+                <artifactId>workday-user</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>flock.community.eco.workday</groupId>
+                <artifactId>workday-application</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
-
-        <!-- Flock Eco -->
         <dependency>
-            <groupId>community.flock.flock-eco</groupId>
-            <artifactId>flock-eco-feature-user</artifactId>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
         </dependency>
         <dependency>
-            <groupId>community.flock.flock-eco</groupId>
-            <artifactId>flock-eco-cloud-stub</artifactId>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
         </dependency>
-
-        <!-- Spring boot -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-gcp-starter-storage</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>3.9.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session-jdbc</artifactId>
-        </dependency>
-
-        <!-- Services -->
-        <dependency>
-            <groupId>com.mailjet</groupId>
-            <artifactId>mailjet-client</artifactId>
-            <version>5.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>community.flock.wirespec.integration</groupId>
-            <artifactId>jackson-jvm</artifactId>
-            <version>${wirespec.version}</version>
-        </dependency>
-
-        <!-- Google API-->
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-drive</artifactId>
-            <version>v3-rev20220709-1.32.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-sheets</artifactId>
-            <version>v4-rev20220620-1.32.1</version>
-        </dependency>
-
-        <!-- Other -->
-        <dependency>
-            <groupId>net.sf.biweekly</groupId>
-            <artifactId>biweekly</artifactId>
-            <version>0.6.7</version>
-        </dependency>
-
-        <!-- Testing -->
-        <dependency>
-            <groupId>com.ninja-squad</groupId>
-            <artifactId>springmockk</artifactId>
-            <version>3.1.1</version>
-        </dependency>
-
     </dependencies>
-
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+
+        <pluginManagement>
+            <plugins>
+                <!-- Kotlin Maven Plugin -->
+                <plugin>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-maven-plugin</artifactId>
+                    <version>${kotlin-maven-plugin.version}</version>
+                    <configuration>
+                        <args>
+                            <arg>-Xjsr305=strict</arg>
+                        </args>
+                        <compilerPlugins>
+                            <plugin>jpa</plugin>
+                            <plugin>spring</plugin>
+                        </compilerPlugins>
+                        <jvmTarget>${java.version}</jvmTarget>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>compile</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>test-compile</id>
+                            <phase>test-compile</phase>
+                            <goals>
+                                <goal>test-compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-maven-allopen</artifactId>
+                            <version>${kotlin.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-maven-noarg</artifactId>
+                            <version>${kotlin.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+
+                <plugin>
+                    <groupId>community.flock</groupId>
+                    <artifactId>graphql-simple-bindings-maven-plugin</artifactId>
+                    <version>0.8.0</version>
+                    <configuration>
+                        <language>Kotlin</language>
+                        <sourceDirectory>${project.basedir}/src/main/graphql</sourceDirectory>
+                        <targetDirectory>${project.build.directory}/generated-sources/graphql</targetDirectory>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Liquibase Maven Plugin -->
+                <plugin>
+                    <groupId>org.liquibase</groupId>
+                    <artifactId>liquibase-maven-plugin</artifactId>
+                    <version>${liquibase.version}</version>
+                </plugin>
+
+
+                <!-- Maven Compiler Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.3</version>
+                    <configuration>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <preparationGoals>frontend:npm@version --non-recursive</preparationGoals>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Build Helper Maven Plugin -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build-helper-maven-plugin.version}</version>
+                </plugin>
+
+
+                <!-- Maven Resources Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven-resources-plugin.version}</version>
+                </plugin>
+
+                <!-- Frontend Maven Plugin -->
+                <plugin>
+                    <groupId>com.github.eirslett</groupId>
+                    <artifactId>frontend-maven-plugin</artifactId>
+                    <version>${frontend-maven-plugin.version}</version>
+                    <configuration>
+                        <nodeVersion>${node.version}</nodeVersion>
+                        <npmVersion>${npm.version}</npmVersion>
+                    </configuration>
+                </plugin>
+
+                <!-- Wirespec Maven Plugin (Workday-specific) -->
+                <plugin>
+                    <groupId>community.flock.wirespec.plugin.maven</groupId>
+                    <artifactId>wirespec-maven-plugin</artifactId>
+                    <version>${wirespec.version}</version>
+                </plugin>
+
+                <!-- Jib Maven Plugin (Docker) -->
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>${jib-maven-plugin.version}</version>
+                </plugin>
+
+                <!-- App Engine Maven Plugin (GCP) -->
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>appengine-maven-plugin</artifactId>
+                    <version>${appengine-maven-plugin.version}</version>
+                    <configuration>
+                        <version>1</version>
+                        <projectId>flock-community</projectId>
+                    </configuration>
+                </plugin>
+
+                <!-- ktlint Maven Plugin (Code Quality) -->
+                <plugin>
+                    <groupId>com.github.gantsign.maven</groupId>
+                    <artifactId>ktlint-maven-plugin</artifactId>
+                    <version>${ktlint-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>check</id>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Maven Surefire Plugin (Testing) -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
-                <configuration>
-                    <args>
-                        <arg>-Xjsr305=strict</arg>
-                    </args>
-                    <compilerPlugins>
-                        <plugin>jpa</plugin>
-                        <plugin>spring</plugin>
-                    </compilerPlugins>
-                    <jvmTarget>${java.version}</jvmTarget>
-                </configuration>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -150,101 +513,48 @@
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jetbrains.kotlin</groupId>
-                        <artifactId>kotlin-maven-allopen</artifactId>
-                        <version>${kotlin.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.jetbrains.kotlin</groupId>
-                        <artifactId>kotlin-maven-noarg</artifactId>
-                        <version>${kotlin.version}</version>
-                    </dependency>
-
-                </dependencies>
             </plugin>
-
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mainClass>community.flock.eco.workday.ApplicationKt</mainClass>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>appengine-maven-plugin</artifactId>
-                <version>2.2.0</version>
-                <configuration>
-                    <version>1</version>
-                    <projectId>flock-community</projectId>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>community.flock.wirespec.plugin.maven</groupId>
-                <artifactId>wirespec-maven-plugin</artifactId>
-                <version>${wirespec.version}</version>
-                <executions>
-                    <execution>
-                        <id>kotlin</id>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <input>${project.basedir}/src/main/wirespec</input>
-                            <output>${project.build.directory}/generated-sources</output>
-                            <packageName>community.flock.eco.workday.api</packageName>
-                            <languages>
-                                <language>Kotlin</language>
-                            </languages>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <preparationGoals>frontend:npm@version --non-recursive</preparationGoals>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-                <version>3.4.4</version>
-                <configuration>
-                    <from>
-                        <image>eclipse-temurin:17-jre</image>
-                    </from>
-                    <container>
-                        <mainClass>community.flock.eco.workday.ApplicationKt</mainClass>
-                    </container>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>3.9.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>add-resource-database</id>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-resource</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>add-resource</goal>
@@ -252,102 +562,180 @@
                         <configuration>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/src/main/database</directory>
+                                    <directory>${project.basedir}/src/main/graphql</directory>
+                                </resource>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/database</directory>
                                 </resource>
                             </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/src/develop/kotlin</source>
+                            </sources>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
-                        <id>copy-resources-images</id>
-                        <phase>compile</phase>
+                        <phase>package</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>test-jar</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.outputDirectory}/static/images</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/images</directory>
-                                </resource>
-                            </resources>
+                            <classifier>develop</classifier>
+                            <includes>
+                                <include>**/develop/data/*</include>
+                            </includes>
+                            <skipIfEmpty>true</skipIfEmpty>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.github.gantsign.maven</groupId>
+                <artifactId>ktlint-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <!-- Unofficial way to include only `src` files: https://github.com/gantsign/ktlint-maven-plugin/issues/341#issuecomment-1677673242 -->
+                    <sourceRoots>${project.build.sourceDirectory}</sourceRoots>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>ktlint-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>verify</phase>
+                        <configuration>
+                            <skip>${quality.skip}</skip>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>ktlint-format</id>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jetbrains.dokka</groupId>
+                <artifactId>dokka-maven-plugin</artifactId>
+                <version>1.9.0</version>
+                <configuration>
+                    <skip>${dokka.skip}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>javadocJar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib-maven-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
+
+
+    <scm>
+        <url>https://github.com/flock-community/flock-eco-workday</url>
+        <connection>scm:git:git://github.com/flock-community/flock-eco-workday.git</connection>
+        <developerConnection>scm:git:git@github.com:flock-community/flock-eco-workday.git</developerConnection>
+    </scm>
 
     <profiles>
         <profile>
             <id>develop</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
-                        <!--                        <version></version>-->
+                        <version>3.0.0</version>
                         <executions>
                             <execution>
-                                <id>add-develop-sources</id>
-                                <phase>process-resources</phase>
+                                <id>add-source</id>
+                                <phase>generate-sources</phase>
                                 <goals>
                                     <goal>add-source</goal>
                                 </goals>
                                 <configuration>
                                     <sources>
-                                        <source>src/develop/kotlin</source>
+                                        <source>${project.basedir}/src/develop/kotlin</source>
+                                        <source>${project.build.directory}/generated-sources</source>
                                     </sources>
                                 </configuration>
                             </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>frontend</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.github.eirslett</groupId>
-                        <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.15.1</version>
-                        <configuration>
-                            <nodeVersion>v18.20.4</nodeVersion>
-                            <npmVersion>10.8.2</npmVersion>
-                        </configuration>
-                        <executions>
                             <execution>
-                                <id>install node and npm</id>
+                                <id>add-resource-develop</id>
+                                <phase>generate-resources</phase>
                                 <goals>
-                                    <goal>install-node-and-npm</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>npm ci</id>
-                                <goals>
-                                    <goal>npm</goal>
+                                    <goal>add-resource</goal>
                                 </goals>
                                 <configuration>
-                                    <arguments>ci</arguments>
-                                    <skip>${npm.ci.skip}</skip>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>npm build</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <arguments>run build</arguments>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/src/develop/resources</directory>
+                                        </resource>
+                                        <resource>
+                                            <directory>${basedir}/src/main/graphql</directory>
+                                        </resource>
+                                        <resource>
+                                            <directory>${basedir}/src/main/database</directory>
+                                        </resource>
+                                    </resources>
                                 </configuration>
                             </execution>
                         </executions>

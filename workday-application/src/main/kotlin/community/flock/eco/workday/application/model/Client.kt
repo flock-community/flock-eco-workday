@@ -1,0 +1,15 @@
+package community.flock.eco.workday.application.model
+
+import community.flock.eco.workday.core.events.EventEntityListeners
+import community.flock.eco.workday.core.model.AbstractCodeEntity
+import java.util.UUID
+import javax.persistence.Entity
+import javax.persistence.EntityListeners
+
+@Entity
+@EntityListeners(EventEntityListeners::class)
+data class Client(
+    override val id: Long = 0,
+    override val code: String = UUID.randomUUID().toString(),
+    val name: String,
+) : AbstractCodeEntity(id, code)

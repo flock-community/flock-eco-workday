@@ -42,15 +42,20 @@ secrets.yml
 .gradletasknamecache
 .sts4-cache
 node_modules
+node
+workday-application/node
 coverage
 .env
 
 .husky
 
-/src/main/react/wirespec/
+*/src/main/react/wirespec/
 
 # Ignore generated credentials from google-github-actions/auth
 gha-creds-*.json
 
 /playwright-report
 /test-results
+
+
+database
