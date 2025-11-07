@@ -4,17 +4,11 @@ import WorkIcon from "@material-ui/icons/Work";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
-import {
-  WorkDayClient,
-  WORK_DAY_PAGE_SIZE,
-} from "../../../clients/WorkDayClient";
+import { WorkDayClient } from "../../../clients/WorkDayClient";
 import { TransitionSlider } from "../../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../../components/dialog";
 import { schema, WORKDAY_FORM_ID } from "../WorkDayForm";
-import { isDefined } from "../../../utils/validation";
-import { ISO_8601_DATE } from "../../../clients/util/DateFormats";
 import Button from "@material-ui/core/Button";
-import { ExportClient } from "../../../clients/ExportClient";
 import Snackbar from "@material-ui/core/Snackbar";
 import dayjs from "dayjs";
 import { Form, Formik } from "formik";
@@ -27,16 +21,10 @@ import isBetween from "dayjs/plugin/isBetween";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { useStyles } from "./styles";
 import { CalendarGrid } from "./CalendarGrid";
-import {
-  WorkDayProps,
-  WorkDayState,
-  ExportStatusProps,
-  EventData,
-  LeaveData,
-  SickData,
-} from "./types";
+import { WorkDayProps, WorkDayState } from "./types";
 import { usePerson } from "../../../hooks/PersonHook";
 import { useWorkdayData } from "../hooks/useWorkdayData";
+import { useWorkdayFormHandlers } from "../hooks/useWorkdayFormHandlers";
 import {
   isWeekend,
   isFreeDayDate,
@@ -59,8 +47,6 @@ export function EnhancedWorkDayDialog({
   onComplete,
 }: WorkDayProps) {
   const classes = useStyles();
-  const [openDelete, setOpenDelete] = useState<boolean>(false);
-  const [processing, setProcessing] = useState<boolean>(false);
   const [showWeekends, setShowWeekends] = useState<boolean>(false);
 
   // Initialize with null to ensure we set it properly when data loads
@@ -68,10 +54,6 @@ export function EnhancedWorkDayDialog({
   const [state, setState] = useState<WorkDayState | null>(null);
   // NEW: Add state to track all displayed months - using useRef to prevent render loops
   const initialMonthsRef = useRef<dayjs.Dayjs[]>([]);
-  const [exportLink, setExportLink] = useState<ExportStatusProps>({
-    loading: false,
-    link: null,
-  });
 
   // Track the previous code value to detect changes
   const [prevCode, setPrevCode] = useState<string | undefined>(undefined);
@@ -94,6 +76,25 @@ export function EnhancedWorkDayDialog({
     currentMonth,
     currentWorkdayCode: code,
     enabled: open,
+  });
+
+  // Use form handlers hook for submission, deletion, and export
+  const {
+    processing,
+    openDelete,
+    exportLink,
+    handleSubmit,
+    handleDelete,
+    handleDeleteOpen,
+    handleDeleteClose,
+    handleClose,
+    handleExport,
+    clearExportLink,
+  } = useWorkdayFormHandlers({
+    code,
+    selectedWeeks,
+    onComplete,
+    onStateChange: setState,
   });
 
   // For debugging
@@ -206,112 +207,9 @@ export function EnhancedWorkDayDialog({
     setSelectedWeeks(weeks);
   }, []);
 
-  // Handle form submission
-  const handleSubmit = (it) => {
-    setProcessing(true);
-
-    // Clone the days array to avoid modifying the original
-    let processedDays = it.days ? [...it.days] : null;
-
-    // NEW: Filter out hours from days in disabled weeks
-    if (processedDays && processedDays.length > 0) {
-      // Create an array to track whether each day should be included
-      const includeDayFlags = Array(processedDays.length).fill(false);
-
-      // For each day, determine if it belongs to a selected week
-      for (let i = 0; i < processedDays.length; i++) {
-        const dayDate = it.from.clone().add(i, "day");
-        const weekNumber = dayDate.isoWeek();
-
-        // If the week is selected, this day should be included
-        if (selectedWeeks.includes(weekNumber)) {
-          includeDayFlags[i] = true;
-        }
-      }
-
-      // Now zero out the hours for days in disabled weeks
-      for (let i = 0; i < processedDays.length; i++) {
-        if (!includeDayFlags[i]) {
-          processedDays[i] = 0;
-        }
-      }
-    }
-
-    // Calculate total hours only from selected days
-    const totalHours = processedDays
-      ? processedDays.reduce((acc, cur) => acc + parseFloat(cur || 0), 0)
-      : it.hours;
-
-    const body = {
-      from: it.from.format(ISO_8601_DATE),
-      to: it.to.format(ISO_8601_DATE),
-      days: processedDays ? processedDays : null,
-      hours: totalHours,
-      assignmentCode: it.assignmentCode,
-      status: it.status,
-      sheets: it.sheets,
-    };
-
-    if (code) {
-      return WorkDayClient.put(code, body).then((res) => {
-        if (isDefined(onComplete)) {
-          setProcessing(false);
-          onComplete(res);
-        }
-        setState(null);
-      });
-    } else {
-      return WorkDayClient.post(body).then((res) => {
-        if (isDefined(onComplete)) onComplete(res);
-        setState(null);
-        setProcessing(false);
-      });
-    }
-  };
-
-  // Delete workday
-  const handleDelete = () => {
-    WorkDayClient.delete(code).then(() => {
-      if (isDefined(onComplete)) onComplete();
-      setOpenDelete(false);
-      setProcessing(true);
-    });
-  };
-
-  const handleDeleteOpen = () => {
-    setOpenDelete(true);
-  };
-
-  const handleDeleteClose = () => {
-    setOpenDelete(false);
-  };
-
-  const handleClose = () => {
-    if (isDefined(onComplete)) onComplete();
-    setState(null);
-  };
-
-  // Export functionality
-  const handleExport =
-    code && UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN")
-      ? async () => {
-          setExportLink({ loading: true, link: null });
-          const response = await ExportClient().exportWorkday(code);
-          setExportLink({ loading: false, link: response.link });
-          setProcessing(true);
-        }
-      : null;
-
   const headline = UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN")
     ? `Create Workday | ${personFullName}`
     : "Create Workday";
-
-  function clearExportLink() {
-    setExportLink({
-      loading: false,
-      link: null,
-    });
-  }
 
   // Update hours for a specific day
   const handleDayHoursChange = (
