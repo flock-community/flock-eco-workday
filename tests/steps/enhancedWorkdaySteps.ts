@@ -15,7 +15,10 @@ export async function When_I_fill_hours_for_a_specific_day(page: Page, dayNumber
   const dayCells = calendarGrid.locator('[class*="dayCell"]');
 
   // Find the specific day by looking for the day number span
-  const targetDayCell = dayCells.filter({ has: page.locator(`span:has-text("${dayNumber}")`) }).first();
+  // Use exact text match to avoid matching "1" in "31", "21", etc.
+  const targetDayCell = dayCells.filter({ 
+    has: page.getByText(dayNumber.toString(), { exact: true })
+  }).first();
 
   // Wait for cell to be ready and click with force to avoid overlay issues
   await targetDayCell.waitFor({ state: 'visible', timeout: 5000 });
@@ -164,7 +167,9 @@ export async function Then_I_see_day_with_hours(page: Page, dayNumber: number, e
 
   // Find the specific day cell
   const dayCells = calendarGrid.locator('[class*="dayCell"]');
-  const targetDayCell = dayCells.filter({ has: page.locator(`span:has-text("${dayNumber}")`) }).first();
+  const targetDayCell = dayCells.filter({ 
+    has: page.getByText(dayNumber.toString(), { exact: true })
+  }).first();
 
   // Find the hours display within the cell
   const hoursDisplay = targetDayCell.locator('[class*="hoursDisplay"]');
