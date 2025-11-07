@@ -39,19 +39,27 @@ export function AssignmentSelector({
   const [state, setState] = useState(value);
 
   useEffect(() => {
-    console.log('[AssignmentSelector] useEffect triggered. personId:', personId);
+    console.log(
+      "[AssignmentSelector] useEffect triggered. personId:",
+      personId
+    );
     if (!personId) {
-      console.log('[AssignmentSelector] No personId, skipping fetch');
+      console.log("[AssignmentSelector] No personId, skipping fetch");
       return;
     }
 
-    console.log('[AssignmentSelector] Fetching assignments for personId:', personId);
-    AssignmentClient.findAllByPersonId(personId, "all").then((res) => {
-      console.log('[AssignmentSelector] Received assignments:', res.list);
-      setItems(res.list);
-    }).catch(err => {
-      console.error('[AssignmentSelector] Error fetching assignments:', err);
-    });
+    console.log(
+      "[AssignmentSelector] Fetching assignments for personId:",
+      personId
+    );
+    AssignmentClient.findAllByPersonId(personId, "all")
+      .then((res) => {
+        console.log("[AssignmentSelector] Received assignments:", res.list);
+        setItems(res.list);
+      })
+      .catch((err) => {
+        console.error("[AssignmentSelector] Error fetching assignments:", err);
+      });
   }, [personId]);
 
   useEffect(() => {

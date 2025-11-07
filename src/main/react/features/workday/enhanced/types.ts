@@ -62,7 +62,7 @@ export type SickData = {
 // Period type for PeriodSelector
 export type Period = {
   id: string;
-  viewType: 'month' | 'week';
+  viewType: "month" | "week";
   date: dayjs.Dayjs;
   from: dayjs.Dayjs;
   to: dayjs.Dayjs;

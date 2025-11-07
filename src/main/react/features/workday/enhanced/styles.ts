@@ -40,7 +40,7 @@ export const useStyles = makeStyles((theme) => ({
     gap: theme.spacing(2),
   },
   weekendToggle: {
-    marginLeft: 'auto',
+    marginLeft: "auto",
   },
   monthHeaderRow: {
     display: "flex",
@@ -73,11 +73,11 @@ export const useStyles = makeStyles((theme) => ({
     padding: `${theme.spacing(1)}px ${theme.spacing(3)}px`,
   },
   monthSelector: {
-    fontSize: '1rem',
-    '& .MuiSelect-select': {
-      fontSize: '1rem',
-      padding: '10px 12px'
-    }
+    fontSize: "1rem",
+    "& .MuiSelect-select": {
+      fontSize: "1rem",
+      padding: "10px 12px",
+    },
   },
   yearSelector: {
     minWidth: 100,
@@ -85,7 +85,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   currentMonthButton: {
     marginRight: theme.spacing(1),
-    textTransform: 'none',
+    textTransform: "none",
   },
   weekRow: {
     display: "flex",
@@ -149,9 +149,9 @@ export const useStyles = makeStyles((theme) => ({
     margin: 0,
     padding: 0,
     "& input": {
-      textAlign: 'center',
-      padding: '0px',
-    }
+      textAlign: "center",
+      padding: "0px",
+    },
   },
   totalCell: {
     flex: 1,
@@ -233,7 +233,7 @@ export const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     marginRight: theme.spacing(2),
     padding: theme.spacing(1),
-    borderRadius: '4px',
+    borderRadius: "4px",
   },
   summaryColor: {
     width: "20px",
@@ -248,7 +248,7 @@ export const useStyles = makeStyles((theme) => ({
   summaryHours: {
     minWidth: "20px",
     height: "20px",
-    padding: '0 4px',
+    padding: "0 4px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -279,11 +279,11 @@ export const useStyles = makeStyles((theme) => ({
   fillWithButtons: {
     display: "flex",
     alignItems: "center",
-    margin: '16px 0',
+    margin: "16px 0",
   },
   fillButton: {
-    minWidth: '40px',
-    margin: '0 4px',
+    minWidth: "40px",
+    margin: "0 4px",
   },
   navButtons: {
     display: "flex",

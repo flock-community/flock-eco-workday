@@ -4,7 +4,7 @@
  */
 
 // Prefix for all localStorage keys to avoid collisions with other applications
-const STORAGE_PREFIX = 'flock-app-';
+const STORAGE_PREFIX = "flock-app-";
 
 /**
  * Get a value from localStorage by key
@@ -12,7 +12,10 @@ const STORAGE_PREFIX = 'flock-app-';
  * @param defaultValue Optional default value if key doesn't exist
  * @returns The stored value (parsed from JSON) or defaultValue if not found
  */
-export const getStorageItem = <T>(key: string, defaultValue?: T): T | undefined => {
+export const getStorageItem = <T>(
+  key: string,
+  defaultValue?: T
+): T | undefined => {
   try {
     const item = localStorage.getItem(`${STORAGE_PREFIX}${key}`);
     return item ? JSON.parse(item) : defaultValue;
@@ -62,11 +65,11 @@ export const clearStorage = (): boolean => {
   try {
     // Only clear keys that start with our prefix
     Object.keys(localStorage)
-      .filter(key => key.startsWith(STORAGE_PREFIX))
-      .forEach(key => localStorage.removeItem(key));
+      .filter((key) => key.startsWith(STORAGE_PREFIX))
+      .forEach((key) => localStorage.removeItem(key));
     return true;
   } catch (error) {
-    console.error('Error clearing localStorage:', error);
+    console.error("Error clearing localStorage:", error);
     return false;
   }
 };
@@ -78,7 +81,7 @@ export const clearStorage = (): boolean => {
 export const isStorageAvailable = (): boolean => {
   try {
     const testKey = `${STORAGE_PREFIX}test`;
-    localStorage.setItem(testKey, 'test');
+    localStorage.setItem(testKey, "test");
     localStorage.removeItem(testKey);
     return true;
   } catch (e) {
@@ -94,7 +97,7 @@ export const isStorageAvailable = (): boolean => {
  */
 export const createNamespacedStorage = (namespace: string) => {
   const namespacedKey = (key: string) => `${namespace}.${key}`;
-  
+
   return {
     /**
      * Get a value from the namespaced localStorage
@@ -102,26 +105,25 @@ export const createNamespacedStorage = (namespace: string) => {
      * @param defaultValue Optional default value if key doesn't exist
      * @returns The stored value or defaultValue if not found
      */
-    get: <T>(key: string, defaultValue?: T): T | undefined => 
+    get: <T>(key: string, defaultValue?: T): T | undefined =>
       getStorageItem<T>(namespacedKey(key), defaultValue),
-    
+
     /**
      * Set a value in the namespaced localStorage
      * @param key The key to store value under (will be prefixed with namespace)
      * @param value The value to store
      * @returns boolean indicating success or failure
      */
-    set: <T>(key: string, value: T): boolean => 
+    set: <T>(key: string, value: T): boolean =>
       setStorageItem<T>(namespacedKey(key), value),
-    
+
     /**
      * Remove a value from the namespaced localStorage
      * @param key The key to remove (will be prefixed with namespace)
      * @returns boolean indicating success or failure
      */
-    remove: (key: string): boolean => 
-      removeStorageItem(namespacedKey(key)),
-    
+    remove: (key: string): boolean => removeStorageItem(namespacedKey(key)),
+
     /**
      * Clear all keys in this namespace
      * @returns boolean indicating success or failure
@@ -131,14 +133,14 @@ export const createNamespacedStorage = (namespace: string) => {
         // Only clear keys that start with our namespaced prefix
         const fullPrefix = `${STORAGE_PREFIX}${namespace}.`;
         Object.keys(localStorage)
-          .filter(key => key.startsWith(fullPrefix))
-          .forEach(key => localStorage.removeItem(key));
+          .filter((key) => key.startsWith(fullPrefix))
+          .forEach((key) => localStorage.removeItem(key));
         return true;
       } catch (error) {
         console.error(`Error clearing namespace ${namespace}:`, error);
         return false;
       }
-    }
+    },
   };
 };
 

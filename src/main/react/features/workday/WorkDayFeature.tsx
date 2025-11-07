@@ -11,7 +11,10 @@ import AddIcon from "@material-ui/icons/Add";
 import { Person } from "../../clients/PersonClient";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import EnhancedUiToggle from "../../components/preferences/EnhancedUiToggle";
-import { isEnhancedUiEnabled, setEnhancedUiEnabled } from "../../utils/UiPreferences";
+import {
+  isEnhancedUiEnabled,
+  setEnhancedUiEnabled,
+} from "../../utils/UiPreferences";
 
 type WorkDayFeatureProps = {
   person: Person;
@@ -72,7 +75,7 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
         <CardHeader
           title="Work days"
           action={
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <EnhancedUiToggle
                 onChange={handleToggleUI}
                 label="Enhanced Calendar UI"

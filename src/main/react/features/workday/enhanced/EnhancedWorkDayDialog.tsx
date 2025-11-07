@@ -4,7 +4,10 @@ import WorkIcon from "@material-ui/icons/Work";
 import { ConfirmDialog } from "@flock-community/flock-eco-core/src/main/react/components/ConfirmDialog";
 import Typography from "@material-ui/core/Typography";
 import UserAuthorityUtil from "@flock-community/flock-eco-feature-user/src/main/react/user_utils/UserAuthorityUtil";
-import { WorkDayClient, WORK_DAY_PAGE_SIZE } from "../../../clients/WorkDayClient";
+import {
+  WorkDayClient,
+  WORK_DAY_PAGE_SIZE,
+} from "../../../clients/WorkDayClient";
 import { TransitionSlider } from "../../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../../components/dialog";
 import { schema, WORKDAY_FORM_ID } from "../WorkDayForm";
@@ -24,10 +27,23 @@ import isBetween from "dayjs/plugin/isBetween";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { useStyles } from "./styles";
 import { CalendarGrid } from "./CalendarGrid";
-import { WorkDayProps, WorkDayState, ExportStatusProps, EventData, LeaveData, SickData } from "./types";
+import {
+  WorkDayProps,
+  WorkDayState,
+  ExportStatusProps,
+  EventData,
+  LeaveData,
+  SickData,
+} from "./types";
 import { EventClient } from "../../../clients/EventClient";
-import { LeaveDayClient, LEAVE_DAY_PAGE_SIZE } from "../../../clients/LeaveDayClient";
-import { SickDayClient, SICKDAY_PAGE_SIZE } from "../../../clients/SickDayClient";
+import {
+  LeaveDayClient,
+  LEAVE_DAY_PAGE_SIZE,
+} from "../../../clients/LeaveDayClient";
+import {
+  SickDayClient,
+  SICKDAY_PAGE_SIZE,
+} from "../../../clients/SickDayClient";
 import { usePerson } from "../../../hooks/PersonHook";
 
 // Extend dayjs with needed plugins
@@ -39,32 +55,37 @@ dayjs.extend(isSameOrBefore);
 // Helper function to get unique months in a date range
 const getUniqueMonthsInRange = (from, to) => {
   if (!from || !to) return [];
-  
+
   const months = [];
   // Create a new dayjs object to avoid mutation issues
-  let currentDate = dayjs(from).startOf('month');
-  const endDate = dayjs(to).endOf('month');
-  
+  let currentDate = dayjs(from).startOf("month");
+  const endDate = dayjs(to).endOf("month");
+
   // Ensure the month keys are distinct - format them to year-month
   const uniqueMonths = new Set();
-  
-  while (currentDate.isSameOrBefore(endDate, 'month')) {
-    const monthKey = currentDate.format('YYYY-MM');
-    
+
+  while (currentDate.isSameOrBefore(endDate, "month")) {
+    const monthKey = currentDate.format("YYYY-MM");
+
     if (!uniqueMonths.has(monthKey)) {
       uniqueMonths.add(monthKey);
       // Create a new instance for each month to avoid reference issues
       months.push(dayjs(currentDate));
     }
-    
+
     // Move to the next month
-    currentDate = currentDate.add(1, 'month');
+    currentDate = currentDate.add(1, "month");
   }
-  
+
   return months;
 };
 
-export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }: WorkDayProps) {
+export function EnhancedWorkDayDialog({
+  personFullName,
+  open,
+  code,
+  onComplete,
+}: WorkDayProps) {
   const classes = useStyles();
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const [processing, setProcessing] = useState<boolean>(false);
@@ -76,7 +97,9 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   const [events, setEvents] = useState<EventData[]>([]);
   const [leaveData, setLeaveData] = useState<LeaveData[]>([]);
   const [sickData, setSickData] = useState<SickData[]>([]);
-  const [overlappingWorkdays, setOverlappingWorkdays] = useState<WorkDayState[]>([]);
+  const [overlappingWorkdays, setOverlappingWorkdays] = useState<
+    WorkDayState[]
+  >([]);
   // NEW: Add state to track all displayed months - using useRef to prevent render loops
   const initialMonthsRef = useRef<dayjs.Dayjs[]>([]);
   const [exportLink, setExportLink] = useState<ExportStatusProps>({
@@ -92,7 +115,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
   // Use the person hook to get the current person
   const [person] = usePerson();
-  
+
   // For debugging
   const logRef = useRef(false);
 
@@ -122,31 +145,35 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
     try {
       // Fetch all events
-      const allEvents = await fetchAllPages((page) => EventClient.getAll(page), 10);
-      const personEvents = allEvents.filter(event =>
-        event.persons.some(p => p.uuid === personId)
+      const allEvents = await fetchAllPages(
+        (page) => EventClient.getAll(page),
+        10
+      );
+      const personEvents = allEvents.filter((event) =>
+        event.persons.some((p) => p.uuid === personId)
       );
 
       // Format events data
-      const formattedEvents = personEvents.flatMap(event => {
+      const formattedEvents = personEvents.flatMap((event) => {
         const days: EventData[] = [];
         const startDate = event.from;
         const endDate = event.to;
 
         let currentDate = startDate;
         let dayIndex = 0;
-        while (currentDate.isSameOrBefore(endDate, 'day')) {
+        while (currentDate.isSameOrBefore(endDate, "day")) {
           // Use per-day hours from the days array if available, otherwise use total hours
-          const hoursForDay = event.days && event.days.length > dayIndex 
-            ? event.days[dayIndex] 
-            : event.hours;
-          
+          const hoursForDay =
+            event.days && event.days.length > dayIndex
+              ? event.days[dayIndex]
+              : event.hours;
+
           days.push({
-            date: currentDate.format('YYYY-MM-DD'),
+            date: currentDate.format("YYYY-MM-DD"),
             hours: hoursForDay,
-            description: event.description
+            description: event.description,
           });
-          currentDate = currentDate.add(1, 'day');
+          currentDate = currentDate.add(1, "day");
           dayIndex++;
         }
 
@@ -155,7 +182,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
       // Group events by date and take only the first event for each date
       const eventsMap = new Map<string, EventData>();
-      formattedEvents.forEach(event => {
+      formattedEvents.forEach((event) => {
         if (!eventsMap.has(event.date)) {
           eventsMap.set(event.date, event);
         }
@@ -170,21 +197,21 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
       );
 
       // Format leave days data
-      const formattedLeaveDays = allLeaveDays.flatMap(leaveDay => {
+      const formattedLeaveDays = allLeaveDays.flatMap((leaveDay) => {
         const days: LeaveData[] = [];
         const startDate = leaveDay.from;
         const endDate = leaveDay.to;
 
         let currentDate = startDate;
-        while (currentDate.isSameOrBefore(endDate, 'day')) {
+        while (currentDate.isSameOrBefore(endDate, "day")) {
           days.push({
-            date: currentDate.format('YYYY-MM-DD'),
+            date: currentDate.format("YYYY-MM-DD"),
             // Ensure leave hours are capped at 8
             hours: Math.min(leaveDay.hours || 8, 8),
             description: leaveDay.description,
-            status: leaveDay.status
+            status: leaveDay.status,
           });
-          currentDate = currentDate.add(1, 'day');
+          currentDate = currentDate.add(1, "day");
         }
 
         return days;
@@ -192,17 +219,20 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
       // Group leave days by date
       const leaveDaysMap = new Map<string, LeaveData>();
-      formattedLeaveDays.forEach(leaveDay => {
+      formattedLeaveDays.forEach((leaveDay) => {
         const dateKey = leaveDay.date;
         if (!leaveDaysMap.has(dateKey)) {
           leaveDaysMap.set(dateKey, leaveDay);
         } else {
           // If there's already an entry for this date, don't add a duplicate
           // Just update status to APPROVED if any of the entries are approved
-          if (leaveDay.status === 'APPROVED' && leaveDaysMap.get(dateKey).status !== 'APPROVED') {
+          if (
+            leaveDay.status === "APPROVED" &&
+            leaveDaysMap.get(dateKey).status !== "APPROVED"
+          ) {
             leaveDaysMap.set(dateKey, {
               ...leaveDaysMap.get(dateKey),
-              status: 'APPROVED'
+              status: "APPROVED",
             });
           }
         }
@@ -217,21 +247,21 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
       );
 
       // Format sick days data
-      const formattedSickDays = allSickDays.flatMap(sickDay => {
+      const formattedSickDays = allSickDays.flatMap((sickDay) => {
         const days: SickData[] = [];
         const startDate = sickDay.from;
         const endDate = sickDay.to;
 
         let currentDate = startDate;
-        while (currentDate.isSameOrBefore(endDate, 'day')) {
+        while (currentDate.isSameOrBefore(endDate, "day")) {
           days.push({
-            date: currentDate.format('YYYY-MM-DD'),
+            date: currentDate.format("YYYY-MM-DD"),
             // Ensure sick hours are capped at 8
             hours: Math.min(sickDay.hours || 8, 8),
             description: sickDay.description,
-            status: sickDay.status
+            status: sickDay.status,
           });
-          currentDate = currentDate.add(1, 'day');
+          currentDate = currentDate.add(1, "day");
         }
 
         return days;
@@ -239,42 +269,50 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
       // Group sick days by date
       const sickDaysMap = new Map<string, SickData>();
-      formattedSickDays.forEach(sickDay => {
+      formattedSickDays.forEach((sickDay) => {
         const dateKey = sickDay.date;
         if (!sickDaysMap.has(dateKey)) {
           sickDaysMap.set(dateKey, sickDay);
         } else {
           // If there's already an entry for this date, don't add a duplicate
           // Just update status to APPROVED if any of the entries are approved
-          if (sickDay.status === 'APPROVED' && sickDaysMap.get(dateKey).status !== 'APPROVED') {
+          if (
+            sickDay.status === "APPROVED" &&
+            sickDaysMap.get(dateKey).status !== "APPROVED"
+          ) {
             sickDaysMap.set(dateKey, {
               ...sickDaysMap.get(dateKey),
-              status: 'APPROVED'
+              status: "APPROVED",
             });
           }
         }
       });
 
       setSickData(Array.from(sickDaysMap.values()));
-
     } catch (error) {
       console.error("Error fetching additional data:", error);
     }
   };
 
   // Function to fetch overlapping workdays for the person
-  const fetchOverlappingWorkdays = async (personId: string, currentWorkdayCode?: string) => {
+  const fetchOverlappingWorkdays = async (
+    personId: string,
+    currentWorkdayCode?: string
+  ) => {
     if (!personId) return;
-    
+
     try {
       // Fetch all workdays for the person
       const allWorkdays = [];
       let page = 0;
       let hasMore = true;
-      
+
       // Fetch all pages of workdays
       while (hasMore) {
-        const response = await WorkDayClient.findAllByPersonUuid(personId, page);
+        const response = await WorkDayClient.findAllByPersonUuid(
+          personId,
+          page
+        );
         if (response && response.list && response.list.length > 0) {
           allWorkdays.push(...response.list);
           hasMore = response.list.length === WORK_DAY_PAGE_SIZE;
@@ -283,11 +321,11 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
         }
         page++;
       }
-      
+
       // Filter out the current workday and convert to WorkDayState format
       const overlappingWorkdaysList = allWorkdays
-        .filter(workday => workday.code !== currentWorkdayCode) // exclude current workday
-        .map(workday => ({
+        .filter((workday) => workday.code !== currentWorkdayCode) // exclude current workday
+        .map((workday) => ({
           assignmentCode: workday.assignment.code,
           from: workday.from,
           to: workday.to,
@@ -295,9 +333,9 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
           hours: workday.hours,
           status: workday.status,
           sheets: workday.sheets,
-          personId: personId
+          personId: personId,
         }));
-      
+
       setOverlappingWorkdays(overlappingWorkdaysList);
     } catch (error) {
       console.error("Error fetching overlapping workdays:", error);
@@ -346,7 +384,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
             hours: res.hours,
             status: res.status,
             sheets: res.sheets,
-            personId: person?.uuid
+            personId: person?.uuid,
           };
 
           setState(workDayState);
@@ -354,21 +392,27 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
           // When editing an existing workday, determine all months in the range
           // Extract all months from the state's date range
           const months = [];
-          let current = dayjs(res.from).startOf('month');
-          const end = dayjs(res.to).endOf('month');
+          let current = dayjs(res.from).startOf("month");
+          const end = dayjs(res.to).endOf("month");
 
           // Add all months in the date range
-          while (current.isSameOrBefore(end, 'month')) {
+          while (current.isSameOrBefore(end, "month")) {
             months.push(dayjs(current));
-            current = current.add(1, 'month');
+            current = current.add(1, "month");
           }
 
           // Debug logging - only do once
           if (!logRef.current) {
-            console.log("Loading existing workday with range:",
-                        res.from.format('YYYY-MM-DD'), "to",
-                        res.to.format('YYYY-MM-DD'));
-            console.log("Detected months:", months.map(m => m.format('YYYY-MM')));
+            console.log(
+              "Loading existing workday with range:",
+              res.from.format("YYYY-MM-DD"),
+              "to",
+              res.to.format("YYYY-MM-DD")
+            );
+            console.log(
+              "Detected months:",
+              months.map((m) => m.format("YYYY-MM"))
+            );
             logRef.current = true;
           }
 
@@ -382,7 +426,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
           if (person?.uuid) {
             await Promise.all([
               fetchAdditionalData(person.uuid),
-              fetchOverlappingWorkdays(person.uuid, code)
+              fetchOverlappingWorkdays(person.uuid, code),
             ]);
           }
         } else {
@@ -390,21 +434,21 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
           const now = dayjs();
           const initialState = {
             ...schema.cast(),
-            from: now,  // Ensure from is a Dayjs object, not Date
-            to: now,    // Ensure to is a Dayjs object, not Date
-            personId: person?.uuid || null
+            from: now, // Ensure from is a Dayjs object, not Date
+            to: now, // Ensure to is a Dayjs object, not Date
+            personId: person?.uuid || null,
           };
           setState(initialState);
 
           // For new workdays, use the current month
           setCurrentMonth(now);
-          initialMonthsRef.current = [now.startOf('month')];
+          initialMonthsRef.current = [now.startOf("month")];
 
           // Fetch additional data if we have a person ID
           if (person?.uuid) {
             await Promise.all([
               fetchAdditionalData(person.uuid),
-              fetchOverlappingWorkdays(person.uuid)
+              fetchOverlappingWorkdays(person.uuid),
             ]);
           }
         }
@@ -443,7 +487,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
       // For each day, determine if it belongs to a selected week
       for (let i = 0; i < processedDays.length; i++) {
-        const dayDate = it.from.clone().add(i, 'day');
+        const dayDate = it.from.clone().add(i, "day");
         const weekNumber = dayDate.isoWeek();
 
         // If the week is selected, this day should be included
@@ -472,7 +516,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
       hours: totalHours,
       assignmentCode: it.assignmentCode,
       status: it.status,
-      sheets: it.sheets
+      sheets: it.sheets,
     };
 
     if (code) {
@@ -537,19 +581,28 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   }
 
   // Update hours for a specific day
-  const handleDayHoursChange = (date: dayjs.Dayjs, hours: number, type: string = 'regular') => {
+  const handleDayHoursChange = (
+    date: dayjs.Dayjs,
+    hours: number,
+    type: string = "regular"
+  ) => {
     if (!state) return;
 
     // Clone the current state to avoid direct mutation
     const newState = { ...state };
 
-    if (type === 'regular') {
+    if (type === "regular") {
       // Check if the date is within the current range
-      const isWithinRange = date.isBetween(newState.from, newState.to, 'day', '[]');
+      const isWithinRange = date.isBetween(
+        newState.from,
+        newState.to,
+        "day",
+        "[]"
+      );
 
       if (isWithinRange) {
         // Calculate the index in the days array
-        const dayIndex = date.diff(newState.from, 'day');
+        const dayIndex = date.diff(newState.from, "day");
 
         // Update the existing day
         if (newState.days) {
@@ -558,7 +611,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
           newState.days = newDays;
         } else {
           // Initialize days array if needed
-          const dayCount = newState.to.diff(newState.from, 'day') + 1;
+          const dayCount = newState.to.diff(newState.from, "day") + 1;
           const newDays = Array(dayCount).fill(0);
           newDays[dayIndex] = hours;
           newState.days = newDays;
@@ -577,14 +630,14 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
         }
 
         // Calculate the new day count
-        const newDayCount = newTo.diff(newFrom, 'day') + 1;
+        const newDayCount = newTo.diff(newFrom, "day") + 1;
 
         // Create a new days array with all zeros
         const newDays = Array(newDayCount).fill(0);
 
         // Copy existing days data to the correct position in the new array
         if (newState.days) {
-          const offset = newFrom.diff(newState.from, 'day');
+          const offset = newFrom.diff(newState.from, "day");
 
           for (let i = 0; i < newState.days.length; i++) {
             const newIndex = i - offset;
@@ -595,7 +648,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
         }
 
         // Set the hours for the clicked day
-        const clickedDayIndex = date.diff(newFrom, 'day');
+        const clickedDayIndex = date.diff(newFrom, "day");
         newDays[clickedDayIndex] = hours;
 
         // Update the state with the new range and days
@@ -610,13 +663,19 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   };
 
   // Handle date range change with resetDays parameter
-  const handleDateRangeChange = (from: dayjs.Dayjs, to: dayjs.Dayjs, resetDays: boolean = false) => {
+  const handleDateRangeChange = (
+    from: dayjs.Dayjs,
+    to: dayjs.Dayjs,
+    resetDays: boolean = false
+  ) => {
     if (!state) return;
-    
-    console.log("Date range change:", 
-                from ? from.format('YYYY-MM-DD') : 'null', 
-                "to", 
-                to ? to.format('YYYY-MM-DD') : 'null');
+
+    console.log(
+      "Date range change:",
+      from ? from.format("YYYY-MM-DD") : "null",
+      "to",
+      to ? to.format("YYYY-MM-DD") : "null"
+    );
 
     // Validate inputs - ensure we have valid dates
     if (!from || !to) {
@@ -634,8 +693,8 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     const newState = { ...state };
 
     // Calculate the new day count
-    const newDayCount = to.diff(from, 'day') + 1;
-    
+    const newDayCount = to.diff(from, "day") + 1;
+
     // Sanity check to prevent creating a huge array
     if (newDayCount > 366) {
       console.warn("Very large date range detected:", newDayCount, "days");
@@ -653,14 +712,14 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
         // Handle both range expansion and reduction
         const oldDayCount = newState.days.length;
         newDays = Array(newDayCount).fill(0);
-        
+
         // Map days from old range to new range
         const oldFrom = newState.from;
-        
+
         for (let i = 0; i < newDayCount; i++) {
-          const newDate = from.clone().add(i, 'day');
-          const oldIndex = newDate.diff(oldFrom, 'day');
-          
+          const newDate = from.clone().add(i, "day");
+          const oldIndex = newDate.diff(oldFrom, "day");
+
           // Only copy if the date was in the old range
           if (oldIndex >= 0 && oldIndex < oldDayCount) {
             newDays[i] = newState.days[oldIndex];
@@ -678,21 +737,23 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     newState.days = newDays;
 
     setState(newState);
-    
+
     // Update the months if necessary
     const allMonths = [];
-    let currentDate = dayjs(from).startOf('month');
-    const endDate = dayjs(to).endOf('month');
-    
-    while (currentDate.isSameOrBefore(endDate, 'month')) {
+    let currentDate = dayjs(from).startOf("month");
+    const endDate = dayjs(to).endOf("month");
+
+    while (currentDate.isSameOrBefore(endDate, "month")) {
       allMonths.push(dayjs(currentDate));
-      currentDate = currentDate.add(1, 'month');
+      currentDate = currentDate.add(1, "month");
     }
-    
+
     if (allMonths.length > 0) {
       initialMonthsRef.current = allMonths;
-      console.log("Updated months based on new date range:", 
-                  allMonths.map(m => m.format('YYYY-MM')));
+      console.log(
+        "Updated months based on new date range:",
+        allMonths.map((m) => m.format("YYYY-MM"))
+      );
     }
   };
 
@@ -705,7 +766,7 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   // Helper function to check if a date is a free day based on settings
   const isFreeDayDate = (date: dayjs.Dayjs): boolean => {
     // Get the free day settings from localStorage
-    const freeDaySettingsStr = localStorage.getItem('freeDaySettings');
+    const freeDaySettingsStr = localStorage.getItem("freeDaySettings");
     if (!freeDaySettingsStr) return false;
 
     try {
@@ -716,12 +777,12 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
       if (date.day() !== freeDaySettings.dayOfWeek) return false;
 
       // Handle frequency
-      if (freeDaySettings.frequency === 'every') {
+      if (freeDaySettings.frequency === "every") {
         return true;
-      } else if (freeDaySettings.frequency === 'odd') {
+      } else if (freeDaySettings.frequency === "odd") {
         const weekNumber = date.week();
         return weekNumber % 2 !== 0;
-      } else if (freeDaySettings.frequency === 'even') {
+      } else if (freeDaySettings.frequency === "even") {
         const weekNumber = date.week();
         return weekNumber % 2 === 0;
       }
@@ -735,22 +796,22 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
   // Helper function to get event hours for a date
   const getEventHours = (date: dayjs.Dayjs): number => {
-    const formattedDate = date.format('YYYY-MM-DD');
-    const event = events.find(e => e.date === formattedDate);
+    const formattedDate = date.format("YYYY-MM-DD");
+    const event = events.find((e) => e.date === formattedDate);
     return event ? Number(event.hours) || 0 : 0;
   };
 
   // Helper function to get leave hours for a date
   const getLeaveHours = (date: dayjs.Dayjs): number => {
-    const formattedDate = date.format('YYYY-MM-DD');
-    const leave = leaveData.find(l => l.date === formattedDate);
+    const formattedDate = date.format("YYYY-MM-DD");
+    const leave = leaveData.find((l) => l.date === formattedDate);
     return leave ? Number(leave.hours) || 0 : 0;
   };
 
   // Helper function to get sick hours for a date
   const getSickHours = (date: dayjs.Dayjs): number => {
-    const formattedDate = date.format('YYYY-MM-DD');
-    const sick = sickData.find(s => s.date === formattedDate);
+    const formattedDate = date.format("YYYY-MM-DD");
+    const sick = sickData.find((s) => s.date === formattedDate);
     return sick ? Number(sick.hours) || 0 : 0;
   };
 
@@ -762,32 +823,32 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
   // Function to determine if a date is in the workday date range
   const isInWorkdayRange = (date: dayjs.Dayjs): boolean => {
     if (!state || !state.from || !state.to) return false;
-    return date.isBetween(state.from, state.to, 'day', '[]');
+    return date.isBetween(state.from, state.to, "day", "[]");
   };
 
   // Check if a date is within any of the visible months
   const isInCurrentVisibleMonth = (date: dayjs.Dayjs): boolean => {
     if (!currentMonth) return false;
-    
+
     // Check if we have multiple months through initialMonthsRef
     if (initialMonthsRef.current.length > 0) {
-      return initialMonthsRef.current.some(month => {
-        const startOfMonth = month.startOf('month');
-        const endOfMonth = month.endOf('month');
-        return date.isBetween(startOfMonth, endOfMonth, 'day', '[]');
+      return initialMonthsRef.current.some((month) => {
+        const startOfMonth = month.startOf("month");
+        const endOfMonth = month.endOf("month");
+        return date.isBetween(startOfMonth, endOfMonth, "day", "[]");
       });
     }
-    
+
     // Fallback to just checking current month
-    const startOfMonth = currentMonth.startOf('month');
-    const endOfMonth = currentMonth.endOf('month');
-    return date.isBetween(startOfMonth, endOfMonth, 'day', '[]');
+    const startOfMonth = currentMonth.startOf("month");
+    const endOfMonth = currentMonth.endOf("month");
+    return date.isBetween(startOfMonth, endOfMonth, "day", "[]");
   };
 
   // Find the index of a date in the days array
   const getDayIndex = (date: dayjs.Dayjs): number => {
     if (!state || !state.from) return -1;
-    return date.diff(state.from, 'day');
+    return date.diff(state.from, "day");
   };
 
   // Improved quick fill - now supports targeting a specific month
@@ -801,8 +862,8 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     const monthDate = targetMonth || currentMonth;
     if (!monthDate) return;
 
-    const startOfMonth = monthDate.startOf('month');
-    const endOfMonth = monthDate.endOf('month');
+    const startOfMonth = monthDate.startOf("month");
+    const endOfMonth = monthDate.endOf("month");
 
     // Determine if we need to expand the date range to include the target month
     let newFrom = newState.from;
@@ -825,14 +886,14 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     let newDays;
     if (daysChanged) {
       // Calculate the new day count
-      const newDayCount = newTo.diff(newFrom, 'day') + 1;
+      const newDayCount = newTo.diff(newFrom, "day") + 1;
 
       // Create a new days array filled with zeros
       newDays = Array(newDayCount).fill(0);
 
       // Copy existing days data to the correct position in the new array
       if (newState.days) {
-        const offset = newFrom.diff(newState.from, 'day');
+        const offset = newFrom.diff(newState.from, "day");
 
         for (let i = 0; i < newState.days.length; i++) {
           const newIndex = i - offset;
@@ -849,21 +910,21 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     } else {
       // If we didn't expand the date range, just use the existing days array
       newDays = [...(newState.days || [])];
-      
+
       // If days array is empty, initialize it
       if (newDays.length === 0) {
-        const newDayCount = newTo.diff(newFrom, 'day') + 1;
+        const newDayCount = newTo.diff(newFrom, "day") + 1;
         newDays = Array(newDayCount).fill(0);
       }
     }
 
     // Now fill in the hours for each workday in the target month
     let currentDate = startOfMonth.clone();
-    while (currentDate.isSameOrBefore(endOfMonth, 'day')) {
+    while (currentDate.isSameOrBefore(endOfMonth, "day")) {
       // Check if the date is within the workday range
-      if (currentDate.isBetween(newState.from, newState.to, 'day', '[]')) {
+      if (currentDate.isBetween(newState.from, newState.to, "day", "[]")) {
         // Get the index of this day in the days array
-        const dayIndex = currentDate.diff(newState.from, 'day');
+        const dayIndex = currentDate.diff(newState.from, "day");
 
         // Skip weekend days
         if (isWeekend(currentDate)) {
@@ -904,13 +965,13 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
       }
 
       // Move to the next day
-      currentDate = currentDate.add(1, 'day');
+      currentDate = currentDate.add(1, "day");
     }
 
     // Update the state with the new days array
     setState({
       ...newState,
-      days: newDays
+      days: newDays,
     });
   };
 
@@ -921,19 +982,27 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
   // Handle updates to month list from CalendarGrid
   // This updates our reference to the current months without causing re-renders
-  const handleMonthsChange = useCallback((months: dayjs.Dayjs[]) => {
-    if (months && months.length > 0) {
-      // Create new dayjs instances to avoid reference issues
-      initialMonthsRef.current = months.map(m => dayjs(m));
-      console.log("Parent updated with months:", 
-                  initialMonthsRef.current.map(m => m.format('YYYY-MM')));
-      
-      // If current month is not in the list, update it
-      if (currentMonth && !months.some(m => m.isSame(currentMonth, 'month'))) {
-        setCurrentMonth(months[0]);
+  const handleMonthsChange = useCallback(
+    (months: dayjs.Dayjs[]) => {
+      if (months && months.length > 0) {
+        // Create new dayjs instances to avoid reference issues
+        initialMonthsRef.current = months.map((m) => dayjs(m));
+        console.log(
+          "Parent updated with months:",
+          initialMonthsRef.current.map((m) => m.format("YYYY-MM"))
+        );
+
+        // If current month is not in the list, update it
+        if (
+          currentMonth &&
+          !months.some((m) => m.isSame(currentMonth, "month"))
+        ) {
+          setCurrentMonth(months[0]);
+        }
       }
-    }
-  }, [currentMonth]);
+    },
+    [currentMonth]
+  );
 
   // Render the form elements (assignment, status, etc.)
   const renderFormFields = () => {
@@ -942,7 +1011,12 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
     // Show loading message if person is not loaded yet or doesn't have uuid
     if (!person || !person.uuid) {
       return (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="200px"
+        >
           <Typography>Loading...</Typography>
         </Box>
       );
@@ -950,32 +1024,41 @@ export function EnhancedWorkDayDialog({ personFullName, open, code, onComplete }
 
     // Force initialMonthsRef to have at least one month
     if (initialMonthsRef.current.length === 0 && currentMonth) {
-      initialMonthsRef.current = [currentMonth.startOf('month')];
+      initialMonthsRef.current = [currentMonth.startOf("month")];
     }
-    
+
     // Check if period spans multiple months and ensure all months are included
     if (state && state.from && state.to) {
-      const fromMonth = dayjs(state.from).startOf('month');
-      const toMonth = dayjs(state.to).startOf('month');
-      
+      const fromMonth = dayjs(state.from).startOf("month");
+      const toMonth = dayjs(state.to).startOf("month");
+
       // If from and to are in different months, make sure both are in initialMonthsRef
-      if (!fromMonth.isSame(toMonth, 'month') && initialMonthsRef.current.length < 2) {
-        console.log("Period spans multiple months:", 
-                    fromMonth.format('YYYY-MM'), 
-                    toMonth.format('YYYY-MM'));
-        
+      if (
+        !fromMonth.isSame(toMonth, "month") &&
+        initialMonthsRef.current.length < 2
+      ) {
+        console.log(
+          "Period spans multiple months:",
+          fromMonth.format("YYYY-MM"),
+          toMonth.format("YYYY-MM")
+        );
+
         // Create a comprehensive list of all months in the range
         const months = [];
         let current = dayjs(fromMonth);
-        
-        while (current.isSameOrBefore(toMonth, 'month')) {
+
+        while (current.isSameOrBefore(toMonth, "month")) {
           months.push(dayjs(current)); // Create new instance to avoid reference issues
-          current = current.add(1, 'month');
+          current = current.add(1, "month");
         }
-        
+
         // Update initialMonthsRef if we found multiple months
         if (months.length > 1) {
-          console.log("Updating initialMonthsRef to include all", months.length, "months");
+          console.log(
+            "Updating initialMonthsRef to include all",
+            months.length,
+            "months"
+          );
           initialMonthsRef.current = months;
         }
       }

@@ -1,8 +1,19 @@
 import React, { useState } from "react";
 import { Typography, TextField } from "@material-ui/core";
 import { useStyles } from "./styles";
-import { CalendarDay as CalendarDayType, WorkDayState, EventData, LeaveData, SickData } from "./types";
-import { EVENT_COLOR, VACATION_COLOR, SICKNESS_COLOR, OVERLAP_COLOR } from "./types";
+import {
+  CalendarDay as CalendarDayType,
+  WorkDayState,
+  EventData,
+  LeaveData,
+  SickData,
+} from "./types";
+import {
+  EVENT_COLOR,
+  VACATION_COLOR,
+  SICKNESS_COLOR,
+  OVERLAP_COLOR,
+} from "./types";
 
 interface CalendarDayProps {
   day: CalendarDayType;
@@ -10,7 +21,7 @@ interface CalendarDayProps {
   events: EventData[];
   leaveData: LeaveData[];
   sickData: SickData[];
-  overlapData?: { hours: number, description?: string }[];
+  overlapData?: { hours: number; description?: string }[];
   onHoursChange: (date: any, hours: number, type?: string) => void;
 }
 
@@ -21,7 +32,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
   leaveData,
   sickData,
   overlapData = [],
-  onHoursChange
+  onHoursChange,
 }) => {
   const classes = useStyles();
   const { date, dayOfMonth, isCurrentMonth, hours, isSelected } = day;
@@ -36,14 +47,14 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
   const hasOverlap = isCurrentMonth && overlapData && overlapData.length > 0;
 
   // Get the actual hours (or default to 8 only if hours is not provided)
-  const eventHours = hasEvent ? (events[0].hours || 8) : 0;
-  const leaveHours = hasLeaveData ? (leaveData[0].hours || 8) : 0;
-  const sickHours = hasSickData ? (sickData[0].hours || 8) : 0;
-  const overlapHours = hasOverlap ? (overlapData[0].hours || 0) : 0;
+  const eventHours = hasEvent ? events[0].hours || 8 : 0;
+  const leaveHours = hasLeaveData ? leaveData[0].hours || 8 : 0;
+  const sickHours = hasSickData ? sickData[0].hours || 8 : 0;
+  const overlapHours = hasOverlap ? overlapData[0].hours || 0 : 0;
 
   // Get status for leave days and sick days (approved or not)
-  const leaveApproved = hasLeaveData && leaveData[0].status === 'APPROVED';
-  const sickApproved = hasSickData && sickData[0].status === 'APPROVED';
+  const leaveApproved = hasLeaveData && leaveData[0].status === "APPROVED";
+  const sickApproved = hasSickData && sickData[0].status === "APPROVED";
 
   const handleClick = () => {
     if (state && isCurrentMonth) {
@@ -55,24 +66,24 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
 
   const handleChange = (e) => {
     // Allow only numbers
-    const value = e.target.value.replace(/[^0-9]/g, '');
+    const value = e.target.value.replace(/[^0-9]/g, "");
     setInputValue(value);
   };
 
   const handleBlur = () => {
     setIsEditing(false);
     // Convert to number and update hours
-    const newHours = inputValue === '' ? 0 : parseInt(inputValue, 10);
+    const newHours = inputValue === "" ? 0 : parseInt(inputValue, 10);
     if (newHours !== hours) {
       onHoursChange(date, newHours);
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleBlur();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setIsEditing(false);
       setInputValue(hours.toString());
     }
@@ -80,14 +91,11 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
 
   // Determine cell class based on current month and selection status
   const cellClassName = `${classes.dayCell}
-    ${isSelected ? classes.dayCellSelected : ''}
-    ${!isCurrentMonth ? classes.dayCellNotCurrentMonth : ''}`;
+    ${isSelected ? classes.dayCellSelected : ""}
+    ${!isCurrentMonth ? classes.dayCellNotCurrentMonth : ""}`;
 
   return (
-    <div
-      className={cellClassName}
-      onClick={handleClick}
-    >
+    <div className={cellClassName} onClick={handleClick}>
       <span className={classes.dayNumber}>{dayOfMonth}</span>
 
       {isEditing ? (
@@ -100,15 +108,15 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
           className={classes.hoursInput}
           inputProps={{
             style: {
-              textAlign: 'center',
-              fontSize: '1.5rem',
-              width: '30px',
-            }
+              textAlign: "center",
+              fontSize: "1.5rem",
+              width: "30px",
+            },
           }}
         />
       ) : (
         <span className={classes.hoursDisplay}>
-          {isCurrentMonth && hours > 0 ? hours : ''}
+          {isCurrentMonth && hours > 0 ? hours : ""}
         </span>
       )}
 
@@ -116,11 +124,21 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
       {hasSickData && (
         <div
           className={classes.sickIndicator}
-          style={sickApproved ?
-            { backgroundColor: SICKNESS_COLOR, border: `2px solid ${SICKNESS_COLOR}` } :
-            { border: `2px solid ${SICKNESS_COLOR}`, color: SICKNESS_COLOR, backgroundColor: 'transparent' }
+          style={
+            sickApproved
+              ? {
+                  backgroundColor: SICKNESS_COLOR,
+                  border: `2px solid ${SICKNESS_COLOR}`,
+                }
+              : {
+                  border: `2px solid ${SICKNESS_COLOR}`,
+                  color: SICKNESS_COLOR,
+                  backgroundColor: "transparent",
+                }
           }
-          title={`${sickData[0].description || "Sick"} (${sickApproved ? 'Approved' : 'Pending'})`}
+          title={`${sickData[0].description || "Sick"} (${
+            sickApproved ? "Approved" : "Pending"
+          })`}
         >
           {sickHours}
         </div>
@@ -132,7 +150,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
           className={classes.eventIndicator}
           style={{
             backgroundColor: EVENT_COLOR,
-            border: `2px solid ${EVENT_COLOR}`
+            border: `2px solid ${EVENT_COLOR}`,
           }}
           title={events[0].description || "Event"}
         >
@@ -144,11 +162,21 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
       {hasLeaveData && (
         <div
           className={classes.vacationIndicator}
-          style={leaveApproved ?
-            { backgroundColor: VACATION_COLOR, border: `2px solid ${VACATION_COLOR}` } :
-            { border: `2px solid ${VACATION_COLOR}`, color: VACATION_COLOR, backgroundColor: 'transparent' }
+          style={
+            leaveApproved
+              ? {
+                  backgroundColor: VACATION_COLOR,
+                  border: `2px solid ${VACATION_COLOR}`,
+                }
+              : {
+                  border: `2px solid ${VACATION_COLOR}`,
+                  color: VACATION_COLOR,
+                  backgroundColor: "transparent",
+                }
           }
-          title={`${leaveData[0].description || "Vacation"} (${leaveApproved ? 'Approved' : 'Pending'})`}
+          title={`${leaveData[0].description || "Vacation"} (${
+            leaveApproved ? "Approved" : "Pending"
+          })`}
         >
           {leaveHours}
         </div>

@@ -10,7 +10,7 @@ import {
   Grid,
   Box,
   Chip,
-  Paper
+  Paper,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -27,7 +27,10 @@ interface PeriodSelectorProps {
   onChange: (periods: Period[]) => void;
 }
 
-export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ periods, onChange }) => {
+export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
+  periods,
+  onChange,
+}) => {
   // Generate weeks for selection (3 months before and after current date)
   const getWeekOptions = () => {
     const options = [];
@@ -43,7 +46,7 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ periods, onChang
         value: currentDate.format("YYYY-MM-DD"),
         label,
         weekNumber,
-        year
+        year,
       });
       currentDate = currentDate.add(1, "week");
     }
@@ -62,7 +65,7 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ periods, onChang
       const label = currentDate.format("MMMM YYYY");
       options.push({
         value: currentDate.format("YYYY-MM-DD"),
-        label
+        label,
       });
       currentDate = currentDate.add(1, "month");
     }
@@ -74,21 +77,21 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ periods, onChang
   const monthOptions = getMonthOptions();
 
   // Handle period type change
-  const handleTypeChange = (periodId: string, viewType: 'month' | 'week') => {
-    const updatedPeriods = periods.map(period => {
+  const handleTypeChange = (periodId: string, viewType: "month" | "week") => {
+    const updatedPeriods = periods.map((period) => {
       if (period.id === periodId) {
         // Get default date for the new view type
         let date = dayjs();
         let from, to;
 
-        if (viewType === 'month') {
-          date = date.startOf('month');
-          from = date.startOf('month');
-          to = date.endOf('month');
+        if (viewType === "month") {
+          date = date.startOf("month");
+          from = date.startOf("month");
+          to = date.endOf("month");
         } else {
-          date = date.startOf('week');
+          date = date.startOf("week");
           from = date;
-          to = date.endOf('week');
+          to = date.endOf("week");
         }
 
         return {
@@ -96,7 +99,7 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ periods, onChang
           viewType,
           date,
           from,
-          to
+          to,
         };
       }
       return period;
@@ -109,23 +112,23 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ periods, onChang
   const handleDateChange = (periodId: string, dateValue: string) => {
     const date = dayjs(dateValue);
 
-    const updatedPeriods = periods.map(period => {
+    const updatedPeriods = periods.map((period) => {
       if (period.id === periodId) {
         let from, to;
 
-        if (period.viewType === 'month') {
-          from = date.startOf('month');
-          to = date.endOf('month');
+        if (period.viewType === "month") {
+          from = date.startOf("month");
+          to = date.endOf("month");
         } else {
-          from = date.startOf('week');
-          to = date.endOf('week');
+          from = date.startOf("week");
+          to = date.endOf("week");
         }
 
         return {
           ...period,
           date,
           from,
-          to
+          to,
         };
       }
       return period;
@@ -139,18 +142,23 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ periods, onChang
   // Add new period
   const handleAddPeriod = () => {
     // Find the latest end date from existing periods
-    let latestEndDate = periods.length > 0
-      ? periods.reduce((latest, period) => period.to.isAfter(latest) ? period.to : latest, periods[0].to)
-      : dayjs();
+    let latestEndDate =
+      periods.length > 0
+        ? periods.reduce(
+            (latest, period) =>
+              period.to.isAfter(latest) ? period.to : latest,
+            periods[0].to
+          )
+        : dayjs();
 
     // Default to month view, starting after the latest period
-    const newDate = latestEndDate.add(1, 'day').startOf('month');
+    const newDate = latestEndDate.add(1, "day").startOf("month");
     const newPeriod: Period = {
       id: generateId(),
-      viewType: 'month',
+      viewType: "month",
       date: newDate,
-      from: newDate.startOf('month'),
-      to: newDate.endOf('month')
+      from: newDate.startOf("month"),
+      to: newDate.endOf("month"),
     };
 
     // Check for overlaps and adjust if needed
@@ -162,7 +170,7 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ periods, onChang
 
   // Remove period
   const handleRemovePeriod = (periodId: string) => {
-    const updatedPeriods = periods.filter(period => period.id !== periodId);
+    const updatedPeriods = periods.filter((period) => period.id !== periodId);
     onChange(updatedPeriods);
   };
 
@@ -183,24 +191,30 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ periods, onChang
         const prevPeriod = adjustedPeriods[index - 1];
 
         // Check if the current period overlaps with the previous one
-        if (period.from.isBefore(prevPeriod.to) || period.from.isSame(prevPeriod.to)) {
+        if (
+          period.from.isBefore(prevPeriod.to) ||
+          period.from.isSame(prevPeriod.to)
+        ) {
           // Adjust the start date to be after the previous period
-          const newFrom = prevPeriod.to.add(1, 'day');
+          const newFrom = prevPeriod.to.add(1, "day");
           let newTo;
 
-          if (period.viewType === 'month') {
+          if (period.viewType === "month") {
             // For month view, adjust to end of the month containing newFrom
-            newTo = newFrom.endOf('month');
+            newTo = newFrom.endOf("month");
           } else {
             // For week view, adjust to end of the week containing newFrom
-            newTo = newFrom.endOf('week');
+            newTo = newFrom.endOf("week");
           }
 
           adjustedPeriods.push({
             ...period,
             from: newFrom,
             to: newTo,
-            date: period.viewType === 'month' ? newFrom.startOf('month') : newFrom.startOf('week')
+            date:
+              period.viewType === "month"
+                ? newFrom.startOf("month")
+                : newFrom.startOf("week"),
           });
         } else {
           // No overlap, keep the period as is
@@ -223,11 +237,18 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ periods, onChang
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} sm={3}>
               <FormControl fullWidth>
-                <InputLabel id={`period-type-label-${period.id}`}>Type</InputLabel>
+                <InputLabel id={`period-type-label-${period.id}`}>
+                  Type
+                </InputLabel>
                 <Select
                   labelId={`period-type-label-${period.id}`}
                   value={period.viewType}
-                  onChange={(e) => handleTypeChange(period.id, e.target.value as 'month' | 'week')}
+                  onChange={(e) =>
+                    handleTypeChange(
+                      period.id,
+                      e.target.value as "month" | "week"
+                    )
+                  }
                 >
                   <MenuItem value="month">Maand</MenuItem>
                   <MenuItem value="week">Week</MenuItem>
@@ -238,25 +259,26 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ periods, onChang
             <Grid item xs={12} sm={7}>
               <FormControl fullWidth>
                 <InputLabel id={`period-date-label-${period.id}`}>
-                  {period.viewType === 'month' ? 'Maand' : 'Week'}
+                  {period.viewType === "month" ? "Maand" : "Week"}
                 </InputLabel>
                 <Select
                   labelId={`period-date-label-${period.id}`}
                   value={period.date.format("YYYY-MM-DD")}
-                  onChange={(e) => handleDateChange(period.id, e.target.value as string)}
-                >
-                  {period.viewType === 'month' ?
-                    monthOptions.map(option => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    )) :
-                    weekOptions.map(option => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))
+                  onChange={(e) =>
+                    handleDateChange(period.id, e.target.value as string)
                   }
+                >
+                  {period.viewType === "month"
+                    ? monthOptions.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))
+                    : weekOptions.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
                 </Select>
               </FormControl>
             </Grid>
@@ -278,9 +300,7 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({ periods, onChang
                   label={`Van: ${period.from.format("DD MMM YYYY")}`}
                   style={{ marginRight: 8 }}
                 />
-                <Chip
-                  label={`Tot: ${period.to.format("DD MMM YYYY")}`}
-                />
+                <Chip label={`Tot: ${period.to.format("DD MMM YYYY")}`} />
               </Box>
             </Grid>
           </Grid>
