@@ -928,6 +928,65 @@ test.describe('Enhanced Workday Dialog', () => {
     logs.forEach(log => console.log(log));
   });
 
+  test('should allow re-setting hours in first week of February after clearing', async ({ page }) => {
+    await Given_I_am_logged_in_as_user(page, 'ernie');
+    await When_I_go_to_my_work_days(page);
+    await When_I_click_the_button(page, 'Add');
+    await When_I_select_the_assignment(page, 'Client D');
+
+    // Change to February 2025 (starts Saturday, first workweek is Feb 3-7)
+    await When_I_change_month_selector_to(page, 0, 2025, 1); // Month 1 = February
+    await page.waitForTimeout(2000);
+
+    // Fill the entire month with 8 hours
+    await When_I_use_quick_fill_with_hours(page, 8, 0);
+    await page.waitForTimeout(1000);
+
+    // Clear the first workweek (Feb 3-7)
+    await When_I_fill_hours_for_a_specific_day(page, 3, 0);
+    await When_I_fill_hours_for_a_specific_day(page, 4, 0);
+    await When_I_fill_hours_for_a_specific_day(page, 5, 0);
+    await When_I_fill_hours_for_a_specific_day(page, 6, 0);
+    await When_I_fill_hours_for_a_specific_day(page, 7, 0);
+
+    // Save the workday
+    await When_I_click_the_button(page, 'Save');
+    await page.waitForURL('**/workdays', { timeout: 10000 });
+
+    // Reopen the workday
+    await page.waitForTimeout(1000);
+    const firstRow = page.locator('table tbody tr').first();
+    await firstRow.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRow.click({ force: true, timeout: 30000 });
+
+    // Wait for dialog to open
+    await Then_I_see_the_calendar_grid(page);
+    await page.waitForTimeout(1000);
+
+    // Now try to set hours for Feb 3 (Monday)
+    await When_I_fill_hours_for_a_specific_day(page, 3, 8);
+
+    // Verify the total increased
+    await Then_I_see_the_total_hours_as(page, { minimum: 120 });
+
+    // Save again
+    await When_I_click_the_button(page, 'Save');
+    await page.waitForURL('**/workdays', { timeout: 10000 });
+
+    // Reopen to verify it persisted
+    await page.waitForTimeout(1000);
+    const firstRowAgain = page.locator('table tbody tr').first();
+    await firstRowAgain.waitFor({ state: 'visible', timeout: 10000 });
+    await firstRowAgain.click({ force: true, timeout: 30000 });
+
+    // Wait for dialog
+    await Then_I_see_the_calendar_grid(page);
+    await page.waitForTimeout(1000);
+
+    // Verify Feb 3 still has 8 hours after reopening
+    await Then_I_see_the_total_hours_as(page, { minimum: 120 });
+  });
+
   test('should not save hours when period is shortened by removing a month', async ({ page }) => {
     await Given_I_am_logged_in_as_user(page, 'ernie');
     await When_I_go_to_my_work_days(page);
