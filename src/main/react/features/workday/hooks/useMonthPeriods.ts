@@ -155,7 +155,9 @@ export const useMonthPeriods = ({
         return;
       }
     }
-  }, [initialMonths, currentMonth, monthPeriods.length, state]);
+  }, [initialMonths, currentMonth, state]);
+  // Removed monthPeriods.length from dependencies to prevent infinite loop
+  // when months are added/removed
 
   // Notify parent component of month changes, but only when they actually change
   // and avoid infinite loops by using a ref to track the last reported state
