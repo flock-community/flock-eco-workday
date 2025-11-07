@@ -40,6 +40,13 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(hours.toString());
 
+  // Sync inputValue with hours prop when it changes (e.g., after save/reload)
+  React.useEffect(() => {
+    if (!isEditing) {
+      setInputValue(hours.toString());
+    }
+  }, [hours, isEditing]);
+
   // Only consider events, leave and sick data if the day is in the current month
   const hasEvent = isCurrentMonth && events && events.length > 0;
   const hasLeaveData = isCurrentMonth && leaveData && leaveData.length > 0;

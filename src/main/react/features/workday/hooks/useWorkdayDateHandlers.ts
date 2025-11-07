@@ -58,14 +58,6 @@ export function useWorkdayDateHandlers({
     (date: dayjs.Dayjs, hours: number, type: string = "regular") => {
       if (!state) return;
 
-      console.log("handleDayHoursChange called:", {
-        date: date.format("YYYY-MM-DD"),
-        hours,
-        type,
-        currentRange: `${state.from.format("YYYY-MM-DD")} to ${state.to.format("YYYY-MM-DD")}`,
-        daysLength: state.days?.length || 0,
-      });
-
       // Clone the current state to avoid direct mutation
       const newState = { ...state };
 
