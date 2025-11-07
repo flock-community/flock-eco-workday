@@ -16,6 +16,12 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { useStyles } from "./styles";
 import { CalendarDay } from "./CalendarDay";
 import {
+  FreeDaySettings,
+  FreeDaySettingsValue,
+} from "../../components/FreeDaySettings";
+import { QuickFillButtons } from "../../components/QuickFillButtons";
+import { WorkdaySummary } from "../../components/WorkdaySummary";
+import {
   EVENT_COLOR,
   SICKNESS_COLOR,
   VACATION_COLOR,
@@ -67,13 +73,6 @@ interface CalendarGridProps {
   overlappingWorkdays?: WorkDayState[]; // Workdays that might overlap with the current one
 }
 
-// Interface for free day settings
-interface FreeDaySettings {
-  enabled: boolean;
-  frequency: string;
-  dayOfWeek: number;
-}
-
 // Interface for a month period
 interface MonthPeriod {
   id: string;
@@ -111,7 +110,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const logRef = useRef(false);
 
   // Free day settings state
-  const [freeDaySettings, setFreeDaySettings] = useState<FreeDaySettings>(
+  const [freeDaySettings, setFreeDaySettings] = useState<FreeDaySettingsValue>(
     () => {
       const savedSettings = localStorage.getItem("freeDaySettings");
       if (savedSettings) {
@@ -456,28 +455,6 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     setUpdateKey((prev) => prev + 1);
   };
 
-  // Free day settings handlers
-  const handleFreeDayToggle = (event) => {
-    setFreeDaySettings((prev) => ({
-      ...prev,
-      enabled: event.target.checked,
-    }));
-  };
-
-  const handleFrequencyChange = (event) => {
-    setFreeDaySettings((prev) => ({
-      ...prev,
-      frequency: event.target.value,
-    }));
-  };
-
-  const handleDayOfWeekChange = (event) => {
-    setFreeDaySettings((prev) => ({
-      ...prev,
-      dayOfWeek: parseInt(event.target.value),
-    }));
-  };
-
   // Check if a date is a free day
   const isFreeDayDate = (date: dayjs.Dayjs): boolean => {
     if (!freeDaySettings.enabled) return false;
@@ -723,64 +700,17 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   return (
     <div className={classes.calendarContainer} key={updateKey}>
       {/* Free day settings */}
-      <Paper className={classes.freeDaySettings}>
-        <div className={classes.freeDayRow}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={freeDaySettings.enabled}
-                onChange={handleFreeDayToggle}
-                name="enableFreeDay"
-                color="primary"
-              />
-            }
-            label="Vrije dag optie"
-            style={{ marginRight: 16 }}
-          />
-
-          {freeDaySettings.enabled && (
-            <>
-              <Select
-                value={freeDaySettings.frequency}
-                onChange={handleFrequencyChange}
-                style={{ marginRight: 8 }}
-              >
-                <MenuItem value="every">Elke week</MenuItem>
-                <MenuItem value="odd">Oneven weken</MenuItem>
-                <MenuItem value="even">Even weken</MenuItem>
-              </Select>
-
-              <Select
-                value={freeDaySettings.dayOfWeek}
-                onChange={handleDayOfWeekChange}
-                style={{ marginLeft: 8 }}
-              >
-                <MenuItem value={1}>Maandag</MenuItem>
-                <MenuItem value={2}>Dinsdag</MenuItem>
-                <MenuItem value={3}>Woensdag</MenuItem>
-                <MenuItem value={4}>Donderdag</MenuItem>
-                <MenuItem value={5}>Vrijdag</MenuItem>
-                <MenuItem value={6}>Zaterdag</MenuItem>
-                <MenuItem value={0}>Zondag</MenuItem>
-              </Select>
-            </>
-          )}
-
-          <div className={classes.weekendToggle}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={showWeekends}
-                  onChange={onToggleWeekends}
-                  name="showWeekends"
-                  color="primary"
-                />
-              }
-              label="Toon weekend dagen"
-            />
-          </div>
-        </div>
-      </Paper>
+      <FreeDaySettings
+        value={freeDaySettings}
+        onChange={setFreeDaySettings}
+        showWeekends={showWeekends}
+        onToggleWeekends={onToggleWeekends}
+        classes={{
+          freeDaySettings: classes.freeDaySettings,
+          freeDayRow: classes.freeDayRow,
+          weekendToggle: classes.weekendToggle,
+        }}
+      />
 
       {/* Date range header */}
       <div className={classes.dateRangeHeader}>
@@ -864,40 +794,10 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
             </div>
 
             {/* Hours fill buttons */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: 16,
-              }}
-            >
-              <Typography variant="body2" style={{ marginRight: "8px" }}>
-                Uren vullen voor deze maand:
-              </Typography>
-              <Button
-                variant="outlined"
-                className={classes.fillButton}
-                style={{ marginRight: 8 }}
-                onClick={() => handleQuickFill(0, month.id)}
-              >
-                0
-              </Button>
-              <Button
-                variant="outlined"
-                className={classes.fillButton}
-                style={{ marginRight: 8 }}
-                onClick={() => handleQuickFill(8, month.id)}
-              >
-                8
-              </Button>
-              <Button
-                variant="outlined"
-                className={classes.fillButton}
-                onClick={() => handleQuickFill(9, month.id)}
-              >
-                9
-              </Button>
-            </div>
+            <QuickFillButtons
+              onQuickFill={(hours) => handleQuickFill(hours, month.id)}
+              classes={{ fillButton: classes.fillButton }}
+            />
 
             {/* Calendar display */}
             {updatedCalendarData.length > 0 ? (
@@ -968,92 +868,27 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       })}
 
       {/* Legend and add month button */}
-      <div className={classes.legendAndButtonRow}>
-        <div className={classes.summaryRow}>
-          {sickHours > 0 && (
-            <div className={classes.summaryItem}>
-              <div
-                className={classes.summaryColor}
-                style={{ backgroundColor: SICKNESS_COLOR }}
-              ></div>
-              <Typography variant="body2" className={classes.summaryText}>
-                Ziekte
-              </Typography>
-              <div className={classes.summaryHours}>
-                <Typography variant="body2">{sickHours}</Typography>
-              </div>
-            </div>
-          )}
-
-          {eventHours > 0 && (
-            <div className={classes.summaryItem}>
-              <div
-                className={classes.summaryColor}
-                style={{ backgroundColor: EVENT_COLOR }}
-              ></div>
-              <Typography variant="body2" className={classes.summaryText}>
-                Event
-              </Typography>
-              <div className={classes.summaryHours}>
-                <Typography variant="body2">{eventHours}</Typography>
-              </div>
-            </div>
-          )}
-
-          {leaveHours > 0 && (
-            <div className={classes.summaryItem}>
-              <div
-                className={classes.summaryColor}
-                style={{ backgroundColor: VACATION_COLOR }}
-              ></div>
-              <Typography variant="body2" className={classes.summaryText}>
-                Verlof
-              </Typography>
-              <div className={classes.summaryHours}>
-                <Typography variant="body2">{leaveHours}</Typography>
-              </div>
-            </div>
-          )}
-
-          {overlapHours > 0 && (
-            <div className={classes.summaryItem}>
-              <div
-                className={classes.summaryColor}
-                style={{
-                  backgroundColor: "transparent",
-                  border: `2px solid ${OVERLAP_COLOR}`,
-                }}
-              ></div>
-              <Typography variant="body2" className={classes.summaryText}>
-                Overlappend
-              </Typography>
-              <div className={classes.summaryHours}>
-                <Typography variant="body2">{overlapHours}</Typography>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={handleAddMonth}
-          startIcon={<AddIcon />}
-          className={classes.addMonthButton}
-        >
-          Maand toevoegen
-        </Button>
-      </div>
-
-      {/* Total for all periods */}
-      <div className={classes.monthTotal}>
-        <Typography variant="h6" className={classes.monthTotalLabel}>
-          {monthPeriods.length > 1 ? "Totaal Alle Maanden:" : "Maand Totaal:"}
-        </Typography>
-        <Typography variant="h4" className={classes.monthTotalValue}>
-          {calculateGrandTotal()}
-        </Typography>
-      </div>
+      <WorkdaySummary
+        sickHours={sickHours}
+        eventHours={eventHours}
+        leaveHours={leaveHours}
+        overlapHours={overlapHours}
+        grandTotal={calculateGrandTotal()}
+        monthCount={monthPeriods.length}
+        onAddMonth={handleAddMonth}
+        classes={{
+          legendAndButtonRow: classes.legendAndButtonRow,
+          summaryRow: classes.summaryRow,
+          summaryItem: classes.summaryItem,
+          summaryColor: classes.summaryColor,
+          summaryText: classes.summaryText,
+          summaryHours: classes.summaryHours,
+          addMonthButton: classes.addMonthButton,
+          monthTotal: classes.monthTotal,
+          monthTotalLabel: classes.monthTotalLabel,
+          monthTotalValue: classes.monthTotalValue,
+        }}
+      />
     </div>
   );
 };
