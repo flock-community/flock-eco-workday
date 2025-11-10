@@ -50,7 +50,6 @@
         <liquibase.version>3.9.0</liquibase.version>
         <h2.version>1.4.200</h2.version>
         <wirespec.version>0.11.2</wirespec.version>
-        <spring.boot.graphql.version>12.0.0</spring.boot.graphql.version>
 
         <!-- Utility Library Versions -->
         <commons-lang3.version>3.7</commons-lang3.version>
@@ -138,45 +137,6 @@
                 <version>${jackson.version}</version>
             </dependency>
 
-
-            <!-- GraphQl -->
-            <dependency>
-                <groupId>com.graphql-java-kickstart</groupId>
-                <artifactId>graphql-spring-boot-starter</artifactId>
-                <version>${spring.boot.graphql.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.graphql-java-kickstart</groupId>
-                <artifactId>graphql-spring-boot-starter-test</artifactId>
-                <version>${spring.boot.graphql.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.graphql-java-kickstart</groupId>
-                <artifactId>graphql-spring-boot-test-autoconfigure</artifactId>
-                <version>7.0.1</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.graphql-java-kickstart</groupId>
-                <artifactId>graphiql-spring-boot-starter</artifactId>
-                <version>11.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.graphql-java-kickstart</groupId>
-                <artifactId>graphql-java-tools</artifactId>
-                <version>12.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.graphql-java</groupId>
-                <artifactId>graphql-java</artifactId>
-                <version>17.3</version>
-            </dependency>
-            <dependency>
-                <groupId>com.graphql-java</groupId>
-                <artifactId>graphql-java-extended-scalars</artifactId>
-                <version>17.0</version>
-            </dependency>
 
             <!-- Database -->
             <dependency>
@@ -354,25 +314,6 @@
                             <version>${kotlin.version}</version>
                         </dependency>
                     </dependencies>
-                </plugin>
-
-
-                <plugin>
-                    <groupId>community.flock</groupId>
-                    <artifactId>graphql-simple-bindings-maven-plugin</artifactId>
-                    <version>0.8.0</version>
-                    <configuration>
-                        <language>Kotlin</language>
-                        <sourceDirectory>${project.basedir}/src/main/graphql</sourceDirectory>
-                        <targetDirectory>${project.build.directory}/generated-sources/graphql</targetDirectory>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>generate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
 
                 <!-- Liquibase Maven Plugin -->
@@ -562,9 +503,6 @@
                         <configuration>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/src/main/graphql</directory>
-                                </resource>
-                                <resource>
                                     <directory>${project.basedir}/src/main/database</directory>
                                 </resource>
                             </resources>
@@ -728,9 +666,6 @@
                                     <resources>
                                         <resource>
                                             <directory>${basedir}/src/develop/resources</directory>
-                                        </resource>
-                                        <resource>
-                                            <directory>${basedir}/src/main/graphql</directory>
                                         </resource>
                                         <resource>
                                             <directory>${basedir}/src/main/database</directory>

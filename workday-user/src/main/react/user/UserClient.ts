@@ -1,4 +1,4 @@
-import { User } from "../graphql/user";
+import { User } from "@workday-user/user/response/user";
 
 function internalize<T>(res): Promise<T> {
   if (res.ok) {

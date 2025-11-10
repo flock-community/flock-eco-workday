@@ -57,29 +57,13 @@
             <artifactId>mail</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.graphql-java</groupId>
-            <artifactId>graphql-java-extended-scalars</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>community.flock</groupId>
-                <artifactId>graphql-simple-bindings-maven-plugin</artifactId>
-                <configuration>
-                    <sourceDirectory>${project.basedir}/src/main/graphql</sourceDirectory>
-                    <targetDirectory>${project.build.directory}/generated-sources</targetDirectory>
-                    <packageName>community.flock.eco.core.graphql</packageName>
-                    <language>Kotlin</language>
-                </configuration>
             </plugin>
         </plugins>
     </build>

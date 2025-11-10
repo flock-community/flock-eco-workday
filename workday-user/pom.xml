@@ -75,28 +75,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- GraphQL -->
-        <dependency>
-            <groupId>com.graphql-java-kickstart</groupId>
-            <artifactId>graphql-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.graphql-java-kickstart</groupId>
-            <artifactId>graphql-spring-boot-starter-test</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.graphql-java-kickstart</groupId>
-            <artifactId>graphql-java-tools</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.graphql-java</groupId>
-            <artifactId>graphql-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.graphql-java</groupId>
-            <artifactId>graphql-java-extended-scalars</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -148,19 +126,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>community.flock</groupId>
-                <artifactId>graphql-simple-bindings-maven-plugin</artifactId>
-                <configuration>
-                    <sourceDirectory>${project.basedir}/src/main/graphql</sourceDirectory>
-                    <targetDirectory>${project.build.directory}/generated-sources</targetDirectory>
-                    <packageName>community.flock.eco.feature.user.graphql</packageName>
-                    <scalarsKotlin>
-                        <DateTime>java.time.LocalDateTime</DateTime>
-                    </scalarsKotlin>
-                    <language>Kotlin</language>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.liquibase</groupId>

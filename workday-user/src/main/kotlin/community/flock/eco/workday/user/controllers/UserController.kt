@@ -25,11 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
-import community.flock.eco.feature.user.graphql.kotlin.User as UserGraphql
-import community.flock.eco.feature.user.graphql.kotlin.UserAccount as UserAccountGraphql
-import community.flock.eco.feature.user.graphql.kotlin.UserAccountKey as UserAccountKeyGraphql
-import community.flock.eco.feature.user.graphql.kotlin.UserAccountOauth as UserAccountOauthGraphql
-import community.flock.eco.feature.user.graphql.kotlin.UserAccountPassword as UserAccountPasswordGraphql
 
 @RestController
 @RequestMapping("/api/users")
@@ -43,7 +38,7 @@ class UserController(
     fun findMeUser(authentication: Authentication) =
         userService
             .read(authentication.name)
-            ?.toGraphql()
+            ?.produce()
             .toResponse()
 
     @GetMapping("/me/accounts")
@@ -52,7 +47,7 @@ class UserController(
         userAccountService
             .findUserAccountByUserCode(authentication.name)
             .toList()
-            .map { it.toGraphql() }
+            .map { it.produce() }
             .toResponse()
 
     @GetMapping
@@ -62,7 +57,7 @@ class UserController(
         page: Pageable,
     ) = userRepository
         .findAllByNameIgnoreCaseContainingOrEmailIgnoreCaseContaining(search, search, page)
-        .map { it.toGraphql() }
+        .map { it.produce() }
         .toResponse()
 
     @PostMapping("search")
@@ -71,7 +66,7 @@ class UserController(
         @RequestBody(required = false) codes: Set<String>,
     ) = userRepository.findAllByCodeIn(codes)
         .toList()
-        .map { it.toGraphql() }
+        .map { it.produce() }
         .toResponse()
 
     @PostMapping
@@ -80,7 +75,7 @@ class UserController(
         @RequestBody form: UserForm,
     ) = userService
         .create(form)
-        .toGraphql()
+        .produce()
         .toResponse()
 
     @GetMapping("/{code}")
@@ -89,7 +84,7 @@ class UserController(
         @PathVariable code: String,
     ) = userService
         .read(code)
-        ?.toGraphql()
+        ?.produce()
         .toResponse()
 
     @PutMapping("/{code}")
@@ -99,7 +94,7 @@ class UserController(
         @RequestBody form: UserForm,
     ) = userService
         .update(code, form)
-        ?.toGraphql()
+        ?.produce()
         .toResponse()
 
     @DeleteMapping("/{code}")
@@ -136,22 +131,21 @@ class UserController(
     )
 }
 
-private fun User.toGraphql(): UserGraphql {
-    return UserGraphql(
-        id = this.code,
-        name = this.name,
-        email = this.email,
-        authorities = this.authorities.toList(),
-        accounts = this.accounts.map { it.toGraphql() },
-        created = this.created,
+private fun User.produce(): UserResponse =
+    UserResponse(
+        id = code,
+        name = name,
+        email = email,
+        authorities = authorities.toList(),
+        accounts = accounts.map { it.produce() },
+        created = created,
     )
-}
 
-private fun UserAccount.toGraphql(): UserAccountGraphql {
+private fun UserAccount.produce(): UserAccountResponse {
     return when (this) {
-        is UserAccountPassword -> UserAccountPasswordGraphql(id = id.toString())
-        is UserAccountOauth -> UserAccountOauthGraphql(id = id.toString(), provider = provider.name)
-        is UserAccountKey -> UserAccountKeyGraphql(id = id.toString(), key = key)
+        is UserAccountPassword -> UserAccountPasswordResponse(id = id.toString())
+        is UserAccountOauth -> UserAccountOauthResponse(id = id.toString(), provider = provider.name)
+        is UserAccountKey -> UserAccountKeyResponse(id = id.toString(), key = key)
         else -> error("Cannot map UserAccount")
     }
 }

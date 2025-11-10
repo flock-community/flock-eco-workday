@@ -9,41 +9,6 @@ This guide outlines potential modernization steps and optimizations for the Floc
 
 ---
 
-## Quick Wins (Low Effort, High Value)
-
-### 1. Remove Unused GraphQL Dependencies
-
-**Why**: Workday uses Wirespec for API contracts. GraphQL dependencies are legacy from flock-eco vendoring.
-
-**Impact**:
-- Smaller build artifacts (~5MB reduction)
-- Fewer dependencies to maintain
-- Cleaner codebase
-
-**Steps**:
-1. Remove GraphQL dependencies from parent POM:
-   ```xml
-   <!-- Remove these -->
-   <dependency>
-       <groupId>com.graphql-java-kickstart</groupId>
-       <artifactId>*</artifactId>
-   </dependency>
-   ```
-
-2. Remove `graphql-simple-bindings-maven-plugin` from workday-core and workday-user
-
-3. Delete GraphQL schema files:
-   ```bash
-   find . -name "*.graphqls" -delete
-   ```
-
-4. Remove GraphQL configuration classes (if any remain)
-
-5. Test: `./mvnw clean install`
-
-**Estimated Time**: 1-2 hours
-
----
 
 ## Major Modernization Opportunities
 
