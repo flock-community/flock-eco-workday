@@ -52,7 +52,7 @@
         <wirespec.version>0.11.2</wirespec.version>
 
         <!-- Utility Library Versions -->
-        <commons-lang3.version>3.7</commons-lang3.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
         <reflections.version>0.9.11</reflections.version>
         <mockk.version>1.12.2</mockk.version>
         <springmockk.version>3.1.1</springmockk.version>
