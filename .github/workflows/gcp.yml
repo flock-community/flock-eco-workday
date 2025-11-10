@@ -24,18 +24,22 @@ jobs:
 
       - id: "auth"
         name: "Authenticate to Google Cloud"
+        if: github.actor != 'dependabot[bot]'
         uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDED }}
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
       - name: Setup gcloud environment
+        if: github.actor != 'dependabot[bot]'
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Google cloud info
+        if: github.actor != 'dependabot[bot]'
         run: gcloud info
 
       - name: Setup docker
+        if: github.actor != 'dependabot[bot]'
         run: gcloud auth configure-docker
 
       - uses: actions/setup-java@v4
@@ -129,7 +133,9 @@ jobs:
           fi
 
       - name: Build and Deploy
+        if: github.actor != 'dependabot[bot]' && github.ref != 'refs/heads/master'
         run: ./mvnw -B clean package jib:build -DskipTests -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
 
       - name: Build and Deploy Development version
+        if: github.actor != 'dependabot[bot]'
         run: ./mvnw -B package jib:build -DskipTests -Pdevelop,frontend -Dnpm.ci.skip -Dnpm.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
