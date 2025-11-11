@@ -48,7 +48,7 @@
         <!-- Library Versions -->
         <jackson.version>2.13.1</jackson.version>
         <liquibase.version>3.9.0</liquibase.version>
-        <h2.version>1.4.200</h2.version>
+        <h2.version>2.2.220</h2.version>
         <wirespec.version>0.11.2</wirespec.version>
 
         <!-- Utility Library Versions -->
