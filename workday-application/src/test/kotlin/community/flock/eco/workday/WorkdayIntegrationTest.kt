@@ -5,6 +5,7 @@ import community.flock.eco.workday.config.AppTestConfig
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.helpers.DataHelper
 import community.flock.eco.workday.helpers.OrganisationHelper
+import community.flock.eco.workday.utils.CleanupDbService
 import org.junit.jupiter.api.AfterEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -13,8 +14,8 @@ import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebCl
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
-import org.springframework.data.repository.CrudRepository
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.transaction.TestTransaction
 
 @ActiveProfiles("test")
 @AutoConfigureDataJpa
@@ -28,19 +29,17 @@ import org.springframework.test.context.ActiveProfiles
 )
 class WorkdayIntegrationTest() {
     @Autowired
-    lateinit var repos: List<CrudRepository<*, *>>
+    private lateinit var cleanupDbService: CleanupDbService
 
     @AfterEach
     fun resetDb() {
-        repeat(3) {
-            repos.forEach { repo ->
-                try {
-                    repo.deleteAll()
-                } catch (e: Exception) {
-                    println("Failed to delete all records for repository: ${repo.javaClass.simpleName}")
-                    e.printStackTrace()
-                }
-            }
+        // End current test transaction
+        if (TestTransaction.isActive()) {
+            TestTransaction.flagForCommit()
+            TestTransaction.end()
         }
+
+        // Cleanup database
+        cleanupDbService.cleanup()
     }
 }
