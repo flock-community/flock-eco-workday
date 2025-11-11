@@ -32,13 +32,13 @@ class WorkdayIntegrationTest() {
 
     @AfterEach
     fun resetDb() {
-        repeat(3) {
+        repeat(3) { attempt ->
             repos.forEach { repo ->
                 try {
                     repo.deleteAll()
                 } catch (e: Exception) {
                     println("Failed to delete all records for repository: ${repo.javaClass.simpleName}")
-                    e.printStackTrace()
+                    if (attempt == 2) throw e
                 }
             }
         }
