@@ -133,7 +133,7 @@ jobs:
           fi
 
       - name: Build and Deploy
-        if: github.actor != 'dependabot[bot]' && github.ref != 'refs/heads/master'
+        if: github.actor != 'dependabot[bot]' && github.ref == 'refs/heads/master'
         run: ./mvnw -B clean package jib:build -DskipTests -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
 
       - name: Build and Deploy Development version
