@@ -27,38 +27,32 @@ endpoint GetFiles GET /api/expenses/files/{file: String}/{name: String} -> {
 }
 
 type TravelExpenseInput {
-  personId: UUID?,
+  personId: UUID,
   description: String?,
   date: String?,
-  status: TravelExpenseInputStatus?,
+  status: ExpenseStatus,
   distance: Number?,
   allowance: Number?
 }
-enum TravelExpenseInputStatus {
-  REQUESTED, APPROVED, REJECTED, DONE
-}
 type CostExpenseDetails {
-  amount: Number?,
-  files: CostExpenseFile[]?
+  amount: Number,
+  files: CostExpenseFile[]
 }
 type CostExpenseFile {
-  name: String?,
-  file: UUID?
+  name: String,
+  file: UUID
 }
 type Expense {
   id: String?,
-  personId: UUID?,
+  personId: UUID,
   description: String?,
   date: String?,
-  status: ExpenseStatus?,
-  expenseType: ExpenseExpenseType?,
+  status: ExpenseStatus,
+  expenseType: ExpenseType?,
   costDetails: CostExpenseDetails?,
   travelDetails: TravelExpenseDetails?
 }
-enum ExpenseStatus {
-  REQUESTED, APPROVED, REJECTED, DONE
-}
-enum ExpenseExpenseType {
+enum ExpenseType {
   TRAVEL, COST
 }
 type TravelExpenseDetails {
@@ -66,23 +60,20 @@ type TravelExpenseDetails {
   allowance: Number?
 }
 type CostExpenseFileInput {
-  name: String?,
-  file: UUID?
+  name: String,
+  file: UUID
 }
 type CostExpenseInput {
-  personId: UUID?,
+  personId: UUID,
   description: String?,
   date: String?,
-  status: CostExpenseInputStatus?,
+  status: ExpenseStatus,
   amount: Number?,
-  files: CostExpenseFileInput[]?
+  files: CostExpenseFileInput[]
 }
-enum CostExpenseInputStatus {
+enum ExpenseStatus {
   REQUESTED, APPROVED, REJECTED, DONE
 }
 type PostFilesRequestBody {
   file: String
-}
-type UUID {
-  value: String?
 }

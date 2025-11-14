@@ -10,27 +10,18 @@ import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
 import { useEffect, useState } from 'react';
-import {
-  ExpenseClient,
-  emptyPersonWithUUID,
-} from '../../clients/ExpenseClient';
+import { ExpenseClient } from '../../clients/ExpenseClient';
 import { TransitionSlider } from '../../components/transitions/Slide';
-import {
-  type CostExpense,
-  type Expense,
-  ExpenseType,
-  type TravelExpense,
-} from '../../models/Expense';
-import { Status } from '../../models/Status';
+import type { Expense, ExpenseType } from '../../wirespec/model';
 import { ExpenseFormCost } from './ExpenseFormCost';
 import { ExpenseFormTravel } from './ExpenseFormTravel';
 
 type ExpenseDialogProps = {
   open: boolean;
   id?: string;
-  personId?: string;
+  personId: string;
   personFullName: string;
-  onComplete?: (item?: CostExpense | TravelExpense) => void;
+  onComplete?: (item?: Expense) => void;
   expenseType?: ExpenseType;
 };
 
@@ -42,13 +33,13 @@ export function ExpenseDialog({
   onComplete,
   expenseType,
 }: ExpenseDialogProps) {
-  const [type, setType] = useState(ExpenseType.COST);
+  const [type, setType] = useState<ExpenseType>('COST');
   const [state, setState] = useState<Expense | undefined>(undefined);
   const [openDelete, setOpenDelete] = useState(false);
 
   useEffect(() => {
     setState(undefined);
-    setType(expenseType ?? ExpenseType.COST);
+    setType(expenseType ?? 'COST');
     if (id) {
       ExpenseClient.get(id).then((res) => {
         setState(res);
@@ -61,29 +52,24 @@ export function ExpenseDialog({
     setType(ev.target.value);
   };
 
-  const handleSubmit = (it: CostExpense | TravelExpense) => {
+  const handleSubmit = (it: Expense) => {
     if (id) {
       ExpenseClient.put(id, {
         ...it,
-        person: emptyPersonWithUUID(personId!),
-        expenseType:
-          type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
-        status: Status.REQUESTED,
+        personId: personId,
+        expenseType: type,
+        status: 'REQUESTED',
         date: it.date,
-        files: it.files,
-      }).then((res: CostExpense | TravelExpense) => {
+      }).then((res) => {
         onComplete?.(res);
       });
     } else {
       ExpenseClient.post({
         ...it,
-        expenseType:
-          type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
-        person: emptyPersonWithUUID(personId!),
-        status: Status.REQUESTED,
-        date: it.date,
-        files: it.files,
-      }).then((res: CostExpense | TravelExpense) => {
+        expenseType: type,
+        personId: personId,
+        status: 'REQUESTED',
+      }).then((res) => {
         onComplete?.(res);
       });
     }
@@ -147,17 +133,17 @@ export function ExpenseDialog({
                     value={type}
                     onChange={handleTypeChange}
                   >
-                    <MenuItem value={ExpenseType.COST}>Cost</MenuItem>
-                    <MenuItem value={ExpenseType.TRAVEL}>Travel</MenuItem>
+                    <MenuItem value={'COST'}>Cost</MenuItem>
+                    <MenuItem value={'TRAVEL'}>Travel</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
             )}
             <Grid size={{ xs: 12 }}>
-              {type === ExpenseType.TRAVEL && (
+              {type === 'TRAVEL' && (
                 <ExpenseFormTravel value={state} onSubmit={handleSubmit} />
               )}
-              {type === ExpenseType.COST && (
+              {type === 'COST' && (
                 <ExpenseFormCost value={state} onSubmit={handleSubmit} />
               )}
             </Grid>

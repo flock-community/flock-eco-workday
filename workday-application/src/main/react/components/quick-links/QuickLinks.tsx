@@ -9,7 +9,6 @@ import { LeaveDayDialog } from '../../features/holiday/LeaveDayDialog';
 import { WorkDayDialog } from '../../features/workday/WorkDayDialog';
 import { addError } from '../../hooks/ErrorHook';
 import { usePerson } from '../../hooks/PersonHook';
-import { ExpenseType } from '../../models/Expense';
 
 const PREFIX = 'QuickLinks';
 
@@ -140,7 +139,7 @@ export function QuickLinks() {
         personId={person?.uuid}
         personFullName={person?.fullName ?? ''}
         onComplete={handleCompleteTravelExpenseDialog}
-        expenseType={ExpenseType.TRAVEL}
+        expenseType={'TRAVEL'}
       />
       <ExpenseDialog
         open={costExpenseOpen}
@@ -148,7 +147,7 @@ export function QuickLinks() {
         personId={person?.uuid}
         personFullName={person?.fullName ?? ''}
         onComplete={handleCompleteCostExpenseDialog}
-        expenseType={ExpenseType.COST}
+        expenseType={'COST'}
       />
     </Root>
   );

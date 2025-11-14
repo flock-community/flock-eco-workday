@@ -105,7 +105,8 @@ type NonProductiveHours {
   sickHours: Number?,
   holidayHours: Number?,
   paidParentalLeaveHours: Number?,
-  unpaidParentalLeaveHours: Number?
+  unpaidParentalLeaveHours: Number?,
+  paidLeaveHours: Number?
 }
 type AggregationLeaveDay {
   name: String?,
@@ -113,7 +114,8 @@ type AggregationLeaveDay {
   plusHours: Number?,
   holidayHours: Number?,
   paidParentalLeaveHours: Number?,
-  unpaidParentalLeaveHours: Number?
+  unpaidParentalLeaveHours: Number?,
+  paidLeaveHours: Number?
 }
 type PersonHolidayDetails {
   name: String?,

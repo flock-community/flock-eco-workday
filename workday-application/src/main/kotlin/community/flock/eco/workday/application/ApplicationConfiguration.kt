@@ -7,6 +7,7 @@ import community.flock.eco.workday.application.config.cloud.StubCloudConfigurati
 import community.flock.eco.workday.application.config.properties.PropertyConfig
 import community.flock.eco.workday.application.exactonline.ExactonlineConfiguration
 import community.flock.eco.workday.user.UserConfiguration
+import community.flock.wirespec.integration.spring.kotlin.configuration.EnableWirespecController
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -17,6 +18,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EnableJpaRepositories
 @EntityScan
 @ComponentScan
+@EnableWirespecController
 @Import(
     UserConfiguration::class,
     ExactonlineConfiguration::class,

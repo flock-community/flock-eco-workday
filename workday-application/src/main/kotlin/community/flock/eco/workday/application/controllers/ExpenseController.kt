@@ -1,12 +1,12 @@
 package community.flock.eco.workday.application.controllers
 
-import community.flock.eco.workday.api.CostExpenseDetails
-import community.flock.eco.workday.api.CostExpenseFile
-import community.flock.eco.workday.api.CostExpenseInput
-import community.flock.eco.workday.api.ExpenseType
-import community.flock.eco.workday.api.TravelExpenseDetails
-import community.flock.eco.workday.api.TravelExpenseInput
-import community.flock.eco.workday.api.validate
+import community.flock.eco.workday.api.model.CostExpenseDetails
+import community.flock.eco.workday.api.model.CostExpenseFile
+import community.flock.eco.workday.api.model.CostExpenseInput
+import community.flock.eco.workday.api.model.ExpenseType
+import community.flock.eco.workday.api.model.TravelExpenseDetails
+import community.flock.eco.workday.api.model.TravelExpenseInput
+import community.flock.eco.workday.api.model.validate
 import community.flock.eco.workday.application.authorities.ExpenseAuthority
 import community.flock.eco.workday.application.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.application.mappers.CostExpenseMapper
@@ -42,9 +42,9 @@ import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import java.io.File
 import java.util.UUID
-import community.flock.eco.workday.api.Expense as ExpenseApi
-import community.flock.eco.workday.api.Status as StatusApi
-import community.flock.eco.workday.api.UUID as UUIDApi
+import community.flock.eco.workday.api.model.Expense as ExpenseApi
+import community.flock.eco.workday.api.model.ExpenseStatus as StatusApi
+import community.flock.eco.workday.api.model.UUID as UUIDApi
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -205,7 +205,7 @@ private fun TravelExpense.produce(): ExpenseApi =
             ),
     )
 
-private fun Status.produce() =
+private fun Status.produce(): StatusApi =
     when (this) {
         Status.REQUESTED -> StatusApi.REQUESTED
         Status.APPROVED -> StatusApi.APPROVED

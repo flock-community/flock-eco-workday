@@ -4,7 +4,7 @@ import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-mui';
 import * as Yup from 'yup';
 import { DatePickerField } from '../../components/fields/DatePickerField';
-import type { TravelExpense } from '../../models/Expense';
+import type { Expense } from '../../wirespec/model';
 
 export const EXPENSE_TRAVEL_FORM_ID = 'travel-expense-form';
 
@@ -17,7 +17,7 @@ const schema = Yup.object({
 
 type ExpenseFormTravelProps = {
   value: any;
-  onSubmit: (item: TravelExpense) => void;
+  onSubmit: (item: Expense) => void;
 };
 
 export const ExpenseFormTravel = ({

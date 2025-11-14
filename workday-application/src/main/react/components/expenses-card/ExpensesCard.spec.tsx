@@ -1,12 +1,12 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import dayjs from 'dayjs';
-import type { CostExpense, TravelExpense } from '../../models/Expense';
-import { Status } from '../../models/Status';
 import {
   createTestCostExpense,
   createTestTravelExpense,
 } from '../../utils/tests/test-models';
+import type { Expense } from '../../wirespec/model';
+
 import { ExpensesCard } from './ExpensesCard';
 
 describe('ExpensesCard', () => {
@@ -18,25 +18,25 @@ describe('ExpensesCard', () => {
   const testExpense003 = createTestCostExpense(
     'item-03',
     dayjs().subtract(3, 'days'),
-    Status.APPROVED,
+    'APPROVED',
   );
   const testExpense004 = createTestTravelExpense(
     'item-04',
     dayjs().subtract(15, 'days'),
-    Status.REJECTED,
+    'REJECTED',
   );
   const testExpense005 = createTestCostExpense(
     'item-05',
     dayjs().subtract(25, 'days'),
-    Status.DONE,
+    'DONE',
   );
   const testExpense006 = createTestCostExpense(
     'item-06',
     dayjs().subtract(31, 'days'),
-    Status.REJECTED,
+    'REJECTED',
   );
 
-  const expenses: (CostExpense | TravelExpense)[] = [
+  const expenses: Expense[] = [
     testExpense001,
     testExpense002,
     testExpense003,

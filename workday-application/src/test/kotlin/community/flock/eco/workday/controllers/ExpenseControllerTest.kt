@@ -2,8 +2,8 @@ package community.flock.eco.workday.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.WorkdayIntegrationTest
-import community.flock.eco.workday.api.CostExpenseFileInput
-import community.flock.eco.workday.api.CostExpenseInput
+import community.flock.eco.workday.api.model.CostExpenseFileInput
+import community.flock.eco.workday.api.model.CostExpenseInput
 import community.flock.eco.workday.application.authorities.ExpenseAuthority
 import community.flock.eco.workday.application.controllers.produce
 import community.flock.eco.workday.application.model.CostExpense
@@ -80,14 +80,14 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 CostExpenseInput(
                     personId = person.uuid.produce(),
                     description = "Lucy in the sky with diamonds",
-                    status = community.flock.eco.workday.api.Status.REQUESTED,
+                    status = community.flock.eco.workday.api.model.ExpenseStatus.REQUESTED,
                     date = "2025-01-22",
                     amount = 1.23,
                     files =
                         listOf(
                             CostExpenseFileInput(
                                 "a-test-file.flock",
-                                community.flock.eco.workday.api.UUID(
+                                community.flock.eco.workday.api.model.UUID(
                                     "38ba2264-ed3a-44c9-b691-ab47b7935c7c",
                                 ),
                             ),
@@ -186,9 +186,10 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 CostExpenseInput(
                     personId =
                         community.flock.eco.workday.api
+                            .model
                             .UUID(created.person.uuid.toString()),
                     description = "updated description",
-                    status = community.flock.eco.workday.api.Status.REQUESTED,
+                    status = community.flock.eco.workday.api.model.ExpenseStatus.REQUESTED,
                     date = "2025-01-22",
                     amount = 12.0,
                     files = listOf(),
@@ -284,14 +285,14 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 CostExpenseInput(
                     personId = person.uuid.produce(),
                     description = "Lucy in the sky with diamonds",
-                    status = community.flock.eco.workday.api.Status.REQUESTED,
+                    status = community.flock.eco.workday.api.model.ExpenseStatus.REQUESTED,
                     date = "2025-01-22",
                     amount = 1.23,
                     files =
                         listOf(
                             CostExpenseFileInput(
                                 "a-test-file.flock",
-                                community.flock.eco.workday.api.UUID(
+                                community.flock.eco.workday.api.model.UUID(
                                     "38ba2264-ed3a-44c9-b691-ab47b7935c7c",
                                 ),
                             ),
@@ -390,9 +391,10 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 CostExpenseInput(
                     personId =
                         community.flock.eco.workday.api
+                            .model
                             .UUID(created.person.uuid.toString()),
                     description = "updated description",
-                    status = community.flock.eco.workday.api.Status.REQUESTED,
+                    status = community.flock.eco.workday.api.model.ExpenseStatus.REQUESTED,
                     date = "2025-01-22",
                     amount = 12.0,
                     files = listOf(),

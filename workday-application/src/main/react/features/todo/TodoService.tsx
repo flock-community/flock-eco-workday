@@ -3,11 +3,9 @@ import { LeaveDayClient } from '../../clients/LeaveDayClient';
 import { SickDayClient } from '../../clients/SickDayClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { WorkDayClient } from '../../clients/WorkDayClient';
-import { Status } from '../../models/Status';
-import type { StatusProps } from '../../types';
-import type { Todo, UUID } from '../../wirespec/Models';
+import type { Todo, WorkDayStatus } from '../../wirespec/model';
 
-const updateStatusWorkDay = async (id: UUID, status: Status) => {
+const updateStatusWorkDay = async (id: string, status: WorkDayStatus) => {
   const res = await WorkDayClient.get(id);
   await WorkDayClient.put(id, {
     ...res,
@@ -18,7 +16,7 @@ const updateStatusWorkDay = async (id: UUID, status: Status) => {
   });
 };
 
-const updateStatusSickDay = async (id: UUID, status: Status) => {
+const updateStatusSickDay = async (id: string, status: WorkDayStatus) => {
   const res = await SickDayClient.get(id);
   await SickDayClient.put(id, {
     ...res,
@@ -28,7 +26,7 @@ const updateStatusSickDay = async (id: UUID, status: Status) => {
   });
 };
 
-const updateStatusLeaveDay = async (id: UUID, status: Status) => {
+const updateStatusLeaveDay = async (id: string, status: WorkDayStatus) => {
   const res = await LeaveDayClient.get(id);
   await LeaveDayClient.put(id, {
     ...res,
@@ -39,19 +37,7 @@ const updateStatusLeaveDay = async (id: UUID, status: Status) => {
   });
 };
 
-const convertStatus = (status: StatusProps): Status => {
-  switch (status) {
-    case 'APPROVED':
-      return Status.APPROVED;
-    case 'REJECTED':
-      return Status.REJECTED;
-    case 'REQUESTED':
-      return Status.REQUESTED;
-    default:
-      throw Error(`Could not internalize Status with value ${status}`);
-  }
-};
-const updateStatusExpense = async (id: UUID, status: Status) => {
+const updateStatusExpense = async (id: string, status: WorkDayStatus) => {
   const res = await ExpenseClient.get(id);
   await ExpenseClient.put(id, {
     ...res,
@@ -59,8 +45,8 @@ const updateStatusExpense = async (id: UUID, status: Status) => {
   });
 };
 
-export const updateStatus = (status: StatusProps, item: Todo) => {
-  let updateFunction: (id: UUID, status: Status) => Promise<void>;
+export const updateStatus = (status: WorkDayStatus, item: Todo) => {
+  let updateFunction: (id: string, status: WorkDayStatus) => Promise<void>;
 
   switch (item.todoType) {
     case 'WORKDAY':
@@ -80,5 +66,5 @@ export const updateStatus = (status: StatusProps, item: Todo) => {
       break;
   }
 
-  return updateFunction(item.id, convertStatus(status));
+  return updateFunction(item.id, status);
 };

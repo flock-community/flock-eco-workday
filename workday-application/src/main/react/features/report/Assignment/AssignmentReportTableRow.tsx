@@ -8,7 +8,7 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import type { Dayjs } from 'dayjs';
 import { useState } from 'react';
-import type { AggregationClientPersonAssignmentItem } from '../../../wirespec/Models';
+import type { AggregationClientPersonAssignmentItem } from '../../../wirespec/model';
 import NonProductiveHours from './NonProductiveHours';
 
 const PREFIX = 'AssignmentReportTableRow';

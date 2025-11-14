@@ -20,29 +20,21 @@
         <appengine-maven-plugin.version>2.2.0</appengine-maven-plugin.version>
         <biweekly.version>0.6.7</biweekly.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
-
-        <!-- Utility Library Versions -->
         <commons-lang3.version>3.7</commons-lang3.version>
         <dokka.skip>true</dokka.skip>
         <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
         <google-api-drive.version>v3-rev20251210-2.0.0</google-api-drive.version>
         <google-api-sheets.version>v4-rev20251110-2.0.0</google-api-sheets.version>
-
-        <!-- Other properties -->
         <gpg.skip>true</gpg.skip>
         <h2.version>2.3.232</h2.version>
-        <!-- Library Versions -->
         <jackson.version>2.13.1</jackson.version>
         <java.version>17</java.version>
         <javax-mail.version>2.0.2</javax-mail.version>
         <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
-
-        <!-- Plugin Versions -->
         <kotlin-maven-plugin.version>${kotlin.version}</kotlin-maven-plugin.version>
+        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.version>1.9.22</kotlin.version>
         <liquibase.version>5.0.1</liquibase.version>
-
-        <!-- Workday-Specific -->
         <mailjet.version>5.1.1</mailjet.version>
         <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
@@ -51,24 +43,19 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <mockito.version>5.21.0</mockito.version>
         <mockk.version>1.12.2</mockk.version>
-
-        <!-- Node/npm versions for frontend -->
         <node.version>v18.20.4</node.version>
         <npm.ci.skip>false</npm.ci.skip>
         <npm.version>10.8.2</npm.version>
-        <!-- Build Configuration -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quality.skip>false</quality.skip>
         <reflections.version>0.9.11</reflections.version>
-
         <spotless.version>3.1.0</spotless.version>
-        <!-- Framework Versions -->
         <spring.boot.version>3.4.13</spring.boot.version>
         <spring.cloud.gcp.version>5.12.3</spring.cloud.gcp.version>
         <springdoc.version>2.1.0</springdoc.version>
         <springmockk.version>3.1.1</springmockk.version>
-        <wirespec.version>0.11.2</wirespec.version>
+        <wirespec.version>0.17.6</wirespec.version>
     </properties>
 
     <dependencyManagement>
@@ -112,15 +99,11 @@
                 <artifactId>google-api-services-sheets</artifactId>
                 <version>${google-api-sheets.version}</version>
             </dependency>
-
-            <!-- Database -->
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
             </dependency>
-
-            <!-- Workday-Specific Dependencies -->
             <dependency>
                 <groupId>com.mailjet</groupId>
                 <artifactId>mailjet-client</artifactId>
@@ -132,12 +115,15 @@
                 <version>${wirespec.version}</version>
             </dependency>
             <dependency>
+                <groupId>community.flock.wirespec.integration</groupId>
+                <artifactId>spring-jvm</artifactId>
+                <version>${wirespec.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>flock.community.eco.workday</groupId>
                 <artifactId>workday-application</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
-            <!-- Inter-module dependencies (will be used by workday-application) -->
             <dependency>
                 <groupId>flock.community.eco.workday</groupId>
                 <artifactId>workday-core</artifactId>
@@ -163,8 +149,6 @@
                 <artifactId>kotlin-reflect</artifactId>
                 <version>${kotlin.version}</version>
             </dependency>
-
-            <!-- Kotlin -->
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-stdlib</artifactId>
@@ -180,15 +164,11 @@
                 <artifactId>liquibase-hibernate5</artifactId>
                 <version>${liquibase.version}</version>
             </dependency>
-
-            <!-- Utilities -->
             <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
                 <version>${reflections.version}</version>
             </dependency>
-
-            <!-- API Documentation -->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -200,8 +180,6 @@
                 <version>${springmockk.version}</version>
                 <scope>test</scope>
             </dependency>
-
-            <!-- Testing -->
             <dependency>
                 <groupId>io.mockk</groupId>
                 <artifactId>mockk</artifactId>
@@ -351,6 +329,13 @@
                     <groupId>community.flock.wirespec.plugin.maven</groupId>
                     <artifactId>wirespec-maven-plugin</artifactId>
                     <version>${wirespec.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>community.flock.wirespec.integration</groupId>
+                            <artifactId>spring-jvm</artifactId>
+                            <version>${wirespec.version}</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
 
                 <!-- Jib Maven Plugin (Docker) -->

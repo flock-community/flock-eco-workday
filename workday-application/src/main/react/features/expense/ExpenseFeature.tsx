@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from '@mui/material';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 import type { Person } from '../../clients/PersonClient';
-import type { CostExpense, TravelExpense } from '../../models/Expense';
+import type { Expense } from '../../wirespec/model/Expense';
 import { ExpenseDialog } from './ExpenseDialog';
 import { ExpenseList } from './ExpenseList';
 
@@ -33,7 +33,7 @@ export function ExpenseFeature({ person }: ExpenseFeatureProps) {
     });
   };
 
-  const handleClickRow = (item: CostExpense | TravelExpense) => {
+  const handleClickRow = (item: Expense) => {
     setDialog({
       id: item.id,
       open: true,

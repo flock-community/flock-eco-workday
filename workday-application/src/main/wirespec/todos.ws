@@ -4,11 +4,11 @@ endpoint GetTodoAll GET /api/todos -> {
 
 type Todo {
   id: UUID?,
-  todoType: TodoTodoType?,
+  todoType: TodoType?,
   personId: UUID?,
   personName: String?,
   description: String?
 }
-enum TodoTodoType {
-  WORKDAY, SICKDAY, HOLIDAY, PAID_PARENTAL_LEAVE, UNPAID_PARENTAL_LEAVE, EXPENSE, PLUSDAY
+enum TodoType {
+  WORKDAY, SICKDAY, HOLIDAY, PAID_PARENTAL_LEAVE, UNPAID_PARENTAL_LEAVE, EXPENSE, PLUSDAY, PAID_LEAVE
 }

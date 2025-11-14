@@ -5,13 +5,13 @@ import { TextField } from 'formik-mui';
 import * as Yup from 'yup';
 import { DatePickerField } from '../../components/fields/DatePickerField';
 import { DropzoneAreaField } from '../../components/fields/DropzoneAreaField';
-import type { CostExpense } from '../../models/Expense';
+import type { Expense } from '../../wirespec/model/Expense';
 
 export const EXPENSE_COST_FORM_ID = 'cost-expense-form';
 
 type ExpenseFormCostProps = {
   value: any;
-  onSubmit: (item: CostExpense) => void;
+  onSubmit: (item: Expense) => void;
 };
 
 export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
