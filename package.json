@@ -95,7 +95,7 @@
     "webpack": "^4.46.0",
     "webpack-bundle-analyzer": "^3.8.0",
     "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.3"
+    "webpack-dev-server": "^5.2.2"
   },
   "lint-staged": {
     "workday-application/src/main/react/**/*.{js,jsx,tsx,ts}": [
