@@ -12,7 +12,6 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType
 import jakarta.persistence.ManyToOne
-import jakarta.persistence.MappedSuperclass
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode

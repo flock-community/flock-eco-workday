@@ -11,10 +11,10 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class EventRepositoryTest(
-) : WorkdayIntegrationTest() {
+class EventRepositoryTest() : WorkdayIntegrationTest() {
     @Autowired
     private lateinit var eventRepository: EventRepository
+
     @Autowired
     private lateinit var createHelper: CreateHelper
 

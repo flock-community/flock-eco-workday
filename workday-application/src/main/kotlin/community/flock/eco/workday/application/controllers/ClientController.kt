@@ -1,7 +1,6 @@
 package community.flock.eco.workday.application.controllers
 
 import community.flock.eco.workday.application.authorities.ClientAuthority
-import community.flock.eco.workday.application.authorities.ContractAuthority
 import community.flock.eco.workday.application.forms.ClientForm
 import community.flock.eco.workday.application.model.Client
 import community.flock.eco.workday.application.services.ClientService
@@ -67,11 +66,4 @@ class ClientController(
         clientService
             .delete(code)
             .toResponse()
-
-
-    private fun User.isAdmin(): Boolean =
-        this
-            .authorities
-            .contains(ClientAuthority.ADMIN.toName())
 }
-

@@ -20,7 +20,6 @@ class ContractExternal(
     override val hoursPerWeek: Int,
     val billable: Boolean = true,
 ) : Hourly, Contract(id, code, from, to, person, ContractType.EXTERNAL) {
-
     init {
         require(person != null) {
             "External contracts must have a person"

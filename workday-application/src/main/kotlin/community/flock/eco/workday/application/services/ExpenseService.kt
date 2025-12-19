@@ -110,7 +110,8 @@ class TravelExpenseService(
                 println(it.person)
                 println(it.type)
                 println(it.status)
-                travelExpenseMailService.sendNotification(it) }
+                travelExpenseMailService.sendNotification(it)
+            }
 
     @Transactional
     fun update(

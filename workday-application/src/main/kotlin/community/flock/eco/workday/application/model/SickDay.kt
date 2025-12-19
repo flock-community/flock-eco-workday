@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.workday.application.interfaces.Approve
 import community.flock.eco.workday.core.events.EventEntityListeners
-import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.EnumType

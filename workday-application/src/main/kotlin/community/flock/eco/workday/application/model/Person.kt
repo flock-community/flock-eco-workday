@@ -37,7 +37,7 @@ data class Person(
     val shoeSize: String? = null,
     val shirtSize: String? = null,
     val googleDriveId: String? = null,
-    @OneToOne(fetch= FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)
     val user: User?,

@@ -114,7 +114,7 @@ class EventService(
                     costs = costs,
                     type = type,
                     days = days,
-                    persons = persons.filter { it.uuid != person.uuid }.plus(person).toMutableList()
+                    persons = persons.filter { it.uuid != person.uuid }.plus(person).toMutableList(),
                 )
                     .run { eventRepository.save(this) }
             } ?: error("Cannot subscribe to Event: $eventCode")

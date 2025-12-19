@@ -13,10 +13,10 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 
 @Transactional
-class ContractRepositoryTest(
-) : WorkdayIntegrationTest() {
+class ContractRepositoryTest() : WorkdayIntegrationTest() {
     @Autowired
     private lateinit var contractRepository: ContractRepository
+
     @Autowired
     private lateinit var createHelper: CreateHelper
 
@@ -33,22 +33,22 @@ class ContractRepositoryTest(
                 hackHours = 160,
             )
         val saved = contractRepository.save(new)
-        val update = ContractInternal(
-            id = saved.id,
-            code = saved.code,
-            person = saved.person!!,
-            from = saved.from,
+        val update =
+            ContractInternal(
+                id = saved.id,
+                code = saved.code,
+                person = saved.person!!,
+                from = saved.from,
 //            to = saved.to,
 //            monthlySalary = saved.monthlySalary,
 //            hoursPerWeek = saved.hoursPerWeek,
-            holidayHours = saved.holidayHours,
-            hackHours = saved.hackHours,
-            billable = saved.billable,
-
-            to = LocalDate.of(2020, 6, 1),
-            hoursPerWeek = 80,
-            monthlySalary = 1000.0,
-        )
+                holidayHours = saved.holidayHours,
+                hackHours = saved.hackHours,
+                billable = saved.billable,
+                to = LocalDate.of(2020, 6, 1),
+                hoursPerWeek = 80,
+                monthlySalary = 1000.0,
+            )
         val updated = contractRepository.save(update)
 
         assertEquals(saved.id, updated.id)

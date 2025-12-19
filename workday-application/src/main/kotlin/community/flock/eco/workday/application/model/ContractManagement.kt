@@ -21,12 +21,12 @@ class ContractManagement(
     to: LocalDate? = null,
     val monthlyFee: Double,
 ) : Contract(id, code, from, to, person, ContractType.MANAGEMENT) {
-
     init {
         require(person != null) {
             "External contracts must have a person"
         }
     }
+
     override fun totalCostsInPeriod(
         from: LocalDate,
         to: LocalDate,

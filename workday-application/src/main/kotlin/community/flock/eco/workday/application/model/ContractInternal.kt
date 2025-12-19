@@ -26,12 +26,12 @@ class ContractInternal(
     val hackHours: Int,
     val billable: Boolean = true,
 ) : Monthly, Contract(id, code, from, to, person, ContractType.INTERNAL) {
-
     init {
         require(person != null) {
             "Internal contracts must have a person"
         }
     }
+
     override fun totalCostsInPeriod(
         from: LocalDate,
         to: LocalDate,

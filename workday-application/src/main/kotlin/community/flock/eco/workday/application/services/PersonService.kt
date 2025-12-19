@@ -14,6 +14,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Service
+@Transactional
 class PersonService(
     private val repository: PersonRepository,
     private val userRepository: UserRepository,

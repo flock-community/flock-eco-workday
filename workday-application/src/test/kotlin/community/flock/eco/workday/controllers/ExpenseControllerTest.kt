@@ -33,8 +33,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 import java.util.UUID
 
-class ExpenseControllerTest(
-) : WorkdayIntegrationTest() {
+class ExpenseControllerTest() : WorkdayIntegrationTest() {
     @Autowired
     private lateinit var mvc: MockMvc
 
