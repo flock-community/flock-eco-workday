@@ -20,7 +20,7 @@ class LoadSickdaysData(
     val data: MutableSet<SickDay> = mutableSetOf()
 
     init {
-        loadData.loadWhenEmpty {
+        loadData.load {
 
             loadPersonData.data.forEach {
                 createSickdays(it)

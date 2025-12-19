@@ -24,7 +24,7 @@ class LoadWorkDayData(
      * to create and persist the Workday.
      */
     private final fun WorkDayForm.create() {
-        loadData.loadWhenEmpty {
+        loadData.load {
             workDayService.create(this)
         }
     }

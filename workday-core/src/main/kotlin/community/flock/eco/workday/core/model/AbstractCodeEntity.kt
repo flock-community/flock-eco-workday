@@ -1,13 +1,13 @@
 package community.flock.eco.workday.core.model
 
+import jakarta.persistence.Column
+import jakarta.persistence.MappedSuperclass
 import java.util.Objects
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.MappedSuperclass
 
 @MappedSuperclass
 abstract class AbstractCodeEntity(
-    override val id: Long = 0,
+    id: Long = 0,
     @Column(unique = true)
     open val code: String = UUID.randomUUID().toString(),
 ) : AbstractIdEntity(id) {

@@ -12,9 +12,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class EventRepositoryTest(
-    @Autowired private val eventRepository: EventRepository,
-    @Autowired private val createHelper: CreateHelper,
 ) : WorkdayIntegrationTest() {
+    @Autowired
+    private lateinit var eventRepository: EventRepository
+    @Autowired
+    private lateinit var createHelper: CreateHelper
+
     @Test
     fun `create update delete`() {
         val person1 = createHelper.createPerson()
@@ -26,8 +29,8 @@ class EventRepositoryTest(
                 from = LocalDate.now(),
                 to = LocalDate.now().plusDays(5),
                 hours = 40.0,
-                days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
-                persons = listOf(person1, person2),
+                days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0),
+                persons = mutableListOf(person1, person2),
                 costs = 538.38,
                 type = EventType.GENERAL_EVENT,
             )

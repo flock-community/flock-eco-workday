@@ -78,7 +78,7 @@ class LoadPersonData(
      * iterate over userData and create a person for every user in userData
      */
     init {
-        loadData.loadWhenEmpty {
+        loadData.load {
             val userMap = userData.data.associateBy { it.name }
 
             users.forEach {
@@ -87,7 +87,8 @@ class LoadPersonData(
                     lastname = it.lastName,
                     birthdate = it.birthdate,
                     joinDate = it.joinDate,
-                    user = userMap[it.firstName] ?: throw IllegalStateException("User not found with name ${it.firstName}"),
+                    user = userMap[it.firstName]
+                        ?: throw IllegalStateException("User not found with name ${it.firstName}"),
                     active = it.active,
                     shoeSize = it.shoeSize,
                     shirtSize = it.shirtSize,

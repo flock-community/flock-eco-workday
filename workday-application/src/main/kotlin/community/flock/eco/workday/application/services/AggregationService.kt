@@ -395,23 +395,23 @@ class AggregationService(
                     yearMonth = yearMonth.toString(),
                     countContractInternal =
                         all.contract
-                            .filterIsInstance(ContractInternal::class.java)
+                            .filterIsInstance<ContractInternal>()
                             .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
                             .filter { it.billable }
-                            .distinctBy { it.person.id }
+                            .distinctBy { it.person?.id }
                             .count(),
                     countContractExternal =
                         all.contract
-                            .filterIsInstance(ContractExternal::class.java)
+                            .filterIsInstance<ContractExternal>()
                             .filter { it.billable }
                             .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
-                            .distinctBy { it.person.id }
+                            .distinctBy { it.person?.id }
                             .count(),
                     countContractManagement =
                         all.contract
-                            .filterIsInstance(ContractManagement::class.java)
+                            .filterIsInstance<ContractManagement>()
                             .filter { it.toDateRangeInPeriod(yearMonth).isNotEmpty() }
-                            .distinctBy { it.person.id }
+                            .distinctBy { it.person?.id }
                             .count(),
                     forecastRevenueGross =
                         all.assignment

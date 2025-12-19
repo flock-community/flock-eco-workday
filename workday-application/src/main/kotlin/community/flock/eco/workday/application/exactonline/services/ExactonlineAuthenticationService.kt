@@ -5,13 +5,13 @@ import community.flock.eco.workday.application.exactonline.clients.ExactonlineAu
 import community.flock.eco.workday.application.exactonline.clients.ExactonlineUserClient
 import community.flock.eco.workday.application.exactonline.model.ExactonlineRequestObject
 import community.flock.eco.workday.application.exactonline.properties.ExactonlineProperties
+import jakarta.servlet.http.HttpSession
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponents
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.LocalDateTime
-import javax.servlet.http.HttpSession
 
 data class StoreObject(
     val accessToken: String,

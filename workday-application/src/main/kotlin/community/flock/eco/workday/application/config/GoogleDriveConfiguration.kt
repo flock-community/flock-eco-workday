@@ -18,6 +18,11 @@ import org.springframework.context.annotation.Configuration
     matchIfMissing = true,
 )
 class GoogleDriveConfiguration {
+    //    @Bean
+//    fun googleCredentialsProvider(): CredentialsProvider {
+//        return GoogleCredentialsProvider.newBuilder().build()
+//    }
+
     @Bean
     fun workdayGoogleDrive(
         credentialsProvider: CredentialsProvider,

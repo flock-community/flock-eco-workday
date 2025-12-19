@@ -13,13 +13,13 @@ import community.flock.eco.workday.application.repository.TravelExpenseRepositor
 import community.flock.eco.workday.application.services.email.CostExpenseMailService
 import community.flock.eco.workday.application.services.email.TravelExpenseMailService
 import community.flock.eco.workday.core.utils.toNullable
+import jakarta.transaction.Transactional
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.UUID
-import javax.transaction.Transactional
 
 @Service
 class ExpenseService(
@@ -101,11 +101,16 @@ class TravelExpenseService(
     private val travelExpenseMailService: TravelExpenseMailService,
 ) {
     @Transactional
-    fun create(it: TravelExpense): TravelExpense =
+    fun create(travelExpense: TravelExpense): TravelExpense =
         travelExpenseRepository
-            .save(it)
+            .save(travelExpense)
             .also { applicationEventPublisher.publishEvent(CreateExpenseEvent(it)) }
-            .also { travelExpenseMailService.sendNotification(it) }
+            .also {
+                println(it)
+                println(it.person)
+                println(it.type)
+                println(it.status)
+                travelExpenseMailService.sendNotification(it) }
 
     @Transactional
     fun update(

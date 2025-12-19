@@ -5,13 +5,13 @@ import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.model.Status
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.repository.PagingAndSortingRepository
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.Optional
 import java.util.UUID
 
 @Repository
-interface LeaveDayRepository : PagingAndSortingRepository<LeaveDay, Long> {
+interface LeaveDayRepository : JpaRepository<LeaveDay, Long> {
     fun findByCode(code: String): Optional<LeaveDay>
 
     fun findAllByPersonUuid(personCode: UUID): Iterable<LeaveDay>

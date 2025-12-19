@@ -2,12 +2,12 @@ package community.flock.eco.workday.application.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import community.flock.eco.workday.core.events.EventEntityListeners
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.Id
+import jakarta.persistence.IdClass
+import jakarta.persistence.ManyToOne
 import java.io.Serializable
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.Id
-import javax.persistence.IdClass
-import javax.persistence.ManyToOne
 
 @Entity
 @EntityListeners(EventEntityListeners::class)

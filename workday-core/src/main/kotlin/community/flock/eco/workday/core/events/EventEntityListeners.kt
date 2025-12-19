@@ -1,12 +1,12 @@
 package community.flock.eco.workday.core.events
 
+import jakarta.persistence.PostPersist
+import jakarta.persistence.PostRemove
+import jakarta.persistence.PostUpdate
+import jakarta.persistence.PrePersist
+import jakarta.persistence.PreRemove
+import jakarta.persistence.PreUpdate
 import org.springframework.context.ApplicationEventPublisher
-import javax.persistence.PostPersist
-import javax.persistence.PostRemove
-import javax.persistence.PostUpdate
-import javax.persistence.PrePersist
-import javax.persistence.PreRemove
-import javax.persistence.PreUpdate
 
 sealed class EntityEvent(open val entity: Any) : Event
 

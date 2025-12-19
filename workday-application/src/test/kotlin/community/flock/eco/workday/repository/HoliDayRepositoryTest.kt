@@ -9,10 +9,10 @@ import community.flock.eco.workday.application.repository.LeaveDayRepository
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.core.utils.toNullable
 import community.flock.eco.workday.utils.dayFromLocalDate
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import javax.transaction.Transactional
 
 @Transactional
 class HoliDayRepositoryTest(

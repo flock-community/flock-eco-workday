@@ -2,16 +2,17 @@ package community.flock.eco.workday.application.repository
 
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventType
+import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.model.PersonProjection
 import org.springframework.data.jpa.repository.EntityGraph
-import org.springframework.data.repository.PagingAndSortingRepository
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
 
 @Repository
-interface EventRepository : PagingAndSortingRepository<Event, Long> {
+interface EventRepository : JpaRepository<Event, Long> {
     fun findByCode(code: String): Optional<Event>
 
     fun findAllByPersonsIsEmptyOrPersonsUuid(personCode: UUID): Iterable<Event>

@@ -22,7 +22,7 @@ class LoadContractData(
     val data: MutableSet<Contract> = mutableSetOf()
 
     init {
-        loadData.loadWhenEmpty {
+        loadData.load {
             create("tommy@sesam.straat", ContractType.EXTERNAL, now.minusMonths(2))
             create("ieniemienie@sesam.straat", ContractType.INTERNAL, now.minusMonths(8), now.plusMonths(8))
             create("pino@sesam.straat", ContractType.INTERNAL, now.minusMonths(12), now.plusMonths(4))

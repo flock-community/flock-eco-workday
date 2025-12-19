@@ -2,16 +2,17 @@ package community.flock.eco.workday.application.model
 
 import community.flock.eco.workday.application.interfaces.Approve
 import community.flock.eco.workday.core.events.EventEntityListeners
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
+import jakarta.persistence.Id
+import jakarta.persistence.Inheritance
+import jakarta.persistence.InheritanceType
+import jakarta.persistence.ManyToOne
 import java.time.LocalDate
 import java.util.UUID
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.Id
-import javax.persistence.Inheritance
-import javax.persistence.InheritanceType
-import javax.persistence.ManyToOne
 
 @Entity
 @Inheritance(
@@ -23,7 +24,7 @@ abstract class Expense(
     open val id: UUID = UUID.randomUUID(),
     open val date: LocalDate = LocalDate.now(),
     open val description: String? = null,
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     open val person: Person,
     @Enumerated(EnumType.STRING)
     override val status: Status = Status.REQUESTED,

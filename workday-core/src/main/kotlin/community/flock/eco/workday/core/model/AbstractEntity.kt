@@ -1,8 +1,8 @@
 package community.flock.eco.workday.core.model
 
+import jakarta.persistence.Id
+import jakarta.persistence.MappedSuperclass
 import java.io.Serializable
-import javax.persistence.Id
-import javax.persistence.MappedSuperclass
 
 @MappedSuperclass
 abstract class AbstractEntity<ID : Serializable>(

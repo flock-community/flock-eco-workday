@@ -6,15 +6,15 @@ import community.flock.eco.workday.application.utils.DateUtils
 import community.flock.eco.workday.application.utils.DateUtils.isWorkingDay
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.core.model.AbstractCodeEntity
+import jakarta.persistence.ElementCollection
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.Inheritance
+import jakarta.persistence.InheritanceType
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
 import java.util.UUID
-import javax.persistence.ElementCollection
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.Inheritance
-import javax.persistence.InheritanceType
 
 @Entity
 @Inheritance(
@@ -22,8 +22,8 @@ import javax.persistence.InheritanceType
 )
 @EntityListeners(EventEntityListeners::class)
 abstract class Day(
-    override val id: Long = 0,
-    override val code: String = UUID.randomUUID().toString(),
+    id: Long = 0,
+    code: String = UUID.randomUUID().toString(),
     override val from: LocalDate = LocalDate.now(),
     override val to: LocalDate = LocalDate.now(),
     override val hours: Double,

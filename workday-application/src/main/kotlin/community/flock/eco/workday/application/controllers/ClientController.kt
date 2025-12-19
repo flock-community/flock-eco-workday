@@ -1,9 +1,12 @@
 package community.flock.eco.workday.application.controllers
 
+import community.flock.eco.workday.application.authorities.ClientAuthority
+import community.flock.eco.workday.application.authorities.ContractAuthority
 import community.flock.eco.workday.application.forms.ClientForm
 import community.flock.eco.workday.application.model.Client
 import community.flock.eco.workday.application.services.ClientService
 import community.flock.eco.workday.core.utils.toResponse
+import community.flock.eco.workday.user.model.User
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -64,4 +67,11 @@ class ClientController(
         clientService
             .delete(code)
             .toResponse()
+
+
+    private fun User.isAdmin(): Boolean =
+        this
+            .authorities
+            .contains(ClientAuthority.ADMIN.toName())
 }
+

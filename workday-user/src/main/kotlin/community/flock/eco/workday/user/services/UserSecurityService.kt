@@ -64,56 +64,82 @@ class UserSecurityService(
         override fun isAccountNonLocked() = true
     }
 
-    fun testLogin(http: HttpSecurity): FormLoginConfigurer<HttpSecurity> {
+    fun testLogin(
+        http: HttpSecurity,
+        block: FormLoginConfigurer<HttpSecurity>.() -> Unit,
+    ): HttpSecurity {
         return http
             .userDetailsService { ref ->
                 userAccountService.findUserAccountPasswordByUserEmail(ref)
                     ?.let { UserSecurityPassword(it) }
-                    ?: userAccountService.createUserAccountPassword(UserAccountPasswordForm(email = ref, password = ref))
+                    ?: userAccountService.createUserAccountPassword(
+                        UserAccountPasswordForm(
+                            email = ref,
+                            password = ref,
+                        ),
+                    )
                         .let { UserSecurityPassword(it) }
             }
-            .formLogin()
+            .formLogin { it.block() }
     }
 
-    fun databaseLogin(http: HttpSecurity): FormLoginConfigurer<HttpSecurity> {
+    fun databaseLogin(
+        http: HttpSecurity,
+        block: FormLoginConfigurer<HttpSecurity>.() -> Unit,
+    ): HttpSecurity {
         return http
             .userDetailsService { ref ->
                 userAccountService.findUserAccountPasswordByUserEmail(ref)
                     ?.let { UserSecurityPassword(it) }
                     ?: throw UsernameNotFoundException("User '$ref' not found")
             }
-            .formLogin()
-    }
-
-    fun googleLogin(http: HttpSecurity): OAuth2LoginConfigurer<HttpSecurity>.UserInfoEndpointConfig {
-        return http
-            .oauth2Login()
-            .userInfoEndpoint()
-            .oidcUserService { it ->
-
-                val delegate = OidcUserService()
-                val oidcUser = delegate.loadUser(it)
-
-                val reference = oidcUser.attributes["sub"].toString()
-                val name = oidcUser.attributes["name"].toString()
-                val email = oidcUser.attributes["email"].toString()
-
-                val form =
-                    UserAccountOauthForm(
-                        email = email,
-                        name = name,
-                        reference = reference,
-                        provider = UserAccountOauthProvider.GOOGLE,
-                    )
-
-                if (userAccountService.findUserAccountOauthByReference(reference) == null) {
-                    userAccountService.createUserAccountOauth(form)
-                }
-
-                userAccountService.findUserAccountOauthByReference(reference)
-                    ?.let { UserSecurityOauth2(it, oidcUser.idToken) }
+            .formLogin {
+                it.block()
             }
     }
+
+    fun googleLogin(
+        http: HttpSecurity,
+        block: OAuth2LoginConfigurer<HttpSecurity>.() -> Unit,
+        block2: HttpSecurity.() -> Unit,
+    ): HttpSecurity =
+        http
+            .oauth2Login({ login ->
+                login
+                    .userInfoEndpoint({ endpoint ->
+                        endpoint
+                            .oidcUserService { oidcUserRequest ->
+
+                                val delegate = OidcUserService()
+                                val oidcUser = delegate.loadUser(oidcUserRequest)
+
+                                val reference = oidcUser.attributes["sub"].toString()
+                                val name = oidcUser.attributes["name"].toString()
+                                val email = oidcUser.attributes["email"].toString()
+
+                                val form =
+                                    UserAccountOauthForm(
+                                        email = email,
+                                        name = name,
+                                        reference = reference,
+                                        provider = UserAccountOauthProvider.GOOGLE,
+                                    )
+
+                                if (userAccountService.findUserAccountOauthByReference(reference) == null) {
+                                    userAccountService.createUserAccountOauth(form)
+                                }
+
+                                userAccountService.findUserAccountOauthByReference(reference)
+                                    ?.let { UserSecurityOauth2(it, oidcUser.idToken) }
+                            }
+                    })
+
+                login.block()
+            })
+            .let {
+                it.block2()
+                it
+            }
 }
 
 private fun User.getGrantedAuthority(): List<GrantedAuthority> {

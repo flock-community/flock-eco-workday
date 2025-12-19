@@ -9,6 +9,7 @@ import community.flock.eco.workday.user.forms.UserAccountPasswordForm
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserAccountService
 import community.flock.eco.workday.user.services.UserAuthorityService
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import community.flock.eco.workday.application.mocks.User as MockUser
@@ -20,6 +21,7 @@ class LoadUserData(
     loadData: LoadData,
     userAuthorityService: UserAuthorityService,
 ) {
+    private val log = LoggerFactory.getLogger(this::class.java)
     val data: MutableSet<User> = mutableSetOf()
 
     val workerRoles =
@@ -39,19 +41,24 @@ class LoadUserData(
     private val workerAuthorities = userAuthorityService.allAuthorities().filter { workerRoles.contains(it) }
 
     init {
-        loadData.loadWhenEmpty {
-            users.forEach { create(it) }
-        }
+        loadData.load(false) { users.forEach { findOrCreate(it) } }
     }
 
-    private final fun create(user: MockUser) =
-        UserAccountPasswordForm(
-            name = user.firstName,
-            email = "${user.firstName.lowercase()}@sesam.straat",
-            password = user.firstName.lowercase(),
-            authorities = user.authorities.map { it.toName() }.toSet(),
-        )
-            .save()
+    private final fun findOrCreate(user: MockUser): User {
+        val email = "${user.firstName.lowercase()}@sesam.straat"
+        val passwordByUserEmail = userAccountService.findUserAccountPasswordByUserEmail(email)
+        return if (passwordByUserEmail != null) {
+            passwordByUserEmail.user.also { data.add(it) }
+        } else {
+            UserAccountPasswordForm(
+                name = user.firstName,
+                email = email,
+                password = user.firstName.lowercase(),
+                authorities = user.authorities.map { it.toName() }.toSet(),
+            )
+                .save()
+        }
+    }
 
     val MockUser.authorities: List<Authority>
         get() {

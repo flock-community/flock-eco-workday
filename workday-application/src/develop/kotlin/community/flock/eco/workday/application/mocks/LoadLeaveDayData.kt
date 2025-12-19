@@ -19,7 +19,7 @@ class LoadLeaveDayData(
     final val now: LocalDate = LocalDate.now().withDayOfYear(1).withDayOfMonth(1)
 
     init {
-        loadData.loadWhenEmpty {
+        loadData.load {
             loadPersonData.data.forEach {
                 createHolidays(it)
                 createPlusDays(it)

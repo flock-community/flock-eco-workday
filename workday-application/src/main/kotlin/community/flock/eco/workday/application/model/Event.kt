@@ -3,22 +3,22 @@ package community.flock.eco.workday.application.model
 import community.flock.eco.workday.application.interfaces.Dayly
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.core.model.AbstractCodeEntity
+import jakarta.persistence.ElementCollection
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.ManyToMany
 import org.hibernate.annotations.BatchSize
 import java.time.LocalDate
 import java.util.UUID
-import javax.persistence.ElementCollection
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.ManyToMany
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-data class Event(
+class Event(
     val description: String,
-    override val id: Long = 0,
-    override val code: String = UUID.randomUUID().toString(),
+    id: Long = 0,
+    code: String = UUID.randomUUID().toString(),
     override val from: LocalDate = LocalDate.now(),
     override val to: LocalDate = LocalDate.now(),
     override val hours: Double,
@@ -26,8 +26,8 @@ data class Event(
     @Enumerated(EnumType.STRING)
     val type: EventType,
     @ElementCollection
-    override val days: List<Double>? = null,
+    override val days: MutableList<Double>? = null,
     @ManyToMany
     @BatchSize(size = 50)
-    val persons: List<Person>,
+    val persons: MutableList<Person>,
 ) : Dayly, AbstractCodeEntity(id, code)

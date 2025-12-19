@@ -3,6 +3,7 @@ package community.flock.eco.workday.application.exactonline.controllers
 import community.flock.eco.workday.application.exactonline.clients.ExactonlineDivisionClient
 import community.flock.eco.workday.application.exactonline.clients.ExactonlineUserClient
 import community.flock.eco.workday.application.exactonline.services.ExactonlineAuthenticationService
+import jakarta.servlet.http.HttpSession
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 import java.net.URI
-import javax.servlet.http.HttpSession
 
 @RestController
 @RequestMapping("/api/exactonline")

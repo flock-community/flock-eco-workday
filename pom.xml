@@ -42,13 +42,13 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <dokka.skip>true</dokka.skip>
         <!-- Framework Versions -->
-        <spring.boot.version>2.6.2</spring.boot.version>
-        <spring.cloud.gcp.version>3.0.0</spring.cloud.gcp.version>
+        <spring.boot.version>3.4.13</spring.boot.version>
+        <spring.cloud.gcp.version>5.12.3</spring.cloud.gcp.version>
 
         <!-- Library Versions -->
         <jackson.version>2.13.1</jackson.version>
-        <liquibase.version>3.9.0</liquibase.version>
-        <h2.version>1.4.200</h2.version>
+        <liquibase.version>5.0.1</liquibase.version>
+        <h2.version>2.3.232</h2.version>
         <wirespec.version>0.11.2</wirespec.version>
 
         <!-- Utility Library Versions -->
@@ -56,14 +56,14 @@
         <reflections.version>0.9.11</reflections.version>
         <mockk.version>1.12.2</mockk.version>
         <springmockk.version>3.1.1</springmockk.version>
-        <springdoc.version>1.6.6</springdoc.version>
-        <mockito.version>4.2.0</mockito.version>
-        <javax-mail.version>1.4.7</javax-mail.version>
+        <springdoc.version>2.1.0</springdoc.version>
+        <mockito.version>5.21.0</mockito.version>
+        <javax-mail.version>2.0.2</javax-mail.version>
 
         <!-- Workday-Specific -->
         <mailjet.version>5.1.1</mailjet.version>
-        <google-api-drive.version>v3-rev20220709-1.32.1</google-api-drive.version>
-        <google-api-sheets.version>v4-rev20220620-1.32.1</google-api-sheets.version>
+        <google-api-drive.version>v3-rev20251210-2.0.0</google-api-drive.version>
+        <google-api-sheets.version>v4-rev20251110-2.0.0</google-api-sheets.version>
         <biweekly.version>0.6.7</biweekly.version>
 
         <!-- Plugin Versions -->
@@ -71,10 +71,10 @@
         <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
         <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
         <ktlint-maven-plugin.version>3.0.0</ktlint-maven-plugin.version>
-        <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
-        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
         <appengine-maven-plugin.version>2.2.0</appengine-maven-plugin.version>
 
         <!-- Node/npm versions for frontend -->
@@ -157,33 +157,21 @@
 
             <!-- Utilities -->
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
                 <version>${reflections.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
+                <groupId>jakarta.mail</groupId>
+                <artifactId>jakarta.mail-api</artifactId>
                 <version>${javax-mail.version}</version>
             </dependency>
 
             <!-- API Documentation -->
             <dependency>
                 <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-ui</artifactId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${springdoc.version}</version>
-            </dependency>
-
-            <!-- TODO: update this version. It is now managed by the gcp dependencies -->
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>
-                <version>1.2.8.RELEASE</version>
             </dependency>
 
             <!-- Testing -->
@@ -330,8 +318,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
+                        <release>${java.version}</release>
                     </configuration>
                 </plugin>
 
@@ -437,7 +424,6 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -458,7 +444,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <preparationGoals>frontend:npm@version --non-recursive</preparationGoals>
@@ -467,7 +452,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -480,7 +464,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>add-source</id>
@@ -545,7 +528,6 @@
             <plugin>
                 <groupId>com.github.gantsign.maven</groupId>
                 <artifactId>ktlint-maven-plugin</artifactId>
-                <version>3.0.0</version>
                 <configuration>
                     <!-- Unofficial way to include only `src` files: https://github.com/gantsign/ktlint-maven-plugin/issues/341#issuecomment-1677673242 -->
                     <sourceRoots>${project.build.sourceDirectory}</sourceRoots>
@@ -611,7 +593,6 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>${jib-maven-plugin.version}</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
@@ -641,7 +622,6 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>3.0.0</version>
                         <executions>
                             <execution>
                                 <id>add-source</id>

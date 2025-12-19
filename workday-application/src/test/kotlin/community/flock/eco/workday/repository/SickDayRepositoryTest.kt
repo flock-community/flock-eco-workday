@@ -6,11 +6,11 @@ import community.flock.eco.workday.application.model.SickDay
 import community.flock.eco.workday.application.model.Status
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.application.repository.SickdayRepository
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
-import javax.transaction.Transactional
 
 @Transactional
 class SickDayRepositoryTest(

@@ -4,18 +4,21 @@ import community.flock.eco.workday.application.authorities.LeaveDayAuthority
 import community.flock.eco.workday.user.services.UserAccountService
 import community.flock.eco.workday.user.services.UserAuthorityService
 import community.flock.eco.workday.user.services.UserSecurityService
+import jakarta.servlet.DispatcherType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
+import org.springframework.security.config.Customizer.withDefaults
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-class WebSecurityConfig : WebSecurityConfigurerAdapter() {
+@EnableMethodSecurity(securedEnabled = true)
+class WebSecurityConfig {
     @Autowired
     lateinit var userAuthorityService: UserAuthorityService
 
@@ -28,53 +31,70 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     @Value("\${flock.eco.workday.login:TEST}")
     lateinit var loginType: String
 
-    override fun configure(http: HttpSecurity) {
+    @Bean
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
         userAuthorityService.addAuthority(LeaveDayAuthority::class.java)
 
         http
-            .headers()
-            .frameOptions()
-            .sameOrigin()
+            .headers({ headers ->
+                headers
+                    .frameOptions({ options ->
+                        options
+                            .sameOrigin()
+                    })
+            })
         http
-            .csrf().disable()
+            .csrf({ csrf -> csrf.disable() })
         http
-            .authorizeRequests()
-            .antMatchers("/favicon.ico").permitAll()
-            .antMatchers("/").permitAll()
-            .antMatchers("/*.js").permitAll()
-            .antMatchers("/images/*.webp").permitAll()
-            .antMatchers("/images/*.svg").permitAll()
-            .antMatchers("/tasks/**").permitAll()
-            .antMatchers("/actuator/**").permitAll()
-            .antMatchers("/login/**").permitAll()
-            .antMatchers("/bootstrap").permitAll()
-            .antMatchers("/h2/**").permitAll()
-            .antMatchers("/api/events/**").permitAll()
-            .antMatchers(*SWAGGER_WHITELIST).permitAll()
-            .antMatchers(*EXT_WHITELIST).permitAll()
-            .anyRequest().authenticated()
+            .authorizeHttpRequests({ requests ->
+                requests
+                    // Permit FORWARD and ERROR dispatchers to prevent infinite redirects
+                    .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
+                    .requestMatchers("/favicon.ico").permitAll()
+                    .requestMatchers("/").permitAll()
+                    .requestMatchers("/*.js").permitAll()
+                    .requestMatchers("/images/*.webp").permitAll()
+                    .requestMatchers("/images/*.svg").permitAll()
+                    .requestMatchers("/tasks/**").permitAll()
+                    .requestMatchers("/actuator/**").permitAll()
+                    .requestMatchers("/login/**").permitAll()
+                    .requestMatchers("/bootstrap").permitAll()
+                    .requestMatchers("/h2/**").permitAll()
+                    .requestMatchers("/api/events/**").permitAll()
+                    .requestMatchers(*SWAGGER_WHITELIST).permitAll()
+                    .requestMatchers(*EXT_WHITELIST).permitAll()
+                    .anyRequest().authenticated()
+            })
         http
-            .cors()
+            .cors(withDefaults())
 
         when (loginType.uppercase()) {
             "GOOGLE" ->
-                userSecurityService.googleLogin(http)
-                    .and()
-                    .defaultSuccessUrl("/", true)
-                    .and()
-                    .logout().logoutSuccessUrl("/")
+                userSecurityService.googleLogin(http, {
+                    defaultSuccessUrl("/", true)
+                }) {
+                    logout { logout ->
+                        logout.logoutSuccessUrl("/")
+                        logout.logoutUrl("/logout")
+                    }
+                }
 
             "DATABASE" ->
-                userSecurityService.databaseLogin(http)
-                    .loginPage("/")
-                    .loginProcessingUrl("/login")
-                    .defaultSuccessUrl("/", true)
+                userSecurityService.databaseLogin(http) {
+                    loginPage("/")
+                    loginProcessingUrl("/login")
+                    defaultSuccessUrl("/", true)
+                }
+
             else ->
-                userSecurityService.testLogin(http)
-                    .loginPage("/")
-                    .loginProcessingUrl("/login")
-                    .defaultSuccessUrl("/", true)
+                userSecurityService.testLogin(http) {
+                    loginPage("/")
+                    loginProcessingUrl("/login")
+                    defaultSuccessUrl("/", true)
+                }
         }
+
+        return http.build()
     }
 
     companion object {

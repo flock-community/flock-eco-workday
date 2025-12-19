@@ -22,13 +22,13 @@ class LoadEventData(
     final val data: MutableList<Event> = mutableListOf()
 
     init {
-        loadData.loadWhenEmpty {
+        loadData.load {
             (
                 publicHolidays(loadPersonData) + communityDays(loadPersonData) + conferences(loadPersonData) +
                     hackDays(
                         loadPersonData,
                     )
-            )
+                )
                 .map { it.create() }.let { data.addAll(it) }
         }
     }

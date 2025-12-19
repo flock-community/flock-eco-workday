@@ -2,6 +2,7 @@ package community.flock.eco.workday.application.controllers
 
 import community.flock.eco.workday.application.services.InvoiceService
 import community.flock.eco.workday.core.utils.toResponse
+import jakarta.servlet.http.HttpSession
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
-import javax.servlet.http.HttpSession
 
 @RestController
 @RequestMapping("/api/invoices")

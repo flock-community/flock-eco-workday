@@ -2,21 +2,21 @@ package community.flock.eco.workday.application.model
 
 import community.flock.eco.workday.application.utils.NumericUtils.sum
 import community.flock.eco.workday.core.events.EventEntityListeners
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.YearMonth
 import java.util.UUID
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-data class ContractService(
-    override val id: Long = 0,
-    override val code: String = UUID.randomUUID().toString(),
-    override val from: LocalDate,
-    override val to: LocalDate? = null,
+class ContractService(
+    id: Long = 0,
+    code: String = UUID.randomUUID().toString(),
+    from: LocalDate,
+    to: LocalDate? = null,
     val monthlyCosts: Double,
     val description: String,
 ) : Contract(id, code, from, to, null, ContractType.SERVICE) {

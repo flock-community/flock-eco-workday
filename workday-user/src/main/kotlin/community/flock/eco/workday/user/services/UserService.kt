@@ -8,10 +8,10 @@ import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.repositories.UserAccountRepository
 import community.flock.eco.workday.user.repositories.UserGroupRepository
 import community.flock.eco.workday.user.repositories.UserRepository
+import jakarta.transaction.Transactional
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import javax.transaction.Transactional
 
 @Service
 class UserService(

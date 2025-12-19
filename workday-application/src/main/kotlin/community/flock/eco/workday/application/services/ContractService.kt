@@ -12,13 +12,13 @@ import community.flock.eco.workday.application.model.ContractService
 import community.flock.eco.workday.application.repository.ContractRepository
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.core.utils.toNullable
+import jakarta.persistence.EntityManager
+import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.util.UUID
-import javax.persistence.EntityManager
-import javax.transaction.Transactional
 
 @Service
 class ContractService(

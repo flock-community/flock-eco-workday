@@ -1,7 +1,7 @@
 package community.flock.eco.workday.application.model
 
+import jakarta.persistence.Embeddable
 import java.util.UUID
-import javax.persistence.Embeddable
 
 @Embeddable
 class Document(

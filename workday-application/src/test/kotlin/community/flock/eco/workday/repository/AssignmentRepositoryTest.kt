@@ -9,13 +9,13 @@ import community.flock.eco.workday.application.repository.AssignmentRepository
 import community.flock.eco.workday.application.repository.ClientRepository
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.application.repository.ProjectRepository
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import java.time.LocalDate
 import java.util.UUID
-import javax.transaction.Transactional
 
 @Transactional
 class AssignmentRepositoryTest(
