@@ -1,7 +1,6 @@
 package community.flock.eco.workday.application.config
 
 import community.flock.eco.workday.application.authorities.LeaveDayAuthority
-import community.flock.eco.workday.user.services.UserAccountService
 import community.flock.eco.workday.user.services.UserAuthorityService
 import community.flock.eco.workday.user.services.UserSecurityService
 import jakarta.servlet.DispatcherType
@@ -24,9 +23,6 @@ class WebSecurityConfig {
 
     @Autowired
     lateinit var userSecurityService: UserSecurityService
-
-    @Autowired
-    lateinit var userAccountService: UserAccountService
 
     @Value("\${flock.eco.workday.login:TEST}")
     lateinit var loginType: String

@@ -52,7 +52,7 @@ class HoliDayRepositoryTest(
                         hours = 42.0,
                         from = dayFromLocalDate(),
                         to = dayFromLocalDate(1),
-                        days = listOf(8.0),
+                        days = mutableListOf(8.0),
                         person = person,
                         type = LeaveDayType.PLUSDAY,
                     ),

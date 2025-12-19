@@ -32,7 +32,7 @@ class SickDayMailServiceTest {
                 from = LocalDate.of(2025, 2, 13),
                 to = LocalDate.of(2025, 2, 13),
                 hours = 12.0,
-                days = emptyList(),
+                days = mutableListOf(),
             )
 
         val expectedEmailMessage =

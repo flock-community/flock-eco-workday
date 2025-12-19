@@ -24,7 +24,7 @@ class SickDay(
     from: LocalDate = LocalDate.now(),
     to: LocalDate = LocalDate.now(),
     hours: Double,
-    days: List<Double>? = null,
+    days: MutableList<Double>? = null,
     val description: String? = null,
     @Enumerated(EnumType.STRING)
     override val status: Status,

@@ -1,0 +1,186 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-hibernate6-entity-sequences
+      author: Julius van Dis
+      comment: Create entity-specific sequences for Hibernate 6 (Spring Boot 3 migration). Hibernate 6 uses entity-specific sequences instead of the shared hibernate_sequence.
+      preConditions:
+        onFail: MARK_RAN
+        sequenceExists:
+          sequenceName: hibernate_sequence
+      changes:
+        # Workday Application Entities (19 entities)
+        - createSequence:
+            sequenceName: assignment_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: client_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: contract_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: contractexternal_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: contractinternal_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: contractmanagement_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: contractservice_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: costexpense_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: day_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: event_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: eventrating_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: expense_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: invoice_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: leaveday_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: person_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: project_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: sickday_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: travelexpense_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: workday_seq
+            startValue: 1
+            incrementBy: 50
+
+        # User Module Entities (7 entities)
+        - createSequence:
+            sequenceName: user_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: user_account_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: user_accountkey_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: user_accountoauth_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: user_accountpassword_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: userconfiguration_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: usergroup_seq
+            startValue: 1
+            incrementBy: 50
+
+  - changeSet:
+      id: initialize-sequences-from-hibernate-sequence
+      author: springboot3-migration
+      comment: Initialize all new sequences from the current value of hibernate_sequence to avoid ID conflicts
+      preConditions:
+        - onFail: MARK_RAN
+          sequenceExists:
+            sequenceName: hibernate_sequence
+      changes:
+        - sql:
+            dbms: h2
+            sql: |
+              ALTER SEQUENCE assignment_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE client_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE contract_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE contractexternal_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE contractinternal_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE contractmanagement_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE contractservice_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE costexpense_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE day_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE event_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE eventrating_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE expense_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE invoice_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE leaveday_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE person_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE project_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE sickday_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE travelexpense_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE workday_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE user_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE user_account_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE user_accountkey_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE user_accountoauth_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE user_accountpassword_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE userconfiguration_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+              ALTER SEQUENCE usergroup_seq RESTART WITH (SELECT NEXT VALUE FOR hibernate_sequence);
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              SELECT setval('assignment_seq', COALESCE((SELECT MAX(nextval('hibernate_sequence'))), 1));
+              SELECT setval('client_seq', nextval('hibernate_sequence'));
+              SELECT setval('contract_seq', nextval('hibernate_sequence'));
+              SELECT setval('contractexternal_seq', nextval('hibernate_sequence'));
+              SELECT setval('contractinternal_seq', nextval('hibernate_sequence'));
+              SELECT setval('contractmanagement_seq', nextval('hibernate_sequence'));
+              SELECT setval('contractservice_seq', nextval('hibernate_sequence'));
+              SELECT setval('costexpense_seq', nextval('hibernate_sequence'));
+              SELECT setval('day_seq', nextval('hibernate_sequence'));
+              SELECT setval('event_seq', nextval('hibernate_sequence'));
+              SELECT setval('eventrating_seq', nextval('hibernate_sequence'));
+              SELECT setval('expense_seq', nextval('hibernate_sequence'));
+              SELECT setval('invoice_seq', nextval('hibernate_sequence'));
+              SELECT setval('leaveday_seq', nextval('hibernate_sequence'));
+              SELECT setval('person_seq', nextval('hibernate_sequence'));
+              SELECT setval('project_seq', nextval('hibernate_sequence'));
+              SELECT setval('sickday_seq', nextval('hibernate_sequence'));
+              SELECT setval('travelexpense_seq', nextval('hibernate_sequence'));
+              SELECT setval('workday_seq', nextval('hibernate_sequence'));
+              SELECT setval('user_seq', nextval('hibernate_sequence'));
+              SELECT setval('user_account_seq', nextval('hibernate_sequence'));
+              SELECT setval('user_accountkey_seq', nextval('hibernate_sequence'));
+              SELECT setval('user_accountoauth_seq', nextval('hibernate_sequence'));
+              SELECT setval('user_accountpassword_seq', nextval('hibernate_sequence'));
+              SELECT setval('userconfiguration_seq', nextval('hibernate_sequence'));
+              SELECT setval('usergroup_seq', nextval('hibernate_sequence'));

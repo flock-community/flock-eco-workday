@@ -84,7 +84,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
             SickDayForm(
                 from = from,
                 to = to,
-                days = days,
+                days = days.toMutableList(),
                 hours = hours,
                 personId = person.uuid,
                 description = description,
@@ -124,7 +124,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
             SickDayForm(
                 from = from,
                 to = to,
-                days = days,
+                days = days.toMutableList(),
                 hours = hours,
                 personId = person.uuid,
                 description = description,
@@ -165,7 +165,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
             SickDayForm(
                 from = from,
                 to = to,
-                days = days,
+                days = days.toMutableList(),
                 hours = hours,
                 personId = person.uuid,
                 description = description,
@@ -210,7 +210,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
             SickDayForm(
                 from = from,
                 to = to,
-                days = days,
+                days = days.toMutableList(),
                 hours = hours,
                 personId = person.uuid,
                 description = description,
@@ -249,7 +249,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
             SickDayForm(
                 from = from,
                 to = to,
-                days = days,
+                days = days.toMutableList(),
                 hours = hours,
                 personId = person.uuid,
                 description = description,
@@ -289,7 +289,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
             SickDayForm(
                 from = from,
                 to = to,
-                days = days,
+                days = days.toMutableList(),
                 hours = hours,
                 personId = person.uuid,
                 description = description,

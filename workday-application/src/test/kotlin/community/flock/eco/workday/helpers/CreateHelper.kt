@@ -148,7 +148,7 @@ class CreateHelper(
         to = to,
         personId = person.uuid,
         hours = 40.0,
-        days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
+        days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0),
     ).run {
         sickDayService.create(this)
     }
@@ -164,7 +164,7 @@ class CreateHelper(
         to = to,
         assignmentCode = assignment.code,
         hours = hours ?: ((ChronoUnit.DAYS.between(from, to) + 1) * 8.0),
-        days = days ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 },
+        days = days?.toMutableList() ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 }.toMutableList(),
         sheets = listOf(),
     ).run {
         workDayService.create(this)
@@ -181,7 +181,7 @@ class CreateHelper(
         to = to,
         assignmentCode = assignment.code,
         hours = hours ?: ((ChronoUnit.DAYS.between(from, to) + 1) * 8.0),
-        days = days,
+        days = days?.toMutableList(),
         sheets = listOf(),
     ).run {
         workDayService.create(this)
@@ -197,7 +197,7 @@ class CreateHelper(
         to = to,
         personId = person.uuid,
         hours = 40.0,
-        days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
+        days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0),
     ).run {
         leaveDayService.create(this)
     }
@@ -213,7 +213,7 @@ class CreateHelper(
         from = from,
         to = to,
         hours = hours ?: ((ChronoUnit.DAYS.between(from, to) + 1) * 8.0),
-        days = days ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 },
+        days = days?.toMutableList() ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 }.toMutableList(),
         personIds = persons,
         costs = 538.38,
         type = EventType.GENERAL_EVENT,

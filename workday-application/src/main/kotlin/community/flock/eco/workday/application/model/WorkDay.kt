@@ -11,6 +11,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
 import jakarta.persistence.ManyToOne
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -26,12 +27,12 @@ class WorkDay(
     from: LocalDate = LocalDate.now(),
     to: LocalDate = LocalDate.now(),
     hours: Double,
-    days: List<Double>? = null,
+    days: MutableList<Double>? = null,
     @ManyToOne
     val assignment: Assignment,
     @Enumerated(EnumType.STRING)
     override val status: Status,
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     val sheets: List<WorkDaySheet>,
 ) : Day(id, code, from, to, hours, days), Approve {
     fun totalRevenueInPeriod(period: Period): BigDecimal =

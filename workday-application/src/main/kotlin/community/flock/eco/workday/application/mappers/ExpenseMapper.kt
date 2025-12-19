@@ -51,7 +51,7 @@ class CostExpenseMapper(
                     name = it.name,
                     file = UUID.fromString(it.file.value),
                 )
-            },
+            }.toMutableList(),
         status = input.status.consume(),
         person =
             personService

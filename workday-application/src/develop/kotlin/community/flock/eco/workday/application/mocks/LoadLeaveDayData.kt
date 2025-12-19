@@ -36,7 +36,7 @@ class LoadLeaveDayData(
                 description = "Test holiday ${it.firstname}",
                 from = now.plusYears(i.toLong()).plusDays(random),
                 to = now.plusYears(i.toLong()).plusDays(random + 5),
-                days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
+                days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
                 hours = 48.0,
                 personId = it.uuid,
             ).create()
@@ -53,7 +53,7 @@ class LoadLeaveDayData(
                 description = "Plus day ${it.firstname}",
                 from = date,
                 to = date,
-                days = listOf(8.0),
+                days = mutableListOf(8.0),
                 hours = 8.0,
                 personId = it.uuid,
             ).create()
@@ -77,7 +77,7 @@ class LoadLeaveDayData(
                     description = "Paid parental leave for ${it.firstname} for month ${startOfMonth.month}",
                     from = startOfMonth,
                     to = endOfMonth,
-                    days = days,
+                    days = days.toMutableList(),
                     hours = days.reduce { acc, curr -> acc + curr },
                     personId = it.uuid,
                 ).create()
@@ -102,7 +102,7 @@ class LoadLeaveDayData(
                     description = "Unpaid parental leave for ${it.firstname} for month ${startOfMonth.month}",
                     from = startOfMonth,
                     to = endOfMonth,
-                    days = days,
+                    days = days.toMutableList(),
                     hours = days.reduce { acc, curr -> acc + curr },
                     personId = it.uuid,
                 ).create()

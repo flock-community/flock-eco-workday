@@ -18,6 +18,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Service
+@Transactional
 class EventService(
     private val eventRepository: EventRepository,
     private val eventRatingRepository: EventRatingRepository,

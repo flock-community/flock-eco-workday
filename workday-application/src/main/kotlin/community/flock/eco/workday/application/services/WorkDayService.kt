@@ -20,6 +20,7 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
+@Transactional
 @Service
 class WorkDayService(
     private val workDayRepository: WorkDayRepository,

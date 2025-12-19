@@ -35,7 +35,7 @@ class LoadSickdaysData(
             SickDayForm(
                 from = now.plusYears(plusYears).plusDays(random),
                 to = now.plusYears(plusYears).plusDays(random + 5),
-                days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
+                days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
                 hours = 48.0,
                 personId = it.uuid,
             ).create()
@@ -43,7 +43,7 @@ class LoadSickdaysData(
             SickDayForm(
                 from = now.plusYears(plusYears).plusDays(random + 100),
                 to = now.plusYears(plusYears).plusDays(random + 105),
-                days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
+                days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
                 hours = 48.0,
                 personId = it.uuid,
             ).run {

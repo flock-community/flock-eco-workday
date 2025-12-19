@@ -4,6 +4,7 @@ import community.flock.eco.workday.core.events.EventEntityListeners
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
+import jakarta.persistence.FetchType
 import java.time.LocalDate
 import java.util.UUID
 
@@ -16,6 +17,6 @@ class CostExpense(
     person: Person,
     status: Status,
     val amount: Double,
-    @ElementCollection
-    val files: List<Document> = listOf(),
+    @ElementCollection(fetch = FetchType.EAGER)
+    val files: MutableList<Document> = mutableListOf(),
 ) : Expense(id, date, description, person, status, ExpenseType.COST)

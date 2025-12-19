@@ -1,5 +1,7 @@
 package community.flock.eco.workday.application.mocks
 
+import community.flock.eco.workday.application.authorities.AssignmentAuthority
+import community.flock.eco.workday.application.authorities.EventAuthority
 import community.flock.eco.workday.application.authorities.ExpenseAuthority
 import community.flock.eco.workday.application.authorities.LeaveDayAuthority
 import community.flock.eco.workday.application.authorities.SickdayAuthority
@@ -35,6 +37,8 @@ class LoadUserData(
             WorkDayAuthority.TOTAL_HOURS,
             ExpenseAuthority.READ,
             ExpenseAuthority.WRITE,
+            AssignmentAuthority.READ,
+            EventAuthority.SUBSCRIBE,
         )
 
     private val allAuthorities = userAuthorityService.allAuthorities()
@@ -46,18 +50,17 @@ class LoadUserData(
 
     private final fun findOrCreate(user: MockUser): User {
         val email = "${user.firstName.lowercase()}@sesam.straat"
-        val passwordByUserEmail = userAccountService.findUserAccountPasswordByUserEmail(email)
-        return if (passwordByUserEmail != null) {
-            passwordByUserEmail.user.also { data.add(it) }
-        } else {
-            UserAccountPasswordForm(
+        return userAccountService.findUserAccountPasswordByUserEmail(email)
+            ?.let {
+                data.add(it.user)
+                it.user
+            }
+            ?: UserAccountPasswordForm(
                 name = user.firstName,
                 email = email,
                 password = user.firstName.lowercase(),
                 authorities = user.authorities.map { it.toName() }.toSet(),
-            )
-                .save()
-        }
+            ).save()
     }
 
     val MockUser.authorities: List<Authority>

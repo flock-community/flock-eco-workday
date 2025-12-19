@@ -20,7 +20,7 @@ data class LeaveDayForm(
     @JsonSerialize(using = LocalDateSerializer::class)
     override val to: LocalDate,
     override val hours: Double,
-    override val days: List<Double>?,
+    override val days: MutableList<Double>?,
     override val status: Status = Status.REQUESTED,
     val type: LeaveDayType = LeaveDayType.HOLIDAY,
     val personId: UUID,

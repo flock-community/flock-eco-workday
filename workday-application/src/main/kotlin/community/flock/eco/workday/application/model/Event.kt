@@ -8,6 +8,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
 import jakarta.persistence.ManyToMany
 import org.hibernate.annotations.BatchSize
 import java.time.LocalDate
@@ -25,9 +26,9 @@ class Event(
     val costs: Double,
     @Enumerated(EnumType.STRING)
     val type: EventType,
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     override val days: MutableList<Double>? = null,
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @BatchSize(size = 50)
     val persons: MutableList<Person>,
 ) : Dayly, AbstractCodeEntity(id, code)

@@ -25,7 +25,7 @@ class DayTest {
     @Test
     fun `hours per day when period differs from day range`() {
         val days = listOf(1.0, 2.0, 3.0, 0.0, 0.0)
-        val day = object : Day(id = 0L, hours = 6.0, from = startDate, to = endDate, days = days) {}
+        val day = object : Day(id = 0L, hours = 6.0, from = startDate, to = endDate, days = days.toMutableList()) {}
         val dates = DateUtils.dateRange(startDate.minusDays(2), endDate.plusDays(2))
         val dayToHours = day.hoursPerDayInPeriod(startDate.minusDays(2), endDate.plusDays(2))
         val resultHours = dayToHours.map { it.value }.map { it.toDouble() }
@@ -50,7 +50,14 @@ class DayTest {
     @Test
     fun `hours per day when day ranges between different months`() {
         val days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0, 8.0, 8.0)
-        val day = object : Day(id = 0L, hours = 56.0, from = startDate.minusDays(2), to = endDate.plusDays(2), days = days) {}
+        val day =
+            object : Day(
+                id = 0L,
+                hours = 56.0,
+                from = startDate.minusDays(2),
+                to = endDate.plusDays(2),
+                days = days.toMutableList(),
+            ) {}
         val dates = DateUtils.dateRange(startDate, endDate.plusDays(2))
         val dayToHours = day.hoursPerDayInPeriod(startDate, endDate.plusDays(2))
         val resultHours = dayToHours.map { it.value }.map { it.toDouble() }

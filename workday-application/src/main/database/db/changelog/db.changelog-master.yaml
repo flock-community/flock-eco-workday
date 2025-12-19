@@ -77,6 +77,6 @@ databaseChangeLog:
       file: db.changelog-025-contract-internal-hackdays.yaml
       relativeToChangelogFile: true
   - include:
-      file: db.changelog-027-hibernate6-sequences.yaml
+      file: db.changelog-026-hibernate6-sequences.yaml
       relativeToChangelogFile: true
 

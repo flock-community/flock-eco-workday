@@ -33,7 +33,7 @@ class LeaveDayMailServiceTest {
                 from = LocalDate.of(2028, 9, 12),
                 to = LocalDate.of(2028, 10, 2),
                 hours = 66.6,
-                days = emptyList(),
+                days = mutableListOf(),
                 type = LeaveDayType.UNPAID_PARENTAL_LEAVE,
             )
 

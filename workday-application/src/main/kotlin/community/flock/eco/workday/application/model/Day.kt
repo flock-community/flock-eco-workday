@@ -9,6 +9,7 @@ import community.flock.eco.workday.core.model.AbstractCodeEntity
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
+import jakarta.persistence.FetchType
 import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType
 import java.math.BigDecimal
@@ -27,8 +28,8 @@ abstract class Day(
     override val from: LocalDate = LocalDate.now(),
     override val to: LocalDate = LocalDate.now(),
     override val hours: Double,
-    @ElementCollection
-    override val days: List<Double>? = null,
+    @ElementCollection(fetch = FetchType.EAGER)
+    override val days: MutableList<Double>? = null,
 ) : Dayly, AbstractCodeEntity(id, code) {
     private fun getHoursPerDay(): Map<LocalDate, BigDecimal> =
         when (days.isNullOrEmpty()) {

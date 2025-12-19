@@ -31,7 +31,7 @@ class LeaveDay(
     from: LocalDate = LocalDate.now(),
     to: LocalDate = LocalDate.now(),
     hours: Double,
-    days: List<Double>? = null,
+    days: MutableList<Double>? = null,
     val description: String,
     @Enumerated(EnumType.STRING)
     val type: LeaveDayType,

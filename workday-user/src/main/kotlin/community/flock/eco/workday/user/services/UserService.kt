@@ -90,13 +90,18 @@ class UserService(
         User(
             name = this.name,
             email = this.email,
-            authorities = this.authorities,
+            authorities = this.authorities.toMutableSet(),
         )
 
     private fun User.merge(form: UserForm) =
-        this.copy(
+        User(
+            id = id,
+            code = code,
+            enabled = enabled,
+            accounts = accounts,
+            created = created,
             name = form.name,
             email = form.email,
-            authorities = form.authorities,
+            authorities = form.authorities.toMutableSet(),
         )
 }

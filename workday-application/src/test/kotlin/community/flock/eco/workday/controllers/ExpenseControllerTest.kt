@@ -434,7 +434,7 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                 date = date,
                 person = person,
                 amount = 1.23,
-                files = listOf(Document(filename, fileId)),
+                files = mutableListOf(Document(filename, fileId)),
             )
         }
 

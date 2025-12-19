@@ -28,8 +28,8 @@ fun aPerson() =
                 name = "Henk Henkszoon",
                 email = "henk@hotmail.com",
                 enabled = true,
-                authorities = setOf(),
-                accounts = setOf(),
+                authorities = mutableSetOf(),
+                accounts = mutableSetOf(),
                 created = LocalDateTime.of(2020, 4, 5, 14, 30),
             ),
     )

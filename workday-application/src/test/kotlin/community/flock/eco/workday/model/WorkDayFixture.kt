@@ -12,7 +12,7 @@ fun aWorkDay(assignment: Assignment = anAssignment()) =
         from = LocalDate.of(2024, 1, 1),
         to = LocalDate.of(2024, 1, 31),
         hours = 160.0,
-        days = listOf(),
+        days = mutableListOf(),
         assignment = assignment,
         status = Status.REQUESTED,
         sheets =

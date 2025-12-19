@@ -17,6 +17,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Service
+@Transactional
 class LeaveDayService(
     private val leaveDayRepository: LeaveDayRepository,
     private val personService: PersonService,

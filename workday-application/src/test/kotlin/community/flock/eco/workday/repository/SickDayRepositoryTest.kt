@@ -40,7 +40,7 @@ class SickDayRepositoryTest(
                 person = person,
                 from = from,
                 to = LocalDate.of(1970, 1, 6),
-                days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
+                days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0),
                 status = Status.REQUESTED,
             )
 
@@ -83,7 +83,7 @@ class SickDayRepositoryTest(
                     person = person,
                     from = from,
                     to = LocalDate.of(1970, 1, i),
-                    days = listOf(8.0, 8.0, 8.0, 8.0, 8.0),
+                    days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0),
                     status = Status.REQUESTED,
                 ),
             )

@@ -30,7 +30,7 @@ class CostExpenseMailServiceTest {
                 person = aPerson(),
                 status = Status.REQUESTED,
                 amount = 43.21,
-                files = emptyList(),
+                files = mutableListOf(),
             )
 
         val expectedEmailMessage =

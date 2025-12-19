@@ -27,9 +27,9 @@ abstract class Contract(
     override val from: LocalDate,
     override val to: LocalDate?,
     @ManyToOne(fetch = FetchType.EAGER)
-    val person: Person?,
+    open val person: Person?,
     @Enumerated(EnumType.STRING)
-    val type: ContractType,
+    open val type: ContractType,
 ) : Period, AbstractCodeEntity(id, code) {
     abstract fun totalCostsInPeriod(
         from: LocalDate,
