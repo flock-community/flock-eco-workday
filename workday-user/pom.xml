@@ -12,12 +12,8 @@
     <name>Flock Eco Workday - User</name>
     <description>User related domain object and shared components vendored from flock-eco-feature-user</description>
     <packaging>jar</packaging>
-    <properties>
-        <spring.boot.version>3.4.13</spring.boot.version>
-    </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>flock.community.eco.workday</groupId>
             <artifactId>workday-core</artifactId>
