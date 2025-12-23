@@ -14,7 +14,7 @@ class LoadClientData(
     val data: MutableSet<Client> = mutableSetOf()
 
     init {
-        loadData.loadWhenEmpty {
+        loadData.load(true) {
             create("Client A")
             create("Client B")
             create("Client C")

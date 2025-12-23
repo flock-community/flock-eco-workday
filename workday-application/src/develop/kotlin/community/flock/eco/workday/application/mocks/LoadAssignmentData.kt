@@ -20,7 +20,7 @@ class LoadAssignmentData(
     val data: MutableSet<Assignment> = mutableSetOf()
 
     init {
-        loadData.loadWhenEmpty {
+        loadData.load {
             create(
                 "tommy@sesam.straat",
                 "client_a",

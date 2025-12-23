@@ -24,7 +24,7 @@ class LoadWorkDayData(
      * to create and persist the Workday.
      */
     private final fun WorkDayForm.create() {
-        loadData.loadWhenEmpty {
+        loadData.load {
             workDayService.create(this)
         }
     }
@@ -43,7 +43,7 @@ class LoadWorkDayData(
                             from = now.withMonth(it).withDayOfMonth(1),
                             to = now.withMonth(it).withDayOfMonth(1).plusDays(9),
                             hours = 80.0,
-                            days = listOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
+                            days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
                             assignmentCode = assignment.code,
                             sheets =
                                 listOf(

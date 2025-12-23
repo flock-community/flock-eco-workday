@@ -7,12 +7,12 @@ import community.flock.eco.workday.application.model.Status
 import community.flock.eco.workday.application.repository.SickdayRepository
 import community.flock.eco.workday.application.services.email.SickDayMailService
 import community.flock.eco.workday.core.utils.toNullable
+import jakarta.persistence.EntityManager
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.util.UUID
-import javax.persistence.EntityManager
 
 @Service
 class SickDayService(

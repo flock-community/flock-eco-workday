@@ -20,7 +20,7 @@ class WorkDayUtilsTest {
             from = startDate,
             to = endDate,
             assignment = mockk<Assignment>(),
-            days = days,
+            days = days.toMutableList(),
             code = "test",
             sheets = listOf(),
             status = Status.REQUESTED,

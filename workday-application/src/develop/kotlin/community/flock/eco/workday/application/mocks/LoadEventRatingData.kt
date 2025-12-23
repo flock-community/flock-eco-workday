@@ -22,7 +22,7 @@ class LoadEventRatingData(
 
     init {
 
-        loadData.loadWhenEmpty {
+        loadData.load {
 
             val combined: List<Pair<Person, Event>> =
                 loadPersonData.data

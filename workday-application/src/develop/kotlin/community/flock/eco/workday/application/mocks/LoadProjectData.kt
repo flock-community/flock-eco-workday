@@ -19,7 +19,7 @@ class LoadProjectData(
         }
 
     init {
-        loadData.loadWhenEmpty {
+        loadData.load {
             Project(name = "Empty project").save()
         }
     }

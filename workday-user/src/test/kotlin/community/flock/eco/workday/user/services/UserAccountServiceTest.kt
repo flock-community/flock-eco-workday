@@ -11,6 +11,7 @@ import community.flock.eco.workday.user.forms.UserForm
 import community.flock.eco.workday.user.forms.UserKeyForm
 import community.flock.eco.workday.user.model.UserAccountOauthProvider
 import community.flock.eco.workday.user.repositories.UserAccountPasswordRepository
+import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +19,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.crypto.password.PasswordEncoder
-import javax.transaction.Transactional
 
 @SpringBootTest(classes = [UserConfiguration::class])
 @AutoConfigureTestDatabase

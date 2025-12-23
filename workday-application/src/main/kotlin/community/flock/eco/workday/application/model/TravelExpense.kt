@@ -1,19 +1,19 @@
 package community.flock.eco.workday.application.model
 
 import community.flock.eco.workday.core.events.EventEntityListeners
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
 import java.time.LocalDate
 import java.util.UUID
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
 class TravelExpense(
-    override val id: UUID = UUID.randomUUID(),
-    override val date: LocalDate = LocalDate.now(),
-    override val description: String? = null,
-    override val person: Person,
-    override val status: Status = Status.REQUESTED,
+    id: UUID = UUID.randomUUID(),
+    date: LocalDate,
+    description: String?,
+    person: Person,
+    status: Status,
     val distance: Double,
     val allowance: Double,
 ) : Expense(id, date, description, person, status, ExpenseType.TRAVEL)

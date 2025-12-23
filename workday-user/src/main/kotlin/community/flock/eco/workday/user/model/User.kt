@@ -3,19 +3,19 @@ package community.flock.eco.workday.user.model
 import com.fasterxml.jackson.annotation.JsonBackReference
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.core.model.AbstractIdEntity
+import jakarta.persistence.Column
+import jakarta.persistence.ElementCollection
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.FetchType
+import jakarta.persistence.OneToMany
 import java.time.LocalDateTime
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.ElementCollection
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.FetchType
-import javax.persistence.OneToMany
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-data class User(
-    override val id: Long = 0,
+class User(
+    id: Long = 0,
     @Column(unique = true)
     val code: String = UUID.randomUUID().toString(),
     val name: String? = null,
@@ -23,10 +23,10 @@ data class User(
     val email: String,
     val enabled: Boolean = true,
     @ElementCollection(fetch = FetchType.EAGER)
-    val authorities: Set<String> = setOf(),
+    val authorities: MutableSet<String> = mutableSetOf(),
     @JsonBackReference
-    @OneToMany(mappedBy = "user")
-    val accounts: Set<UserAccount> = setOf(),
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    val accounts: MutableSet<UserAccount> = mutableSetOf(),
     val created: LocalDateTime = LocalDateTime.now(),
 ) : AbstractIdEntity(id) {
     override fun equals(other: Any?) = super.equals(other)

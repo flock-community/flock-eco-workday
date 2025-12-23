@@ -1,6 +1,6 @@
 package community.flock.eco.workday.core.model
 
-import javax.mail.internet.InternetAddress
+import jakarta.mail.internet.InternetAddress
 
 data class MailMessage(
     val from: InternetAddress,

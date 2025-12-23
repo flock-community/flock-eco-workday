@@ -11,6 +11,7 @@ import community.flock.eco.workday.application.model.WorkDaySheet
 import community.flock.eco.workday.application.repository.WorkDayRepository
 import community.flock.eco.workday.application.services.email.WorkdayEmailService
 import community.flock.eco.workday.core.utils.toNullable
+import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -18,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
-import javax.persistence.EntityManager
 
+@Transactional
 @Service
 class WorkDayService(
     private val workDayRepository: WorkDayRepository,

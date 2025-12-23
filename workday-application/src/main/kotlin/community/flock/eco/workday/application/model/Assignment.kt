@@ -5,11 +5,11 @@ import community.flock.eco.workday.application.interfaces.Hourly
 import community.flock.eco.workday.application.interfaces.Period
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.core.model.AbstractCodeEntity
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.ManyToOne
 import java.time.LocalDate
 import java.util.UUID
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.ManyToOne
 
 @Entity
 @EntityListeners(EventEntityListeners::class)

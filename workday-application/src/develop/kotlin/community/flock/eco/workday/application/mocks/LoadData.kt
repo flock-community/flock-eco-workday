@@ -9,12 +9,15 @@ import org.springframework.stereotype.Component
 class LoadData(
     private val userRepository: UserRepository,
 ) {
-    fun loadWhenEmpty(block: () -> Unit) {
+    fun load(
+        onlyWhenEmpty: Boolean = true,
+        block: () -> Unit,
+    ) {
         if (load == null) {
             load = userRepository.count() == 0L
         }
 
-        if (load == true) {
+        if (load == true || !onlyWhenEmpty) {
             block()
         }
     }

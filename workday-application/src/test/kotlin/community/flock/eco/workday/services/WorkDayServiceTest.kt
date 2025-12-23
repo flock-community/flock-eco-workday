@@ -13,11 +13,11 @@ import io.mockk.Called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import jakarta.persistence.EntityManager
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.util.Optional
-import javax.persistence.EntityManager
 
 private const val BUCKET_NAME = "some-bucket-name"
 

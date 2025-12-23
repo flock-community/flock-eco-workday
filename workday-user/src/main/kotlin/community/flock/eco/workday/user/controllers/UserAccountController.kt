@@ -30,9 +30,9 @@ class UserAccountController(
     fun findAllAccounts(
         @RequestParam(defaultValue = "", required = false) search: String,
         page: Pageable,
-    ): ResponseEntity<Iterable<UserAccount>> =
+    ): ResponseEntity<List<UserAccount>> =
         userAccountRepository
-            .findAll()
+            .findAll(page)
             .toResponse()
 
     @PutMapping("/reset-password")

@@ -15,7 +15,7 @@ class NumericUtilsTest {
     @Test
     fun `calculate revenue `() {
         val days = listOf(1.0, 2.0, 3.5, 0.0, 0.0)
-        val day = object : Day(id = 0L, hours = 6.5, from = startDate, to = endDate, days = days) {}
+        val day = object : Day(id = 0L, hours = 6.5, from = startDate, to = endDate, days = days.toMutableList()) {}
         val revenue = day.hoursPerDayInPeriod(startDate, endDate).calculateRevenue(421.12)
         assertEquals(2737.28F, revenue.toFloat())
     }

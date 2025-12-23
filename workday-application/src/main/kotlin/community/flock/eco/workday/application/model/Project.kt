@@ -2,19 +2,14 @@ package community.flock.eco.workday.application.model
 
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.core.model.AbstractCodeEntity
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
 import java.util.UUID
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
 
 @Entity
 @EntityListeners(EventEntityListeners::class)
-data class Project(
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    override val id: Long = 0,
-    override val code: String = UUID.randomUUID().toString(),
+class Project(
+    id: Long = 0,
+    code: String = UUID.randomUUID().toString(),
     val name: String,
 ) : AbstractCodeEntity(id, code)

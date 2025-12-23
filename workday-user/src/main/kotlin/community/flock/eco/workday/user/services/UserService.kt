@@ -8,10 +8,10 @@ import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.repositories.UserAccountRepository
 import community.flock.eco.workday.user.repositories.UserGroupRepository
 import community.flock.eco.workday.user.repositories.UserRepository
+import jakarta.transaction.Transactional
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import javax.transaction.Transactional
 
 @Service
 class UserService(
@@ -90,13 +90,18 @@ class UserService(
         User(
             name = this.name,
             email = this.email,
-            authorities = this.authorities,
+            authorities = this.authorities.toMutableSet(),
         )
 
     private fun User.merge(form: UserForm) =
-        this.copy(
+        User(
+            id = id,
+            code = code,
+            enabled = enabled,
+            accounts = accounts,
+            created = created,
             name = form.name,
             email = form.email,
-            authorities = form.authorities,
+            authorities = form.authorities.toMutableSet(),
         )
 }

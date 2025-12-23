@@ -3,6 +3,7 @@ package community.flock.eco.workday.application.mocks
 import community.flock.eco.workday.application.model.CostExpense
 import community.flock.eco.workday.application.model.Expense
 import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.model.Status
 import community.flock.eco.workday.application.model.TravelExpense
 import community.flock.eco.workday.application.services.CostExpenseService
 import community.flock.eco.workday.application.services.TravelExpenseService
@@ -22,7 +23,7 @@ class LoadExpensesData(
     val data: MutableList<Expense> = mutableListOf()
 
     init {
-        loadData.loadWhenEmpty {
+        loadData.load {
             // To get some variety in the list sizes of expenses, the number of
             // expense sets (one of each type) is based on the list index
             loadPersonData.data.forEachIndexed { index, person ->
@@ -35,13 +36,14 @@ class LoadExpensesData(
         person: Person,
         sets: Int,
     ) {
-        for (i in 1..sets) {
+        for (i in 1..sets + 1) {
             TravelExpense(
                 date = now.plusDays(i.toLong()),
                 description = "Travel expense description $i",
                 person = person,
                 distance = 100.0,
                 allowance = 0.19,
+                status = Status.REQUESTED,
             )
                 .save()
                 .apply { data.add(this) }
@@ -51,6 +53,7 @@ class LoadExpensesData(
                 description = "Cost expense description $i",
                 person = person,
                 amount = 50.0,
+                status = Status.REQUESTED,
             )
                 .save()
                 .apply { data.add(this) }

@@ -12,7 +12,6 @@ import community.flock.eco.workday.user.forms.UserAccountPasswordForm
 import community.flock.eco.workday.user.services.UserAccountService
 import community.flock.eco.workday.user.services.UserSecurityService
 import community.flock.eco.workday.user.services.UserService
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -86,17 +85,12 @@ class EventControllerTest() : WorkdayIntegrationTest() {
         from = from,
         to = to,
         hours = 16.0,
-        days = listOf(8.0, 8.0),
+        days = mutableListOf(8.0, 8.0),
         costs = 200.0,
         personIds = ids,
         type = type,
     )
         .run { eventService.create(this) }
-
-    @AfterEach
-    fun afterEach() {
-        eventRepository.deleteAll()
-    }
 
     @Test
     fun `should get hack-day events`() {

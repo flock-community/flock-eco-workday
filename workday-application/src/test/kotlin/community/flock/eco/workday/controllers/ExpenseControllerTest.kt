@@ -33,13 +33,19 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 import java.util.UUID
 
-class ExpenseControllerTest(
-    @Autowired private val mvc: MockMvc,
-    @Autowired private val mapper: ObjectMapper,
-    @Autowired private val createHelper: CreateHelper,
-    @Autowired private val costExpenseService: CostExpenseService,
-    @Autowired private val travExpenseService: TravelExpenseService,
-) : WorkdayIntegrationTest() {
+class ExpenseControllerTest() : WorkdayIntegrationTest() {
+    @Autowired
+    private lateinit var mvc: MockMvc
+
+    @Autowired
+    private lateinit var mapper: ObjectMapper
+
+    @Autowired
+    private lateinit var createHelper: CreateHelper
+
+    @Autowired
+    private lateinit var costExpenseService: CostExpenseService
+
     @Autowired
     private lateinit var travelExpenseService: TravelExpenseService
     private val baseUrl: String = "/api/expenses"
@@ -53,7 +59,7 @@ class ExpenseControllerTest(
         fun `should get a travel expense via GET-method`() {
             val user = createHelper.createUser(userAuthorities)
             val travelExpense = aTravelExpense(user)
-            val created = travExpenseService.create(travelExpense)
+            val created = travelExpenseService.create(travelExpense)
 
             mvc.perform(
                 get("$baseUrl/${created.id}")
@@ -97,16 +103,16 @@ class ExpenseControllerTest(
             )
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("\$.id").exists())
-                .andExpect(jsonPath("\$.personId").value(costExpenseInput.personId.value))
-                .andExpect(jsonPath("\$.description").value(costExpenseInput.description))
-                .andExpect(jsonPath("\$.date").value(costExpenseInput.date))
-                .andExpect(jsonPath("\$.status").value(costExpenseInput.status.toString()))
-                .andExpect(jsonPath("\$.expenseType").value("COST"))
-                .andExpect(jsonPath("\$.costDetails.amount").value(1.23))
-                .andExpect(jsonPath("\$.costDetails.files[0].name").value(costExpenseInput.files.first().name))
-                .andExpect(jsonPath("\$.costDetails.files[0].file").value(costExpenseInput.files.first().file.value))
-                .andExpect(jsonPath("\$.travelDetails").doesNotExist())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.personId").value(costExpenseInput.personId.value))
+                .andExpect(jsonPath("$.description").value(costExpenseInput.description))
+                .andExpect(jsonPath("$.date").value(costExpenseInput.date))
+                .andExpect(jsonPath("$.status").value(costExpenseInput.status.toString()))
+                .andExpect(jsonPath("$.expenseType").value("COST"))
+                .andExpect(jsonPath("$.costDetails.amount").value(1.23))
+                .andExpect(jsonPath("$.costDetails.files[0].name").value(costExpenseInput.files.first().name))
+                .andExpect(jsonPath("$.costDetails.files[0].file").value(costExpenseInput.files.first().file.value))
+                .andExpect(jsonPath("$.travelDetails").doesNotExist())
         }
 
         @ParameterizedTest
@@ -116,7 +122,7 @@ class ExpenseControllerTest(
             val user = createHelper.createUser(authorities)
             val expenseId = UUID.fromString("58674E0F-0B52-4D48-BCE4-BE493C3CBEBE")
 
-            travExpenseService.create(
+            travelExpenseService.create(
                 aTravelExpense(
                     user = user,
                     expenseId = expenseId,
@@ -145,7 +151,7 @@ class ExpenseControllerTest(
             val anotherUser = createHelper.createUser(userAuthorities)
             val expenseId = UUID.fromString("99BC1EDC-B34F-44CA-9846-6683555FD44F")
 
-            travExpenseService.create(
+            travelExpenseService.create(
                 aTravelExpense(
                     user = anotherUser,
                     expenseId = expenseId,
@@ -233,15 +239,15 @@ class ExpenseControllerTest(
         }
 
         private fun ResultActions.andExpectBodyToMatch(expense: TravelExpense): ResultActions =
-            andExpect(jsonPath("\$.id").value(expense.id.toString()))
-                .andExpect(jsonPath("\$.personId").value(expense.person.uuid.toString()))
-                .andExpect(jsonPath("\$.description").value(expense.description))
-                .andExpect(jsonPath("\$.date").value(expense.date.toString()))
-                .andExpect(jsonPath("\$.status").value(expense.status.toString()))
-                .andExpect(jsonPath("\$.expenseType").value("TRAVEL"))
-                .andExpect(jsonPath("\$.costDetails").doesNotExist())
-                .andExpect(jsonPath("\$.travelDetails.distance").value(7.0))
-                .andExpect(jsonPath("\$.travelDetails.allowance").value(0.99))
+            andExpect(jsonPath("$.id").value(expense.id.toString()))
+                .andExpect(jsonPath("$.personId").value(expense.person.uuid.toString()))
+                .andExpect(jsonPath("$.description").value(expense.description))
+                .andExpect(jsonPath("$.date").value(expense.date.toString()))
+                .andExpect(jsonPath("$.status").value(expense.status.toString()))
+                .andExpect(jsonPath("$.expenseType").value("TRAVEL"))
+                .andExpect(jsonPath("$.costDetails").doesNotExist())
+                .andExpect(jsonPath("$.travelDetails.distance").value(7.0))
+                .andExpect(jsonPath("$.travelDetails.allowance").value(0.99))
     }
 
     @Nested
@@ -294,16 +300,16 @@ class ExpenseControllerTest(
             )
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("\$.id").exists())
-                .andExpect(jsonPath("\$.personId").value(costExpenseInput.personId.value))
-                .andExpect(jsonPath("\$.description").value(costExpenseInput.description))
-                .andExpect(jsonPath("\$.date").value(costExpenseInput.date))
-                .andExpect(jsonPath("\$.status").value(costExpenseInput.status.toString()))
-                .andExpect(jsonPath("\$.expenseType").value("COST"))
-                .andExpect(jsonPath("\$.costDetails.amount").value(1.23))
-                .andExpect(jsonPath("\$.costDetails.files[0].name").value(costExpenseInput.files.first().name))
-                .andExpect(jsonPath("\$.costDetails.files[0].file").value(costExpenseInput.files.first().file.value))
-                .andExpect(jsonPath("\$.travelDetails").doesNotExist())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.personId").value(costExpenseInput.personId.value))
+                .andExpect(jsonPath("$.description").value(costExpenseInput.description))
+                .andExpect(jsonPath("$.date").value(costExpenseInput.date))
+                .andExpect(jsonPath("$.status").value(costExpenseInput.status.toString()))
+                .andExpect(jsonPath("$.expenseType").value("COST"))
+                .andExpect(jsonPath("$.costDetails.amount").value(1.23))
+                .andExpect(jsonPath("$.costDetails.files[0].name").value(costExpenseInput.files.first().name))
+                .andExpect(jsonPath("$.costDetails.files[0].file").value(costExpenseInput.files.first().file.value))
+                .andExpect(jsonPath("$.travelDetails").doesNotExist())
         }
 
         @ParameterizedTest
@@ -428,20 +434,20 @@ class ExpenseControllerTest(
                 date = date,
                 person = person,
                 amount = 1.23,
-                files = listOf(Document(filename, fileId)),
+                files = mutableListOf(Document(filename, fileId)),
             )
         }
 
         private fun ResultActions.andExpectBodyToMatch(costExpense: CostExpense): ResultActions =
-            andExpect(jsonPath("\$.id").value(costExpense.id.toString()))
-                .andExpect(jsonPath("\$.personId").value(costExpense.person.uuid.toString()))
-                .andExpect(jsonPath("\$.description").value(costExpense.description))
-                .andExpect(jsonPath("\$.date").value(costExpense.date.toString()))
-                .andExpect(jsonPath("\$.status").value(costExpense.status.toString()))
-                .andExpect(jsonPath("\$.expenseType").value("COST"))
-                .andExpect(jsonPath("\$.costDetails.amount").value(1.23))
-                .andExpect(jsonPath("\$.costDetails.files[0].name").value(costExpense.files.first().name))
-                .andExpect(jsonPath("\$.costDetails.files[0].file").value(costExpense.files.first().file.toString()))
-                .andExpect(jsonPath("\$.travelDetails").doesNotExist())
+            andExpect(jsonPath("$.id").value(costExpense.id.toString()))
+                .andExpect(jsonPath("$.personId").value(costExpense.person.uuid.toString()))
+                .andExpect(jsonPath("$.description").value(costExpense.description))
+                .andExpect(jsonPath("$.date").value(costExpense.date.toString()))
+                .andExpect(jsonPath("$.status").value(costExpense.status.toString()))
+                .andExpect(jsonPath("$.expenseType").value("COST"))
+                .andExpect(jsonPath("$.costDetails.amount").value(1.23))
+                .andExpect(jsonPath("$.costDetails.files[0].name").value(costExpense.files.first().name))
+                .andExpect(jsonPath("$.costDetails.files[0].file").value(costExpense.files.first().file.toString()))
+                .andExpect(jsonPath("$.travelDetails").doesNotExist())
     }
 }

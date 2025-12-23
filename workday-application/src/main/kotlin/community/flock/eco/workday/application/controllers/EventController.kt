@@ -49,11 +49,18 @@ class EventController(
         .findAll(pageable)
         .map {
             if (!it.isAuthenticated(authentication)) {
-                it.copy(
+                Event(
                     description = "N/A - ${it.description}",
                     costs = 0.00,
                     days = null,
-                    persons = listOf(),
+                    persons = mutableListOf(),
+                    // keep fields the same from below
+                    id = it.id,
+                    code = it.code,
+                    from = it.from,
+                    to = it.to,
+                    hours = it.hours,
+                    type = it.type,
                 )
             } else {
                 it
@@ -65,7 +72,6 @@ class EventController(
     @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
     fun getHackDays(
         @RequestParam year: Int,
-        principal: Principal,
     ): ResponseEntity<List<EventProjection>> =
         eventService
             .findAllHackDaysOf(year)

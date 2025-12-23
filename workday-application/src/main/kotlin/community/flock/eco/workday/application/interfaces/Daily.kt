@@ -8,7 +8,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 
-interface Dayly : Hours, Period {
+interface Daily : Hours, Period {
     fun totalHoursInPeriod(yearMonth: YearMonth): BigDecimal =
         this
             .totalHoursInPeriod(yearMonth.toPeriod())
@@ -39,7 +39,7 @@ interface Dayly : Hours, Period {
             .toMap()
 }
 
-fun <T : Dayly> T.validate(): T =
+fun <T : Daily> T.validate(): T =
     apply {
         if (this.hours < 0) {
             error("Hours cannot have negative value")

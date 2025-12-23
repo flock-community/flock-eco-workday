@@ -9,15 +9,16 @@ import community.flock.eco.workday.application.repository.EventProjection
 import community.flock.eco.workday.application.repository.EventRatingRepository
 import community.flock.eco.workday.application.repository.EventRepository
 import community.flock.eco.workday.core.utils.toNullable
+import jakarta.persistence.EntityManager
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.util.UUID
-import javax.persistence.EntityManager
 
 @Service
+@Transactional
 class EventService(
     private val eventRepository: EventRepository,
     private val eventRatingRepository: EventRatingRepository,
@@ -104,7 +105,18 @@ class EventService(
     ): Event {
         return eventRepository.findByCode(eventCode).toNullable()
             ?.run {
-                copy(persons = persons.filter { it.uuid != person.uuid }.plus(person))
+                Event(
+                    description = description,
+                    id = id,
+                    code = code,
+                    from = from,
+                    to = to,
+                    hours = hours,
+                    costs = costs,
+                    type = type,
+                    days = days,
+                    persons = persons.filter { it.uuid != person.uuid }.plus(person).toMutableList(),
+                )
                     .run { eventRepository.save(this) }
             } ?: error("Cannot subscribe to Event: $eventCode")
     }
@@ -115,7 +127,18 @@ class EventService(
     ): Event {
         return eventRepository.findByCode(eventCode).toNullable()
             ?.run {
-                copy(persons = persons.filter { it.uuid != person.uuid })
+                Event(
+                    description = description,
+                    id = id,
+                    code = code,
+                    from = from,
+                    to = to,
+                    hours = hours,
+                    costs = costs,
+                    type = type,
+                    days = days,
+                    persons = persons.filter { it.uuid != person.uuid }.toMutableList(),
+                )
                     .run { eventRepository.save(this) }
             } ?: error("Cannot unsubscribe from Event: $eventCode")
     }
@@ -131,19 +154,19 @@ class EventService(
     private fun EventForm.consume(it: Event? = null): Event {
         val persons =
             personService
-                .findByPersonCodeIdIn(this.personIds)
+                .findByPersonCodeIdIn(personIds)
 
         return Event(
             id = it?.id ?: 0L,
             code = it?.code ?: UUID.randomUUID().toString(),
-            description = this.description,
-            from = this.from,
-            to = this.to,
-            persons = persons.toList(),
-            hours = this.hours,
-            days = this.days,
-            costs = this.costs,
-            type = this.type,
+            description = description,
+            from = from,
+            to = to,
+            persons = persons.toMutableList(),
+            hours = hours,
+            days = days.toMutableList(),
+            costs = costs,
+            type = type,
         )
     }
 }

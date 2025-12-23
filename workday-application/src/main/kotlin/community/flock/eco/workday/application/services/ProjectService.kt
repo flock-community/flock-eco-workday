@@ -3,10 +3,10 @@ package community.flock.eco.workday.application.services
 import community.flock.eco.workday.application.forms.ProjectForm
 import community.flock.eco.workday.application.model.Project
 import community.flock.eco.workday.application.repository.ProjectRepository
+import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import javax.transaction.Transactional
 
 @Service
 class ProjectService(private val projectRepository: ProjectRepository) {

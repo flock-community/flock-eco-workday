@@ -2,6 +2,7 @@ package community.flock.eco.workday.user.repositories
 
 import community.flock.eco.workday.user.UserConfiguration
 import community.flock.eco.workday.user.model.UserGroup
+import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.Pageable
-import javax.transaction.Transactional
 
 @SpringBootTest(classes = [UserConfiguration::class])
 @AutoConfigureTestDatabase

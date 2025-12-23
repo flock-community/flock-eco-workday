@@ -3,11 +3,11 @@ package community.flock.eco.workday.services
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.services.AssignmentService
 import community.flock.eco.workday.helpers.DataHelper
+import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import java.time.LocalDate
-import javax.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

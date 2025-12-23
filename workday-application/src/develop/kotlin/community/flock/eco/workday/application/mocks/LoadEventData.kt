@@ -22,7 +22,7 @@ class LoadEventData(
     final val data: MutableList<Event> = mutableListOf()
 
     init {
-        loadData.loadWhenEmpty {
+        loadData.load {
             (
                 publicHolidays(loadPersonData) + communityDays(loadPersonData) + conferences(loadPersonData) +
                     hackDays(
@@ -39,7 +39,7 @@ class LoadEventData(
                 description = "New years eve",
                 from = LocalDate.of(now.year, 1, 1),
                 to = LocalDate.of(now.year, 1, 1),
-                days = listOf(8.0),
+                days = mutableListOf(8.0),
                 hours = 8.0,
                 personIds = loadPersonData.data.map { it.uuid },
                 costs = 1000.0,
@@ -49,7 +49,7 @@ class LoadEventData(
                 description = "King's Day",
                 from = LocalDate.of(now.year, 4, 27),
                 to = LocalDate.of(now.year, 4, 27),
-                days = listOf(8.0),
+                days = mutableListOf(8.0),
                 hours = 8.0,
                 personIds = loadPersonData.data.map { it.uuid },
                 costs = random.nextDouble(10.0, 1000.0),
@@ -59,7 +59,7 @@ class LoadEventData(
                 description = "Halloween",
                 from = LocalDate.of(now.year, 10, 31),
                 to = LocalDate.of(now.year, 10, 31),
-                days = listOf(2.0),
+                days = mutableListOf(2.0),
                 hours = 2.0,
                 personIds = loadPersonData.data.map { it.uuid },
                 costs = random.nextDouble(1.0, 20.0),
@@ -75,7 +75,7 @@ class LoadEventData(
                     description = "Flock. Community Day",
                     from = LocalDate.of(now.year, (i + 1) * 3, 12),
                     to = LocalDate.of(now.year, (i + 1) * 3, 12),
-                    days = listOf(7.0),
+                    days = mutableListOf(7.0),
                     hours = 7.0,
                     personIds = loadPersonData.data.map { it.uuid },
                     costs = 750.0,
@@ -92,7 +92,7 @@ class LoadEventData(
                 description = "Conference",
                 from = LocalDate.of(now.year, 5, 27),
                 to = LocalDate.of(now.year, 5, 29),
-                days = listOf(8.0, 8.0, 8.0),
+                days = mutableListOf(8.0, 8.0, 8.0),
                 hours = 24.0,
                 personIds = loadPersonData.data.take(2).map { it.uuid },
                 costs = 1000.0,
@@ -108,7 +108,7 @@ class LoadEventData(
                     description = "Flock. Hack Day",
                     from = LocalDate.of(now.year, i % 12 + 1, (i % 2 + 1) * 14),
                     to = LocalDate.of(now.year, i % 12 + 1, (i % 2 + 1) * 14),
-                    days = listOf(8.0),
+                    days = mutableListOf(8.0),
                     hours = 8.0,
                     personIds = loadPersonData.data.map { it.uuid },
                     costs = 750.0,

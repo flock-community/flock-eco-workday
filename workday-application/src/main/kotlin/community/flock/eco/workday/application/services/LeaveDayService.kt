@@ -9,14 +9,15 @@ import community.flock.eco.workday.application.repository.LeaveDayRepository
 import community.flock.eco.workday.application.services.email.LeaveDayMailService
 import community.flock.eco.workday.core.utils.toNullable
 import community.flock.eco.workday.user.model.User
+import jakarta.persistence.EntityManager
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.util.UUID
-import javax.persistence.EntityManager
 
 @Service
+@Transactional
 class LeaveDayService(
     private val leaveDayRepository: LeaveDayRepository,
     private val personService: PersonService,

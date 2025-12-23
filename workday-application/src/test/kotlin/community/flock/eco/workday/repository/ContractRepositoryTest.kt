@@ -6,17 +6,20 @@ import community.flock.eco.workday.application.model.ContractInternal
 import community.flock.eco.workday.application.model.ContractType
 import community.flock.eco.workday.application.repository.ContractRepository
 import community.flock.eco.workday.helpers.CreateHelper
+import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
-import javax.transaction.Transactional
 import kotlin.test.assertEquals
 
 @Transactional
-class ContractRepositoryTest(
-    @Autowired private val contractRepository: ContractRepository,
-    @Autowired private val createHelper: CreateHelper,
-) : WorkdayIntegrationTest() {
+class ContractRepositoryTest() : WorkdayIntegrationTest() {
+    @Autowired
+    private lateinit var contractRepository: ContractRepository
+
+    @Autowired
+    private lateinit var createHelper: CreateHelper
+
     @Test
     fun `create and update internal contract`() {
         val person = createHelper.createPerson("Hello", "Bye")
@@ -31,7 +34,17 @@ class ContractRepositoryTest(
             )
         val saved = contractRepository.save(new)
         val update =
-            saved.copy(
+            ContractInternal(
+                id = saved.id,
+                code = saved.code,
+                person = saved.person!!,
+                from = saved.from,
+//            to = saved.to,
+//            monthlySalary = saved.monthlySalary,
+//            hoursPerWeek = saved.hoursPerWeek,
+                holidayHours = saved.holidayHours,
+                hackHours = saved.hackHours,
+                billable = saved.billable,
                 to = LocalDate.of(2020, 6, 1),
                 hoursPerWeek = 80,
                 monthlySalary = 1000.0,
@@ -59,7 +72,15 @@ class ContractRepositoryTest(
             )
         val saved = contractRepository.save(new)
         val update =
-            saved.copy(
+            ContractExternal(
+                id = saved.id,
+                code = saved.code,
+                person = saved.person!!,
+                from = saved.from,
+//                to = saved.to,
+//                hourlyRate = saved.hourlyRate,
+//                hoursPerWeek = saved.hoursPerWeek,
+                billable = saved.billable,
                 to = LocalDate.of(2020, 6, 1),
                 hoursPerWeek = 80,
                 hourlyRate = 1000.0,

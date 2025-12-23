@@ -5,8 +5,8 @@ import community.flock.eco.workday.user.forms.UserGroupForm
 import community.flock.eco.workday.user.model.UserGroup
 import community.flock.eco.workday.user.repositories.UserGroupRepository
 import community.flock.eco.workday.user.repositories.UserRepository
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import javax.transaction.Transactional
 
 @Service
 class UserGroupService(
