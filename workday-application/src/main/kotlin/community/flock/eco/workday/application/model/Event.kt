@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.model
 
-import community.flock.eco.workday.application.interfaces.Dayly
+import community.flock.eco.workday.application.interfaces.Daily
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.core.model.AbstractCodeEntity
 import jakarta.persistence.ElementCollection
@@ -31,4 +31,4 @@ class Event(
     @ManyToMany(fetch = FetchType.EAGER)
     @BatchSize(size = 50)
     val persons: MutableList<Person>,
-) : Dayly, AbstractCodeEntity(id, code)
+) : Daily, AbstractCodeEntity(id, code)

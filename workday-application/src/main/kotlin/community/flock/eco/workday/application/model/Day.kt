@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.model
 
-import community.flock.eco.workday.application.interfaces.Dayly
+import community.flock.eco.workday.application.interfaces.Daily
 import community.flock.eco.workday.application.services.countWorkDaysInPeriod
 import community.flock.eco.workday.application.utils.DateUtils
 import community.flock.eco.workday.application.utils.DateUtils.isWorkingDay
@@ -30,7 +30,7 @@ abstract class Day(
     override val hours: Double,
     @ElementCollection(fetch = FetchType.EAGER)
     override val days: MutableList<Double>? = null,
-) : Dayly, AbstractCodeEntity(id, code) {
+) : Daily, AbstractCodeEntity(id, code) {
     private fun getHoursPerDay(): Map<LocalDate, BigDecimal> =
         when (days.isNullOrEmpty()) {
             true -> {
