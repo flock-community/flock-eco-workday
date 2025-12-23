@@ -14,8 +14,8 @@ window.fetch = async (...args) => {
       ...(config || {}).headers,
     },
   };
-  const response = await originalFetch(resource, opts);
-  return response;
+
+  return originalFetch(resource, opts);
 };
 
 ReactDOM.render(<Application />, document.getElementById("index"));
