@@ -62,12 +62,6 @@
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.cloud.sql</groupId>
-                    <artifactId>jdbc-socket-factory-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.cloud</groupId>
@@ -123,7 +117,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
 
 
