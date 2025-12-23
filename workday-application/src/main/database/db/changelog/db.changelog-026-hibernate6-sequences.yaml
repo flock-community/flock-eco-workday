@@ -118,7 +118,7 @@ databaseChangeLog:
 
   - changeSet:
       id: initialize-sequences-from-hibernate-sequence
-      author: springboot3-migration
+      author: Julius van Dis
       comment: Initialize all new sequences from the current value of hibernate_sequence to avoid ID conflicts
       preConditions:
         - onFail: MARK_RAN

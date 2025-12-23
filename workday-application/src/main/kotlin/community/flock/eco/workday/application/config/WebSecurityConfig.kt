@@ -1,7 +1,5 @@
 package community.flock.eco.workday.application.config
 
-import community.flock.eco.workday.application.authorities.LeaveDayAuthority
-import community.flock.eco.workday.user.services.UserAuthorityService
 import community.flock.eco.workday.user.services.UserSecurityService
 import jakarta.servlet.DispatcherType
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,9 +17,6 @@ import org.springframework.security.web.SecurityFilterChain
 @EnableMethodSecurity(securedEnabled = true)
 class WebSecurityConfig {
     @Autowired
-    lateinit var userAuthorityService: UserAuthorityService
-
-    @Autowired
     lateinit var userSecurityService: UserSecurityService
 
     @Value("\${flock.eco.workday.login:TEST}")
@@ -29,20 +24,13 @@ class WebSecurityConfig {
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        userAuthorityService.addAuthority(LeaveDayAuthority::class.java)
-
         http
-            .headers({ headers ->
-                headers
-                    .frameOptions({ options ->
-                        options
-                            .sameOrigin()
-                    })
-            })
-        http
-            .csrf({ csrf -> csrf.disable() })
-        http
-            .authorizeHttpRequests({ requests ->
+            .headers { headers ->
+                headers.frameOptions { it.sameOrigin() }
+            }
+            .csrf { it.disable() }
+            .cors(withDefaults())
+            .authorizeHttpRequests { requests ->
                 requests
                     // Permit FORWARD and ERROR dispatchers to prevent infinite redirects
                     .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
@@ -60,9 +48,7 @@ class WebSecurityConfig {
                     .requestMatchers(*SWAGGER_WHITELIST).permitAll()
                     .requestMatchers(*EXT_WHITELIST).permitAll()
                     .anyRequest().authenticated()
-            })
-        http
-            .cors(withDefaults())
+            }
 
         when (loginType.uppercase()) {
             "GOOGLE" ->
