@@ -122,7 +122,6 @@ npm test               # Run Jest tests
 npm run lint           # Run ESLint
 npm run lint:fix       # Fix ESLint issues
 npm run format         # Run Prettier
-npm run storybook      # Start Storybook for component development
 ```
 
 ## Testing
@@ -300,7 +299,6 @@ Integration configurations are managed in `application-cloud.properties` and can
 - Formik for forms
 - Webpack 4
 - Jest for testing
-- Storybook for component development
 
 ## Migration Notes
 
