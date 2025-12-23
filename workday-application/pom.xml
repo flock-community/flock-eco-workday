@@ -251,27 +251,27 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-resources-images</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.outputDirectory}/static/images</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/images</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-resources-plugin</artifactId>-->
+<!--                <executions>-->
+<!--&lt;!&ndash;                    <execution>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <id>copy-resources-images</id>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <phase>compile</phase>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <goals>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <goal>copy-resources</goal>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </goals>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <configuration>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <outputDirectory>${project.build.outputDirectory}/static/images</outputDirectory>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <resources>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <resource>&ndash;&gt;-->
+<!--&lt;!&ndash;                                    <directory>${project.basedir}/images</directory>&ndash;&gt;-->
+<!--&lt;!&ndash;                                </resource>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </resources>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </configuration>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </execution>&ndash;&gt;-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 

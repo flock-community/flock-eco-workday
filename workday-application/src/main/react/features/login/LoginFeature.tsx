@@ -80,7 +80,7 @@ export function LoginFeature() {
     <img
       width="46px"
       height="46px"
-      src="images/googleLogoIcon.svg"
+      src="/images/googleLogoIcon.svg"
       alt="Google Logo Icon"
     />
   );
@@ -90,7 +90,7 @@ export function LoginFeature() {
       <Box className={classes.background}>
         <Box className={classes.loginContent}>
           <Box className={classes.logo}>
-            <img width="100%" src="images/workday_logo.webp" alt="" />
+            <img width="100%" src="/images/workday_logo.webp" alt="" />
           </Box>
           <Card className={classes.card}>
             <CardHeader
