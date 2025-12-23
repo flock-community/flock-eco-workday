@@ -87,8 +87,9 @@ class LoadPersonData(
                     lastname = it.lastName,
                     birthdate = it.birthdate,
                     joinDate = it.joinDate,
-                    user = userMap[it.firstName]
-                        ?: throw IllegalStateException("User not found with name ${it.firstName}"),
+                    user =
+                        userMap[it.firstName]
+                            ?: throw IllegalStateException("User not found with name ${it.firstName}"),
                     active = it.active,
                     shoeSize = it.shoeSize,
                     shirtSize = it.shirtSize,

@@ -28,7 +28,7 @@ class LoadEventData(
                     hackDays(
                         loadPersonData,
                     )
-                )
+            )
                 .map { it.create() }.let { data.addAll(it) }
         }
     }
