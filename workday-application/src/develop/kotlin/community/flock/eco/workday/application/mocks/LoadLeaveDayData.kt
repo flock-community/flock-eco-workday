@@ -71,15 +71,16 @@ class LoadLeaveDayData(
 
         (0..11).forEach { monthIdx ->
             val startOfMonth: LocalDate = startOfYear.plusMonths(monthIdx.toLong())
-            val endOfMonth: LocalDate = startOfMonth.plusMonths( 1L).minusDays(1)
+            val endOfMonth: LocalDate = startOfMonth.plusMonths(1L).minusDays(1)
 
             val days: MutableList<Double> = mutableListOf()
             repeat(startOfMonth.lengthOfMonth()) {
-                days += if (random.nextInt(5) == 0) {
-                    random.nextInt(4, 8).toDouble()
-                } else {
-                    0.0
-                }
+                days +=
+                    if (random.nextInt(5) == 0) {
+                        random.nextInt(4, 8).toDouble()
+                    } else {
+                        0.0
+                    }
             }
 
             LeaveDayForm(
@@ -104,15 +105,16 @@ class LoadLeaveDayData(
 
         (0..11).forEach { monthIdx ->
             val startOfMonth: LocalDate = startOfYear.plusMonths(monthIdx.toLong())
-            val endOfMonth: LocalDate = startOfMonth.plusMonths( 1L).minusDays(1)
+            val endOfMonth: LocalDate = startOfMonth.plusMonths(1L).minusDays(1)
 
             val days: MutableList<Double> = mutableListOf()
             repeat(startOfMonth.lengthOfMonth()) {
-                days += if (random.nextInt(7) == 0) {
-                    random.nextInt(4, 8).toDouble()
-                } else {
-                    0.0
-                }
+                days +=
+                    if (random.nextInt(7) == 0) {
+                        random.nextInt(4, 8).toDouble()
+                    } else {
+                        0.0
+                    }
             }
 
             LeaveDayForm(
@@ -125,7 +127,6 @@ class LoadLeaveDayData(
                 personId = person.uuid,
             ).create()
         }
-
     }
 
     fun LeaveDayForm.create() {

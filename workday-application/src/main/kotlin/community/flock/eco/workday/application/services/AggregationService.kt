@@ -124,7 +124,6 @@ class AggregationService(
             .map { person ->
                 AggregationLeaveDay(
                     name = person.getFullName(),
-
                     contractHours =
                         all.contract
                             .filterIsInstance<ContractInternal>()
@@ -335,8 +334,7 @@ class AggregationService(
             }
     }
 
-    fun totalPerMonth(yearMonth: YearMonth): List<AggregationMonth> =
-        totalPerMonth(yearMonth.atDay(1), yearMonth.atEndOfMonth())
+    fun totalPerMonth(yearMonth: YearMonth): List<AggregationMonth> = totalPerMonth(yearMonth.atDay(1), yearMonth.atEndOfMonth())
 
     fun totalPerMonth(
         from: LocalDate,
@@ -712,7 +710,7 @@ class AggregationService(
                 this.sickDay.map { it.person } +
                 this.leaveDay.map { it.person } +
                 this.workDay.map { it.assignment.person }
-            )
+        )
             .filterNotNull()
             .toSet()
     }
@@ -794,5 +792,4 @@ private fun <A, B> cartesianProducts(
 
 data class PersonAssignmentCompositeIdentifier(val person: AggregationIdentifier, val assignment: AggregationIdentifier)
 
-private fun AggregationClientPersonAssignmentItem.personAssignmentKey() =
-    PersonAssignmentCompositeIdentifier(person, assignment)
+private fun AggregationClientPersonAssignmentItem.personAssignmentKey() = PersonAssignmentCompositeIdentifier(person, assignment)
