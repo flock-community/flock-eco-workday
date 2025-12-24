@@ -774,17 +774,4 @@ class AggregationServiceTest(
         assertEquals(80, result.event)
         assertEquals(BigDecimal("40.0"), result.leaveDayUsed)
     }
-
-    @Test
-    fun `holiday overview me`() {
-        val person = createHelper.createPerson("Jesse", "Pinkman")
-        val from = LocalDate.of(2021, 12, 1)
-        val to = LocalDate.of(2021, 12, 5)
-        createHelper.createContractInternal(person, LocalDate.of(2021, 1, 1), LocalDate.of(2021, 12, 31))
-        createHelper.createHoliDay(person, from, to)
-
-        val result = aggregationService.leaveDayReportMe(2021, person)
-        assertEquals(BigDecimal("192.0000000000"), result.contractHours)
-        assertEquals(BigDecimal("40.0"), result.holidayHours)
-    }
 }

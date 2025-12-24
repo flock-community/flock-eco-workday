@@ -108,28 +108,13 @@ class AggregationController(
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
     fun leaveDayReportByYear(
         @RequestParam year: Int,
-    ): List<AggregationLeaveDayApi> {
-        return aggregationService.leaveDayReport(year).map { it.produce() }
-    }
+    ): List<AggregationLeaveDayApi> = aggregationService.leaveDayReport(year).map { it.produce() }
 
     @GetMapping("/hack-day-report", params = ["year"])
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
     fun hackDayReportByYear(
         @RequestParam year: Int,
     ): List<AggregationHackDayApi> = aggregationService.hackdayReport(year).map { it.produce() }
-
-    // TODO: refactor the leave-day-report-me into new endpoint: holiday-details-me
-    @GetMapping("/leave-day-report-me", params = ["year"])
-    @PreAuthorize("isAuthenticated()")
-    fun leaveDayReportMeByYear(
-        authentication: Authentication,
-        @RequestParam year: Int,
-    ): AggregationLeaveDayApi {
-        val person =
-            personService.findByUserCode(authentication.name) ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
-        return aggregationService.leaveDayReportMe(year, person)
-            .produce()
-    }
 
     @GetMapping("/client-hour-overview", params = ["year", "month"])
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
@@ -168,7 +153,6 @@ class AggregationController(
             } ?: emptyList()
         ).toResponse()
 
-    // TODO: refactor the leave-day-report-me into this new endpoint
     @GetMapping("/holiday-details-me", params = ["year"])
     @PreAuthorize("isAuthenticated()")
     fun holidayDetailsMeYear(

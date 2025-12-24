@@ -109,16 +109,6 @@ const internalizePersonHackdayDetails: (
   totalHoursRemaining: api.totalHoursRemaining,
 });
 
-export const leaveDayReportMe = (year): Promise<AggregationLeaveDay> => {
-  const opts = {
-    method: "GET",
-  };
-  return fetch(`${path}/leave-day-report-me?year=${year}`, opts)
-    .then((res) => validateResponse<AggregationLeaveDay>(res))
-    .then(checkResponse)
-    .then((res) => res.body);
-};
-
 export const holidayDetailsMeYear = (year): Promise<PersonHolidayDetails> => {
   const opts = {
     method: "GET",
@@ -197,7 +187,6 @@ export const AggregationClient = {
   clientAssignmentPersonBetween,
   totalPerMonthByYear,
   totalPerPersonMe,
-  leaveDayReportMe,
   leaveDayReportByYear,
   hackDayReportByYear,
   holidayDetailsMeYear,
