@@ -32,7 +32,7 @@ export function LeaveDaysPerPersonChart({
           res
             .filter(
               (it) =>
-                it.contractHours > 0 || it.holidayHours > 0 || it.plusHours > 0
+                it.contractHours > 0 || it.holidayHours > 0 || it.plusHours > 0 || it.paidLeaveHours > 0
             )
             .map((it) => ({
               ...it,
@@ -87,6 +87,12 @@ export function LeaveDaysPerPersonChart({
           dataKey="unpaidParentalLeaveHours"
           name="unpaid parental leave"
           fill="#87cefa"
+        />
+        <Bar
+          stackId="paidLeave"
+          dataKey="paidLeaveHours"
+          name="paid leave"
+          fill="#90ee90"
         />
         <Bar
           stackId="used"

@@ -20,6 +20,7 @@ enum class LeaveDayType {
     PLUSDAY,
     PAID_PARENTAL_LEAVE,
     UNPAID_PARENTAL_LEAVE,
+    PAID_LEAVE,
 }
 
 @Entity

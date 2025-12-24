@@ -27,6 +27,7 @@ class LoadLeaveDayData(
                 createPlusDays(it)
                 createPaidParentalLeave(it)
                 createUnpaidParentalLeave(it)
+                createPaidLeave(it)
             }
         }
     }
@@ -131,5 +132,27 @@ class LoadLeaveDayData(
 
     fun LeaveDayForm.create() {
         leaveDayService.create(this)
+    }
+
+    private fun createPaidLeave(person: Person) {
+        val random = Random(person.id)
+
+        (-2..2).forEach { relativeYear ->
+            repeat(random.nextInt(5)) {
+                // pick a random day, in the relative year
+                val daysAhead = random.nextLong(0, 360)
+                val date = startOfYear.plusYears(relativeYear.toLong()).plusDays(daysAhead)
+
+                LeaveDayForm(
+                    type = LeaveDayType.PAID_LEAVE,
+                    description = "Test paid leave for ${person.firstname}",
+                    from = date,
+                    to = date.plusDays(1),
+                    days = mutableListOf(8.0, 8.0),
+                    hours = 16.0,
+                    personId = person.uuid,
+                ).create()
+            }
+        }
     }
 }

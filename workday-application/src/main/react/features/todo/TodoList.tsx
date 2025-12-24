@@ -37,6 +37,8 @@ const typeToPath = (type: TypeProp) => {
       return "leave-days";
     case "UNPAID_PARENTAL_LEAVE":
       return "leave-days";
+    case "PAID_LEAVE":
+      return "leave-days";
     case "EXPENSE":
       return "expenses";
     default:
@@ -94,6 +96,7 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
     UNPAID_PARENTAL_LEAVE: "",
     EXPENSE: "",
     PLUSDAY: "",
+    PAID_LEAVE: "",
   };
   const handleCardClick = (item: Todo) => () => {
     history.push(`/${typeToPath(item.todoType)}?personId=${item.personId}`);
