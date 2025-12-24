@@ -68,16 +68,17 @@ export const totalPerPersonMe = () => {
 };
 
 export type AggregationLeaveDay = {
-  name: String;
+  name: string;
   contractHours: number;
   plusHours: number;
   holidayHours: number;
   paidParentalLeaveHours: number;
   unpaidParentalLeaveHours: number;
+  paidLeaveHours: number;
 };
 
 export type PersonHackdayDetails = {
-  name: String;
+  name: string;
   hackHoursFromContract: number;
   hackHoursUsed: number;
   totalHoursRemaining: number;
@@ -89,7 +90,7 @@ export type AggregationHackDay = {
   hackHoursUsed: number;
 };
 export type PersonHolidayDetails = {
-  name: String;
+  name: string;
   holidayHoursFromContract: number;
   plusHours: number;
   holidayHoursDone: number;

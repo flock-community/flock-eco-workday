@@ -194,6 +194,7 @@ private fun AggregationLeaveDay.produce() =
         holidayHours = holidayHours.produce(),
         paidParentalLeaveHours = paidParentalLeaveHours.produce(),
         unpaidParentalLeaveHours = unpaidParentalLeaveHours.produce(),
+        paidLeaveHours = paidLeaveHours.produce(),
     )
 
 private fun PersonHolidayDetails.produce() =
@@ -223,6 +224,7 @@ private fun AggregationService.NonProductiveHours.produce() =
         holidayHours = holidayHours,
         paidParentalLeaveHours = paidParentalLeaveHours,
         unpaidParentalLeaveHours = unpaidParentalLeaveHours,
+        paidLeaveHours = paidLeaveHours,
     )
 
 private fun AggregationClientPersonAssignmentOverview.produce() =

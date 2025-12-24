@@ -15,7 +15,8 @@ enum TodoType {
     PAID_PARENTAL_LEAVE,
     UNPAID_PARENTAL_LEAVE,
     EXPENSE,
-    PLUSDAY
+    PLUSDAY,
+    PAID_LEAVE
 }
 
 type AggregationIdentifier {
@@ -88,7 +89,8 @@ type NonProductiveHours{
     sickHours: Number,
     holidayHours: Number,
     paidParentalLeaveHours: Number,
-    unpaidParentalLeaveHours: Number
+    unpaidParentalLeaveHours: Number,
+    paidLeaveHours: Number
 }
 
 type PersonHolidayDetails{
@@ -122,7 +124,8 @@ type AggregationLeaveDay {
     plusHours: Number,
     holidayHours: Number,
     paidParentalLeaveHours: Number,
-    unpaidParentalLeaveHours: Number
+    unpaidParentalLeaveHours: Number,
+    paidLeaveHours: Number
 }
 
 type Expense {

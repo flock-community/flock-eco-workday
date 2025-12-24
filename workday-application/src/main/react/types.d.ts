@@ -8,7 +8,8 @@ export type TypeProp =
   | "PAID_PARENTAL_LEAVE"
   | "UNPAID_PARENTAL_LEAVE"
   | "PLUSDAY"
-  | "EXPENSE";
+  | "EXPENSE"
+  | "PAID_LEAVE";
 
 export type DayProps = {
   type: TypeProp;

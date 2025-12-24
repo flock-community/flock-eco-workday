@@ -86,6 +86,7 @@ class TodoController(
             LeaveDayType.PLUSDAY -> TodoType.PLUSDAY
             LeaveDayType.PAID_PARENTAL_LEAVE -> TodoType.PAID_PARENTAL_LEAVE
             LeaveDayType.UNPAID_PARENTAL_LEAVE -> TodoType.UNPAID_PARENTAL_LEAVE
+            LeaveDayType.PAID_LEAVE -> TodoType.PAID_LEAVE
         }
 
     fun SickDay.mapTodo() =

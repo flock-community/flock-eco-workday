@@ -26,6 +26,7 @@ enum Types {
   PLUSDAY = "PLUSDAY",
   PAID_PARENTAL_LEAVE = "PAID_PARENTAL_LEAVE",
   UNPAID_PARENTAL_LEAVE = "UNPAID_PARENTAL_LEAVE",
+  PAID_LEAVE = "PAID_LEAVE",
 }
 
 type LeaveDayDialogProps = {
@@ -152,6 +153,9 @@ export function LeaveDayDialog({
                     <MenuItem value={Types.UNPAID_PARENTAL_LEAVE}>
                       Unpaid Parental Leave
                     </MenuItem>
+                    <MenuItem value={Types.PAID_LEAVE}>
+                      Paid Leave
+                    </MenuItem>
                   </Select>
                 </Grid>
               </UserAuthorityUtil>
@@ -168,6 +172,9 @@ export function LeaveDayDialog({
                   <LeaveDayForm value={state} onSubmit={handleSubmit} />
                 )}
                 {type === Types.UNPAID_PARENTAL_LEAVE && (
+                  <LeaveDayForm value={state} onSubmit={handleSubmit} />
+                )}
+                {type === Types.PAID_LEAVE && (
                   <LeaveDayForm value={state} onSubmit={handleSubmit} />
                 )}
               </Grid>

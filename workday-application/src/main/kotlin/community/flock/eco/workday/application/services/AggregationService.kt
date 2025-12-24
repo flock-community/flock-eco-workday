@@ -150,6 +150,11 @@ class AggregationService(
                             .filter { it.person == person }
                             .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
                             .totalHoursInPeriod(from, to),
+                    paidLeaveHours =
+                        all.leaveDay
+                            .filter { it.person == person }
+                            .filter { it.type == LeaveDayType.PAID_LEAVE }
+                            .totalHoursInPeriod(from, to),
                 )
             }
     }
@@ -654,6 +659,10 @@ class AggregationService(
             leaveDayData.filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
                 .map { it.hoursPerDayInPeriod(from, to) }
                 .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
+        val paidLeave =
+            leaveDayData.filter { it.type == LeaveDayType.PAID_LEAVE }
+                .map { it.hoursPerDayInPeriod(from, to) }
+                .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
 
         val map =
             from.datesUntil(to.plusDays(1)).toList().associateWith { date ->
@@ -662,6 +671,7 @@ class AggregationService(
                     holidayHours = holidays[date]?.toDouble() ?: 0.0,
                     paidParentalLeaveHours = paidParentalLeave[date]?.toDouble() ?: 0.0,
                     unpaidParentalLeaveHours = unpaidParentalLeave[date]?.toDouble() ?: 0.0,
+                    paidLeaveHours = paidLeave[date]?.toDouble() ?: 0.0,
                 )
             }
 
@@ -682,6 +692,7 @@ class AggregationService(
         val holidayHours: Double,
         val paidParentalLeaveHours: Double,
         val unpaidParentalLeaveHours: Double,
+        val paidLeaveHours: Double,
     )
 
     fun Iterable<Iterable<Float>>.sumAtIndex() =
