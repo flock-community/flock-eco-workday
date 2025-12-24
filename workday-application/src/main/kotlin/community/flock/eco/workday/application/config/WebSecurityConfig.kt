@@ -39,6 +39,7 @@ class WebSecurityConfig {
                     .requestMatchers("/*.js").permitAll()
                     .requestMatchers("/images/*.webp").permitAll()
                     .requestMatchers("/images/*.svg").permitAll()
+                    .requestMatchers("/assets/**").permitAll()
                     .requestMatchers("/tasks/**").permitAll()
                     .requestMatchers("/actuator/**").permitAll()
                     .requestMatchers("/login/**").permitAll()

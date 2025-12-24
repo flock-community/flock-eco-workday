@@ -221,7 +221,6 @@ community.flock.eco.workday/
 **Why**:
 - Reusability across projects
 - Clearer separation of concerns
-- Better storybook organization
 
 **Approach**:
 - Keep vendored components in workday-core (frozen)
