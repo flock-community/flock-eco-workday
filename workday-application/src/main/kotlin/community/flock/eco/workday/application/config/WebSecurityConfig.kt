@@ -35,6 +35,7 @@ class WebSecurityConfig {
                     // Permit FORWARD and ERROR dispatchers to prevent infinite redirects
                     .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                     .requestMatchers("/favicon.ico").permitAll()
+                    .requestMatchers("/site.webmanifest").permitAll()
                     .requestMatchers("/").permitAll()
                     .requestMatchers("/*.js").permitAll()
                     .requestMatchers("/images/*.webp").permitAll()
