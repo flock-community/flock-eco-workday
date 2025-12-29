@@ -29,16 +29,16 @@ export const emptyPersonWithUUID = (personId: UUID) => ({
 });
 
 const serializeCost = (it: Expense): CostExpenseInput => {
-  console.log("serializeCost", it);
-  return({
+  console.log('serializeCost', it);
+  return {
     amount: it?.costDetails?.amount,
     description: it.description,
     files: it?.costDetails?.files ?? [],
     status: it.status,
     personId: it.personId,
     date: dayjs(it.date).format(ISO_8601_DATE),
-  });
-}
+  };
+};
 
 const serializeTravel = (it: Expense): TravelExpenseInput => ({
   allowance: it.travelDetails.allowance,

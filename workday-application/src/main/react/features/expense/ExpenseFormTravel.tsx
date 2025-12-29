@@ -9,7 +9,7 @@ import type { Expense } from '../../wirespec/model';
 export const EXPENSE_TRAVEL_FORM_ID = 'travel-expense-form';
 
 export type ExpenseTravelForm = {
-  description: String
+  description: string;
   date: Date;
   distance: number;
   allowance: number;

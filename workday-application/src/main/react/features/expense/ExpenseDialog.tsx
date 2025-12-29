@@ -12,9 +12,9 @@ import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
 import { useEffect, useState } from 'react';
 import { ExpenseClient } from '../../clients/ExpenseClient';
 import { TransitionSlider } from '../../components/transitions/Slide';
-import { ExpenseFormTravel, ExpenseTravelForm } from "./ExpenseFormTravel";
-import { ExpenseCostForm, ExpenseFormCost } from "./ExpenseFormCost";
-import { Expense, ExpenseType } from "../../wirespec/model";
+import type { Expense, ExpenseType } from '../../wirespec/model';
+import { type ExpenseCostForm, ExpenseFormCost } from './ExpenseFormCost';
+import { ExpenseFormTravel, type ExpenseTravelForm } from './ExpenseFormTravel';
 
 type ExpenseDialogProps = {
   open: boolean;
@@ -31,7 +31,7 @@ export function ExpenseDialog({
   personId,
   personFullName,
   onComplete,
-  expenseType
+  expenseType,
 }: ExpenseDialogProps) {
   const [type, setType] = useState<ExpenseType>('COST');
   const [state, setState] = useState<Expense | undefined>(undefined);
@@ -58,12 +58,11 @@ export function ExpenseDialog({
         id: id,
         personId: personId,
         expenseType: type,
-        status: "REQUESTED",
+        status: 'REQUESTED',
         costDetails: undefined,
-        date: "",
-        description: "",
-        travelDetails: undefined
-
+        date: '',
+        description: '',
+        travelDetails: undefined,
       }).then((res) => {
         onComplete?.(res);
       });
@@ -73,13 +72,13 @@ export function ExpenseDialog({
         expenseType: type,
         personId: personId,
         status: 'REQUESTED',
-        date: "",
-        description: "",
+        date: '',
+        description: '',
         travelDetails: undefined,
         costDetails: {
           amount: 0,
-          files: []
-        }
+          files: [],
+        },
       }).then((res) => {
         onComplete?.(res);
       });

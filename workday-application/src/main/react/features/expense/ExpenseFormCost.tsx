@@ -10,7 +10,7 @@ import type { Expense } from '../../wirespec/model';
 export const EXPENSE_COST_FORM_ID = 'cost-expense-form';
 
 export type ExpenseCostForm = {
-  description: String
+  description: string;
   amount: number;
   date: Date;
   files: File[];
@@ -28,7 +28,6 @@ type ExpenseFormCostProps = {
   onSubmit: (item: ExpenseCostForm) => void;
 };
 export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
-
   const form = () => (
     <Form id={EXPENSE_COST_FORM_ID}>
       <Grid container spacing={1}>

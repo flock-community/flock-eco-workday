@@ -6,7 +6,6 @@ import {
   createTestTravelExpense,
 } from '../../utils/tests/test-models';
 import type { Expense } from '../../wirespec/model';
-
 import { ExpensesCard } from './ExpensesCard';
 
 describe('ExpensesCard', () => {
