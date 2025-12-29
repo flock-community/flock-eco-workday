@@ -5,22 +5,29 @@ import { TextField } from 'formik-mui';
 import * as Yup from 'yup';
 import { DatePickerField } from '../../components/fields/DatePickerField';
 import { DropzoneAreaField } from '../../components/fields/DropzoneAreaField';
-import type { Expense } from '../../wirespec/model/Expense';
+import type { Expense } from '../../wirespec/model';
 
 export const EXPENSE_COST_FORM_ID = 'cost-expense-form';
 
-type ExpenseFormCostProps = {
-  value: any;
-  onSubmit: (item: Expense) => void;
+export type ExpenseCostForm = {
+  description: String
+  amount: number;
+  date: Date;
+  files: File[];
 };
 
+const schema = Yup.object({
+  description: Yup.string().required().default(''),
+  amount: Yup.number().required().default(0),
+  date: Yup.mixed().required().default(dayjs()),
+  files: Yup.array().default([]),
+});
+
+type ExpenseFormCostProps = {
+  value: any;
+  onSubmit: (item: ExpenseCostForm) => void;
+};
 export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
-  const schema = Yup.object({
-    description: Yup.string().required().default(''),
-    amount: Yup.number().required().default(0),
-    date: Yup.mixed().required().default(dayjs()),
-    files: Yup.array().default([]),
-  });
 
   const form = () => (
     <Form id={EXPENSE_COST_FORM_ID}>

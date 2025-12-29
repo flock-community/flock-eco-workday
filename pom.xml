@@ -120,6 +120,11 @@
                 <version>${wirespec.version}</version>
             </dependency>
             <dependency>
+                <groupId>community.flock.wirespec.integration</groupId>
+                <artifactId>wirespec-jvm</artifactId>
+                <version>${wirespec.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>flock.community.eco.workday</groupId>
                 <artifactId>workday-application</artifactId>
                 <version>${project.version}</version>

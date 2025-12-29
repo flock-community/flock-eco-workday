@@ -2,7 +2,6 @@ package community.flock.eco.workday.application
 
 import community.flock.eco.workday.application.config.GoogleDriveConfiguration
 import community.flock.eco.workday.application.config.MailjetClientConfig
-import community.flock.eco.workday.application.config.WirespecConfiguration
 import community.flock.eco.workday.application.config.cloud.StubCloudConfiguration
 import community.flock.eco.workday.application.config.properties.PropertyConfig
 import community.flock.eco.workday.application.exactonline.ExactonlineConfiguration
@@ -25,7 +24,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     ApplicationConstants::class,
     PropertyConfig::class,
     MailjetClientConfig::class,
-    WirespecConfiguration::class,
     GoogleDriveConfiguration::class,
     StubCloudConfiguration::class,
 )

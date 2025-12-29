@@ -51,7 +51,7 @@ class TodoController(
 
         return GetTodoAll.Response200(
             list.map {
-                community.flock.eco.workday.api.model.Todo(
+                Todo(
                     id = UUID(it.id.toString()),
                     personId = UUID(it.personId.toString()),
                     personName = it.personName,

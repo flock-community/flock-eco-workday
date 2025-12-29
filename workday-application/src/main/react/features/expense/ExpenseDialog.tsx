@@ -12,9 +12,9 @@ import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
 import { useEffect, useState } from 'react';
 import { ExpenseClient } from '../../clients/ExpenseClient';
 import { TransitionSlider } from '../../components/transitions/Slide';
-import type { Expense, ExpenseType } from '../../wirespec/model';
-import { ExpenseFormCost } from './ExpenseFormCost';
-import { ExpenseFormTravel } from './ExpenseFormTravel';
+import { ExpenseFormTravel, ExpenseTravelForm } from "./ExpenseFormTravel";
+import { ExpenseCostForm, ExpenseFormCost } from "./ExpenseFormCost";
+import { Expense, ExpenseType } from "../../wirespec/model";
 
 type ExpenseDialogProps = {
   open: boolean;
@@ -31,7 +31,7 @@ export function ExpenseDialog({
   personId,
   personFullName,
   onComplete,
-  expenseType,
+  expenseType
 }: ExpenseDialogProps) {
   const [type, setType] = useState<ExpenseType>('COST');
   const [state, setState] = useState<Expense | undefined>(undefined);
@@ -52,23 +52,34 @@ export function ExpenseDialog({
     setType(ev.target.value);
   };
 
-  const handleSubmit = (it: Expense) => {
+  const handleSubmit = (it: ExpenseCostForm | ExpenseTravelForm) => {
     if (id) {
       ExpenseClient.put(id, {
-        ...it,
+        id: id,
         personId: personId,
         expenseType: type,
-        status: 'REQUESTED',
-        date: it.date,
+        status: "REQUESTED",
+        costDetails: undefined,
+        date: "",
+        description: "",
+        travelDetails: undefined
+
       }).then((res) => {
         onComplete?.(res);
       });
     } else {
       ExpenseClient.post({
-        ...it,
+        id: undefined,
         expenseType: type,
         personId: personId,
         status: 'REQUESTED',
+        date: "",
+        description: "",
+        travelDetails: undefined,
+        costDetails: {
+          amount: 0,
+          files: []
+        }
       }).then((res) => {
         onComplete?.(res);
       });
@@ -79,7 +90,6 @@ export function ExpenseDialog({
     if (id === undefined) {
       return;
     }
-
     ExpenseClient.delete(id).then(() => {
       if (onComplete) onComplete();
       setOpenDelete(false);

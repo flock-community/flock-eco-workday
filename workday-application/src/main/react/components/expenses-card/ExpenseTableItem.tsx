@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from '@mui/material';
 import dayjs from 'dayjs';
 import { DMY_DATE } from '../../clients/util/DateFormats';
-import type { Expense } from '../../wirespec/model/Expense';
+import type { Expense } from '../../wirespec/model';
 
 type ExpenseTableItemProps = {
   item: Expense;
@@ -15,13 +15,13 @@ export function ExpenseTableItem({ item }: ExpenseTableItemProps) {
         {dayjs(item.date).format(DMY_DATE)}
       </TableCell>
       <TableCell width={110} align={'right'}>
-        {item.costDetails.amount.toLocaleString('nl-NL', {
+        {item.costDetails?.amount?.toLocaleString('nl-NL', {
           style: 'currency',
           currency: 'EUR',
         })}
       </TableCell>
       <TableCell width={110} align={'right'}>
-        {item.ExpensesCard.spec.status.toLowerCase()}
+        {item.status.toLowerCase()}
       </TableCell>
     </TableRow>
   );

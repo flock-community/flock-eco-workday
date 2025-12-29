@@ -28,8 +28,8 @@ type BootstrapResponse {
   loggedIn: Boolean?
 }
 type Pageable {
-  page: Integer32?,
-  size: Integer32?,
+  page: Integer32,
+  size: Integer32,
   sort: String[]?
 }
 type UUID = String

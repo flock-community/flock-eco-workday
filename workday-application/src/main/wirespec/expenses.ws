@@ -1,29 +1,36 @@
-endpoint PutTravelExpense PUT TravelExpenseInput /api/expenses-travel/{id: String} -> {
+endpoint TravelExpenseUpdate PUT TravelExpenseInput /api/expenses-travel/{ id: String } -> {
   200 -> Expense
+  500 -> Error
 }
-endpoint PutCostExpense PUT CostExpenseInput /api/expenses-cost/{id: String} -> {
+endpoint CostExpenseUpdate PUT CostExpenseInput /api/expenses-cost/{ id: String } -> {
   200 -> Expense
+  500 -> Error
 }
-endpoint PostFiles POST PostFilesRequestBody /api/expenses/files -> {
+endpoint ExpenseFilesCreate POST PostFilesRequestBody /api/expenses/files -> {
   200 -> String
 }
-endpoint PostTravelExpense POST TravelExpenseInput /api/expenses-travel -> {
+endpoint TravelExpenseCreate POST TravelExpenseInput /api/expenses-travel -> {
   200 -> Expense
+  500 -> Error
 }
-endpoint PostCostExpense POST CostExpenseInput /api/expenses-cost -> {
+endpoint CostExpenseCreate POST CostExpenseInput /api/expenses-cost -> {
   200 -> Expense
+  500 -> Error
 }
-endpoint GetExpenseAll GET /api/expenses ? {personId: String,pageable: Pageable} -> {
+endpoint ExpenseAll GET /api/expenses ? { personId: String, pageable: Pageable? } -> {
   200 -> Expense[]
 }
-endpoint GetExpenseById GET /api/expenses/{id: String} -> {
+endpoint ExpenseById GET /api/expenses/{id: String} -> {
   200 -> Expense
+  404 -> Error
 }
-endpoint DeleteExpenseById DELETE /api/expenses/{id: String} -> {
-  200 -> Unit
+endpoint ExpenseDeleteById DELETE /api/expenses/{id: String} -> {
+  204 -> Unit
+  404 -> Error
 }
-endpoint GetFiles GET /api/expenses/files/{file: String}/{name: String} -> {
-  200 -> String[]
+
+endpoint ExpenseGetFiles GET /api/expenses/files/{file: String}/{name: String} -> {
+  200 -> Bytes
 }
 
 type TravelExpenseInput {

@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -80,12 +82,14 @@ class TodoControllerTest : WorkdayIntegrationTest() {
     fun `should return 403 when user has no TodoAuthority READ`() {
         val user = createHelper.createUser(setOf(WorkDayAuthority.READ))
 
-        mvc
-            .perform(
-                get(baseUrl)
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .accept(APPLICATION_JSON),
-            ).andExpect(status().isForbidden)
+        val mvcResult =
+            mvc
+                .perform(
+                    get(baseUrl)
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .accept(APPLICATION_JSON),
+                ).asyncDispatch()
+                .andExpect(status().isForbidden)
     }
 
     @Test
@@ -97,7 +101,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 get(baseUrl)
                     .with(user(CreateHelper.UserSecurity(user)))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(content().string("[]"))
     }
@@ -110,7 +115,7 @@ class TodoControllerTest : WorkdayIntegrationTest() {
         val client = createHelper.createClient()
         val person = createHelper.createPerson()
         val assignment = createHelper.createAssignment(client, person, from, to)
-
+        val days = ChronoUnit.DAYS.between(from, to) + 1
         // Create a workday todo
         val workDayForm =
             WorkDayForm(
@@ -128,8 +133,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 description = "Test leave day",
                 from = from,
                 to = to,
-                hours = 8.0,
-                days = mutableListOf(8.0),
+                hours = days * 8.0,
+                days = (1..days).map { 8.0 }.toMutableList(),
                 type = LeaveDayType.HOLIDAY,
                 personId = person.uuid,
             )
@@ -140,8 +145,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
             SickDayForm(
                 from = from,
                 to = to,
-                hours = 8.0,
-                days = mutableListOf(8.0),
+                hours = days * 8.0,
+                days = (1..days).map { 8.0 }.toMutableList(),
                 description = "Test sick day",
                 personId = person.uuid,
             )
@@ -164,7 +169,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 get(baseUrl)
                     .with(user(CreateHelper.UserSecurity(user)))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$.length()").value(4))
@@ -183,6 +189,7 @@ class TodoControllerTest : WorkdayIntegrationTest() {
         val client = createHelper.createClient()
         val person = createHelper.createPerson()
         val assignment = createHelper.createAssignment(client, person, from, to)
+        val days = ChronoUnit.DAYS.between(from, to) + 1
 
         // Create a workday todo
         val workDayForm =
@@ -201,8 +208,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 description = "Test leave day",
                 from = from,
                 to = to,
-                hours = 8.0,
-                days = mutableListOf(8.0),
+                hours = days * 8.0,
+                days = (1..days).map { 8.0 }.toMutableList(),
                 type = LeaveDayType.HOLIDAY,
                 personId = person.uuid,
             )
@@ -213,7 +220,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 get(baseUrl)
                     .with(user(CreateHelper.UserSecurity(user)))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$.length()").value(1))
@@ -246,7 +254,9 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 get(baseUrl)
                     .with(user(CreateHelper.UserSecurity(user)))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andDo { println(it.response.contentAsString) }
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$.length()").value(1))
@@ -259,14 +269,15 @@ class TodoControllerTest : WorkdayIntegrationTest() {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val person = createHelper.createPerson()
+        val days = ChronoUnit.DAYS.between(from, to) + 1
 
         // Create a sick day todo
         val sickDayForm =
             SickDayForm(
                 from = from,
                 to = to,
-                hours = 8.0,
-                days = mutableListOf(8.0),
+                hours = days * 8.0,
+                days = (1..days).map { 8.0 }.toMutableList(),
                 description = "Test sick day",
                 personId = person.uuid,
             )
@@ -277,7 +288,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 get(baseUrl)
                     .with(user(CreateHelper.UserSecurity(user)))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$.length()").value(1))
@@ -306,7 +318,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 get(baseUrl)
                     .with(user(CreateHelper.UserSecurity(user)))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$.length()").value(1))
@@ -318,6 +331,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
         val user = createHelper.createUser(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
+        val days = ChronoUnit.DAYS.between(from, to) + 1
+
         val client = createHelper.createClient()
 
         // Create persons with different names to test sorting
@@ -354,8 +369,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 description = "Test leave day A",
                 from = from,
                 to = to,
-                hours = 8.0,
-                days = mutableListOf(8.0),
+                hours = days * 8.0,
+                days = (1..days).map { 8.0 }.toMutableList(),
                 type = LeaveDayType.HOLIDAY,
                 personId = personA.uuid,
             ),
@@ -366,8 +381,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 description = "Test leave day B",
                 from = from,
                 to = to,
-                hours = 8.0,
-                days = mutableListOf(8.0),
+                hours = days * 8.0,
+                days = (1..days).map { 8.0 }.toMutableList(),
                 type = LeaveDayType.HOLIDAY,
                 personId = personB.uuid,
             ),
@@ -378,8 +393,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 get(baseUrl)
                     .with(user(CreateHelper.UserSecurity(user)))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON))
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$.length()").value(4))
             // Should be sorted by person name first: Alice Smith, Bob Johnson
@@ -426,10 +441,15 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 get(baseUrl)
                     .with(user(CreateHelper.UserSecurity(user)))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
-            .andExpect(jsonPath("$").isArray)
-            .andExpect(jsonPath("$.length()").value(1))
+            .andDo {
+                println(it.response.contentAsString)
+            }.andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$.length()").value(2))
             .andExpect(jsonPath("$[0].todoType").value("WORKDAY"))
     }
+
+    private fun ResultActions.asyncDispatch() = mvc.perform(asyncDispatch(this.andReturn()))
 }

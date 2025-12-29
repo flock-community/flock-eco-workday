@@ -14,6 +14,7 @@ import community.flock.eco.workday.application.services.CostExpenseService
 import community.flock.eco.workday.application.services.TravelExpenseService
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.user.model.User
+import community.flock.wirespec.integration.jackson.kotlin.WirespecModuleKotlin
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -23,6 +24,7 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -35,10 +37,10 @@ import java.util.UUID
 
 class ExpenseControllerTest : WorkdayIntegrationTest() {
     @Autowired
-    private lateinit var mvc: MockMvc
+    private lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    private lateinit var mapper: ObjectMapper
+    private lateinit var mvc: MockMvc
 
     @Autowired
     private lateinit var createHelper: CreateHelper
@@ -50,7 +52,8 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
     private lateinit var travelExpenseService: TravelExpenseService
     private val baseUrl: String = "/api/expenses"
 
-    val adminAuthorities = setOf(ExpenseAuthority.READ, ExpenseAuthority.WRITE, ExpenseAuthority.ADMIN)
+    val adminAuthorities =
+        setOf(ExpenseAuthority.READ, ExpenseAuthority.WRITE, ExpenseAuthority.ADMIN)
     val userAuthorities = setOf(ExpenseAuthority.READ, ExpenseAuthority.WRITE)
 
     @Nested
@@ -66,13 +69,15 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                     get("$baseUrl/${created.id}")
                         .with(user(CreateHelper.UserSecurity(user)))
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isOk)
+                ).asyncDispatch()
+                .andExpect(status().isOk)
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpectBodyToMatch(travelExpense)
         }
 
         @Test
         fun `should create a valid cost expense via POST-method with status REQUESTED`() {
+            val mapper = objectMapper.copy().registerModule(WirespecModuleKotlin())
             val user = createHelper.createUser(userAuthorities)
 
             val person = createHelper.createPerson("john", "doe", user.code)
@@ -101,7 +106,8 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                         .content(mapper.writeValueAsString(costExpenseInput))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isOk)
+                ).asyncDispatch()
+                .andExpect(status().isOk)
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.personId").value(costExpenseInput.personId.value))
@@ -140,14 +146,16 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                         .with(user(CreateHelper.UserSecurity(user)))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isNoContent)
+                ).asyncDispatch()
+                .andExpect(status().isNoContent)
 
             mvc
                 .perform(
                     get("$baseUrl/$expenseId")
                         .with(user(CreateHelper.UserSecurity(user)))
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isNotFound)
+                ).asyncDispatch()
+                .andExpect(status().isNotFound)
         }
 
         @Test
@@ -168,11 +176,13 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                     get("$baseUrl/$expenseId")
                         .with(user(CreateHelper.UserSecurity(user)))
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isForbidden)
+                ).asyncDispatch()
+                .andExpect(status().isForbidden)
         }
 
         @Test
         fun `A (non admin) user should not be able to modify another user's costExpense`() {
+            val mapper = objectMapper.copy().registerModule(WirespecModuleKotlin())
             val user = createHelper.createUser(userAuthorities)
             val anotherUser = createHelper.createUser(userAuthorities)
             val travelExpense =
@@ -202,7 +212,8 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                         .content(mapper.writeValueAsString(costExpenseInput))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isForbidden)
+                ).asyncDispatch()
+                .andExpect(status().isForbidden)
         }
 
         @Test
@@ -222,7 +233,8 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                         .with(user(CreateHelper.UserSecurity(user)))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isForbidden)
+                ).asyncDispatch()
+                .andExpect(status().isForbidden)
         }
 
         private fun aTravelExpense(
@@ -271,13 +283,15 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                     get("$baseUrl/${created.id}")
                         .with(user(CreateHelper.UserSecurity(user)))
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isOk)
+                ).asyncDispatch()
+                .andExpect(status().isOk)
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpectBodyToMatch(costExpense)
         }
 
         @Test
         fun `should create a valid cost expense via POST-method with status REQUESTED`() {
+            val mapper = objectMapper.copy().registerModule(WirespecModuleKotlin())
             val user = createHelper.createUser(userAuthorities)
 
             val person = createHelper.createPerson("john", "doe", user.code)
@@ -306,7 +320,8 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                         .content(mapper.writeValueAsString(costExpenseInput))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isOk)
+                ).asyncDispatch()
+                .andExpect(status().isOk)
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.personId").value(costExpenseInput.personId.value))
@@ -345,14 +360,16 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                         .with(user(CreateHelper.UserSecurity(user)))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isNoContent)
+                ).asyncDispatch()
+                .andExpect(status().isNoContent)
 
             mvc
                 .perform(
                     get("$baseUrl/$expenseId")
                         .with(user(CreateHelper.UserSecurity(user)))
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isNotFound)
+                ).asyncDispatch()
+                .andExpect(status().isNotFound)
         }
 
         @Test
@@ -373,11 +390,13 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                     get("$baseUrl/$expenseId")
                         .with(user(CreateHelper.UserSecurity(user)))
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isForbidden)
+                ).asyncDispatch()
+                .andExpect(status().isForbidden)
         }
 
         @Test
         fun `A (non admin) user should not be able to modify another user's costExpense`() {
+            val mapper = objectMapper.copy().registerModule(WirespecModuleKotlin())
             val user = createHelper.createUser(userAuthorities)
             val anotherUser = createHelper.createUser(userAuthorities)
             val costExpense =
@@ -407,7 +426,8 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                         .content(mapper.writeValueAsString(costExpenseInput))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isForbidden)
+                ).asyncDispatch()
+                .andExpect(status().isForbidden)
         }
 
         @Test
@@ -427,7 +447,8 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                         .with(user(CreateHelper.UserSecurity(user)))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
-                ).andExpect(status().isForbidden)
+                ).asyncDispatch()
+                .andExpect(status().isForbidden)
         }
 
         private fun aCostExpense(
@@ -472,4 +493,11 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                     ),
                 ).andExpect(jsonPath("$.travelDetails").doesNotExist())
     }
+
+    private fun ResultActions.asyncDispatch() =
+        mvc.perform(
+            MockMvcRequestBuilders.asyncDispatch(
+                this.andReturn(),
+            ),
+        )
 }

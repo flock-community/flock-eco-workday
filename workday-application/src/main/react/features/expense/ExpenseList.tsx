@@ -76,7 +76,7 @@ export function ExpenseList({
   };
 
   const renderItem = (item: Expense, key: number) => {
-    const totalAmount: number = item.costDetails.amount;
+    const totalAmount: number = item?.costDetails?.amount;
 
     return (
       <Grid key={`workday-list-item-${item.id}`} size={{ xs: 12 }}>
@@ -93,7 +93,7 @@ export function ExpenseList({
             subheader={
               <Typography>
                 Date: {dayjs(item.date).format('DD-MM-YYYY')} | Total:{' '}
-                {totalAmount.toLocaleString('nl-NL', {
+                {totalAmount?.toLocaleString('nl-NL', {
                   style: 'currency',
                   currency: 'EUR',
                 })}
@@ -101,7 +101,7 @@ export function ExpenseList({
             }
           />
           <List>
-            {item.costDetails.files &&
+            {item.costDetails?.files &&
               item.costDetails.files.map((file) => (
                 <ListItemButton
                   key={file.file}

@@ -8,7 +8,14 @@ import type { Expense } from '../../wirespec/model';
 
 export const EXPENSE_TRAVEL_FORM_ID = 'travel-expense-form';
 
-const schema = Yup.object({
+export type ExpenseTravelForm = {
+  description: String
+  date: Date;
+  distance: number;
+  allowance: number;
+};
+
+export const schema = Yup.object({
   description: Yup.string().required().default(''),
   date: Yup.mixed().required().default(dayjs()),
   distance: Yup.number().required().default(''),
@@ -17,7 +24,7 @@ const schema = Yup.object({
 
 type ExpenseFormTravelProps = {
   value: any;
-  onSubmit: (item: Expense) => void;
+  onSubmit: (item: ExpenseTravelForm) => void;
 };
 
 export const ExpenseFormTravel = ({
