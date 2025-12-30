@@ -14,6 +14,7 @@ import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Typography } from "@mui/material";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 type DropzoneAreaFieldProps = {
   name: string;
@@ -58,18 +59,27 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
       <ListItem
         key={it.file}
         disableGutters
-        component="a"
-        target="_blank"
-        href={`${endpoint}/${it.file}/${it.name}`}
         secondaryAction={
-          <IconButton
-            edge="end"
-            aria-label="delete"
-            onClick={handleDeleteFile(it.file)}
-            size="large"
-          >
-            <DeleteIcon />
-          </IconButton>
+          <>
+            <IconButton
+              edge="end"
+              aria-label="preview"
+              component="a"
+              href={`${endpoint}/${it.file}/${it.name}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <OpenInNewIcon />
+            </IconButton>
+            <IconButton
+              edge="end"
+              aria-label="delete"
+              onClick={handleDeleteFile(it.file)}
+              size="large"
+            >
+              <DeleteIcon />
+            </IconButton>
+          </>
         }
       >
         <ListItemAvatar>
@@ -77,7 +87,17 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
             <FolderIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary={it.name} />
+        <ListItemText
+          primary={
+            <a
+              href={`${endpoint}/${it.file}/${it.name}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {it.name}
+            </a>
+          }
+        />
       </ListItem>
     );
 

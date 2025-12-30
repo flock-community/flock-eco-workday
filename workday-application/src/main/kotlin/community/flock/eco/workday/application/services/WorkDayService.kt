@@ -117,23 +117,6 @@ class WorkDayService(
             }
     }
 
-    fun uploadSheet(byteArray: ByteArray): UUID {
-        return UUID.randomUUID()
-            .apply {
-                BlobInfo
-                    .newBuilder(bucketName, toString())
-                    .build()
-                    .apply {
-                        storage.create(this, byteArray)
-                    }
-            }
-    }
-
-    fun readSheet(uuid: UUID): ByteArray {
-        val blob = storage.get(bucketName, uuid.toString())
-        return blob.getContent()
-    }
-
     @Transactional
     fun deleteByCode(code: String) = workDayRepository.deleteByCode(code)
 
