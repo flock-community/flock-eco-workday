@@ -83,7 +83,7 @@
     "react-test-renderer": "^18.2.0",
     "ts-jest": "^29.4.5",
     "typescript": "^5.2.2",
-    "vite": "^5.0.10"
+    "vite": "^7.3.0"
   },
   "lint-staged": {
     "workday-application/src/main/react/**/*.{js,jsx,tsx,ts}": [
