@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { MissingHoursDetailDialog } from "./MissingHoursDetailDialog";
 import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
+import ListItemButton from "@mui/material/ListItemButton";
 
 type MissingHoursCardProps = {
   totalPerPersonMe: any;
@@ -79,14 +79,14 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
 
   function renderItem(item: AggregationPersonObject, index: number) {
     return (
-      <ListItem key={index} onClick={() => openWorkDayDialog(item)} button>
+      <ListItemButton key={index} onClick={() => openWorkDayDialog(item)}>
         <ListItemText
           primary={`You have missing hours in
                     ${new Date(item.monthYear).toLocaleString("en-EN", {
                       month: "long",
                     })}`}
         />
-      </ListItem>
+      </ListItemButton>
     );
   }
 

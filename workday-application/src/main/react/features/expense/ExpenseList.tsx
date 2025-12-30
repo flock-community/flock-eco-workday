@@ -6,18 +6,18 @@ import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import CardHeader from "@mui/material/CardHeader";
 import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
-import ListItem from "@mui/material/ListItem";
 import { StatusMenu } from "../../components/status/StatusMenu";
 import { EXPENSE_PAGE_SIZE, ExpenseClient } from "../../clients/ExpenseClient";
 import makeStyles from "@mui/styles/makeStyles";
-
 // Components
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 // Types
 import type { DayListProps } from "../../types";
+
 import { Status } from "../../models/Status";
 import { CostExpense, TravelExpense } from "../../models/Expense";
+import ListItemButton from "@mui/material/ListItemButton";
 
 const useStyles = makeStyles({
   list: (loading) => ({
@@ -94,16 +94,14 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
           <List>
             {item.files &&
               item.files.map((file) => (
-                <ListItem
+                <ListItemButton
                   key={file.file}
-                  button
                   component="a"
                   target="_blank"
                   href={`/api/expenses/files/${file.file}/${file.name}`}
-                  onClick={(event) => event.stopPropagation()}
-                >
+                  onClick={(event) => event.stopPropagation()}>
                   <ListItemText primary={file.name} />
-                </ListItem>
+                </ListItemButton>
               ))}
           </List>
         </Card>

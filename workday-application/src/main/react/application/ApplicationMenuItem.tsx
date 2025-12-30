@@ -2,13 +2,13 @@ import { useHistory } from "react-router-dom";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import React, { useState } from "react";
 import ListItemText from "@mui/material/ListItemText";
-import ListItem from "@mui/material/ListItem";
 import { OverridableComponent } from "@mui/material/OverridableComponent";
 import { Collapse, SvgIconTypeMap } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import List from "@mui/material/List";
 import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
+import ListItemButton from "@mui/material/ListItemButton";
 
 const useStyles = makeStyles((theme: Theme) => ({
   nested: {
@@ -53,20 +53,20 @@ export default function ApplicationMenuItem({
 
   if (!("items" in item)) {
     return (
-      <ListItem button key={item.name} onClick={handleClickItem(item)}>
+      <ListItemButton key={item.name} onClick={handleClickItem(item)}>
         <ListItemIcon>{React.createElement(item.icon)}</ListItemIcon>
         <ListItemText primary={item.name} />
-      </ListItem>
+      </ListItemButton>
     );
   }
 
   return (
     <>
-      <ListItem button onClick={handleClickFolder}>
+      <ListItemButton onClick={handleClickFolder}>
         <ListItemIcon>{React.createElement(item.icon)}</ListItemIcon>
         <ListItemText primary={item.name} />
         {open ? <ExpandLess /> : <ExpandMore />}
-      </ListItem>
+      </ListItemButton>
       <Collapse
         in={open}
         timeout={0} // This has to be 0 for the scrolling to work
