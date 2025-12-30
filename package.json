@@ -31,10 +31,9 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^6.0.0",
-    "@mui/lab": "^6.0.0-beta.0",
     "@mui/material": "^6.0.0",
     "@mui/styles": "^6.5.0",
-    "@mui/x-date-pickers": "^6.18.0",
+    "@mui/x-date-pickers": "^7.0.0",
     "dayjs": "^1.11.1",
     "formik": "^2.2.6",
     "formik-mui": "^5.0.0-alpha.0",
@@ -54,7 +53,7 @@
     "@fontsource/roboto": "^5.0.8",
     "@playwright/test": "^1.53.1",
     "@testing-library/jest-dom": "^6.1.5",
-    "@testing-library/react": "^14.1.2",
+    "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.5.1",
     "@types/jest": "^29.5.10",
     "@types/node": "^20.10.0",
@@ -82,13 +81,17 @@
     "nodemon": "^2.0.2",
     "playwright": "^1.52.0",
     "prettier": "^2.2.1",
-    "react-test-renderer": "^18.2.0",
+    "react-test-renderer": "^19.0.0",
     "ts-jest": "^29.4.5",
     "typescript": "^5.2.2",
     "vite": "^5.0.10"
   },
   "overrides": {
-    "react-is": "^19.0.0"
+    "react-is": "^19.0.0",
+    "mui-file-dropzone": {
+      "@mui/material": "^6.0.0",
+      "@mui/icons-material": "^6.0.0"
+    }
   },
   "lint-staged": {
     "workday-application/src/main/react/**/*.{js,jsx,tsx,ts}": [
