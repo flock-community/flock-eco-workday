@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { FlockEvent } from "../../clients/EventClient";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
 import { DMY_DATE } from "../../clients/util/DateFormats";
-import { FormGroup } from "@material-ui/core";
-import Switch from "@material-ui/core/Switch";
+import { FormGroup } from "@mui/material";
+import Switch from "@mui/material/Switch";
 import { isPersonAttending } from "../../utils/EventUtils";
 import { usePerson } from "../../hooks/PersonHook";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles(() => ({
   active: {

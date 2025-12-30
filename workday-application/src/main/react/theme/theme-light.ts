@@ -1,6 +1,7 @@
-import { blueGrey, green, red } from "@material-ui/core/colors";
-import { createTheme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { blueGrey, green, red } from "@mui/material/colors";
+import { createTheme, PaletteOptions } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
 
 export const themeLight = createTheme({
   palette: {
@@ -14,31 +15,52 @@ export const themeLight = createTheme({
     // @ts-ignore
     done: "hotpink",
   },
-  overrides: {
+  components: {
     MuiDialogTitle: {
-      root: { backgroundColor: "#fcde00" },
+      styleOverrides: {
+        root: {
+          backgroundColor: "#fcde00",
+        },
+      },
     },
-  },
-  props: {
     MuiButton: {
-      variant: "contained",
-      color: "primary",
-    },
-    // @ts-ignore
-    link: {
-      "&::after": {
-        content: '""',
-        position: "absolute",
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
+      defaultProps: {
+        variant: "contained",
+        color: "primary",
+      },
+      styleOverrides: {
+        root: ({ theme }) => ({
+          variants: [
+            {
+              props: { variant: "outlined" },
+              style: {
+                color: theme.palette.text.primary,
+                borderColor: theme.palette.text.primary,
+                "&:hover": {
+                  borderColor: theme.palette.text.primary,
+                  backgroundColor: theme.palette.background.paper,
+                },
+              },
+            },
+            {
+              props: { variant: "text" },
+              style: {
+                color: theme.palette.text.primary,
+                borderColor: theme.palette.text.primary,
+                "&:hover": {
+                  borderColor: theme.palette.text.primary,
+                  backgroundColor: theme.palette.background.paper,
+                },
+              },
+            },
+          ],
+        }),
       },
     },
   },
 });
 
-export const highLightClass = makeStyles((theme) => ({
+export const highLightClass = makeStyles((theme: Theme) => ({
   highlight: {
     position: "relative",
     fontFamily: theme.typography.fontFamily,

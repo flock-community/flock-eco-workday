@@ -1,5 +1,5 @@
 import React from "react";
-import { TableCell, TableHead, TableRow } from "@material-ui/core";
+import { TableCell, TableHead, TableRow } from "@mui/material";
 
 const headCells = [
   {

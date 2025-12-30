@@ -1,4 +1,4 @@
-import { TableCell, TableHead, TableRow } from "@material-ui/core";
+import { TableCell, TableHead, TableRow } from "@mui/material";
 import React from "react";
 
 const headcells = [

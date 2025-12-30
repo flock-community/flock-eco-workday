@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useRouteMatch, Link } from "react-router-dom";
+import { Link, useRouteMatch } from "react-router-dom";
 import {
   Box,
   Card,
@@ -13,15 +13,15 @@ import {
   TableRow,
   TextField,
   Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { PersonTableHead } from "./PersonTableHead";
 import { Person, PersonClient } from "../../../clients/PersonClient";
 import { PersonDialog } from "../PersonDialog";
-import { CheckBox } from "@material-ui/icons";
-import AddIcon from "@material-ui/icons/Add";
-import Button from "@material-ui/core/Button";
+import { CheckBox } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
+import Button from "@mui/material/Button";
 
 const useStyles = makeStyles((theme: any) => ({
   tblEmail: {

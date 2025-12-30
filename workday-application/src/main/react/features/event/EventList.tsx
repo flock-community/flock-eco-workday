@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Box, Card, Chip, Typography } from "@material-ui/core";
-import CardContent from "@material-ui/core/CardContent";
-import Grid from "@material-ui/core/Grid";
+import { Box, Card, Chip, Typography } from "@mui/material";
+import CardContent from "@mui/material/CardContent";
+import Grid from "@mui/material/Grid";
 import {
   EVENT_PAGE_SIZE,
   EventClient,
@@ -10,7 +10,7 @@ import {
 } from "../../clients/EventClient";
 import { isDefined } from "../../utils/validation";
 import { EventTypeMapping } from "../../utils/mappings";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 const useStyles = makeStyles({

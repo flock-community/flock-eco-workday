@@ -5,11 +5,11 @@ import { User } from "@workday-user/user/response/user";
 import {
   Card,
   CardContent,
-  Select,
-  MenuItem,
   FormControl,
   InputLabel,
-} from "@material-ui/core";
+  MenuItem,
+  Select,
+} from "@mui/material";
 
 export function UserSelector(props) {
   const { embedded, onChange, label, selectedItem } = props;
@@ -39,7 +39,12 @@ export function UserSelector(props) {
   const selectInput = (
     <FormControl fullWidth>
       <InputLabel shrink>{label}</InputLabel>
-      <Select value={selected || ""} displayEmpty onChange={handleChange}>
+      <Select
+        label={label}
+        value={selected || ""}
+        displayEmpty
+        onChange={handleChange}
+      >
         <MenuItem value="">
           <em>None</em>
         </MenuItem>

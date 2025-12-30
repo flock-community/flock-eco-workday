@@ -7,8 +7,8 @@ import {
   InputLabel,
   MenuItem,
   Select,
-} from "@material-ui/core";
-import { PersonClient } from "../../clients/PersonClient";
+} from "@mui/material";
+import { Person, PersonClient } from "../../clients/PersonClient";
 
 type PersonSelectorProps = FormControlProps & {
   value?: string;
@@ -67,7 +67,7 @@ export function PersonSelector({
     }
   }
 
-  function renderMenuItem(item, key) {
+  function renderMenuItem(item: Person, key: string) {
     return (
       <MenuItem key={`person-selector-menu-item-${key}`} value={item.uuid}>
         {renderString(item)}
@@ -76,12 +76,13 @@ export function PersonSelector({
   }
 
   const selectInput = items && (
-    <FormControl {...props}>
+    <FormControl fullWidth {...props}>
       <InputLabel shrink>{label}</InputLabel>
       <Select
+        label={label}
         value={state || (multiple ? [] : "")}
-        displayEmpty
         onChange={handleChange}
+        displayEmpty
         renderValue={multiple ? renderValue : undefined}
         multiple={multiple}
       >

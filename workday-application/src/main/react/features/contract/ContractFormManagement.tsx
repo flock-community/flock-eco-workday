@@ -1,12 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { Field, Form, Formik } from "formik";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { TextField } from "formik-material-ui";
+import { TextField } from "formik-mui";
 import { mixed, number, object } from "yup";
 import { DatePickerField } from "../../components/fields/DatePickerField";
-import DayjsUtils from "@date-io/dayjs";
 import dayjs from "dayjs";
 
 // form id as a reference point for buttons outside of the <form></form> scope to be
@@ -24,36 +22,27 @@ export const ContractFormManagement = ({
 }: ContractFormManagementProps) => {
   const form = ({ values }) => (
     <Form id={MANAGEMENT_CONTRACT_FORM_ID}>
-      <MuiPickersUtilsProvider utils={DayjsUtils}>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <Field
-              name="monthlyFee"
-              type="number"
-              label="Monthly fee"
-              fullWidth
-              component={TextField}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <DatePickerField
-              name="from"
-              label="Start date"
-              maxDate={values.to ? values.to : undefined}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <DatePickerField
-              name="to"
-              label="End date"
-              minDate={values.from}
-              fullWidth
-              clearable
-            />
-          </Grid>
+      <Grid container spacing={1}>
+        <Grid item xs={12}>
+          <Field
+            name="monthlyFee"
+            type="number"
+            label="Monthly fee"
+            fullWidth
+            component={TextField}
+          />
         </Grid>
-      </MuiPickersUtilsProvider>
+        <Grid item xs={6}>
+          <DatePickerField
+            name="from"
+            label="Start date"
+            maxDate={values.to ? values.to : undefined}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <DatePickerField name="to" label="End date" minDate={values.from} />
+        </Grid>
+      </Grid>
     </Form>
   );
 

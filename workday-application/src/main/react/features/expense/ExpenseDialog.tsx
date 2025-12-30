@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Box, Dialog, DialogContent, Divider } from "@material-ui/core";
-import WorkIcon from "@material-ui/icons/Work";
+import { Dialog, Divider } from "@mui/material";
+import WorkIcon from "@mui/icons-material/Work";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import {
@@ -23,6 +23,7 @@ import {
   TravelExpense,
 } from "../../models/Expense";
 import { Status } from "../../models/Status";
+import { DialogBody } from "../../components/dialog/DialogHeader";
 
 type ExpenseDialogProps = {
   open: boolean;
@@ -117,10 +118,11 @@ export function ExpenseDialog({
   return (
     <>
       <Dialog
-        fullScreen
         open={open}
         onClose={handleClose}
         TransitionComponent={TransitionSlider}
+        maxWidth="lg"
+        fullWidth
       >
         <DialogHeader
           icon={<WorkIcon />}
@@ -128,15 +130,15 @@ export function ExpenseDialog({
           subheadline="Add your expense."
           onClose={handleClose}
         />
-        <DialogContent>
-          <UserAuthorityUtil has={"ExpenseAuthority.ADMIN"}>
-            <Box my="1rem">
-              <Typography variant={"h5"} component={"h2"}>
-                {personFullName}
-              </Typography>
-            </Box>
-          </UserAuthorityUtil>
+        <DialogBody>
           <Grid container spacing={1}>
+            <UserAuthorityUtil has={"ExpenseAuthority.ADMIN"}>
+              <Grid item xs>
+                <Typography variant={"h5"} component={"h2"}>
+                  {personFullName}
+                </Typography>
+              </Grid>
+            </UserAuthorityUtil>
             {!id && (
               <Grid item xs={12}>
                 <FormControl fullWidth>
@@ -160,7 +162,7 @@ export function ExpenseDialog({
               )}
             </Grid>
           </Grid>
-        </DialogContent>
+        </DialogBody>
         <Divider />
         <DialogFooter
           formId={`${type.toLowerCase()}-expense-form`}
@@ -173,7 +175,7 @@ export function ExpenseDialog({
         onClose={handleDeleteClose}
         onConfirm={handleDelete}
       >
-        <Typography>Are you sure you want to remove this expense.</Typography>
+        <Typography>Are you sure you want to remove this expense?</Typography>
       </ConfirmDialog>
     </>
   );

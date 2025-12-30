@@ -2,15 +2,13 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import Grid from "@material-ui/core/Grid";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { TextField } from "formik-material-ui";
+import Grid from "@mui/material/Grid";
+import { TextField } from "formik-mui";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PersonSelectorField } from "../../components/fields/PersonSelectorField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
 import { mutatePeriod } from "../period/Period";
 import dayjs from "dayjs";
-import DayjsUtils from "@date-io/dayjs";
 import { EventTypeSelect } from "./EventTypeSelect";
 import { EventTypeMappingToBillable } from "../../utils/mappings";
 
@@ -54,61 +52,49 @@ export function EventForm({ value, onSubmit }) {
 
     return (
       <Form id={EVENT_FORM_ID}>
-        <MuiPickersUtilsProvider utils={DayjsUtils}>
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
-              <Field
-                name="description"
-                type="text"
-                label="Description"
-                fullWidth
-                component={TextField}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Field
-                name="costs"
-                type="number"
-                label="Costs"
-                fullWidth
-                component={TextField}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <PersonSelectorField name="personIds" multiple fullWidth />
-            </Grid>
-            <Grid item xs={12} style={{ marginTop: "1rem" }}>
-              <EventTypeSelect
-                value={values.type}
-                onChange={handleEventTypeChange}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <DatePickerField
-                name="from"
-                label="From"
-                maxDate={values.to}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <DatePickerField
-                name="to"
-                label="To"
-                minDate={values.from}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <PeriodInputField
-                name="days"
-                from={values.from}
-                to={values.to}
-                reset={resetHours}
-              />
-            </Grid>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Field
+              name="description"
+              type="text"
+              label="Description"
+              fullWidth
+              component={TextField}
+            />
           </Grid>
-        </MuiPickersUtilsProvider>
+          <Grid item xs={12}>
+            <Field
+              name="costs"
+              type="number"
+              label="Costs"
+              fullWidth
+              component={TextField}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <PersonSelectorField name="personIds" multiple fullWidth />
+          </Grid>
+          <Grid item xs={12} style={{ marginTop: "1rem" }}>
+            <EventTypeSelect
+              value={values.type}
+              onChange={handleEventTypeChange}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <DatePickerField name="from" label="From" maxDate={values.to} />
+          </Grid>
+          <Grid item xs={6}>
+            <DatePickerField name="to" label="To" minDate={values.from} />
+          </Grid>
+          <Grid item xs={12}>
+            <PeriodInputField
+              name="days"
+              from={values.from}
+              to={values.to}
+              reset={resetHours}
+            />
+          </Grid>
+        </Grid>
       </Form>
     );
   };

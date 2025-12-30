@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Dialog, DialogTitle } from "@material-ui/core";
-import DialogContent from "@material-ui/core/DialogContent";
-import Button from "@material-ui/core/Button";
-import DialogActions from "@material-ui/core/DialogActions";
+import { Dialog, DialogTitle } from "@mui/material";
+import DialogContent from "@mui/material/DialogContent";
+import Button from "@mui/material/Button";
+import DialogActions from "@mui/material/DialogActions";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import { AssignmentClient } from "../../clients/AssignmentClient";
 import { isDefined } from "../../utils/validation";
 import { ASSIGNMENT_FORM_ID, AssignmentForm } from "./AssignmentForm";
 import { usePerson } from "../../hooks/PersonHook";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import { DialogBody, DialogHeader } from "../../components/dialog/DialogHeader";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 
 export function AssignmentDialog(props) {
   const { open, code, onClose } = props;
@@ -54,11 +56,16 @@ export function AssignmentDialog(props) {
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-        <DialogTitle>Assignment form</DialogTitle>
-        <DialogContent>
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
+        <DialogHeader
+          headline="Create / Edit an assignment"
+          subheadline="What are we working on?"
+          icon={<AssignmentIcon />}
+          onClose={onClose}
+        />
+        <DialogBody>
           <AssignmentForm value={state} onSubmit={handleSubmit} />
-        </DialogContent>
+        </DialogBody>
         <DialogActions>
           {code && <Button onClick={handelDeleteOpen}>Delete</Button>}
           <Button

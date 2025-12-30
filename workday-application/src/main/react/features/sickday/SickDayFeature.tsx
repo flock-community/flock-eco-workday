@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Button, Card, CardContent, CardHeader } from "@material-ui/core";
+import { Button, Card, CardContent, CardHeader } from "@mui/material";
 import { SickDayDialog } from "./SickDayDialog";
 import { SickDayList } from "./SickDayList";
 import { SickDayClient } from "../../clients/SickDayClient";
 import { Person } from "../../clients/PersonClient";
-import AddIcon from "@material-ui/icons/Add";
+import AddIcon from "@mui/icons-material/Add";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import type { DayProps } from "../../types";
 

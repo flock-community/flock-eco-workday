@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Box, Dialog, DialogContent, Divider } from "@material-ui/core";
+import { Box, Dialog, DialogContent, Divider } from "@mui/material";
 import { DialogHeader } from "../dialog";
-import { makeStyles } from "@material-ui/core/styles";
-import HolidayIcon from "@material-ui/icons/WbSunny";
-import HealingIcon from "@material-ui/icons/Healing";
-import EventIcon from "@material-ui/icons/CalendarToday";
-import WorkdayIcon from "@material-ui/icons/Work";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import { ChildCare, MoreHoriz, Timeline } from "@material-ui/icons";
+import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
+import HolidayIcon from "@mui/icons-material/WbSunny";
+import HealingIcon from "@mui/icons-material/Healing";
+import EventIcon from "@mui/icons-material/CalendarToday";
+import WorkdayIcon from "@mui/icons-material/Work";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
+import { ChildCare, MoreHoriz, Timeline } from "@mui/icons-material";
 import { AggregationPersonObject } from "./MissingHoursCard";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
+import { DialogBody } from "../dialog/DialogHeader";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   flexDataContainer: {
     display: "flex",
     height: "2rem",
@@ -88,7 +90,7 @@ export function MissingHoursDetailDialog({
             month: "long",
           })}
         />
-        <DialogContent style={{ padding: "32px 24px" }}>
+        <DialogBody>
           {!item && (
             <Typography align={"center"}>No data to display.</Typography>
           )}
@@ -201,7 +203,7 @@ export function MissingHoursDetailDialog({
               </List>
             </Box>
           )}
-        </DialogContent>
+        </DialogBody>
       </Dialog>
     </>
   );

@@ -1,14 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { TableCell } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import TableRow from "@material-ui/core/TableRow";
+import { TableCell } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
+import TableRow from "@mui/material/TableRow";
 import { StatusMenu } from "../../components/status/StatusMenu";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
-import CreateIcon from "@material-ui/icons/Create";
-import IconButton from "@material-ui/core/IconButton";
+import CreateIcon from "@mui/icons-material/Create";
+import IconButton from "@mui/material/IconButton";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     position: "relative",
   },
@@ -45,7 +46,7 @@ export function WorkDayListItem({
         />
       </TableCell>
       <TableCell>
-        <IconButton onClick={onClick}>
+        <IconButton onClick={onClick} size="large">
           <CreateIcon />
         </IconButton>
       </TableCell>

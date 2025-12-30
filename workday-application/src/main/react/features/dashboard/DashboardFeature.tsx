@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Card from "@material-ui/core/Card";
-import { Box, CardContent, MenuItem, Select } from "@material-ui/core";
-import CardHeader from "@material-ui/core/CardHeader";
+import Card from "@mui/material/Card";
+import { Box, CardContent, MenuItem, Select } from "@mui/material";
+import CardHeader from "@mui/material/CardHeader";
 import { HackDaysPerPersonChart } from "../../components/charts/HackDaysPerPersonChart";
 import { LeaveDaysPerPersonChart } from "../../components/charts/LeaveDaysPerPersonChart";
 import { SickdayPerPersonChart } from "../../components/charts/SickdayPerPersonChart";

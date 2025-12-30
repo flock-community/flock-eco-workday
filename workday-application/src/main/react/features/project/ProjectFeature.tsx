@@ -1,11 +1,11 @@
-import { Box, Card, CardContent, CardHeader } from "@material-ui/core";
+import { Box, Card, CardContent, CardHeader } from "@mui/material";
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import ProjectList from "./ProjectList";
 import ProjectDialog from "./ProjectDialog";
 import { Project } from "../../clients/ProjectClient";
-import AddIcon from "@material-ui/icons/Add";
-import Button from "@material-ui/core/Button";
+import AddIcon from "@mui/icons-material/Add";
+import Button from "@mui/material/Button";
 
 const useStyles = makeStyles({
   root: {

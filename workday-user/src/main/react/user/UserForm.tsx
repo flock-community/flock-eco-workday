@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 
-import FormControl from "@material-ui/core/FormControl";
+import FormControl from "@mui/material/FormControl";
 import UserClient from "./UserClient";
 import { Field, FieldArray, Form, Formik } from "formik";
-import { Checkbox, TextField } from "formik-material-ui";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormLabel from "@material-ui/core/FormLabel";
+import { Checkbox, TextField } from "formik-mui";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
+import FormLabel from "@mui/material/FormLabel";
 import * as Yup from "yup";
 
 export const USER_FORM_ID = "user-form-id";

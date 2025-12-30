@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import { Box } from "@material-ui/core";
+import { Box } from "@mui/material";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import { Person, PersonClient } from "../../clients/PersonClient";
 import { PersonWidget } from "../../components/person-widget/PersonWidget";

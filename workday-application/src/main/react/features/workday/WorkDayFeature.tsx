@@ -1,12 +1,12 @@
 import React, { useContext, useState } from "react";
-import { Card, CardContent, CardHeader } from "@material-ui/core";
+import { Card, CardContent, CardHeader } from "@mui/material";
 import { WorkDayDialog } from "./WorkDayDialog";
 import { WorkDayList } from "./WorkDayList";
 import { ApplicationContext } from "../../application/ApplicationContext";
 import { WorkDayClient } from "../../clients/WorkDayClient";
 import { addError } from "../../hooks/ErrorHook";
-import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
 import { Person } from "../../clients/PersonClient";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 

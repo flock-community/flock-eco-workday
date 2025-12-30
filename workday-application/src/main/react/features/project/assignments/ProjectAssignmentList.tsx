@@ -4,10 +4,10 @@ import {
   Assignment,
   AssignmentClient,
 } from "../../../clients/AssignmentClient";
-import { TableBody, TableCell, TableHead } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import Table from "@material-ui/core/Table";
-import TableRow from "@material-ui/core/TableRow";
+import { TableBody, TableCell, TableHead } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import Table from "@mui/material/Table";
+import TableRow from "@mui/material/TableRow";
 
 export default function ProjectAssignmentList({ project }) {
   const [assignments, setAssignments] = useState<Assignment[]>([]);

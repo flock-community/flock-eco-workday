@@ -1,12 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { Field, Form, Formik } from "formik";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { CheckboxWithLabel, TextField } from "formik-material-ui";
+import { CheckboxWithLabel, TextField } from "formik-mui";
 import { boolean, mixed, number, object } from "yup";
 import { DatePickerField } from "../../components/fields/DatePickerField";
-import DayjsUtils from "@date-io/dayjs";
 import dayjs from "dayjs";
 
 export const EXTERNAL_CONTRACT_FORM_ID = "external-contract-form";
@@ -22,53 +20,44 @@ export const ContractFormExternal = ({
 }: ContractFormExternalProps) => {
   const form = ({ values }) => (
     <Form id={EXTERNAL_CONTRACT_FORM_ID}>
-      <MuiPickersUtilsProvider utils={DayjsUtils}>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <Field
-              name="hourlyRate"
-              type="number"
-              label="Hourly rate"
-              fullWidth
-              component={TextField}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Field
-              name="hoursPerWeek"
-              type="number"
-              label="Hours per week"
-              fullWidth
-              component={TextField}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <DatePickerField
-              name="from"
-              label="Start date"
-              fullWidth
-              maxDate={values.to ? values.to : undefined}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <DatePickerField
-              name="to"
-              label="End date"
-              fullWidth
-              clearable
-              minDate={values.from}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Field
-              name="billable"
-              type="checkbox"
-              Label={{ label: "Billable" }}
-              component={CheckboxWithLabel}
-            />
-          </Grid>
+      <Grid container spacing={1}>
+        <Grid item xs={12}>
+          <Field
+            name="hourlyRate"
+            type="number"
+            label="Hourly rate"
+            fullWidth
+            component={TextField}
+          />
         </Grid>
-      </MuiPickersUtilsProvider>
+        <Grid item xs={12}>
+          <Field
+            name="hoursPerWeek"
+            type="number"
+            label="Hours per week"
+            fullWidth
+            component={TextField}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <DatePickerField
+            name="from"
+            label="Start date"
+            maxDate={values.to ? values.to : undefined}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <DatePickerField name="to" label="End date" minDate={values.from} />
+        </Grid>
+        <Grid item xs={12}>
+          <Field
+            name="billable"
+            type="checkbox"
+            Label={{ label: "Billable" }}
+            component={CheckboxWithLabel}
+          />
+        </Grid>
+      </Grid>
     </Form>
   );
 

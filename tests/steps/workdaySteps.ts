@@ -31,33 +31,19 @@ export async function When_I_click_the_button(page, buttonText: string) {
 }
 
 export async function selectDateInPicker(page: Page, dateLabel: string, day: number, month: number, year: number) {
-  await page.getByLabel(dateLabel, {exact: true}).click();
-  const datePicker = page.getByRole('dialog');
-  const monthYearElement = datePicker.locator('.MuiPickersCalendarHeader-transitionContainer p');
-  const targetDate = dayjs(`${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`);
-  const today = dayjs();
-  let currentMonthYear = await monthYearElement.textContent();
-  let [currentMonth, currentYear] = currentMonthYear.split(' ');
-  let targetMonth = new Date(year, month - 1).toLocaleString('default', { month: 'long' });
-  const isFuture = targetDate.isAfter(today, 'month');
-  const navButton = isFuture
-    ? datePicker.locator('.MuiPickersCalendarHeader-switchHeader button').nth(1)
-    : datePicker.locator('.MuiPickersCalendarHeader-switchHeader button').first();
-  while (currentMonth !== targetMonth || currentYear !== year.toString()) {
-    await navButton.click();
-    await page.waitForTimeout(500);
-    currentMonthYear = await monthYearElement.textContent();
-    [currentMonth, currentYear] = currentMonthYear.split(' ');
-  }
-  const dayButtons = await datePicker.locator(`button[type="button"]:not(.MuiPickersDay-hidden)`).all();
-  for (const btn of dayButtons) {
-    const btnText = await btn.textContent();
-    if (btnText === `${day}`) {
-      await btn.click();
-      break;
-    }
-  }
-  await datePicker.getByRole('button', {name: 'OK'}).click();
+  // Format the date as DD-MM-YYYY (the format the application uses)
+  const dateString = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
+
+  // Find the date input field and fill it directly
+  const dateInput = page.getByLabel(dateLabel, { exact: true });
+  await dateInput.click();
+  await dateInput.fill(dateString);
+
+  // Press Enter or Tab to confirm the date
+  await dateInput.press('Tab');
+
+  // Wait a moment for the date to be processed
+  await page.waitForTimeout(200);
 }
 
 export async function When_I_fill_in_the_date_range_from_till(page: Page, fromDate: string, tillDate: string) {
@@ -131,6 +117,13 @@ export async function Then_I_see_the_expense_as(page, status: string, reason: st
 }
 
 export async function When_I_select_the_assignment(page, assignmentText: string) {
+  // Click the assignment field to open the autocomplete
   await page.getByLabel('Assignment').click();
+
+  // Wait for the listbox to appear - MUI v5 renders it outside the dialog
+  const listbox = page.getByRole('listbox', { name: 'Assignment' });
+  await listbox.waitFor({ state: 'visible', timeout: 5000 });
+
+  // Click the matching option
   await page.getByRole('option', { name: new RegExp(assignmentText, 'i') }).click();
 }

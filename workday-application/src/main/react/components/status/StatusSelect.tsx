@@ -1,11 +1,13 @@
-import MenuItem from "@material-ui/core/MenuItem";
+import MenuItem from "@mui/material/MenuItem";
 import React from "react";
-import Select from "@material-ui/core/Select";
+import Select from "@mui/material/Select";
 import {
   allStatusTransitions,
   canChangeStatus,
   filterTransitionsFromByStatus,
 } from "./StatusMethods";
+import FormControl from "@mui/material/FormControl";
+import { InputLabel } from "@mui/material";
 
 const statusTransitions = [
   { from: "REQUESTED", to: "REQUESTED" },
@@ -41,9 +43,12 @@ export function StatusSelect({ onChange, value }) {
   return (
     <>
       {currentStateOptions && currentStateOptions.length > 0 && (
-        <Select fullWidth value={value} onChange={handleOnChange}>
-          {(currentStateOptions || []).map((it) => renderMenuItem(it))}
-        </Select>
+        <FormControl fullWidth>
+          <InputLabel id="status-select-label">Status</InputLabel>
+          <Select label="Status" value={value} onChange={handleOnChange}>
+            {(currentStateOptions || []).map((it) => renderMenuItem(it))}
+          </Select>
+        </FormControl>
       )}
     </>
   );

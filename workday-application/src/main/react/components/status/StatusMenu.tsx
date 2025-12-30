@@ -1,7 +1,8 @@
-import Button from "@material-ui/core/Button";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import { makeStyles } from "@material-ui/core/styles";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
@@ -10,7 +11,7 @@ import {
   filterTransitionsFromByStatus,
 } from "./StatusMethods";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   buttonRequested: {
     backgroundColor: "unset",
     "&:disabled": {

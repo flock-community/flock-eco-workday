@@ -1,6 +1,6 @@
 import React from "react";
-import { Box, Grid, TextField } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
+import { Box, Grid, TextField } from "@mui/material";
+import Typography from "@mui/material/Typography";
 import { Period } from "../../features/period/Period";
 import dayjs, { Dayjs } from "dayjs";
 import weekOfYearPlugin from "dayjs/plugin/weekOfYear";
@@ -27,13 +27,13 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
 
   return (
     <>
-      <Grid container spacing={1} alignItems="center">
+      <Grid container spacing={2} alignItems="center">
         {/* The header of the table with the days as caption */}
         <Grid item xs={2}>
           <Typography>Week</Typography>
         </Grid>
         {daysOfWeek.map((d) => (
-          <Grid item xs key={`day-name-${d}`}>
+          <Grid item xs textAlign="center" key={`day-name-${d}`}>
             <Typography>{d}</Typography>
           </Grid>
         ))}
@@ -48,29 +48,31 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
           <Grid
             container
             spacing={1}
+            mt={1}
+            mb={1}
             key={`${week.year} week-${week.weekNumber}`}
             alignItems="center"
+            alignContent="center"
           >
             <Grid item xs={2}>
               <Typography>{week.weekNumber}</Typography>
             </Grid>
-            {week.days &&
-              week.days.map((day) => (
-                <Grid item xs key={`day-${day.key}`}>
-                  <TextField
-                    label={day.disabled ? "-" : day.date.format("DD MMM")}
-                    value={day.value}
-                    disabled={day.disabled}
-                    onChange={(ev) =>
-                      onChange(day.date, parseFloat(ev.target.value || "0"))
-                    }
-                    type="number"
-                    InputLabelProps={{
-                      shrink: !day.disabled,
-                    }}
-                  />
-                </Grid>
-              ))}
+            {week.days?.map((day) => (
+              <Grid item xs key={`day-${day.key}`}>
+                <TextField
+                  label={day.disabled ? "-" : day.date.format("DD MMM")}
+                  value={day.value}
+                  disabled={day.disabled}
+                  onChange={(ev) =>
+                    onChange(day.date, parseFloat(ev.target.value || "0"))
+                  }
+                  type="number"
+                  InputLabelProps={{
+                    shrink: !day.disabled,
+                  }}
+                />
+              </Grid>
+            ))}
             <Grid item xs={2}>
               <Typography align="right">{week.total}</Typography>
             </Grid>
@@ -79,7 +81,7 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
       })}
 
       {/* Bottom */}
-      <Box mt={1}>
+      <Box mt={2}>
         <Grid container spacing={1} alignItems="center">
           <Grid item xs={10}>
             <Typography align="right">Period total</Typography>

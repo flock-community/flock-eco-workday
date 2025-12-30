@@ -2,14 +2,12 @@ import React from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import Grid from "@material-ui/core/Grid";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { TextField } from "formik-material-ui";
+import Grid from "@mui/material/Grid";
+import { TextField } from "formik-mui";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PeriodInputField } from "../../components/fields/PeriodInputField";
 import dayjs from "dayjs";
-import DayjsUtils from "@date-io/dayjs";
 import { StatusSelect } from "../../components/status/StatusSelect";
 
 export const SICKDAY_FORM_ID = "sick-day-form";
@@ -40,46 +38,34 @@ export function SickDayForm({ value, onSubmit }) {
 
     return (
       <Form id={SICKDAY_FORM_ID}>
-        <MuiPickersUtilsProvider utils={DayjsUtils}>
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
-              <Field
-                name="description"
-                type="text"
-                label="Description"
-                fullWidth
-                component={TextField}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <UserAuthorityUtil has={"SickdayAuthority.ADMIN"}>
-                <StatusSelect
-                  value={values.status}
-                  onChange={handleStatusChange}
-                ></StatusSelect>
-              </UserAuthorityUtil>
-            </Grid>
-            <Grid item xs={6}>
-              <DatePickerField
-                name="from"
-                label="From"
-                maxDate={values.to}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <DatePickerField
-                name="to"
-                label="To"
-                minDate={values.from}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <PeriodInputField name="days" from={values.from} to={values.to} />
-            </Grid>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Field
+              name="description"
+              type="text"
+              label="Description"
+              component={TextField}
+              fullWidth
+            />
           </Grid>
-        </MuiPickersUtilsProvider>
+          <Grid item xs={12}>
+            <UserAuthorityUtil has={"SickdayAuthority.ADMIN"}>
+              <StatusSelect
+                value={values.status}
+                onChange={handleStatusChange}
+              ></StatusSelect>
+            </UserAuthorityUtil>
+          </Grid>
+          <Grid item xs={6}>
+            <DatePickerField name="from" label="From" maxDate={values.to} />
+          </Grid>
+          <Grid item xs={6}>
+            <DatePickerField name="to" label="To" minDate={values.from} />
+          </Grid>
+          <Grid item xs={12}>
+            <PeriodInputField name="days" from={values.from} to={values.to} />
+          </Grid>
+        </Grid>
       </Form>
     );
   };

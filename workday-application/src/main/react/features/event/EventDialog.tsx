@@ -1,24 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, Divider } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import EventIcon from "@material-ui/icons/CalendarToday";
+import { Dialog, DialogContent, Divider } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import EventIcon from "@mui/icons-material/CalendarToday";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
 import { EventClient, FlockEventRequest } from "../../clients/EventClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { EVENT_FORM_ID, EventForm } from "./EventForm";
 import { schema } from "../workday/WorkDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
-
-const useStyles = makeStyles(() => ({
-  dialogContent: {
-    margin: "auto",
-    maxWidth: 768, // should be a decent medium-sized breakpoint
-  },
-}));
+import { DialogBody } from "../../components/dialog/DialogHeader";
 
 type EventDialogProps = {
   open: boolean;
@@ -27,8 +21,6 @@ type EventDialogProps = {
 };
 
 export function EventDialog({ open, code, onComplete }: EventDialogProps) {
-  const classes = useStyles();
-
   const [openDelete, setOpenDelete] = useState(false);
 
   const [state, setState] = useState<FlockEventRequest | undefined>(undefined);
@@ -90,10 +82,11 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   return (
     <>
       <Dialog
-        fullScreen
         open={open}
         onClose={handleClose}
         TransitionComponent={TransitionSlider}
+        maxWidth="lg"
+        fullWidth
       >
         <DialogHeader
           icon={<EventIcon />}
@@ -101,7 +94,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
           subheadline="Have a fun time!"
           onClose={handleClose}
         />
-        <DialogContent className={classes.dialogContent}>
+        <DialogBody>
           <Grid container spacing={1}>
             <Grid item>
               {state && <EventForm value={state} onSubmit={handleSubmit} />}
@@ -119,7 +112,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
               </Grid>
             )}
           </Grid>
-        </DialogContent>
+        </DialogBody>
         <Divider />
         <DialogFooter
           formId={EVENT_FORM_ID}
@@ -132,7 +125,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         onClose={handleDeleteClose}
         onConfirm={handleDelete}
       >
-        <Typography>Are you sure you want to remove this event.</Typography>
+        <Typography>Are you sure you want to remove this event?</Typography>
       </ConfirmDialog>
     </>
   );

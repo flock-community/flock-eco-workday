@@ -28,8 +28,7 @@ test.describe('Workday scenarios', () => {
     });
   });
 
-  // TODO make sure ernie user has assignment
-  test.skip('Submitting worked hours', async ({ page }) => {
+  test('Submitting worked hours', async ({ page }) => {
     await Given_I_am_logged_in_as_user(page, 'ernie');
     await When_I_go_to_my_work_days(page);
     await Then_I_see_a_list_of_the_hours_I_have_submitted_as_for(
@@ -39,7 +38,7 @@ test.describe('Workday scenarios', () => {
     );
 
     await When_I_click_the_button(page, 'Add');
-    await When_I_select_the_assignment(page, 'Client A');
+    await When_I_select_the_assignment(page, 'Client D');
     await When_I_fill_in_the_date_range_from_till(page, '01-04-2026', '30-04-2026');
     // TODO: File upload causes a call to Google storage API, which is not mocked.
     // await When_I_add_a_file(page, 'timesheet.png');

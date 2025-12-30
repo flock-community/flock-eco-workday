@@ -1,6 +1,6 @@
 import React from "react";
-import { TableCell } from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
+import { TableCell } from "@mui/material";
+import TableRow from "@mui/material/TableRow";
 import { Assignment } from "../../../clients/AssignmentClient";
 
 export default function ProjectAssignmentListItem({

@@ -8,10 +8,10 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-} from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
-import CreateIcon from "@material-ui/icons/Create";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
+} from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import CreateIcon from "@mui/icons-material/Create";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import { Person } from "../../clients/PersonClient";
 import { DMY_DATE } from "../../clients/util/DateFormats";
 
@@ -31,10 +31,10 @@ export function PersonWidget({
         title={person.fullName}
         action={
           <>
-            <IconButton onClick={handleEditDialog}>
+            <IconButton onClick={handleEditDialog} size="large">
               <CreateIcon />
             </IconButton>
-            <IconButton onClick={handleDelDialog}>
+            <IconButton onClick={handleDelDialog} size="large">
               <DeleteRoundedIcon />
             </IconButton>
           </>

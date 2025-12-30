@@ -7,9 +7,9 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-} from "@material-ui/core";
-import Table from "@material-ui/core/Table";
-import TableRow from "@material-ui/core/TableRow";
+} from "@mui/material";
+import Table from "@mui/material/Table";
+import TableRow from "@mui/material/TableRow";
 
 export default function ProjectList({ editProject, refresh }) {
   const [projects, setProjects] = useState<Project[]>([]);

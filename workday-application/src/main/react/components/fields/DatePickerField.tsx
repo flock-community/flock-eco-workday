@@ -1,29 +1,42 @@
 import { Field } from "formik";
 import React from "react";
-import { DatePicker, DatePickerProps } from "@material-ui/pickers";
-import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
+import { DatePicker, DatePickerProps } from "@mui/x-date-pickers";
+import { Dayjs } from "dayjs";
 import { DMY_DATE } from "../../clients/util/DateFormats";
 
-type DatePickerFieldProps = Omit<DatePickerProps, "value" | "onChange"> & {
+type DatePickerFieldProps = Omit<
+  DatePickerProps<Dayjs>,
+  "value" | "onChange"
+> & {
   name: string;
-  onChange?: (it: MaterialUiPickersDate) => void;
+  onChange?: (it: Dayjs | null) => void;
 };
 
-export function DatePickerField({ name, ...props }: DatePickerFieldProps) {
+export const DatePickerField = ({
+  name,
+  label,
+  format,
+  ...slotProps
+}: DatePickerFieldProps) => {
   return (
-    <Field id={name} name={name}>
+    <Field name={name}>
       {({ field: { value }, form: { setFieldValue, isSubmitting } }) => (
         <DatePicker
-          id={name}
-          value={value}
+          label={label}
+          value={value || null}
           format={DMY_DATE}
           onChange={(it) => {
             setFieldValue(name, it?.startOf("day"));
           }}
           disabled={isSubmitting}
-          {...props}
+          slotProps={{
+            ...slotProps,
+            textField: {
+              fullWidth: true,
+            },
+          }}
         />
       )}
     </Field>
   );
-}
+};

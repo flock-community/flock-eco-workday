@@ -7,7 +7,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-} from "@material-ui/core";
+} from "@mui/material";
 import { Expense } from "../../models/Expense";
 import { ExpenseTableItem } from "./ExpenseTableItem";
 

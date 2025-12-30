@@ -5,8 +5,8 @@ import path from 'path'
 export default defineConfig({
   plugins: [
     react({
-      // Use classic JSX runtime for React 16
-      jsxRuntime: 'classic',
+      // Use automatic JSX runtime for React 18
+      jsxRuntime: 'automatic',
       // Include .js files for JSX transformation
       include: /\.(jsx|js|tsx|ts)$/,
     }),
@@ -80,10 +80,10 @@ export default defineConfig({
       'react',
       'react-dom',
       'react-router-dom',
-      '@material-ui/core',
-      '@material-ui/icons',
-      '@material-ui/lab',
-      '@material-ui/pickers',
+      '@mui/material',
+      '@mui/icons-material',
+      '@mui/lab',
+      '@mui/x-date-pickers',
     ],
   },
 })

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Box, Card, Typography } from "@material-ui/core";
-import CardContent from "@material-ui/core/CardContent";
-import Grid from "@material-ui/core/Grid";
+import { Box, Card, Typography } from "@mui/material";
+import CardContent from "@mui/material/CardContent";
+import Grid from "@mui/material/Grid";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
-import CardHeader from "@material-ui/core/CardHeader";
-import List from "@material-ui/core/List";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItem from "@material-ui/core/ListItem";
+import CardHeader from "@mui/material/CardHeader";
+import List from "@mui/material/List";
+import ListItemText from "@mui/material/ListItemText";
+import ListItem from "@mui/material/ListItem";
 import { StatusMenu } from "../../components/status/StatusMenu";
 import { EXPENSE_PAGE_SIZE, ExpenseClient } from "../../clients/ExpenseClient";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 
 // Components
 import { FlockPagination } from "../../components/pagination/FlockPagination";

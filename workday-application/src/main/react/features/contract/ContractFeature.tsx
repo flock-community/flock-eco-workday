@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { ContractList } from "./ContractList";
 import { ContractDialog } from "./ContractDialog";
-import { Card, CardContent, CardHeader } from "@material-ui/core";
+import { Card, CardContent, CardHeader } from "@mui/material";
 import { Person } from "../../clients/PersonClient";
-import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
 
 type ContractFeatureProps = {
   person: Person;

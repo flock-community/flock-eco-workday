@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Dialog, DialogTitle } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import DialogContent from "@material-ui/core/DialogContent";
-import Button from "@material-ui/core/Button";
-import DialogActions from "@material-ui/core/DialogActions";
+import { Dialog, DialogTitle } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import DialogContent from "@mui/material/DialogContent";
+import Button from "@mui/material/Button";
+import DialogActions from "@mui/material/DialogActions";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@material-ui/core/Typography";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import Grid from "@material-ui/core/Grid";
+import Typography from "@mui/material/Typography";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Grid from "@mui/material/Grid";
 import { ContractClient } from "../../clients/ContractClient";
 import { isDefined } from "../../utils/validation";
 import { ContractFormInternal } from "./ContractFormInternal";
@@ -20,6 +20,7 @@ import { ContractFormManagement } from "./ContractFormManagement";
 import { ContractFormService } from "./ContractFormService";
 import { ContractType } from "./ContractType";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import { DialogBody } from "../../components/dialog/DialogHeader";
 
 const useStyles = makeStyles({});
 
@@ -77,7 +78,7 @@ export function ContractDialog(props) {
     <>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
         <DialogTitle>Contract form</DialogTitle>
-        <DialogContent>
+        <DialogBody>
           <Grid container spacing={1}>
             {!code && (
               <Grid item xs={12}>
@@ -110,7 +111,7 @@ export function ContractDialog(props) {
               )}
             </Grid>
           </Grid>
-        </DialogContent>
+        </DialogBody>
 
         <DialogActions>
           {code && <Button onClick={handelDeleteOpen}>Delete</Button>}

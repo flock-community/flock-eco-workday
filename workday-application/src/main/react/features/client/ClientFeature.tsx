@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { ClientList } from "./ClientList";
 import { ClientDialog } from "./ClientDialog";
-import { Box, Card, CardContent, CardHeader } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import Button from "@material-ui/core/Button";
+import { Box, Card, CardContent, CardHeader } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import Button from "@mui/material/Button";
 
 export function ClientFeature() {
   const [reload, setReload] = useState(false);

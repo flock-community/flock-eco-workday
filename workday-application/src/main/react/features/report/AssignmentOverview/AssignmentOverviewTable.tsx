@@ -7,7 +7,7 @@ import {
   TableContainer,
   TablePagination,
   TableRow,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   Assignment,
   AssignmentClient,

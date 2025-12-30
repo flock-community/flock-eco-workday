@@ -1,10 +1,11 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { makeStyles } from "@material-ui/core/styles";
-import { Typography, Button, DialogTitle } from "@material-ui/core";
-import Close from "@material-ui/icons/Close";
+import React, { ReactNode } from "react";
+import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
+import { Button, DialogTitle, Typography } from "@mui/material";
+import Close from "@mui/icons-material/Close";
+import DialogContent from "@mui/material/DialogContent";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     margin: 0,
     padding: theme.spacing(2),
@@ -17,6 +18,12 @@ const useStyles = makeStyles((theme) => ({
   dialogTitle: {
     alignItems: "center",
     display: "flex",
+  },
+  dialogContent: {
+    paddingTop: "10px",
+    paddingBottom: "10px",
+    marginTop: "10px",
+    marginBottom: "10px",
   },
   iconWrapper: {
     "& > svg": {
@@ -31,9 +38,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function DialogHeader(props) {
-  const { icon, headline, subheadline, onClose } = props;
+type DialogHeaderProps = {
+  icon?: React.ReactNode;
+  headline?: string;
+  subheadline?: string;
+  onClose: () => void;
+};
 
+type DialogBodyProps = {
+  children: React.ReactNode | React.ReactNode[];
+};
+
+export const DialogHeader = (props: DialogHeaderProps) => {
+  const { icon, headline, subheadline, onClose } = props;
   const classes = useStyles();
 
   return (
@@ -50,11 +67,14 @@ export function DialogHeader(props) {
       </div>
     </DialogTitle>
   );
-}
+};
 
-DialogHeader.propTypes = {
-  icon: PropTypes.any,
-  headline: PropTypes.string,
-  subheadline: PropTypes.string,
-  onClose: PropTypes.func.isRequired,
+export const DialogBody = (props: DialogBodyProps) => {
+  const classes = useStyles();
+
+  return (
+    <div className={classes.dialogContent}>
+      <DialogContent>{props.children}</DialogContent>
+    </div>
+  );
 };

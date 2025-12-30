@@ -1,15 +1,16 @@
 import { useHistory } from "react-router-dom";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemIcon from "@mui/material/ListItemIcon";
 import React, { useState } from "react";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItem from "@material-ui/core/ListItem";
-import { OverridableComponent } from "@material-ui/core/OverridableComponent";
-import { Collapse, SvgIconTypeMap } from "@material-ui/core";
-import { ExpandLess, ExpandMore } from "@material-ui/icons";
-import List from "@material-ui/core/List";
-import { makeStyles } from "@material-ui/core/styles";
+import ListItemText from "@mui/material/ListItemText";
+import ListItem from "@mui/material/ListItem";
+import { OverridableComponent } from "@mui/material/OverridableComponent";
+import { Collapse, SvgIconTypeMap } from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import List from "@mui/material/List";
+import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   nested: {
     paddingLeft: theme.spacing(1),
   },

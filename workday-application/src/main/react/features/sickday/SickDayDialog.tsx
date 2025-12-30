@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Box, Dialog, DialogContent, Divider } from "@material-ui/core";
-import HealingIcon from "@material-ui/icons/Healing";
+import { Dialog, Divider } from "@mui/material";
+import HealingIcon from "@mui/icons-material/Healing";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { SickDayClient } from "../../clients/SickDayClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { schemaSickDayForm, SICKDAY_FORM_ID, SickDayForm } from "./SickDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import { DialogBody } from "../../components/dialog/DialogHeader";
+import Grid from "@mui/material/Grid";
 
 type SickDayDialogProps = {
   personFullName: string;
@@ -105,10 +107,11 @@ export function SickDayDialog({
   return (
     <>
       <Dialog
-        fullScreen
         open={open}
         onClose={handleClose}
         TransitionComponent={TransitionSlider}
+        maxWidth="lg"
+        fullWidth
       >
         <DialogHeader
           icon={<HealingIcon />}
@@ -116,16 +119,23 @@ export function SickDayDialog({
           subheadline="Add your sick days. Hope you feel better soon."
           onClose={handleClose}
         />
-        <DialogContent>
-          <UserAuthorityUtil has={"SickdayAuthority.ADMIN"}>
-            <Box mt="1rem">
-              <Typography variant={"h5"} component={"h2"}>
-                {personFullName}
-              </Typography>
-            </Box>
-          </UserAuthorityUtil>
-          {state && <SickDayForm value={state} onSubmit={handleSubmit} />}
-        </DialogContent>
+        <DialogBody>
+          <Grid container spacing={2}>
+            <UserAuthorityUtil has={"SickdayAuthority.ADMIN"}>
+              <Grid item xs={12}>
+                <Typography variant={"h5"} component={"h2"}>
+                  {personFullName}
+                </Typography>
+              </Grid>
+            </UserAuthorityUtil>
+
+            {state && (
+              <Grid item xs={12}>
+                <SickDayForm value={state} onSubmit={handleSubmit} />
+              </Grid>
+            )}
+          </Grid>
+        </DialogBody>
         <Divider />
         <DialogFooter
           formId={SICKDAY_FORM_ID}
@@ -148,7 +158,7 @@ export function SickDayDialog({
         onClose={handleDeleteClose}
         onConfirm={handleDelete}
       >
-        <Typography>Are you sure you want to remove this Sickday.</Typography>
+        <Typography>Are you sure you want to remove this Sick day?</Typography>
       </ConfirmDialog>
     </>
   );

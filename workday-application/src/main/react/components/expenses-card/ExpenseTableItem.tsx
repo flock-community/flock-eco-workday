@@ -1,5 +1,5 @@
 import React from "react";
-import { TableCell, TableRow } from "@material-ui/core";
+import { TableCell, TableRow } from "@mui/material";
 import { DMY_DATE } from "../../clients/util/DateFormats";
 import { Expense } from "../../models/Expense";
 

@@ -1,4 +1,4 @@
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import React from "react";
 import { Contract } from "../../clients/ContractClient";
 import {
@@ -9,9 +9,9 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-} from "@material-ui/core";
-import Table from "@material-ui/core/Table";
-import TableRow from "@material-ui/core/TableRow";
+} from "@mui/material";
+import Table from "@mui/material/Table";
+import TableRow from "@mui/material/TableRow";
 import { DMY_DATE } from "../../clients/util/DateFormats";
 
 type ContractsEndingProps = {

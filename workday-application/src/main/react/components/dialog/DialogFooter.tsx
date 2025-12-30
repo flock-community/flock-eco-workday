@@ -1,19 +1,30 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { Box, Button, DialogActions } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { Box, Button, DialogActions } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+
+type DialogFooterProps = {
+  formId: string;
+  onClose: () => void;
+  onSubmit?: (() => void) | null;
+  onDelete?: () => void;
+  onExport?: () => void;
+  disableDelete?: boolean;
+  disableEdit?: boolean;
+  processingExport?: boolean;
+  processing?: boolean;
+};
 
 export function DialogFooter({
   formId,
   onClose,
-  onSubmit,
+  onSubmit = null,
   onDelete,
   onExport,
   disableDelete = false,
   disableEdit = false,
   processingExport = false,
   processing = false,
-}) {
+}: DialogFooterProps) {
   return (
     <DialogActions>
       {onExport && (
@@ -53,19 +64,3 @@ export function DialogFooter({
     </DialogActions>
   );
 }
-
-DialogFooter.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  formId: PropTypes.string.isRequired,
-  onSubmit: PropTypes.func,
-  onDelete: PropTypes.func,
-  onExport: PropTypes.func,
-  disableDelete: PropTypes.bool,
-  disableEdit: PropTypes.bool,
-};
-
-DialogFooter.defaultProps = {
-  onSubmit: null,
-  disableDelete: false,
-  disableEdit: false,
-};

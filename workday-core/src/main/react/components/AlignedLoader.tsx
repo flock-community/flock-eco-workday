@@ -1,8 +1,8 @@
 import React from "react";
-import { CircularProgress, Grid, Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { CircularProgress, Grid, Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     height: "100%",
   },

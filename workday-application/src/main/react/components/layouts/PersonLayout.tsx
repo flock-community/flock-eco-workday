@@ -1,9 +1,9 @@
 import React from "react";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { PersonSelector } from "../selector";
-import { Box } from "@material-ui/core";
+import { Box } from "@mui/material";
 import { usePerson } from "../../hooks/PersonHook";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 
 type PageProps = {
   requireAuthority: string;

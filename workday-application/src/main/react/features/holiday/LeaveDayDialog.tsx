@@ -6,9 +6,9 @@ import {
   MenuItem,
   Select,
   Slide,
-} from "@material-ui/core";
-import HolidayIcon from "@material-ui/icons/WbSunny";
-import Typography from "@material-ui/core/Typography";
+} from "@mui/material";
+import HolidayIcon from "@mui/icons-material/WbSunny";
+import Typography from "@mui/material/Typography";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
@@ -18,6 +18,7 @@ import { PlusDayForm } from "./PlusDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import { LeaveDayForm } from "./LeaveDayForm";
 import dayjs from "dayjs";
+import { DialogBody } from "../../components/dialog/DialogHeader";
 
 export const LEAVE_DAY_DIALOG_FORM_ID = "leave-day-dialog-form-id";
 
@@ -133,8 +134,8 @@ export function LeaveDayDialog({
           subheadline="Have the best time of your life, beside working for Flock."
           onClose={handleClose}
         />
-        <DialogContent>
-          <Grid container spacing={2}>
+        <DialogBody>
+          <Grid container spacing={1}>
             {!code && (
               <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
                 <Grid item xs={12}>
@@ -178,7 +179,7 @@ export function LeaveDayDialog({
               </Grid>
             )}
           </Grid>
-        </DialogContent>
+        </DialogBody>
         <DialogFooter
           formId={LEAVE_DAY_DIALOG_FORM_ID}
           onClose={handleClose}

@@ -1,14 +1,11 @@
 import React from "react";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import Grid from "@material-ui/core/Grid";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { TextField } from "formik-material-ui";
+import Grid from "@mui/material/Grid";
+import { TextField } from "formik-mui";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
-import MenuItem from "@material-ui/core/MenuItem";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import dayjs from "dayjs";
-import DayjsUtils from "@date-io/dayjs";
 import { LEAVE_DAY_DIALOG_FORM_ID } from "./LeaveDayDialog";
 import { StatusSelect } from "../../components/status/StatusSelect";
 
@@ -45,55 +42,43 @@ export function PlusDayForm({ value, onSubmit }: PlusDayFormProps) {
 
     return (
       <Form id={LEAVE_DAY_DIALOG_FORM_ID}>
-        <MuiPickersUtilsProvider utils={DayjsUtils}>
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
-              <Field
-                name="description"
-                type="text"
-                label="Description"
-                fullWidth
-                component={TextField}
-              />
-            </Grid>
-
-            {value && (
-              <Grid item xs={12}>
-                <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
-                  <StatusSelect
-                    value={values.status}
-                    onChange={handleStatusChange}
-                  ></StatusSelect>
-                </UserAuthorityUtil>
-              </Grid>
-            )}
-            <Grid item xs={6}>
-              <DatePickerField
-                name="from"
-                label="From"
-                fullWidth
-                maxDate={values.to}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <DatePickerField
-                name="to"
-                label="To"
-                fullWidth
-                minDate={values.from}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Field
-                name="hours"
-                type="number"
-                label="Hours"
-                fullWidth
-                component={TextField}
-              />
-            </Grid>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Field
+              name="description"
+              type="text"
+              label="Description"
+              fullWidth
+              component={TextField}
+            />
           </Grid>
-        </MuiPickersUtilsProvider>
+
+          {value && (
+            <Grid item xs={12}>
+              <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+                <StatusSelect
+                  value={values.status}
+                  onChange={handleStatusChange}
+                ></StatusSelect>
+              </UserAuthorityUtil>
+            </Grid>
+          )}
+          <Grid item xs={6}>
+            <DatePickerField name="from" label="From" maxDate={values.to} />
+          </Grid>
+          <Grid item xs={6}>
+            <DatePickerField name="to" label="To" minDate={values.from} />
+          </Grid>
+          <Grid item xs={12}>
+            <Field
+              name="hours"
+              type="number"
+              label="Hours"
+              fullWidth
+              component={TextField}
+            />
+          </Grid>
+        </Grid>
       </Form>
     );
   };
