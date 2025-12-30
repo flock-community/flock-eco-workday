@@ -118,10 +118,11 @@ export function ExpenseDialog({
   return (
     <>
       <Dialog
-        fullScreen
         open={open}
         onClose={handleClose}
         TransitionComponent={TransitionSlider}
+        maxWidth="lg"
+        fullWidth
       >
         <DialogHeader
           icon={<WorkIcon />}
