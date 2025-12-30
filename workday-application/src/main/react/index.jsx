@@ -19,5 +19,4 @@ window.fetch = async (...args) => {
   return originalFetch(resource, opts);
 };
 
-// ReactDOM.render(<Application />, document.getElementById("index"));
 createRoot(document.getElementById("index")).render(<Application />);
