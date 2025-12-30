@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { EventDialog } from "./EventDialog";
 import { EventList } from "./EventList";
-import { Card, CardContent, CardHeader, Box } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import Button from "@material-ui/core/Button";
+import { Box, Card, CardContent, CardHeader } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import Button from "@mui/material/Button";
 import { FlockEvent } from "../../clients/EventClient";
 
 export function EventFeature() {

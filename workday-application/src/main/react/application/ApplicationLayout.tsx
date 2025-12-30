@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
-import MenuIcon from "@material-ui/icons/Menu";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import MenuItem from "@material-ui/core/MenuItem";
-import Button from "@material-ui/core/Button";
-import Snackbar from "@material-ui/core/Snackbar";
-import Alert from "@material-ui/lab/Alert";
-import { makeStyles } from "@material-ui/core/styles";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuIcon from "@mui/icons-material/Menu";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import MenuItem from "@mui/material/MenuItem";
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import makeStyles from "@mui/styles/makeStyles";
 import { Link as RouterLink } from "react-router-dom";
-import { Link } from "@material-ui/core";
+import { Link } from "@mui/material";
 
 // Hooks
 import { useSession } from "../hooks/SessionHook";
@@ -72,6 +72,7 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
             color="inherit"
             aria-label="Menu"
             onClick={handleClickDrawer}
+            size="large"
           >
             <MenuIcon />
           </IconButton>
@@ -92,6 +93,7 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
               aria-haspopup="true"
               onClick={handleMenu}
               color="inherit"
+              size="large"
             >
               <AccountCircle />
             </IconButton>

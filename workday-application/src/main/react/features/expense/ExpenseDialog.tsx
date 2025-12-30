@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Box, Dialog, DialogContent, Divider } from "@material-ui/core";
-import WorkIcon from "@material-ui/icons/Work";
+import { Box, Dialog, DialogContent, Divider } from "@mui/material";
+import WorkIcon from "@mui/icons-material/Work";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import {
@@ -173,7 +173,7 @@ export function ExpenseDialog({
         onClose={handleDeleteClose}
         onConfirm={handleDelete}
       >
-        <Typography>Are you sure you want to remove this expense.</Typography>
+        <Typography>Are you sure you want to remove this expense?</Typography>
       </ConfirmDialog>
     </>
   );

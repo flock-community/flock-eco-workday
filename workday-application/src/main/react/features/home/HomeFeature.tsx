@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import { useUserMe } from "../../hooks/UserMeHook";
-import { Box } from "@material-ui/core";
+import { Box } from "@mui/material";
 import ContractsEnding from "../../components/contracts/ContractsEnding";
 import PersonEvents from "../../components/person/PersonEvents";
 import { highLightClass } from "../../theme/theme-light";

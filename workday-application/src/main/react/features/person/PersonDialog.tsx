@@ -1,6 +1,6 @@
 import React from "react";
-import { Dialog, DialogContent, Divider } from "@material-ui/core";
-import PersonAdd from "@material-ui/icons/PersonAdd";
+import { Dialog, DialogContent, Divider } from "@mui/material";
+import PersonAdd from "@mui/icons-material/PersonAdd";
 import { PERSON_FORM_ID, PersonForm } from "./PersonForm";
 import { PersonClient, PersonRequest } from "../../clients/PersonClient";
 import { TransitionSlider } from "../../components/transitions/Slide";

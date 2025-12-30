@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Dialog, DialogTitle } from "@material-ui/core";
-import DialogContent from "@material-ui/core/DialogContent";
-import Button from "@material-ui/core/Button";
-import DialogActions from "@material-ui/core/DialogActions";
+import { Dialog, DialogTitle } from "@mui/material";
+import DialogContent from "@mui/material/DialogContent";
+import Button from "@mui/material/Button";
+import DialogActions from "@mui/material/DialogActions";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import { AssignmentClient } from "../../clients/AssignmentClient";
 import { isDefined } from "../../utils/validation";
 import { ASSIGNMENT_FORM_ID, AssignmentForm } from "./AssignmentForm";

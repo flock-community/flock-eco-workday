@@ -1,10 +1,10 @@
-import { Card, CardContent, CardHeader, Typography } from "@material-ui/core";
+import { Card, CardContent, CardHeader, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
   AggregationClient,
   PersonHackdayDetails,
 } from "../../clients/AggregationClient";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import { highLightClass } from "../../theme/theme-light";
 import { HackdayDetailDialog } from "./HackdayDetailDialog";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";

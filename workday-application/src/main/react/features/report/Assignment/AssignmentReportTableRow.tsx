@@ -1,14 +1,14 @@
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import IconButton from "@material-ui/core/IconButton";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import IconButton from "@mui/material/IconButton";
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import NonProductiveHours from "./NonProductiveHours";
 import React, { useState } from "react";
 import { AggregationClientPersonAssignmentItem } from "../../../wirespec/Models";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import { Dayjs } from "dayjs";
 
 const useStyles = makeStyles({

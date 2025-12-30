@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { UserTable } from "./UserTable";
 import { UserDialog } from "./UserDialog";
-import { Card } from "@material-ui/core";
+import { Card } from "@mui/material";
 import { UserToolbar } from "./UserToolbar";
 
 type UserFeatureProps = {

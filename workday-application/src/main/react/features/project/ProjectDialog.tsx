@@ -1,10 +1,10 @@
-import { Dialog, DialogActions, DialogTitle } from "@material-ui/core";
+import { Dialog, DialogActions, DialogTitle } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import DialogContent from "@material-ui/core/DialogContent";
+import DialogContent from "@mui/material/DialogContent";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter } from "../../components/dialog";
 import { AssignmentClient } from "../../clients/AssignmentClient";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import ProjectForm, { PROJECT_FORM_ID } from "./ProjectForm";
 import { Project, ProjectClient } from "../../clients/ProjectClient";
 

@@ -7,10 +7,10 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-} from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import TableRow from "@material-ui/core/TableRow";
-import Table from "@material-ui/core/Table";
+} from "@mui/material";
+import Typography from "@mui/material/Typography";
+import TableRow from "@mui/material/TableRow";
+import Table from "@mui/material/Table";
 import { PersonEvent, PersonEventType } from "../../clients/PersonEventClient";
 
 type PersonEventsProps = {

@@ -1,14 +1,14 @@
-import { Box, Card, CardContent, CardHeader, Link } from "@material-ui/core";
+import { Box, Card, CardContent, CardHeader } from "@mui/material";
 import React, { useState } from "react";
-import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
 import { usePerson } from "../../hooks/PersonHook";
 import { WorkDayDialog } from "../../features/workday/WorkDayDialog";
 import { addError } from "../../hooks/ErrorHook";
 import { LeaveDayDialog } from "../../features/holiday/LeaveDayDialog";
 import { ExpenseDialog } from "../../features/expense/ExpenseDialog";
-import { Cloud } from "@material-ui/icons";
-import { makeStyles } from "@material-ui/core/styles";
+import { Cloud } from "@mui/icons-material";
+import makeStyles from "@mui/styles/makeStyles";
 import { ExpenseType } from "../../models/Expense";
 
 const useStyles = makeStyles({
@@ -103,16 +103,15 @@ export function QuickLinks() {
               Cost expense
             </Button>
             {person?.googleDriveId && (
-              <Link
+              <Button
                 href={`https://drive.google.com/drive/folders/${person?.googleDriveId}`}
-                component={Button}
+                component="a"
                 target={"_blank"}
                 rel={"noreferrer"}
-                underline="none"
                 startIcon={<Cloud />}
               >
                 Google Drive
-              </Link>
+              </Button>
             )}
           </Box>
         </CardContent>

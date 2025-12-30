@@ -6,9 +6,9 @@ import {
   MenuItem,
   Select,
   Slide,
-} from "@material-ui/core";
-import HolidayIcon from "@material-ui/icons/WbSunny";
-import Typography from "@material-ui/core/Typography";
+} from "@mui/material";
+import HolidayIcon from "@mui/icons-material/WbSunny";
+import Typography from "@mui/material/Typography";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
@@ -133,7 +133,7 @@ export function LeaveDayDialog({
           onClose={handleClose}
         />
         <DialogContent>
-          <Grid container spacing={2}>
+          <Grid container spacing={50}>
             {!code && (
               <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
                 <Grid item xs={12}>

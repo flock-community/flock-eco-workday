@@ -1,20 +1,20 @@
 import { Field } from "formik";
 import React, { useState } from "react";
-import { DropzoneArea } from "material-ui-dropzone";
+import { DropzoneArea } from "mui-file-dropzone";
 
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListItemText from "@material-ui/core/ListItemText";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
+import ListItemText from "@mui/material/ListItemText";
 
-import FolderIcon from "@material-ui/icons/Folder";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
-import Grid from "@material-ui/core/Grid";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { Typography } from "@material-ui/core";
+import FolderIcon from "@mui/icons-material/Folder";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
+import Grid from "@mui/material/Grid";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Typography } from "@mui/material";
 
 type DropzoneAreaFieldProps = {
   name: string;
@@ -74,6 +74,7 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
             edge="end"
             aria-label="delete"
             onClick={handleDeleteFile(it.file)}
+            size="large"
           >
             <DeleteIcon />
           </IconButton>

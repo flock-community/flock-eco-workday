@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Box, Dialog, DialogContent, Divider } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import WorkIcon from "@material-ui/icons/Work";
+import { Box, Dialog, DialogContent, Divider } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
+import WorkIcon from "@mui/icons-material/Work";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { WorkDayClient } from "../../clients/WorkDayClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
@@ -11,16 +12,16 @@ import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { schema, WORKDAY_FORM_ID, WorkDayForm } from "./WorkDayForm";
 import { isDefined } from "../../utils/validation";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 import { ExportClient } from "../../clients/ExportClient";
-import Snackbar from "@material-ui/core/Snackbar";
+import Snackbar from "@mui/material/Snackbar";
 
 type ExportStatusProps = {
   loading: boolean;
   link: string | null;
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   dialogContent: {
     margin: "auto",
     maxWidth: 768, // should be a decent medium-sized breakpoint
@@ -194,7 +195,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
         onClose={handleDeleteClose}
         onConfirm={handleDelete}
       >
-        <Typography>Are you sure you want to remove this workday.</Typography>
+        <Typography>Are you sure you want to remove this Work Day?</Typography>
       </ConfirmDialog>
       <Snackbar
         open={exportLink.link != null}

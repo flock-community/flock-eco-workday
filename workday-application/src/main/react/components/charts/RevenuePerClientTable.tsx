@@ -5,14 +5,14 @@ import {
   ClientGrossRevenue,
 } from "../../clients/AggregationClient";
 import {
-  makeStyles,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-} from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import TableRow from "@mui/material/TableRow";
 import { currencyFormatter } from "../../utils/Currency";
 
 const useStyles = makeStyles({

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { TableCell } from "@material-ui/core";
-import TableRow from "@material-ui/core/TableRow";
-import CreateIcon from "@material-ui/icons/Create";
-import IconButton from "@material-ui/core/IconButton";
+import { TableCell } from "@mui/material";
+import TableRow from "@mui/material/TableRow";
+import CreateIcon from "@mui/icons-material/Create";
+import IconButton from "@mui/material/IconButton";
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import ProjectAssignmentList from "./assignments/ProjectAssignmentList";
 
 export default function ProjectListItem({ project, editProject }) {
@@ -19,7 +19,7 @@ export default function ProjectListItem({ project, editProject }) {
   const projectHeader = (
     <TableRow>
       <TableCell width={"50px"}>
-        <IconButton onClick={toggleShowAssignments}>
+        <IconButton onClick={toggleShowAssignments} size="large">
           {showAssignments ? (
             <KeyboardArrowUpIcon />
           ) : (
@@ -29,7 +29,7 @@ export default function ProjectListItem({ project, editProject }) {
       </TableCell>
       <TableCell>{project.name}</TableCell>
       <TableCell align="right" width={"50px"}>
-        <IconButton onClick={handleEdit}>
+        <IconButton onClick={handleEdit} size="large">
           <CreateIcon />
         </IconButton>
       </TableCell>

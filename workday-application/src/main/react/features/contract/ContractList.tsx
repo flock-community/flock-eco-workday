@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import Card from "@material-ui/core/Card";
-import { Box, CardContent } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import Card from "@mui/material/Card";
+import { Box, CardContent } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import {
   CONTRACT_PAGE_SIZE,
   ContractClient,
 } from "../../clients/ContractClient";
 import { ContractType } from "./ContractType";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 const useStyles = makeStyles({

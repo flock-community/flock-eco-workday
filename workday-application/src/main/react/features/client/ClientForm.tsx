@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-import { TextField } from "formik-material-ui";
+import { TextField } from "formik-mui";
 import { ClientClient } from "../../clients/ClientClient";
 
 export const CLIENT_FORM_ID = "client-form-id";

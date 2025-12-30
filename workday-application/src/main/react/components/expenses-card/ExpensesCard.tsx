@@ -1,5 +1,5 @@
-import { Box, Card, CardContent, CardHeader } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
+import { Box, Card, CardContent, CardHeader } from "@mui/material";
+import Typography from "@mui/material/Typography";
 import React, { useEffect, useState } from "react";
 import { useExpenseFilters } from "../../hooks/useExpenseFiltersHook";
 import { Expense } from "../../models/Expense";

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Box, Card, Typography } from "@material-ui/core";
-import CardContent from "@material-ui/core/CardContent";
-import Grid from "@material-ui/core/Grid";
+import { Box, Card, Typography } from "@mui/material";
+import CardContent from "@mui/material/CardContent";
+import Grid from "@mui/material/Grid";
 import { SICKDAY_PAGE_SIZE, SickDayClient } from "../../clients/SickDayClient";
 import { DayListItem } from "../../components/DayListItem";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 
 // Components
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 // Types
-import type { DayProps, DayListProps } from "../../types";
+import type { DayListProps, DayProps } from "../../types";
 
 const useStyles = makeStyles({
   list: (loading) => ({

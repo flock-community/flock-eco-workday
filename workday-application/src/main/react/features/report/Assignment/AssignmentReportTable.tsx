@@ -1,12 +1,12 @@
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import React, { Fragment, useEffect, useState } from "react";
 import { AggregationClient } from "../../../clients/AggregationClient";
-import { Box, TableBody, TableContainer } from "@material-ui/core";
-import Table from "@material-ui/core/Table";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
+import { Box, TableBody, TableContainer } from "@mui/material";
+import Table from "@mui/material/Table";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import AssignmentReportTableRow from "./AssignmentReportTableRow";
 import { Dayjs } from "dayjs";
 import { AggregationClientPersonAssignmentOverview } from "../../../wirespec/Models";

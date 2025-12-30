@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Card from "@material-ui/core/Card";
-import { Box, CardContent } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import Card from "@mui/material/Card";
+import { Box, CardContent } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import {
   ASSIGNMENT_PAGE_SIZE,
   AssignmentClient,
 } from "../../clients/AssignmentClient";
 import { isDefined } from "../../utils/validation";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 

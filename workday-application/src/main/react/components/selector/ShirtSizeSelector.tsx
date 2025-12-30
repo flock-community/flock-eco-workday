@@ -6,7 +6,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
-} from "@material-ui/core";
+} from "@mui/material";
 
 type ShirtSizeSelectorProps = FormControlProps & {
   selectedItem: string;
@@ -48,7 +48,7 @@ export function ShirtSizeSelector({
   const selectInput = (
     <FormControl fullWidth>
       <InputLabel shrink>{label}</InputLabel>
-      <Select value={selected || ""} displayEmpty onChange={handleChange}>
+      <Select label={label} value={selected || ""} onChange={handleChange}>
         <MenuItem value="">
           <em>None</em>
         </MenuItem>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import List from "@material-ui/core/List";
-import ListItemText from "@material-ui/core/ListItemText";
+import List from "@mui/material/List";
+import ListItemText from "@mui/material/ListItemText";
 import { ExactonlineClient } from "../../clients/ExactonlineClient";
 
 export function ExactonlineListAccounts() {

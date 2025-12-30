@@ -1,10 +1,10 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { makeStyles } from "@material-ui/core/styles";
-import { Typography, Button, DialogTitle } from "@material-ui/core";
-import Close from "@material-ui/icons/Close";
+import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
+import { Button, DialogTitle, Typography } from "@mui/material";
+import Close from "@mui/icons-material/Close";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     margin: 0,
     padding: theme.spacing(2),
@@ -31,7 +31,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function DialogHeader(props) {
+type DialogHeaderProps = {
+  icon?: React.ReactNode;
+  headline?: string;
+  subheadline?: string;
+  onClose: () => void;
+};
+
+export function DialogHeader(props: DialogHeaderProps) {
   const { icon, headline, subheadline, onClose } = props;
 
   const classes = useStyles();
@@ -51,10 +58,3 @@ export function DialogHeader(props) {
     </DialogTitle>
   );
 }
-
-DialogHeader.propTypes = {
-  icon: PropTypes.any,
-  headline: PropTypes.string,
-  subheadline: PropTypes.string,
-  onClose: PropTypes.func.isRequired,
-};

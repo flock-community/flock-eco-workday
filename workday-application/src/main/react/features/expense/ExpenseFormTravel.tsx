@@ -1,9 +1,7 @@
 import React from "react";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { Field, Form, Formik } from "formik";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DayjsUtils from "@date-io/dayjs";
-import { TextField } from "formik-material-ui";
+import { TextField } from "formik-mui";
 import * as Yup from "yup";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import dayjs from "dayjs";
@@ -30,39 +28,37 @@ export const ExpenseFormTravel = ({
   const form = ({ errors }) => {
     return (
       <Form id={EXPENSE_TRAVEL_FORM_ID}>
-        <MuiPickersUtilsProvider utils={DayjsUtils}>
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
-              <Field
-                name="description"
-                label="Description"
-                fullWidth
-                component={TextField}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <DatePickerField name="date" label="Date" fullWidth />
-            </Grid>
-            <Grid item xs={12}>
-              <Field
-                name="distance"
-                type="number"
-                label="Distance"
-                fullWidth
-                component={TextField}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Field
-                name="allowance"
-                type="number"
-                label="Allowance"
-                fullWidth
-                component={TextField}
-              />
-            </Grid>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Field
+              name="description"
+              label="Description"
+              fullWidth
+              component={TextField}
+            />
           </Grid>
-        </MuiPickersUtilsProvider>
+          <Grid item xs={12}>
+            <DatePickerField name="date" label="Date" />
+          </Grid>
+          <Grid item xs={12}>
+            <Field
+              name="distance"
+              type="number"
+              label="Distance"
+              fullWidth
+              component={TextField}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Field
+              name="allowance"
+              type="number"
+              label="Allowance"
+              fullWidth
+              component={TextField}
+            />
+          </Grid>
+        </Grid>
       </Form>
     );
   };

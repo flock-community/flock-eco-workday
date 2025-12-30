@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, CardHeader, Grid } from "@material-ui/core";
+import { Card, CardContent, CardHeader, Grid } from "@mui/material";
 import ContractOverviewTable from "./ContractOverviewTable";
 
 export default function ContractOverview() {

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Box, Dialog, DialogContent, Divider } from "@material-ui/core";
-import HealingIcon from "@material-ui/icons/Healing";
+import { Box, Dialog, DialogContent, Divider } from "@mui/material";
+import HealingIcon from "@mui/icons-material/Healing";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { SickDayClient } from "../../clients/SickDayClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
@@ -148,7 +148,7 @@ export function SickDayDialog({
         onClose={handleDeleteClose}
         onConfirm={handleDelete}
       >
-        <Typography>Are you sure you want to remove this Sickday.</Typography>
+        <Typography>Are you sure you want to remove this Sick day?</Typography>
       </ConfirmDialog>
     </>
   );

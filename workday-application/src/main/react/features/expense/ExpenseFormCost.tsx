@@ -1,10 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { Field, Form, Formik } from "formik";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DayjsUtils from "@date-io/dayjs";
-import { TextField } from "formik-material-ui";
+import { TextField } from "formik-mui";
 import * as Yup from "yup";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
@@ -28,33 +26,31 @@ export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
 
   const form = () => (
     <Form id={EXPENSE_COST_FORM_ID}>
-      <MuiPickersUtilsProvider utils={DayjsUtils}>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <Field
-              name="description"
-              label="Description"
-              fullWidth
-              component={TextField}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <DatePickerField name="date" label="Date" fullWidth />
-          </Grid>
-          <Grid item xs={12}>
-            <Field
-              name="amount"
-              type="number"
-              label="Amount"
-              fullWidth
-              component={TextField}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <DropzoneAreaField name="files" endpoint="/api/expenses/files" />
-          </Grid>
+      <Grid container spacing={1}>
+        <Grid item xs={12}>
+          <Field
+            name="description"
+            label="Description"
+            component={TextField}
+            fullWidth
+          />
         </Grid>
-      </MuiPickersUtilsProvider>
+        <Grid item xs={12}>
+          <DatePickerField name="date" label="Date" />
+        </Grid>
+        <Grid item xs={12}>
+          <Field
+            name="amount"
+            type="number"
+            label="Amount"
+            fullWidth
+            component={TextField}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <DropzoneAreaField name="files" endpoint="/api/expenses/files" />
+        </Grid>
+      </Grid>
     </Form>
   );
 

@@ -2,23 +2,23 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Card,
-  makeStyles,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-} from "@material-ui/core";
-import CardContent from "@material-ui/core/CardContent";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import CardContent from "@mui/material/CardContent";
 import { WORK_DAY_PAGE_SIZE, WorkDayClient } from "../../clients/WorkDayClient";
-import Table from "@material-ui/core/Table";
-import TableRow from "@material-ui/core/TableRow";
+import Table from "@mui/material/Table";
+import TableRow from "@mui/material/TableRow";
 import { WorkDayListItem } from "./WorkDayListItem";
 
 // Components
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
 // Types
-import type { DayProps, DayListProps } from "../../types";
+import type { DayListProps, DayProps } from "../../types";
 
 const useStyles = makeStyles({
   card: (loading) => ({

@@ -5,8 +5,8 @@ import {
   InputLabel,
   MenuItem,
   Select,
-} from "@material-ui/core";
-import FormHelperText from "@material-ui/core/FormHelperText";
+} from "@mui/material";
+import FormHelperText from "@mui/material/FormHelperText";
 import { Assignment, AssignmentClient } from "../../clients/AssignmentClient";
 import dayjs, { Dayjs } from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
@@ -79,15 +79,13 @@ export function AssignmentSelector({
   if (!items) return null;
 
   return (
-    <FormControl {...props} error={!!error}>
-      <InputLabel id="assignment-select-label" shrink>
-        {label}
-      </InputLabel>
+    <FormControl fullWidth {...props} error={!!error}>
+      <InputLabel id="assignment-select-label">{label}</InputLabel>
       <Select
+        label={label}
         id="assignment-select"
         labelId="assignment-select-label"
         value={state || ""}
-        displayEmpty
         onChange={handleChange}
       >
         <MenuItem value="">

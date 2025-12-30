@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, Divider } from "@material-ui/core";
+import { Dialog, DialogContent, Divider } from "@mui/material";
 import { DialogHeader } from "../dialog";
-import EventIcon from "@material-ui/icons/CalendarToday";
-import ListItem from "@material-ui/core/ListItem";
-import List from "@material-ui/core/List";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import EventIcon from "@mui/icons-material/CalendarToday";
+import ListItem from "@mui/material/ListItem";
+import List from "@mui/material/List";
+import ListItemText from "@mui/material/ListItemText";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import { PersonHackdayDetails } from "../../clients/AggregationClient";
 import { hoursFormatter } from "../../utils/Hours";
 import { FlockEvent } from "../../clients/EventClient";

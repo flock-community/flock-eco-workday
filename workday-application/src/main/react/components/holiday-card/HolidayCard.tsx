@@ -1,8 +1,8 @@
-import { Card, CardContent, CardHeader, Typography } from "@material-ui/core";
+import { Card, CardContent, CardHeader, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { PersonHolidayDetails } from "../../clients/AggregationClient";
 import { hoursFormatter } from "../../utils/Hours";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import { highLightClass } from "../../theme/theme-light";
 import { HolidayDetailDialog } from "./HolidayDetailDialog";
 

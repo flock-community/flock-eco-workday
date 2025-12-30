@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Button, Card, CardContent, CardHeader } from "@material-ui/core";
+import { Button, Card, CardContent, CardHeader } from "@mui/material";
 import { LeaveDayDialog } from "./LeaveDayDialog";
 import { LeaveDayList } from "./LeaveDayList";
 import { LeaveDayClient } from "../../clients/LeaveDayClient";
-import AddIcon from "@material-ui/icons/Add";
+import AddIcon from "@mui/icons-material/Add";
 import { Person } from "../../clients/PersonClient";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 

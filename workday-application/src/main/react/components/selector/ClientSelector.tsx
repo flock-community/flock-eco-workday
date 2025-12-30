@@ -8,8 +8,8 @@ import {
   InputLabel,
   MenuItem,
   Select,
-} from "@material-ui/core";
-import FormHelperText from "@material-ui/core/FormHelperText";
+} from "@mui/material";
+import FormHelperText from "@mui/material/FormHelperText";
 import { Client, ClientClient } from "../../clients/ClientClient";
 
 type ClientSelectorProps = FormControlProps & {
@@ -58,9 +58,9 @@ export function ClientSelector({
   }
 
   const selectInput = (
-    <FormControl {...props} error={!!error}>
+    <FormControl fullWidth {...props} error={!!error}>
       <InputLabel shrink>{label}</InputLabel>
-      <Select value={state || ""} displayEmpty onChange={handleChange}>
+      <Select label={label} value={state || ""} onChange={handleChange}>
         <MenuItem value="">
           <em>None</em>
         </MenuItem>

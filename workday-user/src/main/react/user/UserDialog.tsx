@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
 import { USER_FORM_ID, UserForm } from "./UserForm";
 import UserClient from "./UserClient";
-import Typography from "@material-ui/core/Typography";
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import Typography from "@mui/material/Typography";
+import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import { Snackbar } from "@material-ui/core";
+import { Snackbar } from "@mui/material";
 import { User } from "@workday-user/user/response/user";
 import { DialogTitleClosable } from "@workday-core/components/DialogTitleClosable";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     margin: 0,
     padding: theme.spacing(2),
@@ -154,7 +155,7 @@ export function UserDialog({
         onConfirm={handleDelete}
       >
         <Typography>
-          Would you Are you sure you want to delete user: {state && state.name}
+          Would you Are you sure you want to delete user: {state && state.name}?
         </Typography>
       </ConfirmDialog>
       <Snackbar

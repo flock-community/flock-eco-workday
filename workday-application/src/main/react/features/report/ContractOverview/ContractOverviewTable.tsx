@@ -1,15 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import {
-  CardHeader,
-  TableBody,
-  TableContainer,
-  TablePagination,
-} from "@material-ui/core";
-import Table from "@material-ui/core/Table";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import { makeStyles } from "@material-ui/core/styles";
+import { TableBody, TableContainer, TablePagination } from "@mui/material";
+import Table from "@mui/material/Table";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
 import { Contract, ContractClient } from "../../../clients/ContractClient";
 import { ContractOverviewTableHead } from "./ContractOverviewTableHead";
 import { DMY_DATE } from "../../../clients/util/DateFormats";

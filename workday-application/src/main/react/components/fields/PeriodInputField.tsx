@@ -7,8 +7,9 @@ import {
   mutatePeriod,
   Period,
 } from "../../features/period/Period";
-import { ButtonGroup, makeStyles } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import { ButtonGroup } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import Button from "@mui/material/Button";
 import dayjs from "dayjs";
 
 type PeriodInputFieldProps = {

@@ -1,13 +1,14 @@
 import React from "react";
-import { Card, CardContent, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Card, CardContent, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { StatusMenu } from "./status/StatusMenu";
 
 // types
 import type { DayProps } from "../types";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     position: "relative",
   },

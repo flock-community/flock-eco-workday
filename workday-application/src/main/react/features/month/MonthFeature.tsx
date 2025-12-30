@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Typography from "@material-ui/core/Typography";
-import { Box, CardContent } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
-import IconButton from "@material-ui/core/IconButton";
-import BackIcon from "@material-ui/icons/ChevronLeft";
-import NextIcon from "@material-ui/icons/ChevronRight";
-import Grid from "@material-ui/core/Grid";
+import Typography from "@mui/material/Typography";
+import { Box, CardContent } from "@mui/material";
+import Card from "@mui/material/Card";
+import IconButton from "@mui/material/IconButton";
+import BackIcon from "@mui/icons-material/ChevronLeft";
+import NextIcon from "@mui/icons-material/ChevronRight";
+import Grid from "@mui/material/Grid";
 import {
   Bar,
   BarChart,
@@ -16,10 +16,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import CardHeader from "@material-ui/core/CardHeader";
+import CardHeader from "@mui/material/CardHeader";
 import { AggregationClient } from "../../clients/AggregationClient";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 import { useHistory } from "react-router-dom";
 import dayjs from "dayjs";
 
@@ -162,10 +162,10 @@ export function MonthFeature() {
               <Typography>Total hours: {totalHours}</Typography>
             </Grid>
             <Grid item>
-              <IconButton onClick={handleMonth(-1)}>
+              <IconButton onClick={handleMonth(-1)} size="large">
                 <BackIcon />
               </IconButton>
-              <IconButton onClick={handleMonth(1)}>
+              <IconButton onClick={handleMonth(1)} size="large">
                 <NextIcon />
               </IconButton>
             </Grid>

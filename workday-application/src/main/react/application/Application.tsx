@@ -1,42 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch,
-} from "react-router-dom";
-import { UserFeature } from "@workday-user/user/UserFeature";
-import { Box } from "@material-ui/core";
-import ThemeProvider from "@material-ui/styles/ThemeProvider";
+import { BrowserRouter as Router, Redirect, Route } from "react-router-dom";
+import { Box, StyledEngineProvider, ThemeProvider } from "@mui/material";
+import { ThemeProvider as Mui4ThemeProvider } from "@mui/styles";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
-import { ApplicationLayout } from "./ApplicationLayout";
-import { ApplicationDrawer } from "./ApplicationDrawer";
-import { HomeFeature } from "../features/home/HomeFeature";
-import { ClientFeature } from "../features/client/ClientFeature";
-import { PersonFeature } from "../features/person/PersonFeature";
-import { DashboardFeature } from "../features/dashboard/DashboardFeature";
-import { MonthFeature } from "../features/month/MonthFeature";
-import { EventFeature } from "../features/event/EventFeature";
-import { EventRatingFeature } from "../features/event_rating/EventRatingFeature";
 import { useLoginStatus } from "../hooks/StatusHook";
 import { getTheme } from "../theme/theme";
-import { ExactonlineFeature } from "../features/exactonline/ExactonlineFeature";
-import { TodoFeature } from "../features/todo/TodoFeature";
 import { useError } from "../hooks/ErrorHook";
 import { ErrorStack } from "../components/error/ErrorBarStack";
-import { ProjectFeature } from "../features/project/ProjectFeature";
-import ContractPage from "../features/contract/ContractPage";
-import AssignmentPage from "../features/assignments/AssignmentPage";
-import LeaveDayPage from "../features/holiday/LeaveDayPage";
-import ExpensePage from "../features/expense/ExpensePage";
-import WorkDayPage from "../features/workday/WorkDayPage";
-import SickDayPage from "../features/sickday/SickDayPage";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import AssignmentReport from "../features/report/Assignment/AssignmentReport";
-import ContractOverview from "../features/report/ContractOverview/ContractOverview";
-import AssignmentOverview from "../features/report/AssignmentOverview/AssignmentOverview";
 import { LoginFeature } from "../features/login/LoginFeature";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import "dayjs/locale/nl";
+import { ErrorBoundary } from "react-error-boundary";
+
+const AuthenticatedApplication = React.lazy(() =>
+  import("./AuthenticatedApplication").then((module) => ({
+    default: module.AuthenticatedApplication,
+  }))
+);
 
 const theme = getTheme("light");
 
@@ -58,65 +41,54 @@ export const Application = () => {
 
   return (
     <Router>
-      <ThemeProvider theme={theme}>
-        {status.isLoggedIn ? (
-          <RenderAuthenticated />
-        ) : (
-          <RenderUnauthenticated />
-        )}
-        <ErrorStack ErrorList={errors} />
-      </ThemeProvider>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl">
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <Mui4ThemeProvider theme={theme}>
+              <ErrorBoundary
+                FallbackComponent={ErrorFallback}
+                onReset={() => {
+                  // Optionally reset app state here
+                }}
+                onError={(error, info) => {
+                  logErrorToService(error, info);
+                }}
+              >
+                {status.isLoggedIn ? (
+                  <AuthenticatedApplication />
+                ) : (
+                  <UnauthenticatedApplication />
+                )}
+                <ErrorStack ErrorList={errors} />
+              </ErrorBoundary>
+            </Mui4ThemeProvider>
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </LocalizationProvider>
     </Router>
   );
 };
 
-const RenderAuthenticated = () => {
-  const [openDrawer, setOpenDrawer] = useState(false);
-
+const UnauthenticatedApplication = () => {
   return (
-    <>
-      <ApplicationDrawer
-        open={openDrawer}
-        onClose={() => setOpenDrawer(false)}
-      />
-      <ApplicationLayout onDrawer={() => setOpenDrawer(true)} />
-      <Switch>
-        <Route path="/" exact component={HomeFeature} />
-        <Route path="/dashboard" exact component={DashboardFeature} />
-        <Route path="/month" exact component={MonthFeature} />
-        <Route path="/todo" exact component={TodoFeature} />
-        <Route path="/clients" exact component={ClientFeature} />
-        <Route path="/contracts" exact component={ContractPage} />
-        <Route path="/projects" exact component={ProjectFeature} />
-        <Route path="/assignments" exact component={AssignmentPage} />
-        <Route path="/workdays" exact component={WorkDayPage} />
-        <Route path="/leave-days" exact component={LeaveDayPage} />
-        <Route path="/sickdays" component={SickDayPage} />
-        <Route path="/expenses" component={ExpensePage} />
-        <Route path="/exactonline" component={ExactonlineFeature} />
-        <Route path="/users" exact component={UserFeature} />
-        <Route path="/person" component={PersonFeature} />
-        <Route path="/event" component={EventFeature} />
-        <Route path="/event_rating/:eventCode" component={EventRatingFeature} />
-        <Route path="/reports/assignment" component={AssignmentReport} />
-        <Route path="/reports/contract-overview" component={ContractOverview} />
-        <Route
-          path="/reports/assignment-overview"
-          component={AssignmentOverview}
-        />
-        <Redirect to="/" />
-      </Switch>
-    </>
+    <Box className={"full-width"} style={{ rowGap: 0 }}>
+      <Redirect to="/auth" exact />
+      <Route path="/auth" exact component={LoginFeature} />
+    </Box>
   );
 };
 
-const RenderUnauthenticated = () => {
+function ErrorFallback({ error, resetErrorBoundary }) {
   return (
-    <>
-      <Box className={"full-width"} style={{ rowGap: 0 }}>
-        <Redirect to="/auth" exact />
-        <Route path="/auth" exact component={LoginFeature} />
-      </Box>
-    </>
+    <div role="alert">
+      <p>Something went wrong:</p>
+      <pre>{error.message}</pre>
+      <button onClick={resetErrorBoundary}>Try again</button>
+    </div>
   );
-};
+}
+
+function logErrorToService(error, info) {
+  // Example: Send to Sentry, LogRocket, etc.
+  console.error("Logged error:", error, info);
+}

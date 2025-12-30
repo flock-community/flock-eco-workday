@@ -1,7 +1,9 @@
 import React from "react";
-import InputBase from "@material-ui/core/InputBase";
-import SearchIcon from "@material-ui/icons/Search";
-import { alpha, makeStyles, Theme } from "@material-ui/core/styles";
+import InputBase from "@mui/material/InputBase";
+import SearchIcon from "@mui/icons-material/Search";
+import { alpha, Theme } from "@mui/material/styles";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles((theme: Theme) => ({
   search: {
@@ -33,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("sm")]: {

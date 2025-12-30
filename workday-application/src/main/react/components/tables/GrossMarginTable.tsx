@@ -7,7 +7,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
-} from "@material-ui/core";
+} from "@mui/material";
 
 type GrossMarginTableProps = {
   year?: number;

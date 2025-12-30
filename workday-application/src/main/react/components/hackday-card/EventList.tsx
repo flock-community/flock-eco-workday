@@ -1,7 +1,7 @@
 import React from "react";
 import { FlockEvent } from "../../clients/EventClient";
-import List from "@material-ui/core/List";
-import Typography from "@material-ui/core/Typography";
+import List from "@mui/material/List";
+import Typography from "@mui/material/Typography";
 import { EventListItem } from "./EventListItem";
 
 type FlockEventListProps = {

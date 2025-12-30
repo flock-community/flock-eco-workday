@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 
-import List from "@material-ui/core/List";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar";
-import ExpensesIcon from "@material-ui/icons/Money";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import IconButton from "@material-ui/core/IconButton";
-import PublishIcon from "@material-ui/icons/Publish";
+import List from "@mui/material/List";
+import ListItemText from "@mui/material/ListItemText";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import Avatar from "@mui/material/Avatar";
+import ExpensesIcon from "@mui/icons-material/Money";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
+import IconButton from "@mui/material/IconButton";
+import PublishIcon from "@mui/icons-material/Publish";
 import { InvoiceClient } from "../../clients/InvoiceClient";
 
 export function ExactonlineListInvoices() {
@@ -37,7 +37,11 @@ export function ExactonlineListInvoices() {
             secondary={`${it.type}`}
           />
           <ListItemSecondaryAction>
-            <IconButton edge="end" onClick={handleClickInvoice(it)}>
+            <IconButton
+              edge="end"
+              onClick={handleClickInvoice(it)}
+              size="large"
+            >
               <PublishIcon />
             </IconButton>
           </ListItemSecondaryAction>

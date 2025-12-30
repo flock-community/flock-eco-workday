@@ -2,6 +2,7 @@ import React from "react";
 
 type UserAuthorityUtilProps = {
   has: string;
+  children?: React.ReactNode;
 };
 
 type UserAuthorityUtilState = object;

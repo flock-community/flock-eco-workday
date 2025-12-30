@@ -1,7 +1,9 @@
 import React from "react";
-import { DialogTitle, IconButton, makeStyles, Theme } from "@material-ui/core";
+import { DialogTitle, IconButton, Theme } from "@mui/material";
 
-import Close from "@material-ui/icons/Close";
+import makeStyles from "@mui/styles/makeStyles";
+
+import Close from "@mui/icons-material/Close";
 
 const useStyles = makeStyles((theme: Theme) => ({
   closeButton: {
@@ -17,6 +19,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type DialogTitleClosableProps = {
   onClose?: () => void;
+  children?: React.ReactNode;
 };
 
 export const DialogTitleClosable: React.FC<DialogTitleClosableProps> = ({
@@ -28,12 +31,12 @@ export const DialogTitleClosable: React.FC<DialogTitleClosableProps> = ({
   return (
     <DialogTitle>
       {children}
-
       {onClose && (
         <IconButton
           data-test="dialog-title-closable"
           className={classes.closeButton}
           onClick={onClose}
+          size="large"
         >
           <Close />
         </IconButton>
