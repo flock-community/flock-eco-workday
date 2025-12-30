@@ -1,8 +1,9 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
 import { Button, DialogTitle, Typography } from "@mui/material";
 import Close from "@mui/icons-material/Close";
+import DialogContent from "@mui/material/DialogContent";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -17,6 +18,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   dialogTitle: {
     alignItems: "center",
     display: "flex",
+  },
+  dialogContent: {
+    paddingTop: "10px",
+    paddingBottom: "10px",
+    marginTop: "10px",
+    marginBottom: "10px",
   },
   iconWrapper: {
     "& > svg": {
@@ -38,9 +45,12 @@ type DialogHeaderProps = {
   onClose: () => void;
 };
 
-export function DialogHeader(props: DialogHeaderProps) {
-  const { icon, headline, subheadline, onClose } = props;
+type DialogBodyProps = {
+  children: React.ReactNode | React.ReactNode[];
+};
 
+export const DialogHeader = (props: DialogHeaderProps) => {
+  const { icon, headline, subheadline, onClose } = props;
   const classes = useStyles();
 
   return (
@@ -57,4 +67,14 @@ export function DialogHeader(props: DialogHeaderProps) {
       </div>
     </DialogTitle>
   );
-}
+};
+
+export const DialogBody = (props: DialogBodyProps) => {
+  const classes = useStyles();
+
+  return (
+    <div className={classes.dialogContent}>
+      <DialogContent>{props.children}</DialogContent>
+    </div>
+  );
+};

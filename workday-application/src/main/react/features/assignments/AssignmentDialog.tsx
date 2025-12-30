@@ -11,6 +11,8 @@ import { isDefined } from "../../utils/validation";
 import { ASSIGNMENT_FORM_ID, AssignmentForm } from "./AssignmentForm";
 import { usePerson } from "../../hooks/PersonHook";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import { DialogBody, DialogHeader } from "../../components/dialog/DialogHeader";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 
 export function AssignmentDialog(props) {
   const { open, code, onClose } = props;
@@ -54,11 +56,16 @@ export function AssignmentDialog(props) {
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-        <DialogTitle>Assignment form</DialogTitle>
-        <DialogContent>
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
+        <DialogHeader
+          headline="Create / Edit an assignment"
+          subheadline="What are we working on?"
+          icon={<AssignmentIcon />}
+          onClose={onClose}
+        />
+        <DialogBody>
           <AssignmentForm value={state} onSubmit={handleSubmit} />
-        </DialogContent>
+        </DialogBody>
         <DialogActions>
           {code && <Button onClick={handelDeleteOpen}>Delete</Button>}
           <Button

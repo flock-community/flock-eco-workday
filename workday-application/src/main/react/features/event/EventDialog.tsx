@@ -12,13 +12,7 @@ import { EVENT_FORM_ID, EventForm } from "./EventForm";
 import { schema } from "../workday/WorkDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
-
-const useStyles = makeStyles(() => ({
-  dialogContent: {
-    margin: "auto",
-    maxWidth: 768, // should be a decent medium-sized breakpoint
-  },
-}));
+import { DialogBody } from "../../components/dialog/DialogHeader";
 
 type EventDialogProps = {
   open: boolean;
@@ -27,8 +21,6 @@ type EventDialogProps = {
 };
 
 export function EventDialog({ open, code, onComplete }: EventDialogProps) {
-  const classes = useStyles();
-
   const [openDelete, setOpenDelete] = useState(false);
 
   const [state, setState] = useState<FlockEventRequest | undefined>(undefined);
@@ -90,10 +82,11 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   return (
     <>
       <Dialog
-        fullScreen
         open={open}
         onClose={handleClose}
         TransitionComponent={TransitionSlider}
+        maxWidth="lg"
+        fullWidth
       >
         <DialogHeader
           icon={<EventIcon />}
@@ -101,7 +94,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
           subheadline="Have a fun time!"
           onClose={handleClose}
         />
-        <DialogContent className={classes.dialogContent}>
+        <DialogBody>
           <Grid container spacing={1}>
             <Grid item>
               {state && <EventForm value={state} onSubmit={handleSubmit} />}
@@ -119,7 +112,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
               </Grid>
             )}
           </Grid>
-        </DialogContent>
+        </DialogBody>
         <Divider />
         <DialogFooter
           formId={EVENT_FORM_ID}

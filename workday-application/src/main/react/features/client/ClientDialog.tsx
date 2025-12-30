@@ -7,6 +7,7 @@ import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import Typography from "@mui/material/Typography";
 import { ClientClient } from "../../clients/ClientClient";
 import { CLIENT_FORM_ID, ClientForm } from "./ClientForm";
+import { DialogBody } from "../../components/dialog/DialogHeader";
 
 type ClientDialogProps = {
   open: boolean;
@@ -46,9 +47,9 @@ export function ClientDialog({ open, code, onClose }: ClientDialogProps) {
     <>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
         <DialogTitle>Client form</DialogTitle>
-        <DialogContent>
+        <DialogBody>
           <ClientForm code={code} value={state} onSubmit={handleSubmit} />
-        </DialogContent>
+        </DialogBody>
         <DialogActions>
           <Button onClick={handelDeleteOpen}>Delete</Button>
           <Button

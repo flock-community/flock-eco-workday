@@ -20,6 +20,7 @@ import { ContractFormManagement } from "./ContractFormManagement";
 import { ContractFormService } from "./ContractFormService";
 import { ContractType } from "./ContractType";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import { DialogBody } from "../../components/dialog/DialogHeader";
 
 const useStyles = makeStyles({});
 
@@ -77,7 +78,7 @@ export function ContractDialog(props) {
     <>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
         <DialogTitle>Contract form</DialogTitle>
-        <DialogContent>
+        <DialogBody>
           <Grid container spacing={1}>
             {!code && (
               <Grid item xs={12}>
@@ -110,7 +111,7 @@ export function ContractDialog(props) {
               )}
             </Grid>
           </Grid>
-        </DialogContent>
+        </DialogBody>
 
         <DialogActions>
           {code && <Button onClick={handelDeleteOpen}>Delete</Button>}

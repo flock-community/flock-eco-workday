@@ -7,6 +7,7 @@ import { TransitionSlider } from "../../components/transitions/Slide";
 import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import { Dayjs } from "dayjs";
+import { DialogBody } from "../../components/dialog/DialogHeader";
 
 type PersonDialogProps = {
   open: boolean;
@@ -39,10 +40,11 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
 
   return (
     <Dialog
-      fullScreen
       open={open}
       onClose={onClose}
       TransitionComponent={TransitionSlider}
+      maxWidth="lg"
+      fullWidth
     >
       <DialogHeader
         icon={<PersonAdd />}
@@ -50,9 +52,9 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
         subheadline="Fill out the form to create a person"
         onClose={onClose}
       />
-      <DialogContent>
+      <DialogBody>
         <PersonForm item={item} onSubmit={handleSubmit} />
-      </DialogContent>
+      </DialogBody>
       <Divider />
       <DialogFooter formId={PERSON_FORM_ID} onClose={onClose} />
     </Dialog>

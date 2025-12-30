@@ -63,7 +63,13 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Field name="role" type="text" label="Role" component={TextField} />
+            <Field
+              name="role"
+              type="text"
+              label="Role"
+              fullWidth
+              component={TextField}
+            />
           </Grid>
           <Grid item xs={6}>
             <DatePickerField
@@ -86,7 +92,7 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
               fullWidth
             />
           </Grid>
-          <Grid>
+          <Grid item xs={12}>
             <Button onClick={createProject}>
               <AddIcon /> Add project
             </Button>

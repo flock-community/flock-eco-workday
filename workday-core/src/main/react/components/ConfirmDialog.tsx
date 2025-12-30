@@ -13,6 +13,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
 import EventIcon from "@mui/icons-material/CalendarToday";
 import { DialogHeader } from "../../../../../workday-application/src/main/react/components/dialog";
+import { DialogBody } from "../../../../../workday-application/src/main/react/components/dialog/DialogHeader";
 
 const useStyles = makeStyles((theme: Theme) => ({
   closeButton: {
@@ -49,7 +50,7 @@ export function ConfirmDialog({
   return (
     <Dialog fullWidth maxWidth={"sm"} open={open} onClose={handleClose}>
       <DialogTitle>Confirm</DialogTitle>
-      <DialogContent>{children}</DialogContent>
+      <DialogBody>{children}</DialogBody>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
         <Button variant="contained" color="primary" onClick={handleConfirm}>

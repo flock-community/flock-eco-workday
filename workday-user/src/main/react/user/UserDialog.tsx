@@ -14,6 +14,7 @@ import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import { Snackbar } from "@mui/material";
 import { User } from "@workday-user/user/response/user";
 import { DialogTitleClosable } from "@workday-core/components/DialogTitleClosable";
+import { DialogBody } from "../../../../../workday-application/src/main/react/components/dialog/DialogHeader";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -125,13 +126,13 @@ export function UserDialog({
         <DialogTitleClosable onClose={handleClose}>
           <Typography variant="h6">User</Typography>
         </DialogTitleClosable>
-        <DialogContent>
+        <DialogBody>
           <UserForm
             value={state}
             authorities={authorities}
             onSummit={handleSubmit}
           />
-        </DialogContent>
+        </DialogBody>
         <DialogActions>
           {enablePassword && state && state.id && (
             <Button onClick={handleReset}>Reset password</Button>

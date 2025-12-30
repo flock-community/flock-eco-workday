@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Dialog, DialogContent, Divider } from "@mui/material";
+import { Dialog, Divider } from "@mui/material";
 import WorkIcon from "@mui/icons-material/Work";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import Typography from "@mui/material/Typography";
@@ -23,6 +23,7 @@ import {
   TravelExpense,
 } from "../../models/Expense";
 import { Status } from "../../models/Status";
+import { DialogBody } from "../../components/dialog/DialogHeader";
 
 type ExpenseDialogProps = {
   open: boolean;
@@ -128,15 +129,15 @@ export function ExpenseDialog({
           subheadline="Add your expense."
           onClose={handleClose}
         />
-        <DialogContent>
-          <UserAuthorityUtil has={"ExpenseAuthority.ADMIN"}>
-            <Box my="1rem">
-              <Typography variant={"h5"} component={"h2"}>
-                {personFullName}
-              </Typography>
-            </Box>
-          </UserAuthorityUtil>
+        <DialogBody>
           <Grid container spacing={1}>
+            <UserAuthorityUtil has={"ExpenseAuthority.ADMIN"}>
+              <Grid item xs>
+                <Typography variant={"h5"} component={"h2"}>
+                  {personFullName}
+                </Typography>
+              </Grid>
+            </UserAuthorityUtil>
             {!id && (
               <Grid item xs={12}>
                 <FormControl fullWidth>
@@ -160,7 +161,7 @@ export function ExpenseDialog({
               )}
             </Grid>
           </Grid>
-        </DialogContent>
+        </DialogBody>
         <Divider />
         <DialogFooter
           formId={`${type.toLowerCase()}-expense-form`}

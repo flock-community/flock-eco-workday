@@ -8,6 +8,7 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import { PersonHolidayDetails } from "../../clients/AggregationClient";
 import { hoursFormatter } from "../../utils/Hours";
+import { DialogBody } from "../dialog/DialogHeader";
 
 const initialData: PersonHolidayDetails = {
   name: "",
@@ -59,7 +60,7 @@ export function HolidayDetailDialog({
           icon={<HolidayIcon />}
           headline={"Holiday hours details"}
         />
-        <DialogContent style={{ padding: "32px 24px" }}>
+        <DialogBody>
           {state?.plusHours > 0 && (
             <List dense={true}>
               <ListItem>
@@ -126,7 +127,7 @@ export function HolidayDetailDialog({
               </ListItem>
             </List>
           )}
-        </DialogContent>
+        </DialogBody>
       </Dialog>
     </>
   );

@@ -15,6 +15,7 @@ import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import { ChildCare, MoreHoriz, Timeline } from "@mui/icons-material";
 import { AggregationPersonObject } from "./MissingHoursCard";
 import Typography from "@mui/material/Typography";
+import { DialogBody } from "../dialog/DialogHeader";
 
 const useStyles = makeStyles((theme: Theme) => ({
   flexDataContainer: {
@@ -89,7 +90,7 @@ export function MissingHoursDetailDialog({
             month: "long",
           })}
         />
-        <DialogContent style={{ padding: "32px 24px" }}>
+        <DialogBody>
           {!item && (
             <Typography align={"center"}>No data to display.</Typography>
           )}
@@ -202,7 +203,7 @@ export function MissingHoursDetailDialog({
               </List>
             </Box>
           )}
-        </DialogContent>
+        </DialogBody>
       </Dialog>
     </>
   );

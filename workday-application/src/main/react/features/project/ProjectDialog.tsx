@@ -1,12 +1,14 @@
-import { Dialog, DialogActions, DialogTitle } from "@mui/material";
+import { Dialog, DialogActions } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import DialogContent from "@mui/material/DialogContent";
 import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogFooter } from "../../components/dialog";
+import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { AssignmentClient } from "../../clients/AssignmentClient";
 import Typography from "@mui/material/Typography";
 import ProjectForm, { PROJECT_FORM_ID } from "./ProjectForm";
 import { Project, ProjectClient } from "../../clients/ProjectClient";
+import { DialogBody } from "../../components/dialog/DialogHeader";
+import Grid from "@mui/material/Grid";
+import ProjectIcon from "@mui/icons-material/AccountTree";
 
 type ProjectDialogProps = {
   open: boolean;
@@ -55,11 +57,29 @@ export default function ProjectDialog({
   }, [project]);
 
   return (
-    <Dialog fullScreen open={open} TransitionComponent={TransitionSlider}>
-      <DialogTitle>Project form</DialogTitle>
-      <DialogContent>
-        <ProjectForm projectCode={project?.code} onSubmit={handleSubmit} />
-      </DialogContent>
+    <Dialog
+      open={open}
+      onClose={closeDialog}
+      TransitionComponent={TransitionSlider}
+      maxWidth="md"
+    >
+      <DialogHeader
+        headline="Create a project"
+        icon={<ProjectIcon />}
+        onClose={closeDialog}
+      />
+      <DialogBody>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Typography variant="body1">
+              Fill out the details of a (Flock.) project
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <ProjectForm projectCode={project?.code} onSubmit={handleSubmit} />
+          </Grid>
+        </Grid>
+      </DialogBody>
       <DialogActions>
         {disableDelete && (
           <Typography variant="caption">{disableDeleteReason}</Typography>

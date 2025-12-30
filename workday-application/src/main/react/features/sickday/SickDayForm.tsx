@@ -45,6 +45,7 @@ export function SickDayForm({ value, onSubmit }) {
               type="text"
               label="Description"
               component={TextField}
+              fullWidth
             />
           </Grid>
           <Grid item xs={12}>

@@ -48,7 +48,12 @@ export function ShirtSizeSelector({
   const selectInput = (
     <FormControl fullWidth>
       <InputLabel shrink>{label}</InputLabel>
-      <Select label={label} value={selected || ""} onChange={handleChange}>
+      <Select
+        label={label}
+        value={selected || ""}
+        displayEmpty
+        onChange={handleChange}
+      >
         <MenuItem value="">
           <em>None</em>
         </MenuItem>

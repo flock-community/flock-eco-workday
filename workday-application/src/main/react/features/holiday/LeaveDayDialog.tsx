@@ -18,6 +18,7 @@ import { PlusDayForm } from "./PlusDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import { LeaveDayForm } from "./LeaveDayForm";
 import dayjs from "dayjs";
+import { DialogBody } from "../../components/dialog/DialogHeader";
 
 export const LEAVE_DAY_DIALOG_FORM_ID = "leave-day-dialog-form-id";
 
@@ -132,8 +133,8 @@ export function LeaveDayDialog({
           subheadline="Have the best time of your life, beside working for Flock."
           onClose={handleClose}
         />
-        <DialogContent>
-          <Grid container spacing={50}>
+        <DialogBody>
+          <Grid container spacing={1}>
             {!code && (
               <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
                 <Grid item xs={12}>
@@ -173,7 +174,7 @@ export function LeaveDayDialog({
               </Grid>
             )}
           </Grid>
-        </DialogContent>
+        </DialogBody>
         <DialogFooter
           formId={LEAVE_DAY_DIALOG_FORM_ID}
           onClose={handleClose}

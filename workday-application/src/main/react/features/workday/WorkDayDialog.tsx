@@ -15,6 +15,7 @@ import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import Button from "@mui/material/Button";
 import { ExportClient } from "../../clients/ExportClient";
 import Snackbar from "@mui/material/Snackbar";
+import { DialogBody } from "../../components/dialog/DialogHeader";
 
 type ExportStatusProps = {
   loading: boolean;
@@ -149,10 +150,11 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
   return (
     <>
       <Dialog
-        fullScreen
         open={open}
         onClose={handleClose}
         TransitionComponent={TransitionSlider}
+        maxWidth="lg"
+        fullWidth
       >
         <DialogHeader
           icon={<WorkIcon />}
@@ -160,7 +162,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
           subheadline="Add your workday."
           onClose={handleClose}
         />
-        <DialogContent className={classes.dialogContent}>
+        <DialogBody>
           <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
             <Box my="1rem">
               <Typography variant={"h5"} component={"h2"}>
@@ -169,7 +171,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
             </Box>
           </UserAuthorityUtil>
           {state && <WorkDayForm value={state} onSubmit={handleSubmit} />}
-        </DialogContent>
+        </DialogBody>
         <Divider />
         <DialogFooter
           formId={WORKDAY_FORM_ID}

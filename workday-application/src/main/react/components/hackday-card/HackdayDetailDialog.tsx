@@ -10,6 +10,7 @@ import { PersonHackdayDetails } from "../../clients/AggregationClient";
 import { hoursFormatter } from "../../utils/Hours";
 import { FlockEvent } from "../../clients/EventClient";
 import { HackDayList } from "./HackDayList";
+import { DialogBody } from "../dialog/DialogHeader";
 
 const initialData: PersonHackdayDetails = {
   name: "",
@@ -59,7 +60,7 @@ export function HackdayDetailDialog({
         icon={<EventIcon />}
         headline={"Hack hours details"}
       />
-      <DialogContent style={{ padding: "32px 24px" }}>
+      <DialogBody>
         <List dense={true}>
           <ListItem>
             <ListItemText primary={"Contract"} />
@@ -83,7 +84,7 @@ export function HackdayDetailDialog({
           <Divider />
         </List>
         <HackDayList items={hackEvents} onEventToggle={onEventToggle} />
-      </DialogContent>
+      </DialogBody>
     </Dialog>
   );
 }

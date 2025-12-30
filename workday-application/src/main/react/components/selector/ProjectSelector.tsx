@@ -65,7 +65,12 @@ export function ProjectSelector({
   const selectInput = (
     <FormControl fullWidth {...props} error={!!error}>
       <InputLabel shrink>{label}</InputLabel>
-      <Select label={label} value={state || ""} onChange={handleChange}>
+      <Select
+        label={label}
+        value={state || ""}
+        displayEmpty
+        onChange={handleChange}
+      >
         <MenuItem value="">
           <em>None</em>
         </MenuItem>

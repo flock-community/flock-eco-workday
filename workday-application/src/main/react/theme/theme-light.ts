@@ -23,14 +23,6 @@ export const themeLight = createTheme({
         },
       },
     },
-    MuiDialogContent: {
-      styleOverrides: {
-        root: {
-          marginTop: "10px !important",
-          paddingTop: "30px !important",
-        },
-      },
-    },
     MuiButton: {
       defaultProps: {
         variant: "contained",

@@ -82,6 +82,7 @@ export function PersonSelector({
         label={label}
         value={state || (multiple ? [] : "")}
         onChange={handleChange}
+        displayEmpty
         renderValue={multiple ? renderValue : undefined}
         multiple={multiple}
       >
