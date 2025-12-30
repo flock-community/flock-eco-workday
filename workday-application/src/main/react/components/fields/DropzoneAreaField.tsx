@@ -1,11 +1,10 @@
 import { Field } from "formik";
 import React, { useState } from "react";
-import { DropzoneArea } from "mui-file-dropzone";
+import { DropzoneArea } from "./DropzoneArea";
 
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import ListItemText from "@mui/material/ListItemText";
 
 import FolderIcon from "@mui/icons-material/Folder";
@@ -62,14 +61,7 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
         component="a"
         target="_blank"
         href={`${endpoint}/${it.file}/${it.name}`}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            <FolderIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary={it.name} />
-        <ListItemSecondaryAction>
+        secondaryAction={
           <IconButton
             edge="end"
             aria-label="delete"
@@ -78,7 +70,14 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
           >
             <DeleteIcon />
           </IconButton>
-        </ListItemSecondaryAction>
+        }
+      >
+        <ListItemAvatar>
+          <Avatar>
+            <FolderIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary={it.name} />
       </ListItem>
     );
 

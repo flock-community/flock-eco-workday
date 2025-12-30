@@ -37,9 +37,9 @@
     "dayjs": "^1.11.1",
     "formik": "^2.2.6",
     "formik-mui": "^5.0.0-alpha.0",
-    "mui-file-dropzone": "^4.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-dropzone": "^14.3.8",
     "react-error-boundary": "^6.0.0",
     "react-router-dom": "^5.3.4",
     "recharts": "^2.0.3",
@@ -87,11 +87,7 @@
     "vite": "^5.0.10"
   },
   "overrides": {
-    "react-is": "^19.0.0",
-    "mui-file-dropzone": {
-      "@mui/material": "^6.0.0",
-      "@mui/icons-material": "^6.0.0"
-    }
+    "react-is": "^19.0.0"
   },
   "lint-staged": {
     "workday-application/src/main/react/**/*.{js,jsx,tsx,ts}": [
