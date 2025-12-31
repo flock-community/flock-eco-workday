@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, Grid, TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import { Period } from "../../features/period/Period";
 import dayjs, { Dayjs } from "dayjs";
@@ -29,15 +30,15 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
     <>
       <Grid container spacing={2} alignItems="center">
         {/* The header of the table with the days as caption */}
-        <Grid item xs={2}>
+        <Grid size={{ xs: 2 }}>
           <Typography>Week</Typography>
         </Grid>
         {daysOfWeek.map((d) => (
-          <Grid item xs textAlign="center" key={`day-name-${d}`}>
+          <Grid size="grow" textAlign="center" key={`day-name-${d}`}>
             <Typography>{d}</Typography>
           </Grid>
         ))}
-        <Grid item xs={2}>
+        <Grid size={{ xs: 2 }}>
           <Typography align="right">Total</Typography>
         </Grid>
       </Grid>
@@ -54,11 +55,11 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
             alignItems="center"
             alignContent="center"
           >
-            <Grid item xs={2}>
+            <Grid size={{ xs: 2 }}>
               <Typography>{week.weekNumber}</Typography>
             </Grid>
             {week.days?.map((day) => (
-              <Grid item xs key={`day-${day.key}`}>
+              <Grid size="grow" key={`day-${day.key}`}>
                 <TextField
                   label={day.disabled ? "-" : day.date.format("DD MMM")}
                   value={day.value}
@@ -73,7 +74,7 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
                 />
               </Grid>
             ))}
-            <Grid item xs={2}>
+            <Grid size={{ xs: 2 }}>
               <Typography align="right">{week.total}</Typography>
             </Grid>
           </Grid>
@@ -83,10 +84,10 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
       {/* Bottom */}
       <Box mt={2}>
         <Grid container spacing={1} alignItems="center">
-          <Grid item xs={10}>
+          <Grid size={{ xs: 10 }}>
             <Typography align="right">Period total</Typography>
           </Grid>
-          <Grid item xs={2}>
+          <Grid size={{ xs: 2 }}>
             <Typography align="right">{totalHoursForPeriod}</Typography>
           </Grid>
         </Grid>

@@ -1,7 +1,7 @@
 import React from "react";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import { TextField } from "formik-mui";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { DatePickerField } from "../../components/fields/DatePickerField";
@@ -43,7 +43,7 @@ export function PlusDayForm({ value, onSubmit }: PlusDayFormProps) {
     return (
       <Form id={LEAVE_DAY_DIALOG_FORM_ID}>
         <Grid container spacing={1}>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Field
               name="description"
               type="text"
@@ -54,7 +54,7 @@ export function PlusDayForm({ value, onSubmit }: PlusDayFormProps) {
           </Grid>
 
           {value && (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
                 <StatusSelect
                   value={values.status}
@@ -63,13 +63,13 @@ export function PlusDayForm({ value, onSubmit }: PlusDayFormProps) {
               </UserAuthorityUtil>
             </Grid>
           )}
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DatePickerField name="from" label="From" maxDate={values.to} />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DatePickerField name="to" label="To" minDate={values.from} />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Field
               name="hours"
               type="number"

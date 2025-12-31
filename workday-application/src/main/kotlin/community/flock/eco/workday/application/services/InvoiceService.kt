@@ -30,7 +30,7 @@ class InvoiceService(
     private val invoiceRepository: InvoiceRepository,
     private val exactonlineAuthenticationService: ExactonlineAuthenticationService,
     private val exactonlineDocumentClient: ExactonlineDocumentClient,
-    private val documentService: DocumentService,
+    private val documentService: DocumentStorage,
 ) {
     fun findAll(pageable: Pageable): Page<Invoice> = invoiceRepository.findAll(pageable)
 

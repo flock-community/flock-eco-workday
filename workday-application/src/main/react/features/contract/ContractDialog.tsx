@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { Dialog, DialogTitle } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import DialogContent from "@mui/material/DialogContent";
@@ -10,7 +9,7 @@ import Typography from "@mui/material/Typography";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import { ContractClient } from "../../clients/ContractClient";
 import { isDefined } from "../../utils/validation";
 import { ContractFormInternal } from "./ContractFormInternal";
@@ -24,8 +23,13 @@ import { DialogBody } from "../../components/dialog/DialogHeader";
 
 const useStyles = makeStyles({});
 
-export function ContractDialog(props) {
-  const { open, code, onClose } = props;
+type ContractDialogProps = {
+  open: boolean;
+  code?: string;
+  onClose?: () => void;
+};
+
+export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
   // TODO: remove styles if not used and remove eslint-disable
   const classes = useStyles(); // eslint-disable-line
 
@@ -81,7 +85,7 @@ export function ContractDialog(props) {
         <DialogBody>
           <Grid container spacing={1}>
             {!code && (
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <FormControl fullWidth>
                   <Select
                     id="contract-type-select"
@@ -96,7 +100,7 @@ export function ContractDialog(props) {
                 </FormControl>
               </Grid>
             )}
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               {type === ContractType.INTERNAL && (
                 <ContractFormInternal value={state} onSubmit={handleSubmit} />
               )}
@@ -139,9 +143,3 @@ export function ContractDialog(props) {
     </>
   );
 }
-
-ContractDialog.propTypes = {
-  open: PropTypes.bool,
-  code: PropTypes.string,
-  onClose: PropTypes.func,
-};

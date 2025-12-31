@@ -18,7 +18,7 @@ import community.flock.eco.workday.application.model.Expense
 import community.flock.eco.workday.application.model.Status
 import community.flock.eco.workday.application.model.TravelExpense
 import community.flock.eco.workday.application.services.CostExpenseService
-import community.flock.eco.workday.application.services.DocumentService
+import community.flock.eco.workday.application.services.DocumentStorage
 import community.flock.eco.workday.application.services.ExpenseService
 import community.flock.eco.workday.application.services.TravelExpenseService
 import community.flock.eco.workday.core.utils.toResponse
@@ -49,7 +49,7 @@ import community.flock.eco.workday.api.UUID as UUIDApi
 @RestController
 @RequestMapping("/api/expenses")
 class ExpenseController(
-    private val documentService: DocumentService,
+    private val documentService: DocumentStorage,
     private val expenseService: ExpenseService,
 ) {
     @GetMapping(params = ["personId"])

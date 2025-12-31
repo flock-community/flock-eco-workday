@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { Dialog, DialogTitle } from "@mui/material";
 import DialogContent from "@mui/material/DialogContent";
 import Button from "@mui/material/Button";
@@ -14,9 +13,17 @@ import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import { DialogBody, DialogHeader } from "../../components/dialog/DialogHeader";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
-export function AssignmentDialog(props) {
-  const { open, code, onClose } = props;
+type AssignmentDialogProps = {
+  open: boolean;
+  code?: string;
+  onClose?: () => void;
+};
 
+export function AssignmentDialog({
+  open,
+  code,
+  onClose,
+}: AssignmentDialogProps) {
   const [state, setState] = useState<any>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -92,9 +99,3 @@ export function AssignmentDialog(props) {
     </>
   );
 }
-
-AssignmentDialog.propTypes = {
-  open: PropTypes.bool,
-  code: PropTypes.string,
-  onClose: PropTypes.func,
-};

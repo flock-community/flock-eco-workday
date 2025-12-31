@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import {
   FormControl,
   FormControlProps,
@@ -9,15 +8,15 @@ import {
 } from "@mui/material";
 
 type ShirtSizeSelectorProps = FormControlProps & {
-  selectedItem: string;
+  selectedItem?: string;
   onChange: (shoeSize: string) => void;
   label?: string;
 };
 
 export function ShirtSizeSelector({
   onChange,
-  label,
-  selectedItem,
+  label = "Select shirt size",
+  selectedItem = "",
 }: ShirtSizeSelectorProps) {
   const [selected, setSelected] = useState(selectedItem);
   const shirtSizes: string[] = [
@@ -63,14 +62,3 @@ export function ShirtSizeSelector({
   );
   return <div>{selectInput}</div>;
 }
-
-ShirtSizeSelector.propTypes = {
-  onChange: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
-  selectedItem: PropTypes.string,
-};
-
-ShirtSizeSelector.defaultProps = {
-  selectedItem: "",
-  label: "Select shirt size",
-};

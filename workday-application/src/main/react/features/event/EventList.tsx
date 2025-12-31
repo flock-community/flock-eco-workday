@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Card, Chip, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import {
   EVENT_PAGE_SIZE,
   EventClient,
@@ -53,7 +53,7 @@ export const EventList = ({
 
   function renderItem(item: FullFlockEvent) {
     return (
-      <Grid key={`workday-list-item-${item.id}`} item xs={12}>
+      <Grid key={`workday-list-item-${item.id}`} size={{ xs: 12 }}>
         <Card onClick={handleClickRow(item)}>
           <CardContent>
             <Box

@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  Grid,
-  MenuItem,
-  Select,
-  Slide,
-} from "@mui/material";
+import { Dialog, DialogContent, MenuItem, Select, Slide } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import HolidayIcon from "@mui/icons-material/WbSunny";
 import Typography from "@mui/material/Typography";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
@@ -138,7 +132,7 @@ export function LeaveDayDialog({
           <Grid container spacing={1}>
             {!code && (
               <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Select
                     value={type}
                     onChange={(e) => {
@@ -160,7 +154,7 @@ export function LeaveDayDialog({
               </UserAuthorityUtil>
             )}
             {state && (
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 {type === Types.HOLIDAY && (
                   <HolidayForm value={state} onSubmit={handleSubmit} />
                 )}

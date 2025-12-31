@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import {
   Card,
   CardContent,
@@ -22,7 +21,7 @@ type ClientSelectorProps = FormControlProps & {
 };
 
 export function ClientSelector({
-  value,
+  value = "",
   onChange,
   embedded,
   label = "Select Client",
@@ -83,16 +82,3 @@ export function ClientSelector({
     </Card>
   );
 }
-
-ClientSelector.propTypes = {
-  error: PropTypes.string,
-  value: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
-  embedded: PropTypes.bool,
-};
-
-// ClientSelector.defaultProps = {
-//   value: "",
-//   label: "Select Client",
-// };

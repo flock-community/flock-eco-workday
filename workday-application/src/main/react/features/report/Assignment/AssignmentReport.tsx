@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AssignmentReportTable from "./AssignmentReportTable";
-import { Card, CardContent, CardHeader, Grid } from "@mui/material";
+import { Card, CardContent, CardHeader } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DMY_DATE } from "../../../clients/util/DateFormats";
@@ -13,7 +14,7 @@ export default function AssignmentReport() {
 
   const renderDateRange = () => (
     <Grid container spacing={2}>
-      <Grid item>
+      <Grid>
         <DatePicker
           label="From"
           value={from}
@@ -21,7 +22,7 @@ export default function AssignmentReport() {
           onChange={(newValue) => newValue && setFrom(newValue)}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <DatePicker
           label="To"
           value={to}
@@ -34,13 +35,13 @@ export default function AssignmentReport() {
 
   return (
     <Grid container spacing={1}>
-      <Grid item xs={12}>
+      <Grid size={{ xs: 12 }}>
         <Card>
           <CardHeader title="Assignment Report" />
           <CardContent>{renderDateRange()}</CardContent>
         </Card>
       </Grid>
-      <Grid item xs={12}>
+      <Grid size={{ xs: 12 }}>
         <Card>
           <CardContent>
             <AssignmentReportTable from={from} to={to} />

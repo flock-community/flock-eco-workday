@@ -1,6 +1,5 @@
 package community.flock.eco.workday.application.services
 
-import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import community.flock.eco.workday.application.forms.WorkDayForm
@@ -115,23 +114,6 @@ class WorkDayService(
                     emailService.sendUpdate(it)
                 }
             }
-    }
-
-    fun uploadSheet(byteArray: ByteArray): UUID {
-        return UUID.randomUUID()
-            .apply {
-                BlobInfo
-                    .newBuilder(bucketName, toString())
-                    .build()
-                    .apply {
-                        storage.create(this, byteArray)
-                    }
-            }
-    }
-
-    fun readSheet(uuid: UUID): ByteArray {
-        val blob = storage.get(bucketName, uuid.toString())
-        return blob.getContent()
     }
 
     @Transactional

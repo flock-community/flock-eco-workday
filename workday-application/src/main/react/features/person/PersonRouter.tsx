@@ -17,5 +17,3 @@ export const PersonRouter = () => {
     </Switch>
   );
 };
-
-PersonRouter.propTypes = {};

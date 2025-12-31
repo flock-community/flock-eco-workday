@@ -1,6 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
 import { mixed, number, object } from "yup";
@@ -23,7 +22,7 @@ export const ContractFormManagement = ({
   const form = ({ values }) => (
     <Form id={MANAGEMENT_CONTRACT_FORM_ID}>
       <Grid container spacing={1}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="monthlyFee"
             type="number"
@@ -32,14 +31,14 @@ export const ContractFormManagement = ({
             component={TextField}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <DatePickerField
             name="from"
             label="Start date"
             maxDate={values.to ? values.to : undefined}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <DatePickerField name="to" label="End date" minDate={values.from} />
         </Grid>
       </Grid>
@@ -69,16 +68,4 @@ export const ContractFormManagement = ({
       {form}
     </Formik>
   );
-};
-
-ContractFormManagement.propTypes = {
-  value: PropTypes.object,
-  onSubmit: PropTypes.func.isRequired,
-};
-
-ContractFormManagement.defaultProps = {
-  item: {
-    client: null,
-    user: null,
-  },
 };

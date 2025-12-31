@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import {
   ASSIGNMENT_PAGE_SIZE,
@@ -69,7 +69,7 @@ export function AssignmentList({
     <>
       <Grid container spacing={1} className={classes.list}>
         {items.map((assignment) => (
-          <Grid item xs={12} key={`assignment-${assignment.code}`}>
+          <Grid size={{ xs: 12 }} key={`assignment-${assignment.code}`}>
             <Card onClick={handleClickItem(assignment)}>
               <CardContent>
                 <Typography variant="h6">

@@ -50,5 +50,3 @@ export function ExactonlineListInvoices() {
     </List>
   );
 }
-
-ExactonlineListInvoices.propTypes = {};

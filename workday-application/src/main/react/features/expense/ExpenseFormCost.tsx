@@ -1,6 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
 import * as Yup from "yup";
@@ -27,7 +26,7 @@ export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
   const form = () => (
     <Form id={EXPENSE_COST_FORM_ID}>
       <Grid container spacing={1}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="description"
             label="Description"
@@ -35,10 +34,10 @@ export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <DatePickerField name="date" label="Date" />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="amount"
             type="number"
@@ -47,7 +46,7 @@ export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
             component={TextField}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <DropzoneAreaField name="files" endpoint="/api/expenses/files" />
         </Grid>
       </Grid>
@@ -67,9 +66,4 @@ export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
       {form}
     </Formik>
   );
-};
-
-ExpenseFormCost.propTypes = {
-  value: PropTypes.object,
-  onSubmit: PropTypes.func.isRequired,
 };

@@ -68,7 +68,20 @@ export async function When_I_fill_in_the_date_range_from_till(page: Page, fromDa
 
 export async function When_I_add_a_file(page, filename: string) {
   const fileInput = await page.locator('input[type="file"]');
+
+  // Listen for the upload request before setting the file
+  const uploadPromise = page.waitForResponse(
+    response => response.url().includes('/api/expenses/files') && response.status() === 200,
+    { timeout: 10000 }
+  );
+
   await fileInput.setInputFiles(`tests/files/${filename}`);
+
+  // Wait for the upload to complete
+  await uploadPromise;
+
+  // Wait a moment for the UI to update
+  await page.waitForTimeout(500);
 }
 
 export async function Then_I_see_the_new_work_days_for_the_month_with_hours(page, month: string, year: string, totalHours: string) {

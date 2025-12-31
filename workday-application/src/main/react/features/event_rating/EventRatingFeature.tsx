@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import Fab from "@mui/material/Fab";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import { Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import { useParams } from "react-router-dom";
@@ -46,7 +46,7 @@ export function EventRatingFeature() {
         {[...Array(10).keys()]
           .map((i) => i + 1)
           .map((i) => (
-            <Grid key={`button-${person.uuid}-${i}`} item>
+            <Grid key={`button-${person.uuid}-${i}`}>
               <Fab
                 color={
                   eventRating && eventRating.rating === i
@@ -59,7 +59,7 @@ export function EventRatingFeature() {
               </Fab>
             </Grid>
           ))}
-        <Grid item>
+        <Grid>
           <Fab onClick={deleteRating(person)}>X</Fab>
         </Grid>
       </Grid>
@@ -78,12 +78,12 @@ export function EventRatingFeature() {
           spacing={3}
           alignItems="center"
         >
-          <Grid item xs>
+          <Grid size="grow">
             <Typography>
               {person.firstname} {person.lastname}
             </Typography>
           </Grid>
-          <Grid item>{renderRow(person)}</Grid>
+          <Grid>{renderRow(person)}</Grid>
         </Grid>
       ))}
     </Container>

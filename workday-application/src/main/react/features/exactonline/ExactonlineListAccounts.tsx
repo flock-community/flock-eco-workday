@@ -21,5 +21,3 @@ export function ExactonlineListAccounts() {
     </List>
   );
 }
-
-ExactonlineListAccounts.propTypes = {};

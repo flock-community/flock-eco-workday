@@ -35,5 +35,3 @@ export const PersonTableHead = () => {
     </TableHead>
   );
 };
-
-PersonTableHead.propTypes = {};

@@ -3,7 +3,7 @@ import { Dialog, Divider } from "@mui/material";
 import WorkIcon from "@mui/icons-material/Work";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -133,14 +133,14 @@ export function ExpenseDialog({
         <DialogBody>
           <Grid container spacing={1}>
             <UserAuthorityUtil has={"ExpenseAuthority.ADMIN"}>
-              <Grid item xs>
+              <Grid size="grow">
                 <Typography variant={"h5"} component={"h2"}>
                   {personFullName}
                 </Typography>
               </Grid>
             </UserAuthorityUtil>
             {!id && (
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <FormControl fullWidth>
                   <Select
                     id="contract-type-select"
@@ -153,7 +153,7 @@ export function ExpenseDialog({
                 </FormControl>
               </Grid>
             )}
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               {type === ExpenseType.TRAVEL && (
                 <ExpenseFormTravel value={state} onSubmit={handleSubmit} />
               )}

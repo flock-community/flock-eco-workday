@@ -54,5 +54,3 @@ export function EventFeature() {
     </Box>
   );
 }
-
-EventFeature.propTypes = {};

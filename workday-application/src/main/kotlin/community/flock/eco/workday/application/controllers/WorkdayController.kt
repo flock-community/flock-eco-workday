@@ -4,6 +4,7 @@ import community.flock.eco.workday.application.authorities.WorkDayAuthority
 import community.flock.eco.workday.application.forms.WorkDayForm
 import community.flock.eco.workday.application.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.application.model.WorkDay
+import community.flock.eco.workday.application.services.DocumentStorage
 import community.flock.eco.workday.application.services.WorkDayService
 import community.flock.eco.workday.core.utils.toResponse
 import org.slf4j.Logger
@@ -35,6 +36,7 @@ import java.util.UUID
 @RequestMapping("/api/workdays")
 class WorkdayController(
     private val service: WorkDayService,
+    private val documentStorage: DocumentStorage,
 ) {
     private val log: Logger = LoggerFactory.getLogger(WorkdayController::class.java)
 
@@ -108,7 +110,7 @@ class WorkdayController(
         @PathVariable name: String,
         authentication: Authentication,
     ): ResponseEntity<ByteArray> =
-        service.readSheet(file)
+        documentStorage.readDocument(file)
             .run {
                 ResponseEntity
                     .ok()
@@ -121,8 +123,8 @@ class WorkdayController(
     fun postSheets(
         @RequestParam("file") file: MultipartFile,
         authentication: Authentication,
-    ) = service
-        .uploadSheet(file.bytes)
+    ) = documentStorage
+        .storeDocument(file.bytes)
         .toResponse()
 
     private fun getMediaType(name: String): MediaType {

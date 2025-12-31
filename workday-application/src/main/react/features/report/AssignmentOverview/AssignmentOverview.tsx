@@ -1,10 +1,12 @@
 import React from "react";
-import { Card, CardContent, CardHeader, Grid } from "@mui/material";
+import { Card, CardContent, CardHeader } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+
 import AssignmentOverviewTable from "./AssignmentOverviewTable";
 
 export default function AssignmentOverview() {
   return (
-    <Grid item xs={12}>
+    <Grid size={{ xs: 12 }}>
       <Card>
         <CardHeader title="Assignments" />
         <CardContent>

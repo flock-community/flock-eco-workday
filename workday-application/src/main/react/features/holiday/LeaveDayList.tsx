@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
 import Typography from "@mui/material/Typography";
@@ -53,7 +53,7 @@ export function LeaveDayList({
 
   function renderItem(item: DayProps, key: number) {
     return (
-      <Grid item xs={12} key={`holiday-list-item-${key}`}>
+      <Grid size={{ xs: 12 }} key={`holiday-list-item-${key}`}>
         <DayListItem
           value={item}
           onClick={() => onClickRow(item)}

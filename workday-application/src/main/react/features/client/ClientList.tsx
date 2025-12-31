@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import Card from "@mui/material/Card";
 import { CardContent } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import { Client, ClientClient } from "../../clients/ClientClient";
 import { isDefined } from "../../utils/validation";
@@ -19,8 +18,12 @@ const useStyles = makeStyles({
   },
 });
 
-export function ClientList(props) {
-  const { reload, onItemClick } = props;
+type ClientListProps = {
+  reload?: boolean;
+  onItemClick?: (item: Client) => void;
+};
+
+export function ClientList({ reload, onItemClick }: ClientListProps) {
   const classes = useStyles();
 
   const [list, setList] = useState<Client[]>([]);
@@ -40,7 +43,7 @@ export function ClientList(props) {
   return (
     <Grid container className={classes.root} spacing={1}>
       {list.map((it) => (
-        <Grid item xs={12} key={`clients-${it.code}`}>
+        <Grid size={{ xs: 12 }} key={`clients-${it.code}`}>
           <Card onClick={handleItem(it)}>
             <CardContent>
               <Typography variant="h6">{it.name}</Typography>
@@ -51,8 +54,3 @@ export function ClientList(props) {
     </Grid>
   );
 }
-
-ClientList.propTypes = {
-  reload: PropTypes.bool,
-  onItemClick: PropTypes.func,
-};

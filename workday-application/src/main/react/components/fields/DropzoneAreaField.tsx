@@ -1,20 +1,20 @@
 import { Field } from "formik";
 import React, { useState } from "react";
-import { DropzoneArea } from "mui-file-dropzone";
+import { DropzoneArea } from "./DropzoneArea";
 
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import ListItemText from "@mui/material/ListItemText";
 
 import FolderIcon from "@mui/icons-material/Folder";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Typography } from "@mui/material";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 type DropzoneAreaFieldProps = {
   name: string;
@@ -59,26 +59,45 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
       <ListItem
         key={it.file}
         disableGutters
-        component="a"
-        target="_blank"
-        href={`${endpoint}/${it.file}/${it.name}`}
+        secondaryAction={
+          <>
+            <IconButton
+              edge="end"
+              aria-label="preview"
+              component="a"
+              href={`${endpoint}/${it.file}/${it.name}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <OpenInNewIcon />
+            </IconButton>
+            <IconButton
+              edge="end"
+              aria-label="delete"
+              onClick={handleDeleteFile(it.file)}
+              size="large"
+            >
+              <DeleteIcon />
+            </IconButton>
+          </>
+        }
       >
         <ListItemAvatar>
           <Avatar>
             <FolderIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary={it.name} />
-        <ListItemSecondaryAction>
-          <IconButton
-            edge="end"
-            aria-label="delete"
-            onClick={handleDeleteFile(it.file)}
-            size="large"
-          >
-            <DeleteIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
+        <ListItemText
+          primary={
+            <a
+              href={`${endpoint}/${it.file}/${it.name}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {it.name}
+            </a>
+          }
+        />
       </ListItem>
     );
 
@@ -91,7 +110,7 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
     };
     const renderProgress = () => (
       <Grid container alignItems="center" style={progressStyle}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <CircularProgress />
         </Grid>
       </Grid>
@@ -101,7 +120,7 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
 
     return value ? (
       <Grid container spacing={1}>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           {upload ? (
             renderProgress()
           ) : (
@@ -114,7 +133,7 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
             />
           )}
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           {value.length > 0 ? (
             <List dense>{value.map(renderFilesItem)}</List>
           ) : (

@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import ProjectForm, { PROJECT_FORM_ID } from "./ProjectForm";
 import { Project, ProjectClient } from "../../clients/ProjectClient";
 import { DialogBody } from "../../components/dialog/DialogHeader";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import ProjectIcon from "@mui/icons-material/AccountTree";
 
 type ProjectDialogProps = {
@@ -70,12 +70,12 @@ export default function ProjectDialog({
       />
       <DialogBody>
         <Grid container spacing={1}>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Typography variant="body1">
               Fill out the details of a (Flock.) project
             </Typography>
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <ProjectForm projectCode={project?.code} onSubmit={handleSubmit} />
           </Grid>
         </Grid>

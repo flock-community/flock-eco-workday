@@ -35,7 +35,7 @@ class LoadSickdaysData(
         for (i in -5..5) {
             val plusYears = i.toLong()
             val random = (0..100).shuffled(randomGenerator).first().toLong()
-            val nrOfDays1 = randomGenerator.nextInt(1,10)
+            val nrOfDays1 = randomGenerator.nextInt(1, 10)
             SickDayForm(
                 description = "Runny nose for ${person.firstname}",
                 from = startOfYear.plusYears(plusYears).plusDays(random),
@@ -45,7 +45,7 @@ class LoadSickdaysData(
                 personId = person.uuid,
             ).create()
 
-            val nrOfDays2 = randomGenerator.nextInt(1,10)
+            val nrOfDays2 = randomGenerator.nextInt(1, 10)
             SickDayForm(
                 description = "Cough for ${person.firstname}",
                 from = startOfYear.plusYears(plusYears).plusDays(random + 100),
@@ -54,7 +54,6 @@ class LoadSickdaysData(
                 hours = nrOfDays2 * 8.0,
                 personId = person.uuid,
             ).create()
-
         }
     }
 

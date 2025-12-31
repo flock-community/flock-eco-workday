@@ -1,8 +1,7 @@
 import React from "react";
-import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import { TextField } from "formik-mui";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { DatePickerField } from "../../components/fields/DatePickerField";
@@ -22,7 +21,12 @@ export const schemaSickDayForm = Yup.object().shape({
   days: Yup.array().default([8]).nullable(),
 });
 
-export function SickDayForm({ value, onSubmit }) {
+type SickDayFormProps = {
+  value: any;
+  onSubmit?: (data: any) => void;
+};
+
+export function SickDayForm({ value, onSubmit }: SickDayFormProps) {
   const handleSubmit = (data) => {
     onSubmit?.({
       ...value,
@@ -39,7 +43,7 @@ export function SickDayForm({ value, onSubmit }) {
     return (
       <Form id={SICKDAY_FORM_ID}>
         <Grid container spacing={1}>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Field
               name="description"
               type="text"
@@ -48,7 +52,7 @@ export function SickDayForm({ value, onSubmit }) {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <UserAuthorityUtil has={"SickdayAuthority.ADMIN"}>
               <StatusSelect
                 value={values.status}
@@ -56,13 +60,13 @@ export function SickDayForm({ value, onSubmit }) {
               ></StatusSelect>
             </UserAuthorityUtil>
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DatePickerField name="from" label="From" maxDate={values.to} />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DatePickerField name="to" label="To" minDate={values.from} />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <PeriodInputField name="days" from={values.from} to={values.to} />
           </Grid>
         </Grid>
@@ -83,8 +87,3 @@ export function SickDayForm({ value, onSubmit }) {
     )
   );
 }
-
-SickDayForm.propTypes = {
-  value: PropTypes.object,
-  onSubmit: PropTypes.func,
-};

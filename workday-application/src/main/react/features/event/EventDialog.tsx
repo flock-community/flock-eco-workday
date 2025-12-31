@@ -5,7 +5,7 @@ import EventIcon from "@mui/icons-material/CalendarToday";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import { EventClient, FlockEventRequest } from "../../clients/EventClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { EVENT_FORM_ID, EventForm } from "./EventForm";
@@ -96,11 +96,11 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         />
         <DialogBody>
           <Grid container spacing={1}>
-            <Grid item>
+            <Grid>
               {state && <EventForm value={state} onSubmit={handleSubmit} />}
             </Grid>
             {code && (
-              <Grid item>
+              <Grid>
                 <Button
                   variant="contained"
                   color={"primary"}

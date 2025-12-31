@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import {
   CONTRACT_PAGE_SIZE,
@@ -64,7 +63,7 @@ export function ContractList({
     <>
       <Grid container spacing={1} className={classes.list}>
         {items.map((it) => (
-          <Grid item xs={12} key={it.code}>
+          <Grid size={{ xs: 12 }} key={it.code}>
             <Card onClick={handleClickItem(it)}>
               <CardContent>
                 <Typography>{it.type}</Typography>
@@ -109,7 +108,3 @@ export function ContractList({
 function FormatDate({ date }) {
   return date ? <>{date.format("DD-MM-YYYY")}</> : <i>now</i>;
 }
-
-FormatDate.propTypes = {
-  date: PropTypes.object,
-};

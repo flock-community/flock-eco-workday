@@ -1,6 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { Field, Form, Formik } from "formik";
 import { CheckboxWithLabel, TextField } from "formik-mui";
 import { boolean, mixed, number, object } from "yup";
@@ -21,7 +20,7 @@ export const ContractFormExternal = ({
   const form = ({ values }) => (
     <Form id={EXTERNAL_CONTRACT_FORM_ID}>
       <Grid container spacing={1}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="hourlyRate"
             type="number"
@@ -30,7 +29,7 @@ export const ContractFormExternal = ({
             component={TextField}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="hoursPerWeek"
             type="number"
@@ -39,17 +38,17 @@ export const ContractFormExternal = ({
             component={TextField}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <DatePickerField
             name="from"
             label="Start date"
             maxDate={values.to ? values.to : undefined}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <DatePickerField name="to" label="End date" minDate={values.from} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="billable"
             type="checkbox"
@@ -79,16 +78,4 @@ export const ContractFormExternal = ({
       {form}
     </Formik>
   );
-};
-
-ContractFormExternal.propTypes = {
-  value: PropTypes.object,
-  onSubmit: PropTypes.func.isRequired,
-};
-
-ContractFormExternal.defaultProps = {
-  item: {
-    client: null,
-    user: null,
-  },
 };

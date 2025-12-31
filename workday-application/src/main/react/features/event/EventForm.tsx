@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Grid2";
 import { TextField } from "formik-mui";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PersonSelectorField } from "../../components/fields/PersonSelectorField";
@@ -26,10 +25,12 @@ const schema = Yup.object().shape({
   type: Yup.string().required("Field required").default("GENERAL_EVENT"),
 });
 
-/**
- * @return {null}
- */
-export function EventForm({ value, onSubmit }) {
+type EventFormProps = {
+  value: any;
+  onSubmit?: (data: any) => void;
+};
+
+export function EventForm({ value, onSubmit }: EventFormProps) {
   const handleSubmit = (data) => {
     onSubmit?.({
       description: data.description,
@@ -53,7 +54,7 @@ export function EventForm({ value, onSubmit }) {
     return (
       <Form id={EVENT_FORM_ID}>
         <Grid container spacing={1}>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Field
               name="description"
               type="text"
@@ -62,7 +63,7 @@ export function EventForm({ value, onSubmit }) {
               component={TextField}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Field
               name="costs"
               type="number"
@@ -71,22 +72,22 @@ export function EventForm({ value, onSubmit }) {
               component={TextField}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <PersonSelectorField name="personIds" multiple fullWidth />
           </Grid>
-          <Grid item xs={12} style={{ marginTop: "1rem" }}>
+          <Grid size={{ xs: 12 }} style={{ marginTop: "1rem" }}>
             <EventTypeSelect
               value={values.type}
               onChange={handleEventTypeChange}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DatePickerField name="from" label="From" maxDate={values.to} />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DatePickerField name="to" label="To" minDate={values.from} />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <PeriodInputField
               name="days"
               from={values.from}
@@ -113,8 +114,3 @@ export function EventForm({ value, onSubmit }) {
     )
   );
 }
-
-EventForm.propTypes = {
-  code: PropTypes.string,
-  onSubmit: PropTypes.func,
-};
