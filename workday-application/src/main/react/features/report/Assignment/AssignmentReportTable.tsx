@@ -1,4 +1,5 @@
 import Typography from "@mui/material/Typography";
+import { styled } from "@mui/material/styles";
 import React, { Fragment, useEffect, useState } from "react";
 import { AggregationClient } from "../../../clients/AggregationClient";
 import { Box, TableBody, TableContainer } from "@mui/material";
@@ -6,13 +7,18 @@ import Table from "@mui/material/Table";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import makeStyles from "@mui/styles/makeStyles";
 import AssignmentReportTableRow from "./AssignmentReportTableRow";
 import { Dayjs } from "dayjs";
 import { AggregationClientPersonAssignmentOverview } from "../../../wirespec/Models";
 
-const useStyles = makeStyles({
-  tableContainer: {
+const PREFIX = "AssignmentReportTable";
+
+const classes = {
+  tableContainer: `${PREFIX}-tableContainer`,
+};
+
+const StyledTableContainer = styled(TableContainer)({
+  [`&.${classes.tableContainer}`]: {
     width: "auto",
   },
 });
@@ -29,8 +35,6 @@ export default function AssignmentReportTable({
   const [clientHourOverviewState, setClientHourOverviewState] =
     useState<AggregationClientPersonAssignmentOverview[]>();
   const [dayRange, setDayRange] = useState<string[]>();
-
-  const classes = useStyles();
 
   useEffect(() => {
     const daysInMonth = to.diff(from, "days", false) + 1;
@@ -56,7 +60,7 @@ export default function AssignmentReportTable({
   }
 
   return (
-    <TableContainer className={classes.tableContainer}>
+    <StyledTableContainer className={classes.tableContainer}>
       <Table size="small">
         <TableBody>
           {clientHourOverviewState.map((it, clientIndex) => (
@@ -98,6 +102,6 @@ export default function AssignmentReportTable({
           ))}
         </TableBody>
       </Table>
-    </TableContainer>
+    </StyledTableContainer>
   );
 }

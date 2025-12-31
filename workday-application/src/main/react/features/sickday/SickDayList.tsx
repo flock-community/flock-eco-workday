@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
 import { Box, Card, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { SICKDAY_PAGE_SIZE, SickDayClient } from "../../clients/SickDayClient";
 import { DayListItem } from "../../components/DayListItem";
-import makeStyles from "@mui/styles/makeStyles";
 
 // Components
 import { FlockPagination } from "../../components/pagination/FlockPagination";
@@ -12,8 +12,15 @@ import { FlockPagination } from "../../components/pagination/FlockPagination";
 // Types
 import type { DayListProps, DayProps } from "../../types";
 
-const useStyles = makeStyles({
-  list: (loading) => ({
+const PREFIX = "SickDayList";
+
+const classes = {
+  list: `${PREFIX}-list`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")({
+  [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
 });
@@ -28,8 +35,6 @@ export function SickDayList({
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
-
-  const classes = useStyles(loading);
 
   useEffect(() => {
     if (personId) {
@@ -70,7 +75,7 @@ export function SickDayList({
   }
 
   return (
-    <>
+    <Root>
       <Grid container spacing={1} className={classes.list}>
         {list.map(renderItem)}
       </Grid>
@@ -82,6 +87,6 @@ export function SickDayList({
           changePageCb={setPage}
         />
       </Box>
-    </>
+    </Root>
   );
 }

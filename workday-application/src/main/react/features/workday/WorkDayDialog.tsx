@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
 import { Box, Dialog, DialogContent, Divider } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
 import WorkIcon from "@mui/icons-material/Work";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
@@ -8,26 +8,31 @@ import Typography from "@mui/material/Typography";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { WorkDayClient } from "../../clients/WorkDayClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogFooter, DialogHeader } from "../../components/dialog";
+import { DialogFooter, DialogHeader } from "@workday-core/components/dialog";
 import { schema, WORKDAY_FORM_ID, WorkDayForm } from "./WorkDayForm";
 import { isDefined } from "../../utils/validation";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import Button from "@mui/material/Button";
 import { ExportClient } from "../../clients/ExportClient";
 import Snackbar from "@mui/material/Snackbar";
-import { DialogBody } from "../../components/dialog/DialogHeader";
+import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
-type ExportStatusProps = {
-  loading: boolean;
-  link: string | null;
+const PREFIX = "WorkDayDialog";
+
+const classes = {
+  dialogContent: `${PREFIX}-dialogContent`,
+  exportSnackBar: `${PREFIX}-exportSnackBar`,
+  exportMessage: `${PREFIX}-exportMessage`,
 };
 
-const useStyles = makeStyles((theme: Theme) => ({
-  dialogContent: {
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")(({ theme }) => ({
+  [`& .${classes.dialogContent}`]: {
     margin: "auto",
     maxWidth: 768, // should be a decent medium-sized breakpoint
   },
-  exportSnackBar: {
+
+  [`& .${classes.exportSnackBar}`]: {
     display: "flex",
     justifyItems: "center",
     alignItems: "center",
@@ -37,13 +42,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: "5px",
     backgroundColor: theme.palette.success["200"],
   },
-  exportMessage: {
+
+  [`& .${classes.exportMessage}`]: {
     marginRight: "0.5rem",
   },
 }));
 
+type ExportStatusProps = {
+  loading: boolean;
+  link: string | null;
+};
+
 export function WorkDayDialog({ personFullName, open, code, onComplete }) {
-  const classes = useStyles();
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const [processing, setProcessing] = useState<boolean>(false);
 
@@ -148,7 +158,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
   }
 
   return (
-    <>
+    <Root>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -217,6 +227,6 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
           </Button>
         </div>
       </Snackbar>
-    </>
+    </Root>
   );
 }

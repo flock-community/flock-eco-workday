@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
 import { Box, Dialog, DialogContent, Divider } from "@mui/material";
-import { DialogHeader } from "../dialog";
-import makeStyles from "@mui/styles/makeStyles";
+import { DialogHeader } from "@workday-core/components/dialog";
 import { Theme } from "@mui/material/styles";
 import HolidayIcon from "@mui/icons-material/WbSunny";
 import HealingIcon from "@mui/icons-material/Healing";
@@ -15,35 +15,56 @@ import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import { ChildCare, MoreHoriz, Timeline } from "@mui/icons-material";
 import { AggregationPersonObject } from "./MissingHoursCard";
 import Typography from "@mui/material/Typography";
-import { DialogBody } from "../dialog/DialogHeader";
+import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  flexDataContainer: {
+const PREFIX = "MissingHoursDetailDialog";
+
+const classes = {
+  flexDataContainer: `${PREFIX}-flexDataContainer`,
+  dataItemWorkDay: `${PREFIX}-dataItemWorkDay`,
+  dataItemHoliday: `${PREFIX}-dataItemHoliday`,
+  dataItemPaidPL: `${PREFIX}-dataItemPaidPL`,
+  dataItemUnpaidPL: `${PREFIX}-dataItemUnpaidPL`,
+  dataItemSickDay: `${PREFIX}-dataItemSickDay`,
+  dataItemEventDay: `${PREFIX}-dataItemEventDay`,
+  dataItemMissing: `${PREFIX}-dataItemMissing`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")(({ theme }) => ({
+  [`& .${classes.flexDataContainer}`]: {
     display: "flex",
     height: "2rem",
     "& > *": {
       flexBasis: "0%",
     },
   },
-  dataItemWorkDay: {
+
+  [`& .${classes.dataItemWorkDay}`]: {
     backgroundColor: "#1de8b5",
   },
-  dataItemHoliday: {
+
+  [`& .${classes.dataItemHoliday}`]: {
     backgroundColor: "#42a5f5",
   },
-  dataItemPaidPL: {
+
+  [`& .${classes.dataItemPaidPL}`]: {
     backgroundColor: "#ffb6c1",
   },
-  dataItemUnpaidPL: {
+
+  [`& .${classes.dataItemUnpaidPL}`]: {
     backgroundColor: "#87cefa",
   },
-  dataItemSickDay: {
+
+  [`& .${classes.dataItemSickDay}`]: {
     backgroundColor: "#ef5350",
   },
-  dataItemEventDay: {
+
+  [`& .${classes.dataItemEventDay}`]: {
     backgroundColor: "#fed766",
   },
-  dataItemMissing: {
+
+  [`& .${classes.dataItemMissing}`]: {
     backgroundColor: "#9e9e9e",
   },
 }));
@@ -60,7 +81,6 @@ export function MissingHoursDetailDialog({
   onComplete,
 }: MissingHoursDetailDialogProps) {
   const [state, setState] = useState<any>(null);
-  const classes = useStyles();
 
   useEffect(() => {
     if (open) {
@@ -74,7 +94,7 @@ export function MissingHoursDetailDialog({
   };
 
   return (
-    <>
+    <Root>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -205,6 +225,6 @@ export function MissingHoursDetailDialog({
           )}
         </DialogBody>
       </Dialog>
-    </>
+    </Root>
   );
 }

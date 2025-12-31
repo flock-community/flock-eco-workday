@@ -1,4 +1,5 @@
 import TableRow from "@mui/material/TableRow";
+import { styled } from "@mui/material/styles";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import {
@@ -8,11 +9,17 @@ import {
 import NonProductiveHours from "./NonProductiveHours";
 import React, { useState } from "react";
 import { AggregationClientPersonAssignmentItem } from "../../../wirespec/Models";
-import makeStyles from "@mui/styles/makeStyles";
 import { Dayjs } from "dayjs";
 
-const useStyles = makeStyles({
-  noWrap: {
+const PREFIX = "AssignmentReportTableRow";
+
+const classes = {
+  noWrap: `${PREFIX}-noWrap`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")({
+  [`& .${classes.noWrap}`]: {
     whiteSpace: "nowrap",
   },
 });
@@ -30,13 +37,11 @@ export default function AssignmentReportTableRow({
 }: AssignmentReportTableRowProps) {
   const [showNonProductiveHours, setShowNonProductiveHours] = useState(false);
 
-  const classes = useStyles();
-
   const toggleShowNonProductiveHours = () =>
     setShowNonProductiveHours(!showNonProductiveHours);
 
   return (
-    <>
+    <Root>
       <TableRow>
         <TableCell>
           <IconButton size="small" onClick={toggleShowNonProductiveHours}>
@@ -59,6 +64,6 @@ export default function AssignmentReportTableRow({
       {showNonProductiveHours && (
         <NonProductiveHours personId={item.person.id} from={from} to={to} />
       )}
-    </>
+    </Root>
   );
 }

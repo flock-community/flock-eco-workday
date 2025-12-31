@@ -4,10 +4,10 @@ import PersonAdd from "@mui/icons-material/PersonAdd";
 import { PERSON_FORM_ID, PersonForm } from "./PersonForm";
 import { PersonClient, PersonRequest } from "../../clients/PersonClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogFooter, DialogHeader } from "../../components/dialog";
+import { DialogFooter, DialogHeader } from "@workday-core/components/dialog";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import { Dayjs } from "dayjs";
-import { DialogBody } from "../../components/dialog/DialogHeader";
+import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
 type PersonDialogProps = {
   open: boolean;

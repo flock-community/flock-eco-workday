@@ -1,4 +1,5 @@
 import { Box, Card, CardContent, CardHeader } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
@@ -8,14 +9,21 @@ import { addError } from "../../hooks/ErrorHook";
 import { LeaveDayDialog } from "../../features/holiday/LeaveDayDialog";
 import { ExpenseDialog } from "../../features/expense/ExpenseDialog";
 import { Cloud } from "@mui/icons-material";
-import makeStyles from "@mui/styles/makeStyles";
 import { ExpenseType } from "../../models/Expense";
 
-const useStyles = makeStyles({
-  containerWrapper: {
+const PREFIX = "QuickLinks";
+
+const classes = {
+  containerWrapper: `${PREFIX}-containerWrapper`,
+  buttonWrapper: `${PREFIX}-buttonWrapper`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")({
+  [`& .${classes.containerWrapper}`]: {
     containerType: "inline-size",
   },
-  buttonWrapper: {
+  [`& .${classes.buttonWrapper}`]: {
     display: "flex",
     justifyContent: "space-around",
     flexWrap: "wrap",
@@ -27,8 +35,6 @@ const useStyles = makeStyles({
 });
 
 export function QuickLinks() {
-  const classes = useStyles();
-
   const [person] = usePerson();
   const [workDayOpen, setWorkDayOpen] = useState(false);
   const [leaveDayOpen, setLeaveDayOpen] = useState(false);
@@ -69,7 +75,7 @@ export function QuickLinks() {
   const handleCompleteCostExpenseDialog = () => setCostExpenseOpen(false);
 
   return (
-    <>
+    <Root>
       <Card variant={"outlined"} style={{ borderRadius: 0 }}>
         <CardHeader title={"Quick links"} />
         <CardContent className={classes.containerWrapper}>
@@ -116,7 +122,6 @@ export function QuickLinks() {
           </Box>
         </CardContent>
       </Card>
-
       <WorkDayDialog
         personFullName={person?.fullName}
         open={workDayOpen}
@@ -145,6 +150,6 @@ export function QuickLinks() {
         onComplete={handleCompleteCostExpenseDialog}
         expenseType={ExpenseType.COST}
       />
-    </>
+    </Root>
   );
 }

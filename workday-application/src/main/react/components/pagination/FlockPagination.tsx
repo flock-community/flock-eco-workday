@@ -1,7 +1,21 @@
 // Deps
 import React from "react";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
 import { Pagination } from "@mui/material";
+
+const PREFIX = "FlockPagination";
+
+const classes = {
+  pagination: `${PREFIX}-pagination`,
+};
+
+const StyledPagination = styled(Pagination)({
+  [`& .${classes.pagination}`]: {
+    "& .MuiPagination-ul": {
+      justifyContent: "right",
+    },
+  },
+});
 
 interface FlockPaginationProps {
   currentPage: number;
@@ -9,14 +23,6 @@ interface FlockPaginationProps {
   itemsPerPage: number;
   changePageCb: (pageNumber: number) => void;
 }
-
-const useStyles = makeStyles({
-  pagination: {
-    "& .MuiPagination-ul": {
-      justifyContent: "right",
-    },
-  },
-});
 
 export const FlockPagination: React.FC<FlockPaginationProps> = ({
   currentPage,
@@ -30,8 +36,6 @@ export const FlockPagination: React.FC<FlockPaginationProps> = ({
   ) => {
     changePageCb(value - 1);
   };
-
-  const classes = useStyles();
 
   return (
     <Pagination

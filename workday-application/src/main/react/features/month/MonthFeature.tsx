@@ -5,7 +5,7 @@ import Card from "@mui/material/Card";
 import IconButton from "@mui/material/IconButton";
 import BackIcon from "@mui/icons-material/ChevronLeft";
 import NextIcon from "@mui/icons-material/ChevronRight";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import {
   Bar,
   BarChart,

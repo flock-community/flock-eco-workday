@@ -1,7 +1,7 @@
 import Button from "@mui/material/Button";
+import { styled } from "@mui/material/styles";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
 import React, { useState } from "react";
 import clsx from "clsx";
@@ -10,27 +10,39 @@ import {
   filterTransitionsFromByStatus,
 } from "./StatusMethods";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  buttonRequested: {
+const PREFIX = "StatusMenu";
+
+const classes = {
+  buttonRequested: `${PREFIX}-buttonRequested`,
+  buttonApproved: `${PREFIX}-buttonApproved`,
+  buttonRejected: `${PREFIX}-buttonRejected`,
+  buttonDone: `${PREFIX}-buttonDone`,
+};
+
+const Root = styled("div")(({ theme }) => ({
+  [`& .${classes.buttonRequested}`]: {
     backgroundColor: "unset",
     "&:disabled": {
       backgroundColor: "unset",
       outline: "1px solid",
     },
   },
-  buttonApproved: {
+
+  [`& .${classes.buttonApproved}`]: {
     backgroundColor: theme.palette.success[500],
     "&:disabled": {
       backgroundColor: theme.palette.success[500],
     },
   },
-  buttonRejected: {
+
+  [`& .${classes.buttonRejected}`]: {
     backgroundColor: theme.palette.error[500],
     "&:disabled": {
       backgroundColor: theme.palette.error[500],
     },
   },
-  buttonDone: {
+
+  [`& .${classes.buttonDone}`]: {
     // @ts-ignore
     backgroundColor: theme.palette.done,
     "&:disabled": {
@@ -47,8 +59,6 @@ type StatusMenuProps = {
 };
 
 export function StatusMenu({ onChange, disabled, value }: StatusMenuProps) {
-  const classes = useStyles();
-
   const [anchorEl, setAnchorEl] = useState(null);
   const [expanded, setIsExpanded] = useState(false);
 
@@ -88,7 +98,7 @@ export function StatusMenu({ onChange, disabled, value }: StatusMenuProps) {
 
   return (
     // @ts-ignore
-    <div className={classes.status}>
+    <Root className={classes.status}>
       <Button
         aria-haspopup="true"
         aria-expanded={expanded}
@@ -112,6 +122,6 @@ export function StatusMenu({ onChange, disabled, value }: StatusMenuProps) {
           {(currentStateOptions || []).map((it) => renderMenuItem(it))}
         </Menu>
       )}
-    </div>
+    </Root>
   );
 }

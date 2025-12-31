@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
 import { Box, Card, Chip, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import {
   EVENT_PAGE_SIZE,
   EventClient,
@@ -10,11 +11,17 @@ import {
 } from "../../clients/EventClient";
 import { isDefined } from "../../utils/validation";
 import { EventTypeMapping } from "../../utils/mappings";
-import makeStyles from "@mui/styles/makeStyles";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
-const useStyles = makeStyles({
-  list: (loading) => ({
+const PREFIX = "EventList";
+
+const classes = {
+  list: `${PREFIX}-list`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")({
+  [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
 });
@@ -32,8 +39,6 @@ export const EventList = ({
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
-
-  const classes = useStyles(loading);
 
   useEffect(() => {
     setLoading(true);
@@ -107,7 +112,7 @@ export const EventList = ({
   }
 
   return (
-    <>
+    <Root>
       <Grid container spacing={1} className={classes.list}>
         {items.map(renderItem)}
       </Grid>
@@ -119,6 +124,6 @@ export const EventList = ({
           changePageCb={setPage}
         />
       </Box>
-    </>
+    </Root>
   );
 };

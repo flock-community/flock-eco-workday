@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
 import { Box, Card, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import CardHeader from "@mui/material/CardHeader";
 import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
 import { StatusMenu } from "../../components/status/StatusMenu";
 import { EXPENSE_PAGE_SIZE, ExpenseClient } from "../../clients/ExpenseClient";
-import makeStyles from "@mui/styles/makeStyles";
 // Components
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
@@ -19,8 +19,15 @@ import { Status } from "../../models/Status";
 import { CostExpense, TravelExpense } from "../../models/Expense";
 import ListItemButton from "@mui/material/ListItemButton";
 
-const useStyles = makeStyles({
-  list: (loading) => ({
+const PREFIX = "ExpenseList";
+
+const classes = {
+  list: `${PREFIX}-list`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")({
+  [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
 });
@@ -30,8 +37,6 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
-
-  const classes = useStyles(loading);
 
   const loadState = () => {
     setLoading(true);
@@ -121,7 +126,7 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
   }
 
   return (
-    <>
+    <Root>
       <Grid container spacing={1} className={classes.list}>
         {items.map(renderItem)}
       </Grid>
@@ -133,6 +138,6 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
           changePageCb={setPage}
         />
       </Box>
-    </>
+    </Root>
   );
 }

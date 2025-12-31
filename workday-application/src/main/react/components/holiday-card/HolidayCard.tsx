@@ -1,16 +1,26 @@
 import { Card, CardContent, CardHeader, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import { PersonHolidayDetails } from "../../clients/AggregationClient";
 import { hoursFormatter } from "../../utils/Hours";
-import makeStyles from "@mui/styles/makeStyles";
-import { highLightClass } from "../../theme/theme-light";
+import { HighlightSpan } from "../../theme/theme-light";
 import { HolidayDetailDialog } from "./HolidayDetailDialog";
 
-const useStyles = makeStyles(() => ({
-  containerWrapper: {
+const PREFIX = "HolidayCard";
+
+const classes = {
+  containerWrapper: `${PREFIX}-containerWrapper`,
+  hoursLeftWrapper: `${PREFIX}-hoursLeftWrapper`,
+  hoursLeft: `${PREFIX}-hoursLeft`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")(() => ({
+  [`& .${classes.containerWrapper}`]: {
     containerType: "inline-size",
   },
-  hoursLeftWrapper: {
+
+  [`& .${classes.hoursLeftWrapper}`]: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
@@ -20,7 +30,8 @@ const useStyles = makeStyles(() => ({
       alignItems: "center",
     },
   },
-  hoursLeft: {
+
+  [`& .${classes.hoursLeft}`]: {
     fontSize: "clamp(6rem, 25cqw, 11rem)",
     position: "relative",
     textAlign: "center",
@@ -38,8 +49,6 @@ type HolidayCardProps = {
 
 export function HolidayCard({ item }: HolidayCardProps) {
   const [available, setAvailable] = useState<number>(0);
-  const classes = useStyles();
-  const highLightClasses = highLightClass();
   const [holidayHoursDetails, setHolidayHoursDetails] =
     useState<PersonHolidayDetails>();
   const [leaveDayDetailsOpen, setLeaveDayDetailsOpen] =
@@ -65,7 +74,7 @@ export function HolidayCard({ item }: HolidayCardProps) {
   };
 
   return (
-    <>
+    <Root>
       <Card
         variant={"outlined"}
         style={{ borderRadius: 0, cursor: "pointer" }}
@@ -76,15 +85,12 @@ export function HolidayCard({ item }: HolidayCardProps) {
           <div className={classes.hoursLeftWrapper}>
             <Typography variant="body1">You have</Typography>
             <div className={classes.hoursLeft}>
-              <span className={highLightClasses.highlight}>
-                {hoursFormatter.format(available)}
-              </span>
+              <HighlightSpan>{hoursFormatter.format(available)}</HighlightSpan>
             </div>
             <Typography variant="body1">hours left</Typography>
           </div>
         </CardContent>
       </Card>
-
       {leaveDayDetailsItem !== undefined ? (
         <HolidayDetailDialog
           open={leaveDayDetailsOpen}
@@ -94,6 +100,6 @@ export function HolidayCard({ item }: HolidayCardProps) {
       ) : (
         <></>
       )}
-    </>
+    </Root>
   );
 }

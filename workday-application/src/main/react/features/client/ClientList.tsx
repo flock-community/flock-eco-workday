@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import { CardContent } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { Client, ClientClient } from "../../clients/ClientClient";
 import { isDefined } from "../../utils/validation";
 
-const useStyles = makeStyles({
-  root: {
+const PREFIX = "ClientList";
+
+const classes = {
+  root: `${PREFIX}-root`,
+  fab: `${PREFIX}-fab`,
+};
+
+const StyledGrid = styled(Grid)({
+  [`&.${classes.root}`]: {
     padding: 10,
   },
-  fab: {
+  [`& .${classes.fab}`]: {
     position: "absolute",
     bottom: "25px",
     right: "25px",
@@ -24,8 +31,6 @@ type ClientListProps = {
 };
 
 export function ClientList({ reload, onItemClick }: ClientListProps) {
-  const classes = useStyles();
-
   const [list, setList] = useState<Client[]>([]);
 
   useEffect(() => {
@@ -41,7 +46,7 @@ export function ClientList({ reload, onItemClick }: ClientListProps) {
   };
 
   return (
-    <Grid container className={classes.root} spacing={1}>
+    <StyledGrid container className={classes.root} spacing={1}>
       {list.map((it) => (
         <Grid size={{ xs: 12 }} key={`clients-${it.code}`}>
           <Card onClick={handleItem(it)}>
@@ -51,6 +56,6 @@ export function ClientList({ reload, onItemClick }: ClientListProps) {
           </Card>
         </Grid>
       ))}
-    </Grid>
+    </StyledGrid>
   );
 }

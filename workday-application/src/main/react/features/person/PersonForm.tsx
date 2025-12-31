@@ -1,6 +1,6 @@
 import React from "react";
 import { FormControl } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { Field, Form, Formik } from "formik";
 import { CheckboxWithLabel, TextField as FormikTextField } from "formik-mui";
 import { PERSON_FORM_SCHEMA } from "./schema";

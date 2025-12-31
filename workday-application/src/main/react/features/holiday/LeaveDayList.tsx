@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Grid from "@mui/material/Grid2";
+import { styled } from "@mui/material/styles";
+import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
 import Typography from "@mui/material/Typography";
@@ -8,7 +9,6 @@ import {
   LeaveDayClient,
 } from "../../clients/LeaveDayClient";
 import { DayListItem } from "../../components/DayListItem";
-import makeStyles from "@mui/styles/makeStyles";
 
 // Components
 import { FlockPagination } from "../../components/pagination/FlockPagination";
@@ -16,8 +16,15 @@ import { FlockPagination } from "../../components/pagination/FlockPagination";
 // Types
 import type { DayListProps, DayProps } from "../../types";
 
-const useStyles = makeStyles({
-  list: (loading) => ({
+const PREFIX = "LeaveDayList";
+
+const classes = {
+  list: `${PREFIX}-list`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")({
+  [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
 });
@@ -33,8 +40,6 @@ export function LeaveDayList({
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(-1);
   const [loading, setLoading] = useState(true);
-
-  const classes = useStyles(loading);
 
   useEffect(() => {
     if (personId) {
@@ -75,7 +80,7 @@ export function LeaveDayList({
   }
 
   return (
-    <>
+    <Root>
       <Grid container spacing={1} className={classes.list}>
         {list.map(renderItem)}
       </Grid>
@@ -87,6 +92,6 @@ export function LeaveDayList({
           changePageCb={setPage}
         />
       </Box>
-    </>
+    </Root>
   );
 }

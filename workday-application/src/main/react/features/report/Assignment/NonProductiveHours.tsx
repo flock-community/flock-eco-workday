@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
 import { TableCell } from "@mui/material";
 import TableRow from "@mui/material/TableRow";
-import makeStyles from "@mui/styles/makeStyles";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { Dayjs } from "dayjs";
 import { ISO_8601_DATE } from "../../../clients/util/DateFormats";
 
-const useStyles = makeStyles({
-  row: {
+const PREFIX = "NonProductiveHours";
+
+const classes = {
+  row: `${PREFIX}-row`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")({
+  [`& .${classes.row}`]: {
     fontStyle: "italic",
     backgroundColor: "#EFEFEF",
   },
@@ -34,8 +41,6 @@ export default function NonProductiveHours({
   const [days, setDays] = useState<NonProductiveHoursPerDay[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const classes = useStyles();
-
   useEffect(() => {
     setLoading(true);
 
@@ -61,7 +66,7 @@ export default function NonProductiveHours({
     );
   }
   return (
-    <>
+    <Root>
       <TableRow className={classes.row}>
         <TableCell />
         <TableCell>Sickdays</TableCell>
@@ -100,6 +105,6 @@ export default function NonProductiveHours({
           </TableCell>
         ))}
       </TableRow>
-    </>
+    </Root>
   );
 }

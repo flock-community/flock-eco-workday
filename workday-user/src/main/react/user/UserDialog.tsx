@@ -1,33 +1,15 @@
 import React, { useEffect, useState } from "react";
-
 import Button from "@mui/material/Button";
-
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
 import { USER_FORM_ID, UserForm } from "./UserForm";
 import UserClient from "./UserClient";
 import Typography from "@mui/material/Typography";
-import makeStyles from "@mui/styles/makeStyles";
-import { Theme } from "@mui/material/styles";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import { Snackbar } from "@mui/material";
 import { User } from "@workday-user/user/response/user";
-import { DialogTitleClosable } from "@workday-core/components/DialogTitleClosable";
-import { DialogBody } from "../../../../../workday-application/src/main/react/components/dialog/DialogHeader";
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2),
-  },
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-}));
+import UserIcon from "@mui/icons-material/Person";
+import { DialogBody, DialogHeader } from "@workday-core/components/dialog";
 
 type UserDialogProps = {
   open: boolean;
@@ -35,14 +17,13 @@ type UserDialogProps = {
   onComplete: () => void;
   enablePassword: boolean;
 };
+
 export function UserDialog({
   open,
   id,
   onComplete,
   enablePassword,
 }: UserDialogProps) {
-  const classes = useStyles();
-
   const [state, setState] = useState<User>(null);
 
   const [message, setMessage] = useState<string>(null);
@@ -123,9 +104,12 @@ export function UserDialog({
   return (
     <>
       <Dialog fullWidth maxWidth={"md"} open={open} onClose={handleClose}>
-        <DialogTitleClosable onClose={handleClose}>
-          <Typography variant="h6">User</Typography>
-        </DialogTitleClosable>
+        <DialogHeader
+          icon={<UserIcon />}
+          headline="Create user"
+          subheadline="Create another user that can access the workday application"
+          onClose={handleClose}
+        ></DialogHeader>
         <DialogBody>
           <UserForm
             value={state}

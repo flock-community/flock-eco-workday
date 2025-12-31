@@ -1,22 +1,32 @@
 import { Card, CardContent, CardHeader, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import {
   AggregationClient,
   PersonHackdayDetails,
 } from "../../clients/AggregationClient";
-import makeStyles from "@mui/styles/makeStyles";
-import { highLightClass } from "../../theme/theme-light";
+import { HighlightSpan } from "../../theme/theme-light";
 import { HackdayDetailDialog } from "./HackdayDetailDialog";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { hoursFormatter } from "../../utils/Hours";
 import { EventClient, FlockEvent } from "../../clients/EventClient";
 import { subscribeToEvent, unsubscribeFromEvent } from "../../utils/EventUtils";
 
-const useStyles = makeStyles(() => ({
-  containerWrapper: {
+const PREFIX = "HackdayCard";
+
+const classes = {
+  containerWrapper: `${PREFIX}-containerWrapper`,
+  hoursLeftWrapper: `${PREFIX}-hoursLeftWrapper`,
+  hoursLeft: `${PREFIX}-hoursLeft`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")(() => ({
+  [`& .${classes.containerWrapper}`]: {
     containerType: "inline-size",
   },
-  hoursLeftWrapper: {
+
+  [`& .${classes.hoursLeftWrapper}`]: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
@@ -26,7 +36,8 @@ const useStyles = makeStyles(() => ({
       alignItems: "center",
     },
   },
-  hoursLeft: {
+
+  [`& .${classes.hoursLeft}`]: {
     fontSize: "clamp(6rem, 25cqw, 11rem)",
     position: "relative",
     textAlign: "center",
@@ -39,8 +50,6 @@ const useStyles = makeStyles(() => ({
 }));
 
 export function HackdayCard() {
-  const classes = useStyles();
-  const highLightClasses = highLightClass();
   const [hackdayDetailsOpen, setHackdayDetailsOpen] = useState<boolean>(false);
   const [personHackDayDetails, setPersonHackdayDetails] =
     useState<PersonHackdayDetails>(undefined);
@@ -81,7 +90,7 @@ export function HackdayCard() {
   };
 
   return (
-    <>
+    <Root>
       <Card
         variant="outlined"
         style={{ borderRadius: 0, cursor: "pointer" }}
@@ -97,18 +106,17 @@ export function HackdayCard() {
             <div className={classes.hoursLeftWrapper}>
               <Typography variant="body1">You have</Typography>
               <div className={classes.hoursLeft}>
-                <span className={highLightClasses.highlight}>
+                <HighlightSpan>
                   {hoursFormatter.format(
                     personHackDayDetails?.totalHoursRemaining
                   )}
-                </span>
+                </HighlightSpan>
               </div>
               <Typography variant="body1">hours left</Typography>
             </div>
           )}
         </CardContent>
       </Card>
-
       {hackdayDetailsOpen ? (
         <HackdayDetailDialog
           open={hackdayDetailsOpen}
@@ -120,6 +128,6 @@ export function HackdayCard() {
       ) : (
         <></>
       )}
-    </>
+    </Root>
   );
 }

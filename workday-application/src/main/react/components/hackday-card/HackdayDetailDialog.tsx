@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, Divider } from "@mui/material";
-import { DialogHeader } from "../dialog";
+import { DialogHeader } from "@workday-core/components/dialog";
 import EventIcon from "@mui/icons-material/CalendarToday";
 import ListItem from "@mui/material/ListItem";
 import List from "@mui/material/List";
@@ -10,7 +10,7 @@ import { PersonHackdayDetails } from "../../clients/AggregationClient";
 import { hoursFormatter } from "../../utils/Hours";
 import { FlockEvent } from "../../clients/EventClient";
 import { HackDayList } from "./HackDayList";
-import { DialogBody } from "../dialog/DialogHeader";
+import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
 const initialData: PersonHackdayDetails = {
   name: "",

@@ -11,7 +11,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Typography } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";

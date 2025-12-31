@@ -1,19 +1,26 @@
 import React, { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import {
   ASSIGNMENT_PAGE_SIZE,
   AssignmentClient,
 } from "../../clients/AssignmentClient";
 import { isDefined } from "../../utils/validation";
-import makeStyles from "@mui/styles/makeStyles";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
-const useStyles = makeStyles({
-  list: (loading) => ({
+const PREFIX = "AssignmentList";
+
+const classes = {
+  list: `${PREFIX}-list`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")({
+  [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
 });
@@ -35,8 +42,6 @@ export function AssignmentList({
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(-1);
   const [loading, setLoading] = useState(true);
-
-  const classes = useStyles(loading);
 
   useEffect(() => {
     if (personId) {
@@ -66,7 +71,7 @@ export function AssignmentList({
   }
 
   return (
-    <>
+    <Root>
       <Grid container spacing={1} className={classes.list}>
         {items.map((assignment) => (
           <Grid size={{ xs: 12 }} key={`assignment-${assignment.code}`}>
@@ -105,6 +110,6 @@ export function AssignmentList({
           changePageCb={setPage}
         />
       </Box>
-    </>
+    </Root>
   );
 }

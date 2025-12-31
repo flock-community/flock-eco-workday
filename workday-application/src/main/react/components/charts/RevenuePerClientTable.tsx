@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import {
   AggregationClient,
@@ -11,12 +12,17 @@ import {
   TableContainer,
   TableHead,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import TableRow from "@mui/material/TableRow";
 import { currencyFormatter } from "../../utils/Currency";
 
-const useStyles = makeStyles({
-  table: {
+const PREFIX = "RevenuePerClientTable";
+
+const classes = {
+  table: `${PREFIX}-table`,
+};
+
+const StyledTableContainer = styled(TableContainer)({
+  [`& .${classes.table}`]: {
     maxWidth: 500,
   },
 });
@@ -28,8 +34,6 @@ type RevenuePerClientChartProps = {
 export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
   const [items, setItems] = useState<ClientGrossRevenue[]>();
   const [totalGrossRevenue, setTotalGrossRevenue] = useState<number>();
-
-  const classes = useStyles();
 
   useEffect(() => {
     const date = new Date();
@@ -77,7 +81,7 @@ export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
   );
 
   return (
-    <TableContainer>
+    <StyledTableContainer>
       <Table className={classes.table}>
         <TableHead>
           <TableRow>
@@ -90,6 +94,6 @@ export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
           {totals}
         </TableBody>
       </Table>
-    </TableContainer>
+    </StyledTableContainer>
   );
 }

@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, Divider } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import EventIcon from "@mui/icons-material/CalendarToday";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { EventClient, FlockEventRequest } from "../../clients/EventClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
 import { EVENT_FORM_ID, EventForm } from "./EventForm";
 import { schema } from "../workday/WorkDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import { DialogFooter, DialogHeader } from "../../components/dialog";
-import { DialogBody } from "../../components/dialog/DialogHeader";
+import { DialogFooter, DialogHeader } from "@workday-core/components/dialog";
+import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
 type EventDialogProps = {
   open: boolean;

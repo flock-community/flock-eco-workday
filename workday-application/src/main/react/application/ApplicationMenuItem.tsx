@@ -1,4 +1,5 @@
 import { useHistory } from "react-router-dom";
+import { styled } from "@mui/material/styles";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import React, { useState } from "react";
 import ListItemText from "@mui/material/ListItemText";
@@ -6,12 +7,18 @@ import { OverridableComponent } from "@mui/material/OverridableComponent";
 import { Collapse, SvgIconTypeMap } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import List from "@mui/material/List";
-import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
 import ListItemButton from "@mui/material/ListItemButton";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  nested: {
+const PREFIX = "ApplicationMenuItem";
+
+const classes = {
+  nested: `${PREFIX}-nested`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")(({ theme }) => ({
+  [`& .${classes.nested}`]: {
     paddingLeft: theme.spacing(1),
   },
 }));
@@ -40,8 +47,6 @@ export default function ApplicationMenuItem({
   const history = useHistory();
   const [open, setOpen] = useState(false);
 
-  const classes = useStyles();
-
   const handleClickItem = (item: Item) => () => {
     handleClose();
     history.push(item.url);
@@ -61,7 +66,7 @@ export default function ApplicationMenuItem({
   }
 
   return (
-    <>
+    <Root>
       <ListItemButton onClick={handleClickFolder}>
         <ListItemIcon>{React.createElement(item.icon)}</ListItemIcon>
         <ListItemText primary={item.name} />
@@ -83,6 +88,6 @@ export default function ApplicationMenuItem({
           ))}
         </List>
       </Collapse>
-    </>
+    </Root>
   );
 }
