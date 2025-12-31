@@ -47,6 +47,7 @@
     "yup": "^0.27.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.3.10",
     "@flock/wirespec": "0.11.2",
     "@fontsource/material-icons": "^5.0.7",
     "@fontsource/roboto": "^5.0.8",
