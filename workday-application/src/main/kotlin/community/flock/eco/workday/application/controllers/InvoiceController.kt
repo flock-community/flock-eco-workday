@@ -20,7 +20,8 @@ class InvoiceController(
     @GetMapping
     @PreAuthorize("hasAuthority('InvoiceAuthority.READ')")
     fun getInvoiceAll(pageable: Pageable) =
-        invoiceService.findAll(pageable)
+        invoiceService
+            .findAll(pageable)
             .toResponse()
 
     @PostMapping("upload_invoice")
@@ -33,4 +34,6 @@ class InvoiceController(
         .toResponse()
 }
 
-data class UploadInvoice(val id: UUID)
+data class UploadInvoice(
+    val id: UUID,
+)

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -16,6 +15,38 @@
 
     <dependencies>
 
+        <!-- Google API -->
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-drive</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-sheets</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter-storage</artifactId>
+        </dependency>
+
+        <!-- Services -->
+        <dependency>
+            <groupId>com.mailjet</groupId>
+            <artifactId>mailjet-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>community.flock.wirespec.integration</groupId>
+            <artifactId>jackson-jvm</artifactId>
+        </dependency>
+
         <!-- Workday vendored modules -->
         <dependency>
             <groupId>flock.community.eco.workday</groupId>
@@ -30,55 +61,10 @@
             <artifactId>jakarta.mail-api</artifactId>
         </dependency>
 
-        <!-- Spring Boot -->
+        <!-- Other -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-oauth2-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-oauth2-jose</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.cloud</groupId>
-            <artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.cloud</groupId>
-            <artifactId>spring-cloud-gcp-starter-storage</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.cloud</groupId>
-            <artifactId>spring-cloud-gcp-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session-jdbc</artifactId>
+            <groupId>net.sf.biweekly</groupId>
+            <artifactId>biweekly</artifactId>
         </dependency>
 
         <!-- Database -->
@@ -93,25 +79,44 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
 
-        <!-- Services -->
+        <!-- Spring Boot -->
         <dependency>
-            <groupId>com.mailjet</groupId>
-            <artifactId>mailjet-client</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>community.flock.wirespec.integration</groupId>
-            <artifactId>jackson-jvm</artifactId>
-        </dependency>
-
-        <!-- Google API -->
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-drive</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-sheets</artifactId>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-jdbc</artifactId>
         </dependency>
 
         <dependency>
@@ -119,12 +124,15 @@
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
-
-
-        <!-- Other -->
         <dependency>
-            <groupId>net.sf.biweekly</groupId>
-            <artifactId>biweekly</artifactId>
+            <groupId>com.ninja-squad</groupId>
+            <artifactId>springmockk</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- Testing -->
@@ -136,16 +144,6 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.ninja-squad</groupId>
-            <artifactId>springmockk</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -164,16 +162,19 @@
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>${liquibase.version}</version>
                 <configuration>
-                    <changeLogFile>${project.basedir}/src/main/database/db/changelog/db.changelog-master.yaml
-                    </changeLogFile>
-                    <diffChangeLogFile>${project.basedir}/src/main/database/db/changelog/db.changelog-diff.yaml
-                    </diffChangeLogFile>
+                    <changeLogFile>${project.basedir}/src/main/database/db/changelog/db.changelog-master.yaml</changeLogFile>
+                    <diffChangeLogFile>${project.basedir}/src/main/database/db/changelog/db.changelog-diff.yaml</diffChangeLogFile>
                     <url>jdbc:h2:file:./target/liquibase;DB_CLOSE_ON_EXIT=FALSE</url>
                     <username>sa</username>
                     <driver>org.h2.Driver</driver>
                     <referenceUrl>hibernate:spring:community.flock?dialect=org.hibernate.dialect.H2Dialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
                 </configuration>
                 <dependencies>
+                    <dependency>
+                        <groupId>jakarta.validation</groupId>
+                        <artifactId>jakarta.validation-api</artifactId>
+                        <version>3.0.2</version>
+                    </dependency>
                     <dependency>
                         <groupId>org.liquibase.ext</groupId>
                         <artifactId>liquibase-hibernate5</artifactId>
@@ -184,14 +185,8 @@
                         <artifactId>spring-boot-starter-data-jpa</artifactId>
                         <version>${spring.boot.version}</version>
                     </dependency>
-                    <dependency>
-                        <groupId>jakarta.validation</groupId>
-                        <artifactId>jakarta.validation-api</artifactId>
-                        <version>3.0.2</version>
-                    </dependency>
                 </dependencies>
             </plugin>
-
 
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -251,27 +246,27 @@
                 </configuration>
             </plugin>
 
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-resources-plugin</artifactId>-->
-<!--                <executions>-->
-<!--&lt;!&ndash;                    <execution>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <id>copy-resources-images</id>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <phase>compile</phase>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <goals>&ndash;&gt;-->
-<!--&lt;!&ndash;                            <goal>copy-resources</goal>&ndash;&gt;-->
-<!--&lt;!&ndash;                        </goals>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <configuration>&ndash;&gt;-->
-<!--&lt;!&ndash;                            <outputDirectory>${project.build.outputDirectory}/static/images</outputDirectory>&ndash;&gt;-->
-<!--&lt;!&ndash;                            <resources>&ndash;&gt;-->
-<!--&lt;!&ndash;                                <resource>&ndash;&gt;-->
-<!--&lt;!&ndash;                                    <directory>${project.basedir}/images</directory>&ndash;&gt;-->
-<!--&lt;!&ndash;                                </resource>&ndash;&gt;-->
-<!--&lt;!&ndash;                            </resources>&ndash;&gt;-->
-<!--&lt;!&ndash;                        </configuration>&ndash;&gt;-->
-<!--&lt;!&ndash;                    </execution>&ndash;&gt;-->
-<!--                </executions>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-resources-plugin</artifactId>-->
+            <!--                <executions>-->
+            <!--&lt;!&ndash;                    <execution>&ndash;&gt;-->
+            <!--&lt;!&ndash;                        <id>copy-resources-images</id>&ndash;&gt;-->
+            <!--&lt;!&ndash;                        <phase>compile</phase>&ndash;&gt;-->
+            <!--&lt;!&ndash;                        <goals>&ndash;&gt;-->
+            <!--&lt;!&ndash;                            <goal>copy-resources</goal>&ndash;&gt;-->
+            <!--&lt;!&ndash;                        </goals>&ndash;&gt;-->
+            <!--&lt;!&ndash;                        <configuration>&ndash;&gt;-->
+            <!--&lt;!&ndash;                            <outputDirectory>${project.build.outputDirectory}/static/images</outputDirectory>&ndash;&gt;-->
+            <!--&lt;!&ndash;                            <resources>&ndash;&gt;-->
+            <!--&lt;!&ndash;                                <resource>&ndash;&gt;-->
+            <!--&lt;!&ndash;                                    <directory>${project.basedir}/images</directory>&ndash;&gt;-->
+            <!--&lt;!&ndash;                                </resource>&ndash;&gt;-->
+            <!--&lt;!&ndash;                            </resources>&ndash;&gt;-->
+            <!--&lt;!&ndash;                        </configuration>&ndash;&gt;-->
+            <!--&lt;!&ndash;                    </execution>&ndash;&gt;-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
         </plugins>
     </build>
 

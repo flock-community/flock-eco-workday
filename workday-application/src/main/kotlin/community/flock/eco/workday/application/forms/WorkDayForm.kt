@@ -22,7 +22,8 @@ data class WorkDayForm(
     override val status: Status = Status.REQUESTED,
     val assignmentCode: String,
     val sheets: List<WorkDaySheetForm>,
-) : Daily, Approve
+) : Daily,
+    Approve
 
 data class WorkDaySheetForm(
     val name: String,

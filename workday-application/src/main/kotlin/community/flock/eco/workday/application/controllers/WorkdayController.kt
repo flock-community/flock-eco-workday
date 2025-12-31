@@ -52,8 +52,7 @@ class WorkdayController(
         return when {
             authentication.isAdmin() -> service.findAllByPersonUuid(personId, page)
             else -> service.findAllByPersonUserCode(authentication.name, page)
-        }
-            .toResponse()
+        }.toResponse()
     }
 
     @GetMapping("/{code}")
@@ -81,7 +80,8 @@ class WorkdayController(
         @PathVariable code: String,
         @RequestBody form: WorkDayForm,
         authentication: Authentication,
-    ) = service.findByCode(code)
+    ) = service
+        .findByCode(code)
         ?.applyAuthentication(authentication)
         ?.applyAllowedToUpdate(form.status, authentication.isAdmin())
         ?.run {
@@ -90,15 +90,15 @@ class WorkdayController(
                 form = form,
                 isUpdatedByOwner = authentication.isOwnerOf(this),
             )
-        }
-        .toResponse()
+        }.toResponse()
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('WorkDayAuthority.WRITE')")
     fun delete(
         @PathVariable code: String,
         authentication: Authentication,
-    ) = service.findByCode(code)
+    ) = service
+        .findByCode(code)
         ?.applyAuthentication(authentication)
         ?.run { service.deleteByCode(this.code) }
         .toResponse()

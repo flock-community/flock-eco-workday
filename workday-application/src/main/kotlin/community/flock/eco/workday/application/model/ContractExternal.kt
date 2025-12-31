@@ -19,7 +19,8 @@ class ContractExternal(
     override val hourlyRate: Double,
     override val hoursPerWeek: Int,
     val billable: Boolean = true,
-) : Hourly, Contract(id, code, from, to, person, ContractType.EXTERNAL) {
+) : Contract(id, code, from, to, person, ContractType.EXTERNAL),
+    Hourly {
     init {
         require(person != null) {
             "External contracts must have a person"
@@ -29,15 +30,12 @@ class ContractExternal(
     override fun totalCostsInPeriod(
         from: LocalDate,
         to: LocalDate,
-    ): BigDecimal {
-        return totalDaysInPeriod(from, to, hoursPerWeek)
+    ): BigDecimal =
+        totalDaysInPeriod(from, to, hoursPerWeek)
             .times(hourlyRate.toBigDecimal())
-    }
 
     override fun totalDaysInPeriod(
         from: LocalDate,
         to: LocalDate,
-    ): BigDecimal {
-        return totalDaysInPeriod(from, to, hoursPerWeek)
-    }
+    ): BigDecimal = totalDaysInPeriod(from, to, hoursPerWeek)
 }

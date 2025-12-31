@@ -10,7 +10,8 @@ class ExactonlineAuthenticationClient(
     private val exactonlineProperties: ExactonlineProperties,
 ) {
     val client: WebClient =
-        WebClient.builder()
+        WebClient
+            .builder()
             .baseUrl(exactonlineProperties.requestUri)
             .build()
 
@@ -26,8 +27,7 @@ class ExactonlineAuthenticationClient(
                     "client_id" to exactonlineProperties.clientId,
                     "client_secret" to exactonlineProperties.clientSecret,
                 ).toMultiValueMap(),
-            )
-            .retrieve()
+            ).retrieve()
 
     fun refresh(refreshToken: String): WebClient.ResponseSpec =
         client
@@ -40,8 +40,7 @@ class ExactonlineAuthenticationClient(
                     "client_id" to exactonlineProperties.clientId,
                     "client_secret" to exactonlineProperties.clientSecret,
                 ).toMultiValueMap(),
-            )
-            .retrieve()
+            ).retrieve()
 }
 
 private fun <K, V> Map<K, V>.toMultiValueMap(): LinkedMultiValueMap<K, V> =

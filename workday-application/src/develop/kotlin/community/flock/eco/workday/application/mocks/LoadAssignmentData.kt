@@ -146,8 +146,7 @@ class LoadAssignmentData(
         hoursPerWeek = hoursPerWeek ?: 36,
         role = role,
         project = projectName?.let { loadProjectData.getProjectByName(it) },
-    )
-        .save()
+    ).save()
 
     private fun Assignment.save(): Assignment =
         assignmentRepository

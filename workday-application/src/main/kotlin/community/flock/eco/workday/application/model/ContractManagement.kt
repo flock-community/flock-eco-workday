@@ -30,16 +30,12 @@ class ContractManagement(
     override fun totalCostsInPeriod(
         from: LocalDate,
         to: LocalDate,
-    ): BigDecimal {
-        return totalCostInPeriod(from, to, monthlyFee)
-    }
+    ): BigDecimal = totalCostInPeriod(from, to, monthlyFee)
 
     override fun totalDaysInPeriod(
         from: LocalDate,
         to: LocalDate,
-    ): BigDecimal {
-        return BigDecimal(BigInteger.ZERO)
-    }
+    ): BigDecimal = BigDecimal(BigInteger.ZERO)
 
     fun totalCostInPeriod(yearMonth: YearMonth): BigDecimal =
         this

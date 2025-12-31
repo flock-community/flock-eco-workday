@@ -14,7 +14,8 @@ class ExactonlineAccountClient(
     exactonlineProperties: ExactonlineProperties,
 ) {
     val client: WebClient =
-        WebClient.builder()
+        WebClient
+            .builder()
             .baseUrl(exactonlineProperties.requestUri)
             .build()
 

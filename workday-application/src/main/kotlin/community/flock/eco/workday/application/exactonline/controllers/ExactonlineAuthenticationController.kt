@@ -28,7 +28,8 @@ class ExactonlineAuthenticationController(
             .flatMap { requestObject ->
                 val user = userClient.getCurrentMe(requestObject.accessToken)
                 val division = divisionClient.getDivisionByCode(requestObject, requestObject.division)
-                Mono.zip(user, division)
+                Mono
+                    .zip(user, division)
                     .map { res ->
                         mapOf(
                             "active" to true,
@@ -36,8 +37,7 @@ class ExactonlineAuthenticationController(
                             "division" to res.t2,
                         )
                     }
-            }
-            .defaultIfEmpty(
+            }.defaultIfEmpty(
                 mapOf<String, Any>(
                     "active" to false,
                 ),
@@ -68,8 +68,7 @@ class ExactonlineAuthenticationController(
                 (
                     exactonlineAuthenticationService.getRedirectUri(session)
                         ?: URI("/api/exactonline/status")
-                )
-                    .redirect()
+                ).redirect()
             }
 
     private fun URI.redirect(): ResponseEntity<Unit> {

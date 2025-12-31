@@ -25,7 +25,8 @@ class ContractInternal(
     val holidayHours: Int,
     val hackHours: Int,
     val billable: Boolean = true,
-) : Monthly, Contract(id, code, from, to, person, ContractType.INTERNAL) {
+) : Contract(id, code, from, to, person, ContractType.INTERNAL),
+    Monthly {
     init {
         require(person != null) {
             "Internal contracts must have a person"
@@ -49,13 +50,15 @@ class ContractInternal(
             .divide(yearMonth.lengthOfMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
 
     fun totalLeaveDayHoursInPeriod(period: Period): BigDecimal =
-        this.toDateRangeInPeriod(period)
+        this
+            .toDateRangeInPeriod(period)
             .sumOf { this.holidayHours }
             .toBigDecimal()
             .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
 
     fun totalHackDayHoursInPeriod(period: Period): BigDecimal =
-        this.toDateRangeInPeriod(period)
+        this
+            .toDateRangeInPeriod(period)
             .sumOf { this.hackHours }
             .toBigDecimal()
             .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)

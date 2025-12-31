@@ -27,29 +27,45 @@ class WebSecurityConfig {
         http
             .headers { headers ->
                 headers.frameOptions { it.sameOrigin() }
-            }
-            .csrf { it.disable() }
+            }.csrf { it.disable() }
             .cors(withDefaults())
             .authorizeHttpRequests { requests ->
                 requests
                     // Permit FORWARD and ERROR dispatchers to prevent infinite redirects
-                    .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-                    .requestMatchers("/favicon.ico").permitAll()
-                    .requestMatchers("/site.webmanifest").permitAll()
-                    .requestMatchers("/").permitAll()
-                    .requestMatchers("/*.js").permitAll()
-                    .requestMatchers("/images/*.webp").permitAll()
-                    .requestMatchers("/images/*.svg").permitAll()
-                    .requestMatchers("/assets/**").permitAll()
-                    .requestMatchers("/tasks/**").permitAll()
-                    .requestMatchers("/actuator/**").permitAll()
-                    .requestMatchers("/login/**").permitAll()
-                    .requestMatchers("/bootstrap").permitAll()
-                    .requestMatchers("/h2/**").permitAll()
-                    .requestMatchers("/api/events/**").permitAll()
-                    .requestMatchers(*SWAGGER_WHITELIST).permitAll()
-                    .requestMatchers(*EXT_WHITELIST).permitAll()
-                    .anyRequest().authenticated()
+                    .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR)
+                    .permitAll()
+                    .requestMatchers("/favicon.ico")
+                    .permitAll()
+                    .requestMatchers("/site.webmanifest")
+                    .permitAll()
+                    .requestMatchers("/")
+                    .permitAll()
+                    .requestMatchers("/*.js")
+                    .permitAll()
+                    .requestMatchers("/images/*.webp")
+                    .permitAll()
+                    .requestMatchers("/images/*.svg")
+                    .permitAll()
+                    .requestMatchers("/assets/**")
+                    .permitAll()
+                    .requestMatchers("/tasks/**")
+                    .permitAll()
+                    .requestMatchers("/actuator/**")
+                    .permitAll()
+                    .requestMatchers("/login/**")
+                    .permitAll()
+                    .requestMatchers("/bootstrap")
+                    .permitAll()
+                    .requestMatchers("/h2/**")
+                    .permitAll()
+                    .requestMatchers("/api/events/**")
+                    .permitAll()
+                    .requestMatchers(*SWAGGER_WHITELIST)
+                    .permitAll()
+                    .requestMatchers(*EXT_WHITELIST)
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated()
             }
 
         when (loginType.uppercase()) {

@@ -133,11 +133,10 @@ class AggregationController(
     fun hourAssignmentClientOverviewEmployee(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate,
-    ): List<AggregationClientPersonAssignmentOverviewApi> {
-        return aggregationService.clientPersonAssignmentHourOverview(from, to).map(
+    ): List<AggregationClientPersonAssignmentOverviewApi> =
+        aggregationService.clientPersonAssignmentHourOverview(from, to).map(
             AggregationClientPersonAssignmentOverview::produce,
         )
-    }
 
     @GetMapping("/person-nonproductive-hours-per-day")
     @PreAuthorize("isAuthenticated()")
@@ -148,7 +147,8 @@ class AggregationController(
     ): ResponseEntity<List<NonProductiveHoursApi>> =
         (
             personService.findByUuid(UUID.fromString(personId))?.let { person ->
-                aggregationService.personNonProductiveHoursPerDay(person, from, to)
+                aggregationService
+                    .personNonProductiveHoursPerDay(person, from, to)
                     .map(AggregationService.NonProductiveHours::produce)
             } ?: emptyList()
         ).toResponse()
@@ -172,10 +172,11 @@ class AggregationController(
     ): PersonHackdayDetailsApi {
         val person =
             personService.findByUserCode(authentication.name) ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
-        return aggregationService.getHackdayDetailsMe(
-            year = year,
-            person = person,
-        ).produce()
+        return aggregationService
+            .getHackdayDetailsMe(
+                year = year,
+                person = person,
+            ).produce()
     }
 }
 

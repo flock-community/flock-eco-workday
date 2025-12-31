@@ -11,9 +11,7 @@ abstract class AbstractCodeEntity(
     @Column(unique = true)
     open val code: String = UUID.randomUUID().toString(),
 ) : AbstractIdEntity(id) {
-    override fun hashCode(): Int {
-        return Objects.hashCode(code)
-    }
+    override fun hashCode(): Int = Objects.hashCode(code)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

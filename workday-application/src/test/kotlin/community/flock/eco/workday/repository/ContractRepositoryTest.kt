@@ -13,7 +13,7 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 
 @Transactional
-class ContractRepositoryTest() : WorkdayIntegrationTest() {
+class ContractRepositoryTest : WorkdayIntegrationTest() {
     @Autowired
     private lateinit var contractRepository: ContractRepository
 

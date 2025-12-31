@@ -22,7 +22,8 @@ class GcpDocumentService(
 
     override fun storeDocument(byteArray: ByteArray): UUID {
         logger.debug("Store document to GCP bucket: $bucketName")
-        return UUID.randomUUID()
+        return UUID
+            .randomUUID()
             .apply {
                 BlobInfo
                     .newBuilder(bucketName, toString())

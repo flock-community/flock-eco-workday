@@ -27,21 +27,15 @@ class GoogleDriveConfiguration {
     fun workdayGoogleDrive(
         credentialsProvider: CredentialsProvider,
         userAccountService: UserAccountService,
-    ): WorkdayGoogleDrive {
-        return WorkdayGoogleDrive(credentialsProvider, userAccountService)
-    }
+    ): WorkdayGoogleDrive = WorkdayGoogleDrive(credentialsProvider, userAccountService)
 
     @Bean
-    fun workdayGoogleSheets(credentialsProvider: CredentialsProvider): WorkdayGoogleSheets {
-        return WorkdayGoogleSheets(credentialsProvider)
-    }
+    fun workdayGoogleSheets(credentialsProvider: CredentialsProvider): WorkdayGoogleSheets = WorkdayGoogleSheets(credentialsProvider)
 
     @Bean
     fun workDaySheet(
         workdayGoogleDrive: WorkdayGoogleDrive,
         workdayGoogleSheets: WorkdayGoogleSheets,
         @Value("\${google.drive.sheets.workday.templateId}") templateId: String,
-    ): WorkDaySheet {
-        return WorkDaySheet(workdayGoogleDrive, workdayGoogleSheets, templateId)
-    }
+    ): WorkDaySheet = WorkDaySheet(workdayGoogleDrive, workdayGoogleSheets, templateId)
 }

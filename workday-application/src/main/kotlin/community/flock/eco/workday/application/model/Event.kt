@@ -31,4 +31,5 @@ class Event(
     @ManyToMany(fetch = FetchType.EAGER)
     @BatchSize(size = 50)
     val persons: MutableList<Person>,
-) : Daily, AbstractCodeEntity(id, code)
+) : AbstractCodeEntity(id, code),
+    Daily

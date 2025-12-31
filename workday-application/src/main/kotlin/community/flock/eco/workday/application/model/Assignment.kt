@@ -28,4 +28,6 @@ data class Assignment(
     @ManyToOne
     @JsonIgnoreProperties("assignments")
     val project: Project? = null,
-) : Hourly, Period, AbstractCodeEntity(id, code)
+) : AbstractCodeEntity(id, code),
+    Hourly,
+    Period

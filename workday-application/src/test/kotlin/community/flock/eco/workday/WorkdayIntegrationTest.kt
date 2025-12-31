@@ -27,7 +27,7 @@ import org.springframework.test.context.transaction.TestTransaction
     classes = [Application::class, AppTestConfig::class],
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
-class WorkdayIntegrationTest() {
+class WorkdayIntegrationTest {
     @Autowired
     private lateinit var cleanupDbService: CleanupDbService
 

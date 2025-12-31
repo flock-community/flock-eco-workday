@@ -30,7 +30,8 @@ abstract class Contract(
     open val person: Person?,
     @Enumerated(EnumType.STRING)
     open val type: ContractType,
-) : Period, AbstractCodeEntity(id, code) {
+) : AbstractCodeEntity(id, code),
+    Period {
     abstract fun totalCostsInPeriod(
         from: LocalDate,
         to: LocalDate,
@@ -54,7 +55,8 @@ abstract class Contract(
                     ?: LocalDate.of(to.year, to.month, to.month.length(to.isLeapYear)),
             )
         val unionDateRange =
-            DateUtils.dateRange(from, to)
+            DateUtils
+                .dateRange(from, to)
                 .intersect(dateRangeContract.toSet())
         val yearMonthsInRange = unionDateRange.map { YearMonth.of(it.year, it.month) }.distinct()
         val daysInMonth =
@@ -87,12 +89,14 @@ abstract class Contract(
                     ?: LocalDate.of(to.year, to.month, to.month.length(to.isLeapYear)),
             )
         val hoursPerDay = hoursPerWeek.toBigDecimal().divide(BigDecimal("5.0"), 10, RoundingMode.HALF_UP)
-        return dateRange.intersect(dateRangeContract.toSet()).map {
-            when (it.isWorkingDay()) {
-                true -> hoursPerDay
-                false -> BigDecimal("0.0")
-            }
-        }.sum()
+        return dateRange
+            .intersect(dateRangeContract.toSet())
+            .map {
+                when (it.isWorkingDay()) {
+                    true -> hoursPerDay
+                    false -> BigDecimal("0.0")
+                }
+            }.sum()
     }
 }
 

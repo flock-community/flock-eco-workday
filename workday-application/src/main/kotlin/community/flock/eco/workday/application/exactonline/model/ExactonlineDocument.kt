@@ -8,7 +8,9 @@ data class ExactonlineDocument(
     val type: ExactonlineDocumentType,
 )
 
-enum class ExactonlineDocumentType(val id: Int) {
+enum class ExactonlineDocumentType(
+    val id: Int,
+) {
     SALES(10),
     PURCHASE(20),
 }

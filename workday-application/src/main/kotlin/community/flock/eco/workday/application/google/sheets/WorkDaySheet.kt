@@ -8,7 +8,9 @@ import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-private enum class Tag(val value: String) {
+private enum class Tag(
+    val value: String,
+) {
     WEEK_TABLE("#{weekTable}"),
     FROM_DATE("#{fromDate}"),
     TO_DATE("#{toDate}"),
@@ -96,11 +98,10 @@ class WorkDaySheet(
         )
     }
 
-    private fun buildFileName(workday: WorkDay): String {
-        return "${
+    private fun buildFileName(workday: WorkDay): String =
+        "${
             LocalDateTime.now().format(
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"),
             )
         } Workday ${workday.assignment.person.lastname} ${workday.from.month.name}"
-    }
 }

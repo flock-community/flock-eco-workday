@@ -8,19 +8,33 @@ import jakarta.persistence.PreRemove
 import jakarta.persistence.PreUpdate
 import org.springframework.context.ApplicationEventPublisher
 
-sealed class EntityEvent(open val entity: Any) : Event
+sealed class EntityEvent(
+    open val entity: Any,
+) : Event
 
-data class PrePersistEntityEvent(override val entity: Any) : EntityEvent(entity)
+data class PrePersistEntityEvent(
+    override val entity: Any,
+) : EntityEvent(entity)
 
-data class PreUpdateEntityEvent(override val entity: Any) : EntityEvent(entity)
+data class PreUpdateEntityEvent(
+    override val entity: Any,
+) : EntityEvent(entity)
 
-data class PreRemoveEntityEvent(override val entity: Any) : EntityEvent(entity)
+data class PreRemoveEntityEvent(
+    override val entity: Any,
+) : EntityEvent(entity)
 
-data class PostPersistEntityEvent(override val entity: Any) : EntityEvent(entity)
+data class PostPersistEntityEvent(
+    override val entity: Any,
+) : EntityEvent(entity)
 
-data class PostUpdateEntityEvent(override val entity: Any) : EntityEvent(entity)
+data class PostUpdateEntityEvent(
+    override val entity: Any,
+) : EntityEvent(entity)
 
-data class PostRemoveEntityEvent(override val entity: Any) : EntityEvent(entity)
+data class PostRemoveEntityEvent(
+    override val entity: Any,
+) : EntityEvent(entity)
 
 class EventEntityListeners(
     private val publisher: ApplicationEventPublisher,

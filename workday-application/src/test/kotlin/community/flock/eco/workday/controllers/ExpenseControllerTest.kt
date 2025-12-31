@@ -33,7 +33,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 import java.util.UUID
 
-class ExpenseControllerTest() : WorkdayIntegrationTest() {
+class ExpenseControllerTest : WorkdayIntegrationTest() {
     @Autowired
     private lateinit var mvc: MockMvc
 
@@ -54,19 +54,19 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
     val userAuthorities = setOf(ExpenseAuthority.READ, ExpenseAuthority.WRITE)
 
     @Nested
-    inner class TravelExpenseTest() {
+    inner class TravelExpenseTest {
         @Test
         fun `should get a travel expense via GET-method`() {
             val user = createHelper.createUser(userAuthorities)
             val travelExpense = aTravelExpense(user)
             val created = travelExpenseService.create(travelExpense)
 
-            mvc.perform(
-                get("$baseUrl/${created.id}")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isOk)
+            mvc
+                .perform(
+                    get("$baseUrl/${created.id}")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isOk)
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpectBodyToMatch(travelExpense)
         }
@@ -94,14 +94,14 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                         ),
                 )
 
-            mvc.perform(
-                post("/api/expenses-cost")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .content(mapper.writeValueAsString(costExpenseInput))
-                    .contentType(APPLICATION_JSON)
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isOk)
+            mvc
+                .perform(
+                    post("/api/expenses-cost")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .content(mapper.writeValueAsString(costExpenseInput))
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isOk)
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.personId").value(costExpenseInput.personId.value))
@@ -111,8 +111,13 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                 .andExpect(jsonPath("$.expenseType").value("COST"))
                 .andExpect(jsonPath("$.costDetails.amount").value(1.23))
                 .andExpect(jsonPath("$.costDetails.files[0].name").value(costExpenseInput.files.first().name))
-                .andExpect(jsonPath("$.costDetails.files[0].file").value(costExpenseInput.files.first().file.value))
-                .andExpect(jsonPath("$.travelDetails").doesNotExist())
+                .andExpect(
+                    jsonPath("$.costDetails.files[0].file").value(
+                        costExpenseInput.files
+                            .first()
+                            .file.value,
+                    ),
+                ).andExpect(jsonPath("$.travelDetails").doesNotExist())
         }
 
         @ParameterizedTest
@@ -129,20 +134,20 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                 ),
             )
 
-            mvc.perform(
-                delete("$baseUrl/$expenseId")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .contentType(APPLICATION_JSON)
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isNoContent)
+            mvc
+                .perform(
+                    delete("$baseUrl/$expenseId")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isNoContent)
 
-            mvc.perform(
-                get("$baseUrl/$expenseId")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isNotFound)
+            mvc
+                .perform(
+                    get("$baseUrl/$expenseId")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isNotFound)
         }
 
         @Test
@@ -158,12 +163,12 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                 ),
             )
 
-            mvc.perform(
-                get("$baseUrl/$expenseId")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isForbidden)
+            mvc
+                .perform(
+                    get("$baseUrl/$expenseId")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isForbidden)
         }
 
         @Test
@@ -179,7 +184,9 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
 
             val costExpenseInput =
                 CostExpenseInput(
-                    personId = community.flock.eco.workday.api.UUID(created.person.uuid.toString()),
+                    personId =
+                        community.flock.eco.workday.api
+                            .UUID(created.person.uuid.toString()),
                     description = "updated description",
                     status = community.flock.eco.workday.api.Status.REQUESTED,
                     date = "2025-01-22",
@@ -187,14 +194,14 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                     files = listOf(),
                 )
 
-            mvc.perform(
-                put("/api/expenses-cost/${created.id}")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .content(mapper.writeValueAsString(costExpenseInput))
-                    .contentType(APPLICATION_JSON)
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isForbidden)
+            mvc
+                .perform(
+                    put("/api/expenses-cost/${created.id}")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .content(mapper.writeValueAsString(costExpenseInput))
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isForbidden)
         }
 
         @Test
@@ -208,13 +215,13 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                 )
             val created = travelExpenseService.create(travelExpense)
 
-            mvc.perform(
-                delete("$baseUrl/${created.id}")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .contentType(APPLICATION_JSON)
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isForbidden)
+            mvc
+                .perform(
+                    delete("$baseUrl/${created.id}")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isForbidden)
         }
 
         private fun aTravelExpense(
@@ -251,19 +258,19 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
     }
 
     @Nested
-    inner class CostExpenseTest() {
+    inner class CostExpenseTest {
         @Test
         fun `should get a cost expense via GET-method`() {
             val user = createHelper.createUser(userAuthorities)
             val costExpense = aCostExpense(user)
             val created = costExpenseService.create(costExpense)
 
-            mvc.perform(
-                get("$baseUrl/${created.id}")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isOk)
+            mvc
+                .perform(
+                    get("$baseUrl/${created.id}")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isOk)
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpectBodyToMatch(costExpense)
         }
@@ -291,14 +298,14 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                         ),
                 )
 
-            mvc.perform(
-                post("/api/expenses-cost")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .content(mapper.writeValueAsString(costExpenseInput))
-                    .contentType(APPLICATION_JSON)
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isOk)
+            mvc
+                .perform(
+                    post("/api/expenses-cost")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .content(mapper.writeValueAsString(costExpenseInput))
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isOk)
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.personId").value(costExpenseInput.personId.value))
@@ -308,8 +315,13 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                 .andExpect(jsonPath("$.expenseType").value("COST"))
                 .andExpect(jsonPath("$.costDetails.amount").value(1.23))
                 .andExpect(jsonPath("$.costDetails.files[0].name").value(costExpenseInput.files.first().name))
-                .andExpect(jsonPath("$.costDetails.files[0].file").value(costExpenseInput.files.first().file.value))
-                .andExpect(jsonPath("$.travelDetails").doesNotExist())
+                .andExpect(
+                    jsonPath("$.costDetails.files[0].file").value(
+                        costExpenseInput.files
+                            .first()
+                            .file.value,
+                    ),
+                ).andExpect(jsonPath("$.travelDetails").doesNotExist())
         }
 
         @ParameterizedTest
@@ -326,20 +338,20 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                 ),
             )
 
-            mvc.perform(
-                delete("$baseUrl/$expenseId")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .contentType(APPLICATION_JSON)
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isNoContent)
+            mvc
+                .perform(
+                    delete("$baseUrl/$expenseId")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isNoContent)
 
-            mvc.perform(
-                get("$baseUrl/$expenseId")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isNotFound)
+            mvc
+                .perform(
+                    get("$baseUrl/$expenseId")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isNotFound)
         }
 
         @Test
@@ -355,12 +367,12 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                 ),
             )
 
-            mvc.perform(
-                get("$baseUrl/$expenseId")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isForbidden)
+            mvc
+                .perform(
+                    get("$baseUrl/$expenseId")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isForbidden)
         }
 
         @Test
@@ -376,7 +388,9 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
 
             val costExpenseInput =
                 CostExpenseInput(
-                    personId = community.flock.eco.workday.api.UUID(created.person.uuid.toString()),
+                    personId =
+                        community.flock.eco.workday.api
+                            .UUID(created.person.uuid.toString()),
                     description = "updated description",
                     status = community.flock.eco.workday.api.Status.REQUESTED,
                     date = "2025-01-22",
@@ -384,14 +398,14 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                     files = listOf(),
                 )
 
-            mvc.perform(
-                put("/api/expenses-cost/${created.id}")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .content(mapper.writeValueAsString(costExpenseInput))
-                    .contentType(APPLICATION_JSON)
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isForbidden)
+            mvc
+                .perform(
+                    put("/api/expenses-cost/${created.id}")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .content(mapper.writeValueAsString(costExpenseInput))
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isForbidden)
         }
 
         @Test
@@ -405,13 +419,13 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                 )
             val created = costExpenseService.create(costExpense)
 
-            mvc.perform(
-                delete("$baseUrl/${created.id}")
-                    .with(user(CreateHelper.UserSecurity(user)))
-                    .contentType(APPLICATION_JSON)
-                    .accept(APPLICATION_JSON),
-            )
-                .andExpect(status().isForbidden)
+            mvc
+                .perform(
+                    delete("$baseUrl/${created.id}")
+                        .with(user(CreateHelper.UserSecurity(user)))
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON),
+                ).andExpect(status().isForbidden)
         }
 
         private fun aCostExpense(
@@ -447,7 +461,13 @@ class ExpenseControllerTest() : WorkdayIntegrationTest() {
                 .andExpect(jsonPath("$.expenseType").value("COST"))
                 .andExpect(jsonPath("$.costDetails.amount").value(1.23))
                 .andExpect(jsonPath("$.costDetails.files[0].name").value(costExpense.files.first().name))
-                .andExpect(jsonPath("$.costDetails.files[0].file").value(costExpense.files.first().file.toString()))
-                .andExpect(jsonPath("$.travelDetails").doesNotExist())
+                .andExpect(
+                    jsonPath("$.costDetails.files[0].file").value(
+                        costExpense.files
+                            .first()
+                            .file
+                            .toString(),
+                    ),
+                ).andExpect(jsonPath("$.travelDetails").doesNotExist())
     }
 }

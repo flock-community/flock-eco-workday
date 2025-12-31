@@ -24,4 +24,5 @@ data class LeaveDayForm(
     override val status: Status = Status.REQUESTED,
     val type: LeaveDayType = LeaveDayType.HOLIDAY,
     val personId: UUID,
-) : Daily, Approve
+) : Daily,
+    Approve

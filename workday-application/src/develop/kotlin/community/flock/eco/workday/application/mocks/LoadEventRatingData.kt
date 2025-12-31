@@ -38,11 +38,9 @@ class LoadEventRatingData(
                         eventCode = event.code,
                         rating = 7,
                     )
-                }
-                .map {
+                }.map {
                     service.create(it)
-                }
-                .let {
+                }.let {
                     data.addAll(it)
                 }
         }

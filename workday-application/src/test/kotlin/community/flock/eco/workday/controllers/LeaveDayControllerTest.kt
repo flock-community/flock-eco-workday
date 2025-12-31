@@ -58,12 +58,12 @@ class LeaveDayControllerTest(
 
         val created = leaveDayService.create(createForm)
 
-        mvc.perform(
-            get("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(user)))
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                get("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
@@ -96,14 +96,14 @@ class LeaveDayControllerTest(
                 status = status,
             )
 
-        mvc.perform(
-            post(baseUrl)
-                .with(user(CreateHelper.UserSecurity(user)))
-                .content(mapper.writeValueAsString(createForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .content(mapper.writeValueAsString(createForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
@@ -141,14 +141,14 @@ class LeaveDayControllerTest(
 
         val updatedCreateForm = createForm.copy(description = updatedDescription)
 
-        mvc.perform(
-            put("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(user)))
-                .content(mapper.writeValueAsString(updatedCreateForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                put("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .content(mapper.writeValueAsString(updatedCreateForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
@@ -186,14 +186,14 @@ class LeaveDayControllerTest(
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 
-        mvc.perform(
-            put("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(user)))
-                .content(mapper.writeValueAsString(updatedCreateForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isForbidden)
+        mvc
+            .perform(
+                put("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .content(mapper.writeValueAsString(updatedCreateForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isForbidden)
 
         assertEquals(leaveDayService.findByCode(created.code)?.status, status)
     }
@@ -225,14 +225,14 @@ class LeaveDayControllerTest(
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 
-        mvc.perform(
-            put("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(admin)))
-                .content(mapper.writeValueAsString(updatedCreateForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                put("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(admin)))
+                    .content(mapper.writeValueAsString(updatedCreateForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
@@ -263,13 +263,13 @@ class LeaveDayControllerTest(
 
         val created = leaveDayService.create(createForm)
 
-        mvc.perform(
-            delete("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(admin)))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isNoContent)
+        mvc
+            .perform(
+                delete("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(admin)))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isNoContent)
 
         assertNull(leaveDayService.findByCode(created.code))
     }

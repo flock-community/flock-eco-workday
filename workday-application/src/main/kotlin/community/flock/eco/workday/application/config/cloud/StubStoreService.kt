@@ -24,7 +24,8 @@ class StubStoreService(
         key: String,
         array: ByteArray,
     ) {
-        store.getOrPut(bucket) { mutableMapOf() }
+        store
+            .getOrPut(bucket) { mutableMapOf() }
             .also {
                 it[key] = array
                 logger.info("Put file in bucket: $bucket with key: $key")
@@ -36,7 +37,8 @@ class StubStoreService(
         bucket: String,
         key: String,
     ): ByteArray? =
-        store[bucket]?.get(key)
+        store[bucket]
+            ?.get(key)
             .also {
                 logger.info("Get file from bucket: $bucket and key: $key")
             }
@@ -54,16 +56,12 @@ class StubStoreService(
     override fun hasObject(
         bucket: String,
         key: String,
-    ): Boolean {
-        return store[bucket]?.contains(key) ?: false
-    }
+    ): Boolean = store[bucket]?.contains(key) ?: false
 
     override fun getObject(
         bucket: String,
         key: String,
-    ): ByteArray? {
-        return store[bucket]?.get(key)
-    }
+    ): ByteArray? = store[bucket]?.get(key)
 
     override fun putObject(
         bucket: String,
@@ -108,8 +106,7 @@ class StubStoreService(
         get(bucket, key)
             ?.let {
                 put(bucket, key, (it + file.bytes))
-            }
-            .let { StorageService.StorageChuck() }
+            }.let { StorageService.StorageChuck() }
 
     override fun putChunk(
         bucket: String,
@@ -121,8 +118,7 @@ class StubStoreService(
         get(bucket, key)
             ?.let {
                 put(bucket, key, it + file.readBytes())
-            }
-            .let { StorageService.StorageChuck() }
+            }.let { StorageService.StorageChuck() }
 
     override fun putChunk(
         bucket: String,
@@ -135,8 +131,7 @@ class StubStoreService(
         get(bucket, key)
             ?.let {
                 put(bucket, key, (it + input.readBytes()))
-            }
-            .let { StorageService.StorageChuck() }
+            }.let { StorageService.StorageChuck() }
 
     override fun completeChunk(
         bucket: String,

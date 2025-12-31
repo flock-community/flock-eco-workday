@@ -37,24 +37,26 @@ class InvoiceService(
     fun uploadExactonline(
         httpSession: HttpSession,
         id: UUID,
-    ) = invoiceRepository.findById(id).toNullable()
+    ) = invoiceRepository
+        .findById(id)
+        .toNullable()
         ?.run {
             exactonlineAuthenticationService
                 .accessToken(httpSession)
                 .flatMapMany { requestObject ->
-                    exactonlineDocumentClient.postDocument(requestObject, toExactonlineDocument())
+                    exactonlineDocumentClient
+                        .postDocument(requestObject, toExactonlineDocument())
                         .flatMapMany { exactDocument ->
-                            Flux.fromIterable(documents)
-                                .flatMap {
-                                        document ->
+                            Flux
+                                .fromIterable(documents)
+                                .flatMap { document ->
                                     exactonlineDocumentClient.postDocumentAttachment(
                                         requestObject,
                                         document.toExactonlineDocumentAttachment(exactDocument),
                                     )
                                 }
                         }
-                }
-                .collectList()
+                }.collectList()
                 .doOnNext {
                     invoiceRepository.save(
                         this.copy(
@@ -97,7 +99,6 @@ class InvoiceService(
                     documents = expense.files,
                     status = InvoiceStatus.NEW,
                 )
-            }
-            .run { invoiceRepository.save(this) }
+            }.run { invoiceRepository.save(this) }
             .run { println(this) }
 }

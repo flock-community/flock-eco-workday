@@ -23,13 +23,11 @@ data class KCalendar(
             .apply {
                 setName("Flock. Holidays")
                 timezoneInfo = defaultTimezoneInfo
-            }
-            .also { iCalendar ->
+            }.also { iCalendar ->
                 events
                     .map { it.serialize() }
                     .forEach { iCalendar.addEvent(it) }
-            }
-            .write()
+            }.write()
 
     companion object {
         val defaultTimezoneInfo =

@@ -12,9 +12,7 @@ abstract class AbstractIdEntity(
     @GeneratedValue(strategy = GenerationType.AUTO)
     open val id: Long = 0,
 ) : Serializable {
-    override fun hashCode(): Int {
-        return 13
-    }
+    override fun hashCode(): Int = 13
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

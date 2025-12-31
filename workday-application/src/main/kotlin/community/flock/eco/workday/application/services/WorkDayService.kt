@@ -88,7 +88,8 @@ class WorkDayService(
     fun findAllByStatus(status: Status) = workDayRepository.findAllByStatus(status)
 
     fun create(form: WorkDayForm): WorkDay =
-        form.copy(status = Status.REQUESTED)
+        form
+            .copy(status = Status.REQUESTED)
             .validate()
             .consume()
             .save()
@@ -108,8 +109,7 @@ class WorkDayService(
                     .validate()
                     .consume(this)
                     .save()
-            }
-            .also {
+            }.also {
                 if (!isUpdatedByOwner) {
                     emailService.sendUpdate(it)
                 }

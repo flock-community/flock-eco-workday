@@ -19,26 +19,27 @@ class WorkdayGoogleDrive(
     }
 
     private val drive: Drive =
-        Drive.Builder(
-            GoogleNetHttpTransport.newTrustedTransport(),
-            GsonFactory.getDefaultInstance(),
-            HttpCredentialsAdapter(credentialsProvider.credentials),
-        )
-            .setApplicationName("Workday")
+        Drive
+            .Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                GsonFactory.getDefaultInstance(),
+                HttpCredentialsAdapter(credentialsProvider.credentials),
+            ).setApplicationName("Workday")
             .build()
 
     fun cloneAndShareFile(
         fileId: String,
         title: String,
     ): File =
-        drive.files().copy(
-            fileId,
-            File().apply {
-                name = title
-                parents = listOf("root")
-            },
-        )
-            .setSupportsTeamDrives(true)
+        drive
+            .files()
+            .copy(
+                fileId,
+                File().apply {
+                    name = title
+                    parents = listOf("root")
+                },
+            ).setSupportsTeamDrives(true)
             .setFields(FIELDS)
             .execute()
             .also {
@@ -64,9 +65,10 @@ class WorkdayGoogleDrive(
             type = "user"
             role = "owner"
             emailAddress = email
-        }
-        .let {
-            drive.permissions().create(fileId, it)
+        }.let {
+            drive
+                .permissions()
+                .create(fileId, it)
                 .setSupportsAllDrives(true)
                 .setTransferOwnership(true)
                 .execute()
@@ -80,15 +82,18 @@ class WorkdayGoogleDrive(
             type = "user"
             role = "writer"
             emailAddress = email
-        }
-        .let {
-            drive.permissions().create(fileId, it)
+        }.let {
+            drive
+                .permissions()
+                .create(fileId, it)
                 .setSupportsAllDrives(true)
                 .execute()
         }
 
     private fun getUserEmail(): String =
-        userAccountService.findUserAccountByUserCode(
-            SecurityContextHolder.getContext().authentication.name,
-        ).first().user.email
+        userAccountService
+            .findUserAccountByUserCode(
+                SecurityContextHolder.getContext().authentication.name,
+            ).first()
+            .user.email
 }

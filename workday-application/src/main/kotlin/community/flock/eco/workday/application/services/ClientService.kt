@@ -37,7 +37,8 @@ class ClientService(
         code: String,
         form: ClientForm,
     ): Client? =
-        this.findByCode(code)
+        this
+            .findByCode(code)
             ?.let {
                 form.internalize(it).save()
             }

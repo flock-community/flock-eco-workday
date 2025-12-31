@@ -539,7 +539,8 @@ class AggregationServiceTest(
                 0.0,
             )
         val otherClientHoursExpected =
-            bojackHoursExpected.zip(personHoursExpected) { xv, yv -> xv + yv }
+            bojackHoursExpected
+                .zip(personHoursExpected) { xv, yv -> xv + yv }
                 .zip(walterHoursExpected) { xv, yv -> xv + yv }
                 .zip(thomasHoursExpectedOther) { xv, yv -> xv + yv }
 

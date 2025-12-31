@@ -46,12 +46,13 @@ class CostExpenseMapper(
         description = input.description,
         amount = input.amount.toString().toDouble(),
         files =
-            input.files.map {
-                Document(
-                    name = it.name,
-                    file = UUID.fromString(it.file.value),
-                )
-            }.toMutableList(),
+            input.files
+                .map {
+                    Document(
+                        name = it.name,
+                        file = UUID.fromString(it.file.value),
+                    )
+                }.toMutableList(),
         status = input.status.consume(),
         person =
             personService

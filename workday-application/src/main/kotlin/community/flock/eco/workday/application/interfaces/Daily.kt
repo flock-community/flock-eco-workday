@@ -8,7 +8,9 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 
-interface Daily : Hours, Period {
+interface Daily :
+    Hours,
+    Period {
     fun totalHoursInPeriod(yearMonth: YearMonth): BigDecimal =
         this
             .totalHoursInPeriod(yearMonth.toPeriod())
@@ -27,7 +29,8 @@ interface Daily : Hours, Period {
             .mapIndexed { index, localDate ->
                 localDate to
                     if (this.days?.isNotEmpty()!!) {
-                        this.days?.get(index)
+                        this.days
+                            ?.get(index)
                             ?.toBigDecimal()
                             ?: BigDecimal.ZERO
                     } else {
@@ -35,8 +38,7 @@ interface Daily : Hours, Period {
                             .toBigDecimal()
                             .divide(this.countDays().toBigDecimal(), 100, RoundingMode.HALF_UP)
                     }
-            }
-            .toMap()
+            }.toMap()
 }
 
 fun <T : Daily> T.validate(): T =

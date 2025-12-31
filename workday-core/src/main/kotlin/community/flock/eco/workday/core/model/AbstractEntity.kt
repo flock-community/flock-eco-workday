@@ -9,9 +9,7 @@ abstract class AbstractEntity<ID : Serializable>(
     @Id
     open val id: ID,
 ) : Serializable {
-    override fun hashCode(): Int {
-        return 13
-    }
+    override fun hashCode(): Int = 13
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

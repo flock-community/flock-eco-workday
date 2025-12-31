@@ -28,7 +28,8 @@ class UserRepositoryTest(
         )
 
         val res =
-            userRepository.findByEmail("user@gmail.com")
+            userRepository
+                .findByEmail("user@gmail.com")
                 .toNullable()
 
         assertEquals("User Name", res!!.name)

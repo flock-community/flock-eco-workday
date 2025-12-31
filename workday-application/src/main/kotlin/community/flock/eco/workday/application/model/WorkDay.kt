@@ -34,7 +34,8 @@ class WorkDay(
     override val status: Status,
     @ElementCollection(fetch = FetchType.EAGER)
     val sheets: List<WorkDaySheet>,
-) : Day(id, code, from, to, hours, days), Approve {
+) : Day(id, code, from, to, hours, days),
+    Approve {
     fun totalRevenueInPeriod(period: Period): BigDecimal =
         this
             .hoursPerDayInPeriod(period.from, period.to!!)

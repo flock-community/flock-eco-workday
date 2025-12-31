@@ -12,7 +12,8 @@ class WebMvcConfig : WebMvcConfigurer {
     val etagCache: MutableMap<String, String> = mutableMapOf()
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
-        registry.addResourceHandler("/**")
+        registry
+            .addResourceHandler("/**")
             .addResourceLocations("classpath:/static/")
             .setCacheControl(CacheControl.empty().mustRevalidate())
             .setEtagGenerator { resource ->
@@ -20,8 +21,7 @@ class WebMvcConfig : WebMvcConfigurer {
                     println("Computing cache for ${resource.file.path}. etag: ${resource.contentAsByteArray.contentHashCode()}")
                     resource.contentAsByteArray.contentHashCode().toString()
                 }
-            }
-            .resourceChain(true)
+            }.resourceChain(true)
             .addResolver(
                 object : PathResourceResolver() {
                     @Throws(IOException::class)

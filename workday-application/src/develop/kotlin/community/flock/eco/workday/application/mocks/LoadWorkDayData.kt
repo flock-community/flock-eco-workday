@@ -58,8 +58,7 @@ class LoadWorkDayData(
                                 ),
                         )
                     }
-            }
-            .flatten()
+            }.flatten()
             .forEach { it.create() }
     }
 }

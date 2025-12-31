@@ -16,33 +16,36 @@ class WorkdayGoogleSheets(
     credentialsProvider: CredentialsProvider,
 ) {
     private val sheetsService =
-        Sheets.Builder(
-            GoogleNetHttpTransport.newTrustedTransport(),
-            GsonFactory.getDefaultInstance(),
-            HttpCredentialsAdapter(credentialsProvider.credentials),
-        ).setApplicationName("Your Application Name").build()
+        Sheets
+            .Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                GsonFactory.getDefaultInstance(),
+                HttpCredentialsAdapter(credentialsProvider.credentials),
+            ).setApplicationName("Your Application Name")
+            .build()
 
     fun findAndReplaceCellByTag(
         sheetId: String,
         tag: String,
         newValue: String,
     ): BatchUpdateSpreadsheetResponse =
-        BatchUpdateSpreadsheetRequest().apply {
-            requests =
-                listOf(
-                    Request().apply {
-                        findReplace =
-                            FindReplaceRequest().apply {
-                                find = tag
-                                replacement = newValue
-                                allSheets = true
-                                matchCase = false
-                            }
-                    },
-                )
-        }.let {
-            sheetsService.spreadsheets().batchUpdate(sheetId, it).execute()
-        }
+        BatchUpdateSpreadsheetRequest()
+            .apply {
+                requests =
+                    listOf(
+                        Request().apply {
+                            findReplace =
+                                FindReplaceRequest().apply {
+                                    find = tag
+                                    replacement = newValue
+                                    allSheets = true
+                                    matchCase = false
+                                }
+                        },
+                    )
+            }.let {
+                sheetsService.spreadsheets().batchUpdate(sheetId, it).execute()
+            }
 
     fun findCellAndInsertRowByTag(
         id: String,
@@ -59,7 +62,9 @@ class WorkdayGoogleSheets(
             BatchUpdateValuesRequest()
                 .setValueInputOption("USER_ENTERED")
                 .setData(listOf(valueRange))
-        sheetsService.spreadsheets().values()
+        sheetsService
+            .spreadsheets()
+            .values()
             .batchUpdate(id, batchBody)
             .execute()
     }
@@ -71,7 +76,9 @@ class WorkdayGoogleSheets(
         val range = "A1:Z100"
         // Retrieve the values from the sheet
         val response =
-            sheetsService.spreadsheets().values()
+            sheetsService
+                .spreadsheets()
+                .values()
                 .get(id, range)
                 .execute()
 

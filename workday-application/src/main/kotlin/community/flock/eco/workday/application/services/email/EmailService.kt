@@ -7,7 +7,10 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class EmailService(private val emailSendService: MailjetService, private val notificationProperties: NotificationProperties) {
+class EmailService(
+    private val emailSendService: MailjetService,
+    private val notificationProperties: NotificationProperties,
+) {
     private val log: Logger = LoggerFactory.getLogger(EmailService::class.java)
 
     fun sendEmailMessage(
@@ -49,15 +52,19 @@ class EmailService(private val emailSendService: MailjetService, private val not
         salutation: String,
         emailMessage: String,
         url: String = "https://workday.flock.community",
-    ): JSONObject {
-        return JSONObject()
+    ): JSONObject =
+        JSONObject()
             .put("recipient_salutation", salutation)
             .put("email_message", emailMessage)
             .put("workday_url", url)
-    }
 }
 
-class EmailMessageProperties(recipientEmail: String, subjectLine: String, variables: JSONObject, var templateId: Int) {
+class EmailMessageProperties(
+    recipientEmail: String,
+    subjectLine: String,
+    variables: JSONObject,
+    var templateId: Int,
+) {
     var recipientFirstName: String
     var recipientEmailAddress: String = recipientEmail
     var subject: String = subjectLine

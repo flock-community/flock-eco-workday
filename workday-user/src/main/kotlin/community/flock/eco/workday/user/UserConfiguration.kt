@@ -41,7 +41,5 @@ import org.springframework.security.crypto.password.PasswordEncoder
 )
 class UserConfiguration {
     @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 }

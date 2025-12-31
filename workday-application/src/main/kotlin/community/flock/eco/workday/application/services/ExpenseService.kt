@@ -57,7 +57,8 @@ class ExpenseService(
         expenseRepository
             .findByIdOrNull(id)
             ?.run {
-                expenseRepository.delete(this)
+                expenseRepository
+                    .delete(this)
                     // TODO: nobody listens to this event, can we remove?
                     //  especially since 'this' is removed from the hibernate cache
                     .also { applicationEventPublisher.publishEvent(DeleteExpenseEvent(this)) }
