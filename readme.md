@@ -199,7 +199,7 @@ By default, spotless will check for code style issues in maven's `verify` phase.
 
 ```bash
 # With the format profile enabled, spotless will automatically format code
-./mvnw test-compile -Pformat
+./mvnw test-compil1e -Pformat
 
 # Check for code style issues
 ./mvnw test-compile spotless:apply
