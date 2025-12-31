@@ -4,7 +4,6 @@ import MenuItem from "@mui/material/MenuItem";
 import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import clsx from "clsx";
 import {
   canChangeStatus,
@@ -41,7 +40,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export function StatusMenu({ onChange, disabled, value }) {
+type StatusMenuProps = {
+  onChange: (status: string) => void;
+  disabled?: boolean;
+  value: string;
+};
+
+export function StatusMenu({ onChange, disabled, value }: StatusMenuProps) {
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -110,9 +115,3 @@ export function StatusMenu({ onChange, disabled, value }) {
     </div>
   );
 }
-
-StatusMenu.propTypes = {
-  onChange: PropTypes.func,
-  disabled: PropTypes.bool,
-  value: PropTypes.string,
-};

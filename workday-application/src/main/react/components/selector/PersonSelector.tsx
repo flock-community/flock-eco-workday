@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Person, PersonClient } from "../../clients/PersonClient";
 
-type PersonSelectorProps = FormControlProps & {
+export type PersonSelectorProps = FormControlProps & {
   value?: string;
   onChange: (selected: any) => void;
   label?: string;

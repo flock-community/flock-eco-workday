@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import {
   Card,
   CardContent,
@@ -15,7 +14,7 @@ import { Project, ProjectClient } from "../../clients/ProjectClient";
 type ProjectSelectorProps = FormControlProps & {
   value?: string;
   onChange: (selected: any) => void;
-  label?: string;
+  label: string;
   embedded?: boolean;
   multiple?: boolean;
   error?: string;
@@ -24,10 +23,10 @@ type ProjectSelectorProps = FormControlProps & {
 };
 
 export function ProjectSelector({
-  value,
+  value = "",
   onChange,
   embedded,
-  label,
+  label = "Select Project",
   error,
   refresh,
   onRefresh,
@@ -88,16 +87,3 @@ export function ProjectSelector({
     </Card>
   );
 }
-
-ProjectSelector.propTypes = {
-  error: PropTypes.string,
-  value: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
-  embedded: PropTypes.bool,
-};
-
-ProjectSelector.defaultProps = {
-  value: "",
-  label: "Select Project",
-};

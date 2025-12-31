@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
 import Grid from "@mui/material/Grid2";
@@ -26,10 +25,12 @@ const schema = Yup.object().shape({
   type: Yup.string().required("Field required").default("GENERAL_EVENT"),
 });
 
-/**
- * @return {null}
- */
-export function EventForm({ value, onSubmit }) {
+type EventFormProps = {
+  value: any;
+  onSubmit?: (data: any) => void;
+};
+
+export function EventForm({ value, onSubmit }: EventFormProps) {
   const handleSubmit = (data) => {
     onSubmit?.({
       description: data.description,
@@ -113,8 +114,3 @@ export function EventForm({ value, onSubmit }) {
     )
   );
 }
-
-EventForm.propTypes = {
-  code: PropTypes.string,
-  onSubmit: PropTypes.func,
-};

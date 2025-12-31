@@ -55,4 +55,3 @@ export function EventFeature() {
   );
 }
 
-EventFeature.propTypes = {};

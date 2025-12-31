@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import UserClient from "@workday-user/user/UserClient";
 import { User } from "@workday-user/user/response/user";
 import {
@@ -11,8 +10,19 @@ import {
   Select,
 } from "@mui/material";
 
-export function UserSelector(props) {
-  const { embedded, onChange, label, selectedItem } = props;
+type UserSelectorProps = {
+  embedded?: boolean;
+  onChange: (userId: string) => void;
+  label?: string;
+  selectedItem?: string;
+};
+
+export function UserSelector({
+  embedded = false,
+  onChange,
+  label = "Select User",
+  selectedItem = "",
+}: UserSelectorProps) {
   const [users, setUsers] = useState<User[]>([]);
   const [selected, setSelected] = useState("");
 
@@ -61,16 +71,3 @@ export function UserSelector(props) {
     </Card>
   );
 }
-
-UserSelector.propTypes = {
-  embedded: PropTypes.bool,
-  onChange: PropTypes.func.isRequired,
-  label: PropTypes.string,
-  selectedItem: PropTypes.string,
-};
-
-UserSelector.defaultProps = {
-  embedded: false,
-  selectedItem: "",
-  label: "Select User",
-};

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { Dialog, DialogTitle } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import DialogContent from "@mui/material/DialogContent";
@@ -24,8 +23,13 @@ import { DialogBody } from "../../components/dialog/DialogHeader";
 
 const useStyles = makeStyles({});
 
-export function ContractDialog(props) {
-  const { open, code, onClose } = props;
+type ContractDialogProps = {
+  open: boolean;
+  code?: string;
+  onClose?: () => void;
+};
+
+export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
   // TODO: remove styles if not used and remove eslint-disable
   const classes = useStyles(); // eslint-disable-line
 
@@ -139,9 +143,3 @@ export function ContractDialog(props) {
     </>
   );
 }
-
-ContractDialog.propTypes = {
-  open: PropTypes.bool,
-  code: PropTypes.string,
-  onClose: PropTypes.func,
-};

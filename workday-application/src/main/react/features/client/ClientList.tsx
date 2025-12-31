@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import Card from "@mui/material/Card";
 import { CardContent } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
@@ -19,8 +18,12 @@ const useStyles = makeStyles({
   },
 });
 
-export function ClientList(props) {
-  const { reload, onItemClick } = props;
+type ClientListProps = {
+  reload?: boolean;
+  onItemClick?: (item: Client) => void;
+};
+
+export function ClientList({ reload, onItemClick }: ClientListProps) {
   const classes = useStyles();
 
   const [list, setList] = useState<Client[]>([]);
@@ -51,8 +54,3 @@ export function ClientList(props) {
     </Grid>
   );
 }
-
-ClientList.propTypes = {
-  reload: PropTypes.bool,
-  onItemClick: PropTypes.func,
-};

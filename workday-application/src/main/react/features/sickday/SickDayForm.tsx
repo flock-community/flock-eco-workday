@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
 import Grid from "@mui/material/Grid2";
@@ -22,7 +21,12 @@ export const schemaSickDayForm = Yup.object().shape({
   days: Yup.array().default([8]).nullable(),
 });
 
-export function SickDayForm({ value, onSubmit }) {
+type SickDayFormProps = {
+  value: any;
+  onSubmit?: (data: any) => void;
+};
+
+export function SickDayForm({ value, onSubmit }: SickDayFormProps) {
   const handleSubmit = (data) => {
     onSubmit?.({
       ...value,
@@ -83,8 +87,3 @@ export function SickDayForm({ value, onSubmit }) {
     )
   );
 }
-
-SickDayForm.propTypes = {
-  value: PropTypes.object,
-  onSubmit: PropTypes.func,
-};

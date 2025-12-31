@@ -62,4 +62,3 @@ export function AssignmentFeature({ person }: AssignmentFeatureProps) {
   );
 }
 
-AssignmentFeature.propTypes = {};

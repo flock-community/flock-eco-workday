@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { TableCell } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
@@ -20,12 +19,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+type WorkDayListItemProps = {
+  value: any;
+  onClick: () => void;
+  onClickStatus: (status: string) => void;
+  hasAuthority: string;
+};
+
 export function WorkDayListItem({
   value,
   onClick,
   onClickStatus,
   hasAuthority,
-}) {
+}: WorkDayListItemProps) {
   const classes = useStyles();
 
   return (
@@ -53,10 +59,3 @@ export function WorkDayListItem({
     </TableRow>
   );
 }
-
-WorkDayListItem.propTypes = {
-  value: PropTypes.object,
-  onClick: PropTypes.func,
-  onClickStatus: PropTypes.func,
-  hasAuthority: PropTypes.string,
-};

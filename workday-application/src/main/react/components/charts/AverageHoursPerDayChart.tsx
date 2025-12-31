@@ -9,7 +9,6 @@ import {
   BarChart,
   Bar,
 } from "recharts";
-import PropTypes from "prop-types";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { AggregationClient } from "../../clients/AggregationClient";
 
@@ -51,7 +50,3 @@ export function AverageHoursPerDayChart({
     </ResponsiveContainer>
   );
 }
-
-AverageHoursPerDayChart.propTypes = {
-  year: PropTypes.number,
-};

@@ -18,4 +18,3 @@ export const PersonRouter = () => {
   );
 };
 
-PersonRouter.propTypes = {};

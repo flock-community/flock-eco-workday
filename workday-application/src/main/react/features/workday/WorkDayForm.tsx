@@ -17,7 +17,6 @@ import Button from "@mui/material/Button";
 import { DatePreset, datePresets } from "../../utils/DatePreset";
 import dayjs from "dayjs";
 import { StatusSelect } from "../../components/status/StatusSelect";
-import PropTypes from "prop-types";
 
 export const WORKDAY_FORM_ID = "work-day-form";
 
@@ -36,10 +35,12 @@ export const schema = Yup.object().shape({
   sheets: Yup.array().default([]),
 });
 
-/**
- * @return {null}
- */
-export function WorkDayForm({ value, onSubmit }) {
+type WorkDayFormProps = {
+  value: any;
+  onSubmit?: (data: any) => Promise<void> | void;
+};
+
+export function WorkDayForm({ value, onSubmit }: WorkDayFormProps) {
   const [person] = usePerson();
 
   const [daysSwitch, setDaysSwitch] = useState(!value.days);
@@ -185,11 +186,3 @@ export function WorkDayForm({ value, onSubmit }) {
     </Formik>
   ) : null;
 }
-
-WorkDayForm.propTypes = {
-  value: PropTypes.object,
-  onSubmit: PropTypes.func,
-  onChange: PropTypes.func,
-  onSwitchChange: PropTypes.func,
-  daysSwitch: PropTypes.func,
-};

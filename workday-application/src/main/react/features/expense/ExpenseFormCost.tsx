@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import Grid from "@mui/material/Grid2";
 import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
@@ -67,9 +66,4 @@ export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
       {form}
     </Formik>
   );
-};
-
-ExpenseFormCost.propTypes = {
-  value: PropTypes.object,
-  onSubmit: PropTypes.func.isRequired,
 };

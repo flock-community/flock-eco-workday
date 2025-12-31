@@ -76,4 +76,3 @@ export function ExactonlineFeature() {
   );
 }
 
-ExactonlineFeature.propTypes = {};
