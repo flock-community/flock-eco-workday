@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 
 import { BrowserRouter as Router, Redirect, Route } from "react-router-dom";
-import { Box, StyledEngineProvider, ThemeProvider } from "@mui/material";
+import { Box, ThemeProvider } from "@mui/material";
+import { StyledEngineProvider } from "@mui/material/styles";
 import { ThemeProvider as Mui4ThemeProvider } from "@mui/styles";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { useLoginStatus } from "../hooks/StatusHook";
