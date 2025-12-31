@@ -1,41 +1,54 @@
 import React, { ReactNode } from "react";
-import makeStyles from "@mui/styles/makeStyles";
-import { Theme } from "@mui/material/styles";
+import { styled } from '@mui/material/styles';
 import { Button, DialogTitle, Typography } from "@mui/material";
 import Close from "@mui/icons-material/Close";
 import DialogContent from "@mui/material/DialogContent";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
+const PREFIX = 'DialogHeader';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  closeBtn: `${PREFIX}-closeBtn`,
+  dialogTitle: `${PREFIX}-dialogTitle`,
+  dialogContent: `${PREFIX}-dialogContent`,
+  iconWrapper: `${PREFIX}-iconWrapper`,
+  titleText: `${PREFIX}-titleText`
+};
+
+const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
+  [`&.${classes.root}`]: {
     margin: 0,
     padding: theme.spacing(2),
   },
-  closeBtn: {
+  [`& .${classes.closeBtn}`]: {
     alignSelf: "start",
     marginLeft: "auto",
     minWidth: "unset", // override material button property
   },
-  dialogTitle: {
+  [`& .${classes.dialogTitle}`]: {
     alignItems: "center",
     display: "flex",
   },
-  dialogContent: {
-    paddingTop: "10px",
-    paddingBottom: "10px",
-    marginTop: "10px",
-    marginBottom: "10px",
-  },
-  iconWrapper: {
+  [`& .${classes.iconWrapper}`]: {
     "& > svg": {
       height: 40,
       width: 40,
     },
   },
-  titleText: {
+  [`& .${classes.titleText}`]: {
     display: "flex",
     flexDirection: "column",
     marginLeft: "1rem",
-  },
+  }
+}));
+
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`&.${classes.dialogContent}`]: {
+    paddingTop: "10px",
+    paddingBottom: "10px",
+    marginTop: "10px",
+    marginBottom: "10px",
+  }
 }));
 
 type DialogHeaderProps = {
@@ -51,10 +64,9 @@ type DialogBodyProps = {
 
 export const DialogHeader = (props: DialogHeaderProps) => {
   const { icon, headline, subheadline, onClose } = props;
-  const classes = useStyles();
 
   return (
-    <DialogTitle className={classes.root}>
+    <StyledDialogTitle className={classes.root}>
       <div className={classes.dialogTitle}>
         <div className={classes.iconWrapper}>{icon}</div>
         <div className={classes.titleText}>
@@ -65,16 +77,14 @@ export const DialogHeader = (props: DialogHeaderProps) => {
           <Close />
         </Button>
       </div>
-    </DialogTitle>
+    </StyledDialogTitle>
   );
 };
 
 export const DialogBody = (props: DialogBodyProps) => {
-  const classes = useStyles();
-
   return (
-    <div className={classes.dialogContent}>
+    <StyledDiv className={classes.dialogContent}>
       <DialogContent>{props.children}</DialogContent>
-    </div>
+    </StyledDiv>
   );
 };

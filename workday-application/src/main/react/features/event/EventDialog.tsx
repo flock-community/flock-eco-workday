@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, Divider } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import EventIcon from "@mui/icons-material/CalendarToday";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import Typography from "@mui/material/Typography";
