@@ -1,18 +1,19 @@
-import { Field } from "formik";
-import { styled } from "@mui/material/styles";
-import React, { useEffect, useState } from "react";
-import { PeriodInput } from "../inputs/PeriodInput";
+import { ButtonGroup } from '@mui/material';
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
+import type dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
+import { Field, type FieldProps } from 'formik';
+import { useCallback, useEffect, useState } from 'react';
 import {
   editDay,
   initDays,
   mutatePeriod,
-  Period,
-} from "../../features/period/Period";
-import { ButtonGroup } from "@mui/material";
-import Button from "@mui/material/Button";
-import dayjs from "dayjs";
+  type Period,
+} from '../../features/period/Period';
+import { PeriodInput } from '../inputs/PeriodInput';
 
-const PREFIX = "PeriodInputField";
+const PREFIX = 'PeriodInputField';
 
 const classes = {
   buttons: `${PREFIX}-buttons`,
@@ -20,7 +21,7 @@ const classes = {
 
 const StyledField = styled(Field)({
   [`& .${classes.buttons}`]: {
-    marginTop: "10px",
+    marginTop: '10px',
   },
 });
 
@@ -31,40 +32,68 @@ type PeriodInputFieldProps = {
   reset?: boolean;
 };
 
-export function PeriodInputField({
+type PeriodInputRendererProps = {
+  name: string;
+  from: dayjs.Dayjs;
+  to: dayjs.Dayjs;
+  reset?: boolean;
+  value: any;
+  setFieldValue: (field: string, value: unknown) => void;
+};
+
+function PeriodInputRenderer({
   name,
   from,
   to,
   reset,
-}: PeriodInputFieldProps) {
-  const render = ({ field: { value }, form: { setFieldValue } }) => {
-    const [period, setPeriod] = useState<Period>({
-      from: from,
-      to: to,
-      days: value,
-    });
+  value,
+  setFieldValue,
+}: Readonly<PeriodInputRendererProps>) {
+  const [period, setPeriod] = useState<Period>({
+    from,
+    to,
+    days: value,
+  });
 
-    const update = (period: Period) => {
-      setFieldValue(name, period.days);
-      setPeriod(period);
-    };
+  const update = useCallback(
+    (newPeriod: Period) => {
+      setFieldValue(name, newPeriod.days);
+      setPeriod(newPeriod);
+    },
+    [name, setFieldValue]
+  );
 
-    useEffect(() => {
-      update(mutatePeriod(period, { from, to }));
-    }, [from, to]);
+  useEffect(() => {
+    update(mutatePeriod(period, { from, to }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [from, to]);
 
-    useEffect(() => {
-      reset ? setHoursPerDay(0) : null;
-    }, [reset]);
-
-    const setHoursPerDay = (hoursPerDay: number) => {
+  const setHoursPerDay = useCallback(
+    (hoursPerDay: number) => {
       update({
         ...period,
         days: initDays(period, true, hoursPerDay),
       });
-    };
+    },
+    [period, update]
+  );
 
-    const renderButtons = (
+  useEffect(() => {
+    if (reset) {
+      setHoursPerDay(0);
+    }
+  }, [reset, setHoursPerDay]);
+
+  const handlePeriodChange = useCallback(
+    (day: Dayjs, hours: number) => {
+      update(editDay(period, day, hours));
+    },
+    [period, update]
+  );
+
+  return (
+    <>
+      <PeriodInput period={period} onChange={handlePeriodChange} />
       <ButtonGroup className={classes.buttons} size="small" fullWidth>
         <Button variant="outlined" onClick={() => setHoursPerDay(0)}>
           Clear all
@@ -76,24 +105,28 @@ export function PeriodInputField({
           9 hours per day
         </Button>
       </ButtonGroup>
-    );
+    </>
+  );
+}
 
-    return (
-      <>
-        <PeriodInput
-          period={period}
-          onChange={(date, day) => {
-            update(editDay(period, date, day));
-          }}
-        />
-        {renderButtons}
-      </>
-    );
-  };
-
+export function PeriodInputField({
+  name,
+  from,
+  to,
+  reset,
+}: Readonly<PeriodInputFieldProps>) {
   return (
     <StyledField id={name} name={name}>
-      {render}
+      {({ field: { value }, form: { setFieldValue } }: FieldProps) => (
+        <PeriodInputRenderer
+          name={name}
+          from={from}
+          to={to}
+          reset={reset}
+          value={value}
+          setFieldValue={setFieldValue}
+        />
+      )}
     </StyledField>
   );
 }
