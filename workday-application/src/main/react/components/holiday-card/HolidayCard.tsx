@@ -97,7 +97,7 @@ export function HolidayCard({ item }: HolidayCardProps) {
           item={leaveDayDetailsItem}
           onComplete={handleCloseLeaveDayDetailDialog}
         />
-      ) }
+      )}
     </Root>
   );
 }

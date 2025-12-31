@@ -128,7 +128,12 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
 
   return (
     <Root>
-      <Grid container spacing={1} className={classes.list} style={{ opacity: loading ? 0.5 : 1 }}>
+      <Grid
+        container
+        spacing={1}
+        className={classes.list}
+        style={{ opacity: loading ? 0.5 : 1 }}
+      >
         {items.map(renderItem)}
       </Grid>
       <Box mt={2}>

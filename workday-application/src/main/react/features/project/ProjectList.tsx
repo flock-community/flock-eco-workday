@@ -16,7 +16,7 @@ export default function ProjectList({ editProject, refresh }) {
 
   useEffect(() => {
     ProjectClient.all().then((res) => setProjects(res));
-    refresh // force use of refresh
+    refresh; // force use of refresh
   }, [refresh]);
 
   function renderItem(item: Project, key: number) {
