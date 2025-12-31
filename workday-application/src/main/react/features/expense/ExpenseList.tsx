@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Card, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import CardHeader from "@mui/material/CardHeader";
 import List from "@mui/material/List";

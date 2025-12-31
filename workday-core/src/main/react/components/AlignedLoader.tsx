@@ -1,7 +1,7 @@
 import React from "react";
 import { CircularProgress, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {

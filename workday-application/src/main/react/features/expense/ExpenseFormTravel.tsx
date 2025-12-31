@@ -1,5 +1,5 @@
 import React from "react";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
 import * as Yup from "yup";

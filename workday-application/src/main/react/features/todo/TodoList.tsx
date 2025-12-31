@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Card, Link, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import CardHeader from "@mui/material/CardHeader";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { useHistory } from "react-router-dom";

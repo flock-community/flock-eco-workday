@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import Switch from "@mui/material/Switch";
 import { ButtonGroup, Typography } from "@mui/material";
 import { TextField } from "formik-mui";

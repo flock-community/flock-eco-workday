@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import Fab from "@mui/material/Fab";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import { useParams } from "react-router-dom";

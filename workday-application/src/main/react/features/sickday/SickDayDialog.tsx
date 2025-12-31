@@ -10,7 +10,7 @@ import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { schemaSickDayForm, SICKDAY_FORM_ID, SickDayForm } from "./SickDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import { DialogBody } from "../../components/dialog/DialogHeader";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 
 type SickDayDialogProps = {
   personFullName: string;

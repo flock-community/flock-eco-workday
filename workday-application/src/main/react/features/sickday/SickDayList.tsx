@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Card, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { SICKDAY_PAGE_SIZE, SickDayClient } from "../../clients/SickDayClient";
 import { DayListItem } from "../../components/DayListItem";
 import makeStyles from "@mui/styles/makeStyles";

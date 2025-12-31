@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import AssignmentReportTable from "./AssignmentReportTable";
 import { Card, CardContent, CardHeader } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DMY_DATE } from "../../../clients/util/DateFormats";

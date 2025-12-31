@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 
 import FormControl from "@mui/material/FormControl";
 import UserClient from "./UserClient";

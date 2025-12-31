@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import ProjectForm, { PROJECT_FORM_ID } from "./ProjectForm";
 import { Project, ProjectClient } from "../../clients/ProjectClient";
 import { DialogBody } from "../../components/dialog/DialogHeader";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import ProjectIcon from "@mui/icons-material/AccountTree";
 
 type ProjectDialogProps = {
