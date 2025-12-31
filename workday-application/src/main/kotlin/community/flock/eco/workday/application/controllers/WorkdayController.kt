@@ -36,7 +36,7 @@ import java.util.UUID
 @RequestMapping("/api/workdays")
 class WorkdayController(
     private val service: WorkDayService,
-    private val documentStorage: DocumentStorage
+    private val documentStorage: DocumentStorage,
 ) {
     private val log: Logger = LoggerFactory.getLogger(WorkdayController::class.java)
 
