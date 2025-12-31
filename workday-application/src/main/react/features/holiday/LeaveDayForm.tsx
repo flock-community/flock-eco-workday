@@ -1,22 +1,21 @@
-import React from "react";
-import * as Yup from "yup";
-import { Field, Form, Formik } from "formik";
-import Grid from "@mui/material/Grid";
-import { TextField } from "formik-mui";
-import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
-import MenuItem from "@mui/material/MenuItem";
-import { DatePickerField } from "../../components/fields/DatePickerField";
-import { PeriodInputField } from "../../components/fields/PeriodInputField";
-import dayjs from "dayjs";
-import { LEAVE_DAY_DIALOG_FORM_ID } from "./LeaveDayDialog";
+import Grid from '@mui/material/Grid';
+import MenuItem from '@mui/material/MenuItem';
+import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import dayjs from 'dayjs';
+import { Field, Form, Formik } from 'formik';
+import { TextField } from 'formik-mui';
+import * as Yup from 'yup';
+import { DatePickerField } from '../../components/fields/DatePickerField';
+import { PeriodInputField } from '../../components/fields/PeriodInputField';
+import { LEAVE_DAY_DIALOG_FORM_ID } from './LeaveDayDialog';
 
 const now = dayjs();
 
 export const schemaLeaveDayForm = Yup.object().shape({
-  description: Yup.string().required("Description is required").default(""),
-  status: Yup.string().required("Status is required").default("REQUESTED"),
-  from: Yup.date().required("From date is required").default(now),
-  to: Yup.date().required("To date is required").default(now),
+  description: Yup.string().required('Description is required').default(''),
+  status: Yup.string().required('Status is required').default('REQUESTED'),
+  from: Yup.date().required('From date is required').default(now),
+  to: Yup.date().required('To date is required').default(now),
   days: Yup.array().default([8]).nullable(),
 });
 
@@ -50,7 +49,7 @@ export function LeaveDayForm({ value, onSubmit }: LeaveDayFormProps) {
 
           {value && (
             <Grid size={{ xs: 12 }}>
-              <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
+              <UserAuthorityUtil has={'LeaveDayAuthority.ADMIN'}>
                 <Field
                   name="status"
                   type="text"

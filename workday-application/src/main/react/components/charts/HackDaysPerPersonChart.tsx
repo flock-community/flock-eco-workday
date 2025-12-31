@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import { useEffect, useState } from 'react';
 import {
   Bar,
   BarChart,
@@ -8,12 +9,11 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
+} from 'recharts';
 import {
   AggregationClient,
-  AggregationHackDay,
-} from "../../clients/AggregationClient";
+  type AggregationHackDay,
+} from '../../clients/AggregationClient';
 
 type HackDaysPerPersonChartProps = {
   readonly year: number;
@@ -32,8 +32,8 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
             .map((it) => ({
               ...it,
               availableHours: Math.max(it.contractHours - it.hackHoursUsed, 0),
-            }))
-        )
+            })),
+        ),
     );
   }, [year]);
 
@@ -49,8 +49,8 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
         <YAxis type="category" dataKey="name" width={150} />
         <Tooltip
           formatter={(value) =>
-            typeof value === "number"
-              ? new Intl.NumberFormat("en").format(value)
+            typeof value === 'number'
+              ? new Intl.NumberFormat('en').format(value)
               : value
           }
         />

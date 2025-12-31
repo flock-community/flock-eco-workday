@@ -1,19 +1,18 @@
-import { TableCell, TableHead, TableRow } from "@mui/material";
-import React from "react";
+import { TableCell, TableHead, TableRow } from '@mui/material';
 
 const headCells = [
   {
-    id: "person",
+    id: 'person',
     disablePadding: false,
-    label: "person".toUpperCase(),
+    label: 'person'.toUpperCase(),
   },
   {
-    id: "from",
+    id: 'from',
     disablePadding: false,
-    label: "from".toUpperCase(),
+    label: 'from'.toUpperCase(),
   },
-  { id: "to", label: "to".toUpperCase() },
-  { id: "type", label: "type".toUpperCase() },
+  { id: 'to', label: 'to'.toUpperCase() },
+  { id: 'type', label: 'type'.toUpperCase() },
 ];
 
 export const ContractOverviewTableHead = () => {
@@ -23,7 +22,7 @@ export const ContractOverviewTableHead = () => {
         {headCells.map((cell) => (
           <TableCell
             key={cell.id}
-            padding={cell.disablePadding ? "none" : "normal"}
+            padding={cell.disablePadding ? 'none' : 'normal'}
           >
             {cell.label}
           </TableCell>

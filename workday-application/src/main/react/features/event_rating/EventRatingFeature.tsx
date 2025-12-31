@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
-
-import Fab from "@mui/material/Fab";
-import Grid from "@mui/material/Grid";
-import { Typography } from "@mui/material";
-import Container from "@mui/material/Container";
-import { useParams } from "react-router-dom";
-import { EventClient, FlockEvent } from "../../clients/EventClient";
+import { Typography } from '@mui/material';
+import Container from '@mui/material/Container';
+import Fab from '@mui/material/Fab';
+import Grid from '@mui/material/Grid';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { EventClient, type FlockEvent } from '../../clients/EventClient';
 
 /**
  * @return {null}
  */
 export function EventRatingFeature() {
-  let { eventCode } = useParams();
+  const { eventCode } = useParams();
 
   const [event, setEvent] = useState<FlockEvent | null>(null);
   const [ratings, setRatings] = useState<any>(null);
@@ -19,7 +18,7 @@ export function EventRatingFeature() {
   useEffect(() => {
     EventClient.get(eventCode).then((res) => setEvent(res));
     EventClient.getRatings(eventCode).then((res) => setRatings(res));
-  }, []);
+  }, [eventCode]);
 
   const updateRating = (person, rating) => () => {
     EventClient.postRatings(eventCode, {
@@ -39,7 +38,7 @@ export function EventRatingFeature() {
 
   const renderRow = (person) => {
     const eventRating = ratings.find(
-      (rating) => rating.person.uuid === person.uuid
+      (rating) => rating.person.uuid === person.uuid,
     );
     return (
       <Grid container spacing={1}>
@@ -50,8 +49,8 @@ export function EventRatingFeature() {
               <Fab
                 color={
                   eventRating && eventRating.rating === i
-                    ? "primary"
-                    : "default"
+                    ? 'primary'
+                    : 'default'
                 }
                 onClick={updateRating(person, i)}
               >

@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import path from 'node:path';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [
@@ -17,7 +17,10 @@ export default defineConfig({
 
   // Output directory
   build: {
-    outDir: path.resolve(__dirname, 'workday-application/target/classes/static'),
+    outDir: path.resolve(
+      __dirname,
+      'workday-application/target/classes/static',
+    ),
     emptyOutDir: true,
     sourcemap: true,
   },
@@ -85,4 +88,4 @@ export default defineConfig({
       '@mui/x-date-pickers',
     ],
   },
-})
+});

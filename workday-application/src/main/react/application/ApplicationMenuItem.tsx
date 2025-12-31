@@ -1,23 +1,22 @@
-import { useHistory } from "react-router-dom";
-import { styled } from "@mui/material/styles";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import React, { useState } from "react";
-import ListItemText from "@mui/material/ListItemText";
-import { OverridableComponent } from "@mui/material/OverridableComponent";
-import { Collapse, SvgIconTypeMap } from "@mui/material";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import List from "@mui/material/List";
-import { Theme } from "@mui/material/styles";
-import ListItemButton from "@mui/material/ListItemButton";
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { Collapse, type SvgIconTypeMap } from '@mui/material';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import type { OverridableComponent } from '@mui/material/OverridableComponent';
+import { styled } from '@mui/material/styles';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
-const PREFIX = "ApplicationMenuItem";
+const PREFIX = 'ApplicationMenuItem';
 
 const classes = {
-  nested: `${PREFIX}-nested`,
+  nested: `${PREFIX}Nested`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")(({ theme }) => ({
+const Root = styled('div')(({ theme }) => ({
   [`& .${classes.nested}`]: {
     paddingLeft: theme.spacing(1),
   },
@@ -56,7 +55,7 @@ export default function ApplicationMenuItem({
 
   const handleFolderExpanded = (node: HTMLElement) => node.scrollIntoView();
 
-  if (!("items" in item)) {
+  if (!('items' in item)) {
     return (
       <ListItemButton key={item.name} onClick={handleClickItem(item)}>
         <ListItemIcon>{React.createElement(item.icon)}</ListItemIcon>

@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
-import { TableCell } from "@mui/material";
-import TableRow from "@mui/material/TableRow";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import { Dayjs } from "dayjs";
-import { ISO_8601_DATE } from "../../../clients/util/DateFormats";
+import { TableCell } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import TableRow from '@mui/material/TableRow';
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import type { Dayjs } from 'dayjs';
+import { useEffect, useState } from 'react';
+import { ISO_8601_DATE } from '../../../clients/util/DateFormats';
 
-const PREFIX = "NonProductiveHours";
+const PREFIX = 'NonProductiveHours';
 
 const classes = {
-  row: `${PREFIX}-row`,
+  row: `${PREFIX}Row`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")({
+const Root = styled('div')({
   [`& .${classes.row}`]: {
-    fontStyle: "italic",
-    backgroundColor: "#EFEFEF",
+    fontStyle: 'italic',
+    backgroundColor: '#EFEFEF',
   },
 });
 
@@ -46,8 +46,8 @@ export default function NonProductiveHours({
 
     fetch(
       `/api/aggregations/person-nonproductive-hours-per-day?personId=${personId}&from=${from.format(
-        ISO_8601_DATE
-      )}&to=${to.format(ISO_8601_DATE)}`
+        ISO_8601_DATE,
+      )}&to=${to.format(ISO_8601_DATE)}`,
     )
       .then((res) => res.json())
       .then((res) => {
@@ -70,40 +70,54 @@ export default function NonProductiveHours({
       <TableRow className={classes.row}>
         <TableCell />
         <TableCell>Sickdays</TableCell>
-        {days.map((day, index) => (
-          <TableCell key={index}>
-            {day.sickHours > 0.0 ? day.sickHours : ""}
-          </TableCell>
-        ))}
+        {days.map((day) => {
+          const dayKey = `${personId}-sick-${day.sickHours}-${day.holidayHours}-${day.paidParentalLeaveHours}-${day.unpaidParentalLeaveHours}`;
+          return (
+            <TableCell key={dayKey}>
+              {day.sickHours > 0.0 ? day.sickHours : ''}
+            </TableCell>
+          );
+        })}
       </TableRow>
       <TableRow className={classes.row}>
         <TableCell />
         <TableCell>Leave days</TableCell>
-        {days.map((day, index) => (
-          <TableCell key={index}>
-            {day.holidayHours > 0.0 ? day.holidayHours : ""}
-          </TableCell>
-        ))}
+        {days.map((day) => {
+          const dayKey = `${personId}-holiday-${day.sickHours}-${day.holidayHours}-${day.paidParentalLeaveHours}-${day.unpaidParentalLeaveHours}`;
+          return (
+            <TableCell key={dayKey}>
+              {day.holidayHours > 0.0 ? day.holidayHours : ''}
+            </TableCell>
+          );
+        })}
       </TableRow>
       <TableRow className={classes.row}>
         <TableCell />
         <TableCell>Paid Parental Leave</TableCell>
-        {days.map((day, index) => (
-          <TableCell key={index}>
-            {day.paidParentalLeaveHours > 0.0 ? day.paidParentalLeaveHours : ""}
-          </TableCell>
-        ))}
+        {days.map((day) => {
+          const dayKey = `${personId}-paid-parental-${day.sickHours}-${day.holidayHours}-${day.paidParentalLeaveHours}-${day.unpaidParentalLeaveHours}`;
+          return (
+            <TableCell key={dayKey}>
+              {day.paidParentalLeaveHours > 0.0
+                ? day.paidParentalLeaveHours
+                : ''}
+            </TableCell>
+          );
+        })}
       </TableRow>
       <TableRow className={classes.row}>
         <TableCell />
         <TableCell>Unpaid Parental Leave</TableCell>
-        {days.map((day, index) => (
-          <TableCell key={index}>
-            {day.unpaidParentalLeaveHours > 0.0
-              ? day.unpaidParentalLeaveHours
-              : ""}
-          </TableCell>
-        ))}
+        {days.map((day) => {
+          const dayKey = `${personId}-unpaid-parental-${day.sickHours}-${day.holidayHours}-${day.paidParentalLeaveHours}-${day.unpaidParentalLeaveHours}`;
+          return (
+            <TableCell key={dayKey}>
+              {day.unpaidParentalLeaveHours > 0.0
+                ? day.unpaidParentalLeaveHours
+                : ''}
+            </TableCell>
+          );
+        })}
       </TableRow>
     </Root>
   );

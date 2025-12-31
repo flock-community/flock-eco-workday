@@ -1,15 +1,14 @@
-import React from "react";
-import { FormControl } from "@mui/material";
-import Grid from "@mui/material/Grid";
-import { Field, Form, Formik } from "formik";
-import { CheckboxWithLabel, TextField as FormikTextField } from "formik-mui";
-import { PERSON_FORM_SCHEMA } from "./schema";
-import { UserSelectorField } from "../../components/fields/UserSelectorField";
-import { DatePickerField } from "../../components/fields/DatePickerField";
-import { ShoeSizeSelectorField } from "../../components/fields/ShoeSizeSelectorField";
-import { ShirtSizeSelectorField } from "../../components/fields/ShirtSizeSelectorField";
+import { FormControl } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import { Field, Form, Formik } from 'formik';
+import { CheckboxWithLabel, TextField as FormikTextField } from 'formik-mui';
+import { DatePickerField } from '../../components/fields/DatePickerField';
+import { ShirtSizeSelectorField } from '../../components/fields/ShirtSizeSelectorField';
+import { ShoeSizeSelectorField } from '../../components/fields/ShoeSizeSelectorField';
+import { UserSelectorField } from '../../components/fields/UserSelectorField';
+import { PERSON_FORM_SCHEMA } from './schema';
 
-export const PERSON_FORM_ID = "person-form";
+export const PERSON_FORM_ID = 'person-form';
 
 type PersonFormProps = {
   item: any;
@@ -107,7 +106,7 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
             <Field
               name="reminders"
               type="checkbox"
-              Label={{ label: "Reminders" }}
+              Label={{ label: 'Reminders' }}
               component={CheckboxWithLabel}
             />
           </FormControl>
@@ -117,7 +116,7 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
             <Field
               name="receiveEmail"
               type="checkbox"
-              Label={{ label: "Receive system emails" }}
+              Label={{ label: 'Receive system emails' }}
               component={CheckboxWithLabel}
             />
           </FormControl>
@@ -127,7 +126,7 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
             <Field
               name="active"
               type="checkbox"
-              Label={{ label: "Active" }}
+              Label={{ label: 'Active' }}
               component={CheckboxWithLabel}
             />
           </FormControl>

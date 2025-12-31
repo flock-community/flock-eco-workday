@@ -1,52 +1,51 @@
-import Button from "@mui/material/Button";
-import { styled } from "@mui/material/styles";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import { Theme } from "@mui/material/styles";
-import React, { useState } from "react";
-import clsx from "clsx";
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { styled } from '@mui/material/styles';
+import clsx from 'clsx';
+import { useState } from 'react';
 import {
   canChangeStatus,
   filterTransitionsFromByStatus,
-} from "./StatusMethods";
+} from './StatusMethods';
 
-const PREFIX = "StatusMenu";
+const PREFIX = 'StatusMenu';
 
 const classes = {
-  buttonRequested: `${PREFIX}-buttonRequested`,
-  buttonApproved: `${PREFIX}-buttonApproved`,
-  buttonRejected: `${PREFIX}-buttonRejected`,
-  buttonDone: `${PREFIX}-buttonDone`,
+  buttonRequested: `${PREFIX}ButtonRequested`,
+  buttonApproved: `${PREFIX}ButtonApproved`,
+  buttonRejected: `${PREFIX}ButtonRejected`,
+  buttonDone: `${PREFIX}ButtonDone`,
 };
 
-const Root = styled("div")(({ theme }) => ({
+const Root = styled('div')(({ theme }) => ({
   [`& .${classes.buttonRequested}`]: {
-    backgroundColor: "unset",
-    "&:disabled": {
-      backgroundColor: "unset",
-      outline: "1px solid",
+    backgroundColor: 'unset',
+    '&:disabled': {
+      backgroundColor: 'unset',
+      outline: '1px solid',
     },
   },
 
   [`& .${classes.buttonApproved}`]: {
     backgroundColor: theme.palette.success[500],
-    "&:disabled": {
+    '&:disabled': {
       backgroundColor: theme.palette.success[500],
     },
   },
 
   [`& .${classes.buttonRejected}`]: {
     backgroundColor: theme.palette.error[500],
-    "&:disabled": {
+    '&:disabled': {
       backgroundColor: theme.palette.error[500],
     },
   },
 
   [`& .${classes.buttonDone}`]: {
-    // @ts-ignore
+    // @ts-expect-error
     backgroundColor: theme.palette.done,
-    "&:disabled": {
-      // @ts-ignore
+    '&:disabled': {
+      // @ts-expect-error
       backgroundColor: theme.palette.done,
     },
   },
@@ -97,7 +96,7 @@ export function StatusMenu({ onChange, disabled, value }: StatusMenuProps) {
   };
 
   return (
-    // @ts-ignore
+    // @ts-expect-error
     <Root className={classes.status}>
       <Button
         aria-haspopup="true"
@@ -105,10 +104,10 @@ export function StatusMenu({ onChange, disabled, value }: StatusMenuProps) {
         disabled={disabled}
         onClick={handleMenuClick}
         className={clsx({
-          [classes.buttonRequested]: value === "REQUESTED",
-          [classes.buttonApproved]: value === "APPROVED",
-          [classes.buttonRejected]: value === "REJECTED",
-          [classes.buttonDone]: value === "DONE",
+          [classes.buttonRequested]: value === 'REQUESTED',
+          [classes.buttonApproved]: value === 'APPROVED',
+          [classes.buttonRejected]: value === 'REJECTED',
+          [classes.buttonDone]: value === 'DONE',
         })}
       >
         {value}

@@ -1,6 +1,6 @@
-import InternalizingClient from "../utils/InternalizingClient";
-import dayjs, { Dayjs } from "dayjs";
-import { ISO_8601_DATE } from "./util/DateFormats";
+import dayjs, { type Dayjs } from 'dayjs';
+import InternalizingClient from '../utils/InternalizingClient';
+import { ISO_8601_DATE } from './util/DateFormats';
 
 export type Person = {
   id: number;
@@ -70,7 +70,7 @@ export type PersonRequest = {
   googleDriveId: string;
 };
 
-const path = "/api/persons";
+const path = '/api/persons';
 
 export const internalize = (json: PersonRaw): Person => ({
   ...json,
@@ -90,6 +90,6 @@ const findAllByFullName = (pageable, search: string | null) =>
 
 export const PersonClient = {
   ...internalizingClient,
-  me: () => internalizingClient.get("me"),
+  me: () => internalizingClient.get('me'),
   findAllByFullName,
 };

@@ -1,4 +1,5 @@
-import React from "react";
+import CreateIcon from '@mui/icons-material/Create';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import {
   Card,
   CardContent,
@@ -8,12 +9,10 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-} from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import CreateIcon from "@mui/icons-material/Create";
-import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import { Person } from "../../clients/PersonClient";
-import { DMY_DATE } from "../../clients/util/DateFormats";
+} from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import type { Person } from '../../clients/PersonClient';
+import { DMY_DATE } from '../../clients/util/DateFormats';
 
 type PersonWidgetProps = {
   person: Person;
@@ -59,18 +58,18 @@ export function PersonWidget({
               <TableRow>
                 <TableCell component="th">Date of birth</TableCell>
                 <TableCell>
-                  {person.birthdate?.format(DMY_DATE) ?? "Unknown"}
+                  {person.birthdate?.format(DMY_DATE) ?? 'Unknown'}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th">Join date</TableCell>
                 <TableCell>
-                  {person.joinDate?.format(DMY_DATE) ?? "Unknown"}
+                  {person.joinDate?.format(DMY_DATE) ?? 'Unknown'}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th">Active</TableCell>
-                <TableCell>{person.active ? "Yes" : "No"}</TableCell>
+                <TableCell>{person.active ? 'Yes' : 'No'}</TableCell>
               </TableRow>
               {person.active ? null : (
                 <TableRow>
@@ -80,19 +79,19 @@ export function PersonWidget({
               )}
               <TableRow>
                 <TableCell component="th">Reminders</TableCell>
-                <TableCell>{person.reminders ? "Yes" : "No"}</TableCell>
+                <TableCell>{person.reminders ? 'Yes' : 'No'}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th">Receive system emails</TableCell>
-                <TableCell>{person.receiveEmail ? "Yes" : "No"}</TableCell>
+                <TableCell>{person.receiveEmail ? 'Yes' : 'No'}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th">Shoe size</TableCell>
-                <TableCell>{person.shoeSize ?? "Unknown"}</TableCell>
+                <TableCell>{person.shoeSize ?? 'Unknown'}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th">Shirt size</TableCell>
-                <TableCell>{person.shirtSize ?? "Unknown"}</TableCell>
+                <TableCell>{person.shirtSize ?? 'Unknown'}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

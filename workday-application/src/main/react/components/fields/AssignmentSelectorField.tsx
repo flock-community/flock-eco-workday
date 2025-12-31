@@ -1,9 +1,8 @@
-import React from "react";
-import { Field } from "formik";
+import { Field } from 'formik';
 import {
   AssignmentSelector,
-  AssignmentSelectorProps,
-} from "../selector/AssignmentSelector";
+  type AssignmentSelectorProps,
+} from '../selector/AssignmentSelector';
 
 type AssignmentSelectorFieldProps = AssignmentSelectorProps & { name: string };
 
@@ -24,7 +23,7 @@ export const AssignmentSelectorField = ({
           onChange={(userCode) => {
             setFieldValue(name, userCode);
           }}
-          // @ts-ignore
+          // @ts-expect-error
           error={touched[name] && errors[name]}
         />
       )}

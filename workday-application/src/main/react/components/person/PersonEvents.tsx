@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Card,
   CardContent,
@@ -7,11 +6,14 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-} from "@mui/material";
-import Typography from "@mui/material/Typography";
-import TableRow from "@mui/material/TableRow";
-import Table from "@mui/material/Table";
-import { PersonEvent, PersonEventType } from "../../clients/PersonEventClient";
+} from '@mui/material';
+import Table from '@mui/material/Table';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import type {
+  PersonEvent,
+  PersonEventType,
+} from '../../clients/PersonEventClient';
 
 type PersonEventsProps = {
   withinNWeeks: number;
@@ -30,10 +32,10 @@ export default function PersonEvents({
 
   const renderEventType = (eventType: PersonEventType) => {
     switch (eventType) {
-      case "BIRTHDAY":
-        return "Birthday";
-      case "JOIN_DAY":
-        return "Join day";
+      case 'BIRTHDAY':
+        return 'Birthday';
+      case 'JOIN_DAY':
+        return 'Join day';
       default:
         throw Error(`Unknown event type: ${eventType}`);
     }
@@ -43,7 +45,7 @@ export default function PersonEvents({
     <TableRow key={index}>
       <TableCell>{personEvent.person.fullName}</TableCell>
       <TableCell>{renderEventType(personEvent.eventType)}</TableCell>
-      <TableCell>{personEvent.eventDate.format("DD-MM-YYYY")}</TableCell>
+      <TableCell>{personEvent.eventDate.format('DD-MM-YYYY')}</TableCell>
     </TableRow>
   );
 

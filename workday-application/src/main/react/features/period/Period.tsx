@@ -1,5 +1,5 @@
-import { addError } from "../../hooks/ErrorHook";
-import { Dayjs } from "dayjs";
+import type { Dayjs } from 'dayjs';
+import { addError } from '../../hooks/ErrorHook';
 
 export type Period = {
   from: Dayjs;
@@ -8,7 +8,7 @@ export type Period = {
 };
 
 function daysBefore(before: Dayjs, after: Dayjs): number {
-  return after.startOf("days").diff(before.startOf("days"), "days");
+  return after.startOf('days').diff(before.startOf('days'), 'days');
 }
 
 function correctDaysLength(period: Period): boolean {
@@ -26,20 +26,20 @@ function initDay(date: Dayjs, hoursPerDay: number): number {
 export function initDays(
   period: Period,
   overwrite: boolean = false,
-  hoursPerDay: number = 8
+  hoursPerDay: number = 8,
 ): number[] {
   if (period.days && !overwrite) {
     if (correctDaysLength(period)) {
       return period.days;
     }
     throw new Error(
-      `The amount of days (with hours) (${period.days.length}) is incorrect in period (${period.from} - ${period.to}).`
+      `The amount of days (with hours) (${period.days.length}) is incorrect in period (${period.from} - ${period.to}).`,
     );
   }
   const length = daysBefore(period.from, period.to) + 1;
   const array = Array(length).fill(0);
   return array.map((_, index) =>
-    initDay(period.from.add(index, "days"), hoursPerDay)
+    initDay(period.from.add(index, 'days'), hoursPerDay),
   );
 }
 
@@ -49,7 +49,7 @@ export function dateInPeriod(period: Period, date: Dayjs): boolean {
 
 export function mutatePeriod(
   value: Period,
-  mutation?: Omit<Period, "days">
+  mutation?: Omit<Period, 'days'>,
 ): Period {
   let period: Period = {
     ...value,
@@ -63,14 +63,14 @@ export function mutatePeriod(
   const newStartDate = (from) => {
     if (!period.days) {
       throw new Error(
-        `Initialize period (${period.from} - ${period.to}) properly before editing.`
+        `Initialize period (${period.from} - ${period.to}) properly before editing.`,
       );
     }
     if (period.from.isAfter(from)) {
       const oldDays = period.days;
       const addedDays = initDays({
         from,
-        to: period.from.add(-1, "days"),
+        to: period.from.add(-1, 'days'),
       });
       const days = addedDays.concat(oldDays);
       setPeriod({ ...period, from, days });
@@ -78,7 +78,7 @@ export function mutatePeriod(
     if (period.from.isBefore(from)) {
       if (daysBefore(from, period.to) < 0) {
         addError(
-          `Please pick a startdate (${from}) earlier than the enddate (${period.to}).`
+          `Please pick a startdate (${from}) earlier than the enddate (${period.to}).`,
         );
       } else {
         const diff = daysBefore(period.from, from);
@@ -91,13 +91,13 @@ export function mutatePeriod(
   const newEndDate = (to) => {
     if (!period.days) {
       throw new Error(
-        `Initialize period (${period.from} - ${period.to}) properly before editing.`
+        `Initialize period (${period.from} - ${period.to}) properly before editing.`,
       );
     }
     if (period.to.isBefore(to)) {
       const oldDays = period.days;
       const addedDays = initDays({
-        from: period.to.add(1, "days"),
+        from: period.to.add(1, 'days'),
         to: to,
         days: undefined,
       });
@@ -107,7 +107,7 @@ export function mutatePeriod(
     if (period.to.isAfter(to)) {
       if (daysBefore(period.from, to) < 0) {
         addError(
-          `Please pick a enddate (${to}) later than the startdate (${period.from}).`
+          `Please pick a enddate (${to}) later than the startdate (${period.from}).`,
         );
       } else {
         const diff = period.days.length - daysBefore(to, period.to);
@@ -159,7 +159,7 @@ export function getDay(period: Period, date: Dayjs): number {
 export function editDay(period: Period, date: Dayjs, day: number): Period {
   if (!dateInPeriod(period, date) || !period.days) {
     throw new Error(
-      `Please edit a date (${date}) within the period (${period.from} - ${period.to})`
+      `Please edit a date (${date}) within the period (${period.from} - ${period.to})`,
     );
   }
   const index = daysBefore(period.from, date);

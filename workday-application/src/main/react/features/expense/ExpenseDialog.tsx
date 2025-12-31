@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { Dialog, Divider } from "@mui/material";
-import WorkIcon from "@mui/icons-material/Work";
-import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogFooter, DialogHeader } from "@workday-core/components/dialog";
+import WorkIcon from '@mui/icons-material/Work';
+import { Dialog, Divider } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
+import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
+import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
+import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
+import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import { useEffect, useState } from 'react';
 import {
-  emptyPersonWithUUID,
   ExpenseClient,
-} from "../../clients/ExpenseClient";
-import { ExpenseFormTravel } from "./ExpenseFormTravel";
-import { ExpenseFormCost } from "./ExpenseFormCost";
-import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
+  emptyPersonWithUUID,
+} from '../../clients/ExpenseClient';
+import { TransitionSlider } from '../../components/transitions/Slide';
 import {
-  CostExpense,
-  Expense,
+  type CostExpense,
+  type Expense,
   ExpenseType,
-  TravelExpense,
-} from "../../models/Expense";
-import { Status } from "../../models/Status";
-import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
+  type TravelExpense,
+} from '../../models/Expense';
+import { Status } from '../../models/Status';
+import { ExpenseFormCost } from './ExpenseFormCost';
+import { ExpenseFormTravel } from './ExpenseFormTravel';
 
 type ExpenseDialogProps = {
   open: boolean;
@@ -55,7 +55,7 @@ export function ExpenseDialog({
         setType(res.expenseType);
       });
     }
-  }, [id, open]);
+  }, [id, expenseType]);
 
   const handleTypeChange = (ev) => {
     setType(ev.target.value);
@@ -112,9 +112,9 @@ export function ExpenseDialog({
     onComplete?.();
   };
 
-  const headline = UserAuthorityUtil.hasAuthority("ExpenseAuthority.ADMIN")
+  const headline = UserAuthorityUtil.hasAuthority('ExpenseAuthority.ADMIN')
     ? `Create expense | ${personFullName}`
-    : "Create expense";
+    : 'Create expense';
   return (
     <>
       <Dialog
@@ -132,9 +132,9 @@ export function ExpenseDialog({
         />
         <DialogBody>
           <Grid container spacing={1}>
-            <UserAuthorityUtil has={"ExpenseAuthority.ADMIN"}>
+            <UserAuthorityUtil has={'ExpenseAuthority.ADMIN'}>
               <Grid size="grow">
-                <Typography variant={"h5"} component={"h2"}>
+                <Typography variant={'h5'} component={'h2'}>
                   {personFullName}
                 </Typography>
               </Grid>

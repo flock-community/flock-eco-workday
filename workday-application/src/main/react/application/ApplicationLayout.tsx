@@ -1,32 +1,32 @@
-import React, { useState } from "react";
-import { styled } from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import MenuItem from "@mui/material/MenuItem";
-import Button from "@mui/material/Button";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import { Link as RouterLink } from "react-router-dom";
-import { Link } from "@mui/material";
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import MenuIcon from '@mui/icons-material/Menu';
+import { Link } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import AppBar from '@mui/material/AppBar';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Snackbar from '@mui/material/Snackbar';
+import { styled } from '@mui/material/styles';
+import Toolbar from '@mui/material/Toolbar';
+import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 // Hooks
-import { useSession } from "../hooks/SessionHook";
+import { useSession } from '../hooks/SessionHook';
 
-const PREFIX = "ApplicationLayout";
+const PREFIX = 'ApplicationLayout';
 
 const classes = {
-  root: `${PREFIX}-root`,
-  grow: `${PREFIX}-grow`,
-  menuButton: `${PREFIX}-menuButton`,
-  navBar: `${PREFIX}-navBar`,
+  root: `${PREFIX}Root`,
+  grow: `${PREFIX}grow`,
+  menuButton: `${PREFIX}menuButton`,
+  navBar: `${PREFIX}NavBar`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")({
+const Root = styled('div')({
   [`& .${classes.root}`]: {
     flexGrow: 1,
   },
@@ -38,7 +38,7 @@ const Root = styled("div")({
     marginRight: 20,
   },
   [`& .${classes.navBar}`]: {
-    position: "sticky",
+    position: 'sticky',
   },
 });
 
@@ -48,7 +48,7 @@ type ApplicationLayoutProps = {
 
 export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
   const handleLogout = () => {
-    window.location.href = "/logout";
+    window.location.href = '/logout';
   };
 
   const { extendSession, sessionExpired } = useSession(handleLogout);
@@ -73,7 +73,7 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
 
   return (
     <Root>
-      <AppBar className={classes.navBar + " full-width"}>
+      <AppBar className={`${classes.navBar} full-width`}>
         <Toolbar>
           <IconButton
             className={classes.menuButton}
@@ -97,7 +97,7 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
 
           <div>
             <IconButton
-              aria-owns={state.anchorEl != null ? "menu-appbar" : undefined}
+              aria-owns={state.anchorEl != null ? 'menu-appbar' : undefined}
               aria-haspopup="true"
               onClick={handleMenu}
               color="inherit"
@@ -109,12 +109,12 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
               id="menu-appbar"
               anchorEl={state.anchorEl}
               anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right',
               }}
               transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right',
               }}
               open={state.anchorEl != null}
               onClose={handleClose}

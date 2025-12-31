@@ -1,10 +1,9 @@
-import React from "react";
-import { WorkDayFeature } from "./WorkDayFeature";
-import PersonLayout from "../../components/layouts/PersonLayout";
+import PersonLayout from '../../components/layouts/PersonLayout';
+import { WorkDayFeature } from './WorkDayFeature';
 
 export default function WorkDayPage() {
   return (
-    <PersonLayout requireAuthority={"WorkDayAuthority.ADMIN"}>
+    <PersonLayout requireAuthority={'WorkDayAuthority.ADMIN'}>
       {(person) => <WorkDayFeature person={person} />}
     </PersonLayout>
   );

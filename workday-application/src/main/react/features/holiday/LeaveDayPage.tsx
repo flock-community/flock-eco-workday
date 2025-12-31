@@ -1,10 +1,9 @@
-import React from "react";
-import { LeaveDayFeature } from "./LeaveDayFeature";
-import PersonLayout from "../../components/layouts/PersonLayout";
+import PersonLayout from '../../components/layouts/PersonLayout';
+import { LeaveDayFeature } from './LeaveDayFeature';
 
 export default function LeaveDayPage() {
   return (
-    <PersonLayout requireAuthority={"LeaveDayAuthority.ADMIN"}>
+    <PersonLayout requireAuthority={'LeaveDayAuthority.ADMIN'}>
       {(person) => <LeaveDayFeature person={person} />}
     </PersonLayout>
   );

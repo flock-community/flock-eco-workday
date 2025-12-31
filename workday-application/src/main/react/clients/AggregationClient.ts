@@ -1,14 +1,14 @@
-import { checkResponse, validateResponse } from "@workday-core";
-import { Dayjs } from "dayjs";
-import { ISO_8601_DATE } from "./util/DateFormats";
-import {
+import { checkResponse, validateResponse } from '@workday-core';
+import type { Dayjs } from 'dayjs';
+import type {
   AggregationClientPersonAssignmentOverview,
   AggregationClientPersonOverview,
-  PersonHackdayDetails as PersonHackdayDetailsApi,
   AggregationHackDay as AggregationHackDayApi,
-} from "../wirespec/Models";
+  PersonHackdayDetails as PersonHackdayDetailsApi,
+} from '../wirespec/Models';
+import { ISO_8601_DATE } from './util/DateFormats';
 
-const path = "/api/aggregations";
+const path = '/api/aggregations';
 
 export type ClientGrossRevenue = {
   name: string;
@@ -16,10 +16,10 @@ export type ClientGrossRevenue = {
 };
 
 export const totalPerClientByYear = (
-  year: number
+  year: number,
 ): Promise<ClientGrossRevenue[]> => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`${path}/total-per-client?year=${year}`, opts)
     .then((res) => validateResponse<ClientGrossRevenue[]>(res))
@@ -28,7 +28,7 @@ export const totalPerClientByYear = (
 };
 export const totalPerPersonByYear = (year) => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`${path}/total-per-person?year=${year}`, opts)
     .then(validateResponse<any[]>)
@@ -37,7 +37,7 @@ export const totalPerPersonByYear = (year) => {
 };
 export const totalPerPersonByYearMonth = (year, month) => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`${path}/total-per-person?year=${year}&month=${month}`, opts)
     .then(validateResponse)
@@ -46,10 +46,10 @@ export const totalPerPersonByYearMonth = (year, month) => {
 };
 export const clientHourOverviewByYearMonth: (
   year: number,
-  month: number
-) => Promise<void | AggregationClientPersonOverview[]> = (year, month) => {
+  month: number,
+) => Promise<undefined | AggregationClientPersonOverview[]> = (year, month) => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`${path}/client-hour-overview?year=${year}&month=${month}`, opts)
     .then((res) => validateResponse<AggregationClientPersonOverview[]>(res))
@@ -59,7 +59,7 @@ export const clientHourOverviewByYearMonth: (
 
 export const totalPerPersonMe = () => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`${path}/total-per-person-me`, opts)
     .then(validateResponse)
@@ -102,7 +102,7 @@ export type PersonHolidayDetails = {
 };
 
 const internalizePersonHackdayDetails: (
-  api: PersonHackdayDetailsApi
+  api: PersonHackdayDetailsApi,
 ) => PersonHackdayDetails = (api) => ({
   name: api.name,
   hackHoursFromContract: api.hackHoursFromContract,
@@ -112,7 +112,7 @@ const internalizePersonHackdayDetails: (
 
 export const holidayDetailsMeYear = (year): Promise<PersonHolidayDetails> => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`${path}/holiday-details-me?year=${year}`, opts)
     .then((res) => validateResponse<PersonHolidayDetails>(res))
@@ -122,7 +122,7 @@ export const holidayDetailsMeYear = (year): Promise<PersonHolidayDetails> => {
 
 export const hackdayDetailsMeYear = (year): Promise<PersonHackdayDetails> => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`${path}/hackday-details-me?year=${year}`, opts)
     .then((res) => validateResponse<PersonHackdayDetailsApi>(res))
@@ -132,7 +132,7 @@ export const hackdayDetailsMeYear = (year): Promise<PersonHackdayDetails> => {
 
 export const totalPerMonthByYear = (year) => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`${path}/total-per-month?year=${year}`, opts)
     .then(validateResponse)
@@ -142,7 +142,7 @@ export const totalPerMonthByYear = (year) => {
 
 export const leaveDayReportByYear = (year): Promise<AggregationLeaveDay[]> => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`${path}/leave-day-report?year=${year}`, opts)
     .then((res) => validateResponse<AggregationLeaveDay[]>(res))
@@ -152,7 +152,7 @@ export const leaveDayReportByYear = (year): Promise<AggregationLeaveDay[]> => {
 
 export const hackDayReportByYear = (year): Promise<AggregationHackDay[]> => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`${path}/hack-day-report?year=${year}`, opts)
     .then((res) => validateResponse<AggregationHackDayApi[]>(res))
@@ -162,19 +162,19 @@ export const hackDayReportByYear = (year): Promise<AggregationHackDay[]> => {
 
 const clientAssignmentPersonBetween = (
   from: Dayjs,
-  to: Dayjs
+  to: Dayjs,
 ): Promise<AggregationClientPersonAssignmentOverview[]> => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(
     `${path}/client-assignment-hour-overview?from=${from.format(
-      ISO_8601_DATE
+      ISO_8601_DATE,
     )}&to=${to.format(ISO_8601_DATE)}`,
-    opts
+    opts,
   )
     .then((res) =>
-      validateResponse<AggregationClientPersonAssignmentOverview[]>(res)
+      validateResponse<AggregationClientPersonAssignmentOverview[]>(res),
     )
     .then(checkResponse)
     .then((res) => res.body);

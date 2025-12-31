@@ -1,26 +1,25 @@
-import MenuItem from "@mui/material/MenuItem";
-import React from "react";
-import Select from "@mui/material/Select";
+import { InputLabel } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import {
   allStatusTransitions,
   canChangeStatus,
   filterTransitionsFromByStatus,
-} from "./StatusMethods";
-import FormControl from "@mui/material/FormControl";
-import { InputLabel } from "@mui/material";
+} from './StatusMethods';
 
 const statusTransitions = [
-  { from: "REQUESTED", to: "REQUESTED" },
-  { from: "APPROVED", to: "APPROVED" },
-  { from: "REJECTED", to: "REJECTED" },
-  { from: "DONE", to: "DONE" },
+  { from: 'REQUESTED', to: 'REQUESTED' },
+  { from: 'APPROVED', to: 'APPROVED' },
+  { from: 'REJECTED', to: 'REJECTED' },
+  { from: 'DONE', to: 'DONE' },
   ...allStatusTransitions,
 ];
 
 export function StatusSelect({ onChange, value }) {
   const currentStateOptions = filterTransitionsFromByStatus(
     value,
-    statusTransitions
+    statusTransitions,
   );
 
   const renderMenuItem = (item) => {

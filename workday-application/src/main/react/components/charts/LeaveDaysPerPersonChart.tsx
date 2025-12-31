@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import { useEffect, useState } from 'react';
 import {
   Bar,
   BarChart,
@@ -8,12 +9,11 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
+} from 'recharts';
 import {
   AggregationClient,
-  AggregationLeaveDay,
-} from "../../clients/AggregationClient";
+  type AggregationLeaveDay,
+} from '../../clients/AggregationClient';
 
 type LeaveDaysPerPersonChartProps = {
   year?: number;
@@ -35,16 +35,16 @@ export function LeaveDaysPerPersonChart({
                 it.contractHours > 0 ||
                 it.holidayHours > 0 ||
                 it.plusHours > 0 ||
-                it.paidLeaveHours > 0
+                it.paidLeaveHours > 0,
             )
             .map((it) => ({
               ...it,
               availableHours: Math.max(
                 it.contractHours + it.plusHours - it.holidayHours,
-                0
+                0,
               ),
-            }))
-        )
+            })),
+        ),
     );
   }, [year]);
 
@@ -60,8 +60,8 @@ export function LeaveDaysPerPersonChart({
         <YAxis type="category" dataKey="name" width={150} />
         <Tooltip
           formatter={(value) =>
-            typeof value === "number"
-              ? new Intl.NumberFormat("en").format(value)
+            typeof value === 'number'
+              ? new Intl.NumberFormat('en').format(value)
               : value
           }
         />

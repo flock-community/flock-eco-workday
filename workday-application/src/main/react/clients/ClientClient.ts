@@ -1,4 +1,4 @@
-import NonInternalizingClient from "../utils/NonInternalizingClient";
+import NonInternalizingClient from '../utils/NonInternalizingClient';
 
 export type Client = {
   id: number;
@@ -12,10 +12,10 @@ export type ClientRequest = {
   name: string;
 };
 
-const path = "/api/clients";
+const path = '/api/clients';
 
 const nonInternalizingClient = NonInternalizingClient<ClientRequest, Client>(
-  path
+  path,
 );
 
 export const ClientClient = {

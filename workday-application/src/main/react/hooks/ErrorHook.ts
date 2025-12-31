@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 let errorStore: ErrorMessage[] = [];
 const listeners: Listener[] = [];
@@ -18,18 +18,22 @@ type ErrorMessage = {
 
 export function addError(error: Error | string): void {
   const errorLogObject = {
-    message: typeof error == "string" ? error : error.message,
+    message: typeof error === 'string' ? error : error.message,
     time: Date.now(),
     open: true,
   };
   errorStore = [...errorStore, errorLogObject];
-  listeners.forEach((func) => func(errorStore));
+  listeners.forEach((func) => {
+    func(errorStore);
+  });
   setTimeout(() => {
     errorLogObject.open = false;
     errorStore = errorStore.map((it) =>
-      it === errorLogObject ? errorLogObject : it
+      it === errorLogObject ? errorLogObject : it,
     );
-    listeners.forEach((func) => func(errorStore));
+    listeners.forEach((func) => {
+      func(errorStore);
+    });
   }, ErrorOpenTimeMilliSeconds);
 }
 

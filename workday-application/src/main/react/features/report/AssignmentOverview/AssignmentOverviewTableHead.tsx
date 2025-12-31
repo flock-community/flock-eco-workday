@@ -1,22 +1,21 @@
-import { TableCell, TableHead, TableRow } from "@mui/material";
-import React from "react";
+import { TableCell, TableHead, TableRow } from '@mui/material';
 
 const headcells = [
   {
-    id: "person",
-    label: "person".toUpperCase(),
+    id: 'person',
+    label: 'person'.toUpperCase(),
   },
   {
-    id: "client",
-    label: "client".toUpperCase(),
+    id: 'client',
+    label: 'client'.toUpperCase(),
   },
   {
-    id: "from",
-    label: "from".toUpperCase(),
+    id: 'from',
+    label: 'from'.toUpperCase(),
   },
   {
-    id: "to",
-    label: "to".toUpperCase(),
+    id: 'to',
+    label: 'to'.toUpperCase(),
   },
 ];
 

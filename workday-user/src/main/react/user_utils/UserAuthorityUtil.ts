@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 type UserAuthorityUtilProps = {
   has: string;
@@ -23,7 +23,7 @@ class UserAuthorityUtil extends React.Component<
     }
 
     return authority
-      .split(",")
+      .split(',')
       .map((it) => UserAuthorityUtil.authorities.includes(it))
       .reduce((acc, cur) => (acc ? acc : cur), false);
   }

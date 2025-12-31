@@ -1,9 +1,9 @@
-import { Client } from "./ClientClient";
-import { Person } from "./PersonClient";
-import { Project } from "./ProjectClient";
-import InternalizingClient from "../utils/InternalizingClient";
-import dayjs, { Dayjs } from "dayjs";
-import { ISO_8601_DATE } from "./util/DateFormats";
+import dayjs, { type Dayjs } from 'dayjs';
+import InternalizingClient from '../utils/InternalizingClient';
+import type { Client } from './ClientClient';
+import type { Person } from './PersonClient';
+import type { Project } from './ProjectClient';
+import { ISO_8601_DATE } from './util/DateFormats';
 
 // The type we use in the frontend
 export type Assignment = {
@@ -56,7 +56,7 @@ export type AssignmentRequest = {
   projectCode?: string;
 };
 
-const path = "/api/assignments";
+const path = '/api/assignments';
 
 const internalize = (it: AssignmentRaw): Assignment => ({
   ...it,
@@ -74,12 +74,12 @@ export const ASSIGNMENT_PAGE_SIZE = 5;
 
 const findAllByPersonId: (
   personId: string,
-  page: number | "all"
+  page: number | 'all',
 ) => Promise<{
   list: Assignment[];
   count: number;
-}> = (personId: string, page: number | "all") => {
-  if (page === "all") {
+}> = (personId: string, page: number | 'all') => {
+  if (page === 'all') {
     return findAllByPersonIdUnpaged(personId);
   }
 
@@ -87,11 +87,11 @@ const findAllByPersonId: (
     {
       page,
       size: ASSIGNMENT_PAGE_SIZE,
-      sort: "from,desc",
+      sort: 'from,desc',
     },
     {
       personId: personId,
-    }
+    },
   );
 };
 
@@ -105,16 +105,16 @@ const findAllByProject = (project: Project) =>
 
 const findAllByToAfterOrToNull = (
   to: Date,
-  pageable: { size: number; page: number; sort: string }
+  pageable: { size: number; page: number; sort: string },
 ) => {
-  const toString = to.toISOString().substring(0, 10);
+  const dateString = to.toISOString().substring(0, 10);
   return internalizingClient.queryByPage(
     {
       page: pageable.page,
       size: pageable.size,
       sort: pageable.sort,
     },
-    { to: toString }
+    { to: dateString },
   );
 };
 

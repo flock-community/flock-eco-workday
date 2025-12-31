@@ -1,31 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
-import { Dialog, DialogTitle } from "@mui/material";
-import DialogContent from "@mui/material/DialogContent";
-import Button from "@mui/material/Button";
-import DialogActions from "@mui/material/DialogActions";
-import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@mui/material/Typography";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import Grid from "@mui/material/Grid";
-import { ContractClient } from "../../clients/ContractClient";
-import { isDefined } from "../../utils/validation";
-import { ContractFormInternal } from "./ContractFormInternal";
-import { ContractFormExternal } from "./ContractFormExternal";
-import { usePerson } from "../../hooks/PersonHook";
-import { ContractFormManagement } from "./ContractFormManagement";
-import { ContractFormService } from "./ContractFormService";
-import { ContractType } from "./ContractType";
-import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
+import { Dialog, DialogTitle } from '@mui/material';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
+import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
+import { useEffect, useState } from 'react';
+import { ContractClient } from '../../clients/ContractClient';
+import { ISO_8601_DATE } from '../../clients/util/DateFormats';
+import { usePerson } from '../../hooks/PersonHook';
+import { isDefined } from '../../utils/validation';
+import { ContractFormExternal } from './ContractFormExternal';
+import { ContractFormInternal } from './ContractFormInternal';
+import { ContractFormManagement } from './ContractFormManagement';
+import { ContractFormService } from './ContractFormService';
+import { ContractType } from './ContractType';
 
-const PREFIX = "ContractDialog";
-const classes = {};
+const _PREFIX = 'ContractDialog';
+const _classes = {};
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")({});
+const Root = styled('div')({});
 
 type ContractDialogProps = {
   open: boolean;
@@ -36,7 +35,7 @@ type ContractDialogProps = {
 export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
   // TODO: remove styles if not used and remove eslint-disable
 
-  const [type, setType] = useState("INTERNAL");
+  const [type, setType] = useState('INTERNAL');
   const [state, setState] = useState<any | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -44,26 +43,26 @@ export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
 
   useEffect(() => {
     setState(null);
-    setType("INTERNAL");
+    setType('INTERNAL');
     if (code) {
       ContractClient.get(code).then((res) => {
         setState(res);
         setType(res.type);
       });
     }
-  }, [code, open]);
+  }, [code]);
 
   const handleSubmit = (it) => {
     const body = {
       ...it,
       from: it.from.format(ISO_8601_DATE),
-      to: it.to && it.to.format(ISO_8601_DATE),
-      personId: person && person.uuid,
+      to: it.to?.format(ISO_8601_DATE),
+      personId: person?.uuid,
     };
     if (code) {
-      ContractClient.put(code, type, body).then(() => onClose && onClose());
+      ContractClient.put(code, type, body).then(() => onClose?.());
     } else {
-      ContractClient.post(type, body).then(() => onClose && onClose());
+      ContractClient.post(type, body).then(() => onClose?.());
     }
   };
 
@@ -139,7 +138,7 @@ export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
       >
         <Typography>
           Are you sure you would like to delete contract: &apos;
-          {state && state.code}
+          {state?.code}
           &apos;
         </Typography>
       </ConfirmDialog>

@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
   FormControl,
-  FormControlProps,
+  type FormControlProps,
   InputLabel,
   MenuItem,
   Select,
-} from "@mui/material";
-import FormHelperText from "@mui/material/FormHelperText";
-import { Client, ClientClient } from "../../clients/ClientClient";
+} from '@mui/material';
+import FormHelperText from '@mui/material/FormHelperText';
+import { useEffect, useState } from 'react';
+import { type Client, ClientClient } from '../../clients/ClientClient';
 
 type ClientSelectorProps = FormControlProps & {
   value?: string;
@@ -21,10 +21,10 @@ type ClientSelectorProps = FormControlProps & {
 };
 
 export function ClientSelector({
-  value = "",
+  value = '',
   onChange,
   embedded,
-  label = "Select Client",
+  label = 'Select Client',
   error,
   ...props
 }: ClientSelectorProps) {
@@ -32,8 +32,8 @@ export function ClientSelector({
   const [state, setState] = useState(value);
 
   useEffect(() => {
-    ClientClient.findAllByPage({ page: 0, size: 100, sort: "name,asc" }).then(
-      (res) => setItems(res.list)
+    ClientClient.findAllByPage({ page: 0, size: 100, sort: 'name,asc' }).then(
+      (res) => setItems(res.list),
     );
   }, []);
 
@@ -45,7 +45,7 @@ export function ClientSelector({
     // eslint-disable-next-line no-shadow
     const selected = event.target.value;
     setState(selected);
-    onChange(selected === "" ? null : selected);
+    onChange(selected === '' ? null : selected);
   }
 
   function renderMenuItem(item, key) {
@@ -61,7 +61,7 @@ export function ClientSelector({
       <InputLabel shrink>{label}</InputLabel>
       <Select
         label={label}
-        value={state || ""}
+        value={state || ''}
         displayEmpty={true}
         onChange={handleChange}
       >

@@ -1,9 +1,9 @@
-import { Person, PersonLight } from "./PersonClient";
-import InternalizingClient from "../utils/InternalizingClient";
-import { checkResponse, validateResponse } from "@workday-core";
-import dayjs, { Dayjs } from "dayjs";
+import { checkResponse, validateResponse } from '@workday-core';
+import dayjs, { type Dayjs } from 'dayjs';
+import InternalizingClient from '../utils/InternalizingClient';
+import type { Person, PersonLight } from './PersonClient';
 
-const path = "/api/events";
+const path = '/api/events';
 
 // Type name is prefixed to prevent conflicts with
 // the react Event
@@ -67,10 +67,10 @@ export type FlockEventRequest = {
 };
 
 export enum EventType {
-  CONFERENCE = "CONFERENCE",
-  FLOCK_COMMUNITY_DAY = "FLOCK_COMMUNITY_DAY",
-  FLOCK_HACK_DAY = "FLOCK_HACK_DAY",
-  GENERAL_EVENT = "GENERAL_EVENT",
+  CONFERENCE = 'CONFERENCE',
+  FLOCK_COMMUNITY_DAY = 'FLOCK_COMMUNITY_DAY',
+  FLOCK_HACK_DAY = 'FLOCK_HACK_DAY',
+  GENERAL_EVENT = 'GENERAL_EVENT',
 }
 
 const internalize = (it: FlockEventRaw): FlockEvent => ({
@@ -108,14 +108,14 @@ const getAll = (page: number, pageSize = EVENT_PAGE_SIZE) => {
   return internalizingClient.findAllByPage({
     page,
     size: pageSize,
-    sort: "from,desc",
+    sort: 'from,desc',
   });
 };
 
 // TODO: Rating type
 const getRatings = (id) => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`${path}/${id}/ratings`, opts)
     .then(validateResponse)
@@ -125,9 +125,9 @@ const getRatings = (id) => {
 
 const postRatings = (eventCode, item) => {
   const opts = {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(item),
   };
@@ -139,7 +139,7 @@ const postRatings = (eventCode, item) => {
 
 const deleteRatings = (eventCode, personId) => {
   const opts = {
-    method: "DELETE",
+    method: 'DELETE',
   };
   return fetch(`${path}/${eventCode}/ratings/${personId}`, opts)
     .then(validateResponse)
@@ -149,7 +149,7 @@ const deleteRatings = (eventCode, personId) => {
 
 const getHackDays = (year: number): Promise<FlockEvent[]> => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`${path}/hack-days?year=${year}`, opts)
     .then((it) => validateResponse<FlockEventRawProjection[]>(it))
@@ -159,9 +159,9 @@ const getHackDays = (year: number): Promise<FlockEvent[]> => {
 
 const subscribeToEvent = (event: FlockEvent) => {
   const opts = {
-    method: "PUT",
+    method: 'PUT',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   };
   return fetch(`${path}/${event.code}/subscribe`, opts)
@@ -172,9 +172,9 @@ const subscribeToEvent = (event: FlockEvent) => {
 
 const unsubscribeFromEvent = (event: FlockEvent) => {
   const opts = {
-    method: "PUT",
+    method: 'PUT',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   };
   return fetch(`${path}/${event.code}/unsubscribe`, opts)

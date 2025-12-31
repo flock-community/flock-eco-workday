@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
-
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableFooter from "@mui/material/TableFooter";
-import TableRow from "@mui/material/TableRow";
-import TablePagination from "@mui/material/TablePagination";
-import UserClient from "./UserClient";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableFooter from '@mui/material/TableFooter';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import { useEffect, useState } from 'react';
+import UserClient from './UserClient';
 
 type UserTableProps = {
   search?: string;
@@ -22,7 +21,7 @@ export function UserTable({
   reload,
   onRowClick,
   onChangePage,
-}: UserTableProps) {
+}: Readonly<UserTableProps>) {
   const [state, setState] = useState({
     page: 0,
     count: 0,
@@ -30,14 +29,16 @@ export function UserTable({
   });
 
   useEffect(() => {
-    UserClient.findAllUsers(search || "", state.page, size || 10).then(
+    UserClient.findAllUsers(search || '', state.page, size || 10).then(
       (res) => {
         setState({ ...state, ...res });
-      }
+      },
     );
-  }, [reload, search, size, state.page]);
 
-  const handleChangePage = (event, page) => {
+    reload; // added to force re-render
+  }, [reload, search, size, state]);
+
+  const handleChangePage = (_event, page) => {
     setState({ ...state, page });
     onChangePage?.(page);
   };

@@ -1,5 +1,5 @@
-import dayjs from "dayjs";
-import InternalizingClient from "../utils/InternalizingClient";
+import dayjs from 'dayjs';
+import InternalizingClient from '../utils/InternalizingClient';
 
 export const WORK_DAY_PAGE_SIZE = 5;
 
@@ -10,7 +10,7 @@ const internalize = (it) => ({
   days: it.days && it.days.length === 0 ? null : it.days,
 });
 
-const path = "/api/workdays";
+const path = '/api/workdays';
 const resourceClient = InternalizingClient(path, internalize);
 
 const findAllByPersonUuid = (personId, page) =>
@@ -18,11 +18,11 @@ const findAllByPersonUuid = (personId, page) =>
     {
       page,
       size: WORK_DAY_PAGE_SIZE,
-      sort: "from,desc",
+      sort: 'from,desc',
     },
     {
       personId,
-    }
+    },
   );
 
 export const WorkDayClient = {

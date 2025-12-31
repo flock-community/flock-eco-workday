@@ -1,22 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
-import { FlockEvent } from "../../clients/EventClient";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import { DMY_DATE } from "../../clients/util/DateFormats";
-import { FormGroup } from "@mui/material";
-import Switch from "@mui/material/Switch";
-import { isPersonAttending } from "../../utils/EventUtils";
-import { usePerson } from "../../hooks/PersonHook";
-const PREFIX = "EventListItem";
+import { FormGroup } from '@mui/material';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Switch from '@mui/material/Switch';
+import { styled } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
+import type { FlockEvent } from '../../clients/EventClient';
+import { DMY_DATE } from '../../clients/util/DateFormats';
+import { usePerson } from '../../hooks/PersonHook';
+import { isPersonAttending } from '../../utils/EventUtils';
+
+const PREFIX = 'EventListItem';
 
 const classes = {
-  active: `${PREFIX}-active`,
+  active: `${PREFIX}Active`,
 };
 
 const StyledListItem = styled(ListItem)(() => ({
   [`& .${classes.active}`]: {
-    backgroundColor: "rgba(252, 222, 0, .1);",
+    backgroundColor: 'rgba(252, 222, 0, .1);',
   },
 }));
 
@@ -30,22 +31,15 @@ export function EventListItem({
   onEventToggle,
 }: FlockEventListItemProps) {
   const [person] = usePerson();
-  const [dateString, setDateString] = useState<string>("");
+  const [dateString, setDateString] = useState<string>('');
   const [btnState, setBtnState] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (event) {
-      initDateString();
-      initButtonState();
-    }
-  }, [event]);
-
   const initDateString = (): void => {
-    if (event.from.isSame(event.to, "day")) {
+    if (event.from.isSame(event.to, 'day')) {
       setDateString(`date: ${event.from.format(DMY_DATE)}`);
     } else {
       setDateString(
-        `from: ${event.from.format(DMY_DATE)} to: ${event.to.format(DMY_DATE)}`
+        `from: ${event.from.format(DMY_DATE)} to: ${event.to.format(DMY_DATE)}`,
       );
     }
   };
@@ -56,18 +50,25 @@ export function EventListItem({
     }
   };
 
+  useEffect(() => {
+    if (event) {
+      initDateString();
+      initButtonState();
+    }
+  }, [event, initButtonState, initDateString]);
+
   const handleChange = () => {
     setBtnState(!btnState);
     onEventToggle(event, !btnState);
   };
 
   const getClasses = (): string => {
-    return btnState ? classes.active : "";
+    return btnState ? classes.active : '';
   };
 
   return (
     <StyledListItem
-      data-testid={"flock-event-list-item"}
+      data-testid={'flock-event-list-item'}
       className={getClasses()}
     >
       <ListItemText primary={event.description} secondary={dateString} />

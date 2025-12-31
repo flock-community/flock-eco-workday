@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Typography } from "@mui/material";
-import { FlockEvent } from "../../clients/EventClient";
-import { FlockPagination } from "../pagination/FlockPagination";
-import dayjs from "dayjs";
-import { EventList } from "./EventList";
+import { Typography } from '@mui/material';
+import dayjs from 'dayjs';
+import { useState } from 'react';
+import type { FlockEvent } from '../../clients/EventClient';
+import { FlockPagination } from '../pagination/FlockPagination';
+import { EventList } from './EventList';
 
 type UpcomingEventsCardProps = {
   items: FlockEvent[];
@@ -15,7 +15,7 @@ const rowsPerPage = 4;
 const getFirstUpcomingEventPage = (items: FlockEvent[]) => {
   const today = dayjs();
   const closestEventIndex = items.findIndex((event) =>
-    event.from.isAfter(today, "day")
+    event.from.isAfter(today, 'day'),
   );
   return closestEventIndex === -1
     ? 0
@@ -31,7 +31,7 @@ export function HackDayList({ items, onEventToggle }: UpcomingEventsCardProps) {
       <EventList
         events={items.slice(
           page * rowsPerPage,
-          page * rowsPerPage + rowsPerPage
+          page * rowsPerPage + rowsPerPage,
         )}
         onEventToggle={onEventToggle}
       />

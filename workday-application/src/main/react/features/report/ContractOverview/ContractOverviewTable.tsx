@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
-import { TableBody, TableContainer, TablePagination } from "@mui/material";
-import Table from "@mui/material/Table";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import { Contract, ContractClient } from "../../../clients/ContractClient";
-import { ContractOverviewTableHead } from "./ContractOverviewTableHead";
-import { DMY_DATE } from "../../../clients/util/DateFormats";
-import dayjs from "dayjs";
+import { TableBody, TableContainer, TablePagination } from '@mui/material';
+import Table from '@mui/material/Table';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import dayjs from 'dayjs';
+import { useEffect, useRef, useState } from 'react';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import { type Contract, ContractClient } from '../../../clients/ContractClient';
+import { DMY_DATE } from '../../../clients/util/DateFormats';
+import { ContractOverviewTableHead } from './ContractOverviewTableHead';
 
 export default function ContractReportTable() {
   const { url } = useRouteMatch();
@@ -15,27 +15,27 @@ export default function ContractReportTable() {
   const [size, setSize] = useState(-1);
   const [rowCount, setRowCount] = useState(-1);
   const [contractList, setContractList] = useState<Contract[]>([]);
-  const [reload, setReload] = useState(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [_reload, _setReload] = useState(false);
+  const [_searchTerm, _setSearchTerm] = useState<string>('');
+  const _searchInputRef = useRef<HTMLInputElement>(null);
   const history = useHistory();
 
   useEffect(() => {
     ContractClient.findAllByToAfterOrToNull(dayjs().toDate(), {
       page: page,
       size: size,
-      sort: ["person.firstname", "from"],
+      sort: ['person.firstname', 'from'],
     }).then((res) => {
       setContractList(res.list);
       setRowCount(res.count);
     });
-  }, [reload, page, size, searchTerm]);
+  }, [page, size]);
 
   const handleClick = (contract: Contract) => {
     history.push(`${url}/code/${contract.code}`);
   };
 
-  const handlePageChange = (event, newPage) => {
+  const handlePageChange = (_event, newPage) => {
     setPage(newPage);
   };
 
@@ -50,9 +50,13 @@ export default function ContractReportTable() {
       <Table>
         <ContractOverviewTableHead />
         <TableBody>
-          {contractList.map((contract, idx) => {
+          {contractList.map((contract) => {
             return (
-              <TableRow key={idx} hover onClick={() => handleClick(contract)}>
+              <TableRow
+                key={contract.person.fullName}
+                hover
+                onClick={() => handleClick(contract)}
+              >
                 <TableCell>{contract.person.fullName}</TableCell>
                 <TableCell>{contract.from.format(DMY_DATE)}</TableCell>
                 <TableCell>{contract.to?.format(DMY_DATE)}</TableCell>
@@ -63,7 +67,7 @@ export default function ContractReportTable() {
         </TableBody>
       </Table>
       <TablePagination
-        rowsPerPageOptions={[10, 20, 50, { value: -1, label: "All" }]}
+        rowsPerPageOptions={[10, 20, 50, { value: -1, label: 'All' }]}
         component="div"
         count={rowCount}
         rowsPerPage={size}

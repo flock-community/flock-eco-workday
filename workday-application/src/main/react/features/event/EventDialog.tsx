@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, Divider } from "@mui/material";
-import EventIcon from "@mui/icons-material/CalendarToday";
-import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
-import { EventClient, FlockEventRequest } from "../../clients/EventClient";
-import { TransitionSlider } from "../../components/transitions/Slide";
-import { EVENT_FORM_ID, EventForm } from "./EventForm";
-import { schema } from "../workday/WorkDayForm";
-import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import { DialogFooter, DialogHeader } from "@workday-core/components/dialog";
-import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
+import EventIcon from '@mui/icons-material/CalendarToday';
+import { Dialog, Divider } from '@mui/material';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
+import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
+import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
+import { useEffect, useState } from 'react';
+import { EventClient, type FlockEventRequest } from '../../clients/EventClient';
+import { ISO_8601_DATE } from '../../clients/util/DateFormats';
+import { TransitionSlider } from '../../components/transitions/Slide';
+import { schema } from '../workday/WorkDayForm';
+import { EVENT_FORM_ID, EventForm } from './EventForm';
 
 type EventDialogProps = {
   open: boolean;
@@ -102,7 +102,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
               <Grid>
                 <Button
                   variant="contained"
-                  color={"primary"}
+                  color={'primary'}
                   component="a"
                   href={`/event_rating/${code}`}
                 >

@@ -1,46 +1,43 @@
-import React, { useEffect, useState } from "react";
-import { Box, Card, Link, Typography } from "@mui/material";
-import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid";
-import CardHeader from "@mui/material/CardHeader";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import { useHistory } from "react-router-dom";
-import { TodoClient } from "../../clients/TodoClient";
-
+import { Box, Card, Link, Typography } from '@mui/material';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Grid from '@mui/material/Grid';
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { TodoClient } from '../../clients/TodoClient';
+import { FlockPagination } from '../../components/pagination/FlockPagination';
 // Components
-import { StatusMenu } from "../../components/status/StatusMenu";
-import { SimpleTabs } from "../../components/tabs/Tabs";
-import { FlockPagination } from "../../components/pagination/FlockPagination";
-
-// Utils
-import { groupByType } from "../../utils/groupByType";
-import { getPaginatedTabs } from "../../utils/paginationHelpers";
-
+import { StatusMenu } from '../../components/status/StatusMenu';
+import { SimpleTabs } from '../../components/tabs/Tabs';
 // Types
-import { GroupedTodos, StatusProps, TypeProp } from "../../types";
-import { Todo, TodoType } from "../../wirespec/Models";
+import type { GroupedTodos, StatusProps, TypeProp } from '../../types';
+// Utils
+import { groupByType } from '../../utils/groupByType';
+import { getPaginatedTabs } from '../../utils/paginationHelpers';
+import type { Todo, TodoType } from '../../wirespec/Models';
 
 // @todo make this a global PAGE_SIZE constants
 const TODO_PAGE_SIZE = 5;
 
 const typeToPath = (type: TypeProp) => {
   switch (type) {
-    case "WORKDAY":
-      return "workdays";
-    case "SICKDAY":
-      return "sickdays";
-    case "PLUSDAY":
-      return "leave-days";
-    case "HOLIDAY":
-      return "leave-days";
-    case "PAID_PARENTAL_LEAVE":
-      return "leave-days";
-    case "UNPAID_PARENTAL_LEAVE":
-      return "leave-days";
-    case "PAID_LEAVE":
-      return "leave-days";
-    case "EXPENSE":
-      return "expenses";
+    case 'WORKDAY':
+      return 'workdays';
+    case 'SICKDAY':
+      return 'sickdays';
+    case 'PLUSDAY':
+      return 'leave-days';
+    case 'HOLIDAY':
+      return 'leave-days';
+    case 'PAID_PARENTAL_LEAVE':
+      return 'leave-days';
+    case 'UNPAID_PARENTAL_LEAVE':
+      return 'leave-days';
+    case 'PAID_LEAVE':
+      return 'leave-days';
+    case 'EXPENSE':
+      return 'expenses';
     default:
       throw new Error(`Cannot map todo type to path: ${type}`);
   }
@@ -63,7 +60,7 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
   const handlePageChange = (value: number) => {
     setPage(value);
     setPaginatedItems(
-      getPaginatedTabs(list as GroupedTodos[], value, TODO_PAGE_SIZE)
+      getPaginatedTabs(list as GroupedTodos[], value, TODO_PAGE_SIZE),
     );
   };
 
@@ -72,37 +69,37 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
       const groupedTodos = groupByType(res);
       setList(groupedTodos);
     });
-  }, [refresh]);
+  }, []);
 
   useEffect(() => {
     if (!list) return;
     setCount(list[selectedTab].todos.length);
     setPaginatedItems(getPaginatedTabs(list, page, TODO_PAGE_SIZE));
-  }, [list, page]);
+  }, [list, page, selectedTab]);
 
   useEffect(() => {
     setPage(0);
-  }, [selectedTab]);
+  }, []);
 
   const handleStatusChange = (item: Todo) => (status: StatusProps) => {
     onItemClick(status, item);
   };
 
-  const mapTodoType: Record<TodoType, string> = {
-    WORKDAY: "",
-    SICKDAY: "",
-    HOLIDAY: "",
-    PAID_PARENTAL_LEAVE: "",
-    UNPAID_PARENTAL_LEAVE: "",
-    EXPENSE: "",
-    PLUSDAY: "",
-    PAID_LEAVE: "",
+  const _mapTodoType: Record<TodoType, string> = {
+    WORKDAY: '',
+    SICKDAY: '',
+    HOLIDAY: '',
+    PAID_PARENTAL_LEAVE: '',
+    UNPAID_PARENTAL_LEAVE: '',
+    EXPENSE: '',
+    PLUSDAY: '',
+    PAID_LEAVE: '',
   };
   const handleCardClick = (item: Todo) => () => {
     history.push(`/${typeToPath(item.todoType)}?personId=${item.personId}`);
   };
 
-  function renderItem(item: Todo, key: Number) {
+  function renderItem(item: Todo, key: number) {
     return (
       <Grid size={{ xs: 12 }} key={`todo-list-item-${key}`}>
         <Card>

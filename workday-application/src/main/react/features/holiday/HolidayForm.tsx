@@ -1,24 +1,23 @@
-import React from "react";
-import * as Yup from "yup";
-import { Field, Form, Formik } from "formik";
-import Grid from "@mui/material/Grid";
-import { TextField } from "formik-mui";
-import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
-import { DatePickerField } from "../../components/fields/DatePickerField";
-import { PeriodInputField } from "../../components/fields/PeriodInputField";
-import dayjs from "dayjs";
-import { StatusSelect } from "../../components/status/StatusSelect";
-import { LEAVE_DAY_DIALOG_FORM_ID } from "./LeaveDayDialog";
+import Grid from '@mui/material/Grid';
+import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import dayjs from 'dayjs';
+import { Field, Form, Formik } from 'formik';
+import { TextField } from 'formik-mui';
+import * as Yup from 'yup';
+import { DatePickerField } from '../../components/fields/DatePickerField';
+import { PeriodInputField } from '../../components/fields/PeriodInputField';
+import { StatusSelect } from '../../components/status/StatusSelect';
+import { LEAVE_DAY_DIALOG_FORM_ID } from './LeaveDayDialog';
 
-export const HOLIDAY_FORM_ID = "holiday-form-id";
+export const HOLIDAY_FORM_ID = 'holiday-form-id';
 
 const now = dayjs();
 
 export const schemaHoliDayForm = Yup.object().shape({
-  description: Yup.string().required("Field required").default(""),
-  status: Yup.string().required("Field required").default("REQUESTED"),
-  from: Yup.date().required("From date is required").default(now),
-  to: Yup.date().required("To date is required").default(now),
+  description: Yup.string().required('Field required').default(''),
+  status: Yup.string().required('Field required').default('REQUESTED'),
+  from: Yup.date().required('From date is required').default(now),
+  to: Yup.date().required('To date is required').default(now),
   days: Yup.array().default([8]).nullable(),
 });
 
@@ -38,7 +37,7 @@ export function HolidayForm({ value, onSubmit }: HolidayFormProps) {
 
   const renderForm = ({ values, setFieldValue }) => {
     const handleStatusChange = (newValue) => {
-      setFieldValue("status", newValue);
+      setFieldValue('status', newValue);
     };
 
     return (
@@ -56,7 +55,7 @@ export function HolidayForm({ value, onSubmit }: HolidayFormProps) {
 
           {value && (
             <Grid size={{ xs: 12 }}>
-              <UserAuthorityUtil has={"HolidayAuthority.ADMIN"}>
+              <UserAuthorityUtil has={'HolidayAuthority.ADMIN'}>
                 <StatusSelect
                   value={values.status}
                   onChange={handleStatusChange}

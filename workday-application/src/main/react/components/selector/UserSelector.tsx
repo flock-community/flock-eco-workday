@@ -1,6 +1,3 @@
-import React, { useEffect, useState } from "react";
-import UserClient from "@workday-user/user/UserClient";
-import { User } from "@workday-user/user/response/user";
 import {
   Card,
   CardContent,
@@ -8,7 +5,10 @@ import {
   InputLabel,
   MenuItem,
   Select,
-} from "@mui/material";
+} from '@mui/material';
+import type { User } from '@workday-user/user/response/user';
+import UserClient from '@workday-user/user/UserClient';
+import { useEffect, useState } from 'react';
 
 type UserSelectorProps = {
   embedded?: boolean;
@@ -20,18 +20,18 @@ type UserSelectorProps = {
 export function UserSelector({
   embedded = false,
   onChange,
-  label = "Select User",
-  selectedItem = "",
+  label = 'Select User',
+  selectedItem = '',
 }: UserSelectorProps) {
   const [users, setUsers] = useState<User[]>([]);
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState('');
 
   useEffect(() => {
-    UserClient.findAllUsers("", 0, 100).then((res) => {
+    UserClient.findAllUsers('', 0, 100).then((res) => {
       setUsers(res.list);
       setSelected(selectedItem);
     });
-  }, []);
+  }, [selectedItem]);
 
   function handleChange(event) {
     // eslint-disable-next-line no-shadow
@@ -51,7 +51,7 @@ export function UserSelector({
       <InputLabel shrink>{label}</InputLabel>
       <Select
         label={label}
-        value={selected || ""}
+        value={selected || ''}
         displayEmpty
         onChange={handleChange}
       >

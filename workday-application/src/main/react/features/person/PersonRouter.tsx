@@ -1,7 +1,6 @@
-import React from "react";
-import { Route, Switch, useRouteMatch } from "react-router-dom";
-import { PersonTable } from "./table/PersonTable";
-import { PersonDetails } from "./PersonDetails";
+import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { PersonDetails } from './PersonDetails';
+import { PersonTable } from './table/PersonTable';
 
 export const PersonRouter = () => {
   const { url } = useRouteMatch();

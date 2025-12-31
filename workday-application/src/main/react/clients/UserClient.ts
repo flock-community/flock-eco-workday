@@ -1,10 +1,10 @@
-import { checkResponse, validateResponse } from "@workday-core/clients/utils";
+import { checkResponse, validateResponse } from '@workday-core/clients/utils';
 
-const path = "/login";
+const path = '/login';
 
 const getType = () => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
 
   return fetch(`${path}/type`, opts)

@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogTitle } from "@mui/material";
-import DialogContent from "@mui/material/DialogContent";
-import Button from "@mui/material/Button";
-import DialogActions from "@mui/material/DialogActions";
-import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@mui/material/Typography";
-import { AssignmentClient } from "../../clients/AssignmentClient";
-import { isDefined } from "../../utils/validation";
-import { ASSIGNMENT_FORM_ID, AssignmentForm } from "./AssignmentForm";
-import { usePerson } from "../../hooks/PersonHook";
-import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import { Dialog } from '@mui/material';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import Typography from '@mui/material/Typography';
+import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import {
   DialogBody,
   DialogHeader,
-} from "@workday-core/components/dialog/DialogHeader";
-import AssignmentIcon from "@mui/icons-material/Assignment";
+} from '@workday-core/components/dialog/DialogHeader';
+import { useEffect, useState } from 'react';
+import { AssignmentClient } from '../../clients/AssignmentClient';
+import { ISO_8601_DATE } from '../../clients/util/DateFormats';
+import { usePerson } from '../../hooks/PersonHook';
+import { isDefined } from '../../utils/validation';
+import { ASSIGNMENT_FORM_ID, AssignmentForm } from './AssignmentForm';
 
 type AssignmentDialogProps = {
   open: boolean;
@@ -38,19 +37,19 @@ export function AssignmentDialog({
     } else {
       setState(null);
     }
-  }, [code, open]);
+  }, [code]);
 
   const handleSubmit = (it) => {
     const body = {
       ...it,
       from: it.from.format(ISO_8601_DATE),
-      to: it.to && it.to.format(ISO_8601_DATE),
+      to: it.to?.format(ISO_8601_DATE),
       personId: person?.uuid,
     };
     if (code) {
-      AssignmentClient.put(code, body).then(() => onClose && onClose());
+      AssignmentClient.put(code, body).then(() => onClose?.());
     } else {
-      AssignmentClient.post(body).then(() => onClose && onClose());
+      AssignmentClient.post(body).then(() => onClose?.());
     }
   };
 

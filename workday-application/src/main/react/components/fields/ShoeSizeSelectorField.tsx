@@ -1,6 +1,5 @@
-import React from "react";
-import { Field } from "formik";
-import { ShoeSizeSelector } from "../selector/ShoeSizeSelector";
+import { Field } from 'formik';
+import { ShoeSizeSelector } from '../selector/ShoeSizeSelector';
 
 type ShoeSizeSelectorFieldProperties = {
   name: string;

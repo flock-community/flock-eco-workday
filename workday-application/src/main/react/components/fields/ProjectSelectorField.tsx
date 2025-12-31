@@ -1,6 +1,5 @@
-import { Field } from "formik";
-import React from "react";
-import { ProjectSelector } from "../selector/ProjectSelector";
+import { Field } from 'formik';
+import { ProjectSelector } from '../selector/ProjectSelector';
 
 export function ProjectSelectorField({ name, onRefresh, refresh, ...props }) {
   return (
@@ -14,7 +13,7 @@ export function ProjectSelectorField({ name, onRefresh, refresh, ...props }) {
           value={value}
           onBlur={() => setFieldTouched(name, true)}
           onChange={(userCode) => setFieldValue(name, userCode)}
-          // @ts-ignore
+          // @ts-expect-error
           error={touched[name] && errors[name]}
           onRefresh={onRefresh}
           refresh={refresh}

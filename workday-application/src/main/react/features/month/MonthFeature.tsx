@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from "react";
-import Typography from "@mui/material/Typography";
-import { Box, CardContent } from "@mui/material";
-import Card from "@mui/material/Card";
-import IconButton from "@mui/material/IconButton";
-import BackIcon from "@mui/icons-material/ChevronLeft";
-import NextIcon from "@mui/icons-material/ChevronRight";
-import Grid from "@mui/material/Grid";
+import BackIcon from '@mui/icons-material/ChevronLeft';
+import NextIcon from '@mui/icons-material/ChevronRight';
+import { Box, CardContent } from '@mui/material';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   Bar,
   BarChart,
@@ -15,19 +20,14 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import CardHeader from "@mui/material/CardHeader";
-import { AggregationClient } from "../../clients/AggregationClient";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import Button from "@mui/material/Button";
-import { useHistory } from "react-router-dom";
-import dayjs from "dayjs";
+} from 'recharts';
+import { AggregationClient } from '../../clients/AggregationClient';
 
 /**
  * @return {null}
  */
 export function MonthFeature() {
-  const [date, setDate] = useState(dayjs().startOf("month"));
+  const [date, setDate] = useState(dayjs().startOf('month'));
   const [totalPerPersonState, setTotalPerPersonState] = useState<any>();
   const [clientHourOverviewState, setClientHourOverviewState] = useState<any>();
 
@@ -37,7 +37,7 @@ export function MonthFeature() {
     let cancel = false;
     AggregationClient.totalPerPersonByYearMonth(
       date.year(),
-      date.month() + 1
+      date.month() + 1,
     ).then((res) => !cancel && setTotalPerPersonState(res));
     return () => {
       cancel = true;
@@ -48,7 +48,7 @@ export function MonthFeature() {
     let cancel = false;
     AggregationClient.clientHourOverviewByYearMonth(
       date.year(),
-      date.month() + 1
+      date.month() + 1,
     ).then((res) => !cancel && setClientHourOverviewState(res));
     return () => {
       cancel = true;
@@ -56,7 +56,7 @@ export function MonthFeature() {
   }, [date]);
 
   const handleMonth = (amount) => () => {
-    setDate(date.add(amount, "month"));
+    setDate(date.add(amount, 'month'));
   };
 
   if (!totalPerPersonState || !clientHourOverviewState)
@@ -74,13 +74,13 @@ export function MonthFeature() {
             it.event +
             it.paidParentalLeaveUsed +
             it.unpaidParentalLeaveUsed),
-        0
+        0,
       ),
     }));
 
   const totalHours = totalPerPersonData.reduce(
     (acc, cur) => acc + cur.workDays,
-    0
+    0,
   );
 
   const renderChart = (x) => {
@@ -92,7 +92,7 @@ export function MonthFeature() {
           <XAxis type="number" />
           <YAxis type="category" dataKey="name" width={150} />
           <Tooltip
-            // @ts-ignore
+            // @ts-expect-error
             formatter={(value) => new Intl.NumberFormat().format(value)}
           />
           <Legend />
@@ -145,16 +145,16 @@ export function MonthFeature() {
 
   return (
     <Box
-      className={"flow"}
-      flow-gap={"wide"}
-      style={{ paddingBottom: "1.5rem" }}
+      className={'flow'}
+      flow-gap={'wide'}
+      style={{ paddingBottom: '1.5rem' }}
     >
       <Card>
         <CardContent>
           <Grid container spacing={1}>
             <Grid size="grow">
               <Typography variant="h6">
-                Month: {date.format("YYYY-MM")}
+                Month: {date.format('YYYY-MM')}
               </Typography>
               <Typography>
                 Total persons: {totalPerPersonData.length}
@@ -180,9 +180,9 @@ export function MonthFeature() {
               .filter((it) => it.contractTypes != null)
               .filter(
                 (it) =>
-                  it.contractTypes.includes("ContractInternal") ||
-                  it.contractTypes.includes("ContractManagement")
-              )
+                  it.contractTypes.includes('ContractInternal') ||
+                  it.contractTypes.includes('ContractManagement'),
+              ),
           )}
         </CardContent>
       </Card>
@@ -195,8 +195,8 @@ export function MonthFeature() {
               .filter(
                 (it) =>
                   it.contractTypes.length === 0 ||
-                  it.contractTypes.includes("ContractExternal")
-              )
+                  it.contractTypes.includes('ContractExternal'),
+              ),
           )}
         </CardContent>
       </Card>
@@ -208,7 +208,7 @@ export function MonthFeature() {
             "Reports" menu item.
           </Typography>
           <Box mt={2}>
-            <Button onClick={() => history.push("/reports/assignment")}>
+            <Button onClick={() => history.push('/reports/assignment')}>
               Open report
             </Button>
           </Box>

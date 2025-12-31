@@ -1,8 +1,7 @@
-import React from "react";
-import { Card, CardContent, CardHeader } from "@mui/material";
-import Grid from "@mui/material/Grid";
+import { Card, CardContent, CardHeader } from '@mui/material';
+import Grid from '@mui/material/Grid';
 
-import AssignmentOverviewTable from "./AssignmentOverviewTable";
+import AssignmentOverviewTable from './AssignmentOverviewTable';
 
 export default function AssignmentOverview() {
   return (

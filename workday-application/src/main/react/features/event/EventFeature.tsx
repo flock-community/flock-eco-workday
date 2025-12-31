@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { EventDialog } from "./EventDialog";
-import { EventList } from "./EventList";
-import { Box, Card, CardContent, CardHeader } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import Button from "@mui/material/Button";
-import { FlockEvent } from "../../clients/EventClient";
+import AddIcon from '@mui/icons-material/Add';
+import { Box, Card, CardContent, CardHeader } from '@mui/material';
+import Button from '@mui/material/Button';
+import { useState } from 'react';
+import type { FlockEvent } from '../../clients/EventClient';
+import { EventDialog } from './EventDialog';
+import { EventList } from './EventList';
 
 export function EventFeature() {
   const [reload, setReload] = useState(false);
@@ -29,9 +29,9 @@ export function EventFeature() {
 
   return (
     <Box
-      className={"flow"}
-      flow-gap={"wide"}
-      style={{ paddingBottom: "1.5rem" }}
+      className={'flow'}
+      flow-gap={'wide'}
+      style={{ paddingBottom: '1.5rem' }}
     >
       <Card>
         <CardHeader
@@ -48,7 +48,7 @@ export function EventFeature() {
       </Card>
       <EventDialog
         open={open}
-        code={state && state.code}
+        code={state?.code}
         onComplete={handleCompleteDialog}
       />
     </Box>

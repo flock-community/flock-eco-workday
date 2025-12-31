@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import { useEffect, useState } from 'react';
 import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Legend,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  BarChart,
-  Bar,
-} from "recharts";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import { AggregationClient } from "../../clients/AggregationClient";
+} from 'recharts';
+import { AggregationClient } from '../../clients/AggregationClient';
 
 type SickdayPerPersonChartProps = {
   year?: number;
@@ -21,7 +21,7 @@ export function SickdayPerPersonChart({ year }: SickdayPerPersonChartProps) {
   useEffect(() => {
     const date = new Date();
     AggregationClient.totalPerPersonByYear(year || date.getFullYear()).then(
-      (res) => setState(res.filter((it) => it.sickDays > 0))
+      (res) => setState(res.filter((it) => it.sickDays > 0)),
     );
   }, [year]);
 
@@ -37,8 +37,8 @@ export function SickdayPerPersonChart({ year }: SickdayPerPersonChartProps) {
         <YAxis type="category" dataKey="name" width={150} />
         <Tooltip
           formatter={(value) =>
-            typeof value === "number"
-              ? new Intl.NumberFormat("en").format(value)
+            typeof value === 'number'
+              ? new Intl.NumberFormat('en').format(value)
               : value
           }
         />

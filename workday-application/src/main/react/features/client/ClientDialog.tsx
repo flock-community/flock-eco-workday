@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogTitle } from "@mui/material";
-import DialogContent from "@mui/material/DialogContent";
-import Button from "@mui/material/Button";
-import DialogActions from "@mui/material/DialogActions";
-import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@mui/material/Typography";
-import { ClientClient } from "../../clients/ClientClient";
-import { CLIENT_FORM_ID, ClientForm } from "./ClientForm";
-import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
+import { Dialog, DialogTitle } from '@mui/material';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import Typography from '@mui/material/Typography';
+import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
+import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
+import { useEffect, useState } from 'react';
+import { ClientClient } from '../../clients/ClientClient';
+import { CLIENT_FORM_ID, ClientForm } from './ClientForm';
 
 type ClientDialogProps = {
   open: boolean;
@@ -69,7 +68,7 @@ export function ClientDialog({ open, code, onClose }: ClientDialogProps) {
       >
         <Typography>
           Are you sure you would like to delete client: &apos;
-          {state && state.name}
+          {state?.name}
           &apos;
         </Typography>
       </ConfirmDialog>

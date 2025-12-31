@@ -1,5 +1,5 @@
-import dayjs from "dayjs";
-import InternalizingClient from "../utils/InternalizingClient";
+import dayjs from 'dayjs';
+import InternalizingClient from '../utils/InternalizingClient';
 
 const internalize = (it) => ({
   ...it,
@@ -7,7 +7,7 @@ const internalize = (it) => ({
   to: dayjs(it.to),
 });
 
-const path = "/api/sickdays";
+const path = '/api/sickdays';
 const resourceClient = InternalizingClient(path, internalize);
 
 export const SICKDAY_PAGE_SIZE = 5;
@@ -17,11 +17,11 @@ const findAllByPersonId = (personId, page) =>
     {
       page,
       size: SICKDAY_PAGE_SIZE,
-      sort: "from,desc",
+      sort: 'from,desc',
     },
     {
       personId,
-    }
+    },
   );
 
 export const SickDayClient = {

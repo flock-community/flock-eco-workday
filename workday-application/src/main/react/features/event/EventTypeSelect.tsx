@@ -1,7 +1,6 @@
-import React from "react";
-import { MenuItem, Select } from "@mui/material";
-import { EventType } from "../../clients/EventClient";
-import { EventTypeMapping } from "../../utils/mappings";
+import { MenuItem, Select } from '@mui/material';
+import { EventType } from '../../clients/EventClient';
+import { EventTypeMapping } from '../../utils/mappings';
 
 export function EventTypeSelect({ onChange, value }) {
   const renderSelectOption = (item: EventType) => {

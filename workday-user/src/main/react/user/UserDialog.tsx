@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import { USER_FORM_ID, UserForm } from "./UserForm";
-import UserClient from "./UserClient";
-import Typography from "@mui/material/Typography";
-import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import { Snackbar } from "@mui/material";
-import { User } from "@workday-user/user/response/user";
-import UserIcon from "@mui/icons-material/Person";
-import { DialogBody, DialogHeader } from "@workday-core/components/dialog";
+import UserIcon from '@mui/icons-material/Person';
+import { Snackbar } from '@mui/material';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import Typography from '@mui/material/Typography';
+import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
+import { DialogBody, DialogHeader } from '@workday-core/components/dialog';
+import type { User } from '@workday-user/user/response/user';
+import { useEffect, useState } from 'react';
+import UserClient from './UserClient';
+import { USER_FORM_ID, UserForm } from './UserForm';
 
 type UserDialogProps = {
   open: boolean;
@@ -52,7 +52,7 @@ export function UserDialog({
 
   const handleDelete = () => {
     UserClient.deleteUser(state.id)
-      .then((res) => {
+      .then((_res) => {
         onComplete?.();
         setOpenDelete(false);
       })
@@ -73,9 +73,9 @@ export function UserDialog({
     setMessage(null);
   };
 
-  const handleReset = (ev) => {
+  const handleReset = (_ev) => {
     UserClient.resetUserPassword(state.id)
-      .then((res) => onComplete?.())
+      .then((_res) => onComplete?.())
       .catch((err) => {
         setMessage(err.message);
       });
@@ -103,7 +103,7 @@ export function UserDialog({
 
   return (
     <>
-      <Dialog fullWidth maxWidth={"md"} open={open} onClose={handleClose}>
+      <Dialog fullWidth maxWidth={'md'} open={open} onClose={handleClose}>
         <DialogHeader
           icon={<UserIcon />}
           headline="Create user"
@@ -121,9 +121,7 @@ export function UserDialog({
           {enablePassword && state && state.id && (
             <Button onClick={handleReset}>Reset password</Button>
           )}
-          {state && state.id && (
-            <Button onClick={handleOpenDelete}>Delete</Button>
-          )}
+          {state?.id && <Button onClick={handleOpenDelete}>Delete</Button>}
           <Button
             variant="contained"
             color="primary"
@@ -140,7 +138,7 @@ export function UserDialog({
         onConfirm={handleDelete}
       >
         <Typography>
-          Would you Are you sure you want to delete user: {state && state.name}?
+          Would you Are you sure you want to delete user: {state?.name}?
         </Typography>
       </ConfirmDialog>
       <Snackbar

@@ -1,7 +1,6 @@
-import React from "react";
-import { Field } from "formik";
-import { PersonSelector } from "../selector";
-import { PersonSelectorProps } from "../selector/PersonSelector";
+import { Field } from 'formik';
+import { PersonSelector } from '../selector';
+import type { PersonSelectorProps } from '../selector/PersonSelector';
 
 type PersonSelectorFieldProps = { name: string } & Partial<PersonSelectorProps>;
 

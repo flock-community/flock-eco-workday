@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { Dialog, Divider } from "@mui/material";
-import HealingIcon from "@mui/icons-material/Healing";
-import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@mui/material/Typography";
-import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
-import { SickDayClient } from "../../clients/SickDayClient";
-import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogFooter, DialogHeader } from "@workday-core/components/dialog";
-import { schemaSickDayForm, SICKDAY_FORM_ID, SickDayForm } from "./SickDayForm";
-import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
-import Grid from "@mui/material/Grid";
+import HealingIcon from '@mui/icons-material/Healing';
+import { Dialog, Divider } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
+import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
+import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
+import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import { useEffect, useState } from 'react';
+import { SickDayClient } from '../../clients/SickDayClient';
+import { ISO_8601_DATE } from '../../clients/util/DateFormats';
+import { TransitionSlider } from '../../components/transitions/Slide';
+import { SICKDAY_FORM_ID, SickDayForm, schemaSickDayForm } from './SickDayForm';
 
 type SickDayDialogProps = {
   personFullName: string;
@@ -100,9 +100,9 @@ export function SickDayDialog({
     setOpenDelete(false);
   };
 
-  const headline = UserAuthorityUtil.hasAuthority("SickdayAuthority.ADMIN")
+  const headline = UserAuthorityUtil.hasAuthority('SickdayAuthority.ADMIN')
     ? `Create Sickday | ${personFullName}`
-    : "Create Sickday";
+    : 'Create Sickday';
 
   return (
     <>
@@ -121,9 +121,9 @@ export function SickDayDialog({
         />
         <DialogBody>
           <Grid container spacing={2}>
-            <UserAuthorityUtil has={"SickdayAuthority.ADMIN"}>
+            <UserAuthorityUtil has={'SickdayAuthority.ADMIN'}>
               <Grid size={{ xs: 12 }}>
-                <Typography variant={"h5"} component={"h2"}>
+                <Typography variant={'h5'} component={'h2'}>
                   {personFullName}
                 </Typography>
               </Grid>
@@ -142,14 +142,14 @@ export function SickDayDialog({
           onClose={handleClose}
           onDelete={handleDeleteOpen}
           disableDelete={
-            !UserAuthorityUtil.hasAuthority("SickdayAuthority.ADMIN") &&
+            !UserAuthorityUtil.hasAuthority('SickdayAuthority.ADMIN') &&
             state &&
-            state.status !== "REQUESTED"
+            state.status !== 'REQUESTED'
           }
           disableEdit={
-            !UserAuthorityUtil.hasAuthority("SickdayAuthority.ADMIN") &&
+            !UserAuthorityUtil.hasAuthority('SickdayAuthority.ADMIN') &&
             state &&
-            state.status !== "REQUESTED"
+            state.status !== 'REQUESTED'
           }
         />
       </Dialog>

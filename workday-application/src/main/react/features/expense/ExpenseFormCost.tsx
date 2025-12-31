@@ -1,14 +1,13 @@
-import React from "react";
-import Grid from "@mui/material/Grid";
-import { Field, Form, Formik } from "formik";
-import { TextField } from "formik-mui";
-import * as Yup from "yup";
-import { DatePickerField } from "../../components/fields/DatePickerField";
-import { DropzoneAreaField } from "../../components/fields/DropzoneAreaField";
-import dayjs from "dayjs";
-import { CostExpense } from "../../models/Expense";
+import Grid from '@mui/material/Grid';
+import dayjs from 'dayjs';
+import { Field, Form, Formik } from 'formik';
+import { TextField } from 'formik-mui';
+import * as Yup from 'yup';
+import { DatePickerField } from '../../components/fields/DatePickerField';
+import { DropzoneAreaField } from '../../components/fields/DropzoneAreaField';
+import type { CostExpense } from '../../models/Expense';
 
-export const EXPENSE_COST_FORM_ID = "cost-expense-form";
+export const EXPENSE_COST_FORM_ID = 'cost-expense-form';
 
 type ExpenseFormCostProps = {
   value: any;
@@ -17,7 +16,7 @@ type ExpenseFormCostProps = {
 
 export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
   const schema = Yup.object({
-    description: Yup.string().required().default(""),
+    description: Yup.string().required().default(''),
     amount: Yup.number().required().default(0),
     date: Yup.mixed().required().default(dayjs()),
     files: Yup.array().default([]),

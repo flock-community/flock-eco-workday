@@ -1,6 +1,5 @@
-import React from "react";
-import { Field } from "formik";
-import { UserSelector } from "../selector/UserSelector";
+import { Field } from 'formik';
+import { UserSelector } from '../selector/UserSelector';
 
 type UserSelectorFieldProps = {
   name: string;

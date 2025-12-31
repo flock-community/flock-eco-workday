@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -7,9 +6,10 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-} from "@mui/material";
-import { Expense } from "../../models/Expense";
-import { ExpenseTableItem } from "./ExpenseTableItem";
+} from '@mui/material';
+import { useState } from 'react';
+import type { Expense } from '../../models/Expense';
+import { ExpenseTableItem } from './ExpenseTableItem';
 
 type ExpenseTableProps = {
   tableItems: Expense[];
@@ -22,26 +22,26 @@ export function ExpenseTable({
   page,
   handleChangePageCallBack,
 }: ExpenseTableProps) {
-  const [rowsPerPage, setRowsPerPage] = useState(4);
+  const [rowsPerPage, _setRowsPerPage] = useState(4);
 
   return (
-    <Table size={"small"}>
+    <Table size={'small'}>
       <TableHead>
         <TableRow>
           <TableCell>Description</TableCell>
-          <TableCell align={"right"}>Date</TableCell>
-          <TableCell align={"right"}>Amount</TableCell>
-          <TableCell align={"right"}>Status</TableCell>
+          <TableCell align={'right'}>Date</TableCell>
+          <TableCell align={'right'}>Amount</TableCell>
+          <TableCell align={'right'}>Status</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {tableItems.length > 0 &&
           tableItems
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((item, key) => <ExpenseTableItem item={item} key={key} />)}
+            .map((item) => <ExpenseTableItem item={item} key={item.id} />)}
         {tableItems.length === 0 && (
-          <TableRow data-testid={"expense-empty"}>
-            <TableCell colSpan={4} align={"center"}>
+          <TableRow data-testid={'expense-empty'}>
+            <TableCell colSpan={4} align={'center'}>
               No expenses found.
             </TableCell>
           </TableRow>

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import UserClient from "@workday-user/user/UserClient";
-import { useLoginStatus } from "./StatusHook";
-import { User } from "@workday-user/user/response/user";
+import type { User } from '@workday-user/user/response/user';
+import UserClient from '@workday-user/user/UserClient';
+import { useEffect, useState } from 'react';
+import { useLoginStatus } from './StatusHook';
 
 let loading = false;
 let store: User | null = null;
@@ -10,7 +10,9 @@ const listeners: ((it: any) => void)[] = [];
 function update(it) {
   store = it;
   loading = false;
-  listeners.forEach((func) => func(it));
+  listeners.forEach((func) => {
+    func(it);
+  });
 }
 
 export function useUserMe(): [User, (userId: string) => void] {
@@ -20,7 +22,7 @@ export function useUserMe(): [User, (userId: string) => void] {
 
   useEffect(() => {
     if (store === null && !loading) {
-      if (status && status.isLoggedIn) {
+      if (status?.isLoggedIn) {
         loading = true;
         UserClient.findUsersMe().then(update);
       }

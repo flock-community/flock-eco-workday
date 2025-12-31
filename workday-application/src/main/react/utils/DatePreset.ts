@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from "dayjs";
+import dayjs, { type Dayjs } from 'dayjs';
 
 export type DatePreset = {
   title: string;
@@ -8,23 +8,23 @@ export type DatePreset = {
 
 export const datePresets: DatePreset[] = [
   {
-    title: "Previous week",
-    from: dayjs().subtract(1, "week").startOf("week"),
-    to: dayjs().subtract(1, "week").endOf("week"),
+    title: 'Previous week',
+    from: dayjs().subtract(1, 'week').startOf('week'),
+    to: dayjs().subtract(1, 'week').endOf('week'),
   },
   {
-    title: "Current week",
-    from: dayjs().startOf("week"),
-    to: dayjs().endOf("week"),
+    title: 'Current week',
+    from: dayjs().startOf('week'),
+    to: dayjs().endOf('week'),
   },
   {
-    title: "Previous month",
-    from: dayjs().subtract(1, "month").startOf("month"),
-    to: dayjs().subtract(1, "month").endOf("month"),
+    title: 'Previous month',
+    from: dayjs().subtract(1, 'month').startOf('month'),
+    to: dayjs().subtract(1, 'month').endOf('month'),
   },
   {
-    title: "Current month",
-    from: dayjs().startOf("month"),
-    to: dayjs().endOf("month"),
+    title: 'Current month',
+    from: dayjs().startOf('month'),
+    to: dayjs().endOf('month'),
   },
 ];

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Button, Card, CardContent, CardHeader } from "@mui/material";
-import { LeaveDayDialog } from "./LeaveDayDialog";
-import { LeaveDayList } from "./LeaveDayList";
-import { LeaveDayClient } from "../../clients/LeaveDayClient";
-import AddIcon from "@mui/icons-material/Add";
-import { Person } from "../../clients/PersonClient";
-import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import AddIcon from '@mui/icons-material/Add';
+import { Button, Card, CardContent, CardHeader } from '@mui/material';
+import { useState } from 'react';
+import { LeaveDayClient } from '../../clients/LeaveDayClient';
+import type { Person } from '../../clients/PersonClient';
+import { ISO_8601_DATE } from '../../clients/util/DateFormats';
+import { LeaveDayDialog } from './LeaveDayDialog';
+import { LeaveDayList } from './LeaveDayList';
 
 type LeaveDayFeatureProps = {
   person: Person;

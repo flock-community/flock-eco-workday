@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader } from "@mui/material";
-import { ExpenseList } from "./ExpenseList";
-import { ExpenseDialog } from "./ExpenseDialog";
-import Button from "@mui/material/Button";
-import AddIcon from "@mui/icons-material/Add";
-import { Person } from "../../clients/PersonClient";
-import { CostExpense, TravelExpense } from "../../models/Expense";
+import AddIcon from '@mui/icons-material/Add';
+import { Card, CardContent, CardHeader } from '@mui/material';
+import Button from '@mui/material/Button';
+import { useState } from 'react';
+import type { Person } from '../../clients/PersonClient';
+import type { CostExpense, TravelExpense } from '../../models/Expense';
+import { ExpenseDialog } from './ExpenseDialog';
+import { ExpenseList } from './ExpenseList';
 
 type ExpenseFeatureProps = {
   person: Person;
@@ -61,7 +61,7 @@ export function ExpenseFeature({ person }: ExpenseFeatureProps) {
         </CardContent>
       </Card>
       <ExpenseDialog
-        id={id!!}
+        id={id!}
         open={open}
         personId={person?.uuid}
         personFullName={person.fullName}

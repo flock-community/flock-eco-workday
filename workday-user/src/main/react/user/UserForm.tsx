@@ -1,21 +1,19 @@
-import React, { useEffect, useState } from "react";
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import FormLabel from '@mui/material/FormLabel';
+import Grid from '@mui/material/Grid';
+import { Field, FieldArray, Form, Formik } from 'formik';
+import { Checkbox, TextField } from 'formik-mui';
+import { useEffect, useState } from 'react';
+import * as Yup from 'yup';
+import UserClient from './UserClient';
 
-import Grid from "@mui/material/Grid";
-
-import FormControl from "@mui/material/FormControl";
-import UserClient from "./UserClient";
-import { Field, FieldArray, Form, Formik } from "formik";
-import { Checkbox, TextField } from "formik-mui";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormGroup from "@mui/material/FormGroup";
-import FormLabel from "@mui/material/FormLabel";
-import * as Yup from "yup";
-
-export const USER_FORM_ID = "user-form-id";
+export const USER_FORM_ID = 'user-form-id';
 
 const init = {
-  name: "",
-  email: "",
+  name: '',
+  email: '',
   authorities: null,
 };
 
@@ -24,8 +22,8 @@ const init = {
  */
 export function UserForm({ value, onSummit, ...props }) {
   const [state, setState] = useState(init);
-  const [formRef, setFormRef] = useState(null);
-  const [authorities, setAuthorities] = useState(null);
+  const [_formRef, setFormRef] = useState(null);
+  const [authorities, setAuthorities] = useState<string[] | undefined>(null);
 
   useEffect(() => {
     if (!props.authorities) {
@@ -33,16 +31,14 @@ export function UserForm({ value, onSummit, ...props }) {
     } else {
       setAuthorities(props.authorities);
     }
-  }, []);
+  }, [props.authorities]);
 
   useEffect(() => {
     if (value && authorities) {
       setState({
         ...init,
         ...value,
-        authorities: authorities.map(
-          (it) => value.authorities.indexOf(it) >= 0
-        ),
+        authorities: authorities.map((it) => value.authorities.includes(it)),
       });
     } else {
       setState({
@@ -53,20 +49,19 @@ export function UserForm({ value, onSummit, ...props }) {
   }, [value, authorities]);
 
   const handleSubmit = (value) => {
-    onSummit &&
-      onSummit({
-        ...value,
-        authorities: authorities
-          .map((it, index) => (value.authorities[index] ? it : null))
-          .filter((it) => it !== null),
-      });
+    onSummit?.({
+      ...value,
+      authorities: authorities
+        .map((it, index) => (value.authorities[index] ? it : null))
+        .filter((it) => it !== null),
+    });
   };
 
   const validation = Yup.object({
-    name: Yup.string().required("Name is required"),
+    name: Yup.string().required('Name is required'),
     email: Yup.string()
-      .required("Email is required")
-      .email("Enter a valid email"),
+      .required('Email is required')
+      .email('Enter a valid email'),
     authorities: Yup.array(),
   });
 
@@ -94,13 +89,13 @@ export function UserForm({ value, onSummit, ...props }) {
           <Grid size={{ xs: 12 }}>
             <FieldArray
               name="authorities"
-              render={(arrayHelpers) => (
+              render={(_arrayHelpers) => (
                 <FormControl component="fieldset">
                   <FormLabel component="legend">Authorities</FormLabel>
                   <FormGroup>
                     {authorities.map((value, i) => (
                       <FormControlLabel
-                        key={`user-form-authorities-${i}`}
+                        key={`user-form-authorities-${value}`}
                         control={
                           <Field
                             name={`authorities[${i}]`}

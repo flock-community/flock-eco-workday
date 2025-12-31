@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
-import { Box } from "@mui/material";
-import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import { Person, PersonClient } from "../../clients/PersonClient";
-import { PersonWidget } from "../../components/person-widget/PersonWidget";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import { PersonDialog } from "./PersonDialog";
-import { ContractFeature } from "../contract/ContractFeature";
-import { WorkDayFeature } from "../workday/WorkDayFeature";
-import { AssignmentFeature } from "../assignments/AssignmentFeature";
-import { LeaveDayFeature } from "../holiday/LeaveDayFeature";
-import { SickDayFeature } from "../sickday/SickDayFeature";
-import { ExpenseFeature } from "../expense/ExpenseFeature";
-import { usePerson } from "../../hooks/PersonHook";
+import { Box } from '@mui/material';
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
+import { useEffect, useState } from 'react';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import { type Person, PersonClient } from '../../clients/PersonClient';
+import { PersonWidget } from '../../components/person-widget/PersonWidget';
+import { usePerson } from '../../hooks/PersonHook';
+import { AssignmentFeature } from '../assignments/AssignmentFeature';
+import { ContractFeature } from '../contract/ContractFeature';
+import { ExpenseFeature } from '../expense/ExpenseFeature';
+import { LeaveDayFeature } from '../holiday/LeaveDayFeature';
+import { SickDayFeature } from '../sickday/SickDayFeature';
+import { WorkDayFeature } from '../workday/WorkDayFeature';
+import { PersonDialog } from './PersonDialog';
 
 export const PersonDetails = () => {
   const history = useHistory();
   const { params } = useRouteMatch();
   const [reload, setReload] = useState(false);
-  const [personContext, setPersonContext] = usePerson();
+  const [_personContext, setPersonContext] = usePerson();
   const [person, setPerson] = useState<Person>();
   const [dialog, setDialog] = useState({ edit: false, del: false });
 
@@ -27,7 +27,7 @@ export const PersonDetails = () => {
       setPerson(person);
       setPersonContext(person.uuid);
     });
-  }, [reload]);
+  }, [params.personId, setPersonContext]);
 
   const handleEditDialog = () => {
     const { edit, del } = dialog;
@@ -41,9 +41,9 @@ export const PersonDetails = () => {
   };
 
   const handleDelete = () => {
-    PersonClient.delete(person!!.uuid).then(() => {
+    PersonClient.delete(person?.uuid).then(() => {
       handleDelDialog();
-      history.push("/person");
+      history.push('/person');
     });
   };
 
@@ -53,11 +53,11 @@ export const PersonDetails = () => {
 
   return (
     <Box
-      className={"flow"}
-      flow-gap={"wide"}
-      style={{ paddingBottom: "1.5rem" }}
+      className={'flow'}
+      flow-gap={'wide'}
+      style={{ paddingBottom: '1.5rem' }}
     >
-      <Box className={"even-columns"}>
+      <Box className={'even-columns'}>
         <PersonWidget
           person={person}
           handleEditDialog={handleEditDialog}
@@ -70,12 +70,12 @@ export const PersonDetails = () => {
         <WorkDayFeature person={person} />
       </Box>
 
-      <Box className={"even-columns"}>
+      <Box className={'even-columns'}>
         <ContractFeature person={person} />
         <AssignmentFeature person={person} />
       </Box>
 
-      <Box className={"even-columns"}>
+      <Box className={'even-columns'}>
         <LeaveDayFeature person={person} />
         <SickDayFeature person={person} />
       </Box>

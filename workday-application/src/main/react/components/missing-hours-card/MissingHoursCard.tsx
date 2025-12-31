@@ -1,11 +1,11 @@
-import { Card, CardContent, CardHeader } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import { MissingHoursDetailDialog } from "./MissingHoursDetailDialog";
-import List from "@mui/material/List";
-import ListItemText from "@mui/material/ListItemText";
-import Typography from "@mui/material/Typography";
-import ListItemButton from "@mui/material/ListItemButton";
+import { Card, CardContent, CardHeader } from '@mui/material';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import { useEffect, useState } from 'react';
+import { MissingHoursDetailDialog } from './MissingHoursDetailDialog';
 
 type MissingHoursCardProps = {
   totalPerPersonMe: any;
@@ -29,16 +29,16 @@ export type AggregationPersonObject = {
   cost: number;
 };
 
+const toAggregationPersonObject = (item: any): AggregationPersonObject => {
+  return { ...item } as AggregationPersonObject;
+};
+
 export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
   const [data, setData] = useState<AggregationPersonObject[]>([]);
   const [missingHoursDetailsOpen, setMissingHoursDetailsOpen] =
     useState<boolean>(false);
   const [missingHoursDetailsItem, setMissingHoursDetailsItem] =
     useState<AggregationPersonObject>();
-
-  const toAggregationPersonObject = (item: any): AggregationPersonObject => {
-    return { ...item } as AggregationPersonObject;
-  };
 
   useEffect(() => {
     if (totalPerPersonMe) {
@@ -56,14 +56,14 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
                 it.sickDays +
                 it.event +
                 it.paidParentalLeaveUsed +
-                it.unpaidParentalLeaveUsed)
+                it.unpaidParentalLeaveUsed),
           ),
         }))
         .filter((it) => it.missing > 0)
         .map((it) => toAggregationPersonObject(it));
       setData(data);
     }
-  }, [totalPerPersonMe]);
+  }, [totalPerPersonMe, toAggregationPersonObject]);
 
   if (!totalPerPersonMe) return <AlignedLoader />;
 
@@ -82,8 +82,8 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
       <ListItemButton key={index} onClick={() => openWorkDayDialog(item)}>
         <ListItemText
           primary={`You have missing hours in
-                    ${new Date(item.monthYear).toLocaleString("en-EN", {
-                      month: "long",
+                    ${new Date(item.monthYear).toLocaleString('en-EN', {
+                      month: 'long',
                     })}`}
         />
       </ListItemButton>
@@ -92,11 +92,11 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
 
   return (
     <>
-      <Card variant={"outlined"} style={{ borderRadius: 0 }}>
-        <CardHeader title={"Missing hours"} />
+      <Card variant={'outlined'} style={{ borderRadius: 0 }}>
+        <CardHeader title={'Missing hours'} />
         {data.length === 0 && (
           <CardContent>
-            <Typography display={"block"}>YEAH! You're up to date!</Typography>
+            <Typography display={'block'}>YEAH! You're up to date!</Typography>
           </CardContent>
         )}
         {data.length > 0 && (

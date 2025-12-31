@@ -1,2 +1,2 @@
-export { UserSelector } from "./UserSelector";
-export { PersonSelector } from "./PersonSelector";
+export { PersonSelector } from './PersonSelector';
+export { UserSelector } from './UserSelector';

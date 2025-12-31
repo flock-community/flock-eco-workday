@@ -16,7 +16,7 @@ import { PeriodInput } from '../inputs/PeriodInput';
 const PREFIX = 'PeriodInputField';
 
 const classes = {
-  buttons: `${PREFIX}-buttons`,
+  buttons: `${PREFIX}Buttons`,
 };
 
 const StyledField = styled(Field)({
@@ -60,7 +60,7 @@ function PeriodInputRenderer({
       setFieldValue(name, newPeriod.days);
       setPeriod(newPeriod);
     },
-    [name, setFieldValue]
+    [name],
   );
 
   useEffect(() => {
@@ -75,7 +75,7 @@ function PeriodInputRenderer({
         days: initDays(period, true, hoursPerDay),
       });
     },
-    [period, update]
+    [period, update],
   );
 
   useEffect(() => {
@@ -88,7 +88,7 @@ function PeriodInputRenderer({
     (day: Dayjs, hours: number) => {
       update(editDay(period, day, hours));
     },
-    [period, update]
+    [period, update],
   );
 
   return (

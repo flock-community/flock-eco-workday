@@ -1,9 +1,9 @@
-import { Person } from "./PersonClient";
-import InternalizingClient from "../utils/InternalizingClient";
-import dayjs, { Dayjs } from "dayjs";
-import { ISO_8601_DATE } from "./util/DateFormats";
+import dayjs, { type Dayjs } from 'dayjs';
+import InternalizingClient from '../utils/InternalizingClient';
+import type { Person } from './PersonClient';
+import { ISO_8601_DATE } from './util/DateFormats';
 
-const path = "/api/contracts";
+const path = '/api/contracts';
 const internalPath = `${path}-internal`;
 const externalPath = `${path}-external`;
 const managementPath = `${path}-management`;
@@ -17,7 +17,7 @@ export type Contract = {
   from: Dayjs;
   to?: Dayjs;
   person: Person;
-  type: "INTERNAL" | "EXTERNAL" | "MANAGEMENT" | "SERVICE";
+  type: 'INTERNAL' | 'EXTERNAL' | 'MANAGEMENT' | 'SERVICE';
 };
 
 export type ContractRaw = {
@@ -26,7 +26,7 @@ export type ContractRaw = {
   from: string;
   to?: string;
   person: Person;
-  type: "INTERNAL" | "EXTERNAL" | "MANAGEMENT" | "SERVICE";
+  type: 'INTERNAL' | 'EXTERNAL' | 'MANAGEMENT' | 'SERVICE';
 };
 
 export type ContractRequest = {
@@ -43,62 +43,65 @@ const internalize = (it) => ({
 const clients = new Map<string, any>();
 
 clients.set(
-  "general",
-  InternalizingClient<ContractRequest, Contract, ContractRaw>(path, internalize)
+  'general',
+  InternalizingClient<ContractRequest, Contract, ContractRaw>(
+    path,
+    internalize,
+  ),
 );
 clients.set(
-  "INTERNAL",
+  'INTERNAL',
   InternalizingClient<ContractRequest, Contract, ContractRaw>(
     internalPath,
-    internalize
-  )
+    internalize,
+  ),
 );
 clients.set(
-  "EXTERNAL",
+  'EXTERNAL',
   InternalizingClient<ContractRequest, Contract, ContractRaw>(
     externalPath,
-    internalize
-  )
+    internalize,
+  ),
 );
 clients.set(
-  "MANAGEMENT",
+  'MANAGEMENT',
   InternalizingClient<ContractRequest, Contract, ContractRaw>(
     managementPath,
-    internalize
-  )
+    internalize,
+  ),
 );
 clients.set(
-  "SERVICE",
+  'SERVICE',
   InternalizingClient<ContractRequest, Contract, ContractRaw>(
     servicePath,
-    internalize
-  )
+    internalize,
+  ),
 );
 
 const findAllByPersonId = (personId: string, page: number) =>
-  clients.get("general")!!.queryByPage(
+  clients.get('general')?.queryByPage(
     {
       page,
       size: CONTRACT_PAGE_SIZE,
-      sort: "from,desc",
+      sort: 'from,desc',
     },
-    { personId: personId }
+    { personId: personId },
   );
 
 const findAllByToBetween = (start: Date, end: Date) => {
   const startString = start.toISOString().substring(0, 10);
   const endString = end.toISOString().substring(0, 10);
 
-  return clients.get("general").query({ start: startString, end: endString });
+  return clients.get('general').query({ start: startString, end: endString });
 };
 
 const findAllByToAfterOrToNull = (
   to: Date,
-  pageable: { size: number; page: number; sort: string[] }
+  pageable: { size: number; page: number; sort: string[] },
 ) => {
-  const toString = to.toISOString().substring(0, 10);
+  const dateString = to.toISOString().substring(0, 10);
 
-  return clients.get("general").queryByPage(pageable, { to: toString });
+  return clients.get('general').queryByPage(pageable, { to: dateString });
 };
 
 const put = (id, type, item) => clients.get(type).put(id, item);
@@ -106,7 +109,7 @@ const put = (id, type, item) => clients.get(type).put(id, item);
 const post = (type, item) => clients.get(type).post(item);
 
 export const ContractClient = {
-  ...clients.get("general"),
+  ...clients.get('general'),
   post,
   put,
   findAllByToAfterOrToNull,

@@ -1,4 +1,4 @@
-export { AlignedLoader } from "./AlignedLoader";
-export { ConfirmDialog } from "./ConfirmDialog";
-export { Search } from "./Search";
-export * from "./dialog";
+export { AlignedLoader } from './AlignedLoader';
+export { ConfirmDialog } from './ConfirmDialog';
+export * from './dialog';
+export { Search } from './Search';

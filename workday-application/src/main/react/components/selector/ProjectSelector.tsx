@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
   FormControl,
-  FormControlProps,
+  type FormControlProps,
   InputLabel,
   MenuItem,
   Select,
-} from "@mui/material";
-import FormHelperText from "@mui/material/FormHelperText";
-import { Project, ProjectClient } from "../../clients/ProjectClient";
+} from '@mui/material';
+import FormHelperText from '@mui/material/FormHelperText';
+import { useEffect, useState } from 'react';
+import { type Project, ProjectClient } from '../../clients/ProjectClient';
 
 type ProjectSelectorProps = FormControlProps & {
   value?: string;
@@ -19,14 +19,14 @@ type ProjectSelectorProps = FormControlProps & {
   multiple?: boolean;
   error?: string;
   refresh?: boolean;
-  onRefresh: (Promise) => void;
+  onRefresh: (promise: Promise<void>) => void;
 };
 
 export function ProjectSelector({
-  value = "",
+  value = '',
   onChange,
   embedded,
-  label = "Select Project",
+  label = 'Select Project',
   error,
   refresh,
   onRefresh,
@@ -40,7 +40,7 @@ export function ProjectSelector({
       setItems(res);
     });
     onRefresh(itemPromise);
-  }, [refresh]);
+  }, [onRefresh]);
 
   useEffect(() => {
     setState(value);
@@ -50,7 +50,7 @@ export function ProjectSelector({
     // eslint-disable-next-line no-shadow
     const selected = event.target.value;
     setState(selected);
-    onChange(selected === "" ? null : selected);
+    onChange(selected === '' ? null : selected);
   }
 
   function renderMenuItem(item, key) {
@@ -66,7 +66,7 @@ export function ProjectSelector({
       <InputLabel shrink>{label}</InputLabel>
       <Select
         label={label}
-        value={state || ""}
+        value={state || ''}
         displayEmpty
         onChange={handleChange}
       >

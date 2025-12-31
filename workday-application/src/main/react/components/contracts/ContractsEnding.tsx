@@ -1,6 +1,3 @@
-import Typography from "@mui/material/Typography";
-import React from "react";
-import { Contract } from "../../clients/ContractClient";
 import {
   Card,
   CardContent,
@@ -9,10 +6,12 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-} from "@mui/material";
-import Table from "@mui/material/Table";
-import TableRow from "@mui/material/TableRow";
-import { DMY_DATE } from "../../clients/util/DateFormats";
+} from '@mui/material';
+import Table from '@mui/material/Table';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import type { Contract } from '../../clients/ContractClient';
+import { DMY_DATE } from '../../clients/util/DateFormats';
 
 type ContractsEndingProps = {
   withinNWeeks: number;
@@ -31,7 +30,7 @@ export default function ContractsEnding({
 
   const renderContract = (contract, index) => (
     <TableRow key={index}>
-      <TableCell>{contract.person?.fullName ?? "NVT"}</TableCell>
+      <TableCell>{contract.person?.fullName ?? 'NVT'}</TableCell>
       <TableCell>{contract.from.format(DMY_DATE)}</TableCell>
       <TableCell>{contract.to.format(DMY_DATE)}</TableCell>
       <TableCell>{contract.type}</TableCell>
