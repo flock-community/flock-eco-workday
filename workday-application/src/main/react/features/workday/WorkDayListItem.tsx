@@ -1,5 +1,5 @@
 import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { TableCell } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import TableRow from "@mui/material/TableRow";
@@ -8,11 +8,11 @@ import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import CreateIcon from "@mui/icons-material/Create";
 import IconButton from "@mui/material/IconButton";
 
-const PREFIX = 'WorkDayListItem';
+const PREFIX = "WorkDayListItem";
 
 const classes = {
   root: `${PREFIX}-root`,
-  status: `${PREFIX}-status`
+  status: `${PREFIX}-status`,
 };
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -24,7 +24,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     position: "absolute",
     top: theme.spacing(2),
     right: theme.spacing(2),
-  }
+  },
 }));
 
 type WorkDayListItemProps = {
@@ -40,8 +40,6 @@ export function WorkDayListItem({
   onClickStatus,
   hasAuthority,
 }: WorkDayListItemProps) {
-
-
   return (
     <StyledTableRow>
       <TableCell>{value.assignment.client.name}</TableCell>

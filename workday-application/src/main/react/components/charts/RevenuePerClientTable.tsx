@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import {
   AggregationClient,
@@ -15,10 +15,10 @@ import {
 import TableRow from "@mui/material/TableRow";
 import { currencyFormatter } from "../../utils/Currency";
 
-const PREFIX = 'RevenuePerClientTable';
+const PREFIX = "RevenuePerClientTable";
 
 const classes = {
-  table: `${PREFIX}-table`
+  table: `${PREFIX}-table`,
 };
 
 const StyledTableContainer = styled(TableContainer)({
@@ -34,8 +34,6 @@ type RevenuePerClientChartProps = {
 export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
   const [items, setItems] = useState<ClientGrossRevenue[]>();
   const [totalGrossRevenue, setTotalGrossRevenue] = useState<number>();
-
-
 
   useEffect(() => {
     const date = new Date();

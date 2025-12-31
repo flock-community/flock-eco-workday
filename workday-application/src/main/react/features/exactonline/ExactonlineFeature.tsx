@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { CardHeader, Container } from "@mui/material";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
@@ -10,10 +10,10 @@ import Grid from "@mui/material/Grid";
 import { ExactonlineClient } from "../../clients/ExactonlineClient";
 import { ExactonlineListInvoices } from "./ExactonlineListInvoices";
 
-const PREFIX = 'ExactonlineFeature';
+const PREFIX = "ExactonlineFeature";
 
 const classes = {
-  root: `${PREFIX}-root`
+  root: `${PREFIX}-root`,
 };
 
 const StyledContainer = styled(Container)({
@@ -26,8 +26,6 @@ const StyledContainer = styled(Container)({
  * @return {null}
  */
 export function ExactonlineFeature() {
-
-
   const [status, setStatus] = useState<any>(null);
 
   useEffect(() => {

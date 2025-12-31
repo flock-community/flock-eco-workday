@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Link, useRouteMatch } from "react-router-dom";
 import {
   Box,
@@ -23,13 +23,13 @@ import { CheckBox } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import Button from "@mui/material/Button";
 
-const PREFIX = 'PersonTable';
+const PREFIX = "PersonTable";
 
 const classes = {
   tblEmail: `${PREFIX}-tblEmail`,
   tblName: `${PREFIX}-tblName`,
   tblRow: `${PREFIX}-tblRow`,
-  link: `${PREFIX}-link`
+  link: `${PREFIX}-link`,
 };
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -48,7 +48,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   [`& .${classes.link}`]: {
     color: "black",
     textDecoration: "none",
-  }
+  },
 }));
 
 export const PersonTable = () => {
@@ -61,7 +61,6 @@ export const PersonTable = () => {
   const [reload, setReload] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const searchInputRef = useRef<HTMLInputElement>(null);
-
 
   useEffect(() => searchInputRef?.current?.focus(), [searchInputRef]);
 

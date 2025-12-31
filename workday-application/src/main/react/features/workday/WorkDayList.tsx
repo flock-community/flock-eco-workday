@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import {
   Box,
   Card,
@@ -20,14 +20,14 @@ import { FlockPagination } from "../../components/pagination/FlockPagination";
 // Types
 import type { DayListProps, DayProps } from "../../types";
 
-const PREFIX = 'WorkDayList';
+const PREFIX = "WorkDayList";
 
 const classes = {
-  card: `${PREFIX}-card`
+  card: `${PREFIX}-card`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({
+const Root = styled("div")({
   [`& .${classes.card}`]: (loading) => ({
     marginTop: "10px",
     opacity: loading ? 0.5 : 1,
@@ -44,8 +44,6 @@ export function WorkDayList({
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
-
-
 
   useEffect(() => {
     setLoading(true);

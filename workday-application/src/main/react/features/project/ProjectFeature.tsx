@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, CardHeader } from "@mui/material";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import React, { useState } from "react";
 import ProjectList from "./ProjectList";
 import ProjectDialog from "./ProjectDialog";
@@ -7,10 +7,10 @@ import { Project } from "../../clients/ProjectClient";
 import AddIcon from "@mui/icons-material/Add";
 import Button from "@mui/material/Button";
 
-const PREFIX = 'ProjectFeature';
+const PREFIX = "ProjectFeature";
 
 const classes = {
-  root: `${PREFIX}-root`
+  root: `${PREFIX}-root`,
 };
 
 const StyledBox = styled(Box)({
@@ -25,7 +25,6 @@ type DialogState = {
 };
 
 export function ProjectFeature() {
-
   const [dialog, setDialog] = useState<DialogState>({
     open: false,
     project: undefined,

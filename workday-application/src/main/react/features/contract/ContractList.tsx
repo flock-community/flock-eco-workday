@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
 import Grid from "@mui/material/Grid";
@@ -11,13 +11,13 @@ import {
 import { ContractType } from "./ContractType";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
-const PREFIX = 'ContractList';
+const PREFIX = "ContractList";
 
 const classes = {
-  list: `${PREFIX}-list`
+  list: `${PREFIX}-list`,
 };
 
-const Root = styled('i')({
+const Root = styled("i")({
   [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
@@ -37,8 +37,6 @@ export function ContractList({
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(-1);
   const [loading, setLoading] = useState(true);
-
-
 
   useEffect(() => {
     if (personId) {

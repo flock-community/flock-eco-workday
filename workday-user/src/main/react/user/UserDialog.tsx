@@ -24,7 +24,6 @@ export function UserDialog({
   onComplete,
   enablePassword,
 }: UserDialogProps) {
-
   const [state, setState] = useState<User>(null);
 
   const [message, setMessage] = useState<string>(null);

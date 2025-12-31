@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Box, Dialog, DialogContent, Divider } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import WorkIcon from "@mui/icons-material/Work";
@@ -17,16 +17,16 @@ import { ExportClient } from "../../clients/ExportClient";
 import Snackbar from "@mui/material/Snackbar";
 import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
-const PREFIX = 'WorkDayDialog';
+const PREFIX = "WorkDayDialog";
 
 const classes = {
   dialogContent: `${PREFIX}-dialogContent`,
   exportSnackBar: `${PREFIX}-exportSnackBar`,
-  exportMessage: `${PREFIX}-exportMessage`
+  exportMessage: `${PREFIX}-exportMessage`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')(({ theme }) => ({
+const Root = styled("div")(({ theme }) => ({
   [`& .${classes.dialogContent}`]: {
     margin: "auto",
     maxWidth: 768, // should be a decent medium-sized breakpoint
@@ -45,7 +45,7 @@ const Root = styled('div')(({ theme }) => ({
 
   [`& .${classes.exportMessage}`]: {
     marginRight: "0.5rem",
-  }
+  },
 }));
 
 type ExportStatusProps = {
@@ -54,7 +54,6 @@ type ExportStatusProps = {
 };
 
 export function WorkDayDialog({ personFullName, open, code, onComplete }) {
-
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const [processing, setProcessing] = useState<boolean>(false);
 

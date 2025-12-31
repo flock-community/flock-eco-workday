@@ -1,12 +1,12 @@
 import { Box, Card, CardContent, CardHeader, TextField } from "@mui/material";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import React from "react";
 import { useLoginType } from "../../hooks/LoginTypeHook";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 
-const PREFIX = 'LoginFeature';
+const PREFIX = "LoginFeature";
 
 const classes = {
   root: `${PREFIX}-root`,
@@ -18,7 +18,7 @@ const classes = {
   formLogin: `${PREFIX}-formLogin`,
   googleButton: `${PREFIX}-googleButton`,
   logo: `${PREFIX}-logo`,
-  flock: `${PREFIX}-flock`
+  flock: `${PREFIX}-flock`,
 };
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -83,11 +83,10 @@ const StyledBox = styled(Box)(({ theme }) => ({
     fontFamily: "monospace",
     marginTop: "1rem",
     fontSize: "medium",
-  }
+  },
 }));
 
 export function LoginFeature() {
-
   const loginType = useLoginType();
   const isLoading = loginType.type == "LOADING";
   const isGoogle = loginType.type == "GOOGLE";

@@ -18,7 +18,6 @@ export function ConfirmDialog({
   onConfirm,
   children,
 }: ConfirmDialogProps) {
-
   const handleClose = () => {
     onClose && onClose();
   };

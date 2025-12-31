@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Dialog, DialogTitle } from "@mui/material";
 import DialogContent from "@mui/material/DialogContent";
 import Button from "@mui/material/Button";
@@ -21,11 +21,11 @@ import { ContractType } from "./ContractType";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
-const PREFIX = 'ContractDialog';
+const PREFIX = "ContractDialog";
 const classes = {};
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({});
+const Root = styled("div")({});
 
 type ContractDialogProps = {
   open: boolean;
@@ -35,7 +35,6 @@ type ContractDialogProps = {
 
 export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
   // TODO: remove styles if not used and remove eslint-disable
-
 
   const [type, setType] = useState("INTERNAL");
   const [state, setState] = useState<any | null>(null);

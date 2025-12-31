@@ -59,7 +59,7 @@ export const themeLight = createTheme({
   },
 });
 
-export const HighlightSpan = styled('span')(({ theme }) => ({
+export const HighlightSpan = styled("span")(({ theme }) => ({
   position: "relative",
   fontFamily: theme.typography.fontFamily,
   "&::before": {

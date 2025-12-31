@@ -1,10 +1,10 @@
 import React, { ReactNode } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Button, DialogTitle, Typography } from "@mui/material";
 import Close from "@mui/icons-material/Close";
 import DialogContent from "@mui/material/DialogContent";
 
-const PREFIX = 'DialogHeader';
+const PREFIX = "DialogHeader";
 
 const classes = {
   root: `${PREFIX}-root`,
@@ -12,7 +12,7 @@ const classes = {
   dialogTitle: `${PREFIX}-dialogTitle`,
   dialogContent: `${PREFIX}-dialogContent`,
   iconWrapper: `${PREFIX}-iconWrapper`,
-  titleText: `${PREFIX}-titleText`
+  titleText: `${PREFIX}-titleText`,
 };
 
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
@@ -39,16 +39,16 @@ const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
     display: "flex",
     flexDirection: "column",
     marginLeft: "1rem",
-  }
+  },
 }));
 
-const StyledDiv = styled('div')(({ theme }) => ({
+const StyledDiv = styled("div")(({ theme }) => ({
   [`&.${classes.dialogContent}`]: {
     paddingTop: "10px",
     paddingBottom: "10px",
     marginTop: "10px",
     marginBottom: "10px",
-  }
+  },
 }));
 
 type DialogHeaderProps = {

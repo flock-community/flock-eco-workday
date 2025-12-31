@@ -1,5 +1,5 @@
 import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Card, CardContent, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
@@ -8,11 +8,11 @@ import { StatusMenu } from "./status/StatusMenu";
 // types
 import type { DayProps } from "../types";
 
-const PREFIX = 'DayListItem';
+const PREFIX = "DayListItem";
 
 const classes = {
   root: `${PREFIX}-root`,
-  status: `${PREFIX}-status`
+  status: `${PREFIX}-status`,
 };
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -24,7 +24,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
     position: "absolute",
     top: theme.spacing(2),
     right: theme.spacing(2),
-  }
+  },
 }));
 
 type DayListItemProps = {
@@ -40,8 +40,6 @@ export function DayListItem({
   onClickStatus,
   hasAuthority,
 }: DayListItemProps) {
-
-
   return (
     <StyledCard onClick={onClick}>
       <CardContent className={classes.root}>

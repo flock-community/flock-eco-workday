@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Box, Card, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
@@ -19,14 +19,14 @@ import { Status } from "../../models/Status";
 import { CostExpense, TravelExpense } from "../../models/Expense";
 import ListItemButton from "@mui/material/ListItemButton";
 
-const PREFIX = 'ExpenseList';
+const PREFIX = "ExpenseList";
 
 const classes = {
-  list: `${PREFIX}-list`
+  list: `${PREFIX}-list`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({
+const Root = styled("div")({
   [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
@@ -37,8 +37,6 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
-
-
 
   const loadState = () => {
     setLoading(true);

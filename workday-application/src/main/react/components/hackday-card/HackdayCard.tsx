@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, Typography } from "@mui/material";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import {
   AggregationClient,
@@ -12,16 +12,16 @@ import { hoursFormatter } from "../../utils/Hours";
 import { EventClient, FlockEvent } from "../../clients/EventClient";
 import { subscribeToEvent, unsubscribeFromEvent } from "../../utils/EventUtils";
 
-const PREFIX = 'HackdayCard';
+const PREFIX = "HackdayCard";
 
 const classes = {
   containerWrapper: `${PREFIX}-containerWrapper`,
   hoursLeftWrapper: `${PREFIX}-hoursLeftWrapper`,
-  hoursLeft: `${PREFIX}-hoursLeft`
+  hoursLeft: `${PREFIX}-hoursLeft`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')(() => ({
+const Root = styled("div")(() => ({
   [`& .${classes.containerWrapper}`]: {
     containerType: "inline-size",
   },
@@ -46,11 +46,10 @@ const Root = styled('div')(() => ({
     "@container (max-width: 500px)": {
       fontSize: "clamp(6rem, 40cqw, 9rem)",
     },
-  }
+  },
 }));
 
 export function HackdayCard() {
-
   const [hackdayDetailsOpen, setHackdayDetailsOpen] = useState<boolean>(false);
   const [personHackDayDetails, setPersonHackdayDetails] =
     useState<PersonHackdayDetails>(undefined);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Box, Dialog, DialogContent, Divider } from "@mui/material";
 import { DialogHeader } from "@workday-core/components/dialog";
 import { Theme } from "@mui/material/styles";
@@ -17,7 +17,7 @@ import { AggregationPersonObject } from "./MissingHoursCard";
 import Typography from "@mui/material/Typography";
 import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
-const PREFIX = 'MissingHoursDetailDialog';
+const PREFIX = "MissingHoursDetailDialog";
 
 const classes = {
   flexDataContainer: `${PREFIX}-flexDataContainer`,
@@ -27,11 +27,11 @@ const classes = {
   dataItemUnpaidPL: `${PREFIX}-dataItemUnpaidPL`,
   dataItemSickDay: `${PREFIX}-dataItemSickDay`,
   dataItemEventDay: `${PREFIX}-dataItemEventDay`,
-  dataItemMissing: `${PREFIX}-dataItemMissing`
+  dataItemMissing: `${PREFIX}-dataItemMissing`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')(({ theme }) => ({
+const Root = styled("div")(({ theme }) => ({
   [`& .${classes.flexDataContainer}`]: {
     display: "flex",
     height: "2rem",
@@ -66,7 +66,7 @@ const Root = styled('div')(({ theme }) => ({
 
   [`& .${classes.dataItemMissing}`]: {
     backgroundColor: "#9e9e9e",
-  }
+  },
 }));
 
 type MissingHoursDetailDialogProps = {
@@ -81,7 +81,6 @@ export function MissingHoursDetailDialog({
   onComplete,
 }: MissingHoursDetailDialogProps) {
   const [state, setState] = useState<any>(null);
-
 
   useEffect(() => {
     if (open) {

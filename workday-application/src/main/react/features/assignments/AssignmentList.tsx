@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
 import Grid from "@mui/material/Grid";
@@ -12,14 +12,14 @@ import { isDefined } from "../../utils/validation";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
-const PREFIX = 'AssignmentList';
+const PREFIX = "AssignmentList";
 
 const classes = {
-  list: `${PREFIX}-list`
+  list: `${PREFIX}-list`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({
+const Root = styled("div")({
   [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
@@ -42,8 +42,6 @@ export function AssignmentList({
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(-1);
   const [loading, setLoading] = useState(true);
-
-
 
   useEffect(() => {
     if (personId) {

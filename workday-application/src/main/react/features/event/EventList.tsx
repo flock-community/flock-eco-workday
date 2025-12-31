@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Box, Card, Chip, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
@@ -13,14 +13,14 @@ import { isDefined } from "../../utils/validation";
 import { EventTypeMapping } from "../../utils/mappings";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
-const PREFIX = 'EventList';
+const PREFIX = "EventList";
 
 const classes = {
-  list: `${PREFIX}-list`
+  list: `${PREFIX}-list`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({
+const Root = styled("div")({
   [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
@@ -39,8 +39,6 @@ export const EventList = ({
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
-
-
 
   useEffect(() => {
     setLoading(true);

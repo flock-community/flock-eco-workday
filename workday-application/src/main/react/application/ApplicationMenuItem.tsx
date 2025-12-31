@@ -1,5 +1,5 @@
 import { useHistory } from "react-router-dom";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import React, { useState } from "react";
 import ListItemText from "@mui/material/ListItemText";
@@ -10,17 +10,17 @@ import List from "@mui/material/List";
 import { Theme } from "@mui/material/styles";
 import ListItemButton from "@mui/material/ListItemButton";
 
-const PREFIX = 'ApplicationMenuItem';
+const PREFIX = "ApplicationMenuItem";
 
 const classes = {
-  nested: `${PREFIX}-nested`
+  nested: `${PREFIX}-nested`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')(({ theme }) => ({
+const Root = styled("div")(({ theme }) => ({
   [`& .${classes.nested}`]: {
     paddingLeft: theme.spacing(1),
-  }
+  },
 }));
 
 type Item = {
@@ -46,8 +46,6 @@ export default function ApplicationMenuItem({
 }: ApplicationMenuItemProps) {
   const history = useHistory();
   const [open, setOpen] = useState(false);
-
-
 
   const handleClickItem = (item: Item) => () => {
     handleClose();

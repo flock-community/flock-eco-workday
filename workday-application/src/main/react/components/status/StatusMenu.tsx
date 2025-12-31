@@ -1,5 +1,5 @@
 import Button from "@mui/material/Button";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Theme } from "@mui/material/styles";
@@ -10,16 +10,16 @@ import {
   filterTransitionsFromByStatus,
 } from "./StatusMethods";
 
-const PREFIX = 'StatusMenu';
+const PREFIX = "StatusMenu";
 
 const classes = {
   buttonRequested: `${PREFIX}-buttonRequested`,
   buttonApproved: `${PREFIX}-buttonApproved`,
   buttonRejected: `${PREFIX}-buttonRejected`,
-  buttonDone: `${PREFIX}-buttonDone`
+  buttonDone: `${PREFIX}-buttonDone`,
 };
 
-const Root = styled('div')(({ theme }) => ({
+const Root = styled("div")(({ theme }) => ({
   [`& .${classes.buttonRequested}`]: {
     backgroundColor: "unset",
     "&:disabled": {
@@ -49,7 +49,7 @@ const Root = styled('div')(({ theme }) => ({
       // @ts-ignore
       backgroundColor: theme.palette.done,
     },
-  }
+  },
 }));
 
 type StatusMenuProps = {
@@ -59,8 +59,6 @@ type StatusMenuProps = {
 };
 
 export function StatusMenu({ onChange, disabled, value }: StatusMenuProps) {
-
-
   const [anchorEl, setAnchorEl] = useState(null);
   const [expanded, setIsExpanded] = useState(false);
 

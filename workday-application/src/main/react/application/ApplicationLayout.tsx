@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -16,17 +16,17 @@ import { Link } from "@mui/material";
 // Hooks
 import { useSession } from "../hooks/SessionHook";
 
-const PREFIX = 'ApplicationLayout';
+const PREFIX = "ApplicationLayout";
 
 const classes = {
   root: `${PREFIX}-root`,
   grow: `${PREFIX}-grow`,
   menuButton: `${PREFIX}-menuButton`,
-  navBar: `${PREFIX}-navBar`
+  navBar: `${PREFIX}-navBar`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({
+const Root = styled("div")({
   [`& .${classes.root}`]: {
     flexGrow: 1,
   },
@@ -47,8 +47,6 @@ type ApplicationLayoutProps = {
 };
 
 export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
-
-
   const handleLogout = () => {
     window.location.href = "/logout";
   };

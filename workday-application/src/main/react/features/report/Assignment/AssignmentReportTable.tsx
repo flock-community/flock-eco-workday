@@ -1,5 +1,5 @@
 import Typography from "@mui/material/Typography";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import React, { Fragment, useEffect, useState } from "react";
 import { AggregationClient } from "../../../clients/AggregationClient";
 import { Box, TableBody, TableContainer } from "@mui/material";
@@ -11,10 +11,10 @@ import AssignmentReportTableRow from "./AssignmentReportTableRow";
 import { Dayjs } from "dayjs";
 import { AggregationClientPersonAssignmentOverview } from "../../../wirespec/Models";
 
-const PREFIX = 'AssignmentReportTable';
+const PREFIX = "AssignmentReportTable";
 
 const classes = {
-  tableContainer: `${PREFIX}-tableContainer`
+  tableContainer: `${PREFIX}-tableContainer`,
 };
 
 const StyledTableContainer = styled(TableContainer)({
@@ -35,8 +35,6 @@ export default function AssignmentReportTable({
   const [clientHourOverviewState, setClientHourOverviewState] =
     useState<AggregationClientPersonAssignmentOverview[]>();
   const [dayRange, setDayRange] = useState<string[]>();
-
-
 
   useEffect(() => {
     const daysInMonth = to.diff(from, "days", false) + 1;

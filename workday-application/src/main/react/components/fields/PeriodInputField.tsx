@@ -1,5 +1,5 @@
 import { Field } from "formik";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import { PeriodInput } from "../inputs/PeriodInput";
 import {
@@ -12,10 +12,10 @@ import { ButtonGroup } from "@mui/material";
 import Button from "@mui/material/Button";
 import dayjs from "dayjs";
 
-const PREFIX = 'PeriodInputField';
+const PREFIX = "PeriodInputField";
 
 const classes = {
-  buttons: `${PREFIX}-buttons`
+  buttons: `${PREFIX}-buttons`,
 };
 
 const StyledField = styled(Field)({
@@ -37,8 +37,6 @@ export function PeriodInputField({
   to,
   reset,
 }: PeriodInputFieldProps) {
-
-
   const render = ({ field: { value }, form: { setFieldValue } }) => {
     const [period, setPeriod] = useState<Period>({
       from: from,

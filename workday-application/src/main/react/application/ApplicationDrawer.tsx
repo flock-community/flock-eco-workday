@@ -1,5 +1,5 @@
 import List from "@mui/material/List";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import React from "react";
 import ProjectIcon from "@mui/icons-material/AccountTree";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -23,12 +23,12 @@ import Drawer from "@mui/material/Drawer";
 import { useUserMe } from "../hooks/UserMeHook";
 import ApplicationMenuItem from "./ApplicationMenuItem";
 
-const PREFIX = 'ApplicationDrawer';
+const PREFIX = "ApplicationDrawer";
 
 const classes = {
   head: `${PREFIX}-head`,
   list: `${PREFIX}-list`,
-  fullList: `${PREFIX}-fullList`
+  fullList: `${PREFIX}-fullList`,
 };
 
 const StyledDrawer = styled(Drawer)({
@@ -49,7 +49,6 @@ type ApplicationDrawerProps = {
 };
 
 export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
-
   const [user] = useUserMe();
 
   const handleClose = () => onClose?.();

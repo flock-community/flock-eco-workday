@@ -1,5 +1,5 @@
 import React from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Theme } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import Tabs from "@mui/material/Tabs";
@@ -8,17 +8,17 @@ import Tab from "@mui/material/Tab";
 // Types
 import { GroupedTodos, TypeProp } from "../../types";
 
-const PREFIX = 'SimpleTabs';
+const PREFIX = "SimpleTabs";
 
 const classes = {
-  root: `${PREFIX}-root`
+  root: `${PREFIX}-root`,
 };
 
-const Root = styled('div')(({ theme }) => ({
+const Root = styled("div")(({ theme }) => ({
   [`& .${classes.root}`]: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
-  }
+  },
 }));
 
 type TabPanelProps = {
@@ -46,7 +46,6 @@ export const SimpleTabs = ({
   renderFunction,
   exposedValue,
 }: simpleTabsProps) => {
-
   const [value, setValue] = React.useState(0);
   const categories = data.map((item) => item.todoType);
 

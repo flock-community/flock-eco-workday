@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import { CardContent } from "@mui/material";
 import Grid from "@mui/material/Grid";
@@ -7,11 +7,11 @@ import Typography from "@mui/material/Typography";
 import { Client, ClientClient } from "../../clients/ClientClient";
 import { isDefined } from "../../utils/validation";
 
-const PREFIX = 'ClientList';
+const PREFIX = "ClientList";
 
 const classes = {
   root: `${PREFIX}-root`,
-  fab: `${PREFIX}-fab`
+  fab: `${PREFIX}-fab`,
 };
 
 const StyledGrid = styled(Grid)({
@@ -31,8 +31,6 @@ type ClientListProps = {
 };
 
 export function ClientList({ reload, onItemClick }: ClientListProps) {
-
-
   const [list, setList] = useState<Client[]>([]);
 
   useEffect(() => {
