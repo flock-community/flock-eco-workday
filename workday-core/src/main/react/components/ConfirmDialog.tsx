@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
-import { DialogBody } from "../../../../../workday-application/src/main/react/components/dialog/DialogHeader";
+import { DialogBody } from "./dialog/DialogHeader";
 
 type ConfirmDialogProps = {
   open: boolean;

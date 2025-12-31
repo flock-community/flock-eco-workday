@@ -19,11 +19,7 @@ const classes = {
   buttonDone: `${PREFIX}-buttonDone`
 };
 
-const Root = styled('div')((
-  {
-    theme: Theme
-  }
-) => ({
+const Root = styled('div')(({ theme }) => ({
   [`& .${classes.buttonRequested}`]: {
     backgroundColor: "unset",
     "&:disabled": {

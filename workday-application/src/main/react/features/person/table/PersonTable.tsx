@@ -32,11 +32,7 @@ const classes = {
   link: `${PREFIX}-link`
 };
 
-const StyledBox = styled(Box)((
-  {
-    theme: any
-  }
-) => ({
+const StyledBox = styled(Box)(({ theme }) => ({
   [`& .${classes.tblEmail}`]: {
     minWidth: 200,
   },
@@ -52,7 +48,6 @@ const StyledBox = styled(Box)((
   [`& .${classes.link}`]: {
     color: "black",
     textDecoration: "none",
-    ...theme?.props?.link,
   }
 }));
 

@@ -14,11 +14,7 @@ const classes = {
   root: `${PREFIX}-root`
 };
 
-const Root = styled('div')((
-  {
-    theme: Theme
-  }
-) => ({
+const Root = styled('div')(({ theme }) => ({
   [`& .${classes.root}`]: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,

@@ -1,2 +1,2 @@
 export { DialogFooter } from "./DialogFooter";
-export { DialogHeader } from "./DialogHeader";
+export { DialogHeader, DialogBody } from "./DialogHeader";

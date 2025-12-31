@@ -15,11 +15,7 @@ const classes = {
   status: `${PREFIX}-status`
 };
 
-const StyledCard = styled(Card)((
-  {
-    theme: Theme
-  }
-) => ({
+const StyledCard = styled(Card)(({ theme }) => ({
   [`& .${classes.root}`]: {
     position: "relative",
   },

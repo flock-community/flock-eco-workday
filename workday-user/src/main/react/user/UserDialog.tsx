@@ -9,11 +9,7 @@ import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import { Snackbar } from "@mui/material";
 import { User } from "@workday-user/user/response/user";
 import UserIcon from "@mui/icons-material/Person";
-
-import {
-  DialogBody,
-  DialogHeader,
-} from "../../../../../workday-application/src/main/react/components/dialog/DialogHeader";
+import { DialogBody, DialogHeader } from "@workday-core/components/dialog";
 
 type UserDialogProps = {
   open: boolean;

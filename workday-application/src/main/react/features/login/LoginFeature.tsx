@@ -22,11 +22,7 @@ const classes = {
   flock: `${PREFIX}-flock`
 };
 
-const StyledBox = styled(Box)((
-  {
-    theme: Theme
-  }
-) => ({
+const StyledBox = styled(Box)(({ theme }) => ({
   [`&.${classes.root}`]: {
     width: "100%",
     minHeight: "100vh",

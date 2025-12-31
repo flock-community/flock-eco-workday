@@ -15,11 +15,7 @@ const classes = {
   status: `${PREFIX}-status`
 };
 
-const StyledTableRow = styled(TableRow)((
-  {
-    theme: Theme
-  }
-) => ({
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
   [`& .${classes.root}`]: {
     position: "relative",
   },
