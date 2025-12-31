@@ -1,25 +1,15 @@
 import React from "react";
-import { CircularProgress, Theme } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { CircularProgress } from "@mui/material";
 import Grid from "@mui/material/Grid";
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    height: "100%",
-  },
-}));
 
 type AlignedLoaderProps = {
   height?: number;
 };
 
 export function AlignedLoader({ height }: AlignedLoaderProps) {
-  const classes = useStyles();
-
   return (
     <Grid
-      style={{ height }}
-      className={classes.root}
+      sx={{ height: height || "100%" }}
       container
       alignItems="center"
       justifyContent="center"
