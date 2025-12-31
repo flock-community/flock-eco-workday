@@ -7,7 +7,7 @@ export type DropzoneAreaProps = {
   maxFileSize?: number;
   filesLimit?: number;
   acceptedFiles?: string[];
-  onDrop: (files: File[]) => void | Promise<void>;
+  onDrop: (files: File[]) => Promise<void>;
   showPreviewsInDropzone?: boolean;
 };
 

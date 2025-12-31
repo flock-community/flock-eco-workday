@@ -3,7 +3,6 @@ import { styled } from '@mui/material/styles';
 import React from "react";
 import { useLoginType } from "../../hooks/LoginTypeHook";
 import Button from "@mui/material/Button";
-import { Theme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 
