@@ -1,28 +1,9 @@
 import React from "react";
-
 import Button from "@mui/material/Button";
-
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import Typography from "@mui/material/Typography";
-import makeStyles from "@mui/styles/makeStyles";
-import { Theme } from "@mui/material/styles";
-import EventIcon from "@mui/icons-material/CalendarToday";
-import { DialogHeader } from "../../../../../workday-application/src/main/react/components/dialog";
 import { DialogBody } from "../../../../../workday-application/src/main/react/components/dialog/DialogHeader";
-
-const useStyles = makeStyles((theme: Theme) => ({
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-}));
 
 type ConfirmDialogProps = {
   open: boolean;
@@ -37,7 +18,6 @@ export function ConfirmDialog({
   onConfirm,
   children,
 }: ConfirmDialogProps) {
-  const classes = useStyles();
 
   const handleClose = () => {
     onClose && onClose();
