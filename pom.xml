@@ -45,6 +45,7 @@
         <spring.boot.version>3.4.13</spring.boot.version>
         <spring.cloud.gcp.version>5.12.3</spring.cloud.gcp.version>
 
+        <spotless.version>3.1.0</spotless.version>
         <!-- Library Versions -->
         <jackson.version>2.13.1</jackson.version>
         <liquibase.version>5.0.1</liquibase.version>
@@ -70,7 +71,6 @@
         <kotlin-maven-plugin.version>${kotlin.version}</kotlin-maven-plugin.version>
         <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
         <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
-        <ktlint-maven-plugin.version>3.0.0</ktlint-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
@@ -396,11 +396,34 @@
                     </configuration>
                 </plugin>
 
-                <!-- ktlint Maven Plugin (Code Quality) -->
+                <!-- Maven Surefire Plugin (Testing) -->
                 <plugin>
-                    <groupId>com.github.gantsign.maven</groupId>
-                    <artifactId>ktlint-maven-plugin</artifactId>
-                    <version>${ktlint-maven-plugin.version}</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>${spotless.version}</version>
+                    <configuration>
+                        <kotlin>
+                            <ktlint/>
+                        </kotlin>
+                        <pom>
+                            <sortPom>
+                                <predefinedSortOrder>custom_1</predefinedSortOrder>
+                                <lineSeparator>\n</lineSeparator>
+                                <encoding>${project.build.sourceEncoding}</encoding>
+                                <sortProperties>true</sortProperties>
+                                <sortDependencies>scope,groupId,artifactId</sortDependencies>
+                                <sortDependencyManagement/>
+                                <nrOfIndentSpace>4</nrOfIndentSpace>
+                                <expandEmptyElements>false</expandEmptyElements>
+                            </sortPom>
+                        </pom>
+                    </configuration>
                     <executions>
                         <execution>
                             <id>check</id>
@@ -409,13 +432,6 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
-
-                <!-- Maven Surefire Plugin (Testing) -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven-surefire-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -526,33 +542,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.github.gantsign.maven</groupId>
-                <artifactId>ktlint-maven-plugin</artifactId>
-                <configuration>
-                    <!-- Unofficial way to include only `src` files: https://github.com/gantsign/ktlint-maven-plugin/issues/341#issuecomment-1677673242 -->
-                    <sourceRoots>${project.build.sourceDirectory}</sourceRoots>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>ktlint-check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>verify</phase>
-                        <configuration>
-                            <skip>${quality.skip}</skip>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>ktlint-format</id>
-                        <goals>
-                            <goal>format</goal>
-                        </goals>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.jetbrains.dokka</groupId>
                 <artifactId>dokka-maven-plugin</artifactId>
                 <version>1.9.0</version>
@@ -596,6 +585,10 @@
                 <configuration>
                     <skip>true</skip>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
             </plugin>
 
         </plugins>
@@ -658,6 +651,27 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>format</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.diffplug.spotless</groupId>
+                        <artifactId>spotless-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>format</id>
+                                <goals>
+                                    <goal>apply</goal>
+                                </goals>
+                                <phase>process-sources</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 
 </project>

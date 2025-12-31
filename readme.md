@@ -193,13 +193,20 @@ Connection settings (from `application-develop.properties`):
 
 ### Kotlin Linting (ktlint)
 
-```bash
-# Check code style
-./mvnw ktlint:check
+The project uses ktlint for Kotlin code style. This is configured through the spotless maven plugin.
 
-# Auto-fix code style issues
-./mvnw ktlint:format
+By default, spotless will check for code style issues in maven's `verify` phase. To fix issues automatically, run:
+
+```bash
+# With the format profile enabled, spotless will automatically format code
+./mvnw test-compile -Pformat
+
+# Check for code style issues
+./mvnw test-compile spotless:apply
+
 ```
+
+Spotless will also format pom files automatically, using the `sort-pom` plugin.
 
 ### Frontend Linting (ESLint)
 
