@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Redirect, Route } from "react-router-dom";
 import { Box, ThemeProvider } from "@mui/material";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { ThemeProvider as Mui4ThemeProvider } from "@mui/styles";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { useLoginStatus } from "../hooks/StatusHook";
 import { getTheme } from "../theme/theme";
@@ -45,24 +44,22 @@ export const Application = () => {
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl">
         <StyledEngineProvider injectFirst>
           <ThemeProvider theme={theme}>
-            <Mui4ThemeProvider theme={theme}>
-              <ErrorBoundary
-                FallbackComponent={ErrorFallback}
-                onReset={() => {
-                  // Optionally reset app state here
-                }}
-                onError={(error, info) => {
-                  logErrorToService(error, info);
-                }}
-              >
-                {status.isLoggedIn ? (
-                  <AuthenticatedApplication />
-                ) : (
-                  <UnauthenticatedApplication />
-                )}
-                <ErrorStack ErrorList={errors} />
-              </ErrorBoundary>
-            </Mui4ThemeProvider>
+            <ErrorBoundary
+              FallbackComponent={ErrorFallback}
+              onReset={() => {
+                // Optionally reset app state here
+              }}
+              onError={(error, info) => {
+                logErrorToService(error, info);
+              }}
+            >
+              {status.isLoggedIn ? (
+                <AuthenticatedApplication />
+              ) : (
+                <UnauthenticatedApplication />
+              )}
+              <ErrorStack ErrorList={errors} />
+            </ErrorBoundary>
           </ThemeProvider>
         </StyledEngineProvider>
       </LocalizationProvider>
