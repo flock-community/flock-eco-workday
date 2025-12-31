@@ -1,5 +1,5 @@
 import React from "react";
-import { FormControl, Grid } from "@mui/material";
+import { FormControl, Grid2 } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import { CheckboxWithLabel, TextField as FormikTextField } from "formik-mui";
 import { PERSON_FORM_SCHEMA } from "./schema";
@@ -18,8 +18,8 @@ type PersonFormProps = {
 export function PersonForm({ item, onSubmit }: PersonFormProps) {
   const form = () => (
     <Form id={PERSON_FORM_ID}>
-      <Grid container item xs={12} spacing={2}>
-        <Grid item xs={12} sm={6}>
+      <Grid2 container size={{ xs: 12 }} spacing={2}>
+        <Grid2 size={{ xs: 12, sm: 6 }}>
           <FormControl fullWidth>
             <Field
               id="firstname"
@@ -31,8 +31,8 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
               component={FormikTextField}
             />
           </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={6}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, sm: 6 }}>
           <FormControl fullWidth>
             <Field
               id="lastname"
@@ -43,8 +43,8 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
               component={FormikTextField}
             />
           </FormControl>
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
           <FormControl fullWidth>
             <Field
               id="email"
@@ -54,8 +54,8 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
               component={FormikTextField}
             />
           </FormControl>
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
           <FormControl fullWidth>
             <Field
               id="number"
@@ -64,32 +64,32 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
               component={FormikTextField}
             />
           </FormControl>
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
           <DatePickerField name="birthdate" label="Birthdate" />
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
           <DatePickerField name="joinDate" label="Join date" />
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
           <FormControl fullWidth>
             <UserSelectorField name="userCode" />
           </FormControl>
-        </Grid>
+        </Grid2>
 
-        <Grid item xs={12} sm={6}>
+        <Grid2 size={{ xs: 12, sm: 6 }}>
           <FormControl fullWidth>
             <ShoeSizeSelectorField name="shoeSize" />
           </FormControl>
-        </Grid>
+        </Grid2>
 
-        <Grid item xs={12} sm={6}>
+        <Grid2 size={{ xs: 12, sm: 6 }}>
           <FormControl fullWidth>
             <ShirtSizeSelectorField name="shirtSize" />
           </FormControl>
-        </Grid>
+        </Grid2>
 
-        <Grid item xs={12}>
+        <Grid2 size={{ xs: 12 }}>
           <FormControl fullWidth>
             <Field
               id="googleDriveId"
@@ -99,9 +99,9 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
               component={FormikTextField}
             />
           </FormControl>
-        </Grid>
+        </Grid2>
 
-        <Grid item xs={12}>
+        <Grid2 size={{ xs: 12 }}>
           <FormControl fullWidth>
             <Field
               name="reminders"
@@ -110,8 +110,8 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
               component={CheckboxWithLabel}
             />
           </FormControl>
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
           <FormControl fullWidth>
             <Field
               name="receiveEmail"
@@ -120,8 +120,8 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
               component={CheckboxWithLabel}
             />
           </FormControl>
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
           <FormControl fullWidth>
             <Field
               name="active"
@@ -130,8 +130,8 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
               component={CheckboxWithLabel}
             />
           </FormControl>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Form>
   );
 

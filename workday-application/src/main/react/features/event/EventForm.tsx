@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import Grid from "@mui/material/Grid";
+import Grid2 from "@mui/material/Grid2";
 import { TextField } from "formik-mui";
 import { DatePickerField } from "../../components/fields/DatePickerField";
 import { PersonSelectorField } from "../../components/fields/PersonSelectorField";
@@ -52,8 +52,8 @@ export function EventForm({ value, onSubmit }) {
 
     return (
       <Form id={EVENT_FORM_ID}>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
+        <Grid2 container spacing={1}>
+          <Grid2 size={{ xs: 12 }}>
             <Field
               name="description"
               type="text"
@@ -61,8 +61,8 @@ export function EventForm({ value, onSubmit }) {
               fullWidth
               component={TextField}
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={{ xs: 12 }}>
             <Field
               name="costs"
               type="number"
@@ -70,31 +70,31 @@ export function EventForm({ value, onSubmit }) {
               fullWidth
               component={TextField}
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={{ xs: 12 }}>
             <PersonSelectorField name="personIds" multiple fullWidth />
-          </Grid>
-          <Grid item xs={12} style={{ marginTop: "1rem" }}>
+          </Grid2>
+          <Grid2 size={{ xs: 12 }} style={{ marginTop: "1rem" }}>
             <EventTypeSelect
               value={values.type}
               onChange={handleEventTypeChange}
             />
-          </Grid>
-          <Grid item xs={6}>
+          </Grid2>
+          <Grid2 size={{ xs: 6 }}>
             <DatePickerField name="from" label="From" maxDate={values.to} />
-          </Grid>
-          <Grid item xs={6}>
+          </Grid2>
+          <Grid2 size={{ xs: 6 }}>
             <DatePickerField name="to" label="To" minDate={values.from} />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={{ xs: 12 }}>
             <PeriodInputField
               name="days"
               from={values.from}
               to={values.to}
               reset={resetHours}
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Form>
     );
   };

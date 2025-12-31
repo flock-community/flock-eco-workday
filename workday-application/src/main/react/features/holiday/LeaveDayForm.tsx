@@ -1,7 +1,7 @@
 import React from "react";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import Grid from "@mui/material/Grid";
+import Grid2 from "@mui/material/Grid2";
 import { TextField } from "formik-mui";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import MenuItem from "@mui/material/MenuItem";
@@ -37,8 +37,8 @@ export function LeaveDayForm({ value, onSubmit }: LeaveDayFormProps) {
   const renderForm = ({ values }) => {
     return (
       <Form id={LEAVE_DAY_DIALOG_FORM_ID}>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
+        <Grid2 container spacing={1}>
+          <Grid2 size={{ xs: 12 }}>
             <Field
               name="description"
               type="text"
@@ -46,10 +46,10 @@ export function LeaveDayForm({ value, onSubmit }: LeaveDayFormProps) {
               fullWidth
               component={TextField}
             />
-          </Grid>
+          </Grid2>
 
           {value && (
-            <Grid item xs={12}>
+            <Grid2 size={{ xs: 12 }}>
               <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
                 <Field
                   name="status"
@@ -67,19 +67,19 @@ export function LeaveDayForm({ value, onSubmit }: LeaveDayFormProps) {
                   <MenuItem value="DONE">DONE</MenuItem>
                 </Field>
               </UserAuthorityUtil>
-            </Grid>
+            </Grid2>
           )}
 
-          <Grid item xs={6}>
+          <Grid2 size={{ xs: 6 }}>
             <DatePickerField name="from" label="From" maxDate={values.to} />
-          </Grid>
-          <Grid item xs={6}>
+          </Grid2>
+          <Grid2 size={{ xs: 6 }}>
             <DatePickerField name="to" label="To" minDate={values.from} />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={{ xs: 12 }}>
             <PeriodInputField name="days" from={values.from} to={values.to} />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Form>
     );
   };

@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid } from "@mui/material";
+import { Grid2 } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
 import * as Yup from "yup";
@@ -28,19 +28,19 @@ export const ExpenseFormTravel = ({
   const form = ({ errors }) => {
     return (
       <Form id={EXPENSE_TRAVEL_FORM_ID}>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
+        <Grid2 container spacing={1}>
+          <Grid2 size={{ xs: 12 }}>
             <Field
               name="description"
               label="Description"
               fullWidth
               component={TextField}
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={{ xs: 12 }}>
             <DatePickerField name="date" label="Date" />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={{ xs: 12 }}>
             <Field
               name="distance"
               type="number"
@@ -48,8 +48,8 @@ export const ExpenseFormTravel = ({
               fullWidth
               component={TextField}
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={{ xs: 12 }}>
             <Field
               name="allowance"
               type="number"
@@ -57,8 +57,8 @@ export const ExpenseFormTravel = ({
               fullWidth
               component={TextField}
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Form>
     );
   };

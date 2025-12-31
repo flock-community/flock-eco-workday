@@ -1,7 +1,7 @@
 import React from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
-import Grid from "@mui/material/Grid";
+import Grid2 from "@mui/material/Grid2";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
@@ -67,12 +67,12 @@ export const SimpleTabs = ({
 
         return (
           <TabPanel key={index} value={value} index={index}>
-            <Grid container spacing={1}>
+            <Grid2 container spacing={1}>
               {selectedTab &&
                 selectedTab.todos.map((item, index) => {
                   return renderFunction(item, index);
                 })}
-            </Grid>
+            </Grid2>
           </TabPanel>
         );
       })}

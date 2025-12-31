@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Grid } from "@mui/material";
+import { Grid2 } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import { CheckboxWithLabel, TextField } from "formik-mui";
 import { boolean, mixed, number, object } from "yup";
@@ -20,8 +20,8 @@ export const ContractFormExternal = ({
 }: ContractFormExternalProps) => {
   const form = ({ values }) => (
     <Form id={EXTERNAL_CONTRACT_FORM_ID}>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
+      <Grid2 container spacing={1}>
+        <Grid2 size={{ xs: 12 }}>
           <Field
             name="hourlyRate"
             type="number"
@@ -29,8 +29,8 @@ export const ContractFormExternal = ({
             fullWidth
             component={TextField}
           />
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
           <Field
             name="hoursPerWeek"
             type="number"
@@ -38,26 +38,26 @@ export const ContractFormExternal = ({
             fullWidth
             component={TextField}
           />
-        </Grid>
-        <Grid item xs={6}>
+        </Grid2>
+        <Grid2 size={{ xs: 6 }}>
           <DatePickerField
             name="from"
             label="Start date"
             maxDate={values.to ? values.to : undefined}
           />
-        </Grid>
-        <Grid item xs={6}>
+        </Grid2>
+        <Grid2 size={{ xs: 6 }}>
           <DatePickerField name="to" label="End date" minDate={values.from} />
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
           <Field
             name="billable"
             type="checkbox"
             Label={{ label: "Billable" }}
             component={CheckboxWithLabel}
           />
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Form>
   );
 

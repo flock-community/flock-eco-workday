@@ -10,7 +10,7 @@ import Typography from "@mui/material/Typography";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import Grid from "@mui/material/Grid";
+import Grid2 from "@mui/material/Grid2";
 import { ContractClient } from "../../clients/ContractClient";
 import { isDefined } from "../../utils/validation";
 import { ContractFormInternal } from "./ContractFormInternal";
@@ -79,9 +79,9 @@ export function ContractDialog(props) {
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
         <DialogTitle>Contract form</DialogTitle>
         <DialogBody>
-          <Grid container spacing={1}>
+          <Grid2 container spacing={1}>
             {!code && (
-              <Grid item xs={12}>
+              <Grid2 size={{ xs: 12 }}>
                 <FormControl fullWidth>
                   <Select
                     id="contract-type-select"
@@ -94,9 +94,9 @@ export function ContractDialog(props) {
                     <MenuItem value="SERVICE">Service</MenuItem>
                   </Select>
                 </FormControl>
-              </Grid>
+              </Grid2>
             )}
-            <Grid item xs={12}>
+            <Grid2 size={{ xs: 12 }}>
               {type === ContractType.INTERNAL && (
                 <ContractFormInternal value={state} onSubmit={handleSubmit} />
               )}
@@ -109,8 +109,8 @@ export function ContractDialog(props) {
               {type === ContractType.SERVICE && (
                 <ContractFormService value={state} onSubmit={handleSubmit} />
               )}
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </DialogBody>
 
         <DialogActions>

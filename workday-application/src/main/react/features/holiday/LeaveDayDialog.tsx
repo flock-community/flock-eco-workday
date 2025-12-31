@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
-  Grid,
   MenuItem,
   Select,
   Slide,
 } from "@mui/material";
+import Grid2 from "@mui/material/Grid2";
 import HolidayIcon from "@mui/icons-material/WbSunny";
 import Typography from "@mui/material/Typography";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
@@ -135,10 +135,10 @@ export function LeaveDayDialog({
           onClose={handleClose}
         />
         <DialogBody>
-          <Grid container spacing={1}>
+          <Grid2 container spacing={1}>
             {!code && (
               <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
-                <Grid item xs={12}>
+                <Grid2 size={{ xs: 12 }}>
                   <Select
                     value={type}
                     onChange={(e) => {
@@ -156,11 +156,11 @@ export function LeaveDayDialog({
                     </MenuItem>
                     <MenuItem value={Types.PAID_LEAVE}>Paid Leave</MenuItem>
                   </Select>
-                </Grid>
+                </Grid2>
               </UserAuthorityUtil>
             )}
             {state && (
-              <Grid item xs={12}>
+              <Grid2 size={{ xs: 12 }}>
                 {type === Types.HOLIDAY && (
                   <HolidayForm value={state} onSubmit={handleSubmit} />
                 )}
@@ -176,9 +176,9 @@ export function LeaveDayDialog({
                 {type === Types.PAID_LEAVE && (
                   <LeaveDayForm value={state} onSubmit={handleSubmit} />
                 )}
-              </Grid>
+              </Grid2>
             )}
-          </Grid>
+          </Grid2>
         </DialogBody>
         <DialogFooter
           formId={LEAVE_DAY_DIALOG_FORM_ID}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Card, Chip, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid";
+import Grid2 from "@mui/material/Grid2";
 import {
   EVENT_PAGE_SIZE,
   EventClient,
@@ -53,7 +53,7 @@ export const EventList = ({
 
   function renderItem(item: FullFlockEvent) {
     return (
-      <Grid key={`workday-list-item-${item.id}`} item xs={12}>
+      <Grid2 key={`workday-list-item-${item.id}`} size={{ xs: 12 }}>
         <Card onClick={handleClickRow(item)}>
           <CardContent>
             <Box
@@ -90,7 +90,7 @@ export const EventList = ({
             </Typography>
           </CardContent>
         </Card>
-      </Grid>
+      </Grid2>
     );
   }
 
@@ -98,9 +98,9 @@ export const EventList = ({
     return (
       <Card>
         <CardContent>
-          <Grid container spacing={1} className={classes.list}>
+          <Grid2 container spacing={1} className={classes.list}>
             <Typography>No events</Typography>
-          </Grid>
+          </Grid2>
         </CardContent>
       </Card>
     );
@@ -108,9 +108,9 @@ export const EventList = ({
 
   return (
     <>
-      <Grid container spacing={1} className={classes.list}>
+      <Grid2 container spacing={1} className={classes.list}>
         {items.map(renderItem)}
-      </Grid>
+      </Grid2>
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}

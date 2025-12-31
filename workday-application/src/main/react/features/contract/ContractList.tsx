@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
-import Grid from "@mui/material/Grid";
+import Grid2 from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import {
   CONTRACT_PAGE_SIZE,
@@ -62,9 +62,9 @@ export function ContractList({
 
   return (
     <>
-      <Grid container spacing={1} className={classes.list}>
+      <Grid2 container spacing={1} className={classes.list}>
         {items.map((it) => (
-          <Grid item xs={12} key={it.code}>
+          <Grid2 size={{ xs: 12 }} key={it.code}>
             <Card onClick={handleClickItem(it)}>
               <CardContent>
                 <Typography>{it.type}</Typography>
@@ -91,9 +91,9 @@ export function ContractList({
                 )}
               </CardContent>
             </Card>
-          </Grid>
+          </Grid2>
         ))}
-      </Grid>
+      </Grid2>
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}

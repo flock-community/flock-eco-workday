@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid";
+import Grid2 from "@mui/material/Grid2";
 import { ExactonlineClient } from "../../clients/ExactonlineClient";
 import { ExactonlineListInvoices } from "./ExactonlineListInvoices";
 
@@ -51,8 +51,8 @@ export function ExactonlineFeature() {
   }
   return (
     <Container className={classes.root}>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
+      <Grid2 container spacing={1}>
+        <Grid2 size={{ xs: 12 }}>
           <Card>
             <CardHeader title="User" />
             <CardContent>
@@ -64,14 +64,14 @@ export function ExactonlineFeature() {
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
           <Card>
             <CardHeader title="Invoices" />
             <ExactonlineListInvoices />
           </Card>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Container>
   );
 }

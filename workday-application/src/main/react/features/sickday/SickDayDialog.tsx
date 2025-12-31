@@ -10,7 +10,7 @@ import { DialogFooter, DialogHeader } from "../../components/dialog";
 import { schemaSickDayForm, SICKDAY_FORM_ID, SickDayForm } from "./SickDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import { DialogBody } from "../../components/dialog/DialogHeader";
-import Grid from "@mui/material/Grid";
+import Grid2 from "@mui/material/Grid2";
 
 type SickDayDialogProps = {
   personFullName: string;
@@ -120,21 +120,21 @@ export function SickDayDialog({
           onClose={handleClose}
         />
         <DialogBody>
-          <Grid container spacing={2}>
+          <Grid2 container spacing={2}>
             <UserAuthorityUtil has={"SickdayAuthority.ADMIN"}>
-              <Grid item xs={12}>
+              <Grid2 size={{ xs: 12 }}>
                 <Typography variant={"h5"} component={"h2"}>
                   {personFullName}
                 </Typography>
-              </Grid>
+              </Grid2>
             </UserAuthorityUtil>
 
             {state && (
-              <Grid item xs={12}>
+              <Grid2 size={{ xs: 12 }}>
                 <SickDayForm value={state} onSubmit={handleSubmit} />
-              </Grid>
+              </Grid2>
             )}
-          </Grid>
+          </Grid2>
         </DialogBody>
         <Divider />
         <DialogFooter

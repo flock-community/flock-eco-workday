@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import Grid from "@mui/material/Grid";
+import Grid2 from "@mui/material/Grid2";
 
 import FormControl from "@mui/material/FormControl";
 import UserClient from "./UserClient";
@@ -82,16 +82,16 @@ export function UserForm({ value, onSummit, ...props }) {
       validationSchema={validation}
     >
       <Form id={USER_FORM_ID}>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
+        <Grid2 container spacing={1}>
+          <Grid2 size={{ xs: 12 }}>
             <Field fullWidth name="name" label="Name" component={TextField} />
-          </Grid>
+          </Grid2>
 
-          <Grid item xs={12}>
+          <Grid2 size={{ xs: 12 }}>
             <Field fullWidth name="email" label="Email" component={TextField} />
-          </Grid>
+          </Grid2>
 
-          <Grid item xs={12}>
+          <Grid2 size={{ xs: 12 }}>
             <FieldArray
               name="authorities"
               render={(arrayHelpers) => (
@@ -114,8 +114,8 @@ export function UserForm({ value, onSummit, ...props }) {
                 </FormControl>
               )}
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Form>
     </Formik>
   );
