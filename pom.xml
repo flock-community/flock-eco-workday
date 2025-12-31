@@ -409,6 +409,10 @@
                     <version>${spotless.version}</version>
                     <configuration>
                         <kotlin>
+                            <!-- These are the defaults, you can override if you want -->
+                            <includes combine.self="append">
+                                <include>src/develop/kotlin/**/*.kt</include>
+                            </includes>
                             <ktlint/>
                         </kotlin>
                         <pom>
