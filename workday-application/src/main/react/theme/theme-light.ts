@@ -1,7 +1,6 @@
 import { blueGrey, green, red } from "@mui/material/colors";
-import { createTheme, PaletteOptions } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
-import { Theme } from "@mui/material/styles";
+import { createTheme } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 export const themeLight = createTheme({
   palette: {
@@ -60,21 +59,19 @@ export const themeLight = createTheme({
   },
 });
 
-export const highLightClass = makeStyles((theme: Theme) => ({
-  highlight: {
-    position: "relative",
-    fontFamily: theme.typography.fontFamily,
-    "&::before": {
-      content: '""',
-      backgroundColor: theme.palette.primary.main,
-      width: "100%",
-      height: ".9em",
-      position: "absolute",
-      zIndex: "-1",
-      filter: "url(#markerShape)",
-      left: "-0.15em",
-      top: "0.1em",
-      padding: "0 0.15em",
-    },
+export const HighlightSpan = styled('span')(({ theme }) => ({
+  position: "relative",
+  fontFamily: theme.typography.fontFamily,
+  "&::before": {
+    content: '""',
+    backgroundColor: theme.palette.primary.main,
+    width: "100%",
+    height: ".9em",
+    position: "absolute",
+    zIndex: "-1",
+    filter: "url(#markerShape)",
+    left: "-0.15em",
+    top: "0.1em",
+    padding: "0 0.15em",
   },
 }));

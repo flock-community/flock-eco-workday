@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { styled } from '@mui/material/styles';
 import {
   Box,
   Card,
@@ -7,7 +8,6 @@ import {
   TableContainer,
   TableHead,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import CardContent from "@mui/material/CardContent";
 import { WORK_DAY_PAGE_SIZE, WorkDayClient } from "../../clients/WorkDayClient";
 import Table from "@mui/material/Table";
@@ -20,8 +20,15 @@ import { FlockPagination } from "../../components/pagination/FlockPagination";
 // Types
 import type { DayListProps, DayProps } from "../../types";
 
-const useStyles = makeStyles({
-  card: (loading) => ({
+const PREFIX = 'WorkDayList';
+
+const classes = {
+  card: `${PREFIX}-card`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')({
+  [`& .${classes.card}`]: (loading) => ({
     marginTop: "10px",
     opacity: loading ? 0.5 : 1,
   }),
@@ -38,7 +45,7 @@ export function WorkDayList({
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const classes = useStyles(loading);
+
 
   useEffect(() => {
     setLoading(true);
@@ -76,7 +83,7 @@ export function WorkDayList({
   };
 
   return (
-    <>
+    <Root>
       <Card className={classes.card}>
         <CardContent>
           <TableContainer>
@@ -106,6 +113,6 @@ export function WorkDayList({
           changePageCb={setPage}
         />
       </Box>
-    </>
+    </Root>
   );
 }

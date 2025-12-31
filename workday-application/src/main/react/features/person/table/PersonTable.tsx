@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { styled } from '@mui/material/styles';
 import { Link, useRouteMatch } from "react-router-dom";
 import {
   Box,
@@ -14,7 +15,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 
 import { PersonTableHead } from "./PersonTableHead";
 import { Person, PersonClient } from "../../../clients/PersonClient";
@@ -23,21 +23,37 @@ import { CheckBox } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import Button from "@mui/material/Button";
 
-const useStyles = makeStyles((theme: any) => ({
-  tblEmail: {
+const PREFIX = 'PersonTable';
+
+const classes = {
+  tblEmail: `${PREFIX}-tblEmail`,
+  tblName: `${PREFIX}-tblName`,
+  tblRow: `${PREFIX}-tblRow`,
+  link: `${PREFIX}-link`
+};
+
+const StyledBox = styled(Box)((
+  {
+    theme: any
+  }
+) => ({
+  [`& .${classes.tblEmail}`]: {
     minWidth: 200,
   },
-  tblName: {
+
+  [`& .${classes.tblName}`]: {
     minWidth: 170,
   },
-  tblRow: {
+
+  [`& .${classes.tblRow}`]: {
     position: "relative",
   },
-  link: {
+
+  [`& .${classes.link}`]: {
     color: "black",
     textDecoration: "none",
     ...theme?.props?.link,
-  },
+  }
 }));
 
 export const PersonTable = () => {
@@ -50,7 +66,7 @@ export const PersonTable = () => {
   const [reload, setReload] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const classes = useStyles();
+
 
   useEffect(() => searchInputRef?.current?.focus(), [searchInputRef]);
 
@@ -84,7 +100,7 @@ export const PersonTable = () => {
   };
 
   return (
-    <Box
+    <StyledBox
       className={"flow"}
       flow-gap={"wide"}
       style={{ paddingBottom: "1.5rem" }}
@@ -155,6 +171,6 @@ export const PersonTable = () => {
         </CardContent>
       </Card>
       <PersonDialog open={dialog.open} onClose={handleDialogClose} />
-    </Box>
+    </StyledBox>
   );
 };

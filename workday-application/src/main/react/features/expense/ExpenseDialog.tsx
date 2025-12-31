@@ -8,7 +8,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogFooter, DialogHeader } from "../../components/dialog";
+import { DialogFooter, DialogHeader } from "@workday-core/components/dialog";
 import {
   emptyPersonWithUUID,
   ExpenseClient,
@@ -23,7 +23,7 @@ import {
   TravelExpense,
 } from "../../models/Expense";
 import { Status } from "../../models/Status";
-import { DialogBody } from "../../components/dialog/DialogHeader";
+import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
 type ExpenseDialogProps = {
   open: boolean;

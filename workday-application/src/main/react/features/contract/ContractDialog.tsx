@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { styled } from '@mui/material/styles';
 import { Dialog, DialogTitle } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import DialogContent from "@mui/material/DialogContent";
 import Button from "@mui/material/Button";
 import DialogActions from "@mui/material/DialogActions";
@@ -19,9 +19,13 @@ import { ContractFormManagement } from "./ContractFormManagement";
 import { ContractFormService } from "./ContractFormService";
 import { ContractType } from "./ContractType";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import { DialogBody } from "../../components/dialog/DialogHeader";
+import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
-const useStyles = makeStyles({});
+const PREFIX = 'ContractDialog';
+const classes = {};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')({});
 
 type ContractDialogProps = {
   open: boolean;
@@ -31,7 +35,7 @@ type ContractDialogProps = {
 
 export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
   // TODO: remove styles if not used and remove eslint-disable
-  const classes = useStyles(); // eslint-disable-line
+
 
   const [type, setType] = useState("INTERNAL");
   const [state, setState] = useState<any | null>(null);
@@ -79,7 +83,7 @@ export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
   };
 
   return (
-    <>
+    <Root>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
         <DialogTitle>Contract form</DialogTitle>
         <DialogBody>
@@ -140,6 +144,6 @@ export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
           &apos;
         </Typography>
       </ConfirmDialog>
-    </>
+    </Root>
   );
 }

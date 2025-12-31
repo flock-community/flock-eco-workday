@@ -6,10 +6,10 @@ import Typography from "@mui/material/Typography";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { SickDayClient } from "../../clients/SickDayClient";
 import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogFooter, DialogHeader } from "../../components/dialog";
+import { DialogFooter, DialogHeader } from "@workday-core/components/dialog";
 import { schemaSickDayForm, SICKDAY_FORM_ID, SickDayForm } from "./SickDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import { DialogBody } from "../../components/dialog/DialogHeader";
+import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 import Grid from "@mui/material/Grid";
 
 type SickDayDialogProps = {

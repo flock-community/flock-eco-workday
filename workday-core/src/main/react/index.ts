@@ -13,5 +13,4 @@ export type { ValidResponse, QueryParameters } from "./clients";
 export {
   AlignedLoader,
   ConfirmDialog,
-  DialogTitleClosable,
 } from "./components";

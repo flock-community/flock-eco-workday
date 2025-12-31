@@ -1,6 +1,6 @@
 import React from "react";
+import { styled } from '@mui/material/styles';
 import { Card, CardContent, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { StatusMenu } from "./status/StatusMenu";
@@ -8,15 +8,27 @@ import { StatusMenu } from "./status/StatusMenu";
 // types
 import type { DayProps } from "../types";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
+const PREFIX = 'DayListItem';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  status: `${PREFIX}-status`
+};
+
+const StyledCard = styled(Card)((
+  {
+    theme: Theme
+  }
+) => ({
+  [`& .${classes.root}`]: {
     position: "relative",
   },
-  status: {
+
+  [`& .${classes.status}`]: {
     position: "absolute",
     top: theme.spacing(2),
     right: theme.spacing(2),
-  },
+  }
 }));
 
 type DayListItemProps = {
@@ -32,10 +44,10 @@ export function DayListItem({
   onClickStatus,
   hasAuthority,
 }: DayListItemProps) {
-  const classes = useStyles();
+
 
   return (
-    <Card onClick={onClick}>
+    <StyledCard onClick={onClick}>
       <CardContent className={classes.root}>
         <Typography variant="h6">
           {value.description ? value.description : "empty"}
@@ -57,6 +69,6 @@ export function DayListItem({
           />
         </div>
       </CardContent>
-    </Card>
+    </StyledCard>
   );
 }

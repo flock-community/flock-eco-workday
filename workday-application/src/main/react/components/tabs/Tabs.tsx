@@ -1,5 +1,5 @@
 import React from "react";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from '@mui/material/styles';
 import { Theme } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import Tabs from "@mui/material/Tabs";
@@ -7,6 +7,23 @@ import Tab from "@mui/material/Tab";
 
 // Types
 import { GroupedTodos, TypeProp } from "../../types";
+
+const PREFIX = 'SimpleTabs';
+
+const classes = {
+  root: `${PREFIX}-root`
+};
+
+const Root = styled('div')((
+  {
+    theme: Theme
+  }
+) => ({
+  [`& .${classes.root}`]: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.paper,
+  }
+}));
 
 type TabPanelProps = {
   children?: React.ReactNode;
@@ -16,18 +33,11 @@ type TabPanelProps = {
 
 const TabPanel = ({ children, value, index, ...other }: TabPanelProps) => {
   return (
-    <div role="tabpanel" hidden={value !== index} {...other}>
+    <Root role="tabpanel" hidden={value !== index} {...other}>
       {value === index && <>{children}</>}
-    </div>
+    </Root>
   );
 };
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
-  },
-}));
 
 type simpleTabsProps = {
   data: GroupedTodos[];
@@ -40,7 +50,7 @@ export const SimpleTabs = ({
   renderFunction,
   exposedValue,
 }: simpleTabsProps) => {
-  const classes = useStyles();
+
   const [value, setValue] = React.useState(0);
   const categories = data.map((item) => item.todoType);
 

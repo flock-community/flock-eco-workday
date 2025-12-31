@@ -1,19 +1,39 @@
 import { Box, Card, CardContent, CardHeader, TextField } from "@mui/material";
+import { styled } from '@mui/material/styles';
 import React from "react";
 import { useLoginType } from "../../hooks/LoginTypeHook";
 import Button from "@mui/material/Button";
-import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
+const PREFIX = 'LoginFeature';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  background: `${PREFIX}-background`,
+  loginContent: `${PREFIX}-loginContent`,
+  card: `${PREFIX}-card`,
+  cardHeader: `${PREFIX}-cardHeader`,
+  cardContent: `${PREFIX}-cardContent`,
+  formLogin: `${PREFIX}-formLogin`,
+  googleButton: `${PREFIX}-googleButton`,
+  logo: `${PREFIX}-logo`,
+  flock: `${PREFIX}-flock`
+};
+
+const StyledBox = styled(Box)((
+  {
+    theme: Theme
+  }
+) => ({
+  [`&.${classes.root}`]: {
     width: "100%",
     minHeight: "100vh",
     backgroundImage: `linear-gradient(to bottom, white, ${theme.palette.primary.main})`,
   },
-  background: {
+
+  [`& .${classes.background}`]: {
     width: "100%",
     minHeight: "100vh",
     backgroundImage: "url('/images/background15.webp')",
@@ -21,50 +41,58 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
   },
-  loginContent: {
+
+  [`& .${classes.loginContent}`]: {
     display: "flex",
     alignItems: "center",
     flexDirection: "column",
   },
-  card: {
+
+  [`& .${classes.card}`]: {
     minWidth: "20rem",
     maxWidth: "30rem",
   },
-  cardHeader: {
+
+  [`& .${classes.cardHeader}`]: {
     backgroundColor: theme.palette.primary.main,
   },
-  cardContent: {
+
+  [`& .${classes.cardContent}`]: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
-  formLogin: {
+
+  [`& .${classes.formLogin}`]: {
     width: "100%",
     display: "flex",
     flexDirection: "column",
     alignItems: "stretch",
     gap: "2rem",
   },
-  googleButton: {
+
+  [`& .${classes.googleButton}`]: {
     display: "flex",
     width: "100%",
     justifyContent: "center",
     margin: "1rem 0",
   },
-  logo: {
+
+  [`& .${classes.logo}`]: {
     marginTop: "4rem",
     marginBottom: "2rem",
     maxWidth: "600px",
   },
-  flock: {
+
+  [`& .${classes.flock}`]: {
     fontFamily: "monospace",
     marginTop: "1rem",
     fontSize: "medium",
-  },
+  }
 }));
 
 export function LoginFeature() {
-  const classes = useStyles();
+
   const loginType = useLoginType();
   const isLoading = loginType.type == "LOADING";
   const isGoogle = loginType.type == "GOOGLE";
@@ -79,7 +107,7 @@ export function LoginFeature() {
   );
 
   return (
-    <Box className={classes.root}>
+    <StyledBox className={classes.root}>
       <Box className={classes.background}>
         <Box className={classes.loginContent}>
           <Box className={classes.logo}>
@@ -148,6 +176,6 @@ export function LoginFeature() {
           </Typography>
         </Box>
       </Box>
-    </Box>
+    </StyledBox>
   );
 }

@@ -10,7 +10,7 @@ import { isDefined } from "../../utils/validation";
 import { ASSIGNMENT_FORM_ID, AssignmentForm } from "./AssignmentForm";
 import { usePerson } from "../../hooks/PersonHook";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import { DialogBody, DialogHeader } from "../../components/dialog/DialogHeader";
+import { DialogBody, DialogHeader } from "@workday-core/components/dialog/DialogHeader";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
 type AssignmentDialogProps = {

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { styled } from '@mui/material/styles';
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -9,25 +10,34 @@ import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import makeStyles from "@mui/styles/makeStyles";
 import { Link as RouterLink } from "react-router-dom";
 import { Link } from "@mui/material";
 
 // Hooks
 import { useSession } from "../hooks/SessionHook";
 
-const useStyles = makeStyles({
-  root: {
+const PREFIX = 'ApplicationLayout';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  grow: `${PREFIX}-grow`,
+  menuButton: `${PREFIX}-menuButton`,
+  navBar: `${PREFIX}-navBar`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')({
+  [`& .${classes.root}`]: {
     flexGrow: 1,
   },
-  grow: {
+  [`& .${classes.grow}`]: {
     flexGrow: 1,
   },
-  menuButton: {
+  [`& .${classes.menuButton}`]: {
     marginLeft: -12,
     marginRight: 20,
   },
-  navBar: {
+  [`& .${classes.navBar}`]: {
     position: "sticky",
   },
 });
@@ -37,7 +47,7 @@ type ApplicationLayoutProps = {
 };
 
 export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
-  const classes = useStyles();
+
 
   const handleLogout = () => {
     window.location.href = "/logout";
@@ -64,7 +74,7 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
   };
 
   return (
-    <>
+    <Root>
       <AppBar className={classes.navBar + " full-width"}>
         <Toolbar>
           <IconButton
@@ -131,6 +141,6 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
           Extend your session or be redirected you peasant.
         </Alert>
       </Snackbar>
-    </>
+    </Root>
   );
 }

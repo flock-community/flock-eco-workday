@@ -1,4 +1,5 @@
 import List from "@mui/material/List";
+import { styled } from '@mui/material/styles';
 import React from "react";
 import ProjectIcon from "@mui/icons-material/AccountTree";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -19,18 +20,25 @@ import HomeIcon from "@mui/icons-material/Home";
 import ReportIcon from "@mui/icons-material/Assessment";
 
 import Drawer from "@mui/material/Drawer";
-import makeStyles from "@mui/styles/makeStyles";
 import { useUserMe } from "../hooks/UserMeHook";
 import ApplicationMenuItem from "./ApplicationMenuItem";
 
-const useStyles = makeStyles({
-  head: {
+const PREFIX = 'ApplicationDrawer';
+
+const classes = {
+  head: `${PREFIX}-head`,
+  list: `${PREFIX}-list`,
+  fullList: `${PREFIX}-fullList`
+};
+
+const StyledDrawer = styled(Drawer)({
+  [`& .${classes.head}`]: {
     height: 60,
   },
-  list: {
+  [`& .${classes.list}`]: {
     width: 250,
   },
-  fullList: {
+  [`& .${classes.fullList}`]: {
     width: "auto",
   },
 });
@@ -41,7 +49,7 @@ type ApplicationDrawerProps = {
 };
 
 export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
-  const classes = useStyles();
+
   const [user] = useUserMe();
 
   const handleClose = () => onClose?.();
@@ -191,9 +199,9 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
   }
 
   return (
-    <Drawer open={open} onClose={handleClose}>
+    <StyledDrawer open={open} onClose={handleClose}>
       <div className={classes.head} />
       {sideList()}
-    </Drawer>
+    </StyledDrawer>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, Divider } from "@mui/material";
-import { DialogHeader } from "../dialog";
+import { DialogHeader } from "@workday-core/components/dialog";
 import HolidayIcon from "@mui/icons-material/WbSunny";
 import ListItem from "@mui/material/ListItem";
 import List from "@mui/material/List";
@@ -8,7 +8,7 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import { PersonHolidayDetails } from "../../clients/AggregationClient";
 import { hoursFormatter } from "../../utils/Hours";
-import { DialogBody } from "../dialog/DialogHeader";
+import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
 const initialData: PersonHolidayDetails = {
   name: "",

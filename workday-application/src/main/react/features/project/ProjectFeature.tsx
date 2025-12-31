@@ -1,14 +1,20 @@
 import { Box, Card, CardContent, CardHeader } from "@mui/material";
+import { styled } from '@mui/material/styles';
 import React, { useState } from "react";
-import makeStyles from "@mui/styles/makeStyles";
 import ProjectList from "./ProjectList";
 import ProjectDialog from "./ProjectDialog";
 import { Project } from "../../clients/ProjectClient";
 import AddIcon from "@mui/icons-material/Add";
 import Button from "@mui/material/Button";
 
-const useStyles = makeStyles({
-  root: {
+const PREFIX = 'ProjectFeature';
+
+const classes = {
+  root: `${PREFIX}-root`
+};
+
+const StyledBox = styled(Box)({
+  [`& .${classes.root}`]: {
     marginTop: 100,
   },
 });
@@ -19,7 +25,7 @@ type DialogState = {
 };
 
 export function ProjectFeature() {
-  const classes = useStyles();
+
   const [dialog, setDialog] = useState<DialogState>({
     open: false,
     project: undefined,
@@ -39,7 +45,7 @@ export function ProjectFeature() {
   };
 
   return (
-    <Box
+    <StyledBox
       className={"flow"}
       flow-gap={"wide"}
       style={{ paddingBottom: "1.5rem" }}
@@ -62,6 +68,6 @@ export function ProjectFeature() {
         project={dialog.project}
         closeDialog={closeDialog}
       />
-    </Box>
+    </StyledBox>
   );
 }

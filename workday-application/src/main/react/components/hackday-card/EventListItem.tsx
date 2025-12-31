@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { styled } from '@mui/material/styles';
 import { FlockEvent } from "../../clients/EventClient";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -7,12 +8,16 @@ import { FormGroup } from "@mui/material";
 import Switch from "@mui/material/Switch";
 import { isPersonAttending } from "../../utils/EventUtils";
 import { usePerson } from "../../hooks/PersonHook";
-import makeStyles from "@mui/styles/makeStyles";
+const PREFIX = 'EventListItem';
 
-const useStyles = makeStyles(() => ({
-  active: {
+const classes = {
+  active: `${PREFIX}-active`
+};
+
+const StyledListItem = styled(ListItem)(() => ({
+  [`& .${classes.active}`]: {
     backgroundColor: "rgba(252, 222, 0, .1);",
-  },
+  }
 }));
 
 type FlockEventListItemProps = {
@@ -27,7 +32,7 @@ export function EventListItem({
   const [person] = usePerson();
   const [dateString, setDateString] = useState<string>("");
   const [btnState, setBtnState] = useState<boolean>(false);
-  const classes = useStyles();
+
 
   useEffect(() => {
     if (event) {
@@ -62,7 +67,7 @@ export function EventListItem({
   };
 
   return (
-    <ListItem data-testid={"flock-event-list-item"} className={getClasses()}>
+    <StyledListItem data-testid={"flock-event-list-item"} className={getClasses()}>
       <ListItemText primary={event.description} secondary={dateString} />
       <FormGroup row>
         <Switch
@@ -72,6 +77,6 @@ export function EventListItem({
           color="primary"
         />
       </FormGroup>
-    </ListItem>
+    </StyledListItem>
   );
 }

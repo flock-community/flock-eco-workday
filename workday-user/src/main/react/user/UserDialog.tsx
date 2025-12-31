@@ -9,7 +9,7 @@ import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import { Snackbar } from "@mui/material";
 import { User } from "@workday-user/user/response/user";
 import UserIcon from "@mui/icons-material/Person";
-import { DialogTitleClosable } from "@workday-core/components/DialogTitleClosable";
+
 import {
   DialogBody,
   DialogHeader,
@@ -109,8 +109,12 @@ export function UserDialog({
   return (
     <>
       <Dialog fullWidth maxWidth={"md"} open={open} onClose={handleClose}>
-        <DialogHeader icon={<UserIcon />} headline="Create user" subheadline="Create another user that can access the workday application" onClose={handleClose}>
-        </DialogHeader>
+        <DialogHeader
+          icon={<UserIcon />}
+          headline="Create user"
+          subheadline="Create another user that can access the workday application"
+          onClose={handleClose}
+        ></DialogHeader>
         <DialogBody>
           <UserForm
             value={state}

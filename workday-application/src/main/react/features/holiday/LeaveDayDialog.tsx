@@ -5,14 +5,14 @@ import HolidayIcon from "@mui/icons-material/WbSunny";
 import Typography from "@mui/material/Typography";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
-import { DialogFooter, DialogHeader } from "../../components/dialog";
+import { DialogFooter, DialogHeader } from "@workday-core/components/dialog";
 import { LeaveDayClient } from "../../clients/LeaveDayClient";
 import { HolidayForm } from "./HolidayForm";
 import { PlusDayForm } from "./PlusDayForm";
 import { ISO_8601_DATE } from "../../clients/util/DateFormats";
 import { LeaveDayForm } from "./LeaveDayForm";
 import dayjs from "dayjs";
-import { DialogBody } from "../../components/dialog/DialogHeader";
+import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
 export const LEAVE_DAY_DIALOG_FORM_ID = "leave-day-dialog-form-id";
 

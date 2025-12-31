@@ -7,7 +7,7 @@ import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import Typography from "@mui/material/Typography";
 import { ClientClient } from "../../clients/ClientClient";
 import { CLIENT_FORM_ID, ClientForm } from "./ClientForm";
-import { DialogBody } from "../../components/dialog/DialogHeader";
+import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
 
 type ClientDialogProps = {
   open: boolean;

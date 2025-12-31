@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from '@mui/material/styles';
 import { CardHeader, Container } from "@mui/material";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
@@ -10,8 +10,14 @@ import Grid from "@mui/material/Grid";
 import { ExactonlineClient } from "../../clients/ExactonlineClient";
 import { ExactonlineListInvoices } from "./ExactonlineListInvoices";
 
-const useStyles = makeStyles({
-  root: {
+const PREFIX = 'ExactonlineFeature';
+
+const classes = {
+  root: `${PREFIX}-root`
+};
+
+const StyledContainer = styled(Container)({
+  [`&.${classes.root}`]: {
     padding: 20,
   },
 });
@@ -20,7 +26,7 @@ const useStyles = makeStyles({
  * @return {null}
  */
 export function ExactonlineFeature() {
-  const classes = useStyles();
+
 
   const [status, setStatus] = useState<any>(null);
 
@@ -33,7 +39,7 @@ export function ExactonlineFeature() {
   if (status && !status.active) {
     const href = ExactonlineClient.authorizeUrl;
     return (
-      <Container className={classes.root}>
+      <StyledContainer className={classes.root}>
         <Card>
           <CardContent>
             <Button
@@ -46,7 +52,7 @@ export function ExactonlineFeature() {
             </Button>
           </CardContent>
         </Card>
-      </Container>
+      </StyledContainer>
     );
   }
   return (

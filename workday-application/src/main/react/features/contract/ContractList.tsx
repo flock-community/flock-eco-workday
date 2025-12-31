@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { styled } from '@mui/material/styles';
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
 import Grid from "@mui/material/Grid";
@@ -8,11 +9,16 @@ import {
   ContractClient,
 } from "../../clients/ContractClient";
 import { ContractType } from "./ContractType";
-import makeStyles from "@mui/styles/makeStyles";
 import { FlockPagination } from "../../components/pagination/FlockPagination";
 
-const useStyles = makeStyles({
-  list: (loading) => ({
+const PREFIX = 'ContractList';
+
+const classes = {
+  list: `${PREFIX}-list`
+};
+
+const Root = styled('i')({
+  [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
 });
@@ -32,7 +38,7 @@ export function ContractList({
   const [count, setCount] = useState(-1);
   const [loading, setLoading] = useState(true);
 
-  const classes = useStyles(loading);
+
 
   useEffect(() => {
     if (personId) {
@@ -106,5 +112,5 @@ export function ContractList({
 }
 
 function FormatDate({ date }) {
-  return date ? <>{date.format("DD-MM-YYYY")}</> : <i>now</i>;
+  return date ? <>{date.format("DD-MM-YYYY")}</> : <Root>now</Root>;
 }

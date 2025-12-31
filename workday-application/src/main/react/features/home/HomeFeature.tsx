@@ -4,7 +4,7 @@ import { useUserMe } from "../../hooks/UserMeHook";
 import { Box } from "@mui/material";
 import ContractsEnding from "../../components/contracts/ContractsEnding";
 import PersonEvents from "../../components/person/PersonEvents";
-import { highLightClass } from "../../theme/theme-light";
+import { HighlightSpan } from "../../theme/theme-light";
 import { QuickLinks } from "../../components/quick-links/QuickLinks";
 import { MissingHoursCard } from "../../components/missing-hours-card/MissingHoursCard";
 import { HolidayCard } from "../../components/holiday-card/HolidayCard";
@@ -45,8 +45,6 @@ export function HomeFeature() {
   const showPersonEvents =
     status?.authorities?.includes("PersonAuthority.READ") ?? false;
 
-  const classes = highLightClass();
-
   useEffect(() => {
     const today: Date = new Date();
     const nWeeksFromNow: Date = dayjs().add(withinNWeek, "weeks").toDate();
@@ -80,7 +78,7 @@ export function HomeFeature() {
       <section className={"flow"}>
         <Box style={{ paddingInline: "16px" }}>
           <Typography variant="h2">
-            Hi, <span className={classes.highlight}>{user && user.name}!</span>
+            Hi, <HighlightSpan>{user && user.name}!</HighlightSpan>
           </Typography>
         </Box>
         {!hasAccess && (
