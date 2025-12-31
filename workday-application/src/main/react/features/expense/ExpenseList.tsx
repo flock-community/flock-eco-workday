@@ -99,7 +99,8 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
                   component="a"
                   target="_blank"
                   href={`/api/expenses/files/${file.file}/${file.name}`}
-                  onClick={(event) => event.stopPropagation()}>
+                  onClick={(event) => event.stopPropagation()}
+                >
                   <ListItemText primary={file.name} />
                 </ListItemButton>
               ))}

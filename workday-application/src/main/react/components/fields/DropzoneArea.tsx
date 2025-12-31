@@ -63,7 +63,9 @@ export function DropzoneArea({
         }}
       >
         <input {...getInputProps()} />
-        <CloudUploadIcon sx={{ fontSize: 48, color: "text.secondary", mb: 2 }} />
+        <CloudUploadIcon
+          sx={{ fontSize: 48, color: "text.secondary", mb: 2 }}
+        />
         <Typography variant="h6" gutterBottom>
           {isDragActive ? "Drop files here" : "Drag & drop files here"}
         </Typography>
@@ -88,8 +90,7 @@ export function DropzoneArea({
               color="error"
               display="block"
             >
-              {file.name} -{" "}
-              {errors.map((e) => e.message).join(", ")}
+              {file.name} - {errors.map((e) => e.message).join(", ")}
             </Typography>
           ))}
         </Box>

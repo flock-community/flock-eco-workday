@@ -24,7 +24,6 @@ export function AssignmentDialog({
   code,
   onClose,
 }: AssignmentDialogProps) {
-
   const [state, setState] = useState<any>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 

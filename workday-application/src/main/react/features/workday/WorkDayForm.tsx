@@ -109,14 +109,10 @@ export function WorkDayForm({ value, onSubmit }: WorkDayFormProps) {
       <Grid size={{ xs: 6 }}>
         <DatePickerField name="to" label="To" minDate={values.from} />
       </Grid>
-      <Grid size={{ xs: 12 }}>
-        {renderDatePresetButtons(setFieldValue)}
-      </Grid>
+      <Grid size={{ xs: 12 }}>{renderDatePresetButtons(setFieldValue)}</Grid>
       {(UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN") ||
         UserAuthorityUtil.hasAuthority("WorkDayAuthority.TOTAL_HOURS")) && (
-        <Grid size={{ xs: 12 }}>
-          {renderSwitch}
-        </Grid>
+        <Grid size={{ xs: 12 }}>{renderSwitch}</Grid>
       )}
       <Grid size={{ xs: 12 }}>
         {daysSwitch ? (
