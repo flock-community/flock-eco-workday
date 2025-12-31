@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import Card from "@mui/material/Card";
 import { CardContent } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import { Client, ClientClient } from "../../clients/ClientClient";
 import { isDefined } from "../../utils/validation";
@@ -38,17 +38,17 @@ export function ClientList(props) {
   };
 
   return (
-    <Grid2 container className={classes.root} spacing={1}>
+    <Grid container className={classes.root} spacing={1}>
       {list.map((it) => (
-        <Grid2 size={{ xs: 12 }} key={`clients-${it.code}`}>
+        <Grid size={{ xs: 12 }} key={`clients-${it.code}`}>
           <Card onClick={handleItem(it)}>
             <CardContent>
               <Typography variant="h6">{it.name}</Typography>
             </CardContent>
           </Card>
-        </Grid2>
+        </Grid>
       ))}
-    </Grid2>
+    </Grid>
   );
 }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
 import Typography from "@mui/material/Typography";
@@ -53,14 +53,14 @@ export function LeaveDayList({
 
   function renderItem(item: DayProps, key: number) {
     return (
-      <Grid2 size={{ xs: 12 }} key={`holiday-list-item-${key}`}>
+      <Grid size={{ xs: 12 }} key={`holiday-list-item-${key}`}>
         <DayListItem
           value={item}
           onClick={() => onClickRow(item)}
           onClickStatus={(status) => onClickStatus(status, item)}
           hasAuthority={"LeaveDayAuthority.ADMIN"}
         />
-      </Grid2>
+      </Grid>
     );
   }
 
@@ -76,9 +76,9 @@ export function LeaveDayList({
 
   return (
     <>
-      <Grid2 container spacing={1} className={classes.list}>
+      <Grid container spacing={1} className={classes.list}>
         {list.map(renderItem)}
-      </Grid2>
+      </Grid>
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}

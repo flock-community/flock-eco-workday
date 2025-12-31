@@ -1,16 +1,18 @@
 import React from "react";
-import { Card, CardContent, CardHeader, Grid2 } from "@mui/material";
+import { Card, CardContent, CardHeader } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+
 import ContractOverviewTable from "./ContractOverviewTable";
 
 export default function ContractOverview() {
   return (
-    <Grid2 size={{ xs: 12 }}>
+    <Grid size={{ xs: 12 }}>
       <Card>
         <CardHeader title="Contracts" />
         <CardContent>
           <ContractOverviewTable />
         </CardContent>
       </Card>
-    </Grid2>
+    </Grid>
   );
 }

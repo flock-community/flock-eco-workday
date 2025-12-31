@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Card, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import CardHeader from "@mui/material/CardHeader";
 import List from "@mui/material/List";
@@ -70,7 +70,7 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
     const totalAmount: number = item.amount;
 
     return (
-      <Grid2 key={`workday-list-item-${key}`} size={{ xs: 12 }}>
+      <Grid key={`workday-list-item-${key}`} size={{ xs: 12 }}>
         <Card onClick={handleClickRow(item)}>
           <CardHeader
             action={
@@ -105,7 +105,7 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
               ))}
           </List>
         </Card>
-      </Grid2>
+      </Grid>
     );
   };
 
@@ -121,9 +121,9 @@ export function ExpenseList({ personId, refresh, onClickRow }: DayListProps) {
 
   return (
     <>
-      <Grid2 container spacing={1} className={classes.list}>
+      <Grid container spacing={1} className={classes.list}>
         {items.map(renderItem)}
-      </Grid2>
+      </Grid>
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}

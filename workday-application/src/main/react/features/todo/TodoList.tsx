@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Card, Link, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import CardHeader from "@mui/material/CardHeader";
 import { AlignedLoader } from "@workday-core/components/AlignedLoader";
 import { useHistory } from "react-router-dom";
@@ -104,7 +104,7 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
 
   function renderItem(item: Todo, key: Number) {
     return (
-      <Grid2 size={{ xs: 12 }} key={`todo-list-item-${key}`}>
+      <Grid size={{ xs: 12 }} key={`todo-list-item-${key}`}>
         <Card>
           <CardHeader
             title={
@@ -122,7 +122,7 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
             }
           />
         </Card>
-      </Grid2>
+      </Grid>
     );
   }
 

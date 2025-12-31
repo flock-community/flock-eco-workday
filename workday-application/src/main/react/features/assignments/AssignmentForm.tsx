@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid2 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
 import { DatePickerField } from "../../components/fields/DatePickerField";
@@ -43,8 +43,8 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
 
     return (
       <Form id={ASSIGNMENT_FORM_ID}>
-        <Grid2 container spacing={1}>
-          <Grid2 size={{ xs: 12 }}>
+        <Grid container spacing={1}>
+          <Grid size={{ xs: 12 }}>
             <Field
               name="hourlyRate"
               type="number"
@@ -52,8 +52,8 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
               fullWidth
               component={TextField}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12 }}>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
             <Field
               name="hoursPerWeek"
               type="number"
@@ -61,8 +61,8 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
               fullWidth
               component={TextField}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12 }}>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
             <Field
               name="role"
               type="text"
@@ -70,34 +70,34 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
               fullWidth
               component={TextField}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 6 }}>
             <DatePickerField
               name="from"
               label="Start date"
               maxDate={values.to ? values.to : undefined}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 6 }}>
             <DatePickerField name="to" label="End date" minDate={values.from} />
-          </Grid2>
-          <Grid2 size={{ xs: 12 }}>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
             <ClientSelectorField name="clientCode" fullWidth />
-          </Grid2>
-          <Grid2 size={{ xs: 12 }}>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
             <ProjectSelectorField
               onRefresh={handleRefresh}
               refresh={doRefresh}
               name="projectCode"
               fullWidth
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12 }}>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
             <Button onClick={createProject}>
               <AddIcon /> Add project
             </Button>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Form>
     );
   };

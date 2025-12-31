@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import Fab from "@mui/material/Fab";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import { Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import { useParams } from "react-router-dom";
@@ -42,11 +42,11 @@ export function EventRatingFeature() {
       (rating) => rating.person.uuid === person.uuid
     );
     return (
-      <Grid2 container spacing={1}>
+      <Grid container spacing={1}>
         {[...Array(10).keys()]
           .map((i) => i + 1)
           .map((i) => (
-            <Grid2 key={`button-${person.uuid}-${i}`}>
+            <Grid key={`button-${person.uuid}-${i}`}>
               <Fab
                 color={
                   eventRating && eventRating.rating === i
@@ -57,12 +57,12 @@ export function EventRatingFeature() {
               >
                 {i}
               </Fab>
-            </Grid2>
+            </Grid>
           ))}
-        <Grid2>
+        <Grid>
           <Fab onClick={deleteRating(person)}>X</Fab>
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     );
   };
 
@@ -72,19 +72,19 @@ export function EventRatingFeature() {
     <Container maxWidth="md">
       <Typography variant="h3">{event.description}</Typography>
       {event.persons.map((person) => (
-        <Grid2
+        <Grid
           key={`person-${person.uuid}`}
           container
           spacing={3}
           alignItems="center"
         >
-          <Grid2 size="grow">
+          <Grid size="grow">
             <Typography>
               {person.firstname} {person.lastname}
             </Typography>
-          </Grid2>
-          <Grid2>{renderRow(person)}</Grid2>
-        </Grid2>
+          </Grid>
+          <Grid>{renderRow(person)}</Grid>
+        </Grid>
       ))}
     </Container>
   );

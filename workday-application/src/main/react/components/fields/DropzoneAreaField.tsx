@@ -11,7 +11,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Typography } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
@@ -109,18 +109,18 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
       backgroundColor: "#F0F0F0",
     };
     const renderProgress = () => (
-      <Grid2 container alignItems="center" style={progressStyle}>
-        <Grid2 size={{ xs: 12 }}>
+      <Grid container alignItems="center" style={progressStyle}>
+        <Grid size={{ xs: 12 }}>
           <CircularProgress />
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     );
 
     const renderEmpty = <Typography>No files found</Typography>;
 
     return value ? (
-      <Grid2 container spacing={1}>
-        <Grid2 size={{ xs: 6 }}>
+      <Grid container spacing={1}>
+        <Grid size={{ xs: 6 }}>
           {upload ? (
             renderProgress()
           ) : (
@@ -132,15 +132,15 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
               onDrop={handleDropFile}
             />
           )}
-        </Grid2>
-        <Grid2 size={{ xs: 6 }}>
+        </Grid>
+        <Grid size={{ xs: 6 }}>
           {value.length > 0 ? (
             <List dense>{value.map(renderFilesItem)}</List>
           ) : (
             renderEmpty
           )}
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     ) : null;
   };
 

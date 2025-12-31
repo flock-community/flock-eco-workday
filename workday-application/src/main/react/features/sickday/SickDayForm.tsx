@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import { TextField } from "formik-mui";
 import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
 import { DatePickerField } from "../../components/fields/DatePickerField";
@@ -38,8 +38,8 @@ export function SickDayForm({ value, onSubmit }) {
 
     return (
       <Form id={SICKDAY_FORM_ID}>
-        <Grid2 container spacing={1}>
-          <Grid2 size={{ xs: 12 }}>
+        <Grid container spacing={1}>
+          <Grid size={{ xs: 12 }}>
             <Field
               name="description"
               type="text"
@@ -47,25 +47,25 @@ export function SickDayForm({ value, onSubmit }) {
               component={TextField}
               fullWidth
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12 }}>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
             <UserAuthorityUtil has={"SickdayAuthority.ADMIN"}>
               <StatusSelect
                 value={values.status}
                 onChange={handleStatusChange}
               ></StatusSelect>
             </UserAuthorityUtil>
-          </Grid2>
-          <Grid2 size={{ xs: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 6 }}>
             <DatePickerField name="from" label="From" maxDate={values.to} />
-          </Grid2>
-          <Grid2 size={{ xs: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 6 }}>
             <DatePickerField name="to" label="To" minDate={values.from} />
-          </Grid2>
-          <Grid2 size={{ xs: 12 }}>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
             <PeriodInputField name="days" from={values.from} to={values.to} />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Form>
     );
   };

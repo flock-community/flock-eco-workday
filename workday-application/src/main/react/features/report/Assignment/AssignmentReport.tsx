@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AssignmentReportTable from "./AssignmentReportTable";
-import { Card, CardContent, CardHeader, Grid2 } from "@mui/material";
+import { Card, CardContent, CardHeader } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DMY_DATE } from "../../../clients/util/DateFormats";
@@ -12,41 +13,41 @@ export default function AssignmentReport() {
   const [to, setTo] = useState(dayjs().endOf("month"));
 
   const renderDateRange = () => (
-    <Grid2 container spacing={2}>
-      <Grid2>
+    <Grid container spacing={2}>
+      <Grid>
         <DatePicker
           label="From"
           value={from}
           format={DMY_DATE}
           onChange={(newValue) => newValue && setFrom(newValue)}
         />
-      </Grid2>
-      <Grid2>
+      </Grid>
+      <Grid>
         <DatePicker
           label="To"
           value={to}
           format={DMY_DATE}
           onChange={(newValue) => newValue && setTo(newValue)}
         />
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 
   return (
-    <Grid2 container spacing={1}>
-      <Grid2 size={{ xs: 12 }}>
+    <Grid container spacing={1}>
+      <Grid size={{ xs: 12 }}>
         <Card>
           <CardHeader title="Assignment Report" />
           <CardContent>{renderDateRange()}</CardContent>
         </Card>
-      </Grid2>
-      <Grid2 size={{ xs: 12 }}>
+      </Grid>
+      <Grid size={{ xs: 12 }}>
         <Card>
           <CardContent>
             <AssignmentReportTable from={from} to={to} />
           </CardContent>
         </Card>
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 }

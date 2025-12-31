@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import ProjectForm, { PROJECT_FORM_ID } from "./ProjectForm";
 import { Project, ProjectClient } from "../../clients/ProjectClient";
 import { DialogBody } from "../../components/dialog/DialogHeader";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import ProjectIcon from "@mui/icons-material/AccountTree";
 
 type ProjectDialogProps = {
@@ -69,16 +69,16 @@ export default function ProjectDialog({
         onClose={closeDialog}
       />
       <DialogBody>
-        <Grid2 container spacing={1}>
-          <Grid2 size={{ xs: 12 }}>
+        <Grid container spacing={1}>
+          <Grid size={{ xs: 12 }}>
             <Typography variant="body1">
               Fill out the details of a (Flock.) project
             </Typography>
-          </Grid2>
-          <Grid2 size={{ xs: 12 }}>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
             <ProjectForm projectCode={project?.code} onSubmit={handleSubmit} />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogBody>
       <DialogActions>
         {disableDelete && (

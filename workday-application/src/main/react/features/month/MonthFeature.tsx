@@ -5,7 +5,7 @@ import Card from "@mui/material/Card";
 import IconButton from "@mui/material/IconButton";
 import BackIcon from "@mui/icons-material/ChevronLeft";
 import NextIcon from "@mui/icons-material/ChevronRight";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import {
   Bar,
   BarChart,
@@ -151,8 +151,8 @@ export function MonthFeature() {
     >
       <Card>
         <CardContent>
-          <Grid2 container spacing={1}>
-            <Grid2 size="grow">
+          <Grid container spacing={1}>
+            <Grid size="grow">
               <Typography variant="h6">
                 Month: {date.format("YYYY-MM")}
               </Typography>
@@ -160,16 +160,16 @@ export function MonthFeature() {
                 Total persons: {totalPerPersonData.length}
               </Typography>
               <Typography>Total hours: {totalHours}</Typography>
-            </Grid2>
-            <Grid2>
+            </Grid>
+            <Grid>
               <IconButton onClick={handleMonth(-1)} size="large">
                 <BackIcon />
               </IconButton>
               <IconButton onClick={handleMonth(1)} size="large">
                 <NextIcon />
               </IconButton>
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
         </CardContent>
       </Card>
       <Card>

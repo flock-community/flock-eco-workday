@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import {
   ASSIGNMENT_PAGE_SIZE,
@@ -67,9 +67,9 @@ export function AssignmentList({
 
   return (
     <>
-      <Grid2 container spacing={1} className={classes.list}>
+      <Grid container spacing={1} className={classes.list}>
         {items.map((assignment) => (
-          <Grid2 size={{ xs: 12 }} key={`assignment-${assignment.code}`}>
+          <Grid size={{ xs: 12 }} key={`assignment-${assignment.code}`}>
             <Card onClick={handleClickItem(assignment)}>
               <CardContent>
                 <Typography variant="h6">
@@ -94,9 +94,9 @@ export function AssignmentList({
                 )}
               </CardContent>
             </Card>
-          </Grid2>
+          </Grid>
         ))}
-      </Grid2>
+      </Grid>
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}

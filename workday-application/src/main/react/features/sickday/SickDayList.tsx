@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Card, Typography } from "@mui/material";
 import CardContent from "@mui/material/CardContent";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import { SICKDAY_PAGE_SIZE, SickDayClient } from "../../clients/SickDayClient";
 import { DayListItem } from "../../components/DayListItem";
 import makeStyles from "@mui/styles/makeStyles";
@@ -48,14 +48,14 @@ export function SickDayList({
 
   function renderItem(item: DayProps, key: number) {
     return (
-      <Grid2 size={{ xs: 12 }} key={`sickday-list-item-${key}`}>
+      <Grid size={{ xs: 12 }} key={`sickday-list-item-${key}`}>
         <DayListItem
           value={item}
           onClick={() => onClickRow(item)}
           onClickStatus={(status) => onClickStatus(status, item)}
           hasAuthority={"SickdayAuthority.ADMIN"}
         />
-      </Grid2>
+      </Grid>
     );
   }
 
@@ -71,9 +71,9 @@ export function SickDayList({
 
   return (
     <>
-      <Grid2 container spacing={1} className={classes.list}>
+      <Grid container spacing={1} className={classes.list}>
         {list.map(renderItem)}
-      </Grid2>
+      </Grid>
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}

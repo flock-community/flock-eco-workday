@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, Grid2, TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import { Period } from "../../features/period/Period";
 import dayjs, { Dayjs } from "dayjs";
@@ -27,25 +28,25 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
 
   return (
     <>
-      <Grid2 container spacing={2} alignItems="center">
+      <Grid container spacing={2} alignItems="center">
         {/* The header of the table with the days as caption */}
-        <Grid2 size={{ xs: 2 }}>
+        <Grid size={{ xs: 2 }}>
           <Typography>Week</Typography>
-        </Grid2>
+        </Grid>
         {daysOfWeek.map((d) => (
-          <Grid2 size="grow" textAlign="center" key={`day-name-${d}`}>
+          <Grid size="grow" textAlign="center" key={`day-name-${d}`}>
             <Typography>{d}</Typography>
-          </Grid2>
+          </Grid>
         ))}
-        <Grid2 size={{ xs: 2 }}>
+        <Grid size={{ xs: 2 }}>
           <Typography align="right">Total</Typography>
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
       {/* End header */}
 
       {grid.map((week) => {
         return (
-          <Grid2
+          <Grid
             container
             spacing={1}
             mt={1}
@@ -54,11 +55,11 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
             alignItems="center"
             alignContent="center"
           >
-            <Grid2 size={{ xs: 2 }}>
+            <Grid size={{ xs: 2 }}>
               <Typography>{week.weekNumber}</Typography>
-            </Grid2>
+            </Grid>
             {week.days?.map((day) => (
-              <Grid2 size="grow" key={`day-${day.key}`}>
+              <Grid size="grow" key={`day-${day.key}`}>
                 <TextField
                   label={day.disabled ? "-" : day.date.format("DD MMM")}
                   value={day.value}
@@ -71,25 +72,25 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
                     shrink: !day.disabled,
                   }}
                 />
-              </Grid2>
+              </Grid>
             ))}
-            <Grid2 size={{ xs: 2 }}>
+            <Grid size={{ xs: 2 }}>
               <Typography align="right">{week.total}</Typography>
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
         );
       })}
 
       {/* Bottom */}
       <Box mt={2}>
-        <Grid2 container spacing={1} alignItems="center">
-          <Grid2 size={{ xs: 10 }}>
+        <Grid container spacing={1} alignItems="center">
+          <Grid size={{ xs: 10 }}>
             <Typography align="right">Period total</Typography>
-          </Grid2>
-          <Grid2 size={{ xs: 2 }}>
+          </Grid>
+          <Grid size={{ xs: 2 }}>
             <Typography align="right">{totalHoursForPeriod}</Typography>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Box>
       {/* Endbottom */}
     </>

@@ -3,7 +3,7 @@ import { Dialog, Divider } from "@mui/material";
 import WorkIcon from "@mui/icons-material/Work";
 import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
 import Typography from "@mui/material/Typography";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -131,16 +131,16 @@ export function ExpenseDialog({
           onClose={handleClose}
         />
         <DialogBody>
-          <Grid2 container spacing={1}>
+          <Grid container spacing={1}>
             <UserAuthorityUtil has={"ExpenseAuthority.ADMIN"}>
-              <Grid2 size="grow">
+              <Grid size="grow">
                 <Typography variant={"h5"} component={"h2"}>
                   {personFullName}
                 </Typography>
-              </Grid2>
+              </Grid>
             </UserAuthorityUtil>
             {!id && (
-              <Grid2 size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <FormControl fullWidth>
                   <Select
                     id="contract-type-select"
@@ -151,17 +151,17 @@ export function ExpenseDialog({
                     <MenuItem value={ExpenseType.TRAVEL}>Travel</MenuItem>
                   </Select>
                 </FormControl>
-              </Grid2>
+              </Grid>
             )}
-            <Grid2 size={{ xs: 12 }}>
+            <Grid size={{ xs: 12 }}>
               {type === ExpenseType.TRAVEL && (
                 <ExpenseFormTravel value={state} onSubmit={handleSubmit} />
               )}
               {type === ExpenseType.COST && (
                 <ExpenseFormCost value={state} onSubmit={handleSubmit} />
               )}
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
         </DialogBody>
         <Divider />
         <DialogFooter

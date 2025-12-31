@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Grid2 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { Field, Form, Formik } from "formik";
 import { CheckboxWithLabel, TextField } from "formik-mui";
 import { boolean, mixed, number, object } from "yup";
@@ -20,8 +20,8 @@ export const ContractFormInternal = ({
 }: ContractFormInternalProps) => {
   const form = ({ values }) => (
     <Form id={INTERNAL_CONTRACT_FORM_ID}>
-      <Grid2 container spacing={1}>
-        <Grid2 size={{ xs: 12 }}>
+      <Grid container spacing={1}>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="monthlySalary"
             type="number"
@@ -29,8 +29,8 @@ export const ContractFormInternal = ({
             fullWidth
             component={TextField}
           />
-        </Grid2>
-        <Grid2 size={{ xs: 12 }}>
+        </Grid>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="hoursPerWeek"
             type="number"
@@ -38,34 +38,34 @@ export const ContractFormInternal = ({
             fullWidth
             component={TextField}
           />
-        </Grid2>
-        <Grid2 size={{ xs: 6 }}>
+        </Grid>
+        <Grid size={{ xs: 6 }}>
           <DatePickerField
             name="from"
             label="Start date"
             maxDate={values.to ? values.to : undefined}
           />
-        </Grid2>
-        <Grid2 size={{ xs: 6 }}>
+        </Grid>
+        <Grid size={{ xs: 6 }}>
           <DatePickerField name="to" label="End date" minDate={values.from} />
-        </Grid2>
-        <Grid2 size={{ xs: 12 }}>
+        </Grid>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="billable"
             type="checkbox"
             Label={{ label: "Billable" }}
             component={CheckboxWithLabel}
           />
-        </Grid2>
-        <Grid2 size={{ xs: 12 }}>
+        </Grid>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="holidayHours"
             type="number"
             label="Holiday hours"
             component={TextField}
           />
-        </Grid2>
-        <Grid2 size={{ xs: 12 }}>
+        </Grid>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="hackHours"
             type="number"
@@ -73,8 +73,8 @@ export const ContractFormInternal = ({
             fullWidth
             component={TextField}
           />
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     </Form>
   );
 

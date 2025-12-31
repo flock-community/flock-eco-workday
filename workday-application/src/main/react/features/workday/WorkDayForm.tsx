@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
-import Grid2 from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid2";
 import Switch from "@mui/material/Switch";
 import { ButtonGroup, Typography } from "@mui/material";
 import { TextField } from "formik-mui";
@@ -69,14 +69,14 @@ export function WorkDayForm({ value, onSubmit }) {
   };
 
   const renderSwitch = (
-    <Grid2 container alignItems="center" spacing={1}>
-      <Grid2>
+    <Grid container alignItems="center" spacing={1}>
+      <Grid>
         <Switch checked={daysSwitch} onChange={handleSwitchChange} />
-      </Grid2>
-      <Grid2>
+      </Grid>
+      <Grid>
         <Typography>Hours only</Typography>
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 
   const renderDatePresetButtons = (setFieldValue: any) => {
@@ -102,22 +102,22 @@ export function WorkDayForm({ value, onSubmit }) {
 
   const renderFormHours = ({ values, setFieldValue }) => (
     <>
-      <Grid2 size={{ xs: 6 }}>
+      <Grid size={{ xs: 6 }}>
         <DatePickerField name="from" label="From" maxDate={values.to} />
-      </Grid2>
-      <Grid2 size={{ xs: 6 }}>
+      </Grid>
+      <Grid size={{ xs: 6 }}>
         <DatePickerField name="to" label="To" minDate={values.from} />
-      </Grid2>
-      <Grid2 size={{ xs: 12 }}>
+      </Grid>
+      <Grid size={{ xs: 12 }}>
         {renderDatePresetButtons(setFieldValue)}
-      </Grid2>
+      </Grid>
       {(UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN") ||
         UserAuthorityUtil.hasAuthority("WorkDayAuthority.TOTAL_HOURS")) && (
-        <Grid2 size={{ xs: 12 }}>
+        <Grid size={{ xs: 12 }}>
           {renderSwitch}
-        </Grid2>
+        </Grid>
       )}
-      <Grid2 size={{ xs: 12 }}>
+      <Grid size={{ xs: 12 }}>
         {daysSwitch ? (
           <Field
             name="hours"
@@ -128,7 +128,7 @@ export function WorkDayForm({ value, onSubmit }) {
         ) : (
           <PeriodInputField name="days" from={values.from} to={values.to} />
         )}
-      </Grid2>
+      </Grid>
     </>
   );
 
@@ -139,8 +139,8 @@ export function WorkDayForm({ value, onSubmit }) {
 
     return (
       <Form id={WORKDAY_FORM_ID}>
-        <Grid2 container spacing={1}>
-          <Grid2 size={{ xs: 12 }}>
+        <Grid container spacing={1}>
+          <Grid size={{ xs: 12 }}>
             <AssignmentSelectorField
               id="Assignment"
               name="assignmentCode"
@@ -149,27 +149,27 @@ export function WorkDayForm({ value, onSubmit }) {
               from={values.from}
               to={values.to}
             />
-          </Grid2>
+          </Grid>
 
           <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
-            <Grid2 size={{ xs: 12 }}>
+            <Grid size={{ xs: 12 }}>
               <StatusSelect
                 value={values.status}
                 onChange={handleStatusChange}
               ></StatusSelect>
-            </Grid2>
+            </Grid>
           </UserAuthorityUtil>
-          <Grid2 size={{ xs: 12 }}>
+          <Grid size={{ xs: 12 }}>
             <hr />
-          </Grid2>
+          </Grid>
           {renderFormHours({ values, setFieldValue })}
-          <Grid2 size={{ xs: 12 }}>
+          <Grid size={{ xs: 12 }}>
             <hr />
-          </Grid2>
-          <Grid2 size={{ xs: 12 }}>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
             <DropzoneAreaField name="sheets" endpoint="/api/workdays/sheets" />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Form>
     );
   };

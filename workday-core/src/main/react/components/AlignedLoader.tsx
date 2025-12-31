@@ -1,6 +1,7 @@
 import React from "react";
-import { CircularProgress, Grid2, Theme } from "@mui/material";
+import { CircularProgress, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import Grid from "@mui/material/Grid2";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -16,16 +17,16 @@ export function AlignedLoader({ height }: AlignedLoaderProps) {
   const classes = useStyles();
 
   return (
-    <Grid2
+    <Grid
       style={{ height }}
       className={classes.root}
       container
       alignItems="center"
       justifyContent="center"
     >
-      <Grid2>
+      <Grid>
         <CircularProgress />
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 }
