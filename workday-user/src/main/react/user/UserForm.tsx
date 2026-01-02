@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
@@ -8,7 +9,6 @@ import { Checkbox, TextField } from 'formik-mui';
 import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import UserClient from './UserClient';
-import { Button } from '@mui/material';
 
 export const USER_FORM_ID = 'user-form-id';
 
