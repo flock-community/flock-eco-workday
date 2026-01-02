@@ -36,11 +36,11 @@ export function LeaveDayList({
   onClickStatus,
 }: DayListProps) {
   const [list, setList] = useState<DayProps[]>([]);
-  const [_update] = useState(refresh);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(-1);
   const [_loading, setLoading] = useState(true);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     if (personId) {
       setLoading(true);
@@ -54,7 +54,7 @@ export function LeaveDayList({
     } else {
       setList([]);
     }
-  }, [personId, page]);
+  }, [refresh, personId, page]);
 
   function renderItem(item: DayProps, key: number) {
     return (

@@ -57,28 +57,42 @@ export const PersonTable = () => {
   const [count, setCount] = useState(-1);
   const [personList, setPersonList] = useState<Person[]>([]);
   const [dialog, setDialog] = useState({ open: false });
-  const [reload, setReload] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [debouncedSearchState, setDebouncedSearchState] = useState<string>('');
+
+  // Add this useEffect for debouncing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchState(searchTerm);
+    }, 350);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchTerm]);
+
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => searchInputRef?.current?.focus(), []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     PersonClient.findAllByFullName(
       { page, size, sort: 'firstname' },
-      searchTerm,
+      debouncedSearchState,
     ).then((res) => {
       setPersonList(res.list);
       setCount(res.count);
     });
-  }, [page, size, searchTerm]);
+  }, [refresh, page, size, debouncedSearchState]);
 
   const handleDialogOpen = () => {
     setDialog({ open: true });
   };
 
   const handleDialogClose = () => {
-    setReload(!reload);
+    setRefresh(!refresh);
     setDialog({ open: false });
   };
 

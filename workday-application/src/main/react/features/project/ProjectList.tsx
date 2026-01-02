@@ -14,9 +14,9 @@ import ProjectListItem from './ProjectListItem';
 export default function ProjectList({ editProject, refresh }) {
   const [projects, setProjects] = useState<Project[]>([]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     ProjectClient.all().then((res) => setProjects(res));
-    refresh; // force use of refresh
   }, [refresh]);
 
   function renderItem(item: Project, key: number) {

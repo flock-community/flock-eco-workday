@@ -48,7 +48,7 @@ export function AssignmentFeature({ person }: AssignmentFeatureProps) {
           <AssignmentList
             personId={person?.uuid}
             onItemClick={handleItemClick}
-            reload={reload}
+            refresh={reload}
             disableEdit={!hasWriteAuthority}
           />
         </CardContent>

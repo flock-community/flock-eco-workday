@@ -1,18 +1,18 @@
 import HolidayIcon from '@mui/icons-material/WbSunny';
-import { Dialog, MenuItem, Select, Slide } from '@mui/material';
+import {Dialog, MenuItem, Select, Slide} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
-import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
-import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
+import {ConfirmDialog} from '@workday-core/components/ConfirmDialog';
+import {DialogFooter, DialogHeader} from '@workday-core/components/dialog';
+import {DialogBody} from '@workday-core/components/dialog/DialogHeader';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
-import { LeaveDayClient } from '../../clients/LeaveDayClient';
-import { ISO_8601_DATE } from '../../clients/util/DateFormats';
-import { HolidayForm } from './HolidayForm';
-import { LeaveDayForm } from './LeaveDayForm';
-import { PlusDayForm } from './PlusDayForm';
+import {useEffect, useState} from 'react';
+import {LeaveDayClient} from '../../clients/LeaveDayClient';
+import {ISO_8601_DATE} from '../../clients/util/DateFormats';
+import {HolidayForm} from './HolidayForm';
+import {LeaveDayForm} from './LeaveDayForm';
+import {PlusDayForm} from './PlusDayForm';
 
 export const LEAVE_DAY_DIALOG_FORM_ID = 'leave-day-dialog-form-id';
 
@@ -36,13 +36,11 @@ export function LeaveDayDialog({
   code,
   personId,
   onComplete,
-}: LeaveDayDialogProps) {
+}: Readonly<LeaveDayDialogProps>) {
   const [openDelete, setOpenDelete] = useState(false);
 
   const [state, setState] = useState<any>();
   const [type, setType] = useState<Types>(Types.HOLIDAY);
-  const now = dayjs();
-
   const handleSubmit = (it) => {
     const body = {
       ...it,
@@ -83,14 +81,14 @@ export function LeaveDayDialog({
         setState({
           description: '',
           status: 'REQUESTED',
-          from: now,
-          to: now,
+          from: dayjs(),
+          to: dayjs(),
           days: [8],
           hours: '',
         });
       }
     }
-  }, [code, open, now]);
+  }, [code, open]);
 
   const handleDelete = () => {
     LeaveDayClient.delete(code).then(() => {

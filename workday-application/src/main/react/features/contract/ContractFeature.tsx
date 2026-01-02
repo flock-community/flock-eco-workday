@@ -42,7 +42,7 @@ export function ContractFeature({ person }: ContractFeatureProps) {
           <ContractList
             personId={person?.uuid}
             onItemClick={handleItemClick}
-            reload={reload}
+            refresh={reload}
           />
         </CardContent>
       </Card>

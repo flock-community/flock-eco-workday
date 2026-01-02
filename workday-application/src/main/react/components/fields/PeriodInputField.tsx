@@ -32,28 +32,30 @@ type PeriodInputFieldProps = {
   reset?: boolean;
 };
 
-type PeriodInputRendererProps = {
-  name: string;
-  from: dayjs.Dayjs;
-  to: dayjs.Dayjs;
-  reset?: boolean;
-  value: any;
-  setFieldValue: (field: string, value: unknown) => void;
-};
-
 function PeriodInputRenderer({
-  name,
-  from,
-  to,
-  reset,
-  value,
-  setFieldValue,
-}: Readonly<PeriodInputRendererProps>) {
+                               name,
+                               from,
+                               to,
+                               reset,
+                               value,
+                               setFieldValue,
+                             }: Readonly<PeriodInputRendererProps>) {
   const [period, setPeriod] = useState<Period>({
     from,
     to,
     days: value,
   });
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+      update(mutatePeriod(period, { from, to }));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [from, to]);
+
+  useEffect(() => {
+    if (reset) {
+      setHoursPerDay(0);
+    }
+  }, [reset]);
 
   const update = useCallback(
     (newPeriod: Period) => {
@@ -61,12 +63,8 @@ function PeriodInputRenderer({
       setPeriod(newPeriod);
     },
     [name],
-  );
+);
 
-  useEffect(() => {
-    update(mutatePeriod(period, { from, to }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [from, to]);
 
   const setHoursPerDay = useCallback(
     (hoursPerDay: number) => {
@@ -77,12 +75,6 @@ function PeriodInputRenderer({
     },
     [period, update],
   );
-
-  useEffect(() => {
-    if (reset) {
-      setHoursPerDay(0);
-    }
-  }, [reset, setHoursPerDay]);
 
   const handlePeriodChange = useCallback(
     (day: Dayjs, hours: number) => {
@@ -108,6 +100,15 @@ function PeriodInputRenderer({
     </>
   );
 }
+
+type PeriodInputRendererProps = {
+  name: string;
+  from: dayjs.Dayjs;
+  to: dayjs.Dayjs;
+  reset?: boolean;
+  value: any;
+  setFieldValue: (field: string, value: unknown) => void;
+};
 
 export function PeriodInputField({
   name,

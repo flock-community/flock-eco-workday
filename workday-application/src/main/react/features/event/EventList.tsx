@@ -40,6 +40,7 @@ export const EventList = ({
   const [count, setCount] = useState(0);
   const [_loading, setLoading] = useState(true);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     setLoading(true);
 
@@ -47,8 +48,9 @@ export const EventList = ({
       setItems(res.list);
       setCount(res.count);
       setLoading(false);
-    });
-  }, [page]);
+    }).catch(() => setLoading(false));
+
+  }, [refresh, page]);
 
   function handleClickRow(item: FullFlockEvent) {
     return () => {

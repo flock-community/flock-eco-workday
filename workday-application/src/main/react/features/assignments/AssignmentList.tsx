@@ -26,14 +26,14 @@ const Root = styled('div')({
 });
 
 type AssignmentListProps = {
-  reload: boolean;
+  refresh: boolean;
   personId?: string;
   onItemClick: (item: any) => void;
   disableEdit: boolean;
 };
 
 export function AssignmentList({
-  reload,
+  refresh,
   personId,
   onItemClick,
   disableEdit,
@@ -43,6 +43,7 @@ export function AssignmentList({
   const [count, setCount] = useState(-1);
   const [_loading, setLoading] = useState(true);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     if (personId) {
       setLoading(true);
@@ -54,7 +55,7 @@ export function AssignmentList({
     } else {
       setItems([]);
     }
-  }, [personId, page]);
+  }, [refresh, personId, page]);
 
   const handleClickItem = (it) => () => {
     if (!disableEdit && isDefined(onItemClick)) onItemClick(it);

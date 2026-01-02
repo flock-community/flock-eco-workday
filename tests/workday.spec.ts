@@ -15,7 +15,7 @@ import {
 } from './steps/workdaySteps';
 
 test.describe('Workday scenarios', () => {
-  test.beforeEach(async ({ _, context }) => {
+  test.beforeEach(async ({context }) => {
     // Clear cookies first
     await context.clearCookies();
   });

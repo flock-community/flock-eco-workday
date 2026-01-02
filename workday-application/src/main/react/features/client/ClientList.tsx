@@ -26,20 +26,21 @@ const StyledGrid = styled(Grid)({
 });
 
 type ClientListProps = {
-  reload?: boolean;
+  refresh?: boolean;
   onItemClick?: (item: Client) => void;
 };
 
-export function ClientList({ reload, onItemClick }: ClientListProps) {
+export function ClientList({ refresh, onItemClick }: ClientListProps) {
   const [list, setList] = useState<Client[]>([]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     ClientClient.findAllByPage({
       page: 0,
       size: 100,
       sort: 'name,asc',
     }).then((res) => setList(res.list));
-  }, []);
+  }, [refresh]);
 
   const handleItem = (it) => () => {
     if (isDefined(onItemClick)) onItemClick(it);

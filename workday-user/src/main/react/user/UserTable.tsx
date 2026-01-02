@@ -11,14 +11,14 @@ import UserClient from './UserClient';
 type UserTableProps = {
   search?: string;
   size?: number;
-  reload?: boolean;
+  refresh?: boolean;
   onRowClick?: (user: any) => void;
   onChangePage?: (page: number) => void;
 };
 export function UserTable({
   search,
   size,
-  reload,
+  refresh,
   onRowClick,
   onChangePage,
 }: Readonly<UserTableProps>) {
@@ -28,6 +28,7 @@ export function UserTable({
     list: [],
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     UserClient.findAllUsers(search || '', state.page, size || 10).then(
       (res) => {
@@ -35,8 +36,7 @@ export function UserTable({
       },
     );
 
-    reload; // added to force re-render
-  }, [reload, search, size, state]);
+  }, [refresh, search, size, state.page]);
 
   const handleChangePage = (_event, page) => {
     setState({ ...state, page });

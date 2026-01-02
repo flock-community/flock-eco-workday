@@ -64,12 +64,13 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
     );
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     TodoClient.all().then((res) => {
       const groupedTodos = groupByType(res);
       setList(groupedTodos);
     });
-  }, []);
+  }, [refresh]);
 
   useEffect(() => {
     if (!list) return;

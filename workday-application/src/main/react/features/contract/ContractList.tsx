@@ -24,12 +24,12 @@ const Root = styled('i')({
 });
 
 type ContractListProps = {
-  reload: boolean;
+  refresh: boolean;
   personId?: string;
   onItemClick: (item: any) => void;
 };
 export function ContractList({
-  reload,
+  refresh,
   personId,
   onItemClick,
 }: Readonly<ContractListProps>) {
@@ -38,6 +38,7 @@ export function ContractList({
   const [count, setCount] = useState(-1);
   const [_loading, setLoading] = useState(true);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     if (personId) {
       setLoading(true);
@@ -47,7 +48,7 @@ export function ContractList({
         setLoading(false);
       });
     }
-  }, [personId, page]);
+  }, [refresh, personId, page]);
 
   const handleClickItem = (it) => () => {
     if (onItemClick) onItemClick(it);

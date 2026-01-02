@@ -51,7 +51,7 @@ export function ClientFeature() {
           }
         />
         <CardContent>
-          <ClientList reload={reload} onItemClick={handleItem} />
+          <ClientList refresh={reload} onItemClick={handleItem} />
         </CardContent>
       </Card>
       <ClientDialog
