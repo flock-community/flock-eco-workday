@@ -35,7 +35,6 @@ export function UserTable({
         setState({ ...state, ...res });
       },
     );
-
   }, [refresh, search, size, state.page]);
 
   const handleChangePage = (_event, page) => {

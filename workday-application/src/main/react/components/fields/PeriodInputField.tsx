@@ -33,23 +33,23 @@ type PeriodInputFieldProps = {
 };
 
 function PeriodInputRenderer({
-                               name,
-                               from,
-                               to,
-                               reset,
-                               value,
-                               setFieldValue,
-                             }: Readonly<PeriodInputRendererProps>) {
+  name,
+  from,
+  to,
+  reset,
+  value,
+  setFieldValue,
+}: Readonly<PeriodInputRendererProps>) {
   const [period, setPeriod] = useState<Period>({
     from,
     to,
     days: value,
   });
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-    useEffect(() => {
-      update(mutatePeriod(period, { from, to }));
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [from, to]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    update(mutatePeriod(period, { from, to }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [from, to]);
 
   useEffect(() => {
     if (reset) {
@@ -63,8 +63,7 @@ function PeriodInputRenderer({
       setPeriod(newPeriod);
     },
     [name],
-);
-
+  );
 
   const setHoursPerDay = useCallback(
     (hoursPerDay: number) => {

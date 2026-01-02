@@ -1,16 +1,16 @@
-import {Box, Card, Typography} from '@mui/material';
+import { Box, Card, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid';
-import {styled} from '@mui/material/styles';
-import {useEffect, useState} from 'react';
-import {SICKDAY_PAGE_SIZE, SickDayClient} from '../../clients/SickDayClient';
-import {DayListItem} from '../../components/DayListItem';
+import { styled } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
+import { SICKDAY_PAGE_SIZE, SickDayClient } from '../../clients/SickDayClient';
+import { DayListItem } from '../../components/DayListItem';
 
 // Components
-import {FlockPagination} from '../../components/pagination/FlockPagination';
+import { FlockPagination } from '../../components/pagination/FlockPagination';
 
 // Types
-import type {DayListProps, DayProps} from '../../types';
+import type { DayListProps, DayProps } from '../../types';
 
 const PREFIX = 'SickDayList';
 

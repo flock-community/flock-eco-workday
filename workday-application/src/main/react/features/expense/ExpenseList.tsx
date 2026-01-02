@@ -1,21 +1,21 @@
-import {Box, Card, Typography} from '@mui/material';
+import { Box, Card, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import {styled} from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
-import {useCallback, useEffect, useState} from 'react';
-import {EXPENSE_PAGE_SIZE, ExpenseClient} from '../../clients/ExpenseClient';
+import { useCallback, useEffect, useState } from 'react';
+import { EXPENSE_PAGE_SIZE, ExpenseClient } from '../../clients/ExpenseClient';
 // Components
-import {FlockPagination} from '../../components/pagination/FlockPagination';
-import {StatusMenu} from '../../components/status/StatusMenu';
-import type {CostExpense, TravelExpense} from '../../models/Expense';
-import type {Status} from '../../models/Status';
+import { FlockPagination } from '../../components/pagination/FlockPagination';
+import { StatusMenu } from '../../components/status/StatusMenu';
+import type { CostExpense, TravelExpense } from '../../models/Expense';
+import type { Status } from '../../models/Status';
 // Types
-import type {DayListProps} from '../../types';
+import type { DayListProps } from '../../types';
 
 const PREFIX = 'ExpenseList';
 
@@ -30,7 +30,11 @@ const Root = styled('div')({
   }),
 });
 
-export function ExpenseList({personId, refresh, onClickRow}: Readonly<DayListProps>) {
+export function ExpenseList({
+  personId,
+  refresh,
+  onClickRow,
+}: Readonly<DayListProps>) {
   const [items, setItems] = useState<(CostExpense | TravelExpense)[]>([]);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);

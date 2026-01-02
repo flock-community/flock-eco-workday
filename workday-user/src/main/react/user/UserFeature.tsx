@@ -1,8 +1,8 @@
-import {Card} from '@mui/material';
-import {useEffect, useState} from 'react';
-import {UserDialog} from './UserDialog';
-import {UserTable} from './UserTable';
-import {UserToolbar} from './UserToolbar';
+import { Card } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { UserDialog } from './UserDialog';
+import { UserTable } from './UserTable';
+import { UserToolbar } from './UserToolbar';
 
 type UserFeatureProps = {
   enablePassword?: boolean;

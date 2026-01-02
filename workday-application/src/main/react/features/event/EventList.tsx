@@ -44,12 +44,13 @@ export const EventList = ({
   useEffect(() => {
     setLoading(true);
 
-    EventClient.getAll(page).then((res) => {
-      setItems(res.list);
-      setCount(res.count);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-
+    EventClient.getAll(page)
+      .then((res) => {
+        setItems(res.list);
+        setCount(res.count);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [refresh, page]);
 
   function handleClickRow(item: FullFlockEvent) {
