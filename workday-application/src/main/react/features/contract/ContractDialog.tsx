@@ -33,8 +33,6 @@ type ContractDialogProps = {
 };
 
 export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
-  // TODO: remove styles if not used and remove eslint-disable
-
   const [type, setType] = useState('INTERNAL');
   const [state, setState] = useState<any | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);

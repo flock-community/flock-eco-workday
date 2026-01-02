@@ -4,7 +4,6 @@ import {
   type BootstrapData,
 } from '../clients/BootstrapClient';
 
-// eslint-disable-next-line import/no-mutable-exports
 export let store: BootstrapData | null = null;
 const listeners: ((block: BootstrapData | null) => void)[] = [];
 

@@ -24,7 +24,6 @@ export function ClientForm({ code, value, onSubmit }: ClientFormProps) {
     }
   }, [code, value]);
 
-  // eslint-disable-next-line no-shadow
   const handleSubmit = (value) => {
     onSubmit?.(value);
   };

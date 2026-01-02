@@ -1,6 +1,5 @@
 import { boolean, object, string } from 'yup';
 
-// eslint-disable-next-line no-underscore-dangle
 const _defaultObject = {
   code: string(),
   firstname: string().required().default(''),

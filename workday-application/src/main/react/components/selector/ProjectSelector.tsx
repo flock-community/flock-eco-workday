@@ -47,7 +47,6 @@ export function ProjectSelector({
   }, [value]);
 
   function handleChange(event) {
-    // eslint-disable-next-line no-shadow
     const selected = event.target.value;
     setState(selected);
     onChange(selected === '' ? null : selected);

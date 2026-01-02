@@ -48,7 +48,6 @@ function PeriodInputRenderer({
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     update(mutatePeriod(period, { from, to }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [from, to]);
 
   useEffect(() => {

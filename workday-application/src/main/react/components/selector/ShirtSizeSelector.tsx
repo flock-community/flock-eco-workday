@@ -32,7 +32,6 @@ export function ShirtSizeSelector({
   ];
 
   function handleChange(event) {
-    // eslint-disable-next-line no-shadow
     const selected = event.target.value;
     setSelected(selected);
     onChange(selected);

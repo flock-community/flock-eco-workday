@@ -119,9 +119,9 @@ All frontend scripts should be run from the **root directory**:
 npm start              # Start webpack dev server
 npm run build          # Production build
 npm test               # Run Jest tests
-npm run lint           # Run ESLint
-npm run lint:fix       # Fix ESLint issues
-npm run format         # Run Prettier
+npm run lint           # Run Biome linter
+npm run lint:fix       # Fix Biome linting issues
+npm run format         # Run Biome
 ```
 
 ## Testing
@@ -208,7 +208,8 @@ By default, spotless will check for code style issues in maven's `verify` phase.
 
 Spotless will also format pom files automatically, using the `sort-pom` plugin.
 
-### Frontend Linting (ESLint)
+### Frontend Linting (Biome)
+Workday uses [Biome](https://biomejs.dev/) for frontend code linting.
 
 ```bash
 npm run lint          # Check for issues

@@ -16,7 +16,7 @@ describe('isUndefined() util function', () => {
     expect(isUndefined(false)).toBeFalsy();
     expect(isUndefined({})).toBeFalsy();
     expect(isUndefined([])).toBeFalsy();
-    expect(isUndefined([1, 2, 3])).toBeFalsy(); // eslint-disable-line no-array-constructor
+    expect(isUndefined([1, 2, 3])).toBeFalsy();
     expect(isUndefined(null)).toBeFalsy();
   });
 });
@@ -32,7 +32,7 @@ describe('isDefined() util function', () => {
     expect(isDefined(false)).toBeTruthy();
     expect(isDefined({})).toBeTruthy();
     expect(isDefined([])).toBeTruthy();
-    expect(isDefined([1, 2, 3])).toBeTruthy(); // eslint-disable-line no-array-constructor
+    expect(isDefined([1, 2, 3])).toBeTruthy();
     expect(isDefined(null)).toBeDefined();
     expect(isDefined(null)).toBeTruthy();
   });
