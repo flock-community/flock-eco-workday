@@ -17,22 +17,23 @@ import { PersonDialog } from './PersonDialog';
 export const PersonDetails = () => {
   const history = useHistory();
   const { params } = useRouteMatch();
-  const [reload, setReload] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [_personContext, setPersonContext] = usePerson();
   const [person, setPerson] = useState<Person>();
   const [dialog, setDialog] = useState({ edit: false, del: false });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     PersonClient.get(params.personId).then((person) => {
       setPerson(person);
       setPersonContext(person.uuid);
     });
-  }, [params.personId, setPersonContext]);
+  }, [refresh]);
 
   const handleEditDialog = () => {
     const { edit, del } = dialog;
     setDialog({ edit: !edit, del });
-    setReload(!reload);
+    setRefresh(!refresh);
   };
 
   const handleDelDialog = () => {
