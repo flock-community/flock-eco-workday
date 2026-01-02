@@ -1,19 +1,22 @@
-import React, { useState } from "react";
-import Grid from "@mui/material/Grid";
-import { Field, Form, Formik } from "formik";
-import { TextField } from "formik-mui";
-import { DatePickerField } from "../../components/fields/DatePickerField";
-import { ClientSelectorField } from "../../components/fields/ClientSelectorField";
-import { ASSIGNMENT_FORM_SCHEMA } from "./AssignmentSchema";
-import { ProjectSelectorField } from "../../components/fields/ProjectSelectorField";
-import AddIcon from "@mui/icons-material/Add";
-import Button from "@mui/material/Button";
-import ProjectDialog from "../project/ProjectDialog";
-import { Assignment, AssignmentRequest } from "../../clients/AssignmentClient";
+import AddIcon from '@mui/icons-material/Add';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import { Field, Form, Formik } from 'formik';
+import { TextField } from 'formik-mui';
+import { useState } from 'react';
+import type {
+  Assignment,
+  AssignmentRequest,
+} from '../../clients/AssignmentClient';
+import { ClientSelectorField } from '../../components/fields/ClientSelectorField';
+import { DatePickerField } from '../../components/fields/DatePickerField';
+import { ProjectSelectorField } from '../../components/fields/ProjectSelectorField';
+import ProjectDialog from '../project/ProjectDialog';
+import { ASSIGNMENT_FORM_SCHEMA } from './AssignmentSchema';
 
 // form id as a reference point for buttons outside of the <form></form> scope to be
 // able to submit this form
-export const ASSIGNMENT_FORM_ID = "assignment-form";
+export const ASSIGNMENT_FORM_ID = 'assignment-form';
 
 type AssignmentFormProps = {
   value: Assignment;
@@ -36,7 +39,7 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
 
   const form = ({ values, setFieldValue }) => {
     const handleRefresh = (promise) => {
-      promise.then((res) => {
+      promise.then((_res) => {
         console.log(`Items in project selector updated`);
       });
     };

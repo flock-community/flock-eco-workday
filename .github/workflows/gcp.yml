@@ -60,11 +60,8 @@ jobs:
           node-version: 18
           cache: "npm"
 
-      - name: Ktlint
-        run: ./mvnw -B ktlint:check
-
       - run: npm ci
-      - name: Eslint / prettier
+      - name: Biome
         run: npm run lint
 
       - name: Run npm tests

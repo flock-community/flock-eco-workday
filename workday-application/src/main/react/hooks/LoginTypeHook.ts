@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
-import { UserClient } from "../clients/UserClient";
+import { useEffect, useState } from 'react';
+import { UserClient } from '../clients/UserClient';
 
-const DEFAULT = "LOADING";
+const DEFAULT = 'LOADING';
 let store = { type: DEFAULT };
 const listeners: ((it: any) => void)[] = [];
 
 function update(it) {
   store = it;
-  listeners.forEach((func) => func(it));
+  listeners.forEach((func) => {
+    func(it);
+  });
 }
 
 export function useLoginType() {

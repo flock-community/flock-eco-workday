@@ -42,13 +42,9 @@ data class Person(
     @JsonIdentityReference(alwaysAsId = true)
     val user: User?,
 ) {
-    fun getFullName(): String {
-        return "$firstname $lastname"
-    }
+    fun getFullName(): String = "$firstname $lastname"
 
-    override fun hashCode(): Int {
-        return Objects.hashCode(uuid)
-    }
+    override fun hashCode(): Int = Objects.hashCode(uuid)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

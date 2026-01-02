@@ -1,6 +1,6 @@
-import { checkResponse, validateResponse } from "@workday-core/clients/utils";
+import { checkResponse, validateResponse } from '@workday-core/clients/utils';
 
-const path = "/bootstrap";
+const path = '/bootstrap';
 
 export type BootstrapData = {
   authorities: string[];
@@ -10,7 +10,7 @@ export type BootstrapData = {
 };
 const getBootstrap = () => {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
 
   return fetch(`${path}`, opts)

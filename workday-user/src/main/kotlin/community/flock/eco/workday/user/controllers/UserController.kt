@@ -64,7 +64,8 @@ class UserController(
     @PreAuthorize("hasAuthority('UserAuthority.READ')")
     fun findAllUsersByCodes(
         @RequestBody(required = false) codes: Set<String>,
-    ) = userRepository.findAllByCodeIn(codes)
+    ) = userRepository
+        .findAllByCodeIn(codes)
         .toList()
         .map { it.produce() }
         .toResponse()
@@ -141,11 +142,10 @@ private fun User.produce(): UserResponse =
         created = created,
     )
 
-private fun UserAccount.produce(): UserAccountResponse {
-    return when (this) {
+private fun UserAccount.produce(): UserAccountResponse =
+    when (this) {
         is UserAccountPassword -> UserAccountPasswordResponse(id = id.toString())
         is UserAccountOauth -> UserAccountOauthResponse(id = id.toString(), provider = provider.name)
         is UserAccountKey -> UserAccountKeyResponse(id = id.toString(), key = key)
         else -> error("Cannot map UserAccount")
     }
-}

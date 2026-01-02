@@ -1,14 +1,14 @@
-import React, { useContext, useState } from "react";
-import { Card, CardContent, CardHeader } from "@mui/material";
-import { WorkDayDialog } from "./WorkDayDialog";
-import { WorkDayList } from "./WorkDayList";
-import { ApplicationContext } from "../../application/ApplicationContext";
-import { WorkDayClient } from "../../clients/WorkDayClient";
-import { addError } from "../../hooks/ErrorHook";
-import Button from "@mui/material/Button";
-import AddIcon from "@mui/icons-material/Add";
-import { Person } from "../../clients/PersonClient";
-import { ISO_8601_DATE } from "../../clients/util/DateFormats";
+import AddIcon from '@mui/icons-material/Add';
+import { Card, CardContent, CardHeader } from '@mui/material';
+import Button from '@mui/material/Button';
+import { useContext, useState } from 'react';
+import { ApplicationContext } from '../../application/ApplicationContext';
+import type { Person } from '../../clients/PersonClient';
+import { ISO_8601_DATE } from '../../clients/util/DateFormats';
+import { WorkDayClient } from '../../clients/WorkDayClient';
+import { addError } from '../../hooks/ErrorHook';
+import { WorkDayDialog } from './WorkDayDialog';
+import { WorkDayList } from './WorkDayList';
 
 type WorkDayFeatureProps = {
   person: Person;
@@ -28,7 +28,7 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
 
   function handleClickAdd() {
     if (person === null) {
-      addError("No person selected");
+      addError('No person selected');
     } else {
       setValue(undefined);
       setOpen(true);

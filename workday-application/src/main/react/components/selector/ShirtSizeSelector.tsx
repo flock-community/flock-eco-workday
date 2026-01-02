@@ -1,11 +1,11 @@
-import React, { useState } from "react";
 import {
   FormControl,
-  FormControlProps,
+  type FormControlProps,
   InputLabel,
   MenuItem,
   Select,
-} from "@mui/material";
+} from '@mui/material';
+import { useState } from 'react';
 
 type ShirtSizeSelectorProps = FormControlProps & {
   selectedItem?: string;
@@ -15,24 +15,23 @@ type ShirtSizeSelectorProps = FormControlProps & {
 
 export function ShirtSizeSelector({
   onChange,
-  label = "Select shirt size",
-  selectedItem = "",
+  label = 'Select shirt size',
+  selectedItem = '',
 }: ShirtSizeSelectorProps) {
   const [selected, setSelected] = useState(selectedItem);
   const shirtSizes: string[] = [
-    "XXXS",
-    "XXS",
-    "XS",
-    "S",
-    "M",
-    "L",
-    "XL",
-    "XXL",
-    "XXXL",
+    'XXXS',
+    'XXS',
+    'XS',
+    'S',
+    'M',
+    'L',
+    'XL',
+    'XXL',
+    'XXXL',
   ];
 
   function handleChange(event) {
-    // eslint-disable-next-line no-shadow
     const selected = event.target.value;
     setSelected(selected);
     onChange(selected);
@@ -49,7 +48,7 @@ export function ShirtSizeSelector({
       <InputLabel shrink>{label}</InputLabel>
       <Select
         label={label}
-        value={selected || ""}
+        value={selected || ''}
         displayEmpty
         onChange={handleChange}
       >

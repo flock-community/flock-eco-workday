@@ -5,7 +5,7 @@ import java.io.File
 import java.io.InputStream
 
 interface StorageService {
-    class StorageObject()
+    class StorageObject
 
     data class StorageMultipartObject(
         val uploadId: String,

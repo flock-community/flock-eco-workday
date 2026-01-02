@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
   FormControl,
-  FormControlProps,
+  type FormControlProps,
   InputLabel,
   MenuItem,
   Select,
-} from "@mui/material";
-import { Person, PersonClient } from "../../clients/PersonClient";
+} from '@mui/material';
+import { useEffect, useState } from 'react';
+import { type Person, PersonClient } from '../../clients/PersonClient';
 
 export type PersonSelectorProps = FormControlProps & {
   value?: string;
@@ -34,11 +34,11 @@ export function PersonSelector({
       {
         page: 0,
         size: 100,
-        sort: "firstname",
+        sort: 'firstname',
       },
       {
         active: true,
-      }
+      },
     ).then((res) => setItems(res.list));
   }, []);
 
@@ -59,9 +59,9 @@ export function PersonSelector({
   function renderValue(values: any) {
     if (values.length <= 3) {
       return values
-        .map((uuid) => items.find((it) => it.uuid == uuid))
+        .map((uuid) => items.find((it) => it.uuid === uuid))
         .map(renderString)
-        .join(", ");
+        .join(', ');
     } else {
       return `${values.length} persons selected`;
     }
@@ -80,7 +80,7 @@ export function PersonSelector({
       <InputLabel shrink>{label}</InputLabel>
       <Select
         label={label}
-        value={state || (multiple ? [] : "")}
+        value={state || (multiple ? [] : '')}
         onChange={handleChange}
         displayEmpty
         renderValue={multiple ? renderValue : undefined}

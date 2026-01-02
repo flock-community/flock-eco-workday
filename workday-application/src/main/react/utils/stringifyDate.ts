@@ -1,3 +1,3 @@
 export const stringifyDate = (date) => {
-  return date.format("YYYYMMDD");
+  return date.format('YYYYMMDD');
 };

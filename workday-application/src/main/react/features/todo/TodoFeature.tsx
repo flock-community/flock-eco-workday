@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { TodoList } from "./TodoList";
-import { updateStatus } from "./TodoService";
-import { Box, Card, CardHeader } from "@mui/material";
-import CardContent from "@mui/material/CardContent";
-
+import { Box, Card, CardHeader } from '@mui/material';
+import CardContent from '@mui/material/CardContent';
+import { useState } from 'react';
 // Types
-import { StatusProps } from "../../types";
-import { Todo } from "../../wirespec/Models";
+import type { StatusProps } from '../../types';
+import type { Todo } from '../../wirespec/Models';
+import { TodoList } from './TodoList';
+import { updateStatus } from './TodoService';
 
 export function TodoFeature() {
   const [refresh, setRefresh] = useState(false);
@@ -19,9 +18,9 @@ export function TodoFeature() {
 
   return (
     <Box
-      className={"flow"}
-      flow-gap={"wide"}
-      style={{ paddingBottom: "1.5rem" }}
+      className={'flow'}
+      flow-gap={'wide'}
+      style={{ paddingBottom: '1.5rem' }}
     >
       <Card>
         <CardHeader title="Todo's" />

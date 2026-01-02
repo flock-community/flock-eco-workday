@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 import java.util.UUID
 
-class EventControllerTest() : WorkdayIntegrationTest() {
+class EventControllerTest : WorkdayIntegrationTest() {
     private val baseUrl: String = "/api/events"
     private val adminAuthorities =
         setOf("EventAuthority.READ", "EventAuthority.WRITE", "EventAuthority.SUBSCRIBE", "EventAuthority.ADMIN")
@@ -58,8 +58,7 @@ class EventControllerTest() : WorkdayIntegrationTest() {
             name = "Administrator",
             authorities = authorities,
             password = "admin",
-        )
-            .run { userAccountService.createUserAccountPassword(this) }
+        ).run { userAccountService.createUserAccountPassword(this) }
             .run { UserSecurityService.UserSecurityPassword(this) }
 
     fun createPerson(userCode: String) =
@@ -89,8 +88,7 @@ class EventControllerTest() : WorkdayIntegrationTest() {
         costs = 200.0,
         personIds = ids,
         type = type,
-    )
-        .run { eventService.create(this) }
+    ).run { eventService.create(this) }
 
     @Test
     fun `should get hack-day events`() {
@@ -98,12 +96,12 @@ class EventControllerTest() : WorkdayIntegrationTest() {
         createEvent(LocalDate.of(2024, 4, 2), LocalDate.of(2024, 4, 3), type = EventType.FLOCK_HACK_DAY)
         createEvent(LocalDate.of(2023, 6, 2), LocalDate.of(2023, 6, 3), type = EventType.FLOCK_COMMUNITY_DAY)
 
-        mvc.perform(
-            get("$baseUrl/hack-days?year=2023")
-                .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
-                .accept(MediaType.APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                get("$baseUrl/hack-days?year=2023")
+                    .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(
                 content().json(
@@ -129,12 +127,12 @@ class EventControllerTest() : WorkdayIntegrationTest() {
         val user = createUser(userAuthorities)
         val person = createPerson(user.account.user.code)
 
-        mvc.perform(
-            put("$baseUrl/${event.code}/subscribe")
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .accept(MediaType.APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                put("$baseUrl/${event.code}/subscribe")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.persons[0].uuid").value(person.uuid.toString()))
     }
@@ -151,12 +149,12 @@ class EventControllerTest() : WorkdayIntegrationTest() {
                 listOf(person01.uuid, person02.uuid),
             )
 
-        mvc.perform(
-            put("$baseUrl/${event.code}/unsubscribe")
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .accept(MediaType.APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                put("$baseUrl/${event.code}/unsubscribe")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.persons.length()").value(1))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.persons[0].uuid").value(person02.uuid.toString()))
@@ -168,11 +166,11 @@ class EventControllerTest() : WorkdayIntegrationTest() {
         val user = createUser(setOf("EventAuthority.READ", "EventAuthority.WRITE", "EventAuthority.ADMIN"))
         createPerson(user.account.user.code)
 
-        mvc.perform(
-            put("$baseUrl/${event.code}/unsubscribe")
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .accept(MediaType.APPLICATION_JSON),
-        )
-            .andExpect(status().isForbidden)
+        mvc
+            .perform(
+                put("$baseUrl/${event.code}/unsubscribe")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isForbidden)
     }
 }

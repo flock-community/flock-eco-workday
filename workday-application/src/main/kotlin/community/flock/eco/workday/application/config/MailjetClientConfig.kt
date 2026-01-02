@@ -18,7 +18,8 @@ class MailjetClientConfig {
     @Profile("!test & !develop")
     fun mailjetClient(mailjetClientProperties: MailjetClientProperties) =
         MailjetClient(
-            ClientOptions.builder()
+            ClientOptions
+                .builder()
                 .apiKey(mailjetClientProperties.apiKey)
                 .apiSecretKey(mailjetClientProperties.apiSecretKey)
                 .build(),
@@ -29,9 +30,10 @@ class MailjetClientConfig {
     fun dummyMailjetClient(): MailjetClient = DummyMailjetClient()
 }
 
-class DummyMailjetClient : MailjetClient(
-    ClientOptions.builder().build(),
-) {
+class DummyMailjetClient :
+    MailjetClient(
+        ClientOptions.builder().build(),
+    ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun delete(request: MailjetRequest?): MailjetResponse =

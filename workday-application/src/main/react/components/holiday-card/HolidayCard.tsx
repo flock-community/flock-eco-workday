@@ -1,44 +1,44 @@
-import { Card, CardContent, CardHeader, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import React, { useEffect, useState } from "react";
-import { PersonHolidayDetails } from "../../clients/AggregationClient";
-import { hoursFormatter } from "../../utils/Hours";
-import { HighlightSpan } from "../../theme/theme-light";
-import { HolidayDetailDialog } from "./HolidayDetailDialog";
+import { Card, CardContent, CardHeader, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
+import type { PersonHolidayDetails } from '../../clients/AggregationClient';
+import { HighlightSpan } from '../../theme/theme-light';
+import { hoursFormatter } from '../../utils/Hours';
+import { HolidayDetailDialog } from './HolidayDetailDialog';
 
-const PREFIX = "HolidayCard";
+const PREFIX = 'HolidayCard';
 
 const classes = {
-  containerWrapper: `${PREFIX}-containerWrapper`,
-  hoursLeftWrapper: `${PREFIX}-hoursLeftWrapper`,
-  hoursLeft: `${PREFIX}-hoursLeft`,
+  containerWrapper: `${PREFIX}ContainerWrapper`,
+  hoursLeftWrapper: `${PREFIX}HoursLeftWrapper`,
+  hoursLeft: `${PREFIX}HoursLeft`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")(() => ({
+const Root = styled('div')(() => ({
   [`& .${classes.containerWrapper}`]: {
-    containerType: "inline-size",
+    containerType: 'inline-size',
   },
 
   [`& .${classes.hoursLeftWrapper}`]: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    "@container (max-width: 500px)": {
-      flexDirection: "column",
-      alignItems: "center",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    '@container (max-width: 500px)': {
+      flexDirection: 'column',
+      alignItems: 'center',
     },
   },
 
   [`& .${classes.hoursLeft}`]: {
-    fontSize: "clamp(6rem, 25cqw, 11rem)",
-    position: "relative",
-    textAlign: "center",
+    fontSize: 'clamp(6rem, 25cqw, 11rem)',
+    position: 'relative',
+    textAlign: 'center',
     zIndex: 2,
-    marginInline: "2.5rem",
-    "@container (max-width: 500px)": {
-      fontSize: "clamp(6rem, 40cqw, 9rem)",
+    marginInline: '2.5rem',
+    '@container (max-width: 500px)': {
+      fontSize: 'clamp(6rem, 40cqw, 9rem)',
     },
   },
 }));
@@ -76,11 +76,11 @@ export function HolidayCard({ item }: HolidayCardProps) {
   return (
     <Root>
       <Card
-        variant={"outlined"}
-        style={{ borderRadius: 0, cursor: "pointer" }}
+        variant={'outlined'}
+        style={{ borderRadius: 0, cursor: 'pointer' }}
         onClick={() => openLeaveDayDetailsDialog()}
       >
-        <CardHeader title={"Leave days"} />
+        <CardHeader title={'Leave days'} />
         <CardContent className={classes.containerWrapper}>
           <div className={classes.hoursLeftWrapper}>
             <Typography variant="body1">You have</Typography>
@@ -91,14 +91,12 @@ export function HolidayCard({ item }: HolidayCardProps) {
           </div>
         </CardContent>
       </Card>
-      {leaveDayDetailsItem !== undefined ? (
+      {leaveDayDetailsItem !== undefined && (
         <HolidayDetailDialog
           open={leaveDayDetailsOpen}
           item={leaveDayDetailsItem}
           onComplete={handleCloseLeaveDayDetailDialog}
         />
-      ) : (
-        <></>
       )}
     </Root>
   );

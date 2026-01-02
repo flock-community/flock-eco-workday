@@ -1,10 +1,10 @@
-import dayjs, { Dayjs } from "dayjs";
-import { Person } from "../clients/PersonClient";
-import { Status } from "./Status";
+import dayjs, { type Dayjs } from 'dayjs';
+import type { Person } from '../clients/PersonClient';
+import { Status } from './Status';
 
 export enum ExpenseType {
-  TRAVEL = "TRAVEL",
-  COST = "COST",
+  TRAVEL = 'TRAVEL',
+  COST = 'COST',
 }
 
 export class Expense {
@@ -16,7 +16,7 @@ export class Expense {
     public status: Status,
     public amount: number,
     public files: ExpenseFile[],
-    public expenseType: ExpenseType
+    public expenseType: ExpenseType,
   ) {}
 }
 
@@ -33,7 +33,7 @@ export class CostExpense extends Expense {
     person: Person,
     status: Status,
     amount: number,
-    files: ExpenseFile[]
+    files: ExpenseFile[],
   ) {
     super(
       id,
@@ -43,7 +43,7 @@ export class CostExpense extends Expense {
       status,
       amount,
       files,
-      ExpenseType.COST
+      ExpenseType.COST,
     );
   }
 
@@ -55,7 +55,7 @@ export class CostExpense extends Expense {
       json.person,
       Status[json.status],
       json.costDetails?.amount,
-      json.costDetails?.files
+      json.costDetails?.files,
     );
   }
 }
@@ -69,7 +69,7 @@ export class TravelExpense extends Expense {
     status: Status,
     files: ExpenseFile[],
     public allowance: number,
-    public distance: number
+    public distance: number,
   ) {
     super(
       id,
@@ -79,7 +79,7 @@ export class TravelExpense extends Expense {
       status,
       allowance * distance,
       files,
-      ExpenseType.TRAVEL
+      ExpenseType.TRAVEL,
     );
   }
 
@@ -92,7 +92,7 @@ export class TravelExpense extends Expense {
       Status[json.status],
       json.files,
       json.travelDetails?.allowance,
-      json.travelDetails?.distance
+      json.travelDetails?.distance,
     );
   }
 }

@@ -1,4 +1,4 @@
-import { themeLight } from "./theme-light";
+import { themeLight } from './theme-light';
 
 export function getTheme(theme) {
   if (theme) {

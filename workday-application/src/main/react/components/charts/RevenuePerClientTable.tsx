@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import {
-  AggregationClient,
-  ClientGrossRevenue,
-} from "../../clients/AggregationClient";
 import {
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-} from "@mui/material";
-import TableRow from "@mui/material/TableRow";
-import { currencyFormatter } from "../../utils/Currency";
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import TableRow from '@mui/material/TableRow';
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import { useEffect, useState } from 'react';
+import {
+  AggregationClient,
+  type ClientGrossRevenue,
+} from '../../clients/AggregationClient';
+import { currencyFormatter } from '../../utils/Currency';
 
-const PREFIX = "RevenuePerClientTable";
+const PREFIX = 'RevenuePerClientTable';
 
 const classes = {
-  table: `${PREFIX}-table`,
+  table: `${PREFIX}Table`,
 };
 
 const StyledTableContainer = styled(TableContainer)({
@@ -40,7 +40,7 @@ export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
 
     const validateResponse = (res: ClientGrossRevenue[] | null) => {
       if (!res) {
-        throw Error("Could not fetch total gross revenue per client");
+        throw Error('Could not fetch total gross revenue per client');
       }
       return res;
     };
@@ -75,7 +75,7 @@ export function RevenuePerClientTable({ year }: RevenuePerClientChartProps) {
       <TableCell>
         {totalGrossRevenue
           ? currencyFormatter.format(totalGrossRevenue)
-          : "..."}
+          : '...'}
       </TableCell>
     </TableRow>
   );

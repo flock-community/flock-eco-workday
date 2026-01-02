@@ -18,11 +18,11 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         launchOptions: {
-          args: ['--disable-features=PasswordBreachDetection']
-        }
+          args: ['--disable-features=PasswordBreachDetection'],
+        },
       },
     },
   ],

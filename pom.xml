@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>flock.community.eco.workday</groupId>
@@ -11,98 +10,69 @@
     <name>Flock Eco Workday Parent</name>
     <description>Parent POM for Flock Eco Workday multi-module project</description>
 
-    <url>https://github.com/flock-community/flock-eco-workday</url>
-
-    <licenses>
-        <license>
-            <name>The MIT License</name>
-            <url>https://github.com/flock-community/flock-eco-workday</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <name>Willem Veelenturf</name>
-            <email>willem.veelenturf@flock.community</email>
-        </developer>
-        <developer>
-            <name>Julius van Dis</name>
-            <email>julius.van.dis@flock.community</email>
-        </developer>
-    </developers>
-
-    <properties>
-        <!-- Build Configuration -->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>17</java.version>
-        <kotlin.version>1.9.22</kotlin.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <dokka.skip>true</dokka.skip>
-        <!-- Framework Versions -->
-        <spring.boot.version>3.4.13</spring.boot.version>
-        <spring.cloud.gcp.version>5.12.3</spring.cloud.gcp.version>
-
-        <!-- Library Versions -->
-        <jackson.version>2.13.1</jackson.version>
-        <liquibase.version>5.0.1</liquibase.version>
-        <h2.version>2.3.232</h2.version>
-        <wirespec.version>0.11.2</wirespec.version>
-
-        <!-- Utility Library Versions -->
-        <commons-lang3.version>3.7</commons-lang3.version>
-        <reflections.version>0.9.11</reflections.version>
-        <mockk.version>1.12.2</mockk.version>
-        <springmockk.version>3.1.1</springmockk.version>
-        <springdoc.version>2.1.0</springdoc.version>
-        <mockito.version>5.21.0</mockito.version>
-        <javax-mail.version>2.0.2</javax-mail.version>
-
-        <!-- Workday-Specific -->
-        <mailjet.version>5.1.1</mailjet.version>
-        <google-api-drive.version>v3-rev20251210-2.0.0</google-api-drive.version>
-        <google-api-sheets.version>v4-rev20251110-2.0.0</google-api-sheets.version>
-        <biweekly.version>0.6.7</biweekly.version>
-
-        <!-- Plugin Versions -->
-        <kotlin-maven-plugin.version>${kotlin.version}</kotlin-maven-plugin.version>
-        <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
-        <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
-        <ktlint-maven-plugin.version>3.0.0</ktlint-maven-plugin.version>
-        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
-        <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-        <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
-        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
-        <appengine-maven-plugin.version>2.2.0</appengine-maven-plugin.version>
-
-        <!-- Node/npm versions for frontend -->
-        <node.version>v18.20.4</node.version>
-        <npm.version>10.8.2</npm.version>
-
-        <!-- Other properties -->
-        <gpg.skip>true</gpg.skip>
-        <npm.ci.skip>false</npm.ci.skip>
-        <quality.skip>false</quality.skip>
-    </properties>
-
     <modules>
         <module>workday-application</module>
         <module>workday-core</module>
         <module>workday-user</module>
     </modules>
 
+    <properties>
+        <appengine-maven-plugin.version>2.2.0</appengine-maven-plugin.version>
+        <biweekly.version>0.6.7</biweekly.version>
+        <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
+
+        <!-- Utility Library Versions -->
+        <commons-lang3.version>3.7</commons-lang3.version>
+        <dokka.skip>true</dokka.skip>
+        <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
+        <google-api-drive.version>v3-rev20251210-2.0.0</google-api-drive.version>
+        <google-api-sheets.version>v4-rev20251110-2.0.0</google-api-sheets.version>
+
+        <!-- Other properties -->
+        <gpg.skip>true</gpg.skip>
+        <h2.version>2.3.232</h2.version>
+        <!-- Library Versions -->
+        <jackson.version>2.13.1</jackson.version>
+        <java.version>17</java.version>
+        <javax-mail.version>2.0.2</javax-mail.version>
+        <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
+
+        <!-- Plugin Versions -->
+        <kotlin-maven-plugin.version>${kotlin.version}</kotlin-maven-plugin.version>
+        <kotlin.version>1.9.22</kotlin.version>
+        <liquibase.version>5.0.1</liquibase.version>
+
+        <!-- Workday-Specific -->
+        <mailjet.version>5.1.1</mailjet.version>
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <mockito.version>5.21.0</mockito.version>
+        <mockk.version>1.12.2</mockk.version>
+
+        <!-- Node/npm versions for frontend -->
+        <node.version>v18.20.4</node.version>
+        <npm.ci.skip>false</npm.ci.skip>
+        <npm.version>10.8.2</npm.version>
+        <!-- Build Configuration -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <quality.skip>false</quality.skip>
+        <reflections.version>0.9.11</reflections.version>
+
+        <spotless.version>3.1.0</spotless.version>
+        <!-- Framework Versions -->
+        <spring.boot.version>3.4.13</spring.boot.version>
+        <spring.cloud.gcp.version>5.12.3</spring.cloud.gcp.version>
+        <springdoc.version>2.1.0</springdoc.version>
+        <springmockk.version>3.1.1</springmockk.version>
+        <wirespec.version>0.11.2</wirespec.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
-            <!-- Spring Boot BOM -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
 
             <!-- Spring Cloud GCP BOM -->
             <dependency>
@@ -112,17 +82,18 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <!-- Kotlin -->
+            <!-- Spring Boot BOM -->
             <dependency>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-stdlib</artifactId>
-                <version>${kotlin.version}</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-reflect</artifactId>
-                <version>${kotlin.version}</version>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
 
             <!-- Jackson -->
@@ -132,17 +103,72 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.datatype</groupId>
-                <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>${jackson.version}</version>
+                <groupId>com.google.apis</groupId>
+                <artifactId>google-api-services-drive</artifactId>
+                <version>${google-api-drive.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.google.apis</groupId>
+                <artifactId>google-api-services-sheets</artifactId>
+                <version>${google-api-sheets.version}</version>
+            </dependency>
 
             <!-- Database -->
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
+            </dependency>
+
+            <!-- Workday-Specific Dependencies -->
+            <dependency>
+                <groupId>com.mailjet</groupId>
+                <artifactId>mailjet-client</artifactId>
+                <version>${mailjet.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>community.flock.wirespec.integration</groupId>
+                <artifactId>jackson-jvm</artifactId>
+                <version>${wirespec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>flock.community.eco.workday</groupId>
+                <artifactId>workday-application</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Inter-module dependencies (will be used by workday-application) -->
+            <dependency>
+                <groupId>flock.community.eco.workday</groupId>
+                <artifactId>workday-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>flock.community.eco.workday</groupId>
+                <artifactId>workday-user</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.mail</groupId>
+                <artifactId>jakarta.mail-api</artifactId>
+                <version>${javax-mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.biweekly</groupId>
+                <artifactId>biweekly</artifactId>
+                <version>${biweekly.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-reflect</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+
+            <!-- Kotlin -->
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.liquibase</groupId>
@@ -161,17 +187,18 @@
                 <artifactId>reflections</artifactId>
                 <version>${reflections.version}</version>
             </dependency>
-            <dependency>
-                <groupId>jakarta.mail</groupId>
-                <artifactId>jakarta.mail-api</artifactId>
-                <version>${javax-mail.version}</version>
-            </dependency>
 
             <!-- API Documentation -->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ninja-squad</groupId>
+                <artifactId>springmockk</artifactId>
+                <version>${springmockk.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- Testing -->
@@ -182,60 +209,10 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>com.ninja-squad</groupId>
-                <artifactId>springmockk</artifactId>
-                <version>${springmockk.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.version}</version>
                 <scope>test</scope>
-            </dependency>
-
-            <!-- Workday-Specific Dependencies -->
-            <dependency>
-                <groupId>com.mailjet</groupId>
-                <artifactId>mailjet-client</artifactId>
-                <version>${mailjet.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>community.flock.wirespec.integration</groupId>
-                <artifactId>jackson-jvm</artifactId>
-                <version>${wirespec.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.apis</groupId>
-                <artifactId>google-api-services-drive</artifactId>
-                <version>${google-api-drive.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.apis</groupId>
-                <artifactId>google-api-services-sheets</artifactId>
-                <version>${google-api-sheets.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sf.biweekly</groupId>
-                <artifactId>biweekly</artifactId>
-                <version>${biweekly.version}</version>
-            </dependency>
-
-            <!-- Inter-module dependencies (will be used by workday-application) -->
-            <dependency>
-                <groupId>flock.community.eco.workday</groupId>
-                <artifactId>workday-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>flock.community.eco.workday</groupId>
-                <artifactId>workday-user</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>flock.community.eco.workday</groupId>
-                <artifactId>workday-application</artifactId>
-                <version>${project.version}</version>
             </dependency>
 
         </dependencies>
@@ -274,22 +251,6 @@
                         </compilerPlugins>
                         <jvmTarget>${java.version}</jvmTarget>
                     </configuration>
-                    <executions>
-                        <execution>
-                            <id>compile</id>
-                            <phase>compile</phase>
-                            <goals>
-                                <goal>compile</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>test-compile</id>
-                            <phase>test-compile</phase>
-                            <goals>
-                                <goal>test-compile</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                     <dependencies>
                         <dependency>
                             <groupId>org.jetbrains.kotlin</groupId>
@@ -302,6 +263,22 @@
                             <version>${kotlin.version}</version>
                         </dependency>
                     </dependencies>
+                    <executions>
+                        <execution>
+                            <id>compile</id>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                            <phase>compile</phase>
+                        </execution>
+                        <execution>
+                            <id>test-compile</id>
+                            <goals>
+                                <goal>test-compile</goal>
+                            </goals>
+                            <phase>test-compile</phase>
+                        </execution>
+                    </executions>
                 </plugin>
 
                 <!-- Liquibase Maven Plugin -->
@@ -310,7 +287,6 @@
                     <artifactId>liquibase-maven-plugin</artifactId>
                     <version>${liquibase.version}</version>
                 </plugin>
-
 
                 <!-- Maven Compiler Plugin -->
                 <plugin>
@@ -351,7 +327,6 @@
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>${build-helper-maven-plugin.version}</version>
                 </plugin>
-
 
                 <!-- Maven Resources Plugin -->
                 <plugin>
@@ -396,11 +371,39 @@
                     </configuration>
                 </plugin>
 
-                <!-- ktlint Maven Plugin (Code Quality) -->
+                <!-- Maven Surefire Plugin (Testing) -->
                 <plugin>
-                    <groupId>com.github.gantsign.maven</groupId>
-                    <artifactId>ktlint-maven-plugin</artifactId>
-                    <version>${ktlint-maven-plugin.version}</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>${spotless.version}</version>
+                    <configuration>
+                        <kotlin>
+                            <includes>
+                                <include>src/main/kotlin/**/*.kt</include>
+                                <include>src/test/kotlin/**/*.kt</include>
+                                <include>src/develop/kotlin/**/*.kt</include>
+                            </includes>
+                            <ktlint/>
+                        </kotlin>
+                        <pom>
+                            <sortPom>
+                                <predefinedSortOrder>custom_1</predefinedSortOrder>
+                                <lineSeparator>\n</lineSeparator>
+                                <encoding>${project.build.sourceEncoding}</encoding>
+                                <sortProperties>true</sortProperties>
+                                <sortDependencies>scope,groupId,artifactId</sortDependencies>
+                                <sortDependencyManagement/>
+                                <nrOfIndentSpace>4</nrOfIndentSpace>
+                                <expandEmptyElements>false</expandEmptyElements>
+                            </sortPom>
+                        </pom>
+                    </configuration>
                     <executions>
                         <execution>
                             <id>check</id>
@@ -409,13 +412,6 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
-
-                <!-- Maven Surefire Plugin (Testing) -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven-surefire-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -427,17 +423,17 @@
                 <executions>
                     <execution>
                         <id>compile</id>
-                        <phase>compile</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
+                        <phase>compile</phase>
                     </execution>
                     <execution>
                         <id>test-compile</id>
-                        <phase>test-compile</phase>
                         <goals>
                             <goal>test-compile</goal>
                         </goals>
+                        <phase>test-compile</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -467,10 +463,10 @@
                 <executions>
                     <execution>
                         <id>add-source</id>
-                        <phase>generate-sources</phase>
                         <goals>
                             <goal>add-source</goal>
                         </goals>
+                        <phase>generate-sources</phase>
                         <configuration>
                             <sources>
                                 <source>${project.build.directory}/generated-sources</source>
@@ -479,10 +475,10 @@
                     </execution>
                     <execution>
                         <id>add-resource</id>
-                        <phase>generate-resources</phase>
                         <goals>
                             <goal>add-resource</goal>
                         </goals>
+                        <phase>generate-resources</phase>
                         <configuration>
                             <resources>
                                 <resource>
@@ -493,10 +489,10 @@
                     </execution>
                     <execution>
                         <id>add-test-source</id>
-                        <phase>generate-test-sources</phase>
                         <goals>
                             <goal>add-test-source</goal>
                         </goals>
+                        <phase>generate-test-sources</phase>
                         <configuration>
                             <sources>
                                 <source>${project.basedir}/src/develop/kotlin</source>
@@ -511,10 +507,10 @@
                 <version>3.2.0</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
+                        <phase>package</phase>
                         <configuration>
                             <classifier>develop</classifier>
                             <includes>
@@ -522,33 +518,6 @@
                             </includes>
                             <skipIfEmpty>true</skipIfEmpty>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.github.gantsign.maven</groupId>
-                <artifactId>ktlint-maven-plugin</artifactId>
-                <configuration>
-                    <!-- Unofficial way to include only `src` files: https://github.com/gantsign/ktlint-maven-plugin/issues/341#issuecomment-1677673242 -->
-                    <sourceRoots>${project.build.sourceDirectory}</sourceRoots>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>ktlint-check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>verify</phase>
-                        <configuration>
-                            <skip>${quality.skip}</skip>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>ktlint-format</id>
-                        <goals>
-                            <goal>format</goal>
-                        </goals>
-                        <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -561,10 +530,10 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>package</phase>
                         <goals>
                             <goal>javadocJar</goal>
                         </goals>
+                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -575,10 +544,10 @@
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>sign</goal>
                         </goals>
+                        <phase>verify</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -597,15 +566,39 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
 
         </plugins>
     </build>
 
+    <url>https://github.com/flock-community/flock-eco-workday</url>
+
+    <licenses>
+        <license>
+            <name>The MIT License</name>
+            <url>https://github.com/flock-community/flock-eco-workday</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Willem Veelenturf</name>
+            <email>willem.veelenturf@flock.community</email>
+        </developer>
+        <developer>
+            <name>Julius van Dis</name>
+            <email>julius.van.dis@flock.community</email>
+        </developer>
+    </developers>
 
     <scm>
-        <url>https://github.com/flock-community/flock-eco-workday</url>
         <connection>scm:git:git://github.com/flock-community/flock-eco-workday.git</connection>
         <developerConnection>scm:git:git@github.com:flock-community/flock-eco-workday.git</developerConnection>
+        <url>https://github.com/flock-community/flock-eco-workday</url>
     </scm>
 
     <profiles>
@@ -625,10 +618,10 @@
                         <executions>
                             <execution>
                                 <id>add-source</id>
-                                <phase>generate-sources</phase>
                                 <goals>
                                     <goal>add-source</goal>
                                 </goals>
+                                <phase>generate-sources</phase>
                                 <configuration>
                                     <sources>
                                         <source>${project.basedir}/src/develop/kotlin</source>
@@ -638,10 +631,10 @@
                             </execution>
                             <execution>
                                 <id>add-resource-develop</id>
-                                <phase>generate-resources</phase>
                                 <goals>
                                     <goal>add-resource</goal>
                                 </goals>
+                                <phase>generate-resources</phase>
                                 <configuration>
                                     <resources>
                                         <resource>
@@ -658,6 +651,27 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>format</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.diffplug.spotless</groupId>
+                        <artifactId>spotless-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>format</id>
+                                <goals>
+                                    <goal>apply</goal>
+                                </goals>
+                                <phase>process-sources</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 
 </project>

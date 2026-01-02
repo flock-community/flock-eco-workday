@@ -45,12 +45,12 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
     fun `should get all sickdays from all users`() {
         val admin = createHelper.createUser(adminAuthorities)
 
-        mvc.perform(
-            get(baseUrl)
-                .with(user(CreateHelper.UserSecurity(admin)))
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                get(baseUrl)
+                    .with(user(CreateHelper.UserSecurity(admin)))
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
     }
 
@@ -60,12 +60,12 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
         val person = createHelper.createPerson("john", "doe", user.code)
         val admin = createHelper.createUser(adminAuthorities)
 
-        mvc.perform(
-            get("$baseUrl?code=${person.uuid}")
-                .with(user(CreateHelper.UserSecurity(admin)))
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                get("$baseUrl?code=${person.uuid}")
+                    .with(user(CreateHelper.UserSecurity(admin)))
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
     }
 
@@ -93,12 +93,12 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
         val created = sickDayService.create(createForm)
 
-        mvc.perform(
-            get("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(user)))
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                get("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
@@ -131,14 +131,14 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
                 status = status,
             )
 
-        mvc.perform(
-            post(baseUrl)
-                .with(user(CreateHelper.UserSecurity(user)))
-                .content(mapper.writeValueAsString(createForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .content(mapper.writeValueAsString(createForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
@@ -176,14 +176,14 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
         val updatedCreateForm = createForm.copy(description = updatedDescription)
 
-        mvc.perform(
-            put("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(user)))
-                .content(mapper.writeValueAsString(updatedCreateForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                put("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .content(mapper.writeValueAsString(updatedCreateForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
@@ -221,14 +221,14 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 
-        mvc.perform(
-            put("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(user)))
-                .content(mapper.writeValueAsString(updatedCreateForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isForbidden)
+        mvc
+            .perform(
+                put("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .content(mapper.writeValueAsString(updatedCreateForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isForbidden)
 
         assertEquals(sickDayService.findByCode(created.code)?.status, status)
     }
@@ -260,14 +260,14 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 
-        mvc.perform(
-            put("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(admin)))
-                .content(mapper.writeValueAsString(updatedCreateForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                put("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(admin)))
+                    .content(mapper.writeValueAsString(updatedCreateForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
@@ -298,13 +298,13 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
         val created = sickDayService.create(createForm)
 
-        mvc.perform(
-            delete("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(admin)))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isNoContent)
+        mvc
+            .perform(
+                delete("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(admin)))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isNoContent)
 
         assertNull(sickDayService.findByCode(created.code))
     }

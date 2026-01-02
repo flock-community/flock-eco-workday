@@ -1,14 +1,16 @@
-import { SetStateAction, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { Person, PersonClient } from "../clients/PersonClient";
-import { useLoginStatus } from "./StatusHook";
+import { type SetStateAction, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { type Person, PersonClient } from '../clients/PersonClient';
+import { useLoginStatus } from './StatusHook';
 
 export let store: Person | null = null;
 const listeners: ((person: Person | null) => void)[] = [];
 
 function update(it: Person | null) {
   store = it;
-  listeners.forEach((func) => func(it));
+  listeners.forEach((func) => {
+    func(it);
+  });
 }
 
 export function usePerson(): [Person | null, (personId: string) => void] {
@@ -20,12 +22,12 @@ export function usePerson(): [Person | null, (personId: string) => void] {
   useEffect(() => {
     const listener = (it: SetStateAction<Person | null>) => setState(it);
     if (store === null && listeners.length === 0) {
-      if (status && status.isLoggedIn) {
+      if (status?.isLoggedIn) {
         PersonClient.me().then(update);
       }
     }
     const params = new URLSearchParams(location.search);
-    const personId = params.get("personId");
+    const personId = params.get('personId');
     if (personId) {
       PersonClient.get(personId).then(update);
     }

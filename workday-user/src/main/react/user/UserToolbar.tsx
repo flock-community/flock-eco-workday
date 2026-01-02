@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Tooltip from "@mui/material/Tooltip";
-import IconButton from "@mui/material/IconButton";
-import AddIcon from "@mui/icons-material/Add";
-import { Search } from "@workday-core/components/Search";
+import AddIcon from '@mui/icons-material/Add';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { Search } from '@workday-core/components/Search';
+import { useState } from 'react';
 
 type UserToolbarProps = {
   search?: string;
@@ -27,12 +27,12 @@ export function UserToolbar({
 
   return (
     <Toolbar>
-      <Box sx={{ flex: "0 0 auto" }}>
+      <Box sx={{ flex: '0 0 auto' }}>
         <Typography variant="h6" id="tableTitle">
           Users
         </Typography>
       </Box>
-      <Box sx={{ flex: "1 1 100%" }} />
+      <Box sx={{ flex: '1 1 100%' }} />
       <Box sx={(theme) => ({ color: theme.palette.text.secondary })}>
         <Search value={state} onChange={handleSearchChange} />
       </Box>

@@ -65,8 +65,7 @@ class EventController(
             } else {
                 it
             }
-        }
-        .toResponse()
+        }.toResponse()
 
     @GetMapping("/hack-days")
     @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
@@ -112,8 +111,7 @@ class EventController(
                 personId = form.personId,
                 rating = form.rating,
             ),
-        )
-        .toResponse()
+        ).toResponse()
 
     @PostMapping
     @PreAuthorize("hasAuthority('EventAuthority.WRITE')")
@@ -138,7 +136,8 @@ class EventController(
     fun delete(
         @PathVariable code: String,
         authentication: Authentication,
-    ) = eventService.findByCode(code)
+    ) = eventService
+        .findByCode(code)
         ?.applyAuthentication(authentication)
         ?.run { eventService.deleteByCode(this.code) }
         .toResponse()
@@ -149,7 +148,8 @@ class EventController(
         @PathVariable eventCode: String,
         @PathVariable personId: UUID,
         authentication: Authentication,
-    ) = eventRatingService.deleteByEventCodeAndPersonUuid(eventCode, personId)
+    ) = eventRatingService
+        .deleteByEventCodeAndPersonUuid(eventCode, personId)
         .toResponse()
 
     @PutMapping("/{eventCode}/subscribe")
@@ -180,7 +180,8 @@ class EventController(
 
     private fun Authentication.isAdmin(): Boolean =
         this.authorities
-            .map { it.authority }.contains(EventAuthority.ADMIN.toName())
+            .map { it.authority }
+            .contains(EventAuthority.ADMIN.toName())
 
     private fun Event.isAuthenticated(authentication: Authentication?) =
         authentication?.isAdmin() == true || persons.any { it.isUser(authentication?.name) }

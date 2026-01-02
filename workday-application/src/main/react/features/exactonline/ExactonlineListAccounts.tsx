@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-
-import List from "@mui/material/List";
-import ListItemText from "@mui/material/ListItemText";
-import { ExactonlineClient } from "../../clients/ExactonlineClient";
+import List from '@mui/material/List';
+import ListItemText from '@mui/material/ListItemText';
+import { useEffect, useState } from 'react';
+import { ExactonlineClient } from '../../clients/ExactonlineClient';
 
 export function ExactonlineListAccounts() {
   const [list, setList] = useState<any>([]);

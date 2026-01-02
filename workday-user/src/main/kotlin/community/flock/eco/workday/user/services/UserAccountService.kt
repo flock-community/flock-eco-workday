@@ -51,10 +51,11 @@ class UserAccountService(
     fun findUserAccountOauthByUserEmail(
         email: String,
         provider: UserAccountOauthProvider,
-    ) = userAccountOauthRepository.findByUserEmailIgnoreCaseContainingAndProvider(
-        email,
-        provider,
-    ).toNullable()
+    ) = userAccountOauthRepository
+        .findByUserEmailIgnoreCaseContainingAndProvider(
+            email,
+            provider,
+        ).toNullable()
 
     fun findUserAccountOauthByReference(reference: String) = userAccountOauthRepository.findByReference(reference).toNullable()
 
@@ -109,34 +110,33 @@ class UserAccountService(
         userCode: String,
         oldPassword: String,
         newPassword: String,
-    ) = userService.findByCode(userCode)
+    ) = userService
+        .findByCode(userCode)
         ?.let { findUserAccountPasswordByUserEmail(it.email) }
         ?.apply {
             if (!passwordEncoder.matches(oldPassword, this.secret)) {
                 throw UserAccountNotFoundWrongOldPasswordException()
             }
-        }
-        ?.apply {
+        }?.apply {
             if (passwordEncoder.matches(newPassword, this.secret)) {
                 throw UserAccounNewPasswordMatchesOldPasswordException()
             }
-        }
-        ?.resetPassword(newPassword)
+        }?.resetPassword(newPassword)
         ?.let(userAccountRepository::save)
         ?.let { applicationEventPublisher.publishEvent(UserAccountNewPasswordEvent(it)) }
 
     fun generateKeyForUserCode(
         userCode: String,
         label: String?,
-    ) = userService.findByCode(userCode)
+    ) = userService
+        .findByCode(userCode)
         ?.let { user ->
             UserAccountKey(
                 user = user,
                 key = UUID.randomUUID().toString(),
                 label = label,
             )
-        }
-        ?.run {
+        }?.run {
             userAccountRepository.save(this)
         }
 
@@ -160,11 +160,11 @@ class UserAccountService(
     fun revokeKeyForUserCode(
         userCode: String,
         key: String,
-    ) = userAccountKeyRepository.findByUserCode(userCode)
+    ) = userAccountKeyRepository
+        .findByUserCode(userCode)
         .find {
             it.key == key
-        }
-        ?.run {
+        }?.run {
             userAccountRepository.delete(this)
         }
 

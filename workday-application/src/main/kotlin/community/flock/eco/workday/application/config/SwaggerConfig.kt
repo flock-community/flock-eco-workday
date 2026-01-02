@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class SwaggerConfig {
     @Bean
-    fun api(): GroupedOpenApi {
-        return GroupedOpenApi.builder()
+    fun api(): GroupedOpenApi =
+        GroupedOpenApi
+            .builder()
             .group("flock-eco-workday-public")
             .packagesToScan("community.flock.eco.workday")
             .build()
-    }
 }

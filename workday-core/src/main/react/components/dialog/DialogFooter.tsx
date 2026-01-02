@@ -1,6 +1,5 @@
-import React from "react";
-import { Box, Button, DialogActions } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
+import { Box, Button, DialogActions } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 
 type DialogFooterProps = {
   formId: string;
@@ -34,9 +33,10 @@ export function DialogFooter({
               width="16px"
               height="16xpx"
               src="/images/googleDriveIcon.svg"
+              alt="Google Drive"
             />
           ) : (
-            <CircularProgress color={"secondary"} size={"20px"} />
+            <CircularProgress color={'secondary'} size={'20px'} />
           )}
           <Box ml="0.5rem">Export</Box>
         </Button>

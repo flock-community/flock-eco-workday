@@ -1,26 +1,26 @@
-import TableRow from "@mui/material/TableRow";
-import { styled } from "@mui/material/styles";
-import TableCell from "@mui/material/TableCell";
-import IconButton from "@mui/material/IconButton";
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon,
-} from "@mui/icons-material";
-import NonProductiveHours from "./NonProductiveHours";
-import React, { useState } from "react";
-import { AggregationClientPersonAssignmentItem } from "../../../wirespec/Models";
-import { Dayjs } from "dayjs";
+} from '@mui/icons-material';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import type { Dayjs } from 'dayjs';
+import { useState } from 'react';
+import type { AggregationClientPersonAssignmentItem } from '../../../wirespec/Models';
+import NonProductiveHours from './NonProductiveHours';
 
-const PREFIX = "AssignmentReportTableRow";
+const PREFIX = 'AssignmentReportTableRow';
 
 const classes = {
-  noWrap: `${PREFIX}-noWrap`,
+  noWrap: `${PREFIX}NoWrap`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")({
+const Root = styled('div')({
   [`& .${classes.noWrap}`]: {
-    whiteSpace: "nowrap",
+    whiteSpace: 'nowrap',
   },
 });
 
@@ -56,8 +56,11 @@ export default function AssignmentReportTableRow({
           {item.person.name} ({item.assignment.name})
         </TableCell>
         {item.hours.map((val, personHoursIndex) => (
-          <TableCell width={10} key={personHoursIndex}>
-            {val > 0 ? val.toFixed(1) : ""}
+          <TableCell
+            width={10}
+            key={`${item.person.id}-${item.assignment.id}-${personHoursIndex}`}
+          >
+            {val > 0 ? val.toFixed(1) : ''}
           </TableCell>
         ))}
       </TableRow>

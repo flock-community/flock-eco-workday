@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import { useEffect, useState } from 'react';
 import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Legend,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  BarChart,
-  Bar,
-} from "recharts";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import { AggregationClient } from "../../clients/AggregationClient";
+} from 'recharts';
+import { AggregationClient } from '../../clients/AggregationClient';
 
 type AverageHoursPerDayChartProps = {
   year?: number;
@@ -24,7 +24,7 @@ export function AverageHoursPerDayChart({
   useEffect(() => {
     const date = new Date();
     AggregationClient.totalPerMonthByYear(year || date.getFullYear()).then(
-      (res) => setState(res)
+      (res) => setState(res),
     );
   }, [year]);
 
@@ -38,8 +38,8 @@ export function AverageHoursPerDayChart({
         <YAxis />
         <Tooltip
           formatter={(value) =>
-            typeof value === "number"
-              ? new Intl.NumberFormat("en").format(value)
+            typeof value === 'number'
+              ? new Intl.NumberFormat('en').format(value)
               : value
           }
         />

@@ -68,7 +68,8 @@ class SickdayController(
         @PathVariable code: String,
         @RequestBody form: SickDayForm,
         authentication: Authentication,
-    ) = service.findByCode(code)
+    ) = service
+        .findByCode(code)
         ?.applyAuthentication(authentication)
         ?.applyAllowedToUpdate(form.status, authentication.isAdmin())
         ?.run {
@@ -77,15 +78,15 @@ class SickdayController(
                 form = form,
                 isUpdatedByOwner = authentication.isOwnerOf(this),
             )
-        }
-        .toResponse()
+        }.toResponse()
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('SickdayAuthority.WRITE')")
     fun delete(
         @PathVariable code: String,
         authentication: Authentication,
-    ) = service.findByCode(code)
+    ) = service
+        .findByCode(code)
         ?.applyAuthentication(authentication)
         ?.run { service.deleteByCode(this.code) }
         .toResponse()
@@ -94,7 +95,8 @@ class SickdayController(
         if (authentication.isAdmin()) {
             return this
         }
-        return personService.findByUserCode(authentication.name)
+        return personService
+            .findByUserCode(authentication.name)
             ?.let {
                 this.copy(personId = it.uuid)
             }

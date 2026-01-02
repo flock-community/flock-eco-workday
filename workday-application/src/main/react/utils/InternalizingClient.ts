@@ -1,9 +1,9 @@
 import {
   PageableClient,
-  QueryParameters,
+  type QueryParameters,
   ResourceClient,
-  ValidResponse,
-} from "@workday-core";
+  type ValidResponse,
+} from '@workday-core';
 
 // FIXME: Use the one in PageableClient
 interface Pageable {
@@ -14,16 +14,16 @@ interface Pageable {
 
 export default function InternalizingClient<In, OutRaw, Out>(
   path: string,
-  internalize: (raw: OutRaw) => Out
+  internalize: (raw: OutRaw) => Out,
 ) {
   const resourceClient = ResourceClient<OutRaw, In>(path);
   const pageableClient = PageableClient<OutRaw>(path);
 
   const internalizeSingleItemResponse = (
-    response: ValidResponse<OutRaw>
+    response: ValidResponse<OutRaw>,
   ): Out => internalize(response.body);
   const internalizeItemArrayResponse = (
-    response: ValidResponse<OutRaw[]>
+    response: ValidResponse<OutRaw[]>,
   ): Out[] => response.body.map(internalize);
 
   const all = () => resourceClient.all().then(internalizeItemArrayResponse);

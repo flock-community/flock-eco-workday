@@ -25,10 +25,9 @@ class UserGroupService(
                 form.users
                     ?.let { it.internalizeUsers() }
                     ?: mutableSetOf(),
-        )
-            .let {
-                userGroupRepository.save(it)
-            }
+        ).let {
+            userGroupRepository.save(it)
+        }
 
     fun update(
         code: String,
@@ -43,8 +42,7 @@ class UserGroupService(
                             ?.let { it.internalizeUsers() }
                             ?: userGroup.users,
                 )
-            }
-            ?.let {
+            }?.let {
                 userGroupRepository.save(it)
             }
 

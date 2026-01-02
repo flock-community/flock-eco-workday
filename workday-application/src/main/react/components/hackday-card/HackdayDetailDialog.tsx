@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, Divider } from "@mui/material";
-import { DialogHeader } from "@workday-core/components/dialog";
-import EventIcon from "@mui/icons-material/CalendarToday";
-import ListItem from "@mui/material/ListItem";
-import List from "@mui/material/List";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
-import { PersonHackdayDetails } from "../../clients/AggregationClient";
-import { hoursFormatter } from "../../utils/Hours";
-import { FlockEvent } from "../../clients/EventClient";
-import { HackDayList } from "./HackDayList";
-import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
+import EventIcon from '@mui/icons-material/CalendarToday';
+import { Dialog, Divider } from '@mui/material';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import { DialogHeader } from '@workday-core/components/dialog';
+import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
+import { useEffect, useState } from 'react';
+import type { PersonHackdayDetails } from '../../clients/AggregationClient';
+import type { FlockEvent } from '../../clients/EventClient';
+import { hoursFormatter } from '../../utils/Hours';
+import { HackDayList } from './HackDayList';
 
 const initialData: PersonHackdayDetails = {
-  name: "",
+  name: '',
   hackHoursFromContract: 0,
   hackHoursUsed: 0,
   totalHoursRemaining: 0,
@@ -51,33 +51,33 @@ export function HackdayDetailDialog({
     <Dialog
       open={open}
       onClose={handleClose}
-      maxWidth={"sm"}
+      maxWidth={'sm'}
       fullWidth={true}
       PaperProps={{ square: true }}
     >
       <DialogHeader
         onClose={handleClose}
         icon={<EventIcon />}
-        headline={"Hack hours details"}
+        headline={'Hack hours details'}
       />
       <DialogBody>
         <List dense={true}>
           <ListItem>
-            <ListItemText primary={"Contract"} />
+            <ListItemText primary={'Contract'} />
             <ListItemSecondaryAction>
               {hoursFormatter.format(state?.hackHoursFromContract)}
             </ListItemSecondaryAction>
           </ListItem>
           <ListItem>
-            <ListItemText primary={"Used"} />
+            <ListItemText primary={'Used'} />
             <ListItemSecondaryAction>
               {hoursFormatter.format(state?.hackHoursUsed)}
             </ListItemSecondaryAction>
           </ListItem>
           <Divider />
-          <ListItem style={{ fontStyle: "italic" }}>
-            <ListItemText primary={"Remaining"} />
-            <ListItemSecondaryAction style={{ fontStyle: "italic" }}>
+          <ListItem style={{ fontStyle: 'italic' }}>
+            <ListItemText primary={'Remaining'} />
+            <ListItemSecondaryAction style={{ fontStyle: 'italic' }}>
               {hoursFormatter.format(state?.totalHoursRemaining)}
             </ListItemSecondaryAction>
           </ListItem>

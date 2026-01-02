@@ -83,7 +83,8 @@ class SickDayService(
     }
 
     fun create(form: SickDayForm): SickDay =
-        form.copy(status = Status.REQUESTED)
+        form
+            .copy(status = Status.REQUESTED)
             .validate()
             .consume()
             .save()
@@ -101,8 +102,7 @@ class SickDayService(
                     .validate()
                     .consume(this)
                     .save()
-            }
-            .also {
+            }.also {
                 if (!isUpdatedByOwner) {
                     emailService.sendUpdate(it)
                 }

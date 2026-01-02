@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
 import {
   Box,
   Card,
@@ -7,29 +5,29 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-} from "@mui/material";
-import CardContent from "@mui/material/CardContent";
-import { WORK_DAY_PAGE_SIZE, WorkDayClient } from "../../clients/WorkDayClient";
-import Table from "@mui/material/Table";
-import TableRow from "@mui/material/TableRow";
-import { WorkDayListItem } from "./WorkDayListItem";
-
+} from '@mui/material';
+import CardContent from '@mui/material/CardContent';
+import { styled } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableRow from '@mui/material/TableRow';
+import { useEffect, useState } from 'react';
+import { WORK_DAY_PAGE_SIZE, WorkDayClient } from '../../clients/WorkDayClient';
 // Components
-import { FlockPagination } from "../../components/pagination/FlockPagination";
-
+import { FlockPagination } from '../../components/pagination/FlockPagination';
 // Types
-import type { DayListProps, DayProps } from "../../types";
+import type { DayListProps, DayProps } from '../../types';
+import { WorkDayListItem } from './WorkDayListItem';
 
-const PREFIX = "WorkDayList";
+const PREFIX = 'WorkDayList';
 
 const classes = {
-  card: `${PREFIX}-card`,
+  card: `${PREFIX}Card`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")({
+const Root = styled('div')({
   [`& .${classes.card}`]: (loading) => ({
-    marginTop: "10px",
+    marginTop: '10px',
     opacity: loading ? 0.5 : 1,
   }),
 });
@@ -43,8 +41,9 @@ export function WorkDayList({
   const [list, setList] = useState<DayProps[]>([]);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     setLoading(true);
     WorkDayClient.findAllByPersonUuid(personId, page).then(
@@ -52,9 +51,9 @@ export function WorkDayList({
         setList(res.list);
         setCount(res.count);
         setLoading(false);
-      }
+      },
     );
-  }, [personId, refresh, page]);
+  }, [refresh, personId, page]);
 
   function renderItem(item) {
     return (
@@ -63,7 +62,7 @@ export function WorkDayList({
         value={item}
         onClick={() => onClickRow(item)}
         onClickStatus={(status) => onClickStatus(status, item)}
-        hasAuthority={"WorkDayAuthority.ADMIN"}
+        hasAuthority={'WorkDayAuthority.ADMIN'}
       />
     );
   }

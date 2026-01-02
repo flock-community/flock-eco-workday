@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Field, Form, Formik } from "formik";
-import * as Yup from "yup";
-import { TextField } from "formik-mui";
-import { ClientClient } from "../../clients/ClientClient";
+import { Field, Form, Formik } from 'formik';
+import { TextField } from 'formik-mui';
+import { useEffect, useState } from 'react';
+import * as Yup from 'yup';
+import { ClientClient } from '../../clients/ClientClient';
 
-export const CLIENT_FORM_ID = "client-form-id";
+export const CLIENT_FORM_ID = 'client-form-id';
 type ClientFormProps = {
   code?: string;
   value?: any;
@@ -22,15 +22,14 @@ export function ClientForm({ code, value, onSubmit }: ClientFormProps) {
     if (!value && code) {
       ClientClient.get(code).then((res) => setState(res));
     }
-  }, [code]);
+  }, [code, value]);
 
-  // eslint-disable-next-line no-shadow
   const handleSubmit = (value) => {
     onSubmit?.(value);
   };
 
   const schema = Yup.object().shape({
-    name: Yup.string().required("Required").default(""),
+    name: Yup.string().required('Required').default(''),
   });
 
   const form = () => (

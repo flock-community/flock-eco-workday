@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import dayjs from 'dayjs';
 
 export async function Given_I_am_logged_in_as_user(page, username: string) {
@@ -8,8 +8,12 @@ export async function Given_I_am_logged_in_as_user(page, username: string) {
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.waitForURL('http://localhost:3000/**');
   // Capitalize first letter for welcome message format
-  const capitalizedUsername = username.charAt(0).toUpperCase() + username.slice(1);
-  const welcomeMessage = await page.getByRole('heading', { level: 2, name: `Hi, ${capitalizedUsername}!` });
+  const capitalizedUsername =
+    username.charAt(0).toUpperCase() + username.slice(1);
+  const welcomeMessage = await page.getByRole('heading', {
+    level: 2,
+    name: `Hi, ${capitalizedUsername}!`,
+  });
   await expect(welcomeMessage).toBeVisible();
 }
 
@@ -17,7 +21,11 @@ export async function When_I_go_to_my_work_days(page) {
   await page.goto('http://localhost:3000/workdays');
 }
 
-export async function Then_I_see_a_list_of_the_hours_I_have_submitted_as_for(page, role: string, client: string) {
+export async function Then_I_see_a_list_of_the_hours_I_have_submitted_as_for(
+  page,
+  role: string,
+  client: string,
+) {
   const firstRow = page.locator('table tbody tr').first();
   const clientElement = firstRow.locator('td').nth(0);
   await expect(clientElement).toHaveText(client);
@@ -30,7 +38,13 @@ export async function When_I_click_the_button(page, buttonText: string) {
   await button.click();
 }
 
-export async function selectDateInPicker(page: Page, dateLabel: string, day: number, month: number, year: number) {
+export async function selectDateInPicker(
+  page: Page,
+  dateLabel: string,
+  day: number,
+  month: number,
+  year: number,
+) {
   // Format the date as DD-MM-YYYY (the format the application uses)
   const dateString = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
 
@@ -46,11 +60,19 @@ export async function selectDateInPicker(page: Page, dateLabel: string, day: num
   await page.waitForTimeout(200);
 }
 
-export async function When_I_fill_in_the_date_range_from_till(page: Page, fromDate: string, tillDate: string) {
+export async function When_I_fill_in_the_date_range_from_till(
+  page: Page,
+  fromDate: string,
+  tillDate: string,
+) {
   const [fromDay, fromMonth, fromYear] = fromDate.split('-').map(Number);
   const [tillDay, tillMonth, tillYear] = tillDate.split('-').map(Number);
-  const from = dayjs(`${fromYear}-${fromMonth.toString().padStart(2, '0')}-${fromDay.toString().padStart(2, '0')}`);
-  const to = dayjs(`${tillYear}-${tillMonth.toString().padStart(2, '0')}-${tillDay.toString().padStart(2, '0')}`);
+  const from = dayjs(
+    `${fromYear}-${fromMonth.toString().padStart(2, '0')}-${fromDay.toString().padStart(2, '0')}`,
+  );
+  const to = dayjs(
+    `${tillYear}-${tillMonth.toString().padStart(2, '0')}-${tillDay.toString().padStart(2, '0')}`,
+  );
   const today = dayjs();
   if (to.isAfter(today, 'month')) {
     await selectDateInPicker(page, 'To', tillDay, tillMonth, tillYear);
@@ -71,8 +93,10 @@ export async function When_I_add_a_file(page, filename: string) {
 
   // Listen for the upload request before setting the file
   const uploadPromise = page.waitForResponse(
-    response => response.url().includes('/api/expenses/files') && response.status() === 200,
-    { timeout: 10000 }
+    (response) =>
+      response.url().includes('/api/expenses/files') &&
+      response.status() === 200,
+    { timeout: 10000 },
   );
 
   await fileInput.setInputFiles(`tests/files/${filename}`);
@@ -84,7 +108,12 @@ export async function When_I_add_a_file(page, filename: string) {
   await page.waitForTimeout(500);
 }
 
-export async function Then_I_see_the_new_work_days_for_the_month_with_hours(page, month: string, year: string, totalHours: string) {
+export async function Then_I_see_the_new_work_days_for_the_month_with_hours(
+  page,
+  _month: string,
+  _year: string,
+  totalHours: string,
+) {
   await page.waitForLoadState('networkidle');
   const firstRow = page.locator('table tbody tr').first();
   const hoursElement = firstRow.locator('td').nth(5);
@@ -92,8 +121,9 @@ export async function Then_I_see_the_new_work_days_for_the_month_with_hours(page
 }
 
 export async function Then_the_timesheet_was_uploaded_to_backend(page) {
-  const request = await page.waitForRequest(request =>
-    request.url().includes('/api/workdays') && request.method() === 'POST'
+  const request = await page.waitForRequest(
+    (request) =>
+      request.url().includes('/api/workdays') && request.method() === 'POST',
   );
   expect(request.method()).toBe('POST');
 }
@@ -112,24 +142,43 @@ export async function Then_I_am_on_the_create_expense_page(page) {
   await expect(createExpenseText).toBeVisible();
 }
 
-export async function When_I_fill_in_the_expense_details(page: Page, date: string, amount: string, description: string) {
+export async function When_I_fill_in_the_expense_details(
+  page: Page,
+  date: string,
+  amount: string,
+  description: string,
+) {
   const [day, month, year] = date.split('-').map(Number);
   await selectDateInPicker(page, 'Date', day, month, year);
   await page.fill('input[type="number"]', amount);
   await page.fill('input[type="text"]', description);
 }
 
-export async function Then_I_see_the_expense_as(page, status: string, reason: string, date: string, total: string) {
-  const containerCard = page.locator('.MuiCard-root').filter({ hasText: 'Expenses' }).first();
+export async function Then_I_see_the_expense_as(
+  page,
+  status: string,
+  reason: string,
+  date: string,
+  total: string,
+) {
+  const containerCard = page
+    .locator('.MuiCard-root')
+    .filter({ hasText: 'Expenses' })
+    .first();
   const expenseCard = containerCard.locator('.MuiCard-root').first();
-  const statusButton = expenseCard.getByText(status.toUpperCase(), { exact: true });
+  const statusButton = expenseCard.getByText(status.toUpperCase(), {
+    exact: true,
+  });
   await expect(statusButton).toBeVisible();
   await expect(expenseCard).toContainText(reason);
   await expect(expenseCard).toContainText(date);
   await expect(expenseCard).toContainText(total);
 }
 
-export async function When_I_select_the_assignment(page, assignmentText: string) {
+export async function When_I_select_the_assignment(
+  page,
+  assignmentText: string,
+) {
   // Click the assignment field to open the autocomplete
   await page.getByLabel('Assignment').click();
 
@@ -138,5 +187,7 @@ export async function When_I_select_the_assignment(page, assignmentText: string)
   await listbox.waitFor({ state: 'visible', timeout: 5000 });
 
   // Click the matching option
-  await page.getByRole('option', { name: new RegExp(assignmentText, 'i') }).click();
+  await page
+    .getByRole('option', { name: new RegExp(assignmentText, 'i') })
+    .click();
 }

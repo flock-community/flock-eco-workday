@@ -1,15 +1,15 @@
-import { Todo } from "./wirespec/Models";
+import { Todo } from './wirespec/Models';
 
-export type StatusProps = "REQUESTED" | "APPROVED" | "REJECTED";
+export type StatusProps = 'REQUESTED' | 'APPROVED' | 'REJECTED';
 export type TypeProp =
-  | "WORKDAY"
-  | "SICKDAY"
-  | "HOLIDAY"
-  | "PAID_PARENTAL_LEAVE"
-  | "UNPAID_PARENTAL_LEAVE"
-  | "PLUSDAY"
-  | "EXPENSE"
-  | "PAID_LEAVE";
+  | 'WORKDAY'
+  | 'SICKDAY'
+  | 'HOLIDAY'
+  | 'PAID_PARENTAL_LEAVE'
+  | 'UNPAID_PARENTAL_LEAVE'
+  | 'PLUSDAY'
+  | 'EXPENSE'
+  | 'PAID_LEAVE';
 
 export type DayProps = {
   type: TypeProp;

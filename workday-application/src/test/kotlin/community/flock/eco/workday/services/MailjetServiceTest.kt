@@ -127,8 +127,7 @@ internal class MailjetServiceTest {
         bodyJSON
             .apply {
                 println(this.toString(2))
-            }
-            .getJSONArray("Messages")
+            }.getJSONArray("Messages")
             .apply { assertEquals(1, length(), "Found more than one message") }
             .getJSONObject(0)
 

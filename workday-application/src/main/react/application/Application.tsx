@@ -1,27 +1,26 @@
-import React, { useEffect } from "react";
-
-import { BrowserRouter as Router, Redirect, Route } from "react-router-dom";
-import { Box, ThemeProvider } from "@mui/material";
-import { StyledEngineProvider } from "@mui/material/styles";
-import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
-import { useLoginStatus } from "../hooks/StatusHook";
-import { getTheme } from "../theme/theme";
-import { useError } from "../hooks/ErrorHook";
-import { ErrorStack } from "../components/error/ErrorBarStack";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import { LoginFeature } from "../features/login/LoginFeature";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import "dayjs/locale/nl";
-import { ErrorBoundary } from "react-error-boundary";
+import { Box, ThemeProvider } from '@mui/material';
+import { StyledEngineProvider } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import React, { useEffect } from 'react';
+import { Redirect, Route, BrowserRouter as Router } from 'react-router-dom';
+import { ErrorStack } from '../components/error/ErrorBarStack';
+import { LoginFeature } from '../features/login/LoginFeature';
+import { useError } from '../hooks/ErrorHook';
+import { useLoginStatus } from '../hooks/StatusHook';
+import { getTheme } from '../theme/theme';
+import 'dayjs/locale/nl';
+import { ErrorBoundary } from 'react-error-boundary';
 
 const AuthenticatedApplication = React.lazy(() =>
-  import("./AuthenticatedApplication").then((module) => ({
+  import('./AuthenticatedApplication').then((module) => ({
     default: module.AuthenticatedApplication,
-  }))
+  })),
 );
 
-const theme = getTheme("light");
+const theme = getTheme('light');
 
 export const Application = () => {
   const status = useLoginStatus();
@@ -69,7 +68,7 @@ export const Application = () => {
 
 const UnauthenticatedApplication = () => {
   return (
-    <Box className={"full-width"} style={{ rowGap: 0 }}>
+    <Box className={'full-width'} style={{ rowGap: 0 }}>
       <Redirect to="/auth" exact />
       <Route path="/auth" exact component={LoginFeature} />
     </Box>
@@ -81,12 +80,14 @@ function ErrorFallback({ error, resetErrorBoundary }) {
     <div role="alert">
       <p>Something went wrong:</p>
       <pre>{error.message}</pre>
-      <button onClick={resetErrorBoundary}>Try again</button>
+      <button type="button" onClick={resetErrorBoundary}>
+        Try again
+      </button>
     </div>
   );
 }
 
 function logErrorToService(error, info) {
   // Example: Send to Sentry, LogRocket, etc.
-  console.error("Logged error:", error, info);
+  console.error('Logged error:', error, info);
 }

@@ -5,7 +5,7 @@ export type ValidResponse<T> = {
 };
 
 export const validateResponse = <T>(
-  res: Response
+  res: Response,
 ): Promise<ValidResponse<T> | undefined> => {
   if (res.ok) {
     if (res.status === 204) {
@@ -23,12 +23,12 @@ export const validateResponse = <T>(
 };
 
 export const checkResponse = <A>(
-  it: ValidResponse<A> | void
+  it: ValidResponse<A> | undefined,
 ): ValidResponse<A> => {
   if (it) {
     return it;
   } else {
-    throw new Error("No response");
+    throw new Error('No response');
   }
 };
 
@@ -40,4 +40,4 @@ export const toQueryString = (object: object): any =>
   Object.entries<any>(object)
     .filter(([_, value]) => value != null)
     .map(([key, value]) => `${key}=${value}`)
-    .join("&");
+    .join('&');

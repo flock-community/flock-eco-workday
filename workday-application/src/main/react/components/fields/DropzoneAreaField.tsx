@@ -1,20 +1,18 @@
-import { Field } from "formik";
-import React, { useState } from "react";
-import { DropzoneArea } from "./DropzoneArea";
-
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemText from "@mui/material/ListItemText";
-
-import FolderIcon from "@mui/icons-material/Folder";
-import DeleteIcon from "@mui/icons-material/Delete";
-import Avatar from "@mui/material/Avatar";
-import IconButton from "@mui/material/IconButton";
-import Grid from "@mui/material/Grid";
-import CircularProgress from "@mui/material/CircularProgress";
-import { Typography } from "@mui/material";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import DeleteIcon from '@mui/icons-material/Delete';
+import FolderIcon from '@mui/icons-material/Folder';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { Typography } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import CircularProgress from '@mui/material/CircularProgress';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
+import { Field } from 'formik';
+import { useState } from 'react';
+import { DropzoneArea } from './DropzoneArea';
 
 type DropzoneAreaFieldProps = {
   name: string;
@@ -30,9 +28,9 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
       return Promise.all(
         files.map((file) => {
           const formData = new FormData();
-          formData.append("file", file);
+          formData.append('file', file);
           const opts = {
-            method: "POST",
+            method: 'POST',
             body: formData,
           };
           return fetch(endpoint, opts)
@@ -41,7 +39,7 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
               name: file.name,
               file: uuid,
             }));
-        })
+        }),
       ).then((res) => {
         setFieldValue(name, [...value, ...res]);
         setUpload(false);
@@ -51,7 +49,7 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
     const handleDeleteFile = (file) => () => {
       setFieldValue(
         name,
-        value.filter((it) => it.file !== file)
+        value.filter((it) => it.file !== file),
       );
     };
 
@@ -103,10 +101,10 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
 
     const progressStyle = {
       height: 250,
-      border: "dashed",
-      borderColor: "#C8C8C8",
+      border: 'dashed',
+      borderColor: '#C8C8C8',
       borderWidth: 3,
-      backgroundColor: "#F0F0F0",
+      backgroundColor: '#F0F0F0',
     };
     const renderProgress = () => (
       <Grid container alignItems="center" style={progressStyle}>
@@ -128,7 +126,7 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
               maxFileSize={5000000}
               filesLimit={10}
               showPreviewsInDropzone={false}
-              acceptedFiles={["image/jpeg", "image/png", "application/pdf"]}
+              acceptedFiles={['image/jpeg', 'image/png', 'application/pdf']}
               onDrop={handleDropFile}
             />
           )}
@@ -145,7 +143,7 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
   };
 
   const validate = () => {
-    return upload ? "Uploading files" : null;
+    return upload ? 'Uploading files' : null;
   };
 
   return (

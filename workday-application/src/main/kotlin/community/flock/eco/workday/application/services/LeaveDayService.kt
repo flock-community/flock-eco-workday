@@ -83,7 +83,8 @@ class LeaveDayService(
     }
 
     fun create(form: LeaveDayForm): LeaveDay =
-        form.copy(status = Status.REQUESTED)
+        form
+            .copy(status = Status.REQUESTED)
             .consume()
             .validate()
             .save()
@@ -101,8 +102,7 @@ class LeaveDayService(
                     .validate()
                     .consume(this)
                     .save()
-            }
-            .also {
+            }.also {
                 if (!isUpdatedByOwner) {
                     emailService.sendUpdate(it)
                 }

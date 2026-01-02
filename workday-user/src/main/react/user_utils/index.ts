@@ -1,1 +1,1 @@
-export { default as UserAuthorityUtil } from "./UserAuthorityUtil";
+export { default as UserAuthorityUtil } from './UserAuthorityUtil';

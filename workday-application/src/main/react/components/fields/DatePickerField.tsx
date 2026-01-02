@@ -1,12 +1,11 @@
-import { Field } from "formik";
-import React from "react";
-import { DatePicker, DatePickerProps } from "@mui/x-date-pickers";
-import { Dayjs } from "dayjs";
-import { DMY_DATE } from "../../clients/util/DateFormats";
+import { DatePicker, type DatePickerProps } from '@mui/x-date-pickers';
+import type { Dayjs } from 'dayjs';
+import { Field } from 'formik';
+import { DMY_DATE } from '../../clients/util/DateFormats';
 
 type DatePickerFieldProps = Omit<
   DatePickerProps<Dayjs>,
-  "value" | "onChange"
+  'value' | 'onChange'
 > & {
   name: string;
   onChange?: (it: Dayjs | null) => void;
@@ -26,7 +25,7 @@ export const DatePickerField = ({
           value={value || null}
           format={DMY_DATE}
           onChange={(it) => {
-            setFieldValue(name, it?.startOf("day"));
+            setFieldValue(name, it?.startOf('day'));
           }}
           disabled={isSubmitting}
           slotProps={{

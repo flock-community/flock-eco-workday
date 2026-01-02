@@ -63,6 +63,13 @@ class UserGroupServiceTest(
 
         assertEquals(1, userService.findAll().count())
         assertEquals(1, userGroupRepository.findAll().count())
-        assertEquals(0, userGroupRepository.findByCode(group.code).toNullable()?.users?.count())
+        assertEquals(
+            0,
+            userGroupRepository
+                .findByCode(group.code)
+                .toNullable()
+                ?.users
+                ?.count(),
+        )
     }
 }

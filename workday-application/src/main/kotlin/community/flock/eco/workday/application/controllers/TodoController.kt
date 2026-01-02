@@ -44,8 +44,7 @@ class TodoController(
             SickdayAuthority.READ to findSickDayTodo(),
             WorkDayAuthority.READ to findWorkDayTodo(),
             ExpenseAuthority.READ to findExpenseTodo(),
-        )
-            .filter { authentication.hasAuthority(it.key) }
+        ).filter { authentication.hasAuthority(it.key) }
             .flatMap { it.value }
             .sortedWith(compareBy({ it.personName }, { it.todoType }))
 

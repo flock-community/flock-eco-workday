@@ -1,6 +1,5 @@
-import React from "react";
-import { Field, FieldProps } from "formik";
-import { ClientSelector } from "../selector/ClientSelector";
+import { Field, type FieldProps } from 'formik';
+import { ClientSelector } from '../selector/ClientSelector';
 
 export function ClientSelectorField({ name, ...props }) {
   return (
@@ -16,7 +15,7 @@ export function ClientSelectorField({ name, ...props }) {
           value={value}
           onBlur={() => setFieldTouched(name, true)}
           onChange={(userCode) => setFieldValue(name, userCode)}
-          // @ts-ignore
+          // @ts-expect-error
           error={touched[name] && errors[name]}
           {...props}
         />

@@ -25,22 +25,28 @@ interface Period {
     fun amountPerWorkingDay(month: YearMonth): BigDecimal =
         when (this) {
             is ContractInternal ->
-                this.monthlySalary.toBigDecimal()
+                this.monthlySalary
+                    .toBigDecimal()
                     .divide(month.countWorkDaysInMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
             is ContractExternal ->
-                (this.hourlyRate * this.hoursPerWeek).toBigDecimal()
+                (this.hourlyRate * this.hoursPerWeek)
+                    .toBigDecimal()
                     .divide(BigDecimal.valueOf(5), 10, RoundingMode.HALF_UP)
             is ContractManagement ->
-                this.monthlyFee.toBigDecimal()
+                this.monthlyFee
+                    .toBigDecimal()
                     .divide(month.countWorkDaysInMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
             is ContractService ->
-                this.monthlyCosts.toBigDecimal()
+                this.monthlyCosts
+                    .toBigDecimal()
                     .divide(month.countWorkDaysInMonth().toBigDecimal(), 10, RoundingMode.HALF_UP)
             is Assignment ->
-                (this.hourlyRate * this.hoursPerWeek).toBigDecimal()
+                (this.hourlyRate * this.hoursPerWeek)
+                    .toBigDecimal()
                     .divide(BigDecimal.valueOf(5), 10, RoundingMode.HALF_UP)
             is WorkDay ->
-                (this.assignment.hourlyRate * this.assignment.hoursPerWeek).toBigDecimal()
+                (this.assignment.hourlyRate * this.assignment.hoursPerWeek)
+                    .toBigDecimal()
                     .divide(BigDecimal.valueOf(5), 10, RoundingMode.HALF_UP)
             else -> error("Cannot get amount per working day")
         }
@@ -52,7 +58,8 @@ interface Period {
     fun toDateRangeInPeriod(
         from: LocalDate,
         to: LocalDate,
-    ) = DateUtils.dateRange(from, to)
+    ) = DateUtils
+        .dateRange(from, to)
         .filterInPeriod(this)
 
     fun toDateRangeInPeriod(yearMonth: YearMonth) =
@@ -61,7 +68,8 @@ interface Period {
             .filterInPeriod(this)
 
     fun toDateRangeInPeriod(period: Period) =
-        period.toDateRange()
+        period
+            .toDateRange()
             .filterInPeriod(this)
 
     fun countDays() = ChronoUnit.DAYS.between(this.from, this.to) + 1

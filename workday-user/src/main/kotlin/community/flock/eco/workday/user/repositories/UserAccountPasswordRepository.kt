@@ -6,8 +6,7 @@ import org.springframework.stereotype.Repository
 import java.util.Optional
 
 @Repository
-interface UserAccountPasswordRepository :
-    JpaRepository<UserAccountPassword, Long> {
+interface UserAccountPasswordRepository : JpaRepository<UserAccountPassword, Long> {
     fun findByUserEmailIgnoreCase(email: String): Optional<UserAccountPassword>
 
     fun findByUserCode(code: String): Optional<UserAccountPassword>

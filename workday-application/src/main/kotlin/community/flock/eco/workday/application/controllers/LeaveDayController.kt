@@ -67,7 +67,8 @@ class LeaveDayController(
         @PathVariable code: String,
         @RequestBody form: LeaveDayForm,
         authentication: Authentication,
-    ) = service.findByCode(code)
+    ) = service
+        .findByCode(code)
         ?.applyAuthentication(authentication)
         ?.applyAllowedToUpdate(form.status, authentication.isAdmin())
         ?.run {
@@ -83,7 +84,8 @@ class LeaveDayController(
     fun delete(
         @PathVariable code: String,
         authentication: Authentication,
-    ) = service.findByCode(code)
+    ) = service
+        .findByCode(code)
         ?.applyAuthentication(authentication)
         ?.run { service.deleteByCode(this.code) }
         .toResponse()
@@ -92,7 +94,8 @@ class LeaveDayController(
         if (authentication.isAdmin()) {
             return this
         }
-        return personService.findByUserCode(authentication.name)
+        return personService
+            .findByUserCode(authentication.name)
             ?.let {
                 this.copy(personId = it.uuid)
             }

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { ContractList } from "./ContractList";
-import { ContractDialog } from "./ContractDialog";
-import { Card, CardContent, CardHeader } from "@mui/material";
-import { Person } from "../../clients/PersonClient";
-import Button from "@mui/material/Button";
-import AddIcon from "@mui/icons-material/Add";
+import AddIcon from '@mui/icons-material/Add';
+import { Card, CardContent, CardHeader } from '@mui/material';
+import Button from '@mui/material/Button';
+import { useState } from 'react';
+import type { Person } from '../../clients/PersonClient';
+import { ContractDialog } from './ContractDialog';
+import { ContractList } from './ContractList';
 
 type ContractFeatureProps = {
   person: Person;
@@ -42,7 +42,7 @@ export function ContractFeature({ person }: ContractFeatureProps) {
           <ContractList
             personId={person?.uuid}
             onItemClick={handleItemClick}
-            reload={reload}
+            refresh={reload}
           />
         </CardContent>
       </Card>

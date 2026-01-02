@@ -50,7 +50,8 @@ class LoadUserData(
 
     private final fun findOrCreate(user: MockUser): User {
         val email = "${user.firstName.lowercase()}@sesam.straat"
-        return userAccountService.findUserAccountPasswordByUserEmail(email)
+        return userAccountService
+            .findUserAccountPasswordByUserEmail(email)
             ?.let {
                 data.add(it.user)
                 it.user
@@ -72,7 +73,8 @@ class LoadUserData(
         }
 
     private fun UserAccountPasswordForm.save(): User =
-        userAccountService.createUserAccountPassword(this)
+        userAccountService
+            .createUserAccountPassword(this)
             .user
             .also { data.add(it) }
 }

@@ -1,20 +1,19 @@
-import React from "react";
-import { styled } from "@mui/material/styles";
-import { Theme } from "@mui/material/styles";
-import Grid from "@mui/material/Grid";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import React from 'react';
 
 // Types
-import { GroupedTodos, TypeProp } from "../../types";
+import type { GroupedTodos, TypeProp } from '../../types';
 
-const PREFIX = "SimpleTabs";
+const PREFIX = 'SimpleTabs';
 
 const classes = {
-  root: `${PREFIX}-root`,
+  root: `${PREFIX}Root`,
 };
 
-const Root = styled("div")(({ theme }) => ({
+const Root = styled('div')(({ theme }) => ({
   [`& .${classes.root}`]: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
@@ -49,34 +48,37 @@ export const SimpleTabs = ({
   const [value, setValue] = React.useState(0);
   const categories = data.map((item) => item.todoType);
 
-  const handleChange = (event: any, newValue: React.SetStateAction<number>) => {
+  const handleChange = (
+    _event: any,
+    newValue: React.SetStateAction<number>,
+  ) => {
     setValue(newValue);
 
-    exposedValue && exposedValue(newValue);
+    exposedValue?.(newValue);
   };
 
   const getCategoryLabel = (category: TypeProp) => {
-    return category.replaceAll("_", " ");
+    return category.replaceAll('_', ' ');
   };
 
   return (
     <div className={classes.root}>
       <Tabs value={value} onChange={handleChange}>
-        {categories.map((category, index) => {
-          return <Tab key={index} label={getCategoryLabel(category)} />;
+        {categories.map((category) => {
+          return <Tab key={category} label={getCategoryLabel(category)} />;
         })}
       </Tabs>
       {categories.map((category, index) => {
-        const selectedTab =
-          data && data.find((tabPanel) => tabPanel.todoType === category);
+        const selectedTab = data?.find(
+          (tabPanel) => tabPanel.todoType === category,
+        );
 
         return (
-          <TabPanel key={index} value={value} index={index}>
+          <TabPanel key={category} value={value} index={index}>
             <Grid container spacing={1}>
-              {selectedTab &&
-                selectedTab.todos.map((item, index) => {
-                  return renderFunction(item, index);
-                })}
+              {selectedTab?.todos.map((item, index) => {
+                return renderFunction(item, index);
+              })}
             </Grid>
           </TabPanel>
         );

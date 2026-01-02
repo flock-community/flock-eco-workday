@@ -120,7 +120,8 @@ class AggregationService(
         val to = YearMonth.of(year, 12).atEndOfMonth()
         val period = FromToPeriod(from, to)
         val all = dataService.findAllData(from, to)
-        return all.allPersons()
+        return all
+            .allPersons()
             .map { person ->
                 AggregationLeaveDay(
                     name = person.getFullName(),
@@ -164,7 +165,8 @@ class AggregationService(
         val to = YearMonth.of(year, 12).atEndOfMonth()
         val period = FromToPeriod(from, to)
         val all = dataService.findAllData(from, to)
-        return all.allPersons()
+        return all
+            .allPersons()
             .map { person ->
                 AggregationHackDay(
                     name = person.getFullName(),
@@ -189,14 +191,16 @@ class AggregationService(
         to: LocalDate,
     ): List<AggregationClient> {
         val allAssignments = assignmentService.findAllActive(from, to)
-        return clientService.findAll()
+        return clientService
+            .findAll()
             .map { client ->
                 AggregationClient(
                     name = client.name,
                     revenueGross =
                         allAssignments
                             .filter { it.client == client }
-                            .toMapWorkingDay(from, to).values
+                            .toMapWorkingDay(from, to)
+                            .values
                             .flatten()
                             .fold(BigDecimal.ZERO) { acc, cur -> acc + cur.revenuePerDay() },
                 )
@@ -229,7 +233,8 @@ class AggregationService(
             assignment =
                 allData.assignment
                     .toList()
-                    .toMapWorkingDay(from, to).values
+                    .toMapWorkingDay(from, to)
+                    .values
                     .flatten()
                     .fold(0) { acc, cur -> acc + cur.hoursPerWeek }
                     .div(5),
@@ -272,7 +277,8 @@ class AggregationService(
         val all = dataService.findAllData(from, to)
         val totalWorkDays = countWorkDaysInPeriod(from, to)
         val period = FromToPeriod(from, to)
-        return all.allPersons()
+        return all
+            .allPersons()
             .sortedBy { it.lastname }
             .map { person ->
                 AggregationPerson(
@@ -288,7 +294,8 @@ class AggregationService(
                     assignment =
                         all.assignment
                             .filter { it.person == person }
-                            .toMapWorkingDay(from, to).values
+                            .toMapWorkingDay(from, to)
+                            .values
                             .flatten()
                             .fold(0) { acc, cur -> acc + cur.hoursPerWeek }
                             .div(5),
@@ -410,8 +417,7 @@ class AggregationService(
                                     it.assignment.person,
                                     yearMonth,
                                 ).contains(ContractInternal::class.java)
-                            }
-                            .map { it.totalRevenueInPeriod(yearMonth) }
+                            }.map { it.totalRevenueInPeriod(yearMonth) }
                             .sum(),
                     actualRevenueExternal =
                         all.workDay
@@ -420,8 +426,7 @@ class AggregationService(
                                     it.assignment.person,
                                     yearMonth,
                                 ).contains(ContractExternal::class.java)
-                            }
-                            .map { it.totalRevenueInPeriod(yearMonth) }
+                            }.map { it.totalRevenueInPeriod(yearMonth) }
                             .sum(),
                     actualRevenueManagement =
                         all.workDay
@@ -430,8 +435,7 @@ class AggregationService(
                                     it.assignment.person,
                                     yearMonth,
                                 ).contains(ContractManagement::class.java)
-                            }
-                            .map { it.totalRevenueInPeriod(yearMonth) }
+                            }.map { it.totalRevenueInPeriod(yearMonth) }
                             .sum(),
                     actualHours =
                         all.workDay
@@ -444,20 +448,19 @@ class AggregationService(
                             .map { it.totalCostInPeriod(yearMonth) }
                             .sum(),
                     actualCostContractExternal =
-                        yearMonth.toDateRange()
+                        yearMonth
+                            .toDateRange()
                             .flatMap { date ->
                                 cartesianProducts(
                                     all.contract.filterIsInstance(ContractExternal::class.java),
                                     all.workDay,
-                                )
-                                    .filter { (contract) -> contract.billable }
+                                ).filter { (contract) -> contract.billable }
                                     .filter { (contract, workDay) -> contract.person == workDay.assignment.person }
                                     .filter { (contract, workDay) -> contract.inRange(date) && workDay.inRange(date) }
                                     .map { (contract, workDay) ->
                                         contract.hourlyRate.toBigDecimal() * workDay.hoursPerDay().getValue(date)
                                     }
-                            }
-                            .sum(),
+                            }.sum(),
                     actualCostContractManagement =
                         all.contract
                             .filterIsInstance(ContractManagement::class.java)
@@ -475,116 +478,125 @@ class AggregationService(
     fun clientPersonHourOverview(
         from: LocalDate,
         to: LocalDate,
-    ): List<AggregationClientPersonOverview> {
-        return workDayService.findAllActive(from, to).groupBy {
-            it.assignment.client
-        }.mapValues { (_, workDays) ->
-            val clientPersonItems =
-                workDays.map { workDay ->
-                    val person =
-                        AggregationIdentifier(
-                            id = workDay.assignment.person.id.toString(),
-                            name = workDay.assignment.person.getFullName(),
-                        )
-                    val workingHoursPerDay =
-                        workDay
-                            .hoursPerDayInPeriod(from, to)
-                            .map { it.value.toFloat() }
+    ): List<AggregationClientPersonOverview> =
+        workDayService
+            .findAllActive(from, to)
+            .groupBy {
+                it.assignment.client
+            }.mapValues { (_, workDays) ->
+                val clientPersonItems =
+                    workDays.map { workDay ->
+                        val person =
+                            AggregationIdentifier(
+                                id =
+                                    workDay.assignment.person.id
+                                        .toString(),
+                                name = workDay.assignment.person.getFullName(),
+                            )
+                        val workingHoursPerDay =
+                            workDay
+                                .hoursPerDayInPeriod(from, to)
+                                .map { it.value.toFloat() }
 
-                    AggregationClientPersonItem(
-                        person = person,
-                        hours = workingHoursPerDay,
-                        total = workingHoursPerDay.sum(),
-                    )
-                }
-            clientPersonItems.groupBy { it.person }
-                .mapValues { (person, values) ->
-                    val hours =
-                        values
-                            .map {
-                                it.hours
-                            }.sumAtIndex()
-                    val total = hours.sum()
-                    AggregationClientPersonItem(
-                        person = person,
-                        hours = hours,
-                        total = total,
-                    )
-                }.map {
-                    it.value
-                }
-        }.map { (client, clientPersonItems) ->
-            AggregationClientPersonOverview(
-                client = AggregationIdentifier(id = client.id.toString(), name = client.name),
-                aggregationPerson = clientPersonItems,
-                totals =
-                    clientPersonItems
-                        .map { it.hours }
-                        .sumAtIndex(),
-            )
-        }
-    }
+                        AggregationClientPersonItem(
+                            person = person,
+                            hours = workingHoursPerDay,
+                            total = workingHoursPerDay.sum(),
+                        )
+                    }
+                clientPersonItems
+                    .groupBy { it.person }
+                    .mapValues { (person, values) ->
+                        val hours =
+                            values
+                                .map {
+                                    it.hours
+                                }.sumAtIndex()
+                        val total = hours.sum()
+                        AggregationClientPersonItem(
+                            person = person,
+                            hours = hours,
+                            total = total,
+                        )
+                    }.map {
+                        it.value
+                    }
+            }.map { (client, clientPersonItems) ->
+                AggregationClientPersonOverview(
+                    client = AggregationIdentifier(id = client.id.toString(), name = client.name),
+                    aggregationPerson = clientPersonItems,
+                    totals =
+                        clientPersonItems
+                            .map { it.hours }
+                            .sumAtIndex(),
+                )
+            }
 
     fun clientPersonAssignmentHourOverview(
         from: LocalDate,
         to: LocalDate,
-    ): List<AggregationClientPersonAssignmentOverview> {
-        return workDayService.findAllActive(from, to).groupBy {
-            it.assignment.client
-        }.mapValues { (_, workDays) ->
-            val clientPersonItems =
-                workDays.map { workDay ->
-                    val person =
-                        AggregationIdentifier(
-                            id = workDay.assignment.person.uuid.toString(),
-                            name = workDay.assignment.person.getFullName(),
-                        )
-                    val workingHoursPerDay =
-                        workDay
-                            .hoursPerDayInPeriod(from, to)
-                            .map { it.value.toFloat() }
+    ): List<AggregationClientPersonAssignmentOverview> =
+        workDayService
+            .findAllActive(from, to)
+            .groupBy {
+                it.assignment.client
+            }.mapValues { (_, workDays) ->
+                val clientPersonItems =
+                    workDays.map { workDay ->
+                        val person =
+                            AggregationIdentifier(
+                                id =
+                                    workDay.assignment.person.uuid
+                                        .toString(),
+                                name = workDay.assignment.person.getFullName(),
+                            )
+                        val workingHoursPerDay =
+                            workDay
+                                .hoursPerDayInPeriod(from, to)
+                                .map { it.value.toFloat() }
 
-                    val assignment =
-                        AggregationIdentifier(
-                            id = workDay.assignment.id.toString(),
-                            name = workDay.assignment.role ?: "Unknown",
-                        )
+                        val assignment =
+                            AggregationIdentifier(
+                                id = workDay.assignment.id.toString(),
+                                name = workDay.assignment.role ?: "Unknown",
+                            )
 
-                    AggregationClientPersonAssignmentItem(
-                        person = person,
-                        assignment = assignment,
-                        hours = workingHoursPerDay,
-                        total = workingHoursPerDay.sum(),
-                    )
-                }
-            clientPersonItems.groupBy { it.personAssignmentKey() }
-                .mapValues { (key, values) ->
-                    val person = key.person
-                    val assignment = key.assignment
-                    val hours =
-                        values
-                            .map {
-                                it.hours
-                            }.sumAtIndex()
-                    val total = hours.sum()
-                    AggregationClientPersonAssignmentItem(
-                        person = person,
-                        assignment = assignment,
-                        hours = hours,
-                        total = total,
-                    )
-                }.values.sortedBy { it.person.name }
-        }.map { (client, clientPersonAssignmentItems) ->
-            AggregationClientPersonAssignmentOverview(
-                client = AggregationIdentifier(id = client.id.toString(), name = client.name),
-                aggregationPersonAssignment = clientPersonAssignmentItems,
-                totals =
-                    clientPersonAssignmentItems
-                        .map { it.hours }
-                        .sumAtIndex(),
-            )
-        }.sortedBy { it.client.name }
-    }
+                        AggregationClientPersonAssignmentItem(
+                            person = person,
+                            assignment = assignment,
+                            hours = workingHoursPerDay,
+                            total = workingHoursPerDay.sum(),
+                        )
+                    }
+                clientPersonItems
+                    .groupBy { it.personAssignmentKey() }
+                    .mapValues { (key, values) ->
+                        val person = key.person
+                        val assignment = key.assignment
+                        val hours =
+                            values
+                                .map {
+                                    it.hours
+                                }.sumAtIndex()
+                        val total = hours.sum()
+                        AggregationClientPersonAssignmentItem(
+                            person = person,
+                            assignment = assignment,
+                            hours = hours,
+                            total = total,
+                        )
+                    }.values
+                    .sortedBy { it.person.name }
+            }.map { (client, clientPersonAssignmentItems) ->
+                AggregationClientPersonAssignmentOverview(
+                    client = AggregationIdentifier(id = client.id.toString(), name = client.name),
+                    aggregationPersonAssignment = clientPersonAssignmentItems,
+                    totals =
+                        clientPersonAssignmentItems
+                            .map { it.hours }
+                            .sumAtIndex(),
+                )
+            }.sortedBy { it.client.name }
 
     fun personClientRevenueOverview(
         workDays: Iterable<WorkDay>,
@@ -603,27 +615,29 @@ class AggregationService(
                     name = person.getFullName(),
                 )
             val companyOverviews = mutableListOf<AggregationPersonClientRevenueItem>()
-            values.groupBy {
-                it.assignment.client
-            }.map { (client, workdays) ->
-                var revenueTotal = BigDecimal(BigInteger.ZERO)
-                workdays.map { workDay ->
-                    val revenuePerWorkDay =
-                        workDay.hoursPerDayInPeriod(from, to)
-                            .calculateRevenue(workDay.assignment.hourlyRate)
-                    revenueTotal = revenueTotal.plus(revenuePerWorkDay)
+            values
+                .groupBy {
+                    it.assignment.client
+                }.map { (client, workdays) ->
+                    var revenueTotal = BigDecimal(BigInteger.ZERO)
+                    workdays.map { workDay ->
+                        val revenuePerWorkDay =
+                            workDay
+                                .hoursPerDayInPeriod(from, to)
+                                .calculateRevenue(workDay.assignment.hourlyRate)
+                        revenueTotal = revenueTotal.plus(revenuePerWorkDay)
+                    }
+                    companyOverviews.add(
+                        AggregationPersonClientRevenueItem(
+                            client =
+                                AggregationIdentifier(
+                                    id = client.id.toString(),
+                                    name = client.name,
+                                ),
+                            revenue = revenueTotal,
+                        ),
+                    )
                 }
-                companyOverviews.add(
-                    AggregationPersonClientRevenueItem(
-                        client =
-                            AggregationIdentifier(
-                                id = client.id.toString(),
-                                name = client.name,
-                            ),
-                        revenue = revenueTotal,
-                    ),
-                )
-            }
             val aggregationClientOverview =
                 AggregationPersonClientRevenueOverview(
                     clients = companyOverviews,
@@ -644,23 +658,28 @@ class AggregationService(
     ): List<NonProductiveHours> {
         val leaveDayData = leaveDayService.findAllActiveByPerson(from, to, person.uuid)
         val holidays =
-            leaveDayData.filter { it.type == LeaveDayType.HOLIDAY }
+            leaveDayData
+                .filter { it.type == LeaveDayType.HOLIDAY }
                 .map { it.hoursPerDayInPeriod(from, to) }
                 .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
         val sickdays =
-            sickDayService.findAllActiveByPerson(from, to, person.uuid)
+            sickDayService
+                .findAllActiveByPerson(from, to, person.uuid)
                 .map { it.hoursPerDayInPeriod(from, to) }
                 .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
         val paidParentalLeave =
-            leaveDayData.filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
+            leaveDayData
+                .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
                 .map { it.hoursPerDayInPeriod(from, to) }
                 .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
         val unpaidParentalLeave =
-            leaveDayData.filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
+            leaveDayData
+                .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
                 .map { it.hoursPerDayInPeriod(from, to) }
                 .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
         val paidLeave =
-            leaveDayData.filter { it.type == LeaveDayType.PAID_LEAVE }
+            leaveDayData
+                .filter { it.type == LeaveDayType.PAID_LEAVE }
                 .map { it.hoursPerDayInPeriod(from, to) }
                 .fold(emptyMap<LocalDate, BigDecimal>()) { acc, item -> acc.merge(item) }
 
@@ -699,32 +718,29 @@ class AggregationService(
         this
             .reduce { acc, cur ->
                 acc.zip(cur) { a, b -> a + b }
-            }
-            .toList()
+            }.toList()
 
     private fun List<Day>.totalHoursInPeriod(
         from: LocalDate,
         to: LocalDate,
     ) = this
         .map { day ->
-            day.hoursPerDayInPeriod(from, to)
+            day
+                .hoursPerDayInPeriod(from, to)
                 .map { it.value }
                 .sum()
                 .also { println("Days: ${day.from} to ${day.to}: $it") }
-        }
-        .sum()
+        }.sum()
 
-    private fun Data.allPersons(): Set<Person> {
-        return (
+    private fun Data.allPersons(): Set<Person> =
+        (
             this.assignment.map { it.person } +
                 this.contract.map { it.person } +
                 this.sickDay.map { it.person } +
                 this.leaveDay.map { it.person } +
                 this.workDay.map { it.assignment.person }
-        )
-            .filterNotNull()
+        ).filterNotNull()
             .toSet()
-    }
 
     fun netRevenueFactor(
         from: LocalDate,
@@ -736,8 +752,7 @@ class AggregationService(
                 applicationConstants.averageSickDays,
                 applicationConstants.averagePublicDays,
                 applicationConstants.averageTrainingDays,
-            )
-                .map { it.toInt() }
+            ).map { it.toInt() }
                 .sum()
                 .toBigDecimal()
         val totalWorkDays = countWorkDaysInPeriod(from, to).toBigDecimal()
@@ -801,6 +816,9 @@ private fun <A, B> cartesianProducts(
     b_s: Iterable<B>,
 ) = a_s.flatMap { a -> b_s.map { b -> a to b } }
 
-data class PersonAssignmentCompositeIdentifier(val person: AggregationIdentifier, val assignment: AggregationIdentifier)
+data class PersonAssignmentCompositeIdentifier(
+    val person: AggregationIdentifier,
+    val assignment: AggregationIdentifier,
+)
 
 private fun AggregationClientPersonAssignmentItem.personAssignmentKey() = PersonAssignmentCompositeIdentifier(person, assignment)

@@ -102,8 +102,10 @@ class EventService(
     fun subscribeToEvent(
         eventCode: String,
         person: Person,
-    ): Event {
-        return eventRepository.findByCode(eventCode).toNullable()
+    ): Event =
+        eventRepository
+            .findByCode(eventCode)
+            .toNullable()
             ?.run {
                 Event(
                     description = description,
@@ -116,16 +118,16 @@ class EventService(
                     type = type,
                     days = days,
                     persons = persons.filter { it.uuid != person.uuid }.plus(person).toMutableList(),
-                )
-                    .run { eventRepository.save(this) }
+                ).run { eventRepository.save(this) }
             } ?: error("Cannot subscribe to Event: $eventCode")
-    }
 
     fun unsubscribeFromEvent(
         eventCode: String,
         person: Person,
-    ): Event {
-        return eventRepository.findByCode(eventCode).toNullable()
+    ): Event =
+        eventRepository
+            .findByCode(eventCode)
+            .toNullable()
             ?.run {
                 Event(
                     description = description,
@@ -138,10 +140,8 @@ class EventService(
                     type = type,
                     days = days,
                     persons = persons.filter { it.uuid != person.uuid }.toMutableList(),
-                )
-                    .run { eventRepository.save(this) }
+                ).run { eventRepository.save(this) }
             } ?: error("Cannot unsubscribe from Event: $eventCode")
-    }
 
     @Transactional
     fun deleteByCode(code: String) {

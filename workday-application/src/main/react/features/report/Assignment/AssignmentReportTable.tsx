@@ -1,25 +1,25 @@
-import Typography from "@mui/material/Typography";
-import { styled } from "@mui/material/styles";
-import React, { Fragment, useEffect, useState } from "react";
-import { AggregationClient } from "../../../clients/AggregationClient";
-import { Box, TableBody, TableContainer } from "@mui/material";
-import Table from "@mui/material/Table";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import AssignmentReportTableRow from "./AssignmentReportTableRow";
-import { Dayjs } from "dayjs";
-import { AggregationClientPersonAssignmentOverview } from "../../../wirespec/Models";
+import { Box, TableBody, TableContainer } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import type { Dayjs } from 'dayjs';
+import { Fragment, useEffect, useState } from 'react';
+import { AggregationClient } from '../../../clients/AggregationClient';
+import type { AggregationClientPersonAssignmentOverview } from '../../../wirespec/Models';
+import AssignmentReportTableRow from './AssignmentReportTableRow';
 
-const PREFIX = "AssignmentReportTable";
+const PREFIX = 'AssignmentReportTable';
 
 const classes = {
-  tableContainer: `${PREFIX}-tableContainer`,
+  tableContainer: `${PREFIX}TableContainer`,
 };
 
 const StyledTableContainer = styled(TableContainer)({
   [`&.${classes.tableContainer}`]: {
-    width: "auto",
+    width: 'auto',
   },
 });
 
@@ -37,18 +37,18 @@ export default function AssignmentReportTable({
   const [dayRange, setDayRange] = useState<string[]>();
 
   useEffect(() => {
-    const daysInMonth = to.diff(from, "days", false) + 1;
+    const daysInMonth = to.diff(from, 'days', false) + 1;
     setDayRange(
       Array.from(Array(daysInMonth).keys()).map((n) => {
-        return from.add(n, "day").format("dd DD");
-      })
+        return from.add(n, 'day').format('dd DD');
+      }),
     );
   }, [from, to]);
 
   useEffect(() => {
     let cancel = false;
     AggregationClient.clientAssignmentPersonBetween(from, to).then(
-      (res) => !cancel && setClientHourOverviewState(res)
+      (res) => !cancel && setClientHourOverviewState(res),
     );
     return () => {
       cancel = true;
@@ -63,8 +63,8 @@ export default function AssignmentReportTable({
     <StyledTableContainer className={classes.tableContainer}>
       <Table size="small">
         <TableBody>
-          {clientHourOverviewState.map((it, clientIndex) => (
-            <Fragment key={clientIndex}>
+          {clientHourOverviewState.map((it) => (
+            <Fragment key={it.client.id}>
               <TableRow>
                 <TableCell colSpan={(dayRange?.length ?? 0) + 2}>
                   <Box mt={5}>
@@ -75,15 +75,15 @@ export default function AssignmentReportTable({
               <TableRow>
                 {/*Icon and person name cells*/}
                 <TableCell colSpan={2} />
-                {dayRange?.map((day, dayIndex) => (
-                  <TableCell key={dayIndex}>
+                {dayRange?.map((day) => (
+                  <TableCell key={`${it.client.id}-day-${day}`}>
                     <b>{day}</b>
                   </TableCell>
                 ))}
               </TableRow>
-              {it.aggregationPersonAssignment.map((person, personIndex) => (
+              {it.aggregationPersonAssignment.map((person) => (
                 <AssignmentReportTableRow
-                  key={personIndex}
+                  key={`${person.person.id}-${person.assignment.id}`}
                   item={person}
                   from={from}
                   to={to}
@@ -93,7 +93,7 @@ export default function AssignmentReportTable({
                 <TableCell />
                 <TableCell>Totals</TableCell>
                 {it.totals.map((val, dayTotalIndex) => (
-                  <TableCell key={dayTotalIndex}>
+                  <TableCell key={`${it.client.id}-total-${dayTotalIndex}`}>
                     <b>{val.toFixed(1)}</b>
                   </TableCell>
                 ))}

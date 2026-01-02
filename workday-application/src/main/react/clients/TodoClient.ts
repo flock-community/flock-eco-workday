@@ -1,7 +1,7 @@
-import { Todo } from "../wirespec/Models";
-import InternalizingClient from "../utils/InternalizingClient";
+import InternalizingClient from '../utils/InternalizingClient';
+import type { Todo } from '../wirespec/Models';
 
-const path = "/api/todos";
+const path = '/api/todos';
 
 // Todo: proper mapping between external (wirespec model and internal one)
 const internalize = (it: Todo): Todo => ({ ...it });

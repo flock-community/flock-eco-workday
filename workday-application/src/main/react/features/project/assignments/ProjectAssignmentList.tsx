@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
-import ProjectAssignmentListItem from "./ProjectAssignmentListItem";
+import { TableBody, TableCell, TableHead } from '@mui/material';
+import Table from '@mui/material/Table';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
 import {
-  Assignment,
+  type Assignment,
   AssignmentClient,
-} from "../../../clients/AssignmentClient";
-import { TableBody, TableCell, TableHead } from "@mui/material";
-import Typography from "@mui/material/Typography";
-import Table from "@mui/material/Table";
-import TableRow from "@mui/material/TableRow";
+} from '../../../clients/AssignmentClient';
+import ProjectAssignmentListItem from './ProjectAssignmentListItem';
 
 export default function ProjectAssignmentList({ project }) {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
 
   useEffect(() => {
     AssignmentClient.findAllByProject(project).then((res) =>
-      setAssignments(res ? res : [])
+      setAssignments(res ? res : []),
     );
-  }, []);
+  }, [project]);
 
   function renderAssignment(assignment) {
     return (
@@ -27,7 +27,7 @@ export default function ProjectAssignmentList({ project }) {
     );
   }
 
-  if (assignments.length == 0) {
+  if (assignments.length === 0) {
     return <Typography>No assignments for this project</Typography>;
   }
 

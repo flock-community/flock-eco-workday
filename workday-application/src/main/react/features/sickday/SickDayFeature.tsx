@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { Button, Card, CardContent, CardHeader } from "@mui/material";
-import { SickDayDialog } from "./SickDayDialog";
-import { SickDayList } from "./SickDayList";
-import { SickDayClient } from "../../clients/SickDayClient";
-import { Person } from "../../clients/PersonClient";
-import AddIcon from "@mui/icons-material/Add";
-import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import type { DayProps } from "../../types";
+import AddIcon from '@mui/icons-material/Add';
+import { Button, Card, CardContent, CardHeader } from '@mui/material';
+import { useState } from 'react';
+import type { Person } from '../../clients/PersonClient';
+import { SickDayClient } from '../../clients/SickDayClient';
+import { ISO_8601_DATE } from '../../clients/util/DateFormats';
+import type { DayProps } from '../../types';
+import { SickDayDialog } from './SickDayDialog';
+import { SickDayList } from './SickDayList';
 
 type SickDayFeatureProps = {
   person: Person;

@@ -47,7 +47,8 @@ class ContractController(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate?,
         page: Pageable,
     ): ResponseEntity<List<Contract>> =
-        contractService.findAllByToAfterOrToNull(to, page)
+        contractService
+            .findAllByToAfterOrToNull(to, page)
             .toResponse()
 
     @GetMapping("/contracts", params = ["start", "end"])
@@ -69,14 +70,14 @@ class ContractController(
         page: Pageable,
         principal: Principal,
     ): ResponseEntity<List<Contract>> =
-        principal.findUser()
+        principal
+            .findUser()
             ?.let { user ->
                 when {
                     user.isAdmin() && personId != null -> contractService.findAllByPersonUuid(personId, page)
                     else -> contractService.findAllByPersonUserCode(user.code, page)
                 }
-            }
-            .toResponse()
+            }.toResponse()
 
     @GetMapping("/contracts/{code}")
     @PreAuthorize("hasAuthority('ContractAuthority.READ')")
@@ -101,8 +102,7 @@ class ContractController(
                     else -> UUID.fromString(person.code)
                 }
             contractService.create(form.copy(personId = personCode))
-        }
-        .toResponse()
+        }.toResponse()
 
     @PostMapping("/contracts-external")
     @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")

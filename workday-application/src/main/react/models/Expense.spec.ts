@@ -1,37 +1,37 @@
-import "@testing-library/jest-dom";
-import { CostExpense, TravelExpense } from "./Expense";
+import '@testing-library/jest-dom';
+import { CostExpense, TravelExpense } from './Expense';
 
-describe("Expense model", () => {
-  it("should create a CostExpense fromJson", () => {
+describe('Expense model', () => {
+  it('should create a CostExpense fromJson', () => {
     const result = CostExpense.fromJson({
-      id: "item-01",
-      date: "2023-12-10",
-      description: "Software license",
+      id: 'item-01',
+      date: '2023-12-10',
+      description: 'Software license',
       person: {},
-      status: "REQUESTED",
+      status: 'REQUESTED',
       costDetails: {
         amount: 120,
         files: [],
       },
-      type: "COST",
+      type: 'COST',
     });
     expect(result).toBeDefined();
     expect(result.amount).toBe(120);
   });
 
-  it("should create a valid TravelExpense fromJson", () => {
+  it('should create a valid TravelExpense fromJson', () => {
     const result = TravelExpense.fromJson({
-      id: "item-02",
-      date: "2023-11-10",
-      description: "Travel Costs November",
+      id: 'item-02',
+      date: '2023-11-10',
+      description: 'Travel Costs November',
       person: {},
-      status: "REQUESTED",
+      status: 'REQUESTED',
       travelDetails: {
         allowance: 0.19,
         distance: 100,
       },
       files: [],
-      type: "TRAVEL",
+      type: 'TRAVEL',
     });
     expect(result).toBeDefined();
     expect(result.amount).toBe(0.19 * 100);

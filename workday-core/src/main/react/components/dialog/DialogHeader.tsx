@@ -1,18 +1,18 @@
-import React, { ReactNode } from "react";
-import { styled } from "@mui/material/styles";
-import { Button, DialogTitle, Typography } from "@mui/material";
-import Close from "@mui/icons-material/Close";
-import DialogContent from "@mui/material/DialogContent";
+import Close from '@mui/icons-material/Close';
+import { Button, DialogTitle, Typography } from '@mui/material';
+import DialogContent from '@mui/material/DialogContent';
+import { styled } from '@mui/material/styles';
+import type React from 'react';
 
-const PREFIX = "DialogHeader";
+const PREFIX = 'DialogHeader';
 
 const classes = {
-  root: `${PREFIX}-root`,
-  closeBtn: `${PREFIX}-closeBtn`,
-  dialogTitle: `${PREFIX}-dialogTitle`,
-  dialogContent: `${PREFIX}-dialogContent`,
-  iconWrapper: `${PREFIX}-iconWrapper`,
-  titleText: `${PREFIX}-titleText`,
+  root: `${PREFIX}Root`,
+  closeBtn: `${PREFIX}CloseBtn`,
+  dialogTitle: `${PREFIX}dialogTitle`,
+  dialogContent: `${PREFIX}dialogContent`,
+  iconWrapper: `${PREFIX}iconWrapper`,
+  titleText: `${PREFIX}TitleText`,
 };
 
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
@@ -21,33 +21,33 @@ const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
     padding: theme.spacing(2),
   },
   [`& .${classes.closeBtn}`]: {
-    alignSelf: "start",
-    marginLeft: "auto",
-    minWidth: "unset", // override material button property
+    alignSelf: 'start',
+    marginLeft: 'auto',
+    minWidth: 'unset', // override material button property
   },
   [`& .${classes.dialogTitle}`]: {
-    alignItems: "center",
-    display: "flex",
+    alignItems: 'center',
+    display: 'flex',
   },
   [`& .${classes.iconWrapper}`]: {
-    "& > svg": {
+    '& > svg': {
       height: 40,
       width: 40,
     },
   },
   [`& .${classes.titleText}`]: {
-    display: "flex",
-    flexDirection: "column",
-    marginLeft: "1rem",
+    display: 'flex',
+    flexDirection: 'column',
+    marginLeft: '1rem',
   },
 }));
 
-const StyledDiv = styled("div")(({ theme }) => ({
+const StyledDiv = styled('div')(({ theme }) => ({
   [`&.${classes.dialogContent}`]: {
-    paddingTop: "10px",
-    paddingBottom: "10px",
-    marginTop: "10px",
-    marginBottom: "10px",
+    paddingTop: '10px',
+    paddingBottom: '10px',
+    marginTop: '10px',
+    marginBottom: '10px',
   },
 }));
 

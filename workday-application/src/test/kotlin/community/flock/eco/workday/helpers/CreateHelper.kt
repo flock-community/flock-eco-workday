@@ -221,7 +221,9 @@ class CreateHelper(
         eventService.create(this)
     }
 
-    class UserSecurity(val user: User) : UserDetails {
+    class UserSecurity(
+        val user: User,
+    ) : UserDetails {
         override fun getAuthorities() = user.authorities.map { SimpleGrantedAuthority(it) }
 
         override fun isEnabled() = user.enabled

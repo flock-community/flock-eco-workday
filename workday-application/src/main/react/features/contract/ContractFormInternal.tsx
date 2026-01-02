@@ -1,12 +1,11 @@
-import React from "react";
-import Grid from "@mui/material/Grid";
-import { Field, Form, Formik } from "formik";
-import { CheckboxWithLabel, TextField } from "formik-mui";
-import { boolean, mixed, number, object } from "yup";
-import { DatePickerField } from "../../components/fields/DatePickerField";
-import dayjs from "dayjs";
+import Grid from '@mui/material/Grid';
+import dayjs from 'dayjs';
+import { Field, Form, Formik } from 'formik';
+import { CheckboxWithLabel, TextField } from 'formik-mui';
+import { boolean, mixed, number, object } from 'yup';
+import { DatePickerField } from '../../components/fields/DatePickerField';
 
-export const INTERNAL_CONTRACT_FORM_ID = "internal-contract-form";
+export const INTERNAL_CONTRACT_FORM_ID = 'internal-contract-form';
 
 type ContractFormInternalProps = {
   value: any;
@@ -52,7 +51,7 @@ export const ContractFormInternal = ({
           <Field
             name="billable"
             type="checkbox"
-            Label={{ label: "Billable" }}
+            Label={{ label: 'Billable' }}
             component={CheckboxWithLabel}
           />
         </Grid>

@@ -1,14 +1,14 @@
-import { Field, Form, Formik, FormikProps } from "formik";
-import React, { useEffect, useState } from "react";
+import { Field, Form, Formik, type FormikProps } from 'formik';
+import { TextField } from 'formik-mui';
+import { useEffect, useState } from 'react';
+import * as yup from 'yup';
 import {
-  Project,
+  type Project,
   ProjectClient,
-  ProjectRequest,
-} from "../../clients/ProjectClient";
-import { TextField } from "formik-mui";
-import * as yup from "yup";
+  type ProjectRequest,
+} from '../../clients/ProjectClient';
 
-export const PROJECT_FORM_ID = "project-form";
+export const PROJECT_FORM_ID = 'project-form';
 
 type ProjectFormProps = {
   projectCode?: string;
@@ -19,7 +19,7 @@ export default function ProjectForm({
   projectCode,
   onSubmit,
 }: ProjectFormProps) {
-  const [project, setProject] = useState<ProjectRequest>({ name: "" });
+  const [project, setProject] = useState<ProjectRequest>({ name: '' });
 
   useEffect(() => {
     if (!projectCode) return;
@@ -36,7 +36,7 @@ export default function ProjectForm({
     name: yup.string().required(),
   });
 
-  const form = (props: FormikProps<any>) => (
+  const form = (_props: FormikProps<any>) => (
     <Form id={PROJECT_FORM_ID}>
       <Field type="text" name="name" label="Name" component={TextField} />
     </Form>

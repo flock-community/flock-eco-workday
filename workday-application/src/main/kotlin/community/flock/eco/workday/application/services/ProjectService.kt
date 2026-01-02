@@ -9,7 +9,9 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
-class ProjectService(private val projectRepository: ProjectRepository) {
+class ProjectService(
+    private val projectRepository: ProjectRepository,
+) {
     fun findAll(pageable: Pageable): Page<Project> = projectRepository.findAll(pageable)
 
     fun findByCode(code: String) = projectRepository.findByCode(code)

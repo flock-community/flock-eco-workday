@@ -1,15 +1,16 @@
-import React, { useState } from "react";
-import { UserTable } from "./UserTable";
-import { UserDialog } from "./UserDialog";
-import { Card } from "@mui/material";
-import { UserToolbar } from "./UserToolbar";
+import { Card } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { UserDialog } from './UserDialog';
+import { UserTable } from './UserTable';
+import { UserToolbar } from './UserToolbar';
 
 type UserFeatureProps = {
   enablePassword?: boolean;
 };
 
 export function UserFeature({ enablePassword }: UserFeatureProps) {
-  const [searchState, setSearchState] = useState<string>("");
+  const [searchState, setSearchState] = useState<string>('');
+  const [debouncedSearchState, setDebouncedSearchState] = useState<string>('');
 
   const [dialogState, setDialogState] = useState({
     open: false,
@@ -17,6 +18,16 @@ export function UserFeature({ enablePassword }: UserFeatureProps) {
   });
 
   const [reload, setReload] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchState(searchState);
+    }, 350);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchState]);
 
   const handleRowClick = (item) => {
     setDialogState({
@@ -52,8 +63,8 @@ export function UserFeature({ enablePassword }: UserFeatureProps) {
           onSearchChange={handleSearchChange}
         />
         <UserTable
-          reload={reload}
-          search={searchState}
+          refresh={reload}
+          search={debouncedSearchState}
           onRowClick={handleRowClick}
         />
       </Card>

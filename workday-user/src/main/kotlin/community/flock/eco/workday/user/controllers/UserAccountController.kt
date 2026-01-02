@@ -72,8 +72,7 @@ class UserAccountController(
                 throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change this key")
             }
             this
-        }
-        .updateKey(key, form)
+        }.updateKey(key, form)
         .toResponse()
 
     @PostMapping("/revoke-key")

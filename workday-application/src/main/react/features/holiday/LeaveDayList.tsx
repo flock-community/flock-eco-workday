@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import { Box, CardContent } from "@mui/material";
-import Typography from "@mui/material/Typography";
+import { Box, CardContent } from '@mui/material';
+import Card from '@mui/material/Card';
+import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
 import {
   LEAVE_DAY_PAGE_SIZE,
   LeaveDayClient,
-} from "../../clients/LeaveDayClient";
-import { DayListItem } from "../../components/DayListItem";
+} from '../../clients/LeaveDayClient';
+import { DayListItem } from '../../components/DayListItem';
 
 // Components
-import { FlockPagination } from "../../components/pagination/FlockPagination";
+import { FlockPagination } from '../../components/pagination/FlockPagination';
 
 // Types
-import type { DayListProps, DayProps } from "../../types";
+import type { DayListProps, DayProps } from '../../types';
 
-const PREFIX = "LeaveDayList";
+const PREFIX = 'LeaveDayList';
 
 const classes = {
-  list: `${PREFIX}-list`,
+  list: `${PREFIX}List`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")({
+const Root = styled('div')({
   [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
@@ -36,11 +36,11 @@ export function LeaveDayList({
   onClickStatus,
 }: DayListProps) {
   const [list, setList] = useState<DayProps[]>([]);
-  const [update] = useState(refresh);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(-1);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     if (personId) {
       setLoading(true);
@@ -49,12 +49,12 @@ export function LeaveDayList({
           setList(list);
           setCount(count);
           setLoading(false);
-        }
+        },
       );
     } else {
       setList([]);
     }
-  }, [personId, refresh, update, page]);
+  }, [refresh, personId, page]);
 
   function renderItem(item: DayProps, key: number) {
     return (
@@ -63,7 +63,7 @@ export function LeaveDayList({
           value={item}
           onClick={() => onClickRow(item)}
           onClickStatus={(status) => onClickStatus(status, item)}
-          hasAuthority={"LeaveDayAuthority.ADMIN"}
+          hasAuthority={'LeaveDayAuthority.ADMIN'}
         />
       </Grid>
     );

@@ -1,13 +1,12 @@
-import React from "react";
-import { Dialog, DialogContent, Divider } from "@mui/material";
-import PersonAdd from "@mui/icons-material/PersonAdd";
-import { PERSON_FORM_ID, PersonForm } from "./PersonForm";
-import { PersonClient, PersonRequest } from "../../clients/PersonClient";
-import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogFooter, DialogHeader } from "@workday-core/components/dialog";
-import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import { Dayjs } from "dayjs";
-import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
+import PersonAdd from '@mui/icons-material/PersonAdd';
+import { Dialog, Divider } from '@mui/material';
+import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
+import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
+import type { Dayjs } from 'dayjs';
+import { PersonClient, type PersonRequest } from '../../clients/PersonClient';
+import { ISO_8601_DATE } from '../../clients/util/DateFormats';
+import { TransitionSlider } from '../../components/transitions/Slide';
+import { PERSON_FORM_ID, PersonForm } from './PersonForm';
 
 type PersonDialogProps = {
   open: boolean;
@@ -27,8 +26,8 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
   const handleSubmit = (values: PersonRequestRaw) => {
     const body = {
       ...values,
-      birthdate: values.birthdate && values.birthdate.format(ISO_8601_DATE),
-      joinDate: values.joinDate && values.joinDate.format(ISO_8601_DATE),
+      birthdate: values.birthdate?.format(ISO_8601_DATE),
+      joinDate: values.joinDate?.format(ISO_8601_DATE),
     };
 
     if (item) {

@@ -45,12 +45,14 @@ class ExactonlineAuthenticationService(
         if (store != null) {
             val expiresIn = store.expiresIn - 10
             if (LocalDateTime.now().isAfter(store.timestamp.plusSeconds(expiresIn))) {
-                return authenticationClient.refresh(store.refreshToken)
+                return authenticationClient
+                    .refresh(store.refreshToken)
                     .bodyToMono(ObjectNode::class.java)
                     .flatMap { storeObject(session, it) }
                     .map { ExactonlineRequestObject(it.accessToken, it.division) }
             }
-            return Mono.just(store)
+            return Mono
+                .just(store)
                 .map { ExactonlineRequestObject(it.accessToken, it.division) }
         }
         return Mono.empty()
@@ -61,7 +63,8 @@ class ExactonlineAuthenticationService(
         body: ObjectNode,
     ): Mono<StoreObject> {
         val accessToken = body.get("access_token").asText()
-        return userClient.getCurrentMe(accessToken)
+        return userClient
+            .getCurrentMe(accessToken)
             .map {
                 StoreObject(
                     accessToken = accessToken,
@@ -70,8 +73,7 @@ class ExactonlineAuthenticationService(
                     division = it.currentDivision,
                     timestamp = LocalDateTime.now(),
                 )
-            }
-            .doOnNext {
+            }.doOnNext {
                 session.setAttribute(sessionKeyToken, it)
             }
     }

@@ -1,9 +1,9 @@
 import {
   PageableClient,
-  QueryParameters,
+  type QueryParameters,
   ResourceClient,
-  ValidResponse,
-} from "@workday-core";
+  type ValidResponse,
+} from '@workday-core';
 
 // FIXME: Use the one in PageableClient
 interface Pageable {

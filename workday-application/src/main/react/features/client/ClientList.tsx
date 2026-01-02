@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
-import Card from "@mui/material/Card";
-import { CardContent } from "@mui/material";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import { Client, ClientClient } from "../../clients/ClientClient";
-import { isDefined } from "../../utils/validation";
+import { CardContent } from '@mui/material';
+import Card from '@mui/material/Card';
+import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
+import { type Client, ClientClient } from '../../clients/ClientClient';
+import { isDefined } from '../../utils/validation';
 
-const PREFIX = "ClientList";
+const PREFIX = 'ClientList';
 
 const classes = {
-  root: `${PREFIX}-root`,
-  fab: `${PREFIX}-fab`,
+  root: `${PREFIX}Root`,
+  fab: `${PREFIX}Fab`,
 };
 
 const StyledGrid = styled(Grid)({
@@ -19,27 +19,28 @@ const StyledGrid = styled(Grid)({
     padding: 10,
   },
   [`& .${classes.fab}`]: {
-    position: "absolute",
-    bottom: "25px",
-    right: "25px",
+    position: 'absolute',
+    bottom: '25px',
+    right: '25px',
   },
 });
 
 type ClientListProps = {
-  reload?: boolean;
+  refresh?: boolean;
   onItemClick?: (item: Client) => void;
 };
 
-export function ClientList({ reload, onItemClick }: ClientListProps) {
+export function ClientList({ refresh, onItemClick }: ClientListProps) {
   const [list, setList] = useState<Client[]>([]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     ClientClient.findAllByPage({
       page: 0,
       size: 100,
-      sort: "name,asc",
+      sort: 'name,asc',
     }).then((res) => setList(res.list));
-  }, [reload]);
+  }, [refresh]);
 
   const handleItem = (it) => () => {
     if (isDefined(onItemClick)) onItemClick(it);

@@ -1,9 +1,8 @@
-import React from "react";
-import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
-import { PersonSelector } from "../selector";
-import { Box } from "@mui/material";
-import { usePerson } from "../../hooks/PersonHook";
-import Typography from "@mui/material/Typography";
+import { Box } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import { usePerson } from '../../hooks/PersonHook';
+import { PersonSelector } from '../selector';
 
 type PageProps = {
   requireAuthority: string;
@@ -21,7 +20,7 @@ export default function PersonLayout({
   };
 
   return (
-    <Box className={"full-width content-grid"}>
+    <Box className={'full-width content-grid'}>
       <UserAuthorityUtil has={requireAuthority}>
         <PersonSelector
           value={person?.uuid}
@@ -33,9 +32,9 @@ export default function PersonLayout({
         />
       </UserAuthorityUtil>
       <Box
-        className={"flow"}
-        flow-gap={"wide"}
-        style={{ paddingBottom: "1.5rem" }}
+        className={'flow'}
+        flow-gap={'wide'}
+        style={{ paddingBottom: '1.5rem' }}
       >
         {person ? (
           children(person)

@@ -84,8 +84,7 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                     "PersonAuthority.WRITE",
                 ),
             password = "admin",
-        )
-            .run { userAccountService.createUserAccountPassword(this) }
+        ).run { userAccountService.createUserAccountPassword(this) }
             .run { UserSecurityService.UserSecurityPassword(this) }
             .run { user(this) }
 
@@ -104,14 +103,14 @@ class PersonControllerTest : WorkdayIntegrationTest() {
 
         val user = createUser()
 
-        mvc.perform(
-            post(baseUrl)
-                .with(user)
-                .content(mapper.writeValueAsString(personForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user)
+                    .content(mapper.writeValueAsString(personForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.uuid").exists())
@@ -140,13 +139,14 @@ class PersonControllerTest : WorkdayIntegrationTest() {
         // need this user to compare generated fields
         // create a person so one can query that person via the PersonCode
         var person: JsonNode?
-        mvc.perform(
-            post(baseUrl).with(user)
-                .content(mapper.writeValueAsString(personForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andReturn()
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user)
+                    .content(mapper.writeValueAsString(personForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andReturn()
             .response
             .contentAsString
             .apply { person = mapper.readTree(this) }
@@ -154,12 +154,12 @@ class PersonControllerTest : WorkdayIntegrationTest() {
         fun person(key: String): String = person!!.get(key).textValue()
         // DRY-Block
 
-        mvc.perform(
-            get("$baseUrl/${person("uuid")}")
-                .with(user)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                get("$baseUrl/${person("uuid")}")
+                    .with(user)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.uuid").exists())
             .andExpect(jsonPath("\$.uuid").isString)
@@ -185,13 +185,14 @@ class PersonControllerTest : WorkdayIntegrationTest() {
         // need this user to compare generated fields
         var person: JsonNode?
         val user = createUser()
-        mvc.perform(
-            post(baseUrl).with(user)
-                .content(mapper.writeValueAsString(personForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andReturn()
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user)
+                    .content(mapper.writeValueAsString(personForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andReturn()
             .response
             .contentAsString
             .apply { person = mapper.readTree(this) }
@@ -210,14 +211,14 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                 active = true,
             )
 
-        mvc.perform(
-            put("$baseUrl/${person("uuid")}")
-                .with(user)
-                .content(mapper.writeValueAsString(personUpdate))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                put("$baseUrl/${person("uuid")}")
+                    .with(user)
+                    .content(mapper.writeValueAsString(personUpdate))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.uuid").isNotEmpty)
             .andExpect(jsonPath("\$.uuid").isString)
@@ -247,25 +248,26 @@ class PersonControllerTest : WorkdayIntegrationTest() {
         // create a person so one can query that person via the PersonCode
         var person: JsonNode?
         val user = createUser()
-        mvc.perform(
-            post(baseUrl).with(user)
-                .content(mapper.writeValueAsString(personForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andReturn()
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user)
+                    .content(mapper.writeValueAsString(personForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andReturn()
             .response
             .contentAsString
             .apply { person = mapper.readTree(this) }
 
         fun person(key: String): String = person!!.get(key).textValue()
 
-        mvc.perform(
-            get("$baseUrl/${person("uuid")}")
-                .with(user)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                get("$baseUrl/${person("uuid")}")
+                    .with(user)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.uuid").exists())
             .andExpect(jsonPath("\$.uuid").isString)
@@ -274,15 +276,16 @@ class PersonControllerTest : WorkdayIntegrationTest() {
             .andExpect(jsonPath("\$.lastname").value(person("lastname")))
         // DRY-Block
 
-        mvc.perform(
-            delete("$baseUrl/${person("uuid")}")
-                .with(user)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isNoContent)
+        mvc
+            .perform(
+                delete("$baseUrl/${person("uuid")}")
+                    .with(user)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isNoContent)
 
         // DRY-Bock
-        mvc.perform(get("$baseUrl/${person("uuid")}").with(user).accept(APPLICATION_JSON))
+        mvc
+            .perform(get("$baseUrl/${person("uuid")}").with(user).accept(APPLICATION_JSON))
             .andExpect(status().isNotFound)
         // DRY-Bock
     }
@@ -291,12 +294,12 @@ class PersonControllerTest : WorkdayIntegrationTest() {
     fun `should return an error while trying to get a non-existing person via GET-request`() {
         val user = createUser()
         // DRY-Bock
-        mvc.perform(
-            get("$baseUrl/3b7ab8e2-aeeb-4228-98d8-bd22fa141caa")
-                .with(user)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isNotFound)
+        mvc
+            .perform(
+                get("$baseUrl/3b7ab8e2-aeeb-4228-98d8-bd22fa141caa")
+                    .with(user)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isNotFound)
         // DRY-Bock
     }
 
@@ -334,12 +337,12 @@ class PersonControllerTest : WorkdayIntegrationTest() {
     fun `expect to retrieve only active users with active=true query param`() {
         val user = createUser()
 
-        mvc.perform(
-            get("$baseUrl?active=true")
-                .with(user)
-                .accept("application/json"),
-        )
-            .andExpect(status().isOk())
+        mvc
+            .perform(
+                get("$baseUrl?active=true")
+                    .with(user)
+                    .accept("application/json"),
+            ).andExpect(status().isOk())
             .andExpect(
                 jsonPath(
                     "$.*.active",

@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import { useEffect, useState } from 'react';
 import {
+  CartesianGrid,
+  Legend,
+  Line,
   LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Legend,
-  Tooltip,
-  Line,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
-import { AlignedLoader } from "@workday-core/components/AlignedLoader";
-import { AggregationClient } from "../../clients/AggregationClient";
+} from 'recharts';
+import { AggregationClient } from '../../clients/AggregationClient';
 
 type InternalOverviewChartProps = {
   year?: number;
@@ -22,20 +22,18 @@ export function InternalOverviewChart({ year }: InternalOverviewChartProps) {
   useEffect(() => {
     const date = new Date();
     AggregationClient.totalPerMonthByYear(year || date.getFullYear()).then(
-      (res) => setState(res)
+      (res) => setState(res),
     );
   }, [year]);
 
   if (!state) return <AlignedLoader />;
 
-  const data: any[] =
-    state &&
-    state.map((it) => ({
-      name: it.yearMonth,
-      countContractInternal: it.countContractInternal,
-      actualCostContractInternal: it.actualCostContractInternal,
-      actualRevenueInternal: it.actualRevenueInternal,
-    }));
+  const data: any[] = state?.map((it) => ({
+    name: it.yearMonth,
+    countContractInternal: it.countContractInternal,
+    actualCostContractInternal: it.actualCostContractInternal,
+    actualRevenueInternal: it.actualRevenueInternal,
+  }));
 
   return (
     <ResponsiveContainer>
@@ -47,13 +45,13 @@ export function InternalOverviewChart({ year }: InternalOverviewChartProps) {
           yAxisId="right"
           type="number"
           orientation="right"
-          domain={["dataMin ", "dataMax "]}
+          domain={['dataMin ', 'dataMax ']}
         />
 
         <Tooltip
           formatter={(value) =>
-            typeof value === "number"
-              ? new Intl.NumberFormat("en").format(value)
+            typeof value === 'number'
+              ? new Intl.NumberFormat('en').format(value)
               : value
           }
         />

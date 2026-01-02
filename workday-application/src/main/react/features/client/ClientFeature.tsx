@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { ClientList } from "./ClientList";
-import { ClientDialog } from "./ClientDialog";
-import { Box, Card, CardContent, CardHeader } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import Button from "@mui/material/Button";
+import AddIcon from '@mui/icons-material/Add';
+import { Box, Card, CardContent, CardHeader } from '@mui/material';
+import Button from '@mui/material/Button';
+import { useState } from 'react';
+import { ClientDialog } from './ClientDialog';
+import { ClientList } from './ClientList';
 
 export function ClientFeature() {
   const [reload, setReload] = useState(false);
@@ -37,9 +37,9 @@ export function ClientFeature() {
 
   return (
     <Box
-      className={"flow"}
-      flow-gap={"wide"}
-      style={{ paddingBottom: "1.5rem" }}
+      className={'flow'}
+      flow-gap={'wide'}
+      style={{ paddingBottom: '1.5rem' }}
     >
       <Card>
         <CardHeader
@@ -51,7 +51,7 @@ export function ClientFeature() {
           }
         />
         <CardContent>
-          <ClientList reload={reload} onItemClick={handleItem} />
+          <ClientList refresh={reload} onItemClick={handleItem} />
         </CardContent>
       </Card>
       <ClientDialog

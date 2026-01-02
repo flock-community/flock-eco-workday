@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { Given_I_am_logged_in_as_user } from './steps/workdaySteps';
 
 // Test configuration
 const BASE_URL = 'http://localhost:3000';
 const PERSON_URL = `${BASE_URL}/person`;
-const VALID_USERNAME = 'tommy';
+const _VALID_USERNAME = 'tommy';
 const ADMIN_USERNAME = 'bert';
 
 test.describe('Person CRUD Operations', () => {
@@ -32,14 +32,22 @@ test.describe('Person CRUD Operations', () => {
       firstname: `TestUser${timestamp}`,
       lastname: 'Create',
       email: `test.create.${timestamp}@example.com`,
-      number: `${timestamp.toString().slice(-5)}`
+      number: `${timestamp.toString().slice(-5)}`,
     };
 
     // Fill in the form fields using correct selectors
-    await page.getByRole('textbox', { name: 'firstname' }).fill(testPersonData.firstname);
-    await page.getByRole('textbox', { name: 'lastname' }).fill(testPersonData.lastname);
-    await page.getByRole('textbox', { name: 'email' }).fill(testPersonData.email);
-    await page.getByRole('textbox', { name: 'number' }).fill(testPersonData.number);
+    await page
+      .getByRole('textbox', { name: 'firstname' })
+      .fill(testPersonData.firstname);
+    await page
+      .getByRole('textbox', { name: 'lastname' })
+      .fill(testPersonData.lastname);
+    await page
+      .getByRole('textbox', { name: 'email' })
+      .fill(testPersonData.email);
+    await page
+      .getByRole('textbox', { name: 'number' })
+      .fill(testPersonData.number);
 
     // Set reminders
     await page.getByRole('checkbox', { name: 'Reminders' }).check();
@@ -51,10 +59,16 @@ test.describe('Person CRUD Operations', () => {
     await expect(page.getByText('Create Person')).not.toBeVisible();
 
     // Search for the newly created person
-    await page.getByPlaceholder('Search name').fill(`${testPersonData.firstname} ${testPersonData.lastname}`);
+    await page
+      .getByPlaceholder('Search name')
+      .fill(`${testPersonData.firstname} ${testPersonData.lastname}`);
 
     // Verify the person appears in the table
-    await expect(page.getByRole('link', { name: `${testPersonData.firstname} ${testPersonData.lastname}` })).toBeVisible();
+    await expect(
+      page.getByRole('link', {
+        name: `${testPersonData.firstname} ${testPersonData.lastname}`,
+      }),
+    ).toBeVisible();
     await expect(page.getByText(testPersonData.email)).toBeVisible();
   });
 
@@ -68,27 +82,43 @@ test.describe('Person CRUD Operations', () => {
       firstname: `TestUser${timestamp}`,
       lastname: 'View',
       email: `test.view.${timestamp}@example.com`,
-      number: `${timestamp.toString().slice(-5)}`
+      number: `${timestamp.toString().slice(-5)}`,
     };
 
-    await page.getByRole('textbox', { name: 'firstname' }).fill(testPersonData.firstname);
-    await page.getByRole('textbox', { name: 'lastname' }).fill(testPersonData.lastname);
-    await page.getByRole('textbox', { name: 'email' }).fill(testPersonData.email);
-    await page.getByRole('textbox', { name: 'number' }).fill(testPersonData.number);
+    await page
+      .getByRole('textbox', { name: 'firstname' })
+      .fill(testPersonData.firstname);
+    await page
+      .getByRole('textbox', { name: 'lastname' })
+      .fill(testPersonData.lastname);
+    await page
+      .getByRole('textbox', { name: 'email' })
+      .fill(testPersonData.email);
+    await page
+      .getByRole('textbox', { name: 'number' })
+      .fill(testPersonData.number);
     await page.getByRole('checkbox', { name: 'Reminders' }).check();
 
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByText('Create Person')).not.toBeVisible();
 
     // Search for the person and click on their name to view details
-    await page.getByPlaceholder('Search name').fill(`${testPersonData.firstname} ${testPersonData.lastname}`);
-    await page.getByRole('link', { name: `${testPersonData.firstname} ${testPersonData.lastname}` }).click();
+    await page
+      .getByPlaceholder('Search name')
+      .fill(`${testPersonData.firstname} ${testPersonData.lastname}`);
+    await page
+      .getByRole('link', {
+        name: `${testPersonData.firstname} ${testPersonData.lastname}`,
+      })
+      .click();
 
     // Wait for navigation to person details page
     await page.waitForURL(/.*\/person\/code\/.*/);
 
     // Verify person details are displayed
-    await expect(page.getByText(`${testPersonData.firstname} ${testPersonData.lastname}`)).toBeVisible();
+    await expect(
+      page.getByText(`${testPersonData.firstname} ${testPersonData.lastname}`),
+    ).toBeVisible();
     await expect(page.getByText(testPersonData.email)).toBeVisible();
   });
 
@@ -104,21 +134,33 @@ test.describe('Person CRUD Operations', () => {
       firstname: `TestUser${timestamp}`,
       lastname: 'Edit',
       email: `test.edit.${timestamp}@example.com`,
-      number: `${timestamp.toString().slice(-5)}`
+      number: `${timestamp.toString().slice(-5)}`,
     };
 
-    await page.getByRole('textbox', { name: 'firstname' }).fill(originalData.firstname);
-    await page.getByRole('textbox', { name: 'lastname' }).fill(originalData.lastname);
+    await page
+      .getByRole('textbox', { name: 'firstname' })
+      .fill(originalData.firstname);
+    await page
+      .getByRole('textbox', { name: 'lastname' })
+      .fill(originalData.lastname);
     await page.getByRole('textbox', { name: 'email' }).fill(originalData.email);
-    await page.getByRole('textbox', { name: 'number' }).fill(originalData.number);
+    await page
+      .getByRole('textbox', { name: 'number' })
+      .fill(originalData.number);
     await page.getByRole('checkbox', { name: 'Reminders' }).check();
 
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByText('Create Person')).not.toBeVisible();
 
     // Navigate to person details
-    await page.getByPlaceholder('Search name').fill(`${originalData.firstname} ${originalData.lastname}`);
-    await page.getByRole('link', { name: `${originalData.firstname} ${originalData.lastname}` }).click();
+    await page
+      .getByPlaceholder('Search name')
+      .fill(`${originalData.firstname} ${originalData.lastname}`);
+    await page
+      .getByRole('link', {
+        name: `${originalData.firstname} ${originalData.lastname}`,
+      })
+      .click();
     await page.waitForURL(/.*\/person\/code\/.*/);
 
     // Wait for the page to load completely
@@ -143,14 +185,13 @@ test.describe('Person CRUD Operations', () => {
           editButtonFound = true;
           break;
         }
-      } catch (e) {
-        // Continue to next button if this one fails
-        continue;
-      }
+      } catch (_e) {}
     }
 
     if (!editButtonFound) {
-      throw new Error('Could not find edit button that opens Create Person dialog');
+      throw new Error(
+        'Could not find edit button that opens Create Person dialog',
+      );
     }
 
     // Verify edit dialog is open
@@ -160,12 +201,14 @@ test.describe('Person CRUD Operations', () => {
     const updatedData = {
       firstname: `UpdatedUser${timestamp}`,
       lastname: 'EditUpdated',
-      email: `test.edit.updated.${timestamp}@example.com`
+      email: `test.edit.updated.${timestamp}@example.com`,
     };
 
     // Clear and fill updated values
     await page.getByRole('textbox', { name: 'firstname' }).clear();
-    await page.getByRole('textbox', { name: 'firstname' }).fill(updatedData.firstname);
+    await page
+      .getByRole('textbox', { name: 'firstname' })
+      .fill(updatedData.firstname);
     await page.getByRole('textbox', { name: 'email' }).clear();
     await page.getByRole('textbox', { name: 'email' }).fill(updatedData.email);
 
@@ -176,7 +219,9 @@ test.describe('Person CRUD Operations', () => {
     await expect(page.getByText('Create Person')).not.toBeVisible();
 
     // Verify updated information is displayed
-    await expect(page.getByRole('cell', { name: updatedData.firstname })).toBeVisible();
+    await expect(
+      page.getByRole('cell', { name: updatedData.firstname }),
+    ).toBeVisible();
     await expect(page.getByText(updatedData.email)).toBeVisible();
   });
 
@@ -192,21 +237,35 @@ test.describe('Person CRUD Operations', () => {
       firstname: `TestUser${timestamp}`,
       lastname: 'Delete',
       email: `test.delete.${timestamp}@example.com`,
-      number: `${timestamp.toString().slice(-5)}`
+      number: `${timestamp.toString().slice(-5)}`,
     };
 
-    await page.getByRole('textbox', { name: 'firstname' }).fill(testPersonData.firstname);
-    await page.getByRole('textbox', { name: 'lastname' }).fill(testPersonData.lastname);
-    await page.getByRole('textbox', { name: 'email' }).fill(testPersonData.email);
-    await page.getByRole('textbox', { name: 'number' }).fill(testPersonData.number);
+    await page
+      .getByRole('textbox', { name: 'firstname' })
+      .fill(testPersonData.firstname);
+    await page
+      .getByRole('textbox', { name: 'lastname' })
+      .fill(testPersonData.lastname);
+    await page
+      .getByRole('textbox', { name: 'email' })
+      .fill(testPersonData.email);
+    await page
+      .getByRole('textbox', { name: 'number' })
+      .fill(testPersonData.number);
     await page.getByRole('checkbox', { name: 'Reminders' }).check();
 
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByText('Create Person')).not.toBeVisible();
 
     // Navigate to person details
-    await page.getByPlaceholder('Search name').fill(`${testPersonData.firstname} ${testPersonData.lastname}`);
-    await page.getByRole('link', { name: `${testPersonData.firstname} ${testPersonData.lastname}` }).click();
+    await page
+      .getByPlaceholder('Search name')
+      .fill(`${testPersonData.firstname} ${testPersonData.lastname}`);
+    await page
+      .getByRole('link', {
+        name: `${testPersonData.firstname} ${testPersonData.lastname}`,
+      })
+      .click();
     await page.waitForURL(/.*\/person\/code\/.*/);
 
     // Wait for the page to load completely
@@ -232,9 +291,7 @@ test.describe('Person CRUD Operations', () => {
           await page.waitForTimeout(500);
           break;
         }
-      } catch (e) {
-        continue;
-      }
+      } catch (_e) {}
     }
 
     // Now try the button right after the edit button for delete
@@ -247,7 +304,7 @@ test.describe('Person CRUD Operations', () => {
         if (await page.getByText('Surely you cant be serious?').isVisible()) {
           deleteButtonFound = true;
         }
-      } catch (e) {
+      } catch (_e) {
         // Continue with fallback approach
       }
     }
@@ -263,19 +320,23 @@ test.describe('Person CRUD Operations', () => {
             deleteButtonFound = true;
             break;
           }
-        } catch (e) {
-          continue;
-        }
+        } catch (_e) {}
       }
     }
 
     if (!deleteButtonFound) {
-      throw new Error('Could not find delete button that opens confirmation dialog');
+      throw new Error(
+        'Could not find delete button that opens confirmation dialog',
+      );
     }
 
     // Verify confirmation dialog is open
     await expect(page.getByText('Surely you cant be serious?')).toBeVisible();
-    await expect(page.getByText(`Delete ${testPersonData.firstname} ${testPersonData.lastname}`)).toBeVisible();
+    await expect(
+      page.getByText(
+        `Delete ${testPersonData.firstname} ${testPersonData.lastname}`,
+      ),
+    ).toBeVisible();
 
     // Confirm deletion
     await page.getByRole('button', { name: 'Confirm' }).click();
@@ -284,11 +345,17 @@ test.describe('Person CRUD Operations', () => {
     await page.waitForURL(PERSON_URL);
 
     // Search for the deleted person and verify it's not found
-    await page.getByPlaceholder('Search name').fill(`${testPersonData.firstname} ${testPersonData.lastname}`);
+    await page
+      .getByPlaceholder('Search name')
+      .fill(`${testPersonData.firstname} ${testPersonData.lastname}`);
 
     // Wait for search to complete and verify person is not in the table
     await page.waitForTimeout(1000);
-    await expect(page.getByRole('link', { name: `${testPersonData.firstname} ${testPersonData.lastname}` })).not.toBeVisible();
+    await expect(
+      page.getByRole('link', {
+        name: `${testPersonData.firstname} ${testPersonData.lastname}`,
+      }),
+    ).not.toBeVisible();
   });
 });
 
@@ -309,7 +376,7 @@ test.describe('Person Test Cleanup', () => {
       'test.user@test.com',
       'john.dev@test.com',
       'jane.design@test.com',
-      'mike.mgr@test.com'
+      'mike.mgr@test.com',
     ];
 
     // Delete each test person if they exist
@@ -320,7 +387,10 @@ test.describe('Person Test Cleanup', () => {
         await page.waitForTimeout(500);
 
         // Check if person exists
-        const personLink = page.locator('a').filter({ hasText: /@test\.com/ }).first();
+        const personLink = page
+          .locator('a')
+          .filter({ hasText: /@test\.com/ })
+          .first();
         if (await personLink.isVisible()) {
           await personLink.click();
           await page.waitForURL(/.*\/person\/code\/.*/);

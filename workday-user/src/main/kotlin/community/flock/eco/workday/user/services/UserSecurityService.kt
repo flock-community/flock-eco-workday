@@ -25,12 +25,12 @@ class UserSecurityService(
         val account: UserAccountOauth,
         token: OidcIdToken,
     ) : DefaultOidcUser(account.user.getGrantedAuthority(), token) {
-        override fun getName(): String {
-            return account.user.code
-        }
+        override fun getName(): String = account.user.code
     }
 
-    class UserSecurityPassword(val account: UserAccountPassword) : UserDetails {
+    class UserSecurityPassword(
+        val account: UserAccountPassword,
+    ) : UserDetails {
         override fun getAuthorities() = account.user.getGrantedAuthority()
 
         override fun isEnabled() = account.user.enabled
@@ -46,7 +46,9 @@ class UserSecurityService(
         override fun isAccountNonLocked() = true
     }
 
-    class UserSecurityKey(val account: UserAccountKey) : UserDetails {
+    class UserSecurityKey(
+        val account: UserAccountKey,
+    ) : UserDetails {
         override fun getAuthorities() = account.user.getGrantedAuthority()
 
         override fun isEnabled() = account.user.enabled
@@ -65,36 +67,34 @@ class UserSecurityService(
     fun testLogin(
         http: HttpSecurity,
         block: FormLoginConfigurer<HttpSecurity>.() -> Unit,
-    ): HttpSecurity {
-        return http
+    ): HttpSecurity =
+        http
             .userDetailsService { ref ->
-                userAccountService.findUserAccountPasswordByUserEmail(ref)
+                userAccountService
+                    .findUserAccountPasswordByUserEmail(ref)
                     ?.let { UserSecurityPassword(it) }
-                    ?: userAccountService.createUserAccountPassword(
-                        UserAccountPasswordForm(
-                            email = ref,
-                            password = ref,
-                        ),
-                    )
-                        .let { UserSecurityPassword(it) }
-            }
-            .formLogin { it.block() }
-    }
+                    ?: userAccountService
+                        .createUserAccountPassword(
+                            UserAccountPasswordForm(
+                                email = ref,
+                                password = ref,
+                            ),
+                        ).let { UserSecurityPassword(it) }
+            }.formLogin { it.block() }
 
     fun databaseLogin(
         http: HttpSecurity,
         block: FormLoginConfigurer<HttpSecurity>.() -> Unit,
-    ): HttpSecurity {
-        return http
+    ): HttpSecurity =
+        http
             .userDetailsService { ref ->
-                userAccountService.findUserAccountPasswordByUserEmail(ref)
+                userAccountService
+                    .findUserAccountPasswordByUserEmail(ref)
                     ?.let { UserSecurityPassword(it) }
                     ?: throw UsernameNotFoundException("User '$ref' not found")
-            }
-            .formLogin {
+            }.formLogin {
                 it.block()
             }
-    }
 
     fun googleLogin(
         http: HttpSecurity,
@@ -127,7 +127,8 @@ class UserSecurityService(
                                     userAccountService.createUserAccountOauth(form)
                                 }
 
-                                userAccountService.findUserAccountOauthByReference(reference)
+                                userAccountService
+                                    .findUserAccountOauthByReference(reference)
                                     ?.let { UserSecurityOauth2(it, oidcUser.idToken) }
                             }
                     })
@@ -140,8 +141,7 @@ class UserSecurityService(
             }
 }
 
-private fun User.getGrantedAuthority(): List<GrantedAuthority> {
-    return this.authorities
+private fun User.getGrantedAuthority(): List<GrantedAuthority> =
+    this.authorities
         .map { SimpleGrantedAuthority(it) }
         .toList()
-}

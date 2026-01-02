@@ -1,9 +1,9 @@
-import React from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogTitle from "@mui/material/DialogTitle";
-import { DialogBody } from "./dialog/DialogHeader";
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
+import type React from 'react';
+import { DialogBody } from './dialog/DialogHeader';
 
 type ConfirmDialogProps = {
   open: boolean;
@@ -19,15 +19,15 @@ export function ConfirmDialog({
   children,
 }: ConfirmDialogProps) {
   const handleClose = () => {
-    onClose && onClose();
+    onClose?.();
   };
 
   const handleConfirm = () => {
-    onConfirm && onConfirm();
+    onConfirm?.();
   };
 
   return (
-    <Dialog fullWidth maxWidth={"sm"} open={open} onClose={handleClose}>
+    <Dialog fullWidth maxWidth={'sm'} open={open} onClose={handleClose}>
       <DialogTitle>Confirm</DialogTitle>
       <DialogBody>{children}</DialogBody>
       <DialogActions>

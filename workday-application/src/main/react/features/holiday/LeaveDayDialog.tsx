@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, MenuItem, Select, Slide } from "@mui/material";
-import Grid from "@mui/material/Grid";
-import HolidayIcon from "@mui/icons-material/WbSunny";
-import Typography from "@mui/material/Typography";
-import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
-import { DialogFooter, DialogHeader } from "@workday-core/components/dialog";
-import { LeaveDayClient } from "../../clients/LeaveDayClient";
-import { HolidayForm } from "./HolidayForm";
-import { PlusDayForm } from "./PlusDayForm";
-import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import { LeaveDayForm } from "./LeaveDayForm";
-import dayjs from "dayjs";
-import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
+import HolidayIcon from '@mui/icons-material/WbSunny';
+import { Dialog, MenuItem, Select, Slide } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
+import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
+import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
+import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { LeaveDayClient } from '../../clients/LeaveDayClient';
+import { ISO_8601_DATE } from '../../clients/util/DateFormats';
+import { HolidayForm } from './HolidayForm';
+import { LeaveDayForm } from './LeaveDayForm';
+import { PlusDayForm } from './PlusDayForm';
 
-export const LEAVE_DAY_DIALOG_FORM_ID = "leave-day-dialog-form-id";
+export const LEAVE_DAY_DIALOG_FORM_ID = 'leave-day-dialog-form-id';
 
 enum Types {
-  HOLIDAY = "HOLIDAY",
-  PLUSDAY = "PLUSDAY",
-  PAID_PARENTAL_LEAVE = "PAID_PARENTAL_LEAVE",
-  UNPAID_PARENTAL_LEAVE = "UNPAID_PARENTAL_LEAVE",
-  PAID_LEAVE = "PAID_LEAVE",
+  HOLIDAY = 'HOLIDAY',
+  PLUSDAY = 'PLUSDAY',
+  PAID_PARENTAL_LEAVE = 'PAID_PARENTAL_LEAVE',
+  UNPAID_PARENTAL_LEAVE = 'UNPAID_PARENTAL_LEAVE',
+  PAID_LEAVE = 'PAID_LEAVE',
 }
 
 type LeaveDayDialogProps = {
@@ -36,13 +36,11 @@ export function LeaveDayDialog({
   code,
   personId,
   onComplete,
-}: LeaveDayDialogProps) {
+}: Readonly<LeaveDayDialogProps>) {
   const [openDelete, setOpenDelete] = useState(false);
 
   const [state, setState] = useState<any>();
   const [type, setType] = useState<Types>(Types.HOLIDAY);
-  const now = dayjs();
-
   const handleSubmit = (it) => {
     const body = {
       ...it,
@@ -81,12 +79,12 @@ export function LeaveDayDialog({
         });
       } else {
         setState({
-          description: "",
-          status: "REQUESTED",
-          from: now,
-          to: now,
+          description: '',
+          status: 'REQUESTED',
+          from: dayjs(),
+          to: dayjs(),
           days: [8],
-          hours: "",
+          hours: '',
         });
       }
     }
@@ -119,7 +117,7 @@ export function LeaveDayDialog({
         open={open}
         onClose={handleClose}
         TransitionComponent={Slide}
-        maxWidth={"md"}
+        maxWidth={'md'}
         fullWidth
       >
         <DialogHeader
@@ -131,7 +129,7 @@ export function LeaveDayDialog({
         <DialogBody>
           <Grid container spacing={1}>
             {!code && (
-              <UserAuthorityUtil has={"LeaveDayAuthority.ADMIN"}>
+              <UserAuthorityUtil has={'LeaveDayAuthority.ADMIN'}>
                 <Grid size={{ xs: 12 }}>
                   <Select
                     value={type}
@@ -179,14 +177,14 @@ export function LeaveDayDialog({
           onClose={handleClose}
           onDelete={handleDeleteOpen}
           disableDelete={
-            !UserAuthorityUtil.hasAuthority("LeaveDayAuthority.ADMIN") &&
+            !UserAuthorityUtil.hasAuthority('LeaveDayAuthority.ADMIN') &&
             state &&
-            state.status !== "REQUESTED"
+            state.status !== 'REQUESTED'
           }
           disableEdit={
-            !UserAuthorityUtil.hasAuthority("LeaveDayAuthority.ADMIN") &&
+            !UserAuthorityUtil.hasAuthority('LeaveDayAuthority.ADMIN') &&
             state &&
-            state.status !== "REQUESTED"
+            state.status !== 'REQUESTED'
           }
         />
       </Dialog>

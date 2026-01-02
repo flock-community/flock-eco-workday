@@ -7,8 +7,7 @@ import org.springframework.stereotype.Repository
 import java.util.Optional
 
 @Repository
-interface UserAccountOauthRepository :
-    JpaRepository<UserAccountOauth, Long> {
+interface UserAccountOauthRepository : JpaRepository<UserAccountOauth, Long> {
     fun findByReference(reference: String): Optional<UserAccountOauth>
 
     fun findByUserEmailIgnoreCaseContainingAndProvider(

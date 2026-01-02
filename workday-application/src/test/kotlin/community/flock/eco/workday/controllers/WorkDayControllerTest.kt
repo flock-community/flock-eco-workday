@@ -51,12 +51,12 @@ class WorkDayControllerTest(
 
         workDayService.create(createForm)
 
-        mvc.perform(
-            get("$baseUrl?personId=${person.uuid}")
-                .with(user(CreateHelper.UserSecurity(user)))
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                get("$baseUrl?personId=${person.uuid}")
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
     }
 
@@ -80,12 +80,12 @@ class WorkDayControllerTest(
 
         workDayService.create(createForm)
 
-        mvc.perform(
-            get("$baseUrl?personId=${personNotlinkedToUser.uuid}")
-                .with(user(CreateHelper.UserSecurity(user)))
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                get("$baseUrl?personId=${personNotlinkedToUser.uuid}")
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(content().string("[]"))
     }
@@ -112,12 +112,12 @@ class WorkDayControllerTest(
 
         val created = workDayService.create(createForm)
 
-        mvc.perform(
-            get("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(user)))
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                get("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.id").exists())
             .andExpect(MockMvcResultMatchers.jsonPath("\$.code").exists())
@@ -149,14 +149,15 @@ class WorkDayControllerTest(
 
         val updatedForm = createForm.copy(status = Status.APPROVED)
 
-        mvc.perform(
-            MockMvcRequestBuilders.put("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(user)))
-                .content(mapper.writeValueAsString(updatedForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isForbidden)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .put("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .content(mapper.writeValueAsString(updatedForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isForbidden)
 
         assertEquals(workDayService.findByCode(created.code)?.status, status)
     }
@@ -186,14 +187,15 @@ class WorkDayControllerTest(
 
         val updatedCreateForm = createForm.copy(status = updatedStatus)
 
-        mvc.perform(
-            MockMvcRequestBuilders.put("$baseUrl/${created.code}")
-                .with(user(CreateHelper.UserSecurity(admin)))
-                .content(mapper.writeValueAsString(updatedCreateForm))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .put("$baseUrl/${created.code}")
+                    .with(user(CreateHelper.UserSecurity(admin)))
+                    .content(mapper.writeValueAsString(updatedCreateForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.id").exists())
             .andExpect(MockMvcResultMatchers.jsonPath("\$.code").exists())

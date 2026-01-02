@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from "react";
+import { CardHeader, Container } from '@mui/material';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
+import { ExactonlineClient } from '../../clients/ExactonlineClient';
+import { ExactonlineListInvoices } from './ExactonlineListInvoices';
 
-import { styled } from "@mui/material/styles";
-import { CardHeader, Container } from "@mui/material";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import Typography from "@mui/material/Typography";
-import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid";
-import { ExactonlineClient } from "../../clients/ExactonlineClient";
-import { ExactonlineListInvoices } from "./ExactonlineListInvoices";
-
-const PREFIX = "ExactonlineFeature";
+const PREFIX = 'ExactonlineFeature';
 
 const classes = {
-  root: `${PREFIX}-root`,
+  root: `${PREFIX}Root`,
 };
 
 const StyledContainer = styled(Container)({
@@ -64,7 +63,7 @@ export function ExactonlineFeature() {
               <Typography>Email: {status.user.email}</Typography>
               <Typography>
                 Administration: {status.division.description} (
-                {status.division.code}){" "}
+                {status.division.code}){' '}
               </Typography>
             </CardContent>
           </Card>

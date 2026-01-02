@@ -62,15 +62,13 @@ class ExpenseController(
         when {
             authentication.isAdmin() -> expenseService.findAllByPersonUuid(personId, pageable)
             else -> expenseService.findAllByPersonUserCode(authentication.name, pageable)
-        }
-            .map {
-                when (it) {
-                    is TravelExpense -> it.produce()
-                    is CostExpense -> it.produce()
-                    else -> error("Unsupported expense type")
-                }
+        }.map {
+            when (it) {
+                is TravelExpense -> it.produce()
+                is CostExpense -> it.produce()
+                else -> error("Unsupported expense type")
             }
-            .toResponse()
+        }.toResponse()
 
     @GetMapping("{id}")
     @PreAuthorize("hasAuthority('ExpenseAuthority.READ')")
@@ -87,8 +85,7 @@ class ExpenseController(
                     is CostExpense -> it.produce()
                     else -> error("Unsupported expense type")
                 }
-            }
-            .toResponse()
+            }.toResponse()
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
@@ -109,7 +106,8 @@ class ExpenseController(
         @PathVariable name: String,
         authentication: Authentication,
     ): ResponseEntity<ByteArray> =
-        documentService.readDocument(file)
+        documentService
+            .readDocument(file)
             .run {
                 ResponseEntity
                     .ok()
@@ -176,7 +174,8 @@ class TravelExpenseController(
         @RequestBody input: TravelExpenseInput,
         authentication: Authentication,
     ): ResponseEntity<ExpenseApi> =
-        expenseService.findById(id)
+        expenseService
+            .findById(id)
             ?.applyAuthentication(authentication)
             ?.applyAllowedToUpdate(input.status.consume(), authentication.isAdmin())
             ?.run {
@@ -186,8 +185,7 @@ class TravelExpenseController(
                     input = updatedExpense,
                     isUpdatedByOwner = authentication.isOwnerOf(this),
                 )
-            }
-            ?.produce()
+            }?.produce()
             .toResponse()
 }
 
@@ -241,7 +239,8 @@ class CostExpenseController(
         @RequestBody input: CostExpenseInput,
         authentication: Authentication,
     ): ResponseEntity<ExpenseApi> =
-        expenseService.findById(id)
+        expenseService
+            .findById(id)
             ?.applyAuthentication(authentication)
             ?.applyAllowedToUpdate(input.status.consume(), authentication.isAdmin())
             ?.run {
@@ -251,8 +250,7 @@ class CostExpenseController(
                     input = consume,
                     isUpdatedByOwner = authentication.isOwnerOf(this),
                 )
-            }
-            ?.produce()
+            }?.produce()
             .toResponse()
 }
 

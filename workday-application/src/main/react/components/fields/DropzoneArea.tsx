@@ -1,7 +1,6 @@
-import React from "react";
-import { useDropzone, Accept } from "react-dropzone";
-import { Box, Typography, Paper } from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { Box, Paper, Typography } from '@mui/material';
+import { type Accept, useDropzone } from 'react-dropzone';
 
 export type DropzoneAreaProps = {
   maxFileSize?: number;
@@ -32,11 +31,11 @@ export function DropzoneArea({
     });
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return "0 Bytes";
+    if (bytes === 0) return '0 Bytes';
     const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i)) + " " + sizes[i];
+    return `${Math.round(bytes / k ** i)} ${sizes[i]}`;
   };
 
   return (
@@ -44,30 +43,30 @@ export function DropzoneArea({
       <Paper
         {...getRootProps()}
         sx={{
-          border: "3px dashed",
-          borderColor: isDragActive ? "primary.main" : "#C8C8C8",
-          backgroundColor: isDragActive ? "action.hover" : "#F0F0F0",
+          border: '3px dashed',
+          borderColor: isDragActive ? 'primary.main' : '#C8C8C8',
+          backgroundColor: isDragActive ? 'action.hover' : '#F0F0F0',
           padding: 3,
-          textAlign: "center",
-          cursor: "pointer",
-          transition: "all 0.2s ease-in-out",
+          textAlign: 'center',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease-in-out',
           minHeight: 250,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          "&:hover": {
-            borderColor: "primary.main",
-            backgroundColor: "action.hover",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          '&:hover': {
+            borderColor: 'primary.main',
+            backgroundColor: 'action.hover',
           },
         }}
       >
         <input {...getInputProps()} />
         <CloudUploadIcon
-          sx={{ fontSize: 48, color: "text.secondary", mb: 2 }}
+          sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }}
         />
         <Typography variant="h6" gutterBottom>
-          {isDragActive ? "Drop files here" : "Drag & drop files here"}
+          {isDragActive ? 'Drop files here' : 'Drag & drop files here'}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           or click to browse
@@ -77,7 +76,7 @@ export function DropzoneArea({
         </Typography>
         {acceptedFiles.length > 0 && (
           <Typography variant="caption" color="text.secondary">
-            Accepted: {acceptedFiles.join(", ")}
+            Accepted: {acceptedFiles.join(', ')}
           </Typography>
         )}
       </Paper>
@@ -90,7 +89,7 @@ export function DropzoneArea({
               color="error"
               display="block"
             >
-              {file.name} - {errors.map((e) => e.message).join(", ")}
+              {file.name} - {errors.map((e) => e.message).join(', ')}
             </Typography>
           ))}
         </Box>

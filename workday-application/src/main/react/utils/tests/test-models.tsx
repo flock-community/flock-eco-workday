@@ -1,22 +1,22 @@
-import { CostExpense, TravelExpense } from "../../models/Expense";
-import { Dayjs } from "dayjs";
-import { Status } from "../../models/Status";
-import { Person } from "../../clients/PersonClient";
+import type { Dayjs } from 'dayjs';
 import {
   EventType,
-  FlockEvent,
-  FullFlockEvent,
-} from "../../clients/EventClient";
+  type FlockEvent,
+  type FullFlockEvent,
+} from '../../clients/EventClient';
+import type { Person } from '../../clients/PersonClient';
+import { CostExpense, TravelExpense } from '../../models/Expense';
+import { Status } from '../../models/Status';
 
 function getMonthStringFromDate(date: Dayjs): string {
-  return date.format("MMMM");
+  return date.format('MMMM');
 }
 
 export function createTestCostExpense(
   id: string,
   date: Dayjs,
   status: Status = Status.REQUESTED,
-  amount: number = 120
+  amount: number = 120,
 ): CostExpense {
   const dateMonth = getMonthStringFromDate(date);
   return new CostExpense(
@@ -26,7 +26,7 @@ export function createTestCostExpense(
     {} as Person,
     status,
     amount,
-    []
+    [],
   );
 }
 
@@ -35,7 +35,7 @@ export function createTestTravelExpense(
   date: Dayjs,
   status: Status = Status.REQUESTED,
   distance: number = 120,
-  allowance: number = 0.23
+  allowance: number = 0.23,
 ): TravelExpense {
   const dateMonth = getMonthStringFromDate(date);
   return new TravelExpense(
@@ -46,7 +46,7 @@ export function createTestTravelExpense(
     status,
     [],
     allowance,
-    distance
+    distance,
   );
 }
 
@@ -55,12 +55,12 @@ export function createTestFlockEvent(
   from: Dayjs,
   to: Dayjs,
   hours: number,
-  days: number[]
+  days: number[],
 ): FullFlockEvent {
   return {
     description,
     id: 1909,
-    code: "event-code",
+    code: 'event-code',
     from,
     to,
     hours: hours,
@@ -72,23 +72,23 @@ export function createTestFlockEvent(
 }
 
 export function createTestOneDayFlockEvent(date: Dayjs): FlockEvent {
-  return createTestFlockEvent("Single day Flock Event", date, date, 8, [8]);
+  return createTestFlockEvent('Single day Flock Event', date, date, 8, [8]);
 }
 
 export function createTestMultiDayFlockEvent(
   from: Dayjs,
-  to: Dayjs
+  to: Dayjs,
 ): FlockEvent {
-  let daysArray: number[] = [];
-  const daysBetween = to.diff(from, "days");
+  const daysArray: number[] = [];
+  const daysBetween = to.diff(from, 'days');
   for (let idx = 0; idx < daysBetween; idx++) {
     daysArray.push(8);
   }
   return createTestFlockEvent(
-    "Multiple days Flock Event",
+    'Multiple days Flock Event',
     from,
     to,
     daysBetween * 8,
-    daysArray
+    daysArray,
   );
 }

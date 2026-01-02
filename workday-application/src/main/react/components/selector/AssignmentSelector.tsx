@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
 import {
   FormControl,
-  FormControlProps,
+  type FormControlProps,
   InputLabel,
   MenuItem,
   Select,
-} from "@mui/material";
-import FormHelperText from "@mui/material/FormHelperText";
-import { Assignment, AssignmentClient } from "../../clients/AssignmentClient";
-import dayjs, { Dayjs } from "dayjs";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+} from '@mui/material';
+import FormHelperText from '@mui/material/FormHelperText';
+import dayjs, { type Dayjs } from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { useEffect, useState } from 'react';
+import {
+  type Assignment,
+  AssignmentClient,
+} from '../../clients/AssignmentClient';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -41,10 +44,10 @@ export function AssignmentSelector({
   useEffect(() => {
     if (!personId) return;
 
-    AssignmentClient.findAllByPersonId(personId, "all").then((res) =>
-      setItems(res.list)
+    AssignmentClient.findAllByPersonId(personId, 'all').then((res) =>
+      setItems(res.list),
     );
-  }, []);
+  }, [personId]);
 
   useEffect(() => {
     setState(value);
@@ -54,14 +57,14 @@ export function AssignmentSelector({
     return (
       assignment.code === value ||
       (assignment.from.isSameOrBefore(from) &&
-        (!assignment.to || assignment.to.isSameOrAfter(to, "day")))
+        (!assignment.to || assignment.to.isSameOrAfter(to, 'day')))
     );
   };
 
   function handleChange(event) {
     const selected = event.target.value;
     setState(selected);
-    onChange?.(selected === "" ? null : selected);
+    onChange?.(selected === '' ? null : selected);
   }
 
   function renderMenuItem(item, key) {
@@ -70,8 +73,8 @@ export function AssignmentSelector({
         key={`${AssignmentSelector.name}-selector-menu-item-${key}`}
         value={item.code}
       >
-        {item.client.name} | {item.role} | {item.from.format("DD-MM-YYYY")} -{" "}
-        {item.to ? item.to.format("DD-MM-YYYY") : "now"}
+        {item.client.name} | {item.role} | {item.from.format('DD-MM-YYYY')} -{' '}
+        {item.to ? item.to.format('DD-MM-YYYY') : 'now'}
       </MenuItem>
     );
   }
@@ -85,7 +88,7 @@ export function AssignmentSelector({
         label={label}
         id="assignment-select"
         labelId="assignment-select-label"
-        value={state || ""}
+        value={state || ''}
         onChange={handleChange}
       >
         <MenuItem value="">

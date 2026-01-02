@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -7,14 +5,16 @@ import {
   TableContainer,
   TablePagination,
   TableRow,
-} from "@mui/material";
+} from '@mui/material';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import {
-  Assignment,
+  type Assignment,
   AssignmentClient,
-} from "../../../clients/AssignmentClient";
-import dayjs from "dayjs";
-import { AssignmentOverviewTableHead } from "./AssignmentOverviewTableHead";
-import { DMY_DATE } from "../../../clients/util/DateFormats";
+} from '../../../clients/AssignmentClient';
+import { DMY_DATE } from '../../../clients/util/DateFormats';
+import { AssignmentOverviewTableHead } from './AssignmentOverviewTableHead';
 
 export default function AssignmentOverviewTable() {
   const [assignmentList, setAssignmentList] = useState<Assignment[]>([]);
@@ -28,18 +28,18 @@ export default function AssignmentOverviewTable() {
     AssignmentClient.findAllByToAfterOrToNull(dayjs().toDate(), {
       page: page,
       size: size,
-      sort: "person.firstname,from",
+      sort: 'person.firstname,from',
     }).then((res) => {
       setAssignmentList(res.list);
       setRowCount(res.count);
     });
   }, [page, size]);
 
-  const handleClick = (assignment: Assignment) => {
+  const _handleClick = (assignment: Assignment) => {
     history.push(`${url}/code/${assignment.code}`);
   };
 
-  const handlePageChange = (event, newPage) => {
+  const handlePageChange = (_event, newPage) => {
     setPage(newPage);
   };
 
@@ -54,8 +54,8 @@ export default function AssignmentOverviewTable() {
       <Table>
         <AssignmentOverviewTableHead />
         <TableBody>
-          {assignmentList.map((assignment, idx) => (
-            <TableRow key={idx}>
+          {assignmentList.map((assignment) => (
+            <TableRow key={assignment.code}>
               <TableCell>{assignment.person.fullName}</TableCell>
               <TableCell>{assignment.client.name}</TableCell>
               <TableCell>{assignment.from.format(DMY_DATE)}</TableCell>
@@ -65,7 +65,7 @@ export default function AssignmentOverviewTable() {
         </TableBody>
       </Table>
       <TablePagination
-        rowsPerPageOptions={[10, 20, 50, { value: -1, label: "All" }]}
+        rowsPerPageOptions={[10, 20, 50, { value: -1, label: 'All' }]}
         component="div"
         count={rowCount}
         rowsPerPage={size}

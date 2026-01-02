@@ -1,43 +1,44 @@
-import React, { useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
-import Card from "@mui/material/Card";
-import { Box, CardContent } from "@mui/material";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
+import { Box, CardContent } from '@mui/material';
+import Card from '@mui/material/Card';
+import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
 import {
   CONTRACT_PAGE_SIZE,
   ContractClient,
-} from "../../clients/ContractClient";
-import { ContractType } from "./ContractType";
-import { FlockPagination } from "../../components/pagination/FlockPagination";
+} from '../../clients/ContractClient';
+import { FlockPagination } from '../../components/pagination/FlockPagination';
+import { ContractType } from './ContractType';
 
-const PREFIX = "ContractList";
+const PREFIX = 'ContractList';
 
 const classes = {
-  list: `${PREFIX}-list`,
+  list: `${PREFIX}List`,
 };
 
-const Root = styled("i")({
+const Root = styled('i')({
   [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
 });
 
 type ContractListProps = {
-  reload: boolean;
+  refresh: boolean;
   personId?: string;
   onItemClick: (item: any) => void;
 };
 export function ContractList({
-  reload,
+  refresh,
   personId,
   onItemClick,
 }: Readonly<ContractListProps>) {
   const [items, setItems] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(-1);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     if (personId) {
       setLoading(true);
@@ -47,7 +48,7 @@ export function ContractList({
         setLoading(false);
       });
     }
-  }, [personId, reload, page]);
+  }, [refresh, personId, page]);
 
   const handleClickItem = (it) => () => {
     if (onItemClick) onItemClick(it);
@@ -72,7 +73,7 @@ export function ContractList({
               <CardContent>
                 <Typography>{it.type}</Typography>
                 <Typography>
-                  Period: <FormatDate date={it.from} /> -{" "}
+                  Period: <FormatDate date={it.from} /> -{' '}
                   <FormatDate date={it.to} />
                 </Typography>
                 {it.type === ContractType.EXTERNAL && (
@@ -88,7 +89,7 @@ export function ContractList({
                   <Typography>Monthly cost: {it.monthlyCost} </Typography>
                 )}
                 {[ContractType.EXTERNAL, ContractType.INTERNAL].includes(
-                  it.type
+                  it.type,
                 ) && (
                   <Typography>Hours per week: {it.hoursPerWeek} </Typography>
                 )}
@@ -110,5 +111,5 @@ export function ContractList({
 }
 
 function FormatDate({ date }) {
-  return date ? <>{date.format("DD-MM-YYYY")}</> : <Root>now</Root>;
+  return date ? date.format('DD-MM-YYYY') : <Root>now</Root>;
 }

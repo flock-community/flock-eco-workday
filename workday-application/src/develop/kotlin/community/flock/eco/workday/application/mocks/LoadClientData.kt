@@ -26,8 +26,7 @@ class LoadClientData(
         Client(
             code = name.lowercase().replace(" ", "_"),
             name = name,
-        )
-            .save()
+        ).save()
 
     fun Client.save(): Client =
         clientRepository

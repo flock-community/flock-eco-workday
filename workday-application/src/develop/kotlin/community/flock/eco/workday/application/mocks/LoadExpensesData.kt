@@ -44,8 +44,7 @@ class LoadExpensesData(
                 distance = 100.0,
                 allowance = 0.19,
                 status = Status.REQUESTED,
-            )
-                .save()
+            ).save()
                 .apply { data.add(this) }
 
             CostExpense(
@@ -54,8 +53,7 @@ class LoadExpensesData(
                 person = person,
                 amount = 50.0,
                 status = Status.REQUESTED,
-            )
-                .save()
+            ).save()
                 .apply { data.add(this) }
         }
     }

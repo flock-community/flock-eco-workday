@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import Card from "@mui/material/Card";
-import { Box, CardContent, MenuItem, Select } from "@mui/material";
-import CardHeader from "@mui/material/CardHeader";
-import { HackDaysPerPersonChart } from "../../components/charts/HackDaysPerPersonChart";
-import { LeaveDaysPerPersonChart } from "../../components/charts/LeaveDaysPerPersonChart";
-import { SickdayPerPersonChart } from "../../components/charts/SickdayPerPersonChart";
-import { RevenuePerClientTable } from "../../components/charts/RevenuePerClientTable";
-import { TotalPerMonthChart } from "../../components/charts/TotalPerMonthChart";
-import { AverageHoursPerDayChart } from "../../components/charts/AverageHoursPerDayChart";
-import { InternalOverviewChart } from "../../components/charts/InternalOverviewChart";
-import { ExternalOverviewChart } from "../../components/charts/ExternalOverviewChart";
-import { ManagementOverviewChart } from "../../components/charts/ManagementOverviewChart";
-import { GrossMarginTable } from "../../components/tables/GrossMarginTable";
-import dayjs from "dayjs";
+import { Box, CardContent, MenuItem, Select } from '@mui/material';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import dayjs from 'dayjs';
+import { useState } from 'react';
+import { AverageHoursPerDayChart } from '../../components/charts/AverageHoursPerDayChart';
+import { ExternalOverviewChart } from '../../components/charts/ExternalOverviewChart';
+import { HackDaysPerPersonChart } from '../../components/charts/HackDaysPerPersonChart';
+import { InternalOverviewChart } from '../../components/charts/InternalOverviewChart';
+import { LeaveDaysPerPersonChart } from '../../components/charts/LeaveDaysPerPersonChart';
+import { ManagementOverviewChart } from '../../components/charts/ManagementOverviewChart';
+import { RevenuePerClientTable } from '../../components/charts/RevenuePerClientTable';
+import { SickdayPerPersonChart } from '../../components/charts/SickdayPerPersonChart';
+import { TotalPerMonthChart } from '../../components/charts/TotalPerMonthChart';
+import { GrossMarginTable } from '../../components/tables/GrossMarginTable';
 
 const CHART_HEIGHT = 200;
 
@@ -23,9 +23,9 @@ export function DashboardFeature() {
 
   return (
     <Box
-      className={"flow"}
-      flow-gap={"wide"}
-      style={{ paddingBottom: "1.5rem" }}
+      className={'flow'}
+      flow-gap={'wide'}
+      style={{ paddingBottom: '1.5rem' }}
     >
       <Card>
         <CardHeader title="Year" />

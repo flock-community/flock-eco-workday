@@ -28,7 +28,8 @@ class UserLoadData(
             code = int.toString(),
             email = "email-$int@email-$int.xx",
             authorities =
-                userAuthorityService.allAuthorities()
+                userAuthorityService
+                    .allAuthorities()
                     .map { it.toName() }
                     .toMutableSet(),
         )

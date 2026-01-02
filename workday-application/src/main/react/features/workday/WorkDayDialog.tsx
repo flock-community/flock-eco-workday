@@ -1,50 +1,49 @@
-import React, { useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
-import { Box, Dialog, DialogContent, Divider } from "@mui/material";
-import { Theme } from "@mui/material/styles";
-import WorkIcon from "@mui/icons-material/Work";
-import { ConfirmDialog } from "@workday-core/components/ConfirmDialog";
-import Typography from "@mui/material/Typography";
-import UserAuthorityUtil from "@workday-user/user_utils/UserAuthorityUtil";
-import { WorkDayClient } from "../../clients/WorkDayClient";
-import { TransitionSlider } from "../../components/transitions/Slide";
-import { DialogFooter, DialogHeader } from "@workday-core/components/dialog";
-import { schema, WORKDAY_FORM_ID, WorkDayForm } from "./WorkDayForm";
-import { isDefined } from "../../utils/validation";
-import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import Button from "@mui/material/Button";
-import { ExportClient } from "../../clients/ExportClient";
-import Snackbar from "@mui/material/Snackbar";
-import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
+import WorkIcon from '@mui/icons-material/Work';
+import { Box, Dialog, Divider } from '@mui/material';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
+import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
+import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
+import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import { useEffect, useState } from 'react';
+import { ExportClient } from '../../clients/ExportClient';
+import { ISO_8601_DATE } from '../../clients/util/DateFormats';
+import { WorkDayClient } from '../../clients/WorkDayClient';
+import { TransitionSlider } from '../../components/transitions/Slide';
+import { isDefined } from '../../utils/validation';
+import { schema, WORKDAY_FORM_ID, WorkDayForm } from './WorkDayForm';
 
-const PREFIX = "WorkDayDialog";
+const PREFIX = 'WorkDayDialog';
 
 const classes = {
-  dialogContent: `${PREFIX}-dialogContent`,
-  exportSnackBar: `${PREFIX}-exportSnackBar`,
-  exportMessage: `${PREFIX}-exportMessage`,
+  dialogContent: `${PREFIX}dialogContent`,
+  exportSnackBar: `${PREFIX}exportSnackBar`,
+  exportMessage: `${PREFIX}exportMessage`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")(({ theme }) => ({
+const Root = styled('div')(({ theme }) => ({
   [`& .${classes.dialogContent}`]: {
-    margin: "auto",
+    margin: 'auto',
     maxWidth: 768, // should be a decent medium-sized breakpoint
   },
 
   [`& .${classes.exportSnackBar}`]: {
-    display: "flex",
-    justifyItems: "center",
-    alignItems: "center",
-    padding: "1rem",
-    border: "2px solid",
-    borderColor: theme.palette.success["600"],
-    borderRadius: "5px",
-    backgroundColor: theme.palette.success["200"],
+    display: 'flex',
+    justifyItems: 'center',
+    alignItems: 'center',
+    padding: '1rem',
+    border: '2px solid',
+    borderColor: theme.palette.success['600'],
+    borderRadius: '5px',
+    backgroundColor: theme.palette.success['200'],
   },
 
   [`& .${classes.exportMessage}`]: {
-    marginRight: "0.5rem",
+    marginRight: '0.5rem',
   },
 }));
 
@@ -137,7 +136,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
   };
 
   const handleExport =
-    code && UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN")
+    code && UserAuthorityUtil.hasAuthority('WorkDayAuthority.ADMIN')
       ? async () => {
           setExportLink({ loading: true, link: null });
           const response = await ExportClient().exportWorkday(code);
@@ -146,9 +145,9 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
         }
       : null;
 
-  const headline = UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN")
+  const headline = UserAuthorityUtil.hasAuthority('WorkDayAuthority.ADMIN')
     ? `Create Workday | ${personFullName}`
-    : "Create Workday";
+    : 'Create Workday';
 
   function clearExportLink() {
     setExportLink({
@@ -173,9 +172,9 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
           onClose={handleClose}
         />
         <DialogBody>
-          <UserAuthorityUtil has={"WorkDayAuthority.ADMIN"}>
+          <UserAuthorityUtil has={'WorkDayAuthority.ADMIN'}>
             <Box my="1rem">
-              <Typography variant={"h5"} component={"h2"}>
+              <Typography variant={'h5'} component={'h2'}>
                 {personFullName}
               </Typography>
             </Box>
@@ -189,14 +188,14 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
           onDelete={handleDeleteOpen}
           onExport={handleExport}
           disableDelete={
-            !UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN") &&
+            !UserAuthorityUtil.hasAuthority('WorkDayAuthority.ADMIN') &&
             state &&
-            state.status !== "REQUESTED"
+            state.status !== 'REQUESTED'
           }
           disableEdit={
-            !UserAuthorityUtil.hasAuthority("WorkDayAuthority.ADMIN") &&
+            !UserAuthorityUtil.hasAuthority('WorkDayAuthority.ADMIN') &&
             state &&
-            state.status !== "REQUESTED"
+            state.status !== 'REQUESTED'
           }
           processingExport={exportLink.loading}
           processing={processing}

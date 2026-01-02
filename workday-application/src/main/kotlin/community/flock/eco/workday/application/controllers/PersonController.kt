@@ -94,7 +94,8 @@ class PersonController(
                     user.isAdmin() -> null
                     else -> user.code
                 }
-            form.copy(userCode = userUui)
+            form
+                .copy(userCode = userUui)
                 .let { service.create(it) }
         }
 
@@ -114,13 +115,14 @@ class PersonController(
                     it.isAdmin() -> form.userCode
                     else -> it.code
                 }
-            form.copy(userCode = userCode)
+            form
+                .copy(userCode = userCode)
                 .let {
                     service.update(code, form)
-                }
-                ?.toResponse()
+                }?.toResponse()
                 ?: throw ResponseStatusException(
-                    BAD_REQUEST, "Cannot perform PUT on given item. PersonUui cannot be found. Use POST Method",
+                    BAD_REQUEST,
+                    "Cannot perform PUT on given item. PersonUui cannot be found. Use POST Method",
                 )
         }
         ?: throw ResponseStatusException(UNAUTHORIZED)

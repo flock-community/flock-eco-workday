@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from "react";
-import Typography from "@mui/material/Typography";
-import { useUserMe } from "../../hooks/UserMeHook";
-import { Box } from "@mui/material";
-import ContractsEnding from "../../components/contracts/ContractsEnding";
-import PersonEvents from "../../components/person/PersonEvents";
-import { HighlightSpan } from "../../theme/theme-light";
-import { QuickLinks } from "../../components/quick-links/QuickLinks";
-import { MissingHoursCard } from "../../components/missing-hours-card/MissingHoursCard";
-import { HolidayCard } from "../../components/holiday-card/HolidayCard";
-import { ContractClient } from "../../clients/ContractClient";
-import dayjs from "dayjs";
-import {
-  PersonEvent,
-  PersonEventClient,
-} from "../../clients/PersonEventClient";
+import { Box } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 import {
   AggregationClient,
-  PersonHolidayDetails,
-} from "../../clients/AggregationClient";
-import { ExpensesCard } from "../../components/expenses-card/ExpensesCard";
-import { ExpenseClient } from "../../clients/ExpenseClient";
-import { useLoginStatus } from "../../hooks/StatusHook";
-import { Expense } from "../../models/Expense";
-import { HackdayCard } from "../../components/hackday-card/HackdayCard";
+  type PersonHolidayDetails,
+} from '../../clients/AggregationClient';
+import { ContractClient } from '../../clients/ContractClient';
+import { ExpenseClient } from '../../clients/ExpenseClient';
+import {
+  type PersonEvent,
+  PersonEventClient,
+} from '../../clients/PersonEventClient';
+import ContractsEnding from '../../components/contracts/ContractsEnding';
+import { ExpensesCard } from '../../components/expenses-card/ExpensesCard';
+import { HackdayCard } from '../../components/hackday-card/HackdayCard';
+import { HolidayCard } from '../../components/holiday-card/HolidayCard';
+import { MissingHoursCard } from '../../components/missing-hours-card/MissingHoursCard';
+import PersonEvents from '../../components/person/PersonEvents';
+import { QuickLinks } from '../../components/quick-links/QuickLinks';
+import { useLoginStatus } from '../../hooks/StatusHook';
+import { useUserMe } from '../../hooks/UserMeHook';
+import type { Expense } from '../../models/Expense';
+import { HighlightSpan } from '../../theme/theme-light';
 
 export function HomeFeature() {
   const [user] = useUserMe();
@@ -40,45 +40,45 @@ export function HomeFeature() {
     status?.authorities !== undefined && status?.authorities?.length > 0;
 
   const showContractsEnding =
-    status?.authorities?.includes("ContractAuthority.ADMIN") ?? false;
+    status?.authorities?.includes('ContractAuthority.ADMIN') ?? false;
 
   const showPersonEvents =
-    status?.authorities?.includes("PersonAuthority.READ") ?? false;
+    status?.authorities?.includes('PersonAuthority.READ') ?? false;
 
   useEffect(() => {
     const today: Date = new Date();
-    const nWeeksFromNow: Date = dayjs().add(withinNWeek, "weeks").toDate();
+    const nWeeksFromNow: Date = dayjs().add(withinNWeek, 'weeks').toDate();
     showContractsEnding &&
       ContractClient.findAllByToBetween(today, nWeeksFromNow).then(
-        (contracts) => setContracts(contracts)
+        (contracts) => setContracts(contracts),
       );
     showPersonEvents &&
       PersonEventClient.findAllBetween(today, nWeeksFromNow).then(
-        (personEvents) => setPersonEvents(personEvents)
+        (personEvents) => setPersonEvents(personEvents),
       );
     if (hasAccess) {
       AggregationClient.totalPerPersonMe().then((totalPerPersonMe) =>
-        setTotalPerPersonMe(totalPerPersonMe)
+        setTotalPerPersonMe(totalPerPersonMe),
       );
       AggregationClient.holidayDetailsMeYear(new Date().getFullYear()).then(
-        (res) => setPersonHolidayDetails(res)
+        (res) => setPersonHolidayDetails(res),
       );
       ExpenseClient.findAllByPersonIdNEW(status?.personId, 0, null).then(
-        (res) => setExpenses(res.list)
+        (res) => setExpenses(res.list),
       );
     }
-  }, [status]);
+  }, [status, hasAccess, showContractsEnding, showPersonEvents, withinNWeek]);
 
   return (
     <div
-      className={"content flow"}
-      style={{ marginTop: "24px", paddingBottom: "24px" }}
-      flow-gap={"wide"}
+      className={'content flow'}
+      style={{ marginTop: '24px', paddingBottom: '24px' }}
+      flow-gap={'wide'}
     >
-      <section className={"flow"}>
-        <Box style={{ paddingInline: "16px" }}>
+      <section className={'flow'}>
+        <Box style={{ paddingInline: '16px' }}>
           <Typography variant="h2">
-            Hi, <HighlightSpan>{user && user.name}!</HighlightSpan>
+            Hi, <HighlightSpan>{user?.name}!</HighlightSpan>
           </Typography>
         </Box>
         {!hasAccess && (
@@ -88,7 +88,7 @@ export function HomeFeature() {
         )}
       </section>
       {(showContractsEnding || showPersonEvents) && (
-        <section className={"flow"}>
+        <section className={'flow'}>
           {showContractsEnding && (
             <ContractsEnding withinNWeeks={withinNWeek} contracts={contracts} />
           )}
@@ -101,15 +101,15 @@ export function HomeFeature() {
         </section>
       )}
       {hasAccess && (
-        <section className={"flow"}>
+        <section className={'flow'}>
           <QuickLinks />
 
-          <div className={"gid-auto-fit"}>
+          <div className={'gid-auto-fit'}>
             <HolidayCard item={personHolidayDetails} />
             <HackdayCard />
           </div>
 
-          <div className={"gid-auto-fit"}>
+          <div className={'gid-auto-fit'}>
             <MissingHoursCard totalPerPersonMe={totalPerPersonMe} />
             <ExpensesCard items={expenses} />
           </div>

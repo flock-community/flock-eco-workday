@@ -1,14 +1,13 @@
-import React from "react";
-import Grid from "@mui/material/Grid";
-import { Field, Form, Formik } from "formik";
-import { TextField } from "formik-mui";
-import { mixed, number, object } from "yup";
-import { DatePickerField } from "../../components/fields/DatePickerField";
-import dayjs from "dayjs";
+import Grid from '@mui/material/Grid';
+import dayjs from 'dayjs';
+import { Field, Form, Formik } from 'formik';
+import { TextField } from 'formik-mui';
+import { mixed, number, object } from 'yup';
+import { DatePickerField } from '../../components/fields/DatePickerField';
 
 // form id as a reference point for buttons outside of the <form></form> scope to be
 // able to submit this form
-export const SERVICE_CONTRACT_FORM_ID = "service-contract-form";
+export const SERVICE_CONTRACT_FORM_ID = 'service-contract-form';
 
 type ContractFormServiceProps = {
   value: any;

@@ -18,7 +18,8 @@ class ExactonlineDocumentClient(
     exactonlineProperties: ExactonlineProperties,
 ) {
     val client: WebClient =
-        WebClient.builder()
+        WebClient
+            .builder()
             .baseUrl(exactonlineProperties.requestUri)
             .build()
 
@@ -39,8 +40,7 @@ class ExactonlineDocumentClient(
                     ),
                 ),
                 Map::class.java,
-            )
-            .accept(MediaType.APPLICATION_JSON)
+            ).accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .bodyToMono(ObjectNode::class.java)
             .map { it.get("d") }
@@ -49,7 +49,9 @@ class ExactonlineDocumentClient(
                     id = node.get("ID").asText().let { UUID.fromString(it) },
                     subject = node.get("Subject").asText(),
                     type =
-                        node.get("Type").asText(null)
+                        node
+                            .get("Type")
+                            .asText(null)
                             ?.let { it.toInt() }
                             ?.let { id -> ExactonlineDocumentType.values().find { it.id == id } }
                             ?: error("Cannot find ExactonlineDocumentType"),
@@ -74,8 +76,7 @@ class ExactonlineDocumentClient(
                     ),
                 ),
                 Map::class.java,
-            )
-            .accept(MediaType.APPLICATION_JSON)
+            ).accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .bodyToMono(ObjectNode::class.java)
 }

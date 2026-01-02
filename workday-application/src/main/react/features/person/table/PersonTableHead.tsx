@@ -1,21 +1,20 @@
-import React from "react";
-import { TableCell, TableHead, TableRow } from "@mui/material";
+import { TableCell, TableHead, TableRow } from '@mui/material';
 
 const headCells = [
   {
-    id: "name",
+    id: 'name',
     disablePadding: false,
-    label: "name".toUpperCase(),
+    label: 'name'.toUpperCase(),
   },
   {
-    id: "email",
+    id: 'email',
     disablePadding: false,
-    label: "email".toUpperCase(),
+    label: 'email'.toUpperCase(),
   },
   {
-    id: "active",
+    id: 'active',
     disablePadding: false,
-    label: "active".toUpperCase(),
+    label: 'active'.toUpperCase(),
   },
 ];
 
@@ -26,7 +25,7 @@ export const PersonTableHead = () => {
         {headCells.map((cell) => (
           <TableCell
             key={cell.id}
-            padding={cell.disablePadding ? "none" : "normal"}
+            padding={cell.disablePadding ? 'none' : 'normal'}
           >
             {cell.label}
           </TableCell>

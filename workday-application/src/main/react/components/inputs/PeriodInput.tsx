@@ -1,17 +1,16 @@
-import React from "react";
-import { Box, TextField } from "@mui/material";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import { Period } from "../../features/period/Period";
-import dayjs, { Dayjs } from "dayjs";
-import weekOfYearPlugin from "dayjs/plugin/weekOfYear";
+import { Box, TextField } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import dayjs, { type Dayjs } from 'dayjs';
+import weekOfYearPlugin from 'dayjs/plugin/weekOfYear';
+import type { Period } from '../../features/period/Period';
 
 // utils
-import { calcGrid } from "../../utils/calcGrid";
+import { calcGrid } from '../../utils/calcGrid';
 
 dayjs.extend(weekOfYearPlugin);
 
-const daysOfWeek = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
+const daysOfWeek = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'];
 
 export type PeriodInputProps = {
   period: Period;
@@ -23,7 +22,7 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
 
   const totalHoursForPeriod = period.days?.reduce(
     (previous, current) => previous + current,
-    0
+    0,
   );
 
   return (
@@ -61,11 +60,11 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
             {week.days?.map((day) => (
               <Grid size="grow" key={`day-${day.key}`}>
                 <TextField
-                  label={day.disabled ? "-" : day.date.format("DD MMM")}
+                  label={day.disabled ? '-' : day.date.format('DD MMM')}
                   value={day.value}
                   disabled={day.disabled}
                   onChange={(ev) =>
-                    onChange(day.date, parseFloat(ev.target.value || "0"))
+                    onChange(day.date, parseFloat(ev.target.value || '0'))
                   }
                   type="number"
                   InputLabelProps={{

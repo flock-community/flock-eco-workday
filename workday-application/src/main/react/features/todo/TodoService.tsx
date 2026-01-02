@@ -1,11 +1,11 @@
-import { WorkDayClient } from "../../clients/WorkDayClient";
-import { SickDayClient } from "../../clients/SickDayClient";
-import { LeaveDayClient } from "../../clients/LeaveDayClient";
-import { ExpenseClient } from "../../clients/ExpenseClient";
-import { ISO_8601_DATE } from "../../clients/util/DateFormats";
-import { Todo, UUID } from "../../wirespec/Models";
-import { Status } from "../../models/Status";
-import { StatusProps } from "../../types";
+import { ExpenseClient } from '../../clients/ExpenseClient';
+import { LeaveDayClient } from '../../clients/LeaveDayClient';
+import { SickDayClient } from '../../clients/SickDayClient';
+import { ISO_8601_DATE } from '../../clients/util/DateFormats';
+import { WorkDayClient } from '../../clients/WorkDayClient';
+import { Status } from '../../models/Status';
+import type { StatusProps } from '../../types';
+import type { Todo, UUID } from '../../wirespec/Models';
 
 const updateStatusWorkDay = async (id: UUID, status: Status) => {
   const res = await WorkDayClient.get(id);
@@ -35,20 +35,20 @@ const updateStatusLeaveDay = async (id: UUID, status: Status) => {
     status,
     from: res.from.format(ISO_8601_DATE),
     to: res.to.format(ISO_8601_DATE),
-    days: res.type === "HOLIDAY" ? res.days : undefined,
+    days: res.type === 'HOLIDAY' ? res.days : undefined,
   });
 };
 
 const convertStatus = (status: StatusProps): Status => {
   switch (status) {
-    case "APPROVED":
+    case 'APPROVED':
       return Status.APPROVED;
-    case "REJECTED":
+    case 'REJECTED':
       return Status.REJECTED;
-    case "REQUESTED":
+    case 'REQUESTED':
       return Status.REQUESTED;
     default:
-      throw Error("Could not internalize Status with value " + status);
+      throw Error(`Could not internalize Status with value ${status}`);
   }
 };
 const updateStatusExpense = async (id: UUID, status: Status) => {
@@ -63,19 +63,19 @@ export const updateStatus = (status: StatusProps, item: Todo) => {
   let updateFunction: (id: UUID, status: Status) => Promise<void>;
 
   switch (item.todoType) {
-    case "WORKDAY":
+    case 'WORKDAY':
       updateFunction = updateStatusWorkDay;
       break;
-    case "SICKDAY":
+    case 'SICKDAY':
       updateFunction = updateStatusSickDay;
       break;
-    case "HOLIDAY":
-    case "PLUSDAY":
-    case "PAID_PARENTAL_LEAVE":
-    case "UNPAID_PARENTAL_LEAVE":
+    case 'HOLIDAY':
+    case 'PLUSDAY':
+    case 'PAID_PARENTAL_LEAVE':
+    case 'UNPAID_PARENTAL_LEAVE':
       updateFunction = updateStatusLeaveDay;
       break;
-    case "EXPENSE":
+    case 'EXPENSE':
       updateFunction = updateStatusExpense;
       break;
   }

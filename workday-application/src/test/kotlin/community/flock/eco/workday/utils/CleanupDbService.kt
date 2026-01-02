@@ -8,7 +8,9 @@ import javax.sql.DataSource
 private const val H2_DB_PRODUCT_NAME: String = "H2"
 private const val H2_SCHEMA_NAME: String = "PUBLIC"
 
-open class CleanupDbService(private val dataSource: DataSource) {
+open class CleanupDbService(
+    private val dataSource: DataSource,
+) {
     private val log = LoggerFactory.getLogger(javaClass)
 
     open fun cleanup() {

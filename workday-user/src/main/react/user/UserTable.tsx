@@ -1,43 +1,43 @@
-import React, { useEffect, useState } from "react";
-
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableFooter from "@mui/material/TableFooter";
-import TableRow from "@mui/material/TableRow";
-import TablePagination from "@mui/material/TablePagination";
-import UserClient from "./UserClient";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableFooter from '@mui/material/TableFooter';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import { useEffect, useState } from 'react';
+import UserClient from './UserClient';
 
 type UserTableProps = {
   search?: string;
   size?: number;
-  reload?: boolean;
+  refresh?: boolean;
   onRowClick?: (user: any) => void;
   onChangePage?: (page: number) => void;
 };
 export function UserTable({
   search,
   size,
-  reload,
+  refresh,
   onRowClick,
   onChangePage,
-}: UserTableProps) {
+}: Readonly<UserTableProps>) {
   const [state, setState] = useState({
     page: 0,
     count: 0,
     list: [],
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
-    UserClient.findAllUsers(search || "", state.page, size || 10).then(
+    UserClient.findAllUsers(search || '', state.page, size || 10).then(
       (res) => {
         setState({ ...state, ...res });
-      }
+      },
     );
-  }, [reload, search, size, state.page]);
+  }, [refresh, search, size, state.page]);
 
-  const handleChangePage = (event, page) => {
+  const handleChangePage = (_event, page) => {
     setState({ ...state, page });
     onChangePage?.(page);
   };

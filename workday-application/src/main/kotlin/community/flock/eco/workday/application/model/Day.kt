@@ -30,7 +30,8 @@ abstract class Day(
     override val hours: Double,
     @ElementCollection(fetch = FetchType.EAGER)
     override val days: MutableList<Double>? = null,
-) : Daily, AbstractCodeEntity(id, code) {
+) : AbstractCodeEntity(id, code),
+    Daily {
     private fun getHoursPerDay(): Map<LocalDate, BigDecimal> =
         when (days.isNullOrEmpty()) {
             true -> {
@@ -46,9 +47,11 @@ abstract class Day(
                 }
             }
             false -> {
-                this.toDateRange().mapIndexed { index, localDate ->
-                    localDate to (days!![index]).toBigDecimal()
-                }.toMap()
+                this
+                    .toDateRange()
+                    .mapIndexed { index, localDate ->
+                        localDate to (days!![index]).toBigDecimal()
+                    }.toMap()
             }
         }
 

@@ -1,6 +1,5 @@
-import React from "react";
-import { CircularProgress } from "@mui/material";
-import Grid from "@mui/material/Grid";
+import { CircularProgress } from '@mui/material';
+import Grid from '@mui/material/Grid';
 
 type AlignedLoaderProps = {
   height?: number;
@@ -9,7 +8,7 @@ type AlignedLoaderProps = {
 export function AlignedLoader({ height }: AlignedLoaderProps) {
   return (
     <Grid
-      sx={{ height: height || "100%" }}
+      sx={{ height: height || '100%' }}
       container
       alignItems="center"
       justifyContent="center"

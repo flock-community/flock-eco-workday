@@ -48,7 +48,8 @@ class AssignmentController(
         page: Pageable,
         principal: Principal,
     ): ResponseEntity<List<AssignmentWithHours>> =
-        principal.findUser()
+        principal
+            .findUser()
             ?.let { user ->
                 when {
                     user.isAdmin() && personId != null -> assignmentService.findAllByPersonUuid(personId, page).map { it.toDto() }
@@ -63,8 +64,7 @@ class AssignmentController(
                         }
                     }
                 }
-            }
-            .toResponse()
+            }.toResponse()
 
     @GetMapping(params = ["to"])
     @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
@@ -79,7 +79,8 @@ class AssignmentController(
         @PathVariable code: String,
         principal: Principal,
     ): ResponseEntity<Assignment> =
-        principal.findUser()
+        principal
+            .findUser()
             ?.let { user ->
                 val assignment = assignmentService.findByCode(code)
                 if (user.isAllowedToEdit()) {
@@ -117,8 +118,7 @@ class AssignmentController(
         ?.let {
             assignmentService
                 .update(code, form)
-        }
-        .toResponse()
+        }.toResponse()
 
     @DeleteMapping("/{code}")
     @PreAuthorize("hasAuthority('AssignmentAuthority.ADMIN')")

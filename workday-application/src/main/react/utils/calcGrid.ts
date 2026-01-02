@@ -1,8 +1,8 @@
-import { dateInPeriod, getDay, Period } from "../features/period/Period";
-import { stringifyDate } from "./stringifyDate";
-import dayjs from "dayjs";
-import en from "dayjs/locale/en";
-import isoWeek from "dayjs/plugin/isoWeek";
+import dayjs from 'dayjs';
+import en from 'dayjs/locale/en';
+import isoWeek from 'dayjs/plugin/isoWeek';
+import { dateInPeriod, getDay, type Period } from '../features/period/Period';
+import { stringifyDate } from './stringifyDate';
 
 dayjs.extend(isoWeek);
 dayjs.locale({
@@ -16,25 +16,25 @@ dayjs.locale({
 export const calcGrid = (period: Period) => {
   const diff =
     Math.ceil(
-      period.to.startOf("week").diff(period.from.startOf("week"), "days") / 7
+      period.to.startOf('week').diff(period.from.startOf('week'), 'days') / 7,
     ) + 1;
   const weeks = Array.from(Array(diff > 0 ? diff : 1).keys());
 
   return weeks.map((week) => {
-    const day = period.from.startOf("week").add(week, "weeks");
+    const day = period.from.startOf('week').add(week, 'weeks');
 
     const weekNumber = day.isoWeek();
 
     const year = day.year();
     const res = Array.from(Array(7).keys()).map((dayDiff) => {
-      const date = day.add(dayDiff, "days");
+      const date = day.add(dayDiff, 'days');
       const enabled = dateInPeriod(period, date);
       const key = stringifyDate(date);
       return {
         key,
         date,
         disabled: !enabled,
-        value: enabled ? String(getDay(period, date)) : "",
+        value: enabled ? String(getDay(period, date)) : '',
       };
     });
     const total = res

@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, Divider } from "@mui/material";
-import { DialogHeader } from "@workday-core/components/dialog";
-import HolidayIcon from "@mui/icons-material/WbSunny";
-import ListItem from "@mui/material/ListItem";
-import List from "@mui/material/List";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
-import { PersonHolidayDetails } from "../../clients/AggregationClient";
-import { hoursFormatter } from "../../utils/Hours";
-import { DialogBody } from "@workday-core/components/dialog/DialogHeader";
+import HolidayIcon from '@mui/icons-material/WbSunny';
+import { Dialog, Divider } from '@mui/material';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import { DialogHeader } from '@workday-core/components/dialog';
+import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
+import { useEffect, useState } from 'react';
+import type { PersonHolidayDetails } from '../../clients/AggregationClient';
+import { hoursFormatter } from '../../utils/Hours';
 
 const initialData: PersonHolidayDetails = {
-  name: "",
+  name: '',
   holidayHoursFromContract: 0,
   plusHours: 0,
   holidayHoursDone: 0,
@@ -47,88 +47,86 @@ export function HolidayDetailDialog({
   };
 
   return (
-    <>
-      <Dialog
-        open={open}
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth={'sm'}
+      fullWidth={true}
+      PaperProps={{ square: true }}
+    >
+      <DialogHeader
         onClose={handleClose}
-        maxWidth={"sm"}
-        fullWidth={true}
-        PaperProps={{ square: true }}
-      >
-        <DialogHeader
-          onClose={handleClose}
-          icon={<HolidayIcon />}
-          headline={"Holiday hours details"}
-        />
-        <DialogBody>
-          {state?.plusHours > 0 && (
-            <List dense={true}>
-              <ListItem>
-                <ListItemText primary={"Contract"} />
-                <ListItemSecondaryAction>
-                  {hoursFormatter.format(state?.holidayHoursFromContract)}
-                </ListItemSecondaryAction>
-              </ListItem>
-              <ListItem>
-                <ListItemText primary={"Plus"} />
-                <ListItemSecondaryAction>
-                  {hoursFormatter.format(state?.plusHours)}
-                </ListItemSecondaryAction>
-              </ListItem>
-              <Divider />
-              <ListItem style={{ fontStyle: "italic" }}>
-                <ListItemText primary={"Total"} />
-                <ListItemSecondaryAction style={{ fontStyle: "italic" }}>
-                  {hoursFormatter.format(state?.totalHoursAvailable)}
-                </ListItemSecondaryAction>
-              </ListItem>
-              <Divider />
-            </List>
-          )}
-
+        icon={<HolidayIcon />}
+        headline={'Holiday hours details'}
+      />
+      <DialogBody>
+        {state?.plusHours > 0 && (
           <List dense={true}>
-            {state?.plusHours === 0 && (
-              <ListItem>
-                <ListItemText primary={"Contract"} />
-                <ListItemSecondaryAction>
-                  {hoursFormatter.format(state?.holidayHoursFromContract)}
-                </ListItemSecondaryAction>
-              </ListItem>
-            )}
             <ListItem>
-              <ListItemText primary={"Used"} />
+              <ListItemText primary={'Contract'} />
               <ListItemSecondaryAction>
-                {hoursFormatter.format(state?.totalHoursUsed)}
+                {hoursFormatter.format(state?.holidayHoursFromContract)}
+              </ListItemSecondaryAction>
+            </ListItem>
+            <ListItem>
+              <ListItemText primary={'Plus'} />
+              <ListItemSecondaryAction>
+                {hoursFormatter.format(state?.plusHours)}
               </ListItemSecondaryAction>
             </ListItem>
             <Divider />
-            <ListItem style={{ fontStyle: "italic" }}>
-              <ListItemText primary={"Remaining"} />
-              <ListItemSecondaryAction style={{ fontStyle: "italic" }}>
-                {hoursFormatter.format(state?.totalHoursRemaining)}
+            <ListItem style={{ fontStyle: 'italic' }}>
+              <ListItemText primary={'Total'} />
+              <ListItemSecondaryAction style={{ fontStyle: 'italic' }}>
+                {hoursFormatter.format(state?.totalHoursAvailable)}
               </ListItemSecondaryAction>
             </ListItem>
             <Divider />
           </List>
+        )}
 
-          {state?.holidayHoursRequested > 0 && (
-            <List dense={true}>
-              <ListItem style={{ fontStyle: "italic" }}>
-                {state.holidayHoursRequested === 1 && (
-                  <ListItemText
-                    primary={`You have ${state.holidayHoursRequested} hour requested that are not yet approved.`}
-                  />
-                )}
-                {state.holidayHoursRequested > 1 && (
-                  <ListItemText
-                    primary={`You have ${state.holidayHoursRequested} hours requested that is not yet approved.`}
-                  />
-                )}
-              </ListItem>
-            </List>
+        <List dense={true}>
+          {state?.plusHours === 0 && (
+            <ListItem>
+              <ListItemText primary={'Contract'} />
+              <ListItemSecondaryAction>
+                {hoursFormatter.format(state?.holidayHoursFromContract)}
+              </ListItemSecondaryAction>
+            </ListItem>
           )}
-        </DialogBody>
-      </Dialog>
-    </>
+          <ListItem>
+            <ListItemText primary={'Used'} />
+            <ListItemSecondaryAction>
+              {hoursFormatter.format(state?.totalHoursUsed)}
+            </ListItemSecondaryAction>
+          </ListItem>
+          <Divider />
+          <ListItem style={{ fontStyle: 'italic' }}>
+            <ListItemText primary={'Remaining'} />
+            <ListItemSecondaryAction style={{ fontStyle: 'italic' }}>
+              {hoursFormatter.format(state?.totalHoursRemaining)}
+            </ListItemSecondaryAction>
+          </ListItem>
+          <Divider />
+        </List>
+
+        {state?.holidayHoursRequested > 0 && (
+          <List dense={true}>
+            <ListItem style={{ fontStyle: 'italic' }}>
+              {state.holidayHoursRequested === 1 && (
+                <ListItemText
+                  primary={`You have ${state.holidayHoursRequested} hour requested that are not yet approved.`}
+                />
+              )}
+              {state.holidayHoursRequested > 1 && (
+                <ListItemText
+                  primary={`You have ${state.holidayHoursRequested} hours requested that is not yet approved.`}
+                />
+              )}
+            </ListItem>
+          </List>
+        )}
+      </DialogBody>
+    </Dialog>
   );
 }

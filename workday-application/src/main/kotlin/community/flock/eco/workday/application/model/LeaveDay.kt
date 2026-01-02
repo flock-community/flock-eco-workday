@@ -43,4 +43,5 @@ class LeaveDay(
     @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty("personId")
     val person: Person,
-) : Day(id, code, from, to, hours, days), Approve
+) : Day(id, code, from, to, hours, days),
+    Approve

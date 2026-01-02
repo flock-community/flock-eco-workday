@@ -1,9 +1,10 @@
 // deps
-import { useLocation } from "react-router-dom";
-import { useState, useEffect, useRef, MutableRefObject } from "react";
+
+import { type MutableRefObject, useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 // Clients
-import { UserClient } from "../clients/UserClient";
+import { UserClient } from '../clients/UserClient';
 
 // Constants
 const TWENTY_SEVEN_MIN_IN_MS = 1000 * 60 * 27;
@@ -27,7 +28,7 @@ type useSessionProps = {
  * @returns An object containing the `extendSession` function and `sessionExpired` boolean value.
  */
 export const useSession = (parentCallback): useSessionProps => {
-  const location = useLocation();
+  const _location = useLocation();
   const sessionInterval = useRef<NodeJS.Timeout | null>(null);
   const redirectInterval = useRef<NodeJS.Timeout | null>(null);
 
@@ -57,7 +58,7 @@ export const useSession = (parentCallback): useSessionProps => {
   const createInterval = (
     ref: MutableRefObject<NodeJS.Timeout | null>,
     time: number | undefined,
-    callBack: () => void
+    callBack: () => void,
   ) => {
     return new Promise<void>((resolve) => {
       ref.current = setInterval(() => {
@@ -69,10 +70,10 @@ export const useSession = (parentCallback): useSessionProps => {
 
   const runIntervals = async () => {
     await createInterval(sessionInterval, TWENTY_SEVEN_MIN_IN_MS, () =>
-      setSessionExpired(true)
+      setSessionExpired(true),
     );
     await createInterval(redirectInterval, THIRTY_MIN_IN_MS, () =>
-      parentCallback()
+      parentCallback(),
     );
   };
 
@@ -82,7 +83,7 @@ export const useSession = (parentCallback): useSessionProps => {
     return () => {
       clearIntervals();
     };
-  }, [location]);
+  }, [clearIntervals, runIntervals]);
 
   return {
     extendSession,

@@ -22,4 +22,5 @@ data class SickDayForm(
     override val status: Status = Status.REQUESTED,
     val description: String? = null,
     val personId: UUID,
-) : Daily, Approve
+) : Daily,
+    Approve

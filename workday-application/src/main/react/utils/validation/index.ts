@@ -1,1 +1,1 @@
-export { isDefined, isUndefined, isEmptyObject } from "./definedVars";
+export { isDefined, isEmptyObject, isUndefined } from './definedVars';

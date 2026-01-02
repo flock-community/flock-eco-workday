@@ -17,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest
 @AutoConfigureTestDatabase
 @AutoConfigureDataJpa
 @Transactional
-class UserServiceTest() {
+class UserServiceTest {
     @Autowired
     private lateinit var userService: UserService
 

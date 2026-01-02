@@ -5,12 +5,12 @@ module.exports = {
     '**/src/**/*.spec.ts',
     '**/src/**/*.spec.tsx',
     '**/src/**/*.test.ts',
-    '**/src/**/*.test.tsx'
+    '**/src/**/*.test.tsx',
   ],
   testPathIgnorePatterns: [
     '/node_modules/',
     '/tests/', // Ignore Playwright tests
-    '/dist/'
+    '/dist/',
   ],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
@@ -22,6 +22,6 @@ module.exports = {
     '^@workday-core/(.*)$': '<rootDir>/workday-core/src/main/react/$1',
     '^@workday-user$': '<rootDir>/workday-user/src/main/react',
     '^@workday-user/(.*)$': '<rootDir>/workday-user/src/main/react/$1',
-    '\\.(css|less|scss)$': 'identity-obj-proxy'
-  }
+    '\\.(css|less|scss)$': 'identity-obj-proxy',
+  },
 };

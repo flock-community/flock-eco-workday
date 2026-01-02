@@ -63,7 +63,8 @@ class UserService(
     @Transactional
     fun delete(code: String) =
         read(code)?.run {
-            userGroupRepository.findAllByUsersContains(this)
+            userGroupRepository
+                .findAllByUsersContains(this)
                 .map { group ->
                     group.copy(
                         users =
@@ -71,8 +72,7 @@ class UserService(
                                 .filter { it.code != code }
                                 .toMutableSet(),
                     )
-                }
-                .let { userGroupRepository.saveAll(it) }
+                }.let { userGroupRepository.saveAll(it) }
             userAccountRepository.deleteByUserCode(code)
             userRepository.deleteByCode(code)
         }

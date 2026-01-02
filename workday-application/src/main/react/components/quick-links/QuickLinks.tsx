@@ -1,35 +1,35 @@
-import { Box, Card, CardContent, CardHeader } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import React, { useState } from "react";
-import Button from "@mui/material/Button";
-import AddIcon from "@mui/icons-material/Add";
-import { usePerson } from "../../hooks/PersonHook";
-import { WorkDayDialog } from "../../features/workday/WorkDayDialog";
-import { addError } from "../../hooks/ErrorHook";
-import { LeaveDayDialog } from "../../features/holiday/LeaveDayDialog";
-import { ExpenseDialog } from "../../features/expense/ExpenseDialog";
-import { Cloud } from "@mui/icons-material";
-import { ExpenseType } from "../../models/Expense";
+import { Cloud } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
+import { Box, Card, CardContent, CardHeader } from '@mui/material';
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
+import { useState } from 'react';
+import { ExpenseDialog } from '../../features/expense/ExpenseDialog';
+import { LeaveDayDialog } from '../../features/holiday/LeaveDayDialog';
+import { WorkDayDialog } from '../../features/workday/WorkDayDialog';
+import { addError } from '../../hooks/ErrorHook';
+import { usePerson } from '../../hooks/PersonHook';
+import { ExpenseType } from '../../models/Expense';
 
-const PREFIX = "QuickLinks";
+const PREFIX = 'QuickLinks';
 
 const classes = {
-  containerWrapper: `${PREFIX}-containerWrapper`,
-  buttonWrapper: `${PREFIX}-buttonWrapper`,
+  containerWrapper: `${PREFIX}ContainerWrapper`,
+  buttonWrapper: `${PREFIX}ButtonWrapper`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")({
+const Root = styled('div')({
   [`& .${classes.containerWrapper}`]: {
-    containerType: "inline-size",
+    containerType: 'inline-size',
   },
   [`& .${classes.buttonWrapper}`]: {
-    display: "flex",
-    justifyContent: "space-around",
-    flexWrap: "wrap",
-    gap: "1rem",
-    "@container (max-width: 500px)": {
-      flexDirection: "column",
+    display: 'flex',
+    justifyContent: 'space-around',
+    flexWrap: 'wrap',
+    gap: '1rem',
+    '@container (max-width: 500px)': {
+      flexDirection: 'column',
     },
   },
 });
@@ -43,7 +43,7 @@ export function QuickLinks() {
 
   const openAddWorkDay = () => {
     if (person === null) {
-      addError("No person selected");
+      addError('No person selected');
     } else {
       setWorkDayOpen(true);
     }
@@ -56,7 +56,7 @@ export function QuickLinks() {
 
   const openAddTravelExpense = () => {
     if (person === null) {
-      addError("No person selected");
+      addError('No person selected');
     } else {
       setTravelExpenseOpen(true);
     }
@@ -66,7 +66,7 @@ export function QuickLinks() {
 
   const openAddCostExpense = () => {
     if (person === null) {
-      addError("No person selected");
+      addError('No person selected');
     } else {
       setCostExpenseOpen(true);
     }
@@ -76,33 +76,33 @@ export function QuickLinks() {
 
   return (
     <Root>
-      <Card variant={"outlined"} style={{ borderRadius: 0 }}>
-        <CardHeader title={"Quick links"} />
+      <Card variant={'outlined'} style={{ borderRadius: 0 }}>
+        <CardHeader title={'Quick links'} />
         <CardContent className={classes.containerWrapper}>
           <Box className={classes.buttonWrapper}>
             <Button
-              variant={"contained"}
+              variant={'contained'}
               startIcon={<AddIcon />}
               onClick={openAddWorkDay}
             >
               Workday
             </Button>
             <Button
-              variant={"contained"}
+              variant={'contained'}
               startIcon={<AddIcon />}
               onClick={openAddLeaveDay}
             >
               Holiday
             </Button>
             <Button
-              variant={"contained"}
+              variant={'contained'}
               startIcon={<AddIcon />}
               onClick={openAddTravelExpense}
             >
               Travel expense
             </Button>
             <Button
-              variant={"contained"}
+              variant={'contained'}
               startIcon={<AddIcon />}
               onClick={openAddCostExpense}
             >
@@ -112,8 +112,8 @@ export function QuickLinks() {
               <Button
                 href={`https://drive.google.com/drive/folders/${person?.googleDriveId}`}
                 component="a"
-                target={"_blank"}
-                rel={"noreferrer"}
+                target={'_blank'}
+                rel={'noreferrer'}
                 startIcon={<Cloud />}
               >
                 Google Drive
@@ -138,7 +138,7 @@ export function QuickLinks() {
         open={travelExpenseOpen}
         id={undefined}
         personId={person?.uuid}
-        personFullName={person?.fullName ?? ""}
+        personFullName={person?.fullName ?? ''}
         onComplete={handleCompleteTravelExpenseDialog}
         expenseType={ExpenseType.TRAVEL}
       />
@@ -146,7 +146,7 @@ export function QuickLinks() {
         open={costExpenseOpen}
         id={undefined}
         personId={person?.uuid}
-        personFullName={person?.fullName ?? ""}
+        personFullName={person?.fullName ?? ''}
         onComplete={handleCompleteCostExpenseDialog}
         expenseType={ExpenseType.COST}
       />

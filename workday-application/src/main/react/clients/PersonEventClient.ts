@@ -1,10 +1,10 @@
-import InternalizingClient from "../utils/InternalizingClient";
+import dayjs, { type Dayjs } from 'dayjs';
+import InternalizingClient from '../utils/InternalizingClient';
 import {
   internalize as internalizePerson,
-  Person,
-  PersonRaw,
-} from "./PersonClient";
-import dayjs, { Dayjs } from "dayjs";
+  type Person,
+  type PersonRaw,
+} from './PersonClient';
 
 export type PersonEvent = {
   person: Person;
@@ -18,9 +18,9 @@ export type PersonEventRaw = {
   eventDate: string;
 };
 
-export type PersonEventType = "BIRTHDAY" | "JOIN_DAY";
+export type PersonEventType = 'BIRTHDAY' | 'JOIN_DAY';
 
-const path = "/api/persons/specialDates";
+const path = '/api/persons/specialDates';
 
 const internalize = (json: PersonEventRaw): PersonEvent => ({
   ...json,

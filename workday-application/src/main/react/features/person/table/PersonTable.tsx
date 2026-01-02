@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { styled } from "@mui/material/styles";
-import { Link, useRouteMatch } from "react-router-dom";
+import { CheckBox } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
   Card,
@@ -14,22 +13,22 @@ import {
   TableRow,
   TextField,
   Typography,
-} from "@mui/material";
+} from '@mui/material';
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useRouteMatch } from 'react-router-dom';
+import { type Person, PersonClient } from '../../../clients/PersonClient';
+import { PersonDialog } from '../PersonDialog';
+import { PersonTableHead } from './PersonTableHead';
 
-import { PersonTableHead } from "./PersonTableHead";
-import { Person, PersonClient } from "../../../clients/PersonClient";
-import { PersonDialog } from "../PersonDialog";
-import { CheckBox } from "@mui/icons-material";
-import AddIcon from "@mui/icons-material/Add";
-import Button from "@mui/material/Button";
-
-const PREFIX = "PersonTable";
+const PREFIX = 'PersonTable';
 
 const classes = {
-  tblEmail: `${PREFIX}-tblEmail`,
-  tblName: `${PREFIX}-tblName`,
-  tblRow: `${PREFIX}-tblRow`,
-  link: `${PREFIX}-link`,
+  tblEmail: `${PREFIX}TblEmail`,
+  tblName: `${PREFIX}TblName`,
+  tblRow: `${PREFIX}TblRow`,
+  link: `${PREFIX}Link`,
 };
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -42,12 +41,12 @@ const StyledBox = styled(Box)(({ theme }) => ({
   },
 
   [`& .${classes.tblRow}`]: {
-    position: "relative",
+    position: 'relative',
   },
 
   [`& .${classes.link}`]: {
-    color: "black",
-    textDecoration: "none",
+    color: 'black',
+    textDecoration: 'none',
   },
 }));
 
@@ -58,28 +57,42 @@ export const PersonTable = () => {
   const [count, setCount] = useState(-1);
   const [personList, setPersonList] = useState<Person[]>([]);
   const [dialog, setDialog] = useState({ open: false });
-  const [reload, setReload] = useState(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [refresh, setRefresh] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [debouncedSearchState, setDebouncedSearchState] = useState<string>('');
+
+  // Add this useEffect for debouncing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchState(searchTerm);
+    }, 350);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchTerm]);
+
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => searchInputRef?.current?.focus(), [searchInputRef]);
+  useEffect(() => searchInputRef?.current?.focus(), []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     PersonClient.findAllByFullName(
-      { page, size, sort: "firstname" },
-      searchTerm
+      { page, size, sort: 'firstname' },
+      debouncedSearchState,
     ).then((res) => {
       setPersonList(res.list);
       setCount(res.count);
     });
-  }, [reload, page, size, searchTerm]);
+  }, [refresh, page, size, debouncedSearchState]);
 
   const handleDialogOpen = () => {
     setDialog({ open: true });
   };
 
   const handleDialogClose = () => {
-    setReload(!reload);
+    setRefresh(!refresh);
     setDialog({ open: false });
   };
 
@@ -95,9 +108,9 @@ export const PersonTable = () => {
 
   return (
     <StyledBox
-      className={"flow"}
-      flow-gap={"wide"}
-      style={{ paddingBottom: "1.5rem" }}
+      className={'flow'}
+      flow-gap={'wide'}
+      style={{ paddingBottom: '1.5rem' }}
     >
       <Card>
         <CardHeader
@@ -121,9 +134,13 @@ export const PersonTable = () => {
             <Table>
               <PersonTableHead />
               <TableBody>
-                {personList.map((person, idx) => {
+                {personList.map((person) => {
                   return (
-                    <TableRow key={idx} hover className={classes.tblRow}>
+                    <TableRow
+                      key={person.fullName}
+                      hover
+                      className={classes.tblRow}
+                    >
                       <TableCell
                         className={classes.tblName}
                         component="th"

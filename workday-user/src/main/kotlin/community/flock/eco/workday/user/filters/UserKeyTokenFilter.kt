@@ -26,7 +26,8 @@ class UserKeyTokenFilter(
                 "TOKEN (.*)".toRegex().find(it)?.groups?.get(1)?.value
             }
         if (key != null) {
-            userAccountService.findUserAccountKeyByKey(key)
+            userAccountService
+                .findUserAccountKeyByKey(key)
                 ?.also { account ->
                     val user = UserSecurityService.UserSecurityKey(account)
                     val auth = UsernamePasswordAuthenticationToken(user, null, user.authorities)

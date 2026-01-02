@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
-import { Box, Card, Typography } from "@mui/material";
-import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid";
-import { SICKDAY_PAGE_SIZE, SickDayClient } from "../../clients/SickDayClient";
-import { DayListItem } from "../../components/DayListItem";
+import { Box, Card, Typography } from '@mui/material';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
+import { SICKDAY_PAGE_SIZE, SickDayClient } from '../../clients/SickDayClient';
+import { DayListItem } from '../../components/DayListItem';
 
 // Components
-import { FlockPagination } from "../../components/pagination/FlockPagination";
+import { FlockPagination } from '../../components/pagination/FlockPagination';
 
 // Types
-import type { DayListProps, DayProps } from "../../types";
+import type { DayListProps, DayProps } from '../../types';
 
-const PREFIX = "SickDayList";
+const PREFIX = 'SickDayList';
 
 const classes = {
-  list: `${PREFIX}-list`,
+  list: `${PREFIX}List`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")({
+const Root = styled('div')({
   [`& .${classes.list}`]: (loading) => ({
     opacity: loading ? 0.5 : 1,
   }),
@@ -30,12 +30,13 @@ export function SickDayList({
   refresh,
   onClickRow,
   onClickStatus,
-}: DayListProps) {
+}: Readonly<DayListProps>) {
   const [list, setList] = useState<DayProps[]>([]);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     if (personId) {
       setLoading(true);
@@ -44,12 +45,12 @@ export function SickDayList({
           setList(list);
           setCount(count);
           setLoading(false);
-        }
+        },
       );
     } else {
       setList([]);
     }
-  }, [personId, refresh, page]);
+  }, [refresh, personId, page]);
 
   function renderItem(item: DayProps, key: number) {
     return (
@@ -58,7 +59,7 @@ export function SickDayList({
           value={item}
           onClick={() => onClickRow(item)}
           onClickStatus={(status) => onClickStatus(status, item)}
-          hasAuthority={"SickdayAuthority.ADMIN"}
+          hasAuthority={'SickdayAuthority.ADMIN'}
         />
       </Grid>
     );

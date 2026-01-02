@@ -1,4 +1,4 @@
-import { User } from "@workday-user/user/response/user";
+import type { User } from '@workday-user/user/response/user';
 
 function internalize<T>(res): Promise<T> {
   if (res.ok) {
@@ -14,8 +14,8 @@ function internalize<T>(res): Promise<T> {
   }
 }
 
-export function findAllAuthorities() {
-  return fetch("/api/authorities").then((res) => internalize<string[]>(res));
+export function findAllAuthorities(): Promise<string[]> {
+  return fetch('/api/authorities').then((res) => internalize<string[]>(res));
 }
 
 export function findUsersMe() {
@@ -25,54 +25,54 @@ export function findUsersMe() {
 export function findAllUsers(
   search,
   page,
-  size
+  size,
 ): Promise<{ list: User[]; count: number }> {
   return fetch(
-    `/api/users?search=${search}&page=${page}&size=${size}&sort=name,ignoreCase`
+    `/api/users?search=${search}&page=${page}&size=${size}&sort=name,ignoreCase`,
   ).then((res) =>
     internalize<User[]>(res).then((json) => ({
       list: json,
-      count: parseInt(res.headers.get("x-total")),
-    }))
+      count: parseInt(res.headers.get('x-total'), 10),
+    })),
   );
 }
 
 export function findAllUserByids(ids) {
   const opts = {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json; charset=utf-8",
+      'Content-Type': 'application/json; charset=utf-8',
     },
     body: JSON.stringify(ids),
   };
   return fetch(`/api/users/search`, opts).then((res) =>
-    internalize<User[]>(res)
+    internalize<User[]>(res),
   );
 }
 
 export function findUserByid(id) {
   const opts = {
-    method: "GET",
+    method: 'GET',
   };
   return fetch(`/api/users/${id}`, opts).then((res) => internalize<User>(res));
 }
 
 export function createUser(item) {
   const opts = {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json; charset=utf-8",
+      'Content-Type': 'application/json; charset=utf-8',
     },
     body: JSON.stringify(item),
   };
-  return fetch("/api/users", opts).then((res) => internalize<User>(res));
+  return fetch('/api/users', opts).then((res) => internalize<User>(res));
 }
 
 export function updateUser(id, item) {
   const opts = {
-    method: "PUT",
+    method: 'PUT',
     headers: {
-      "Content-Type": "application/json; charset=utf-8",
+      'Content-Type': 'application/json; charset=utf-8',
     },
     body: JSON.stringify(item),
   };
@@ -81,9 +81,9 @@ export function updateUser(id, item) {
 
 export function deleteUser(id) {
   const opts = {
-    method: "DELETE",
+    method: 'DELETE',
     headers: {
-      "Content-Type": "application/json; charset=utf-8",
+      'Content-Type': 'application/json; charset=utf-8',
     },
   };
   return fetch(`/api/users/${id}`, opts).then((res) => internalize<User>(res));
@@ -91,10 +91,10 @@ export function deleteUser(id) {
 
 export function resetUserPassword(id) {
   const opts = {
-    method: "PUT",
+    method: 'PUT',
   };
   return fetch(`/api/users/${id}/reset-password`, opts).then((res) =>
-    internalize<User>(res)
+    internalize<User>(res),
   );
 }
 
