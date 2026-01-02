@@ -61,7 +61,7 @@ jobs:
           cache: "npm"
 
       - run: npm ci
-      - name: Eslint / prettier
+      - name: Biome
         run: npm run lint
 
       - name: Run npm tests

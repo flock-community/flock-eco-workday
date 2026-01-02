@@ -91,23 +91,23 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
   }
 
   return (
-      <Card variant={'outlined'} style={{ borderRadius: 0 }}>
-        <CardHeader title={'Missing hours'} />
-        {data.length === 0 && (
-          <CardContent>
-            <Typography display={'block'}>YEAH! You're up to date!</Typography>
-          </CardContent>
-        )}
-        {data.length > 0 && (
-          <CardContent>
-            <List>{data.map((it, idx) => renderItem(it, idx))}</List>
-          </CardContent>
-        )}
+    <Card variant={'outlined'} style={{ borderRadius: 0 }}>
+      <CardHeader title={'Missing hours'} />
+      {data.length === 0 && (
+        <CardContent>
+          <Typography display={'block'}>YEAH! You're up to date!</Typography>
+        </CardContent>
+      )}
+      {data.length > 0 && (
+        <CardContent>
+          <List>{data.map((it, idx) => renderItem(it, idx))}</List>
+        </CardContent>
+      )}
       <MissingHoursDetailDialog
         open={missingHoursDetailsOpen}
         item={missingHoursDetailsItem}
         onComplete={handleCLoseWorkdayDialog}
       />
-      </Card>
+    </Card>
   );
 }

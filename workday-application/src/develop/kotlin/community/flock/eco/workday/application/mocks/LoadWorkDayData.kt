@@ -24,9 +24,7 @@ class LoadWorkDayData(
      * to create and persist the Workday.
      */
     private final fun WorkDayForm.create() {
-        loadData.load {
-            workDayService.create(this)
-        }
+        workDayService.create(this)
     }
 
     /**
@@ -34,31 +32,34 @@ class LoadWorkDayData(
      * and one Sickday with status SickdayStatus.HEALTHY (to indicate a past Sickday)
      */
     init {
-        val now = LocalDate.now()
-        loadAssignmentData.data
-            .map { assignment ->
-                (1..12)
-                    .map {
-                        WorkDayForm(
-                            from = now.withMonth(it).withDayOfMonth(1),
-                            to = now.withMonth(it).withDayOfMonth(1).plusDays(9),
-                            hours = 80.0,
-                            days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
-                            assignmentCode = assignment.code,
-                            sheets =
-                                listOf(
-                                    WorkDaySheetForm(
-                                        name = "File1.jpg",
-                                        file = UUID.randomUUID(),
+        loadData.load {
+            val now = LocalDate.now()
+            loadAssignmentData.data
+                .filter { it.to.let{ date -> date == null || date  > now} }
+                .map { assignment ->
+                    (1..12)
+                        .map {
+                            WorkDayForm(
+                                from = now.withMonth(it).withDayOfMonth(1),
+                                to = now.withMonth(it).withDayOfMonth(1).plusDays(9),
+                                hours = 80.0,
+                                days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
+                                assignmentCode = assignment.code,
+                                sheets =
+                                    listOf(
+                                        WorkDaySheetForm(
+                                            name = "File1.jpg",
+                                            file = UUID.randomUUID(),
+                                        ),
+                                        WorkDaySheetForm(
+                                            name = "File2.pdf",
+                                            file = UUID.randomUUID(),
+                                        ),
                                     ),
-                                    WorkDaySheetForm(
-                                        name = "File2.pdf",
-                                        file = UUID.randomUUID(),
-                                    ),
-                                ),
-                        )
-                    }
-            }.flatten()
-            .forEach { it.create() }
+                            )
+                        }
+                }.flatten()
+                .forEach { it.create() }
+        }
     }
 }

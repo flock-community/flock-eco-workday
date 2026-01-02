@@ -44,8 +44,8 @@ test.describe('Workday scenarios', () => {
     await When_I_select_the_assignment(page, 'Client D');
     await When_I_fill_in_the_date_range_from_till(
       page,
-      '01-04-2026',
-      '30-04-2026',
+      '01-04-2027',
+      '30-04-2027',
     );
     // TODO: File upload causes a call to Google storage API, which is not mocked.
     // await When_I_add_a_file(page, 'timesheet.png');
@@ -54,7 +54,7 @@ test.describe('Workday scenarios', () => {
     await Then_I_see_the_new_work_days_for_the_month_with_hours(
       page,
       'April',
-      '2026',
+      '2027',
       '176',
     );
   });
