@@ -60,6 +60,7 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
             {week.days?.map((day) => (
               <Grid size="grow" key={`day-${day.key}`}>
                 <TextField
+                  size="small"
                   label={day.disabled ? '-' : day.date.format('DD MMM')}
                   value={day.value}
                   disabled={day.disabled}
@@ -67,9 +68,6 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
                     onChange(day.date, parseFloat(ev.target.value || '0'))
                   }
                   type="number"
-                  InputLabelProps={{
-                    shrink: !day.disabled,
-                  }}
                 />
               </Grid>
             ))}
