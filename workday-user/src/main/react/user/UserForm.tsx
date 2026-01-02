@@ -14,7 +14,7 @@ export const USER_FORM_ID = 'user-form-id';
 const init = {
   name: '',
   email: '',
-  authorities: null,
+  authorities: [],
 };
 
 /**
@@ -22,7 +22,6 @@ const init = {
  */
 export function UserForm({ value, onSummit, ...props }) {
   const [state, setState] = useState(init);
-  const [_formRef, setFormRef] = useState(null);
   const [authorities, setAuthorities] = useState<string[] | undefined>(null);
 
   useEffect(() => {
@@ -70,7 +69,6 @@ export function UserForm({ value, onSummit, ...props }) {
 
   return (
     <Formik
-      ref={setFormRef}
       onSubmit={handleSubmit}
       enableReinitialize
       initialValues={state}
@@ -100,6 +98,7 @@ export function UserForm({ value, onSummit, ...props }) {
                           <Field
                             name={`authorities[${i}]`}
                             component={Checkbox}
+                            type="checkbox"
                           />
                         }
                         label={value}
