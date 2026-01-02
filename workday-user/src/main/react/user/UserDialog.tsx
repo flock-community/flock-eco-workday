@@ -140,7 +140,7 @@ export function UserDialog({
         onConfirm={handleDelete}
       >
         <Typography>
-          Would you Are you sure you want to delete user: {state && state.name}?
+          Are you sure you want to delete user: {state && state.name}?
         </Typography>
       </ConfirmDialog>
       <Snackbar

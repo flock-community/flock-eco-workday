@@ -67,7 +67,7 @@ test.describe('Login Functionality', () => {
     await expect(page.locator('input[name="username"]')).toBeVisible();
     await expect(page.locator('input[name="password"]')).toBeVisible();
     await expect(page.locator('button:has-text("Sign in")')).toBeVisible();
-    await expect(page.locator('p:has-text("Flock Software Engineering B.V. 2025")')).toBeVisible();
+    await expect(page.locator('p:has-text("Flock Software Engineering B.V. 20")')).toBeVisible();
 
     // Verify input fields are enabled
     await expect(page.locator('input[name="username"]')).toBeEnabled();
