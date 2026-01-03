@@ -1,16 +1,16 @@
 import Grid from '@mui/material/Grid';
-import dayjs from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-mui';
 import * as Yup from 'yup';
 import { DatePickerField } from '../../components/fields/DatePickerField';
-import type { Expense } from '../../wirespec/model';
+import { Expense } from '../../wirespec/model';
 
 export const EXPENSE_TRAVEL_FORM_ID = 'travel-expense-form';
 
 export type ExpenseTravelForm = {
   description: string;
-  date: Date;
+  date: Dayjs;
   distance: number;
   allowance: number;
 };
@@ -23,12 +23,12 @@ export const schema = Yup.object({
 });
 
 type ExpenseFormTravelProps = {
-  value: any;
+  initialState: Partial<ExpenseTravelForm>;
   onSubmit: (item: ExpenseTravelForm) => void;
 };
 
 export const ExpenseFormTravel = ({
-  value,
+  initialState,
   onSubmit,
 }: ExpenseFormTravelProps) => {
   const form = ({ errors }) => {
@@ -73,7 +73,7 @@ export const ExpenseFormTravel = ({
     <Formik
       initialValues={{
         ...schema.cast(),
-        ...value,
+        ...initialState,
       }}
       onSubmit={onSubmit}
       validationSchema={schema}

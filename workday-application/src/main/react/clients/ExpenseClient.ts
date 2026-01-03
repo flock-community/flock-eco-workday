@@ -29,7 +29,6 @@ export const emptyPersonWithUUID = (personId: UUID) => ({
 });
 
 const serializeCost = (it: Expense): CostExpenseInput => {
-  console.log('serializeCost', it);
   return {
     amount: it?.costDetails?.amount,
     description: it.description,
@@ -97,14 +96,14 @@ const findAllByPersonIdNEW = async (
 };
 
 const post = (item: Expense): Promise<Expense> => {
-  if ('amount' in item) {
+  if (item.expenseType === 'COST') {
     return costExpenseClient.post(serializeCost(item));
   }
-  if ('allowance' in item) {
+  if (item.expenseType === 'TRAVEL') {
     return travelExpenseClient.post(serializeTravel(item));
   }
 
-  throw Error(`Unknown expense type: ${item}`);
+  throw new Error(`Unknown expense type: ${item}`);
 };
 
 const put = (id: string, item: Expense): Promise<Expense> => {

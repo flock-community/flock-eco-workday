@@ -27,7 +27,6 @@
         <google-api-sheets.version>v4-rev20251110-2.0.0</google-api-sheets.version>
         <gpg.skip>true</gpg.skip>
         <h2.version>2.3.232</h2.version>
-        <jackson.version>2.13.1</jackson.version>
         <java.version>17</java.version>
         <javax-mail.version>2.0.2</javax-mail.version>
         <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
@@ -76,18 +75,6 @@
                 <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.datatype</groupId>
-                <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-
-            <!-- Jackson -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-kotlin</artifactId>
-                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.apis</groupId>

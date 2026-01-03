@@ -1,19 +1,20 @@
 import Grid from '@mui/material/Grid';
-import dayjs from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-mui';
 import * as Yup from 'yup';
 import { DatePickerField } from '../../components/fields/DatePickerField';
 import { DropzoneAreaField } from '../../components/fields/DropzoneAreaField';
-import type { Expense } from '../../wirespec/model';
+
+import type { UploadedFile } from '../../components/fields/UploadedFile';
 
 export const EXPENSE_COST_FORM_ID = 'cost-expense-form';
 
 export type ExpenseCostForm = {
   description: string;
   amount: number;
-  date: Date;
-  files: File[];
+  date: Dayjs;
+  files: UploadedFile[];
 };
 
 const schema = Yup.object({

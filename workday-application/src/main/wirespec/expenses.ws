@@ -30,7 +30,7 @@ endpoint ExpenseDeleteById DELETE /api/expenses/{id: String} -> {
 }
 
 endpoint ExpenseGetFiles GET /api/expenses/files/{file: String}/{name: String} -> {
-  200 -> Bytes
+  200 -> Bytes # { `Content-Type`: String, justTesting: String}
 }
 
 type TravelExpenseInput {
@@ -72,15 +72,15 @@ type CostExpenseFileInput {
 }
 type CostExpenseInput {
   personId: UUID,
-  description: String?,
-  date: String?,
+  description: String,
+  date: String,
   status: ExpenseStatus,
-  amount: Number?,
+  amount: Number,
   files: CostExpenseFileInput[]
 }
 enum ExpenseStatus {
   REQUESTED, APPROVED, REJECTED, DONE
 }
 type PostFilesRequestBody {
-  file: String
+  file: Bytes
 }

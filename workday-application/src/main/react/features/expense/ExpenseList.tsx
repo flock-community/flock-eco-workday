@@ -1,3 +1,5 @@
+import DriveEtaIcon from '@mui/icons-material/DriveEta';
+import MoneyIcon from '@mui/icons-material/Money';
 import { Box, Card, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -10,10 +12,8 @@ import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useState } from 'react';
 import { EXPENSE_PAGE_SIZE, ExpenseClient } from '../../clients/ExpenseClient';
-// Components
 import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { StatusMenu } from '../../components/status/StatusMenu';
-// Types
 import type { DayListProps } from '../../types';
 import type { Expense, ExpenseStatus } from '../../wirespec/model';
 
@@ -76,7 +76,9 @@ export function ExpenseList({
   };
 
   const renderItem = (item: Expense, key: number) => {
-    const totalAmount: number = item?.costDetails?.amount;
+    const totalAmount: number =
+      item?.costDetails?.amount ||
+      item?.travelDetails?.distance * item?.travelDetails?.allowance;
 
     return (
       <Grid key={`workday-list-item-${item.id}`} size={{ xs: 12 }}>
@@ -89,7 +91,16 @@ export function ExpenseList({
                 value={item.status}
               />
             }
-            title={item.description ? item.description : 'empty'}
+            title={
+              <>
+                {item.expenseType === 'TRAVEL' ? (
+                  <DriveEtaIcon sx={{ verticalAlign: 'middle' }} />
+                ) : (
+                  <MoneyIcon sx={{ verticalAlign: 'middle' }} />
+                )}
+                {item.description ? item.description : 'empty'}
+              </>
+            }
             subheader={
               <Typography>
                 Date: {dayjs(item.date).format('DD-MM-YYYY')} | Total:{' '}
@@ -101,18 +112,17 @@ export function ExpenseList({
             }
           />
           <List>
-            {item.costDetails?.files &&
-              item.costDetails.files.map((file) => (
-                <ListItemButton
-                  key={file.file}
-                  component="a"
-                  target="_blank"
-                  href={`/api/expenses/files/${file.file}/${file.name}`}
-                  onClick={(event) => event.stopPropagation()}
-                >
-                  <ListItemText primary={file.name} />
-                </ListItemButton>
-              ))}
+            {item.costDetails?.files?.map((file) => (
+              <ListItemButton
+                key={file.file}
+                component="a"
+                target="_blank"
+                href={`/api/expenses/files/${file.file}/${file.name}`}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <ListItemText primary={file.name} />
+              </ListItemButton>
+            ))}
           </List>
         </Card>
       </Grid>

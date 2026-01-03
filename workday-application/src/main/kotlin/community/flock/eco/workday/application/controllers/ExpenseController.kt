@@ -5,7 +5,6 @@ import community.flock.eco.workday.api.endpoint.CostExpenseUpdate
 import community.flock.eco.workday.api.endpoint.ExpenseAll
 import community.flock.eco.workday.api.endpoint.ExpenseById
 import community.flock.eco.workday.api.endpoint.ExpenseDeleteById
-import community.flock.eco.workday.api.endpoint.ExpenseFilesCreate
 import community.flock.eco.workday.api.endpoint.TravelExpenseCreate
 import community.flock.eco.workday.api.endpoint.TravelExpenseUpdate
 import community.flock.eco.workday.api.model.CostExpenseDetails
@@ -31,6 +30,7 @@ import community.flock.eco.workday.application.services.TravelExpenseService
 import community.flock.eco.workday.core.utils.toResponse
 import org.springframework.boot.web.server.MimeMappings
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -54,7 +54,6 @@ interface ExpenseHandler :
     ExpenseAll.Handler,
     ExpenseById.Handler,
     ExpenseDeleteById.Handler,
-    ExpenseFilesCreate.Handler,
     CostExpenseCreate.Handler,
     CostExpenseUpdate.Handler,
     TravelExpenseCreate.Handler,
@@ -74,10 +73,23 @@ class ExpenseController(
     @PreAuthorize("hasAuthority('ExpenseAuthority.READ')")
     override suspend fun expenseAll(request: ExpenseAll.Request): ExpenseAll.Response<*> {
         val personId = request.queries.personId.let(UUID::fromString)
+        val defaultSort =
+            Sort
+                .by("date")
+                .descending()
+                .and(Sort.by("id"))
+
         val pageable =
             request.queries.pageable
-                ?.let { PageRequest.of(it.size, it.page) }
-                ?: PageRequest.of(0, 20)
+                ?.let {
+                    PageRequest.of(
+                        it.size,
+                        it.page,
+                        it.sort.consumeSorting(defaultSort),
+                    )
+                }
+
+                ?: PageRequest.of(0, 20, defaultSort)
         return when {
             authentication().isAdmin() -> expenseService.findAllByPersonUuid(personId, pageable)
             else -> expenseService.findAllByPersonUserCode(authentication().name, pageable)
@@ -119,7 +131,8 @@ class ExpenseController(
             ?: ExpenseDeleteById.Response404(Error("Expense not found"))
     }
 
-    @GetMapping("/files/{file}/{name}")
+    // TODO: convert this to a wirespec integration too. This does require wirespec to allow for raw bytearrays to be returned
+    @GetMapping("/api/expenses/files/{file}/{name}")
     @PreAuthorize("hasAuthority('ExpenseAuthority.READ')")
     fun getFiles(
         @PathVariable file: UUID,
@@ -134,19 +147,16 @@ class ExpenseController(
                     .body(this)
             }
 
-    @PostMapping("/files")
+    // TODO: convert this to a wirespec integaration to. For this, the network layer needs to support content-type multiplart/form-data.
+// or, the frontend needs to send the data raw as a base64 string
+    @PostMapping("/api/expenses/files")
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
     fun postFiles(
         @RequestParam("file") file: MultipartFile,
-        authentication: Authentication,
     ): ResponseEntity<UUID> =
         documentService
             .storeDocument(file.bytes)
             .toResponse()
-
-    override suspend fun expenseFilesCreate(request: ExpenseFilesCreate.Request): ExpenseFilesCreate.Response<*> {
-        TODO("Not yet implemented")
-    }
 
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
     override suspend fun costExpenseCreate(request: CostExpenseCreate.Request): CostExpenseCreate.Response<*> =
@@ -273,3 +283,24 @@ private fun Document.produce() =
         name = name,
         file = UUIDApi(file.toString()).also(UUIDApi::validate),
     )
+
+/**
+ * Sorting parameters can be send in various formats:
+ *
+ * Workday isn't very specific on how to do this, so multiple things are seen. Would be good te generalize on this
+ * --> and put this in the wirespec contracts too
+ *
+ * e.g.
+ * - date,asc
+ * - date desc, id
+ * - person.personId, date desc
+ *
+ * NOTE: Current implementation only supports a single sort and will always sort asc
+ * e.g. date,desc will sort by date ascending
+ */
+private fun List<String>?.consumeSorting(defaultSort: Sort): Sort =
+    this
+        ?.firstOrNull()
+        ?.split(",")
+        ?.let { s -> Sort.by(Sort.Order.asc(s.first())) }
+        ?: defaultSort

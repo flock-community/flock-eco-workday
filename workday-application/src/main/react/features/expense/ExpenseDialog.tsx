@@ -9,10 +9,15 @@ import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { ExpenseClient } from '../../clients/ExpenseClient';
 import { TransitionSlider } from '../../components/transitions/Slide';
-import type { Expense, ExpenseType } from '../../wirespec/model';
+import type {
+  CostExpenseFile,
+  Expense,
+  ExpenseType,
+} from '../../wirespec/model';
 import { type ExpenseCostForm, ExpenseFormCost } from './ExpenseFormCost';
 import { ExpenseFormTravel, type ExpenseTravelForm } from './ExpenseFormTravel';
 
@@ -23,6 +28,34 @@ type ExpenseDialogProps = {
   personFullName: string;
   onComplete?: (item?: Expense) => void;
   expenseType?: ExpenseType;
+};
+
+const toExpenseTravelForm = (
+  state?: Expense,
+): ExpenseTravelForm | undefined => {
+  return state
+    ? {
+        allowance: state.travelDetails?.allowance,
+        date: dayjs(state.date),
+        description: state.description,
+        distance: state.travelDetails?.distance,
+      }
+    : undefined;
+};
+
+const toExpenseCostForm = (state?: Expense): ExpenseCostForm | undefined => {
+  return state
+    ? {
+        amount: state.costDetails?.amount,
+        date: dayjs(state.date),
+        description: state.description,
+        files:
+          state.costDetails?.files?.map((f) => ({
+            name: f.name,
+            fileReference: f.file,
+          })) ?? [],
+      }
+    : undefined;
 };
 
 export function ExpenseDialog({
@@ -52,34 +85,45 @@ export function ExpenseDialog({
     setType(ev.target.value);
   };
 
-  const handleSubmit = (it: ExpenseCostForm | ExpenseTravelForm) => {
+  const handleSubmit = (expenseForm: ExpenseCostForm | ExpenseTravelForm) => {
+    const item: Expense = {
+      id: id,
+      personId: personId,
+      expenseType: type,
+      status: 'REQUESTED',
+      date: expenseForm.date.toISOString(),
+      description: expenseForm.description,
+      costDetails:
+        'amount' in expenseForm
+          ? {
+              amount: expenseForm.amount,
+              files: expenseForm.files.map(
+                (f) =>
+                  ({
+                    name: f.name,
+                    file: f.fileReference,
+                  }) satisfies CostExpenseFile,
+              ),
+            }
+          : undefined,
+      travelDetails:
+        'allowance' in expenseForm
+          ? {
+              allowance: expenseForm.allowance,
+              distance: expenseForm.distance,
+            }
+          : undefined,
+    };
+
     if (id) {
       ExpenseClient.put(id, {
-        id: id,
-        personId: personId,
-        expenseType: type,
-        status: 'REQUESTED',
-        costDetails: undefined,
-        date: '',
-        description: '',
-        travelDetails: undefined,
+        ...item,
+        status: state.status || 'REQUESTED',
       }).then((res) => {
         onComplete?.(res);
       });
     } else {
-      ExpenseClient.post({
-        id: undefined,
-        expenseType: type,
-        personId: personId,
-        status: 'REQUESTED',
-        date: '',
-        description: '',
-        travelDetails: undefined,
-        costDetails: {
-          amount: 0,
-          files: [],
-        },
-      }).then((res) => {
+      ExpenseClient.post(item).then((res) => {
         onComplete?.(res);
       });
     }
@@ -150,10 +194,16 @@ export function ExpenseDialog({
             )}
             <Grid size={{ xs: 12 }}>
               {type === 'TRAVEL' && (
-                <ExpenseFormTravel value={state} onSubmit={handleSubmit} />
+                <ExpenseFormTravel
+                  initialState={toExpenseTravelForm(state)}
+                  onSubmit={handleSubmit}
+                />
               )}
               {type === 'COST' && (
-                <ExpenseFormCost value={state} onSubmit={handleSubmit} />
+                <ExpenseFormCost
+                  value={toExpenseCostForm(state)}
+                  onSubmit={handleSubmit}
+                />
               )}
             </Grid>
           </Grid>
