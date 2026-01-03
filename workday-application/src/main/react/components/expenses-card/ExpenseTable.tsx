@@ -8,7 +8,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { useState } from 'react';
-import type { Expense } from '../../models/Expense';
+import type { Expense } from '../../wirespec/model/Expense';
 import { ExpenseTableItem } from './ExpenseTableItem';
 
 type ExpenseTableProps = {

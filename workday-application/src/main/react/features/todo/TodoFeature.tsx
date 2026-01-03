@@ -3,7 +3,7 @@ import CardContent from '@mui/material/CardContent';
 import { useState } from 'react';
 // Types
 import type { StatusProps } from '../../types';
-import type { Todo } from '../../wirespec/Models';
+import type { Todo } from '../../wirespec/model';
 import { TodoList } from './TodoList';
 import { updateStatus } from './TodoService';
 

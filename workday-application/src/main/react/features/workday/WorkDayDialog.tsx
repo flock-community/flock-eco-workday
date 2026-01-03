@@ -73,7 +73,10 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
             days: res.days,
             hours: res.hours,
             status: res.status,
-            sheets: res.sheets,
+            sheets: res.sheets.map((s) => ({
+              name: s.name,
+              fileReference: s.file,
+            })),
           });
         });
       } else {
@@ -95,7 +98,10 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
         : it.hours,
       assignmentCode: it.assignmentCode,
       status: it.status,
-      sheets: it.sheets,
+      sheets: it.sheets.map((s) => ({
+        name: s.name,
+        file: s.fileReference,
+      })),
     };
     if (code) {
       return WorkDayClient.put(code, body).then((res) => {
@@ -161,7 +167,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
       <Dialog
         open={open}
         onClose={handleClose}
-        TransitionComponent={TransitionSlider}
+        // TransitionComponent={TransitionSlider}
         maxWidth="lg"
         fullWidth
       >

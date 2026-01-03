@@ -1,5 +1,5 @@
 import InternalizingClient from '../utils/InternalizingClient';
-import type { Todo } from '../wirespec/Models';
+import type { Todo } from '../wirespec/model';
 
 const path = '/api/todos';
 

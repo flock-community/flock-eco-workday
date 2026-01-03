@@ -1,12 +1,7 @@
 import type { Dayjs } from 'dayjs';
-import {
-  EventType,
-  type FlockEvent,
-  type FullFlockEvent,
-} from '../../clients/EventClient';
-import type { Person } from '../../clients/PersonClient';
-import { CostExpense, TravelExpense } from '../../models/Expense';
-import { Status } from '../../models/Status';
+import type { FlockEvent, FullFlockEvent } from '../../clients/EventClient';
+import { EventType } from '../../clients/EventClient';
+import type { Expense, ExpenseStatus } from '../../wirespec/model';
 
 function getMonthStringFromDate(date: Dayjs): string {
   return date.format('MMMM');
@@ -15,39 +10,46 @@ function getMonthStringFromDate(date: Dayjs): string {
 export function createTestCostExpense(
   id: string,
   date: Dayjs,
-  status: Status = Status.REQUESTED,
+  status: ExpenseStatus = 'REQUESTED',
   amount: number = 120,
-): CostExpense {
+): Expense {
   const dateMonth = getMonthStringFromDate(date);
-  return new CostExpense(
+  return {
+    costDetails: {
+      amount,
+      files: [],
+    },
+    date: date.format('YYYY-MM-DD'),
+    description: `Cost expense ${dateMonth}`,
+    expenseType: 'COST',
     id,
-    date,
-    `Cost expense ${dateMonth}`,
-    {} as Person,
+    personId: '0',
     status,
-    amount,
-    [],
-  );
+    travelDetails: undefined,
+  };
 }
 
 export function createTestTravelExpense(
   id: string,
   date: Dayjs,
-  status: Status = Status.REQUESTED,
+  status: ExpenseStatus = 'REQUESTED',
   distance: number = 120,
   allowance: number = 0.23,
-): TravelExpense {
+): Expense {
   const dateMonth = getMonthStringFromDate(date);
-  return new TravelExpense(
+  return {
+    costDetails: undefined,
+    date: date.format('YYYY-MM-DD'),
+    description: `Cost expense ${dateMonth}`,
+    expenseType: 'COST',
     id,
-    date,
-    `Travel expense ${dateMonth}`,
-    {} as Person,
+    personId: '0',
     status,
-    [],
-    allowance,
-    distance,
-  );
+    travelDetails: {
+      distance,
+      allowance,
+    },
+  };
 }
 
 export function createTestFlockEvent(

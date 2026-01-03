@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
-import type { Expense } from '../models/Expense';
-import { Status } from '../models/Status';
+import type { ExpenseStatus } from '../wirespec/model';
+import type { Expense } from '../wirespec/model/Expense';
 
-const openExpensesStatusFilter = [Status.REQUESTED];
-const recentExpensesStatusFilter = [
-  Status.REJECTED,
-  Status.APPROVED,
-  Status.DONE,
+const openExpensesStatusFilter: ExpenseStatus[] = ['REQUESTED'];
+const recentExpensesStatusFilter: ExpenseStatus[] = [
+  'REJECTED',
+  'APPROVED',
+  'DONE',
 ];
 
 const _filterExpenseOnStatus: (
@@ -21,7 +21,8 @@ const _filterOnNumberOfDays: (
   numberOfDays: number,
 ) => Expense[] = (items: Expense[], numberOfDays: number) => {
   return items.filter(
-    (item) => item.date > dayjs().startOf('day').subtract(numberOfDays, 'days'),
+    (item) =>
+      dayjs(item.date) >= dayjs().startOf('day').subtract(numberOfDays, 'days'),
   );
 };
 

@@ -35,7 +35,7 @@ class LoadWorkDayData(
         loadData.load {
             val now = LocalDate.now()
             loadAssignmentData.data
-                .filter { it.to.let{ date -> date == null || date  > now} }
+                .filter { it.to.let { date -> date == null || date > now } }
                 .map { assignment ->
                     (1..12)
                         .map {

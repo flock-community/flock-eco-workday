@@ -7,15 +7,12 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { TodoClient } from '../../clients/TodoClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
-// Components
 import { StatusMenu } from '../../components/status/StatusMenu';
 import { SimpleTabs } from '../../components/tabs/Tabs';
-// Types
 import type { GroupedTodos, StatusProps, TypeProp } from '../../types';
-// Utils
 import { groupByType } from '../../utils/groupByType';
 import { getPaginatedTabs } from '../../utils/paginationHelpers';
-import type { Todo, TodoType } from '../../wirespec/Models';
+import type { Todo, TodoType } from '../../wirespec/model';
 
 // @todo make this a global PAGE_SIZE constants
 const TODO_PAGE_SIZE = 5;

@@ -29,20 +29,20 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
 import java.util.UUID
-import community.flock.eco.workday.api.AggregationClient as AggregationClientApi
-import community.flock.eco.workday.api.AggregationClientPersonAssignmentItem as AggregationClientPersonAssignmentItemApi
-import community.flock.eco.workday.api.AggregationClientPersonAssignmentOverview as AggregationClientPersonAssignmentOverviewApi
-import community.flock.eco.workday.api.AggregationClientPersonItem as AggregationClientPersonItemApi
-import community.flock.eco.workday.api.AggregationClientPersonOverview as AggregationClientPersonOverviewApi
-import community.flock.eco.workday.api.AggregationHackDay as AggregationHackDayApi
-import community.flock.eco.workday.api.AggregationIdentifier as AggregationIdentifierApi
-import community.flock.eco.workday.api.AggregationLeaveDay as AggregationLeaveDayApi
-import community.flock.eco.workday.api.AggregationPerson as AggregationPersonApi
-import community.flock.eco.workday.api.AggregationPersonClientRevenueItem as AggregationPersonClientRevenueItemApi
-import community.flock.eco.workday.api.AggregationPersonClientRevenueOverview as AggregationPersonClientRevenueOverviewApi
-import community.flock.eco.workday.api.NonProductiveHours as NonProductiveHoursApi
-import community.flock.eco.workday.api.PersonHackdayDetails as PersonHackdayDetailsApi
-import community.flock.eco.workday.api.PersonHolidayDetails as PersonHolidayDetailsApi
+import community.flock.eco.workday.api.model.AggregationClient as AggregationClientApi
+import community.flock.eco.workday.api.model.AggregationClientPersonAssignmentItem as AggregationClientPersonAssignmentItemApi
+import community.flock.eco.workday.api.model.AggregationClientPersonAssignmentOverview as AggregationClientPersonAssignmentOverviewApi
+import community.flock.eco.workday.api.model.AggregationClientPersonItem as AggregationClientPersonItemApi
+import community.flock.eco.workday.api.model.AggregationClientPersonOverview as AggregationClientPersonOverviewApi
+import community.flock.eco.workday.api.model.AggregationHackDay as AggregationHackDayApi
+import community.flock.eco.workday.api.model.AggregationIdentifier as AggregationIdentifierApi
+import community.flock.eco.workday.api.model.AggregationLeaveDay as AggregationLeaveDayApi
+import community.flock.eco.workday.api.model.AggregationPerson as AggregationPersonApi
+import community.flock.eco.workday.api.model.AggregationPersonClientRevenueItem as AggregationPersonClientRevenueItemApi
+import community.flock.eco.workday.api.model.AggregationPersonClientRevenueOverview as AggregationPersonClientRevenueOverviewApi
+import community.flock.eco.workday.api.model.NonProductiveHours as NonProductiveHoursApi
+import community.flock.eco.workday.api.model.PersonHackdayDetails as PersonHackdayDetailsApi
+import community.flock.eco.workday.api.model.PersonHolidayDetails as PersonHolidayDetailsApi
 
 @RestController
 @RequestMapping("/api/aggregations")
@@ -245,14 +245,14 @@ private fun AggregationClientPersonAssignmentItem.produce() =
 
 private fun AggregationPerson.produce() =
     AggregationPersonApi(
-        id = id.produce(),
+        id = id.toString(),
         name = name,
         contractTypes = contractTypes.toList(),
         sickDays = sickDays.produce(),
         workDays = workDays.produce(),
-        assignment = assignment.produce(),
-        event = event.produce(),
-        total = total.produce(),
+        assignment = assignment,
+        event = event,
+        total = total,
         leaveDayUsed = leaveDayUsed.produce(),
         leaveDayBalance = leaveDayBalance.produce(),
         paidParentalLeaveUsed = paidParentalLeaveUsed.produce(),

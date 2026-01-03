@@ -1,14 +1,16 @@
-import { Box, TableBody, TableContainer } from '@mui/material';
+import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import type { Dayjs } from 'dayjs';
 import { Fragment, useEffect, useState } from 'react';
 import { AggregationClient } from '../../../clients/AggregationClient';
-import type { AggregationClientPersonAssignmentOverview } from '../../../wirespec/Models';
+import type { AggregationClientPersonAssignmentOverview } from '../../../wirespec/model';
 import AssignmentReportTableRow from './AssignmentReportTableRow';
 
 const PREFIX = 'AssignmentReportTable';

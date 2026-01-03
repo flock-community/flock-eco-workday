@@ -21,8 +21,8 @@ import PersonEvents from '../../components/person/PersonEvents';
 import { QuickLinks } from '../../components/quick-links/QuickLinks';
 import { useLoginStatus } from '../../hooks/StatusHook';
 import { useUserMe } from '../../hooks/UserMeHook';
-import type { Expense } from '../../models/Expense';
 import { HighlightSpan } from '../../theme/theme-light';
+import type { Expense } from '../../wirespec/model/Expense';
 
 export function HomeFeature() {
   const [user] = useUserMe();

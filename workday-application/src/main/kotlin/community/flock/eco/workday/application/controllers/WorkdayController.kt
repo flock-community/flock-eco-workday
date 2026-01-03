@@ -110,7 +110,8 @@ class WorkdayController(
         @PathVariable name: String,
         authentication: Authentication,
     ): ResponseEntity<ByteArray> =
-        documentStorage.readDocument(file)
+        documentStorage
+            .readDocument(file)
             .run {
                 ResponseEntity
                     .ok()

@@ -9,29 +9,53 @@ import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import {
-  ExpenseClient,
-  emptyPersonWithUUID,
-} from '../../clients/ExpenseClient';
+import { ExpenseClient } from '../../clients/ExpenseClient';
 import { TransitionSlider } from '../../components/transitions/Slide';
-import {
-  type CostExpense,
-  type Expense,
+import type {
+  CostExpenseFile,
+  Expense,
   ExpenseType,
-  type TravelExpense,
-} from '../../models/Expense';
-import { Status } from '../../models/Status';
-import { ExpenseFormCost } from './ExpenseFormCost';
-import { ExpenseFormTravel } from './ExpenseFormTravel';
+} from '../../wirespec/model';
+import { type ExpenseCostForm, ExpenseFormCost } from './ExpenseFormCost';
+import { ExpenseFormTravel, type ExpenseTravelForm } from './ExpenseFormTravel';
 
 type ExpenseDialogProps = {
   open: boolean;
   id?: string;
-  personId?: string;
+  personId: string;
   personFullName: string;
-  onComplete?: (item?: CostExpense | TravelExpense) => void;
+  onComplete?: (item?: Expense) => void;
   expenseType?: ExpenseType;
+};
+
+const toExpenseTravelForm = (
+  state?: Expense,
+): ExpenseTravelForm | undefined => {
+  return state
+    ? {
+        allowance: state.travelDetails?.allowance,
+        date: dayjs(state.date),
+        description: state.description,
+        distance: state.travelDetails?.distance,
+      }
+    : undefined;
+};
+
+const toExpenseCostForm = (state?: Expense): ExpenseCostForm | undefined => {
+  return state
+    ? {
+        amount: state.costDetails?.amount,
+        date: dayjs(state.date),
+        description: state.description,
+        files:
+          state.costDetails?.files?.map((f) => ({
+            name: f.name,
+            fileReference: f.file,
+          })) ?? [],
+      }
+    : undefined;
 };
 
 export function ExpenseDialog({
@@ -42,13 +66,13 @@ export function ExpenseDialog({
   onComplete,
   expenseType,
 }: ExpenseDialogProps) {
-  const [type, setType] = useState(ExpenseType.COST);
+  const [type, setType] = useState<ExpenseType>('COST');
   const [state, setState] = useState<Expense | undefined>(undefined);
   const [openDelete, setOpenDelete] = useState(false);
 
   useEffect(() => {
     setState(undefined);
-    setType(expenseType ?? ExpenseType.COST);
+    setType(expenseType ?? 'COST');
     if (id) {
       ExpenseClient.get(id).then((res) => {
         setState(res);
@@ -61,29 +85,45 @@ export function ExpenseDialog({
     setType(ev.target.value);
   };
 
-  const handleSubmit = (it: CostExpense | TravelExpense) => {
+  const handleSubmit = (expenseForm: ExpenseCostForm | ExpenseTravelForm) => {
+    const item: Expense = {
+      id: id,
+      personId: personId,
+      expenseType: type,
+      status: 'REQUESTED',
+      date: expenseForm.date.toISOString(),
+      description: expenseForm.description,
+      costDetails:
+        'amount' in expenseForm
+          ? {
+              amount: expenseForm.amount,
+              files: expenseForm.files.map(
+                (f) =>
+                  ({
+                    name: f.name,
+                    file: f.fileReference,
+                  }) satisfies CostExpenseFile,
+              ),
+            }
+          : undefined,
+      travelDetails:
+        'allowance' in expenseForm
+          ? {
+              allowance: expenseForm.allowance,
+              distance: expenseForm.distance,
+            }
+          : undefined,
+    };
+
     if (id) {
       ExpenseClient.put(id, {
-        ...it,
-        person: emptyPersonWithUUID(personId!),
-        expenseType:
-          type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
-        status: Status.REQUESTED,
-        date: it.date,
-        files: it.files,
-      }).then((res: CostExpense | TravelExpense) => {
+        ...item,
+        status: state.status || 'REQUESTED',
+      }).then((res) => {
         onComplete?.(res);
       });
     } else {
-      ExpenseClient.post({
-        ...it,
-        expenseType:
-          type === ExpenseType.COST ? ExpenseType.COST : ExpenseType.TRAVEL,
-        person: emptyPersonWithUUID(personId!),
-        status: Status.REQUESTED,
-        date: it.date,
-        files: it.files,
-      }).then((res: CostExpense | TravelExpense) => {
+      ExpenseClient.post(item).then((res) => {
         onComplete?.(res);
       });
     }
@@ -93,7 +133,6 @@ export function ExpenseDialog({
     if (id === undefined) {
       return;
     }
-
     ExpenseClient.delete(id).then(() => {
       if (onComplete) onComplete();
       setOpenDelete(false);
@@ -147,18 +186,24 @@ export function ExpenseDialog({
                     value={type}
                     onChange={handleTypeChange}
                   >
-                    <MenuItem value={ExpenseType.COST}>Cost</MenuItem>
-                    <MenuItem value={ExpenseType.TRAVEL}>Travel</MenuItem>
+                    <MenuItem value={'COST'}>Cost</MenuItem>
+                    <MenuItem value={'TRAVEL'}>Travel</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
             )}
             <Grid size={{ xs: 12 }}>
-              {type === ExpenseType.TRAVEL && (
-                <ExpenseFormTravel value={state} onSubmit={handleSubmit} />
+              {type === 'TRAVEL' && (
+                <ExpenseFormTravel
+                  initialState={toExpenseTravelForm(state)}
+                  onSubmit={handleSubmit}
+                />
               )}
-              {type === ExpenseType.COST && (
-                <ExpenseFormCost value={state} onSubmit={handleSubmit} />
+              {type === 'COST' && (
+                <ExpenseFormCost
+                  value={toExpenseCostForm(state)}
+                  onSubmit={handleSubmit}
+                />
               )}
             </Grid>
           </Grid>

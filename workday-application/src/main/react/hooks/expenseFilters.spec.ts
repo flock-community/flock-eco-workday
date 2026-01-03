@@ -1,7 +1,6 @@
 import { cleanup } from '@testing-library/react';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
-import { Status } from '../models/Status';
 import {
   createTestCostExpense,
   createTestTravelExpense,
@@ -17,22 +16,22 @@ describe('useExpenseFiltersHook', () => {
   const testExpense003 = createTestCostExpense(
     'item-03',
     dayjs().subtract(3, 'days'),
-    Status.APPROVED,
+    'APPROVED',
   );
   const testExpense005 = createTestCostExpense(
     'item-05',
     dayjs().subtract(25, 'days'),
-    Status.DONE,
+    'DONE',
   );
   const testExpense006 = createTestCostExpense(
     'item-06',
     dayjs().subtract(30, 'days'),
-    Status.DONE,
+    'DONE',
   );
   const testExpense007 = createTestCostExpense(
     'item-07',
     dayjs().subtract(31, 'days'),
-    Status.REJECTED,
+    'REJECTED',
   );
 
   const testExpense002 = createTestTravelExpense(
@@ -42,7 +41,7 @@ describe('useExpenseFiltersHook', () => {
   const testExpense004 = createTestTravelExpense(
     'item-04',
     dayjs().subtract(15, 'days'),
-    Status.REJECTED,
+    'REJECTED',
   );
 
   const expenses = [
@@ -88,7 +87,9 @@ describe('useExpenseFiltersHook', () => {
       // needs to be .isBefore because the date of testExpense002 is further in history then
       // the numberOfDays(ForTest) window/ interval
       expect(
-        result[0].date.isBefore(dayjs().subtract(numberOfDaysForTest, 'days')),
+        dayjs(result[0].date).isBefore(
+          dayjs().subtract(numberOfDaysForTest, 'days'),
+        ),
       ).toBeTruthy();
     });
   });
@@ -144,7 +145,7 @@ describe('useExpenseFiltersHook', () => {
       const daysAgo = today.subtract(lastNumberOfDays, 'days');
       const result = getRecentExpenses([testExpense005], lastNumberOfDays);
       expect(result.length).toBe(1);
-      expect(result[0].date.isBetween(today, daysAgo, 'days'));
+      expect(dayjs(result[0].date).isBetween(today, daysAgo, 'days'));
     });
 
     it('should return item when date is equal to today', () => {
@@ -152,11 +153,11 @@ describe('useExpenseFiltersHook', () => {
       const lastNumberOfDays = 25;
       const daysAgo = today.subtract(lastNumberOfDays, 'days');
       const result = getRecentExpenses(
-        [createTestTravelExpense('item-today', today, Status.APPROVED)],
+        [createTestTravelExpense('item-today', today, 'APPROVED')],
         lastNumberOfDays,
       );
       expect(result.length).toBe(1);
-      expect(result[0].date.isBetween(today, daysAgo, 'days'));
+      expect(dayjs(result[0].date).isBetween(today, daysAgo, 'days'));
     });
 
     it('should not return item if the expense date is equal to numberOfDays + 1', () => {
@@ -167,7 +168,7 @@ describe('useExpenseFiltersHook', () => {
           createTestTravelExpense(
             'item-not-in-range',
             daysAgo.subtract(1, 'day'),
-            Status.APPROVED,
+            'APPROVED',
           ),
         ],
         lastNumberOfDays,

@@ -2,7 +2,7 @@ import { Box, Card, CardContent, CardHeader } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { getOpenExpenses, getRecentExpenses } from '../../hooks/expenseFilters';
-import type { Expense } from '../../models/Expense';
+import type { Expense } from '../../wirespec/model';
 import { ExpenseTable } from './ExpenseTable';
 
 type ExpenseCardProps = {

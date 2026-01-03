@@ -13,6 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { Field } from 'formik';
 import { useState } from 'react';
 import { DropzoneArea } from './DropzoneArea';
+import type { UploadedFile } from './UploadedFile';
 
 type DropzoneAreaFieldProps = {
   name: string;
@@ -23,22 +24,22 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
   const [upload, setUpload] = useState(false);
 
   const renderField = ({ field: { value }, form: { setFieldValue } }) => {
-    const handleDropFile = (files) => {
+    const handleDropFile = (files: File[]) => {
       setUpload(true);
       return Promise.all(
-        files.map((file) => {
+        files.map(async (file: File) => {
           const formData = new FormData();
           formData.append('file', file);
           const opts = {
             method: 'POST',
             body: formData,
           };
-          return fetch(endpoint, opts)
-            .then((res) => res.json())
-            .then((uuid) => ({
-              name: file.name,
-              file: uuid,
-            }));
+          const res = await fetch(endpoint, opts);
+          const uuid = await res.json();
+          return {
+            name: file.name,
+            fileReference: uuid,
+          } satisfies UploadedFile;
         }),
       ).then((res) => {
         setFieldValue(name, [...value, ...res]);
@@ -53,51 +54,53 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
       );
     };
 
-    const renderFilesItem = (it) => (
-      <ListItem
-        key={it.file}
-        disableGutters
-        secondaryAction={
-          <>
-            <IconButton
-              edge="end"
-              aria-label="preview"
-              component="a"
-              href={`${endpoint}/${it.file}/${it.name}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <OpenInNewIcon />
-            </IconButton>
-            <IconButton
-              edge="end"
-              aria-label="delete"
-              onClick={handleDeleteFile(it.file)}
-              size="large"
-            >
-              <DeleteIcon />
-            </IconButton>
-          </>
-        }
-      >
-        <ListItemAvatar>
-          <Avatar>
-            <FolderIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={
-            <a
-              href={`${endpoint}/${it.file}/${it.name}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {it.name}
-            </a>
+    const renderFilesItem = (it: UploadedFile) => {
+      return (
+        <ListItem
+          key={it.fileReference}
+          disableGutters
+          secondaryAction={
+            <>
+              <IconButton
+                edge="end"
+                aria-label="preview"
+                component="a"
+                href={`${endpoint}/${it.fileReference}/${it.name}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <OpenInNewIcon />
+              </IconButton>
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={handleDeleteFile(it.fileReference)}
+                size="large"
+              >
+                <DeleteIcon />
+              </IconButton>
+            </>
           }
-        />
-      </ListItem>
-    );
+        >
+          <ListItemAvatar>
+            <Avatar>
+              <FolderIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={
+              <a
+                href={`${endpoint}/${it.fileReference}/${it.name}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {it.name}
+              </a>
+            }
+          />
+        </ListItem>
+      );
+    };
 
     const progressStyle = {
       height: 250,

@@ -1,3 +1,5 @@
+import DriveEtaIcon from '@mui/icons-material/DriveEta';
+import MoneyIcon from '@mui/icons-material/Money';
 import { Box, Card, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -7,15 +9,13 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { styled } from '@mui/material/styles';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import dayjs from 'dayjs';
 import { useCallback, useEffect, useState } from 'react';
 import { EXPENSE_PAGE_SIZE, ExpenseClient } from '../../clients/ExpenseClient';
-// Components
 import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { StatusMenu } from '../../components/status/StatusMenu';
-import type { CostExpense, TravelExpense } from '../../models/Expense';
-import type { Status } from '../../models/Status';
-// Types
 import type { DayListProps } from '../../types';
+import type { Expense, ExpenseStatus } from '../../wirespec/model';
 
 const PREFIX = 'ExpenseList';
 
@@ -35,7 +35,7 @@ export function ExpenseList({
   refresh,
   onClickRow,
 }: Readonly<DayListProps>) {
-  const [items, setItems] = useState<(CostExpense | TravelExpense)[]>([]);
+  const [items, setItems] = useState<Expense[]>([]);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -62,22 +62,23 @@ export function ExpenseList({
   const isAdmin = () =>
     !UserAuthorityUtil.hasAuthority('ExpenseAuthority.ADMIN');
 
-  const handleClickRow = (item: CostExpense | TravelExpense) => {
+  const handleClickRow = (item: Expense) => {
     return () => {
       if (onClickRow) onClickRow(item);
     };
   };
 
-  const handleStatusChange =
-    (item: CostExpense | TravelExpense) => (status: Status) => {
-      ExpenseClient.put(item.id, {
-        ...item,
-        status,
-      }).then(() => loadState());
-    };
+  const handleStatusChange = (item: Expense) => (status: ExpenseStatus) => {
+    ExpenseClient.put(item.id, {
+      ...item,
+      status,
+    }).then(() => loadState());
+  };
 
-  const renderItem = (item: CostExpense | TravelExpense) => {
-    const totalAmount: number = item.amount;
+  const renderItem = (item: Expense, key: number) => {
+    const totalAmount: number =
+      item?.costDetails?.amount ||
+      item?.travelDetails?.distance * item?.travelDetails?.allowance;
 
     return (
       <Grid key={`workday-list-item-${item.id}`} size={{ xs: 12 }}>
@@ -90,11 +91,20 @@ export function ExpenseList({
                 value={item.status}
               />
             }
-            title={item.description ? item.description : 'empty'}
+            title={
+              <>
+                {item.expenseType === 'TRAVEL' ? (
+                  <DriveEtaIcon sx={{ verticalAlign: 'middle' }} />
+                ) : (
+                  <MoneyIcon sx={{ verticalAlign: 'middle' }} />
+                )}
+                {item.description ? item.description : 'empty'}
+              </>
+            }
             subheader={
               <Typography>
-                Date: {item.date.format('DD-MM-YYYY')} | Total:{' '}
-                {totalAmount.toLocaleString('nl-NL', {
+                Date: {dayjs(item.date).format('DD-MM-YYYY')} | Total:{' '}
+                {totalAmount?.toLocaleString('nl-NL', {
                   style: 'currency',
                   currency: 'EUR',
                 })}
@@ -102,7 +112,7 @@ export function ExpenseList({
             }
           />
           <List>
-            {item.files?.map((file) => (
+            {item.costDetails?.files?.map((file) => (
               <ListItemButton
                 key={file.file}
                 component="a"
