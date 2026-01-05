@@ -2,6 +2,7 @@ package community.flock.eco.workday.application.services.email
 
 import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.application.model.CostExpense
+import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.utils.DateUtils.toHumanReadable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

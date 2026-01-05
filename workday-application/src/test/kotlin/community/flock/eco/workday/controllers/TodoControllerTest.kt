@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -296,11 +297,11 @@ class TodoControllerTest : WorkdayIntegrationTest() {
             .andExpect(jsonPath("$[0].todoType").value("SICKDAY"))
     }
 
+    @Transactional
     @Test
     fun `should return only expense todos when user has only ExpenseAuthority read`() {
         val user = createHelper.createUser(expenseAuthorities)
-        val person = createHelper.createPerson()
-
+        val person = createHelper.createPerson("Test", "User", user.code)
         // Create an expense todo
         val costExpense =
             CostExpense(

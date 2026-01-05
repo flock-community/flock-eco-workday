@@ -71,12 +71,15 @@ class CostExpenseService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val costExpenseMailService: CostExpenseMailService,
 ) {
+    private val log: org.slf4j.Logger = org.slf4j.LoggerFactory.getLogger(javaClass)
     @Transactional
-    fun create(it: CostExpense): CostExpense =
+    fun create(costExpense: CostExpense): CostExpense =
         costExpenseRepository
-            .save(it)
-            .also { applicationEventPublisher.publishEvent(CreateExpenseEvent(it)) }
-            .also { costExpenseMailService.sendNotification(it) }
+            .save(costExpense)
+            .also {
+                costExpenseMailService.sendNotification(it)
+                applicationEventPublisher.publishEvent(CreateExpenseEvent(it))
+            }
 
     @Transactional
     fun update(
