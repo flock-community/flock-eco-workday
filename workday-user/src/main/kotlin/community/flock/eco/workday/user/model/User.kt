@@ -29,9 +29,5 @@ class User(
     val accounts: MutableSet<UserAccount> = mutableSetOf(),
     val created: LocalDateTime = LocalDateTime.now(),
 ) : AbstractIdEntity(id) {
-    override fun equals(other: Any?) = super.equals(other)
-
-    override fun hashCode() = super.hashCode()
-
-    override fun toString() = super.toString()
+    override fun toString(): String = "User(id=$id, code='$code', name='$name', email='$email')"
 }

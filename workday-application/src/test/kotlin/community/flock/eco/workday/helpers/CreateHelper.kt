@@ -82,7 +82,7 @@ class CreateHelper(
         active = true,
     ).run {
         personService.create(this)
-    } ?: error("Cannot create person")
+    }
 
     fun createAssignment(
         client: Client,

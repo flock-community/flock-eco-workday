@@ -36,8 +36,6 @@
             <groupId>com.google.cloud</groupId>
             <artifactId>spring-cloud-gcp-starter-storage</artifactId>
         </dependency>
-
-        <!-- Services -->
         <dependency>
             <groupId>com.mailjet</groupId>
             <artifactId>mailjet-client</artifactId>
@@ -45,6 +43,14 @@
         <dependency>
             <groupId>community.flock.wirespec.integration</groupId>
             <artifactId>jackson-jvm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>community.flock.wirespec.integration</groupId>
+            <artifactId>spring-jvm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>community.flock.wirespec.integration</groupId>
+            <artifactId>wirespec-jvm</artifactId>
         </dependency>
 
         <!-- Workday vendored modules -->
@@ -65,6 +71,11 @@
         <dependency>
             <groupId>net.sf.biweekly</groupId>
             <artifactId>biweekly</artifactId>
+        </dependency>
+        <!-- Kotlin Coroutines Reactor Integration -->
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-reactor</artifactId>
         </dependency>
 
         <!-- Database -->
@@ -216,9 +227,8 @@
                             <input>${project.basedir}/src/main/wirespec</input>
                             <output>${project.build.directory}/generated-sources</output>
                             <packageName>community.flock.eco.workday.api</packageName>
-                            <languages>
-                                <language>Kotlin</language>
-                            </languages>
+                            <emitterClass>community.flock.wirespec.integration.spring.kotlin.emit.SpringKotlinEmitter</emitterClass>
+                            <shared>false</shared>
                         </configuration>
                     </execution>
                 </executions>
@@ -245,28 +255,6 @@
                     </container>
                 </configuration>
             </plugin>
-
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-resources-plugin</artifactId>-->
-            <!--                <executions>-->
-            <!--&lt;!&ndash;                    <execution>&ndash;&gt;-->
-            <!--&lt;!&ndash;                        <id>copy-resources-images</id>&ndash;&gt;-->
-            <!--&lt;!&ndash;                        <phase>compile</phase>&ndash;&gt;-->
-            <!--&lt;!&ndash;                        <goals>&ndash;&gt;-->
-            <!--&lt;!&ndash;                            <goal>copy-resources</goal>&ndash;&gt;-->
-            <!--&lt;!&ndash;                        </goals>&ndash;&gt;-->
-            <!--&lt;!&ndash;                        <configuration>&ndash;&gt;-->
-            <!--&lt;!&ndash;                            <outputDirectory>${project.build.outputDirectory}/static/images</outputDirectory>&ndash;&gt;-->
-            <!--&lt;!&ndash;                            <resources>&ndash;&gt;-->
-            <!--&lt;!&ndash;                                <resource>&ndash;&gt;-->
-            <!--&lt;!&ndash;                                    <directory>${project.basedir}/images</directory>&ndash;&gt;-->
-            <!--&lt;!&ndash;                                </resource>&ndash;&gt;-->
-            <!--&lt;!&ndash;                            </resources>&ndash;&gt;-->
-            <!--&lt;!&ndash;                        </configuration>&ndash;&gt;-->
-            <!--&lt;!&ndash;                    </execution>&ndash;&gt;-->
-            <!--                </executions>-->
-            <!--            </plugin>-->
         </plugins>
     </build>
 

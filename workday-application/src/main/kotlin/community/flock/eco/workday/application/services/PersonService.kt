@@ -118,7 +118,7 @@ class PersonService(
             birthdays.plus(joinDays).sortedBy { it.eventDate.withYear(1970) }
         }
 
-    fun create(form: PersonForm): Person? {
+    fun create(form: PersonForm): Person {
         val user =
             when (form.userCode) {
                 is String ->

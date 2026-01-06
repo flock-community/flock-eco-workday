@@ -5,7 +5,7 @@ import type {
   AggregationClientPersonOverview,
   AggregationHackDay as AggregationHackDayApi,
   PersonHackdayDetails as PersonHackdayDetailsApi,
-} from '../wirespec/Models';
+} from '../wirespec/model';
 import { ISO_8601_DATE } from './util/DateFormats';
 
 const path = '/api/aggregations';
