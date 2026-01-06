@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
@@ -10,6 +11,19 @@ import * as Yup from 'yup';
 import UserClient from './UserClient';
 
 export const USER_FORM_ID = 'user-form-id';
+
+const defaultAuthorities = [
+  'WorkDayAuthority.READ',
+  'WorkDayAuthority.WRITE',
+  'SickdayAuthority.READ',
+  'SickdayAuthority.WRITE',
+  'EventAuthority.SUBSCRIBE',
+  'AssignmentAuthority.READ',
+  'ExpenseAuthority.READ',
+  'ExpenseAuthority.WRITE',
+  'LeaveDayAuthority.READ',
+  'LeaveDayAuthority.WRITE',
+];
 
 const init = {
   name: '',
@@ -40,6 +54,10 @@ export function UserForm({ value, onSummit, ...props }) {
         authorities: authorities.map((it) => value.authorities.includes(it)),
       });
     } else {
+      console.log({
+        ...init,
+        authorities: !authorities ? [] : authorities.map(() => false),
+      });
       setState({
         ...init,
         authorities: !authorities ? [] : authorities.map(() => false),
@@ -64,6 +82,14 @@ export function UserForm({ value, onSummit, ...props }) {
     authorities: Yup.array(),
   });
 
+  const handelSetDefaultAuthorities = () => {
+    const selectedAuthorities = authorities.map((it) =>
+      defaultAuthorities.includes(it),
+    );
+    console.log(state);
+    setState({ ...state, authorities: selectedAuthorities });
+  };
+
   if (!authorities || authorities.length !== state.authorities.length)
     return null;
 
@@ -82,6 +108,12 @@ export function UserForm({ value, onSummit, ...props }) {
 
           <Grid size={{ xs: 12 }}>
             <Field fullWidth name="email" label="Email" component={TextField} />
+          </Grid>
+
+          <Grid size={{ xs: 12 }} textAlign="right">
+            <Button onClick={() => handelSetDefaultAuthorities()}>
+              Set default authorities
+            </Button>
           </Grid>
 
           <Grid size={{ xs: 12 }}>
