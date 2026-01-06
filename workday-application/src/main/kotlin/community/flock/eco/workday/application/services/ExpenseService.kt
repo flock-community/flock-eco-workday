@@ -72,6 +72,7 @@ class CostExpenseService(
     private val costExpenseMailService: CostExpenseMailService,
 ) {
     private val log: org.slf4j.Logger = org.slf4j.LoggerFactory.getLogger(javaClass)
+
     @Transactional
     fun create(costExpense: CostExpense): CostExpense =
         costExpenseRepository

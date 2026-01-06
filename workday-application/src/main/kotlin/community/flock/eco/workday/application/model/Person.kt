@@ -50,8 +50,7 @@ class Person(
         return Objects.equals(uuid, otherPerson.uuid)
     }
 
-    override fun toString(): String =
-        "Person(id=$id, uuid=$uuid, firstname='$firstname', lastname='$lastname', email='$email')"
+    override fun toString(): String = "Person(id=$id, uuid=$uuid, firstname='$firstname', lastname='$lastname', email='$email')"
 }
 
 /**

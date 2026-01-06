@@ -29,6 +29,5 @@ class User(
     val accounts: MutableSet<UserAccount> = mutableSetOf(),
     val created: LocalDateTime = LocalDateTime.now(),
 ) : AbstractIdEntity(id) {
-    override fun toString(): String =
-        "User(id=$id, code='$code', name='$name', email='$email')"
+    override fun toString(): String = "User(id=$id, code='$code', name='$name', email='$email')"
 }
