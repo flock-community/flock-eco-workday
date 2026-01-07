@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.authorities.SickdayAuthority
 import community.flock.eco.workday.application.forms.SickDayForm
-import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.services.SickDayService
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,7 +43,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should get all sickdays from all users`() {
-        val admin = createHelper.createUser(adminAuthorities)
+        val admin = createHelper.createUserEntity(adminAuthorities)
 
         mvc
             .perform(
@@ -56,9 +56,9 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should get all sickdays from a single user`() {
-        val user = createHelper.createUser(userAuthorities)
-        val person = createHelper.createPerson("john", "doe", user.code)
-        val admin = createHelper.createUser(adminAuthorities)
+        val user = createHelper.createUserEntity(userAuthorities)
+        val person = createHelper.createPersonEntity("john", "doe", user.code)
+        val admin = createHelper.createUserEntity(adminAuthorities)
 
         mvc
             .perform(
@@ -71,14 +71,14 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should get a sickday via GET-method`() {
-        val user = createHelper.createUser(userAuthorities)
+        val user = createHelper.createUserEntity(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
         val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
-        val person = createHelper.createPerson("john", "doe", user.code)
+        val person = createHelper.createPersonEntity("john", "doe", user.code)
 
         val createForm =
             SickDayForm(
@@ -111,14 +111,14 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should create a valid sickday via POST-method with status REQUESTED`() {
-        val user = createHelper.createUser(userAuthorities)
+        val user = createHelper.createUserEntity(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
         val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
-        val person = createHelper.createPerson("john", "doe", user.code)
+        val person = createHelper.createPersonEntity("john", "doe", user.code)
 
         val createForm =
             SickDayForm(
@@ -151,7 +151,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should update a existing sickday via PUT-Method`() {
-        val user = createHelper.createUser(userAuthorities)
+        val user = createHelper.createUserEntity(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -159,7 +159,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
         val description = "Lucy in the sky with diamonds"
         val updatedDescription = "All the leaves are brown"
         val status = Status.REQUESTED
-        val person = createHelper.createPerson("john", "doe", user.code)
+        val person = createHelper.createPersonEntity("john", "doe", user.code)
 
         val createForm =
             SickDayForm(
@@ -196,7 +196,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should not be allowed to update status field existing sickday via PUT-Method`() {
-        val user = createHelper.createUser(userAuthorities)
+        val user = createHelper.createUserEntity(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -204,7 +204,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
         val updatedStatus = Status.APPROVED
-        val person = createHelper.createPerson("john", "doe", user.code)
+        val person = createHelper.createPersonEntity("john", "doe", user.code)
 
         val createForm =
             SickDayForm(
@@ -235,7 +235,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `admin can update status field existing sickday via PUT-Method`() {
-        val admin = createHelper.createUser(adminAuthorities)
+        val admin = createHelper.createUserEntity(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -243,7 +243,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
         val updatedStatus = Status.APPROVED
-        val person = createHelper.createPerson("john", "doe", admin.code)
+        val person = createHelper.createPersonEntity("john", "doe", admin.code)
 
         val createForm =
             SickDayForm(
@@ -276,14 +276,14 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should delete a sickday via DELETE-Method`() {
-        val admin = createHelper.createUser(adminAuthorities)
+        val admin = createHelper.createUserEntity(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
         val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
-        val person = createHelper.createPerson("john", "doe", admin.code)
+        val person = createHelper.createPersonEntity("john", "doe", admin.code)
 
         val createForm =
             SickDayForm(

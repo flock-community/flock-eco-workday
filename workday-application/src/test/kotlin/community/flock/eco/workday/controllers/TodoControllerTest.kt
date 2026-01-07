@@ -9,14 +9,15 @@ import community.flock.eco.workday.application.authorities.WorkDayAuthority
 import community.flock.eco.workday.application.forms.LeaveDayForm
 import community.flock.eco.workday.application.forms.SickDayForm
 import community.flock.eco.workday.application.forms.WorkDayForm
-import community.flock.eco.workday.application.model.CostExpense
+import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.model.LeaveDayType
-import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.services.CostExpenseService
 import community.flock.eco.workday.application.services.LeaveDayService
 import community.flock.eco.workday.application.services.SickDayService
 import community.flock.eco.workday.application.services.WorkDayService
 import community.flock.eco.workday.core.authorities.Authority
+import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -81,21 +82,20 @@ class TodoControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should return 403 when user has no TodoAuthority READ`() {
-        val user = createHelper.createUser(setOf(WorkDayAuthority.READ))
+        val user = createHelper.createUserEntity(setOf(WorkDayAuthority.READ))
 
-        val mvcResult =
-            mvc
-                .perform(
-                    get(baseUrl)
-                        .with(user(CreateHelper.UserSecurity(user)))
-                        .accept(APPLICATION_JSON),
-                ).asyncDispatch()
-                .andExpect(status().isForbidden)
+        mvc
+            .perform(
+                get(baseUrl)
+                    .with(user(CreateHelper.UserSecurity(user)))
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isForbidden)
     }
 
     @Test
     fun `should return empty list when user has TodoAuthority READ but no other authorities`() {
-        val user = createHelper.createUser(todoOnlyAuthorities)
+        val user = createHelper.createUserEntity(todoOnlyAuthorities)
 
         mvc
             .perform(
@@ -110,11 +110,11 @@ class TodoControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `admin should get all todos from all types`() {
-        val user = createHelper.createUser(adminAuthorities)
+        val user = createHelper.createUserEntity(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val client = createHelper.createClient()
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
         val assignment = createHelper.createAssignment(client, person, from, to)
         val days = ChronoUnit.DAYS.between(from, to) + 1
         // Create a workday todo
@@ -160,8 +160,9 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 description = "Test expense",
                 status = Status.REQUESTED,
                 date = from,
-                person = person,
+                person = person.toDomain(),
                 amount = 100.0,
+                files = emptyList(),
             )
         costExpenseService.create(costExpense)
 
@@ -184,11 +185,11 @@ class TodoControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should return only workday todos when user has only WorkDayAuthority read`() {
-        val user = createHelper.createUser(workDayAuthorities)
+        val user = createHelper.createUserEntity(workDayAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val client = createHelper.createClient()
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
         val assignment = createHelper.createAssignment(client, person, from, to)
         val days = ChronoUnit.DAYS.between(from, to) + 1
 
@@ -231,10 +232,10 @@ class TodoControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should return only leaveday todos when user has only LeaveDayAuthority read`() {
-        val user = createHelper.createUser(leaveDayAuthorities)
+        val user = createHelper.createUserEntity(leaveDayAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
         val days = ChronoUnit.DAYS.between(from, to) + 1
 
         // Create a leave day todo
@@ -266,10 +267,10 @@ class TodoControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should return only sickday todos when user has only SickdayAuthority read`() {
-        val user = createHelper.createUser(sickDayAuthorities)
+        val user = createHelper.createUserEntity(sickDayAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
         val days = ChronoUnit.DAYS.between(from, to) + 1
 
         // Create a sick day todo
@@ -300,8 +301,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
     @Transactional
     @Test
     fun `should return only expense todos when user has only ExpenseAuthority read`() {
-        val user = createHelper.createUser(expenseAuthorities)
-        val person = createHelper.createPerson("Test", "User", user.code)
+        val user = createHelper.createUserEntity(expenseAuthorities)
+        val person = createHelper.createPersonEntity("Test", "User", user.code)
         // Create an expense todo
         val costExpense =
             CostExpense(
@@ -309,8 +310,9 @@ class TodoControllerTest : WorkdayIntegrationTest() {
                 description = "Test expense",
                 status = Status.REQUESTED,
                 date = LocalDate.of(2020, 1, 1),
-                person = person,
+                person = person.toDomain(),
                 amount = 100.0,
+                files = emptyList(),
             )
         costExpenseService.create(costExpense)
 
@@ -329,7 +331,7 @@ class TodoControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should return todos sorted by personName and todoType`() {
-        val user = createHelper.createUser(adminAuthorities)
+        val user = createHelper.createUserEntity(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val days = ChronoUnit.DAYS.between(from, to) + 1
@@ -337,8 +339,8 @@ class TodoControllerTest : WorkdayIntegrationTest() {
         val client = createHelper.createClient()
 
         // Create persons with different names to test sorting
-        val personA = createHelper.createPerson("Alice", "Smith")
-        val personB = createHelper.createPerson("Bob", "Johnson")
+        val personA = createHelper.createPersonEntity("Alice", "Smith")
+        val personB = createHelper.createPersonEntity("Bob", "Johnson")
 
         val assignmentA = createHelper.createAssignment(client, personA, from, to)
         val assignmentB = createHelper.createAssignment(client, personB, from, to)
@@ -407,11 +409,11 @@ class TodoControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should only return todos with REQUESTED status`() {
-        val user = createHelper.createUser(adminAuthorities)
+        val user = createHelper.createUserEntity(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val client = createHelper.createClient()
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
         val assignment = createHelper.createAssignment(client, person, from, to)
 
         // Create a workday with APPROVED status (should not be returned)

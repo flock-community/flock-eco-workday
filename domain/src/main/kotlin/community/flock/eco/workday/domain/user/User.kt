@@ -11,6 +11,4 @@ data class User(
     val authorities: Set<String>,
     val accounts: Set<UserAccount>,
     val created: LocalDateTime,
-) {
-}
-
+)

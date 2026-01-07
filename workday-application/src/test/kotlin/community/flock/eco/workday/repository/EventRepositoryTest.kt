@@ -20,8 +20,8 @@ class EventRepositoryTest : WorkdayIntegrationTest() {
 
     @Test
     fun `create update delete`() {
-        val person1 = createHelper.createPerson()
-        val person2 = createHelper.createPerson()
+        val person1 = createHelper.createPersonEntity()
+        val person2 = createHelper.createPersonEntity()
 
         val event =
             Event(

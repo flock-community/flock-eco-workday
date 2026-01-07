@@ -25,5 +25,4 @@ data class Person(
     val user: User?,
 ) {
     fun getFullName(): String = "$firstname $lastname"
-
 }

@@ -20,7 +20,7 @@ class WorkDayServiceIntegrationTest(
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val client = createHelper.createClient()
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
         val assignment = createHelper.createAssignment(client, person, from, to)
 
         val createForm =

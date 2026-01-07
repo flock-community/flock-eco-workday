@@ -8,5 +8,4 @@ data class UserGroup(
     val name: String,
     val users: MutableSet<User>,
     val created: LocalDateTime,
-) {
-}
+)

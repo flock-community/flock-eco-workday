@@ -9,6 +9,7 @@ import community.flock.eco.workday.application.forms.LeaveDayForm
 import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.forms.SickDayForm
 import community.flock.eco.workday.application.forms.WorkDayForm
+import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.model.Assignment
 import community.flock.eco.workday.application.model.Client
 import community.flock.eco.workday.application.model.EventType
@@ -23,6 +24,7 @@ import community.flock.eco.workday.application.services.SickDayService
 import community.flock.eco.workday.application.services.WorkDayService
 import community.flock.eco.workday.core.authorities.Authority
 import community.flock.eco.workday.user.forms.UserForm
+import community.flock.eco.workday.user.mappers.toDomain
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -44,9 +46,16 @@ class CreateHelper(
     private val workDayService: WorkDayService,
     private val eventService: EventService,
 ) {
-    fun createUser(authorities: Set<Authority>) = createUser(UUID.randomUUID().toString(), authorities)
+    fun createUser(authorities: Set<Authority>) = createUserEntity(authorities).toDomain()
+
+    fun createUserEntity(authorities: Set<Authority>) = createUserEntity(UUID.randomUUID().toString(), authorities)
 
     fun createUser(
+        name: String,
+        authorities: Set<Authority>,
+    ) = createUserEntity(name, authorities).toDomain()
+
+    fun createUserEntity(
         name: String,
         authorities: Set<Authority>,
     ) = UserForm(
@@ -66,9 +75,17 @@ class CreateHelper(
             clientService.create(this)
         } ?: error("Cannot create client")
 
-    fun createPerson() = createPerson(UUID.randomUUID().toString(), UUID.randomUUID().toString())
+    fun createPerson() = createPersonEntity().toDomain()
+
+    fun createPersonEntity() = createPersonEntity(UUID.randomUUID().toString(), UUID.randomUUID().toString())
 
     fun createPerson(
+        firstname: String,
+        lastname: String,
+        userCode: String = "",
+    ) = createPersonEntity(firstname, lastname, userCode).toDomain()
+
+    fun createPersonEntity(
         firstname: String,
         lastname: String,
         userCode: String = "",

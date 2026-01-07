@@ -38,6 +38,12 @@
         </dependency>
         <dependency>
             <groupId>flock.community.eco.workday</groupId>
+            <artifactId>domain</artifactId>
+            <version>develop-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>flock.community.eco.workday</groupId>
             <artifactId>workday-core</artifactId>
         </dependency>
 

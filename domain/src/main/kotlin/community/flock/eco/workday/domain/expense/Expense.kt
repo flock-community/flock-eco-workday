@@ -1,7 +1,7 @@
 package community.flock.eco.workday.domain.expense
 
-import community.flock.eco.workday.domain.interfaces.Approve
 import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.interfaces.Approve
 import community.flock.eco.workday.domain.person.Person
 import java.time.LocalDate
 import java.util.UUID
@@ -19,4 +19,3 @@ enum class ExpenseType {
     COST,
     TRAVEL,
 }
-

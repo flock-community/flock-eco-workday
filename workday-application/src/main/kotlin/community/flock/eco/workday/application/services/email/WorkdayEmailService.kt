@@ -2,9 +2,9 @@ package community.flock.eco.workday.application.services.email
 
 import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.application.model.Person
-import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.utils.DateUtils.toHumanReadable
+import community.flock.eco.workday.domain.Status
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.i18n.LocaleContextHolder

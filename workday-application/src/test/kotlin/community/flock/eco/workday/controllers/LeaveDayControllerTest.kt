@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.authorities.LeaveDayAuthority
 import community.flock.eco.workday.application.forms.LeaveDayForm
-import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.services.LeaveDayService
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -36,14 +36,14 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should get a holiday via GET-method`() {
-        val user = createHelper.createUser(userAuthorities)
+        val user = createHelper.createUserEntity(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
         val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
-        val person = createHelper.createPerson("john", "doe", user.code)
+        val person = createHelper.createPersonEntity("john", "doe", user.code)
 
         val createForm =
             LeaveDayForm(
@@ -76,14 +76,14 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should create a valid holiday via POST-method with status REQUESTED`() {
-        val user = createHelper.createUser(userAuthorities)
+        val user = createHelper.createUserEntity(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
         val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
-        val person = createHelper.createPerson("john", "doe", user.code)
+        val person = createHelper.createPersonEntity("john", "doe", user.code)
 
         val createForm =
             LeaveDayForm(
@@ -116,7 +116,7 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should update a existing holiday via PUT-Method`() {
-        val user = createHelper.createUser(userAuthorities)
+        val user = createHelper.createUserEntity(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -124,7 +124,7 @@ class LeaveDayControllerTest(
         val description = "Lucy in the sky with diamonds"
         val updatedDescription = "All the leaves are brown"
         val status = Status.REQUESTED
-        val person = createHelper.createPerson("john", "doe", user.code)
+        val person = createHelper.createPersonEntity("john", "doe", user.code)
 
         val createForm =
             LeaveDayForm(
@@ -161,7 +161,7 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should not be allowed to update status field existing holiday via PUT-Method`() {
-        val user = createHelper.createUser(userAuthorities)
+        val user = createHelper.createUserEntity(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -169,7 +169,7 @@ class LeaveDayControllerTest(
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
         val updatedStatus = Status.APPROVED
-        val person = createHelper.createPerson("john", "doe", user.code)
+        val person = createHelper.createPersonEntity("john", "doe", user.code)
 
         val createForm =
             LeaveDayForm(
@@ -200,7 +200,7 @@ class LeaveDayControllerTest(
 
     @Test
     fun `admin can update status field existing holiday via PUT-Method`() {
-        val admin = createHelper.createUser(adminAuthorities)
+        val admin = createHelper.createUserEntity(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -208,7 +208,7 @@ class LeaveDayControllerTest(
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
         val updatedStatus = Status.APPROVED
-        val person = createHelper.createPerson("john", "doe", admin.code)
+        val person = createHelper.createPersonEntity("john", "doe", admin.code)
 
         val createForm =
             LeaveDayForm(
@@ -241,14 +241,14 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should delete a holiday via DELETE-Method`() {
-        val admin = createHelper.createUser(adminAuthorities)
+        val admin = createHelper.createUserEntity(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
         val hours = 18.0
         val description = "Lucy in the sky with diamonds"
         val status = Status.REQUESTED
-        val person = createHelper.createPerson("john", "doe", admin.code)
+        val person = createHelper.createPersonEntity("john", "doe", admin.code)
 
         val createForm =
             LeaveDayForm(

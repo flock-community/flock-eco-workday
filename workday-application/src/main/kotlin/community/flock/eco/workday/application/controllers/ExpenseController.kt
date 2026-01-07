@@ -14,20 +14,22 @@ import community.flock.eco.workday.api.model.ExpenseType
 import community.flock.eco.workday.api.model.TravelExpenseDetails
 import community.flock.eco.workday.api.model.validate
 import community.flock.eco.workday.application.authorities.ExpenseAuthority
+import community.flock.eco.workday.application.controllers.applyAuthentication
 import community.flock.eco.workday.application.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.application.mappers.CostExpenseMapper
 import community.flock.eco.workday.application.mappers.TravelExpenseMapper
 import community.flock.eco.workday.application.mappers.consume
-import community.flock.eco.workday.application.model.CostExpense
-import community.flock.eco.workday.application.model.Document
-import community.flock.eco.workday.application.model.Expense
-import community.flock.eco.workday.domain.Status
-import community.flock.eco.workday.application.model.TravelExpense
+import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.services.CostExpenseService
 import community.flock.eco.workday.application.services.DocumentStorage
 import community.flock.eco.workday.application.services.ExpenseService
 import community.flock.eco.workday.application.services.TravelExpenseService
 import community.flock.eco.workday.core.utils.toResponse
+import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Document
+import community.flock.eco.workday.domain.expense.CostExpense
+import community.flock.eco.workday.domain.expense.Expense
+import community.flock.eco.workday.domain.expense.TravelExpense
 import org.springframework.boot.web.server.MimeMappings
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -127,7 +129,7 @@ class ExpenseController(
             .findById(id)
             ?.applyAuthentication(authentication())
             ?.run { expenseService.deleteById(id) }
-            ?.let { ExpenseDeleteById.Response204(it) }
+            ?.let { ExpenseDeleteById.Response204(Unit) }
             ?: ExpenseDeleteById.Response404(Error("Expense not found"))
     }
 
@@ -254,7 +256,7 @@ private fun Authentication.isAdmin(): Boolean =
         .map { it.authority }
         .contains(ExpenseAuthority.ADMIN.toName())
 
-private fun Authentication.isOwnerOf(expense: Expense) = isAssociatedWith(expense.person)
+private fun Authentication.isOwnerOf(expense: Expense) = isAssociatedWith(expense.person.toEntity())
 
 private fun getMediaType(name: String): MediaType {
     val extension = File(name).extension.lowercase()

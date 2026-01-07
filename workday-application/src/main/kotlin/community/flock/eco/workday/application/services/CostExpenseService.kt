@@ -2,16 +2,17 @@ package community.flock.eco.workday.application.services
 
 import community.flock.eco.workday.application.events.CreateExpenseEvent
 import community.flock.eco.workday.application.events.UpdateExpenseEvent
-import community.flock.eco.workday.application.model.CostExpense
+import community.flock.eco.workday.application.mappers.toDomain
+import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.repository.CostExpenseRepository
 import community.flock.eco.workday.application.services.email.CostExpenseMailService
 import community.flock.eco.workday.core.utils.toNullable
+import community.flock.eco.workday.domain.expense.CostExpense
 import jakarta.transaction.Transactional
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import java.util.UUID
+import community.flock.eco.workday.application.model.CostExpense as CostExpenseEntity
 
 @Service
 class CostExpenseService(
@@ -19,16 +20,14 @@ class CostExpenseService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val costExpenseMailService: CostExpenseMailService,
 ) {
-    private val log: Logger = LoggerFactory.getLogger(javaClass)
-
     @Transactional
-    fun create(costExpense: CostExpense): CostExpense =
+    fun create(it: CostExpense): CostExpense =
         costExpenseRepository
-            .save(costExpense)
+            .save(it.toEntity())
             .also {
-                costExpenseMailService.sendNotification(it)
                 applicationEventPublisher.publishEvent(CreateExpenseEvent(it))
-            }
+                costExpenseMailService.sendNotification(it)
+            }.toDomain()
 
     @Transactional
     fun update(
@@ -38,12 +37,34 @@ class CostExpenseService(
     ): CostExpense? {
         val currentExpense = costExpenseRepository.findById(id).toNullable()
         return currentExpense
-            ?.let { costExpenseRepository.save(input) }
+            ?.let { costExpenseRepository.save(input.toEntity()) }
             ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
             ?.also {
                 if (!isUpdatedByOwner) {
                     costExpenseMailService.sendUpdate(it)
                 }
-            }
+            }?.toDomain()
     }
 }
+
+fun CostExpense.toEntity() =
+    CostExpenseEntity(
+        id = id,
+        date = date,
+        description = description,
+        person = person.toEntity(),
+        status = status,
+        amount = amount,
+        files = files.map { it.toEntity() }.toMutableList(),
+    )
+
+fun CostExpenseEntity.toDomain() =
+    CostExpense(
+        id = id,
+        date = date,
+        description = description,
+        person = person.toDomain(),
+        status = status,
+        amount = amount,
+        files = files.map { it.toDomain() },
+    )

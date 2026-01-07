@@ -6,14 +6,15 @@ import community.flock.eco.workday.api.model.CostExpenseFileInput
 import community.flock.eco.workday.api.model.CostExpenseInput
 import community.flock.eco.workday.application.authorities.ExpenseAuthority
 import community.flock.eco.workday.application.controllers.produce
-import community.flock.eco.workday.application.model.CostExpense
-import community.flock.eco.workday.application.model.Document
-import community.flock.eco.workday.domain.Status
-import community.flock.eco.workday.application.model.TravelExpense
 import community.flock.eco.workday.application.services.CostExpenseService
 import community.flock.eco.workday.application.services.TravelExpenseService
+import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Document
+import community.flock.eco.workday.domain.expense.CostExpense
+import community.flock.eco.workday.domain.expense.TravelExpense
+import community.flock.eco.workday.domain.user.User
 import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.user.model.User
+import community.flock.eco.workday.user.mappers.toEntity
 import community.flock.wirespec.integration.jackson.kotlin.WirespecModuleKotlin
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -67,7 +68,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     get("$baseUrl/${created.id}")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .accept(APPLICATION_JSON),
                 ).asyncDispatch()
                 .andExpect(status().isOk)
@@ -102,7 +103,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     post("/api/expenses-cost")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .content(mapper.writeValueAsString(costExpenseInput))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
@@ -143,7 +144,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     delete("$baseUrl/$expenseId")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
                 ).asyncDispatch()
@@ -152,7 +153,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     get("$baseUrl/$expenseId")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .accept(APPLICATION_JSON),
                 ).asyncDispatch()
                 .andExpect(status().isNotFound)
@@ -174,7 +175,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     get("$baseUrl/$expenseId")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .accept(APPLICATION_JSON),
                 ).asyncDispatch()
                 .andExpect(status().isForbidden)
@@ -208,7 +209,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     put("/api/expenses-cost/${created.id}")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .content(mapper.writeValueAsString(costExpenseInput))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
@@ -230,7 +231,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     delete("$baseUrl/${created.id}")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
                 ).asyncDispatch()
@@ -281,7 +282,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     get("$baseUrl/${created.id}")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .accept(APPLICATION_JSON),
                 ).asyncDispatch()
                 .andExpect(status().isOk)
@@ -316,7 +317,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     post("/api/expenses-cost")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .content(mapper.writeValueAsString(costExpenseInput))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
@@ -357,7 +358,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     delete("$baseUrl/$expenseId")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
                 ).asyncDispatch()
@@ -366,7 +367,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     get("$baseUrl/$expenseId")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .accept(APPLICATION_JSON),
                 ).asyncDispatch()
                 .andExpect(status().isNotFound)
@@ -388,7 +389,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     get("$baseUrl/$expenseId")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .accept(APPLICATION_JSON),
                 ).asyncDispatch()
                 .andExpect(status().isForbidden)
@@ -422,7 +423,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     put("/api/expenses-cost/${created.id}")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .content(mapper.writeValueAsString(costExpenseInput))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
@@ -444,7 +445,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             mvc
                 .perform(
                     delete("$baseUrl/${created.id}")
-                        .with(user(CreateHelper.UserSecurity(user)))
+                        .with(user(CreateHelper.UserSecurity(user.toEntity())))
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON),
                 ).asyncDispatch()

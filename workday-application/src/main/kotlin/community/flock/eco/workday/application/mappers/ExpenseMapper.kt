@@ -2,11 +2,11 @@ package community.flock.eco.workday.application.mappers
 
 import community.flock.eco.workday.api.model.CostExpenseInput
 import community.flock.eco.workday.api.model.TravelExpenseInput
-import community.flock.eco.workday.application.model.CostExpense
-import community.flock.eco.workday.application.model.Document
-import community.flock.eco.workday.domain.Status
-import community.flock.eco.workday.application.model.TravelExpense
 import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Document
+import community.flock.eco.workday.domain.expense.CostExpense
+import community.flock.eco.workday.domain.expense.TravelExpense
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.util.UUID
@@ -29,6 +29,7 @@ class TravelExpenseMapper(
         person =
             personService
                 .findByUuid(UUID.fromString(input.personId.value))
+                ?.toDomain()
                 ?: error("Cannot find person"),
     )
 }
@@ -52,11 +53,12 @@ class CostExpenseMapper(
                         name = it.name,
                         file = UUID.fromString(it.file.value),
                     )
-                }.toMutableList(),
+                },
         status = input.status.consume(),
         person =
             personService
                 .findByUuid(UUID.fromString(input.personId.value))
+                ?.toDomain()
                 ?: error("Cannot find person"),
     )
 }

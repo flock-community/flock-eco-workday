@@ -14,12 +14,6 @@
     <description>Main Workday application module</description>
 
     <dependencies>
-
-        <dependency>
-            <groupId>flock.community.eco.workday</groupId>
-            <artifactId>domain</artifactId>
-            <version>develop-SNAPSHOT</version>
-        </dependency>
         <!-- Google API -->
         <dependency>
             <groupId>com.google.apis</groupId>
@@ -56,6 +50,12 @@
         <dependency>
             <groupId>community.flock.wirespec.integration</groupId>
             <artifactId>wirespec-jvm</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>flock.community.eco.workday</groupId>
+            <artifactId>domain</artifactId>
+            <version>develop-SNAPSHOT</version>
         </dependency>
 
         <!-- Workday vendored modules -->

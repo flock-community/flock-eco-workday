@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.authorities.WorkDayAuthority
 import community.flock.eco.workday.application.forms.WorkDayForm
-import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.services.WorkDayService
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,11 +33,11 @@ class WorkDayControllerTest(
 
     @Test
     fun `admin should get all workdays from a single user`() {
-        val user = createHelper.createUser(adminAuthorities)
+        val user = createHelper.createUserEntity(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val client = createHelper.createClient()
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
         val assignment = createHelper.createAssignment(client, person, from, to)
 
         val createForm =
@@ -62,11 +62,11 @@ class WorkDayControllerTest(
 
     @Test
     fun `user can only access its own workdays`() {
-        val user = createHelper.createUser(userAuthorities)
+        val user = createHelper.createUserEntity(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val client = createHelper.createClient()
-        val personNotlinkedToUser = createHelper.createPerson()
+        val personNotlinkedToUser = createHelper.createPersonEntity()
         val assignment = createHelper.createAssignment(client, personNotlinkedToUser, from, to)
 
         val createForm =
@@ -92,12 +92,12 @@ class WorkDayControllerTest(
 
     @Test
     fun `should create a valid Workday via POST-method with status REQUESTED`() {
-        val user = createHelper.createUser(userAuthorities)
+        val user = createHelper.createUserEntity(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val status = Status.APPROVED
         val client = createHelper.createClient()
-        val person = createHelper.createPerson("john", "doe", user.code)
+        val person = createHelper.createPersonEntity("john", "doe", user.code)
         val assignment = createHelper.createAssignment(client, person, from, to)
 
         val createForm =
@@ -127,12 +127,12 @@ class WorkDayControllerTest(
 
     @Test
     fun `should not be allowed to update status field existing holiday via PUT-Method`() {
-        val user = createHelper.createUser(userAuthorities)
+        val user = createHelper.createUserEntity(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val status = Status.REQUESTED
         val client = createHelper.createClient()
-        val person = createHelper.createPerson("john", "doe", user.code)
+        val person = createHelper.createPersonEntity("john", "doe", user.code)
         val assignment = createHelper.createAssignment(client, person, from, to)
 
         val createForm =
@@ -164,13 +164,13 @@ class WorkDayControllerTest(
 
     @Test
     fun `admin can update status field existing wrokday via PUT-Method`() {
-        val admin = createHelper.createUser(adminAuthorities)
+        val admin = createHelper.createUserEntity(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 3, 31)
         val status = Status.REQUESTED
         val updatedStatus = Status.REJECTED
         val client = createHelper.createClient()
-        val person = createHelper.createPerson("john", "doe", admin.code)
+        val person = createHelper.createPersonEntity("john", "doe", admin.code)
         val assignment = createHelper.createAssignment(client, person, from, to)
 
         val createForm =

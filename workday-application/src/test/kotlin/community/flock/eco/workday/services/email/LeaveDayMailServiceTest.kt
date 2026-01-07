@@ -3,9 +3,9 @@ package community.flock.eco.workday.services.email
 import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.application.model.LeaveDay
 import community.flock.eco.workday.application.model.LeaveDayType
-import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.services.email.EmailService
 import community.flock.eco.workday.application.services.email.LeaveDayMailService
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.model.aPerson
 import io.mockk.every
 import io.mockk.mockk

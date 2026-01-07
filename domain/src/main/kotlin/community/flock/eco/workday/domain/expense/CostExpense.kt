@@ -1,6 +1,7 @@
 package community.flock.eco.workday.domain.expense
 
 import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.domain.person.Person
 import java.time.LocalDate
 import java.util.UUID
@@ -14,9 +15,3 @@ data class CostExpense(
     val amount: Double,
     val files: List<Document>,
 ) : Expense(id, date, description, person, status, ExpenseType.COST)
-
-
-data class Document(
-    val name: String,
-    val file: UUID,
-)
