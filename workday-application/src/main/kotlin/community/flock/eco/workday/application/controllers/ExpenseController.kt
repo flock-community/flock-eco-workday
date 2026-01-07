@@ -21,7 +21,7 @@ import community.flock.eco.workday.application.mappers.consume
 import community.flock.eco.workday.application.model.CostExpense
 import community.flock.eco.workday.application.model.Document
 import community.flock.eco.workday.application.model.Expense
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.model.TravelExpense
 import community.flock.eco.workday.application.services.CostExpenseService
 import community.flock.eco.workday.application.services.DocumentStorage

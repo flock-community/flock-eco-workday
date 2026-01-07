@@ -4,7 +4,7 @@ import community.flock.eco.workday.application.authorities.LeaveDayAuthority
 import community.flock.eco.workday.application.forms.LeaveDayForm
 import community.flock.eco.workday.application.interfaces.validate
 import community.flock.eco.workday.application.model.LeaveDay
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.repository.LeaveDayRepository
 import community.flock.eco.workday.application.services.email.LeaveDayMailService
 import community.flock.eco.workday.core.utils.toNullable

@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.interfaces
 
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.interfaces.Approve
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 

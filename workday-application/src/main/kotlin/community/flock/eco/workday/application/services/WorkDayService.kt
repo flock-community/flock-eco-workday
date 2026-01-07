@@ -4,7 +4,7 @@ import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import community.flock.eco.workday.application.forms.WorkDayForm
 import community.flock.eco.workday.application.model.Assignment
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.model.WorkDaySheet
 import community.flock.eco.workday.application.repository.WorkDayRepository

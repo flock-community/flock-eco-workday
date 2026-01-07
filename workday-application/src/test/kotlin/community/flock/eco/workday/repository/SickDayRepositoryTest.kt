@@ -3,7 +3,7 @@ package community.flock.eco.workday.repository
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.model.SickDay
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.application.repository.SickdayRepository
 import jakarta.transaction.Transactional

@@ -1,11 +1,12 @@
 package community.flock.eco.workday.application.model
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import community.flock.eco.workday.application.interfaces.Approve
+import community.flock.eco.workday.domain.interfaces.Approve
 import community.flock.eco.workday.application.interfaces.Period
 import community.flock.eco.workday.application.utils.DateUtils.toPeriod
 import community.flock.eco.workday.application.utils.NumericUtils.calculateRevenue
 import community.flock.eco.workday.core.events.EventEntityListeners
+import community.flock.eco.workday.domain.Status
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners

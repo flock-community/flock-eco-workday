@@ -15,7 +15,7 @@ import community.flock.eco.workday.application.model.LeaveDay
 import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.model.SickDay
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.model.TravelExpense
 import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.services.ExpenseService

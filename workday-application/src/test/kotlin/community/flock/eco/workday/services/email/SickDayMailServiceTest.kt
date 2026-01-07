@@ -2,7 +2,7 @@ package community.flock.eco.workday.services.email
 
 import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.application.model.SickDay
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.services.email.EmailService
 import community.flock.eco.workday.application.services.email.SickDayMailService
 import community.flock.eco.workday.model.aPerson

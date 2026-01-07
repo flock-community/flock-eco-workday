@@ -8,7 +8,7 @@ import community.flock.eco.workday.application.authorities.ExpenseAuthority
 import community.flock.eco.workday.application.controllers.produce
 import community.flock.eco.workday.application.model.CostExpense
 import community.flock.eco.workday.application.model.Document
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.model.TravelExpense
 import community.flock.eco.workday.application.services.CostExpenseService
 import community.flock.eco.workday.application.services.TravelExpenseService

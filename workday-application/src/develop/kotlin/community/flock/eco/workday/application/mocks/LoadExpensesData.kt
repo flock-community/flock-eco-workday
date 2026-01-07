@@ -3,7 +3,7 @@ package community.flock.eco.workday.application.mocks
 import community.flock.eco.workday.application.model.CostExpense
 import community.flock.eco.workday.application.model.Expense
 import community.flock.eco.workday.application.model.Person
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.model.TravelExpense
 import community.flock.eco.workday.application.services.CostExpenseService
 import community.flock.eco.workday.application.services.TravelExpenseService

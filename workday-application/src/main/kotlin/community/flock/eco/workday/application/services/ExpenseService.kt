@@ -5,7 +5,7 @@ import community.flock.eco.workday.application.events.DeleteExpenseEvent
 import community.flock.eco.workday.application.events.UpdateExpenseEvent
 import community.flock.eco.workday.application.model.CostExpense
 import community.flock.eco.workday.application.model.Expense
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.model.TravelExpense
 import community.flock.eco.workday.application.repository.CostExpenseRepository
 import community.flock.eco.workday.application.repository.ExpenseRepository

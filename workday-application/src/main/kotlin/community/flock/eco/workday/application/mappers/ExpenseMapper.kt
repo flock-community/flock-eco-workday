@@ -4,7 +4,7 @@ import community.flock.eco.workday.api.model.CostExpenseInput
 import community.flock.eco.workday.api.model.TravelExpenseInput
 import community.flock.eco.workday.application.model.CostExpense
 import community.flock.eco.workday.application.model.Document
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.model.TravelExpense
 import community.flock.eco.workday.application.services.PersonService
 import org.springframework.stereotype.Component

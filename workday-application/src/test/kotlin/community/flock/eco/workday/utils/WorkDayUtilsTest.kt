@@ -1,7 +1,7 @@
 package community.flock.eco.workday.utils
 
 import community.flock.eco.workday.application.model.Assignment
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.utils.toWorkWeeks
 import io.mockk.mockk

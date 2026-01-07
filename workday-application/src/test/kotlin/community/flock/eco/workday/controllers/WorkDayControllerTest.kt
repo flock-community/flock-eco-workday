@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.authorities.WorkDayAuthority
 import community.flock.eco.workday.application.forms.WorkDayForm
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.services.WorkDayService
 import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test

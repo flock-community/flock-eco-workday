@@ -1,6 +1,6 @@
 package community.flock.eco.workday.domain.expenses
 
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.domain.person.Person
 import java.time.LocalDate
 import java.util.UUID

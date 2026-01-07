@@ -1,7 +1,7 @@
 package community.flock.eco.workday.application.repository
 
 import community.flock.eco.workday.application.model.Assignment
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.model.WorkDay
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

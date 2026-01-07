@@ -11,7 +11,7 @@ import community.flock.eco.workday.application.forms.SickDayForm
 import community.flock.eco.workday.application.forms.WorkDayForm
 import community.flock.eco.workday.application.model.CostExpense
 import community.flock.eco.workday.application.model.LeaveDayType
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.services.CostExpenseService
 import community.flock.eco.workday.application.services.LeaveDayService
 import community.flock.eco.workday.application.services.SickDayService

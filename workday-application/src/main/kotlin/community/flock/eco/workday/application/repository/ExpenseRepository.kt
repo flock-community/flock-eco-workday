@@ -2,7 +2,7 @@ package community.flock.eco.workday.application.repository
 
 import community.flock.eco.workday.application.model.CostExpense
 import community.flock.eco.workday.application.model.Expense
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.model.TravelExpense
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

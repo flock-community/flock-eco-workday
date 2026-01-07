@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.model
 
 import community.flock.eco.workday.core.events.EventEntityListeners
+import community.flock.eco.workday.domain.Status
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
 import java.time.LocalDate

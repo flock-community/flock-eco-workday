@@ -4,7 +4,7 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.model.LeaveDay
 import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.model.Person
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.application.repository.LeaveDayRepository
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.core.utils.toNullable
