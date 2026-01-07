@@ -1,4 +1,4 @@
-package community.flock.eco.workday.domain.expenses
+package community.flock.eco.workday.domain.expense
 
 import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.domain.person.Person
