@@ -1,11 +1,8 @@
-package community.flock.eco.workday.application.expense
+package community.flock.eco.workday.domain.expense
 
 import community.flock.eco.workday.application.events.CreateExpenseEvent
 import community.flock.eco.workday.application.events.UpdateExpenseEvent
 import community.flock.eco.workday.core.utils.toNullable
-import community.flock.eco.workday.domain.expense.CostExpense
-import community.flock.eco.workday.domain.expense.Expense
-import community.flock.eco.workday.domain.expense.TravelExpense
 import jakarta.transaction.Transactional
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service

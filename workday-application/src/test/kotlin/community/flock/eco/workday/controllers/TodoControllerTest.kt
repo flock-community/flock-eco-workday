@@ -5,7 +5,7 @@ import community.flock.eco.workday.application.authorities.LeaveDayAuthority
 import community.flock.eco.workday.application.authorities.SickdayAuthority
 import community.flock.eco.workday.application.authorities.TodoAuthority
 import community.flock.eco.workday.application.authorities.WorkDayAuthority
-import community.flock.eco.workday.application.expense.CostExpenseService
+import community.flock.eco.workday.domain.expense.CostExpenseService
 import community.flock.eco.workday.application.expense.ExpenseAuthority
 import community.flock.eco.workday.application.forms.LeaveDayForm
 import community.flock.eco.workday.application.forms.SickDayForm

@@ -1,8 +1,7 @@
-package community.flock.eco.workday.application.expense
+package community.flock.eco.workday.domain.expense
 
 import community.flock.eco.workday.application.events.DeleteExpenseEvent
 import community.flock.eco.workday.domain.Status
-import community.flock.eco.workday.domain.expense.Expense
 import jakarta.transaction.Transactional
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page

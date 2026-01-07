@@ -14,11 +14,11 @@ import community.flock.eco.workday.api.model.ExpenseType
 import community.flock.eco.workday.api.model.TravelExpenseDetails
 import community.flock.eco.workday.api.model.validate
 import community.flock.eco.workday.application.expense.CostExpenseMapper
-import community.flock.eco.workday.application.expense.CostExpenseService
+import community.flock.eco.workday.domain.expense.CostExpenseService
 import community.flock.eco.workday.application.expense.ExpenseAuthority
-import community.flock.eco.workday.application.expense.ExpenseService
+import community.flock.eco.workday.domain.expense.ExpenseService
 import community.flock.eco.workday.application.expense.TravelExpenseMapper
-import community.flock.eco.workday.application.expense.TravelExpenseService
+import community.flock.eco.workday.domain.expense.TravelExpenseService
 import community.flock.eco.workday.application.expense.consume
 import community.flock.eco.workday.application.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.application.mappers.toEntity

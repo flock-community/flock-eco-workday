@@ -10,7 +10,9 @@ import community.flock.eco.workday.application.controllers.produce
 import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.domain.expense.CostExpense
+import community.flock.eco.workday.domain.expense.CostExpenseService
 import community.flock.eco.workday.domain.expense.TravelExpense
+import community.flock.eco.workday.domain.expense.TravelExpenseService
 import community.flock.eco.workday.domain.user.User
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.user.mappers.toEntity
