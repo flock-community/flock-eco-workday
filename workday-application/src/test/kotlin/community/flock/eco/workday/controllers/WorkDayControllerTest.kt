@@ -7,6 +7,7 @@ import community.flock.eco.workday.application.forms.WorkDayForm
 import community.flock.eco.workday.application.services.WorkDayService
 import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.helpers.CreateHelper
+import community.flock.eco.workday.user.mappers.toDomain
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -54,7 +55,7 @@ class WorkDayControllerTest(
         mvc
             .perform(
                 get("$baseUrl?personId=${person.uuid}")
-                    .with(user(CreateHelper.UserSecurity(user)))
+                    .with(user(CreateHelper.UserSecurity(user.toDomain())))
                     .accept(APPLICATION_JSON),
             ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -83,7 +84,7 @@ class WorkDayControllerTest(
         mvc
             .perform(
                 get("$baseUrl?personId=${personNotlinkedToUser.uuid}")
-                    .with(user(CreateHelper.UserSecurity(user)))
+                    .with(user(CreateHelper.UserSecurity(user.toDomain())))
                     .accept(APPLICATION_JSON),
             ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -115,7 +116,7 @@ class WorkDayControllerTest(
         mvc
             .perform(
                 get("$baseUrl/${created.code}")
-                    .with(user(CreateHelper.UserSecurity(user)))
+                    .with(user(CreateHelper.UserSecurity(user.toDomain())))
                     .accept(APPLICATION_JSON),
             ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
@@ -153,7 +154,7 @@ class WorkDayControllerTest(
             .perform(
                 MockMvcRequestBuilders
                     .put("$baseUrl/${created.code}")
-                    .with(user(CreateHelper.UserSecurity(user)))
+                    .with(user(CreateHelper.UserSecurity(user.toDomain())))
                     .content(mapper.writeValueAsString(updatedForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
@@ -191,7 +192,7 @@ class WorkDayControllerTest(
             .perform(
                 MockMvcRequestBuilders
                     .put("$baseUrl/${created.code}")
-                    .with(user(CreateHelper.UserSecurity(admin)))
+                    .with(user(CreateHelper.UserSecurity(admin.toDomain())))
                     .content(mapper.writeValueAsString(updatedCreateForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),

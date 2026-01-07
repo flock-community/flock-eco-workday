@@ -4,11 +4,11 @@ import community.flock.eco.workday.api.model.CostExpenseInput
 import community.flock.eco.workday.api.model.TravelExpenseInput
 import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.mappers.toEntity
+import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.domain.expense.CostExpense
-import community.flock.eco.workday.domain.expense.Expense
 import community.flock.eco.workday.domain.expense.TravelExpense
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -76,18 +76,12 @@ fun StatusApi.consume(): Status =
         StatusApi.DONE -> Status.DONE
     }
 
-fun Expense.toEntity() =
-    when (this) {
-        is CostExpense -> toEntity()
-        is TravelExpense -> toEntity()
-    }
-
-fun TravelExpense.toEntity() =
+fun TravelExpense.toEntity(personEntity: Person) =
     TravelExpenseEntity(
         id = id,
         date = date,
         description = description,
-        person = person.toEntity(),
+        person = personEntity,
         status = status,
         distance = distance,
         allowance = allowance,
@@ -104,12 +98,12 @@ fun TravelExpenseEntity.toDomain() =
         allowance = allowance,
     )
 
-fun CostExpense.toEntity() =
+fun CostExpense.toEntity(personReference: Person) =
     CostExpenseEntity(
         id = id,
         date = date,
         description = description,
-        person = person.toEntity(),
+        person = personReference,
         status = status,
         amount = amount,
         files = files.map { it.toEntity() }.toMutableList(),

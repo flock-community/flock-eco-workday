@@ -3,9 +3,8 @@ package community.flock.eco.workday.application.utils
 import community.flock.eco.workday.domain.common.Direction
 import community.flock.eco.workday.domain.common.Pageable
 import community.flock.eco.workday.domain.common.Sort
-import community.flock.eco.workday.api.model.Pageable as PageableApi
 
-fun PageableApi.toDomain(defaultSort: List<Sort>? = null): Pageable =
+fun toDomain(page: Int, size: Int, sort: List<String>, defaultSort: List<Sort>? = null): Pageable =
     Pageable(
         page = page,
         size = size,

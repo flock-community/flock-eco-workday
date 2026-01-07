@@ -4,8 +4,8 @@ import java.time.LocalDateTime
 
 class UserAccountKey(
     internalId: Long,
-    user: User,
+    userCode: String,
     created: LocalDateTime,
     val key: String,
     val label: String?,
-) : UserAccount(internalId, user, created)
+) : UserAccount(internalId, userCode, created)

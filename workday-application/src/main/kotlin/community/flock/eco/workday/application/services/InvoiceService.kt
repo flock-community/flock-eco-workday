@@ -5,8 +5,7 @@ import community.flock.eco.workday.application.exactonline.model.ExactonlineDocu
 import community.flock.eco.workday.application.exactonline.model.ExactonlineDocumentAttachment
 import community.flock.eco.workday.application.exactonline.model.ExactonlineDocumentType
 import community.flock.eco.workday.application.exactonline.services.ExactonlineAuthenticationService
-import community.flock.eco.workday.application.expense.CostExpense
-import community.flock.eco.workday.application.expense.toEntity
+import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.model.Document
 import community.flock.eco.workday.application.model.Invoice
 import community.flock.eco.workday.application.model.InvoiceStatus
@@ -82,13 +81,13 @@ class InvoiceService(
 
     @TransactionalEventListener(value = [CreateExpenseEvent::class, UpdateExpenseEvent::class], phase = TransactionPhase.BEFORE_COMMIT)
     fun handleCreateExpenseEvent(ev: ExpenseEvent) =
-        when (val entity = ev.entity.toEntity()) {
-            is CostExpense -> generateCostExpenseInvoice(entity)
+        when (val entity = ev.entity) {
+            is community.flock.eco.workday.domain.expense.CostExpense -> generateCostExpenseInvoice(entity)
             else -> null
         }
 
     @Transactional
-    fun generateCostExpenseInvoice(expense: CostExpense) =
+    fun generateCostExpenseInvoice(expense: community.flock.eco.workday.domain.expense.CostExpense) =
         expense
             .apply { invoiceRepository.deleteByReference(id) }
             .run {
@@ -97,7 +96,7 @@ class InvoiceService(
                     type = InvoiceType.EXPENSE,
                     reference = expense.id,
                     amount = 100.0,
-                    documents = expense.files,
+                    documents = expense.files.map { it.toEntity() },
                     status = InvoiceStatus.NEW,
                 )
             }.run { invoiceRepository.save(this) }

@@ -33,4 +33,4 @@ format:
 
 # Use at your own risk. Get a JAR as quickly as possible, excluding as many validation along the way. Ideal when experimenting or reviewing
 yolo :
-	./mvnw verify -DskipTests -Denforcer.skip -Dspotless.skip -Djacoco.skip
+	./mvnw verify -DskipTests -Denforcer.skip -Dspotless.skip -Djacoco.skip -Pdevelop

@@ -729,7 +729,6 @@ class AggregationService(
                 .hoursPerDayInPeriod(from, to)
                 .map { it.value }
                 .sum()
-                .also { println("Days: ${day.from} to ${day.to}: $it") }
         }.sum()
 
     private fun Data.allPersons(): Set<Person> =

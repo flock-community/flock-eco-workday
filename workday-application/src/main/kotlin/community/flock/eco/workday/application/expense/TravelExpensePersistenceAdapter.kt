@@ -1,7 +1,9 @@
 package community.flock.eco.workday.application.expense
 
+import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.domain.expense.TravelExpense
 import community.flock.eco.workday.domain.expense.TravelExpensePersistencePort
+import jakarta.persistence.EntityManager
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import java.util.UUID
@@ -9,11 +11,14 @@ import java.util.UUID
 @Component
 class TravelExpensePersistenceAdapter(
     private val travelExpenseRepository: TravelExpenseRepository,
+    private val entityManager: EntityManager,
 ) : TravelExpensePersistencePort {
-    override fun create(travelExpense: TravelExpense): TravelExpense =
-        travelExpenseRepository
-            .save(travelExpense.toEntity())
+    override fun create(travelExpense: TravelExpense): TravelExpense {
+        val personReference = entityManager.getReference(Person::class.java, travelExpense.person.internalId)
+        return travelExpenseRepository
+            .save(travelExpense.toEntity(personReference))
             .toDomain()
+    }
 
     override fun findById(id: UUID): TravelExpense? =
         travelExpenseRepository
@@ -28,7 +33,11 @@ class TravelExpensePersistenceAdapter(
         return travelExpenseRepository
             .existsById(id)
             .takeIf { it }
-            ?.let { travelExpenseRepository.save(travelExpense.toEntity()) }
+            ?.let {
+                val personReference = entityManager.getReference(Person::class.java, travelExpense.person.internalId)
+                val entity = travelExpense.toEntity(personReference)
+                travelExpenseRepository.save(entity)
+            }
             ?.toDomain()
     }
 }

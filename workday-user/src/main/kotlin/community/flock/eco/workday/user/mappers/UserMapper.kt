@@ -13,17 +13,17 @@ import community.flock.eco.workday.user.model.UserAccountOauth as UserAccountOau
 import community.flock.eco.workday.user.model.UserAccountOauthProvider as UserAccountOauthProviderEntity
 import community.flock.eco.workday.user.model.UserAccountPassword as UserAccountPasswordEntity
 
-fun User.toEntity() =
-    UserEntity(
-        id = internalId,
-        code = code,
-        name = name,
-        email = email,
-        enabled = enabled,
-        authorities = authorities.toMutableSet(),
-        accounts = accounts.map { it.toEntity() }.toMutableSet(),
-        created = created,
-    )
+//fun User.toEntity() =
+//    UserEntity(
+//        id = internalId,
+//        code = code,
+//        name = name,
+//        email = email,
+//        enabled = enabled,
+//        authorities = authorities.toMutableSet(),
+//        accounts = accounts.map { it.toEntity(code) }.toMutableSet(),
+//        created = created,
+//    )
 
 fun UserEntity.toDomain() =
     User(
@@ -37,39 +37,39 @@ fun UserEntity.toDomain() =
         created = created,
     )
 
-fun UserAccount.toEntity(): UserAccountEntity =
-    when (this) {
-        is UserAccountKey ->
-            UserAccountKeyEntity(
-                id = internalId,
-                user = user.toEntity(),
-                key = key,
-                label = label,
-            )
-
-        is UserAccountOauth ->
-            UserAccountOauthEntity(
-                id = internalId,
-                user = user.toEntity(),
-                reference = reference,
-                provider = provider.toEntity(),
-            )
-
-        is UserAccountPassword ->
-            UserAccountPasswordEntity(
-                id = internalId,
-                user = user.toEntity(),
-                secret = secret,
-                resetCode = resetCode,
-            )
-    }
+//fun UserAccount.toEntity(code: String): UserAccountEntity =
+//    when (this) {
+//        is UserAccountKey ->
+//            UserAccountKeyEntity(
+//                id = internalId,
+//                user = code ,
+//                key = key,
+//                label = label,
+//            )
+//
+//        is UserAccountOauth ->
+//            UserAccountOauthEntity(
+//                id = internalId,
+//                user = user.toEntity(),
+//                reference = reference,
+//                provider = provider.toEntity(),
+//            )
+//
+//        is UserAccountPassword ->
+//            UserAccountPasswordEntity(
+//                id = internalId,
+//                user = user.toEntity(),
+//                secret = secret,
+//                resetCode = resetCode,
+//            )
+//    }
 
 fun UserAccountEntity.toDomain(): UserAccount =
     when (this) {
         is UserAccountPasswordEntity -> {
             UserAccountPassword(
                 internalId = id,
-                user = user.toDomain(),
+                userCode = user.code,
                 created = created,
                 secret = secret,
                 resetCode = resetCode,
@@ -79,7 +79,7 @@ fun UserAccountEntity.toDomain(): UserAccount =
         is UserAccountOauthEntity -> {
             UserAccountOauth(
                 internalId = id,
-                user = user.toDomain(),
+                userCode = user.code,
                 created = created,
                 reference = reference,
                 provider = provider.toDomain(),
@@ -89,7 +89,7 @@ fun UserAccountEntity.toDomain(): UserAccount =
         is UserAccountKeyEntity -> {
             UserAccountKey(
                 internalId = id,
-                user = user.toDomain(),
+                userCode = user.code,
                 created = created,
                 key = key,
                 label = label,
@@ -101,13 +101,6 @@ fun UserAccountEntity.toDomain(): UserAccount =
         }
     }
 
-fun UserAccountOauthProvider.toEntity(): UserAccountOauthProviderEntity =
-    when (this) {
-        UserAccountOauthProvider.GOOGLE -> UserAccountOauthProviderEntity.GOOGLE
-        UserAccountOauthProvider.FACEBOOK -> UserAccountOauthProviderEntity.FACEBOOK
-        UserAccountOauthProvider.GITHUB -> UserAccountOauthProviderEntity.GITHUB
-        UserAccountOauthProvider.KRATOS -> UserAccountOauthProviderEntity.KRATOS
-    }
 
 fun UserAccountOauthProviderEntity.toDomain(): UserAccountOauthProvider =
     when (this) {

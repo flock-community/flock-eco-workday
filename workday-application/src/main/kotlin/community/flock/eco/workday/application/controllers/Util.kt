@@ -14,5 +14,17 @@ fun UUID.produce(): UUIDApi = UUIDApi(toString()).also(UUIDApi::validate)
  *
  * @param person The person whose user code is being checked.
  * @return True if the person's user code matches the authentication name; otherwise, false.
+ * @deprecated
  */
+@Deprecated("Use isAssociatedWith(person: community.flock.eco.workday.domain.person.Person) instead")
 fun Authentication.isAssociatedWith(person: Person) = person.user?.code == this.name
+
+/**
+ * Checks if the current user (through the provided Authentication) is associated
+ * with the given person
+ *
+ * @param person The person whose user code is being checked.
+ * @return True if the person's user code matches the authentication name; otherwise, false.
+ */
+fun Authentication.isAssociatedWith(person: community.flock.eco.workday.domain.person.Person) =
+    person.user?.code == this.name

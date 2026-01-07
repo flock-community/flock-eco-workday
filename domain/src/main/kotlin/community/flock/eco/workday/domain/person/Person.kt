@@ -6,7 +6,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 data class Person(
-    val internalIid: Long,
+    val internalId: Long,
     val uuid: UUID,
     val firstname: String,
     val lastname: String,

@@ -43,7 +43,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should get all sickdays from all users`() {
-        val admin = createHelper.createUserEntity(adminAuthorities)
+        val admin = createHelper.createUser(adminAuthorities)
 
         mvc
             .perform(
@@ -56,9 +56,9 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should get all sickdays from a single user`() {
-        val user = createHelper.createUserEntity(userAuthorities)
+        val user = createHelper.createUser(userAuthorities)
         val person = createHelper.createPersonEntity("john", "doe", user.code)
-        val admin = createHelper.createUserEntity(adminAuthorities)
+        val admin = createHelper.createUser(adminAuthorities)
 
         mvc
             .perform(
@@ -71,7 +71,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should get a sickday via GET-method`() {
-        val user = createHelper.createUserEntity(userAuthorities)
+        val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -111,7 +111,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should create a valid sickday via POST-method with status REQUESTED`() {
-        val user = createHelper.createUserEntity(userAuthorities)
+        val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -151,7 +151,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should update a existing sickday via PUT-Method`() {
-        val user = createHelper.createUserEntity(userAuthorities)
+        val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -196,7 +196,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should not be allowed to update status field existing sickday via PUT-Method`() {
-        val user = createHelper.createUserEntity(userAuthorities)
+        val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -235,7 +235,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `admin can update status field existing sickday via PUT-Method`() {
-        val admin = createHelper.createUserEntity(adminAuthorities)
+        val admin = createHelper.createUser(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -276,7 +276,7 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should delete a sickday via DELETE-Method`() {
-        val admin = createHelper.createUserEntity(adminAuthorities)
+        val admin = createHelper.createUser(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)

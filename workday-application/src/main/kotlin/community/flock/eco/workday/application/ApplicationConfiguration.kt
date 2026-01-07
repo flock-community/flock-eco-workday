@@ -9,6 +9,7 @@ import community.flock.eco.workday.application.exactonline.ExactonlineConfigurat
 import community.flock.eco.workday.application.expense.ExpenseConfiguration
 import community.flock.eco.workday.user.UserConfiguration
 import community.flock.wirespec.integration.spring.kotlin.configuration.EnableWirespecController
+import community.flock.wirespec.integration.spring.kotlin.configuration.WirespecSerializationConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -21,6 +22,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @ComponentScan
 @EnableWirespecController
 @Import(
+//    WirespecSerializationConfiguration::class,
     UserConfiguration::class,
     ExpenseConfiguration::class,
     ExactonlineConfiguration::class,

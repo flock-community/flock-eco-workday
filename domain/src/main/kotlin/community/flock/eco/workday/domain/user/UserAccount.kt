@@ -4,6 +4,6 @@ import java.time.LocalDateTime
 
 sealed class UserAccount(
     val internalId: Long,
-    open val user: User,
+    open val userCode: String,
     open val created: LocalDateTime,
 )

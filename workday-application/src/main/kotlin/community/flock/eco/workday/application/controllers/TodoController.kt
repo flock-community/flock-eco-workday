@@ -9,7 +9,6 @@ import community.flock.eco.workday.application.authorities.LeaveDayAuthority
 import community.flock.eco.workday.application.authorities.SickdayAuthority
 import community.flock.eco.workday.application.authorities.WorkDayAuthority
 import community.flock.eco.workday.application.expense.ExpenseAuthority
-import community.flock.eco.workday.application.expense.toEntity
 import community.flock.eco.workday.application.model.LeaveDay
 import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.model.Person
@@ -122,16 +121,13 @@ class TodoController(
         )
 
     private fun Expense.mapTodo() =
-        toEntity()
-            .run {
-                Todo(
-                    id = UUIDApi(id.toString()).also(UUIDApi::validate),
-                    todoType = TodoType.EXPENSE,
-                    personId = UUIDApi(person.uuid.toString()).also(UUIDApi::validate),
-                    personName = person.fullName(),
-                    description = "$description : ${getAmount()}",
-                )
-            }
+        Todo(
+            id = UUIDApi(id.toString()).also(UUIDApi::validate),
+            todoType = TodoType.EXPENSE,
+            personId = UUIDApi(person.uuid.toString()).also(UUIDApi::validate),
+            personName = person.getFullName(),
+            description = "$description : ${getAmount()}",
+        )
 
     private fun Authentication.hasAuthority(authority: Authority) =
         this.authorities

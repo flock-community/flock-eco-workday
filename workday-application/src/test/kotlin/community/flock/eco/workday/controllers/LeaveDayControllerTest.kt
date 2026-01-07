@@ -36,7 +36,7 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should get a holiday via GET-method`() {
-        val user = createHelper.createUserEntity(userAuthorities)
+        val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -76,7 +76,7 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should create a valid holiday via POST-method with status REQUESTED`() {
-        val user = createHelper.createUserEntity(userAuthorities)
+        val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -116,7 +116,7 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should update a existing holiday via PUT-Method`() {
-        val user = createHelper.createUserEntity(userAuthorities)
+        val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -161,7 +161,7 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should not be allowed to update status field existing holiday via PUT-Method`() {
-        val user = createHelper.createUserEntity(userAuthorities)
+        val user = createHelper.createUser(userAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -200,7 +200,7 @@ class LeaveDayControllerTest(
 
     @Test
     fun `admin can update status field existing holiday via PUT-Method`() {
-        val admin = createHelper.createUserEntity(adminAuthorities)
+        val admin = createHelper.createUser(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)
@@ -241,7 +241,7 @@ class LeaveDayControllerTest(
 
     @Test
     fun `should delete a holiday via DELETE-Method`() {
-        val admin = createHelper.createUserEntity(adminAuthorities)
+        val admin = createHelper.createUser(adminAuthorities)
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 3)
         val days = listOf(6.0, 6.0, 6.0)

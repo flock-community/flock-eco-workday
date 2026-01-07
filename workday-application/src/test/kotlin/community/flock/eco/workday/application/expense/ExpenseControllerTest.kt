@@ -15,7 +15,6 @@ import community.flock.eco.workday.domain.expense.TravelExpense
 import community.flock.eco.workday.domain.expense.TravelExpenseService
 import community.flock.eco.workday.domain.user.User
 import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.user.mappers.toEntity
 import community.flock.wirespec.integration.jackson.kotlin.WirespecModuleKotlin
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -63,7 +62,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .get("$baseUrl/${created.id}")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .accept(MediaType.APPLICATION_JSON),
                 ).asyncDispatch()
                 .andExpect(MockMvcResultMatchers.status().isOk)
@@ -99,7 +98,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .post("/api/expenses-cost")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .content(mapper.writeValueAsString(costExpenseInput))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON),
@@ -141,7 +140,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .delete("$baseUrl/$expenseId")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON),
                 ).asyncDispatch()
@@ -151,7 +150,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .get("$baseUrl/$expenseId")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .accept(MediaType.APPLICATION_JSON),
                 ).asyncDispatch()
                 .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -174,7 +173,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .get("$baseUrl/$expenseId")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .accept(MediaType.APPLICATION_JSON),
                 ).asyncDispatch()
                 .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -207,7 +206,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .put("/api/expenses-cost/${created.id}")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .content(mapper.writeValueAsString(costExpenseInput))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON),
@@ -230,7 +229,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .delete("$baseUrl/${created.id}")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON),
                 ).asyncDispatch()
@@ -282,7 +281,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .get("$baseUrl/${created.id}")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .accept(MediaType.APPLICATION_JSON),
                 ).asyncDispatch()
                 .andExpect(MockMvcResultMatchers.status().isOk)
@@ -318,7 +317,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .post("/api/expenses-cost")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .content(mapper.writeValueAsString(costExpenseInput))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON),
@@ -360,7 +359,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .delete("$baseUrl/$expenseId")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON),
                 ).asyncDispatch()
@@ -370,7 +369,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .get("$baseUrl/$expenseId")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .accept(MediaType.APPLICATION_JSON),
                 ).asyncDispatch()
                 .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -393,7 +392,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .get("$baseUrl/$expenseId")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .accept(MediaType.APPLICATION_JSON),
                 ).asyncDispatch()
                 .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -426,7 +425,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .put("/api/expenses-cost/${created.id}")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .content(mapper.writeValueAsString(costExpenseInput))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON),
@@ -449,7 +448,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                 .perform(
                     MockMvcRequestBuilders
                         .delete("$baseUrl/${created.id}")
-                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user.toEntity())))
+                        .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON),
                 ).asyncDispatch()

@@ -3,6 +3,7 @@ package community.flock.eco.workday.application.expense
 import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.application.services.email.EmailService
 import community.flock.eco.workday.application.utils.DateUtils.toHumanReadable
+import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.CostExpenseMailPort
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -15,18 +16,15 @@ class CostExpenseMailService(
 ) : CostExpenseMailPort {
     private val log: Logger = LoggerFactory.getLogger(CostExpenseMailService::class.java)
 
-    override fun sendUpdate(costExpense: community.flock.eco.workday.domain.expense.CostExpense) {
-        sendUpdate(costExpense.toEntity())
-    }
 
-    fun sendUpdate(expense: CostExpense) {
-        val recipient = expense.person
+    override fun sendUpdate(costExpense: CostExpense) {
+        val recipient = costExpense.person
 
-        val subject = "Cost expense update: ${expense.description ?: "description unknown"}"
+        val subject = "Cost expense update: ${costExpense.description ?: "description unknown"}"
         val emailMessage =
             """
-            |<p>Your cost expense for '${expense.description ?: "unknown"}' has been updated.<p>
-            |${expense.html()}
+            |<p>Your cost expense for '${costExpense.description ?: "unknown"}' has been updated.<p>
+            |${costExpense.html()}
             """.trimMargin()
 
         log.info("Email generated for CostExpense update for ${recipient.email}")
@@ -41,18 +39,15 @@ class CostExpenseMailService(
         )
     }
 
-    override fun sendNotification(costExpense: community.flock.eco.workday.domain.expense.CostExpense) {
-        sendNotification(costExpense.toEntity())
-    }
 
-    fun sendNotification(expense: CostExpense) {
-        val employee = expense.person
+    override fun sendNotification(costExpense: CostExpense) {
+        val employee = costExpense.person
 
         val subject = "Cost expense update for ${employee.firstname}"
         val emailMessage =
             """
             |<p>A cost expense has been added for ${employee.firstname}.</p>
-            |${expense.html()}
+            |${costExpense.html()}
             """.trimMargin()
 
         val templateVariables = emailService.createTemplateVariables(employee.firstname, emailMessage)
