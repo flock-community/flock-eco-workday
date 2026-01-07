@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.UUID
+import community.flock.eco.workday.application.expense.Expense as ExpenseEntity
 
 @Service
 class ExpenseService(
@@ -61,7 +62,7 @@ class ExpenseService(
                 expense
             }
 
-    private fun community.flock.eco.workday.application.expense.Expense.toExpenseDomain(): Expense =
+    private fun ExpenseEntity.toExpenseDomain(): Expense =
         when (this) {
             is CostExpense -> toDomain()
             is TravelExpense -> toDomain()
