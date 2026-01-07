@@ -16,7 +16,6 @@ class TravelExpenseMailService(
 ) : TravelExpenseMailPort {
     private val log: Logger = LoggerFactory.getLogger(TravelExpenseMailService::class.java)
 
-
     override fun sendUpdate(travelExpense: TravelExpense) {
         val recipient = travelExpense.person
 
@@ -38,7 +37,6 @@ class TravelExpenseMailService(
             templateId = mailjetTemplateProperties.updateTemplateId,
         )
     }
-
 
     override fun sendNotification(travelExpense: TravelExpense) {
         val employee = travelExpense.person

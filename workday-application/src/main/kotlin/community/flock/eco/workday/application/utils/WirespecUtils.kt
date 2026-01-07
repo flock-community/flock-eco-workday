@@ -4,7 +4,12 @@ import community.flock.eco.workday.domain.common.Direction
 import community.flock.eco.workday.domain.common.Pageable
 import community.flock.eco.workday.domain.common.Sort
 
-fun toDomain(page: Int, size: Int, sort: List<String>, defaultSort: List<Sort>? = null): Pageable =
+fun toDomain(
+    page: Int,
+    size: Int,
+    sort: List<String>,
+    defaultSort: List<Sort>? = null,
+): Pageable =
     Pageable(
         page = page,
         size = size,

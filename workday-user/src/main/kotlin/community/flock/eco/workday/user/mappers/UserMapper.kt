@@ -13,7 +13,7 @@ import community.flock.eco.workday.user.model.UserAccountOauth as UserAccountOau
 import community.flock.eco.workday.user.model.UserAccountOauthProvider as UserAccountOauthProviderEntity
 import community.flock.eco.workday.user.model.UserAccountPassword as UserAccountPasswordEntity
 
-//fun User.toEntity() =
+// fun User.toEntity() =
 //    UserEntity(
 //        id = internalId,
 //        code = code,
@@ -37,7 +37,7 @@ fun UserEntity.toDomain() =
         created = created,
     )
 
-//fun UserAccount.toEntity(code: String): UserAccountEntity =
+// fun UserAccount.toEntity(code: String): UserAccountEntity =
 //    when (this) {
 //        is UserAccountKey ->
 //            UserAccountKeyEntity(
@@ -100,7 +100,6 @@ fun UserAccountEntity.toDomain(): UserAccount =
             error("Cannot map UserAccount entity into a domain object ${this.id}")
         }
     }
-
 
 fun UserAccountOauthProviderEntity.toDomain(): UserAccountOauthProvider =
     when (this) {

@@ -36,7 +36,7 @@ class CostExpensePersistenceAdapter(
             ?.let {
                 val personReference = entityManager.getReference(Person::class.java, costExpense.person.internalId)
                 val entity = costExpense.toEntity(personReference)
-                costExpenseRepository.save(entity) }
-            ?.toDomain()
+                costExpenseRepository.save(entity)
+            }?.toDomain()
     }
 }

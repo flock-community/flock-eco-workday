@@ -77,7 +77,7 @@ class ExpenseController(
                 Sort(property = "id", direction = Direction.ASC),
             )
 
-        val pageable = toDomain(request.queries.page, request.queries.size, request.queries.sort,defaultSort)
+        val pageable = toDomain(request.queries.page, request.queries.size, request.queries.sort, defaultSort)
 
         return when {
             authentication().isAdmin() -> expenseService.findAllByPersonUuid(personId, pageable)

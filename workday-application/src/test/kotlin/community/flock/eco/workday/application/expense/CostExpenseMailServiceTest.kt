@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.expense
 
 import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
+import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.services.email.EmailService
 import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.model.aPerson
@@ -21,11 +22,11 @@ class CostExpenseMailServiceTest {
     @Test
     fun `Send email`() {
         val costExpense =
-            CostExpense(
+            community.flock.eco.workday.domain.expense.CostExpense(
                 id = UUID.randomUUID(),
                 date = LocalDate.of(2025, 2, 13),
                 description = "Aankoop ergonomische hagelslag",
-                person = aPerson(),
+                person = aPerson().toDomain(),
                 status = Status.REQUESTED,
                 amount = 43.21,
                 files = mutableListOf(),

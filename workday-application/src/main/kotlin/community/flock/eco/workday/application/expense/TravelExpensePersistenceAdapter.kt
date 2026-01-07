@@ -37,7 +37,6 @@ class TravelExpensePersistenceAdapter(
                 val personReference = entityManager.getReference(Person::class.java, travelExpense.person.internalId)
                 val entity = travelExpense.toEntity(personReference)
                 travelExpenseRepository.save(entity)
-            }
-            ?.toDomain()
+            }?.toDomain()
     }
 }

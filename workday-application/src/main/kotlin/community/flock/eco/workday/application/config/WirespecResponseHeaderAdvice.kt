@@ -18,8 +18,10 @@ import kotlin.reflect.full.companionObjectInstance
 class WirespecResponseHeaderAdvice(
     private val wirespecSerialization: Wirespec.Serialization,
 ) : ResponseBodyAdvice<Any?> {
-
-    override fun supports(returnType: MethodParameter, converterType: Class<out HttpMessageConverter<*>?>): Boolean = Wirespec.Response::class.java.isAssignableFrom(returnType.parameterType)
+    override fun supports(
+        returnType: MethodParameter,
+        converterType: Class<out HttpMessageConverter<*>?>,
+    ): Boolean = Wirespec.Response::class.java.isAssignableFrom(returnType.parameterType)
 
     @Suppress("UNCHECKED_CAST")
     override fun beforeBodyWrite(
@@ -31,18 +33,21 @@ class WirespecResponseHeaderAdvice(
         response: ServerHttpResponse,
     ): Any? {
         val declaringClass = returnType.parameterType.declaringClass
-        val handler = declaringClass.declaredClasses.toList()
-            .find { it.simpleName == "Handler" }
-            ?: error("Handler not found")
-        val instance = handler
-            .kotlin.companionObjectInstance as Wirespec.Server<Wirespec.Request<*>, Wirespec.Response<*>>
+        val handler =
+            declaringClass.declaredClasses
+                .toList()
+                .find { it.simpleName == "Handler" }
+                ?: error("Handler not found")
+        val instance =
+            handler
+                .kotlin.companionObjectInstance as Wirespec.Server<Wirespec.Request<*>, Wirespec.Response<*>>
         val server = instance.server(wirespecSerialization)
-            if (body is Wirespec.Response<*> ) {
-                val rawResponse = server.to(body)
-                rawResponse.headers.forEach { (key, value) ->
-                    response.headers.addAll(key, value)
-                }
+        if (body is Wirespec.Response<*>) {
+            val rawResponse = server.to(body)
+            rawResponse.headers.forEach { (key, value) ->
+                response.headers.addAll(key, value)
             }
+        }
         return body
     }
 }
