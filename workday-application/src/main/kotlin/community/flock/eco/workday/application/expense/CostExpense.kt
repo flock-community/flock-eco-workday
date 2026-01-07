@@ -1,5 +1,7 @@
-package community.flock.eco.workday.application.model
+package community.flock.eco.workday.application.expense
 
+import community.flock.eco.workday.application.model.Document
+import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.domain.Status
 import jakarta.persistence.ElementCollection

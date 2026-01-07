@@ -1,8 +1,8 @@
 package community.flock.eco.workday.application.mocks
 
+import community.flock.eco.workday.application.expense.CostExpenseService
+import community.flock.eco.workday.application.expense.TravelExpenseService
 import community.flock.eco.workday.application.mappers.toDomain
-import community.flock.eco.workday.application.services.CostExpenseService
-import community.flock.eco.workday.application.services.TravelExpenseService
 import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.Expense

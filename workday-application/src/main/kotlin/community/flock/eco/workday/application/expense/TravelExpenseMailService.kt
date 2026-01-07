@@ -1,31 +1,30 @@
-package community.flock.eco.workday.application.services.email
+package community.flock.eco.workday.application.expense
 
 import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
-import community.flock.eco.workday.application.model.CostExpense
-import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.services.email.EmailService
 import community.flock.eco.workday.application.utils.DateUtils.toHumanReadable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class CostExpenseMailService(
+class TravelExpenseMailService(
     private val emailService: EmailService,
     private val mailjetTemplateProperties: MailjetTemplateProperties,
 ) {
-    private val log: Logger = LoggerFactory.getLogger(CostExpenseMailService::class.java)
+    private val log: Logger = LoggerFactory.getLogger(TravelExpenseMailService::class.java)
 
-    fun sendUpdate(expense: CostExpense) {
+    fun sendUpdate(expense: TravelExpense) {
         val recipient = expense.person
 
-        val subject = "Cost expense update: ${expense.description ?: "description unknown"}"
+        val subject = "Travel expense update: ${expense.description ?: "description unknown"}"
         val emailMessage =
             """
-            |<p>Your cost expense for '${expense.description ?: "unknown"}' has been updated.<p>
+            |<p>Your travel expense for '${expense.description ?: "unknown"}' has been updated.<p>
             |${expense.html()}
             """.trimMargin()
 
-        log.info("Email generated for CostExpense update for ${recipient.email}")
+        log.info("Email generated for TravelExpense update for ${recipient.email}")
 
         val templateVariables = emailService.createTemplateVariables(recipient.firstname, emailMessage)
         emailService.sendEmailMessage(
@@ -37,19 +36,18 @@ class CostExpenseMailService(
         )
     }
 
-    fun sendNotification(expense: CostExpense) {
+    fun sendNotification(expense: TravelExpense) {
         val employee = expense.person
 
-        val subject = "Cost expense update for ${employee.firstname}"
+        val subject = "Travel expense update for ${employee.firstname}"
         val emailMessage =
             """
-            |<p>A cost expense has been added for ${employee.firstname}.</p>
+            |<p>A travel expense has been added for ${employee.firstname}.</p>
             |${expense.html()}
             """.trimMargin()
-
         val templateVariables = emailService.createTemplateVariables(employee.firstname, emailMessage)
 
-        log.info("Email generated for CostExpense notification for ${employee.email}")
+        log.info("Email generated for TravelExpense notification for ${employee.email}")
 
         emailService.sendEmailNotification(
             subject,
@@ -58,15 +56,16 @@ class CostExpenseMailService(
         )
     }
 
-    private fun CostExpense.html() =
+    private fun TravelExpense.html() =
         // language=html
         """
         |<div>
-        |    <p>Cost expense state:</p>
+        |    <p>Travel expense state:</p>
         |    <ul>
         |        <li>Description: $description</li>
-        |        <li>Incurred on: ${date.toHumanReadable()}</li>
-        |        <li>Amount: €$amount</li>
+        |        <li>Issue date: ${date.toHumanReadable()}</li>
+        |        <li>Distance: $distance</li>
+        |        <li>Allowance: $allowance</li>
         |        <li>Status: $status</li>
         |    </ul>
         |</div>

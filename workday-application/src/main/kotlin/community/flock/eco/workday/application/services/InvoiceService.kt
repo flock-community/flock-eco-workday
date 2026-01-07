@@ -8,7 +8,7 @@ import community.flock.eco.workday.application.exactonline.model.ExactonlineDocu
 import community.flock.eco.workday.application.exactonline.model.ExactonlineDocumentAttachment
 import community.flock.eco.workday.application.exactonline.model.ExactonlineDocumentType
 import community.flock.eco.workday.application.exactonline.services.ExactonlineAuthenticationService
-import community.flock.eco.workday.application.model.CostExpense
+import community.flock.eco.workday.application.expense.CostExpense
 import community.flock.eco.workday.application.model.Document
 import community.flock.eco.workday.application.model.Invoice
 import community.flock.eco.workday.application.model.InvoiceStatus

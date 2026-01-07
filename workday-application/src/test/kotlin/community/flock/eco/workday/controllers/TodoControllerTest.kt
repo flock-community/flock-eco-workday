@@ -1,17 +1,17 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.workday.WorkdayIntegrationTest
-import community.flock.eco.workday.application.authorities.ExpenseAuthority
 import community.flock.eco.workday.application.authorities.LeaveDayAuthority
 import community.flock.eco.workday.application.authorities.SickdayAuthority
 import community.flock.eco.workday.application.authorities.TodoAuthority
 import community.flock.eco.workday.application.authorities.WorkDayAuthority
+import community.flock.eco.workday.application.expense.CostExpenseService
+import community.flock.eco.workday.application.expense.ExpenseAuthority
 import community.flock.eco.workday.application.forms.LeaveDayForm
 import community.flock.eco.workday.application.forms.SickDayForm
 import community.flock.eco.workday.application.forms.WorkDayForm
 import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.model.LeaveDayType
-import community.flock.eco.workday.application.services.CostExpenseService
 import community.flock.eco.workday.application.services.LeaveDayService
 import community.flock.eco.workday.application.services.SickDayService
 import community.flock.eco.workday.application.services.WorkDayService

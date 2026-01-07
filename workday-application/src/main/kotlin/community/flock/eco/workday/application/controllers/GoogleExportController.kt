@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.controllers
 
-import community.flock.eco.workday.application.authorities.ExpenseAuthority
+import community.flock.eco.workday.application.expense.ExpenseAuthority
 import community.flock.eco.workday.application.google.sheets.WorkDaySheet
 import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.services.WorkDayService

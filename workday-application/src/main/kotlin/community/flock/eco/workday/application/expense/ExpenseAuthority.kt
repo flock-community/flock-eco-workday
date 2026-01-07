@@ -1,4 +1,4 @@
-package community.flock.eco.workday.application.authorities
+package community.flock.eco.workday.application.expense
 
 import community.flock.eco.workday.core.authorities.Authority
 

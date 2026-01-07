@@ -1,7 +1,8 @@
-package community.flock.eco.workday.application.mappers
+package community.flock.eco.workday.application.expense
 
 import community.flock.eco.workday.api.model.CostExpenseInput
 import community.flock.eco.workday.api.model.TravelExpenseInput
+import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.domain.common.Document

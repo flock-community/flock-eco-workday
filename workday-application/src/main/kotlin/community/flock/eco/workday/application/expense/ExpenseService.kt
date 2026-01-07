@@ -1,7 +1,6 @@
-package community.flock.eco.workday.application.services
+package community.flock.eco.workday.application.expense
 
 import community.flock.eco.workday.application.events.DeleteExpenseEvent
-import community.flock.eco.workday.application.repository.ExpenseRepository
 import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.domain.expense.Expense
 import jakarta.transaction.Transactional
@@ -11,9 +10,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.UUID
-import community.flock.eco.workday.application.model.CostExpense as CostExpenseEntity
-import community.flock.eco.workday.application.model.Expense as ExpenseEntity
-import community.flock.eco.workday.application.model.TravelExpense as TravelExpenseEntity
 
 @Service
 @Transactional
@@ -66,10 +62,10 @@ class ExpenseService(
                 expense
             }
 
-    private fun ExpenseEntity.toExpenseDomain(): Expense =
+    private fun community.flock.eco.workday.application.expense.Expense.toExpenseDomain(): Expense =
         when (this) {
-            is CostExpenseEntity -> toDomain()
-            is TravelExpenseEntity -> toDomain()
+            is CostExpense -> toDomain()
+            is TravelExpense -> toDomain()
             else -> error("Unsupported expense type")
         }
 }

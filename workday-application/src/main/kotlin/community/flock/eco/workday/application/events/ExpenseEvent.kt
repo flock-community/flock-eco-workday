@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.events
 
-import community.flock.eco.workday.application.model.Expense
+import community.flock.eco.workday.application.expense.Expense
 import community.flock.eco.workday.core.events.Event
 
 sealed class ExpenseEvent(
