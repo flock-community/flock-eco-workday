@@ -15,6 +15,11 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>flock.community.eco.workday</groupId>
+            <artifactId>domain</artifactId>
+            <version>develop-SNAPSHOT</version>
+        </dependency>
         <!-- Google API -->
         <dependency>
             <groupId>com.google.apis</groupId>

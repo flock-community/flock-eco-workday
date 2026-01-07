@@ -4,10 +4,6 @@ import community.flock.eco.workday.application.model.Status
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 
-interface Approve {
-    val status: Status
-}
-
 fun <T : Approve> T.applyAllowedToUpdate(
     status: Status,
     isAdmin: Boolean,
