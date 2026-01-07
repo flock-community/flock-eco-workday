@@ -6,7 +6,7 @@ import community.flock.eco.workday.application.model.SickDay
 import community.flock.eco.workday.application.repository.SickdayRepository
 import community.flock.eco.workday.application.services.email.SickDayMailService
 import community.flock.eco.workday.core.utils.toNullable
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import jakarta.persistence.EntityManager
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service

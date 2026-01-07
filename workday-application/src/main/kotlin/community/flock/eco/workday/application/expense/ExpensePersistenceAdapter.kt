@@ -2,7 +2,7 @@ package community.flock.eco.workday.application.expense
 
 import community.flock.eco.workday.core.utils.toDomainPage
 import community.flock.eco.workday.core.utils.toEntity
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.domain.common.Page
 import community.flock.eco.workday.domain.common.Pageable
 import community.flock.eco.workday.domain.expense.Expense

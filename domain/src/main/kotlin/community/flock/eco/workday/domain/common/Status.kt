@@ -1,4 +1,4 @@
-package community.flock.eco.workday.domain
+package community.flock.eco.workday.domain.common
 
 enum class Status {
     REQUESTED,

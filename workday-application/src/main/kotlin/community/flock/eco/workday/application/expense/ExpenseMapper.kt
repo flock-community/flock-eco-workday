@@ -6,7 +6,7 @@ import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.PersonService
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.TravelExpense

@@ -4,7 +4,7 @@ import community.flock.eco.workday.application.config.properties.MailjetTemplate
 import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.services.email.EmailService
 import community.flock.eco.workday.application.services.email.WorkdayEmailService
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.model.aWorkDaySheet
 import community.flock.eco.workday.model.anAssignment
 import io.mockk.every

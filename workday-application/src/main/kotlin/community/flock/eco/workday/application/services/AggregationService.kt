@@ -35,7 +35,7 @@ import community.flock.eco.workday.application.utils.DateUtils.isWorkingDay
 import community.flock.eco.workday.application.utils.DateUtils.toDateRange
 import community.flock.eco.workday.application.utils.NumericUtils.calculateRevenue
 import community.flock.eco.workday.application.utils.NumericUtils.sum
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.BigInteger

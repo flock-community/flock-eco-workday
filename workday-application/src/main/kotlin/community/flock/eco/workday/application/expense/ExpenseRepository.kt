@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.expense
 
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

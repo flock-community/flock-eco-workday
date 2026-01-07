@@ -2,7 +2,7 @@ package community.flock.eco.workday.model
 
 import community.flock.eco.workday.application.model.Assignment
 import community.flock.eco.workday.application.model.WorkDay
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import java.time.LocalDate
 
 fun aWorkDay(assignment: Assignment = anAssignment()) =

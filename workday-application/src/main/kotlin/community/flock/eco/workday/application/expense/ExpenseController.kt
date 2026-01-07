@@ -18,7 +18,7 @@ import community.flock.eco.workday.application.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.application.services.DocumentStorage
 import community.flock.eco.workday.application.utils.toDomain
 import community.flock.eco.workday.core.utils.toResponse
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.domain.common.Direction
 import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.domain.common.Sort

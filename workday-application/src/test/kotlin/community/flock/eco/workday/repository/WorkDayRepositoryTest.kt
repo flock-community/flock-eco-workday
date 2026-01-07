@@ -3,7 +3,7 @@ package community.flock.eco.workday.repository
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.repository.WorkDayRepository
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

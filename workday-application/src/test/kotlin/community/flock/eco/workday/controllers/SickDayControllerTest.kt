@@ -5,7 +5,7 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.authorities.SickdayAuthority
 import community.flock.eco.workday.application.forms.SickDayForm
 import community.flock.eco.workday.application.services.SickDayService
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

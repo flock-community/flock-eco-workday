@@ -4,7 +4,7 @@ import community.flock.eco.workday.application.config.properties.MailjetTemplate
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.utils.DateUtils.toHumanReadable
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.i18n.LocaleContextHolder

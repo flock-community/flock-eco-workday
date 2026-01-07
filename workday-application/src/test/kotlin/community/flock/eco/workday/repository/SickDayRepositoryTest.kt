@@ -5,7 +5,7 @@ import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.model.SickDay
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.application.repository.SickdayRepository
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

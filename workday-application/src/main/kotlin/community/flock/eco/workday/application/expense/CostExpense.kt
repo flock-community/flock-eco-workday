@@ -3,7 +3,7 @@ package community.flock.eco.workday.application.expense
 import community.flock.eco.workday.application.model.Document
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.core.events.EventEntityListeners
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners

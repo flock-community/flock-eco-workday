@@ -7,7 +7,7 @@ import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.LeaveDayRepository
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.core.utils.toNullable
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.utils.dayFromLocalDate
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat

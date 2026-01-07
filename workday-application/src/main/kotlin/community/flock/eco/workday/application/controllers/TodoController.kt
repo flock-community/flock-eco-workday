@@ -18,7 +18,7 @@ import community.flock.eco.workday.application.services.LeaveDayService
 import community.flock.eco.workday.application.services.SickDayService
 import community.flock.eco.workday.application.services.WorkDayService
 import community.flock.eco.workday.core.authorities.Authority
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.Expense
 import community.flock.eco.workday.domain.expense.ExpenseService

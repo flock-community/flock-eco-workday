@@ -7,7 +7,7 @@ import community.flock.eco.workday.api.model.CostExpenseInput
 import community.flock.eco.workday.api.model.ExpenseStatus
 import community.flock.eco.workday.api.model.UUID
 import community.flock.eco.workday.application.controllers.produce
-import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.CostExpenseService
