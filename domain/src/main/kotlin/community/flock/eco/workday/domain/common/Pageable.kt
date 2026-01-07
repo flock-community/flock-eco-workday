@@ -15,5 +15,3 @@ enum class Direction {
     ASC,
     DESC,
 }
-
-

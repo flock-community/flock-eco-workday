@@ -14,18 +14,19 @@ import community.flock.eco.workday.api.model.ExpenseType
 import community.flock.eco.workday.api.model.TravelExpenseDetails
 import community.flock.eco.workday.api.model.validate
 import community.flock.eco.workday.application.controllers.isAssociatedWith
-import community.flock.eco.workday.domain.expense.CostExpenseService
-import community.flock.eco.workday.domain.expense.ExpenseService
-import community.flock.eco.workday.domain.expense.TravelExpenseService
 import community.flock.eco.workday.application.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.services.DocumentStorage
+import community.flock.eco.workday.core.utils.toDomain
 import community.flock.eco.workday.core.utils.toResponse
 import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.domain.expense.CostExpense
+import community.flock.eco.workday.domain.expense.CostExpenseService
 import community.flock.eco.workday.domain.expense.Expense
+import community.flock.eco.workday.domain.expense.ExpenseService
 import community.flock.eco.workday.domain.expense.TravelExpense
+import community.flock.eco.workday.domain.expense.TravelExpenseService
 import org.springframework.boot.web.server.MimeMappings
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -71,6 +72,7 @@ class ExpenseController(
     @PreAuthorize("hasAuthority('ExpenseAuthority.READ')")
     override suspend fun expenseAll(request: ExpenseAll.Request): ExpenseAll.Response<*> {
         val personId = request.queries.personId.let(UUID::fromString)
+        // TODO: Skip the mapping to spring domain, and than internal domain. Skip spring
         val defaultSort =
             Sort
                 .by("date")
@@ -89,13 +91,12 @@ class ExpenseController(
 
                 ?: PageRequest.of(0, 20, defaultSort)
         return when {
-            authentication().isAdmin() -> expenseService.findAllByPersonUuid(personId, pageable)
-            else -> expenseService.findAllByPersonUserCode(authentication().name, pageable)
+            authentication().isAdmin() -> expenseService.findAllByPersonUuid(personId, pageable.toDomain())
+            else -> expenseService.findAllByPersonUserCode(authentication().name, pageable.toDomain())
         }.map {
             when (it) {
                 is TravelExpense -> it.produce()
                 is CostExpense -> it.produce()
-                else -> error("Unsupported expense type")
             }
         }.let {
             ExpenseAll.Response200(it.content)
@@ -112,7 +113,6 @@ class ExpenseController(
                 when (it) {
                     is TravelExpense -> it.produce()
                     is CostExpense -> it.produce()
-                    else -> error("Unsupported expense type")
                 }
             }?.let { ExpenseById.Response200(it) }
             ?: ExpenseById.Response404(Error("Expense not found"))
@@ -174,7 +174,7 @@ class ExpenseController(
             ?.applyAuthentication(authentication())
             ?.applyAllowedToUpdate(request.body.status.consume(), authentication().isAdmin())
             ?.run {
-                val consume = costExpenseMapper.consume(request.body, id)
+                val consume = costExpenseMapper.consume(request.body, this.id)
                 costExpenseService.update(
                     id = id,
                     input = consume,
@@ -256,7 +256,7 @@ private fun Authentication.isOwnerOf(expense: Expense) = isAssociatedWith(expens
 
 private fun getMediaType(name: String): MediaType {
     val extension = File(name).extension.lowercase()
-    val mime = MimeMappings.DEFAULT.get(extension)
+    val mime = MimeMappings.DEFAULT[extension]
     return MediaType.parseMediaType(mime)
 }
 

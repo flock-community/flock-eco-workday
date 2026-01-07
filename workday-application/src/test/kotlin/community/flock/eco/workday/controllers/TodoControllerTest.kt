@@ -5,7 +5,6 @@ import community.flock.eco.workday.application.authorities.LeaveDayAuthority
 import community.flock.eco.workday.application.authorities.SickdayAuthority
 import community.flock.eco.workday.application.authorities.TodoAuthority
 import community.flock.eco.workday.application.authorities.WorkDayAuthority
-import community.flock.eco.workday.domain.expense.CostExpenseService
 import community.flock.eco.workday.application.expense.ExpenseAuthority
 import community.flock.eco.workday.application.forms.LeaveDayForm
 import community.flock.eco.workday.application.forms.SickDayForm
@@ -18,6 +17,7 @@ import community.flock.eco.workday.application.services.WorkDayService
 import community.flock.eco.workday.core.authorities.Authority
 import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.domain.expense.CostExpense
+import community.flock.eco.workday.domain.expense.CostExpenseService
 import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

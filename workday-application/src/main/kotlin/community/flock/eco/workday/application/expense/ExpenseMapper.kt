@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.util.UUID
 import community.flock.eco.workday.api.model.ExpenseStatus as StatusApi
-import community.flock.eco.workday.application.expense.TravelExpense as TravelExpenseEntity
 import community.flock.eco.workday.application.expense.CostExpense as CostExpenseEntity
+import community.flock.eco.workday.application.expense.TravelExpense as TravelExpenseEntity
 
 @Component
 class TravelExpenseMapper(
@@ -103,7 +103,6 @@ fun TravelExpenseEntity.toDomain() =
         distance = distance,
         allowance = allowance,
     )
-
 
 fun CostExpense.toEntity() =
     CostExpenseEntity(

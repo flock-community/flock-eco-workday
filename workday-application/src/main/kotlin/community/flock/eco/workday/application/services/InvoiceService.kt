@@ -1,20 +1,21 @@
 package community.flock.eco.workday.application.services
 
-import community.flock.eco.workday.domain.expense.CreateExpenseEvent
-import community.flock.eco.workday.domain.expense.ExpenseEvent
-import community.flock.eco.workday.domain.expense.UpdateExpenseEvent
 import community.flock.eco.workday.application.exactonline.clients.ExactonlineDocumentClient
 import community.flock.eco.workday.application.exactonline.model.ExactonlineDocument
 import community.flock.eco.workday.application.exactonline.model.ExactonlineDocumentAttachment
 import community.flock.eco.workday.application.exactonline.model.ExactonlineDocumentType
 import community.flock.eco.workday.application.exactonline.services.ExactonlineAuthenticationService
 import community.flock.eco.workday.application.expense.CostExpense
+import community.flock.eco.workday.application.expense.toEntity
 import community.flock.eco.workday.application.model.Document
 import community.flock.eco.workday.application.model.Invoice
 import community.flock.eco.workday.application.model.InvoiceStatus
 import community.flock.eco.workday.application.model.InvoiceType
 import community.flock.eco.workday.application.repository.InvoiceRepository
 import community.flock.eco.workday.core.utils.toNullable
+import community.flock.eco.workday.domain.expense.CreateExpenseEvent
+import community.flock.eco.workday.domain.expense.ExpenseEvent
+import community.flock.eco.workday.domain.expense.UpdateExpenseEvent
 import jakarta.servlet.http.HttpSession
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
@@ -81,7 +82,7 @@ class InvoiceService(
 
     @TransactionalEventListener(value = [CreateExpenseEvent::class, UpdateExpenseEvent::class], phase = TransactionPhase.BEFORE_COMMIT)
     fun handleCreateExpenseEvent(ev: ExpenseEvent) =
-        when (val entity = ev.entity) {
+        when (val entity = ev.entity.toEntity()) {
             is CostExpense -> generateCostExpenseInvoice(entity)
             else -> null
         }

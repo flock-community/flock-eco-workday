@@ -3,6 +3,7 @@ package community.flock.eco.workday.application.expense
 import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.application.services.email.EmailService
 import community.flock.eco.workday.application.utils.DateUtils.toHumanReadable
+import community.flock.eco.workday.domain.expense.CostExpenseMailPort
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -11,8 +12,12 @@ import org.springframework.stereotype.Service
 class CostExpenseMailService(
     private val emailService: EmailService,
     private val mailjetTemplateProperties: MailjetTemplateProperties,
-) {
+) : CostExpenseMailPort {
     private val log: Logger = LoggerFactory.getLogger(CostExpenseMailService::class.java)
+
+    override fun sendUpdate(costExpense: community.flock.eco.workday.domain.expense.CostExpense) {
+        sendUpdate(costExpense.toEntity())
+    }
 
     fun sendUpdate(expense: CostExpense) {
         val recipient = expense.person
@@ -34,6 +39,10 @@ class CostExpenseMailService(
             templateVariables = templateVariables,
             templateId = mailjetTemplateProperties.updateTemplateId,
         )
+    }
+
+    override fun sendNotification(costExpense: community.flock.eco.workday.domain.expense.CostExpense) {
+        sendNotification(costExpense.toEntity())
     }
 
     fun sendNotification(expense: CostExpense) {

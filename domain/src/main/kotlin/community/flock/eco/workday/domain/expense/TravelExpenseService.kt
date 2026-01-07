@@ -1,43 +1,32 @@
 package community.flock.eco.workday.domain.expense
 
-import community.flock.eco.workday.application.events.CreateExpenseEvent
-import community.flock.eco.workday.application.events.UpdateExpenseEvent
-import community.flock.eco.workday.core.utils.toNullable
-import jakarta.transaction.Transactional
-import org.springframework.context.ApplicationEventPublisher
-import org.springframework.stereotype.Service
+import community.flock.eco.workday.domain.common.ApplicationEventPublisher
 import java.util.UUID
 
-@Service
 class TravelExpenseService(
-    private val travelExpenseRepository: TravelExpenseRepository,
+    private val travelExpenseRepository: TravelExpensePersistencePort,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val travelExpenseMailService: TravelExpenseMailService,
+    private val travelExpenseMailService: TravelExpenseMailPort,
 ) {
-    @Transactional
     fun create(travelExpense: TravelExpense): TravelExpense =
         travelExpenseRepository
-            .save(travelExpense.toEntity())
-            .also { applicationEventPublisher.publishEvent(CreateExpenseEvent(it)) }
+            .create(travelExpense)
             .also {
+                applicationEventPublisher.publishEvent(CreateExpenseEvent(it))
                 travelExpenseMailService.sendNotification(it)
-            }.toDomain()
+            }
 
-    @Transactional
     fun update(
         id: UUID,
         input: TravelExpense,
         isUpdatedByOwner: Boolean,
-    ): TravelExpense? {
-        val currentExpense = travelExpenseRepository.findById(id).toNullable()
-        return currentExpense
-            ?.let { travelExpenseRepository.save(input.toEntity()) }
-            ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
+    ): TravelExpense? =
+        travelExpenseRepository
+            .updateIfExists(id, input)
             ?.also {
+                applicationEventPublisher.publishEvent(UpdateExpenseEvent(it))
                 if (!isUpdatedByOwner) {
                     travelExpenseMailService.sendUpdate(it)
                 }
-            }?.toDomain()
-    }
+            }
 }
-

@@ -10,5 +10,4 @@ class ApplicationEventPublisherConfiguration {
     @Bean
     fun applicationEventPublisher(eventPublisher: SpringApplicationEventPublisher) =
         ApplicationEventPublisher { eventPublisher.publishEvent(it) }
-
 }

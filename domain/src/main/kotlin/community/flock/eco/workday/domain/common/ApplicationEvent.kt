@@ -5,12 +5,8 @@ import java.time.Instant
 import java.util.EventObject
 
 abstract class ApplicationEvent : EventObject {
-    /**
-     * Return the time when the event occurred.
-     */
     /** System time when the event happened.  */
     val timestamp: Instant?
-
 
     /**
      * Create a new `ApplicationEvent` with its [timestamp][.getTimestamp]

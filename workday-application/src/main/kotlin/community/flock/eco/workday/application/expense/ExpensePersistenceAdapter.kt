@@ -19,9 +19,10 @@ import community.flock.eco.workday.application.expense.TravelExpense as TravelEx
 class ExpensePersistenceAdapter(
     private val expenseRepository: ExpenseRepository,
 ) : ExpensePersistencePort {
-    override fun findAll(pageable: Pageable): Page<Expense> = expenseRepository
-        .findAll(pageable.toEntity())
-        .toDomainPage { toExpenseDomain() }
+    override fun findAll(pageable: Pageable): Page<Expense> =
+        expenseRepository
+            .findAll(pageable.toEntity())
+            .toDomainPage { toExpenseDomain() }
 
     override fun findByIdOrNull(id: UUID): Expense? =
         expenseRepository
@@ -30,19 +31,19 @@ class ExpensePersistenceAdapter(
 
     override fun findAllByPersonUuid(
         personId: UUID,
-        pageable: Pageable
-    ): Page<Expense> = expenseRepository
-        .findAllByPersonUuid(personId, pageable.toEntity())
-        .toDomainPage { toExpenseDomain() }
+        pageable: Pageable,
+    ): Page<Expense> =
+        expenseRepository
+            .findAllByPersonUuid(personId, pageable.toEntity())
+            .toDomainPage { toExpenseDomain() }
 
     override fun findAllByPersonUserCode(
         personCode: String,
-        pageable: Pageable
-    ): Page<Expense> {
-        return expenseRepository
+        pageable: Pageable,
+    ): Page<Expense> =
+        expenseRepository
             .findAllByPersonUserCode(personCode, pageable.toEntity())
             .toDomainPage { toExpenseDomain() }
-    }
 
     override fun findAllByStatus(status: Status): List<Expense> =
         expenseRepository
@@ -66,4 +67,3 @@ class ExpensePersistenceAdapter(
             else -> error("Unsupported expense type")
         }
 }
-

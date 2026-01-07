@@ -9,24 +9,34 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class ExpenseConfiguration {
-
     @Bean
-    fun expenseService(expenseRepository: ExpensePersistenceAdapter, applicationEventPublisher: ApplicationEventPublisher) = ExpenseService(
+    fun expenseService(
+        expenseRepository: ExpensePersistenceAdapter,
+        applicationEventPublisher: ApplicationEventPublisher,
+    ) = ExpenseService(
         expenseRepository = expenseRepository,
         applicationEventPublisher = applicationEventPublisher,
     )
 
     @Bean
-    fun costExpenseService() = CostExpenseService(
-        costExpenseRepository = TODO(),
-        applicationEventPublisher = TODO(),
-        costExpenseMailService = TODO()
+    fun costExpenseService(
+        costExpensePersistenceAdapter: CostExpensePersistenceAdapter,
+        applicationEventPublisher: ApplicationEventPublisher,
+        costExpenseMailService: CostExpenseMailService,
+    ) = CostExpenseService(
+        costExpenseRepository = costExpensePersistenceAdapter,
+        applicationEventPublisher = applicationEventPublisher,
+        costExpenseMailService = costExpenseMailService,
     )
 
     @Bean
-    fun travelExpenseService() = TravelExpenseService(
-        travelExpenseRepository = TODO(),
-        applicationEventPublisher = TODO(),
-        travelExpenseMailService = TODO()
+    fun travelExpenseService(
+        travelExpensePersistenceAdapter: TravelExpensePersistenceAdapter,
+        applicationEventPublisher: ApplicationEventPublisher,
+        travelExpenseMailService: TravelExpenseMailService,
+    ) = TravelExpenseService(
+        travelExpenseRepository = travelExpensePersistenceAdapter,
+        applicationEventPublisher = applicationEventPublisher,
+        travelExpenseMailService = travelExpenseMailService,
     )
 }
