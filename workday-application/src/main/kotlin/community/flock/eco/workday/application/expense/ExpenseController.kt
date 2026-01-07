@@ -17,10 +17,13 @@ import community.flock.eco.workday.application.controllers.isAssociatedWith
 import community.flock.eco.workday.application.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.services.DocumentStorage
-import community.flock.eco.workday.core.utils.toDomain
+import community.flock.eco.workday.application.utils.toDomain
 import community.flock.eco.workday.core.utils.toResponse
 import community.flock.eco.workday.domain.Status
+import community.flock.eco.workday.domain.common.Direction
 import community.flock.eco.workday.domain.common.Document
+import community.flock.eco.workday.domain.common.Pageable
+import community.flock.eco.workday.domain.common.Sort
 import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.CostExpenseService
 import community.flock.eco.workday.domain.expense.Expense
@@ -28,8 +31,6 @@ import community.flock.eco.workday.domain.expense.ExpenseService
 import community.flock.eco.workday.domain.expense.TravelExpense
 import community.flock.eco.workday.domain.expense.TravelExpenseService
 import org.springframework.boot.web.server.MimeMappings
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -72,27 +73,19 @@ class ExpenseController(
     @PreAuthorize("hasAuthority('ExpenseAuthority.READ')")
     override suspend fun expenseAll(request: ExpenseAll.Request): ExpenseAll.Response<*> {
         val personId = request.queries.personId.let(UUID::fromString)
-        // TODO: Skip the mapping to spring domain, and than internal domain. Skip spring
-        val defaultSort =
-            Sort
-                .by("date")
-                .descending()
-                .and(Sort.by("id"))
+        val defaultSort: List<Sort> =
+            listOf(
+                Sort(property = "date", direction = Direction.DESC),
+                Sort(property = "id", direction = Direction.ASC),
+            )
 
         val pageable =
-            request.queries.pageable
-                ?.let {
-                    PageRequest.of(
-                        it.size,
-                        it.page,
-                        it.sort.consumeSorting(defaultSort),
-                    )
-                }
+            request.queries.pageable?.toDomain(defaultSort)
+                ?: Pageable(1, 10, defaultSort)
 
-                ?: PageRequest.of(0, 20, defaultSort)
         return when {
-            authentication().isAdmin() -> expenseService.findAllByPersonUuid(personId, pageable.toDomain())
-            else -> expenseService.findAllByPersonUserCode(authentication().name, pageable.toDomain())
+            authentication().isAdmin() -> expenseService.findAllByPersonUuid(personId, pageable)
+            else -> expenseService.findAllByPersonUserCode(authentication().name, pageable)
         }.map {
             when (it) {
                 is TravelExpense -> it.produce()
@@ -281,24 +274,3 @@ private fun Document.produce() =
         name = name,
         file = UUIDApi(file.toString()).also(UUIDApi::validate),
     )
-
-/**
- * Sorting parameters can be send in various formats:
- *
- * Workday isn't very specific on how to do this, so multiple things are seen. Would be good te generalize on this
- * --> and put this in the wirespec contracts too
- *
- * e.g.
- * - date,asc
- * - date desc, id
- * - person.personId, date desc
- *
- * NOTE: Current implementation only supports a single sort and will always sort asc
- * e.g. date,desc will sort by date ascending
- */
-private fun List<String>?.consumeSorting(defaultSort: Sort): Sort =
-    this
-        ?.firstOrNull()
-        ?.split(",")
-        ?.let { s -> Sort.by(Sort.Order.asc(s.first())) }
-        ?: defaultSort
