@@ -1,17 +1,9 @@
 package community.flock.eco.workday.application.services
 
-import community.flock.eco.workday.application.events.CreateExpenseEvent
 import community.flock.eco.workday.application.events.DeleteExpenseEvent
-import community.flock.eco.workday.application.events.UpdateExpenseEvent
-import community.flock.eco.workday.application.model.CostExpense
 import community.flock.eco.workday.application.model.Expense
 import community.flock.eco.workday.domain.Status
-import community.flock.eco.workday.application.model.TravelExpense
-import community.flock.eco.workday.application.repository.CostExpenseRepository
 import community.flock.eco.workday.application.repository.ExpenseRepository
-import community.flock.eco.workday.application.repository.TravelExpenseRepository
-import community.flock.eco.workday.application.services.email.CostExpenseMailService
-import community.flock.eco.workday.application.services.email.TravelExpenseMailService
 import community.flock.eco.workday.core.utils.toNullable
 import jakarta.transaction.Transactional
 import org.springframework.context.ApplicationEventPublisher
@@ -65,74 +57,3 @@ class ExpenseService(
             }
 }
 
-@Service
-class CostExpenseService(
-    private val costExpenseRepository: CostExpenseRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher,
-    private val costExpenseMailService: CostExpenseMailService,
-) {
-    private val log: org.slf4j.Logger = org.slf4j.LoggerFactory.getLogger(javaClass)
-
-    @Transactional
-    fun create(costExpense: CostExpense): CostExpense =
-        costExpenseRepository
-            .save(costExpense)
-            .also {
-                costExpenseMailService.sendNotification(it)
-                applicationEventPublisher.publishEvent(CreateExpenseEvent(it))
-            }
-
-    @Transactional
-    fun update(
-        id: UUID,
-        input: CostExpense,
-        isUpdatedByOwner: Boolean,
-    ): CostExpense? {
-        val currentExpense = costExpenseRepository.findById(id).toNullable()
-        return currentExpense
-            ?.let { costExpenseRepository.save(input) }
-            ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
-            ?.also {
-                if (!isUpdatedByOwner) {
-                    costExpenseMailService.sendUpdate(it)
-                }
-            }
-    }
-}
-
-@Service
-class TravelExpenseService(
-    private val travelExpenseRepository: TravelExpenseRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher,
-    private val travelExpenseMailService: TravelExpenseMailService,
-) {
-    @Transactional
-    fun create(travelExpense: TravelExpense): TravelExpense =
-        travelExpenseRepository
-            .save(travelExpense)
-            .also { applicationEventPublisher.publishEvent(CreateExpenseEvent(it)) }
-            .also {
-                println(it)
-                println(it.person)
-                println(it.type)
-                println(it.status)
-                travelExpenseMailService.sendNotification(it)
-            }
-
-    @Transactional
-    fun update(
-        id: UUID,
-        input: TravelExpense,
-        isUpdatedByOwner: Boolean,
-    ): TravelExpense? {
-        val currentExpense = travelExpenseRepository.findById(id).toNullable()
-        return currentExpense
-            ?.let { travelExpenseRepository.save(input) }
-            ?.also { applicationEventPublisher.publishEvent(UpdateExpenseEvent(it)) }
-            ?.also {
-                if (!isUpdatedByOwner) {
-                    travelExpenseMailService.sendUpdate(it)
-                }
-            }
-    }
-}
