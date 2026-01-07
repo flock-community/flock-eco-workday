@@ -15,14 +15,12 @@ import community.flock.eco.workday.api.model.TravelExpenseDetails
 import community.flock.eco.workday.api.model.validate
 import community.flock.eco.workday.application.controllers.isAssociatedWith
 import community.flock.eco.workday.application.interfaces.applyAllowedToUpdate
-import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.services.DocumentStorage
 import community.flock.eco.workday.application.utils.toDomain
 import community.flock.eco.workday.core.utils.toResponse
 import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.domain.common.Direction
 import community.flock.eco.workday.domain.common.Document
-import community.flock.eco.workday.domain.common.Pageable
 import community.flock.eco.workday.domain.common.Sort
 import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.CostExpenseService
@@ -79,9 +77,7 @@ class ExpenseController(
                 Sort(property = "id", direction = Direction.ASC),
             )
 
-        val pageable =
-            request.queries.pageable?.toDomain(defaultSort)
-                ?: Pageable(1, 10, defaultSort)
+        val pageable = toDomain(request.queries.page, request.queries.size, request.queries.sort,defaultSort)
 
         return when {
             authentication().isAdmin() -> expenseService.findAllByPersonUuid(personId, pageable)
@@ -92,7 +88,7 @@ class ExpenseController(
                 is CostExpense -> it.produce()
             }
         }.let {
-            ExpenseAll.Response200(it.content)
+            ExpenseAll.Response200(it.content, it.totalElements.toInt())
         }
     }
 
@@ -245,7 +241,7 @@ private fun Authentication.isAdmin(): Boolean =
         .map { it.authority }
         .contains(ExpenseAuthority.ADMIN.toName())
 
-private fun Authentication.isOwnerOf(expense: Expense) = isAssociatedWith(expense.person.toEntity())
+private fun Authentication.isOwnerOf(expense: Expense) = isAssociatedWith(expense.person)
 
 private fun getMediaType(name: String): MediaType {
     val extension = File(name).extension.lowercase()
