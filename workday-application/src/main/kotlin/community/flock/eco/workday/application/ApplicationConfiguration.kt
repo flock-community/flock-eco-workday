@@ -1,5 +1,6 @@
 package community.flock.eco.workday.application
 
+import community.flock.eco.workday.application.config.ApplicationEventPublisherConfiguration
 import community.flock.eco.workday.application.config.GoogleDriveConfiguration
 import community.flock.eco.workday.application.config.MailjetClientConfig
 import community.flock.eco.workday.application.config.cloud.StubCloudConfiguration
@@ -24,6 +25,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     ExpenseConfiguration::class,
     ExactonlineConfiguration::class,
     ApplicationConstants::class,
+    ApplicationEventPublisherConfiguration::class,
     PropertyConfig::class,
     MailjetClientConfig::class,
     GoogleDriveConfiguration::class,

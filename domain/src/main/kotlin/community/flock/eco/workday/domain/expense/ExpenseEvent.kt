@@ -1,7 +1,6 @@
-package community.flock.eco.workday.application.events
+package community.flock.eco.workday.domain.expense
 
-import community.flock.eco.workday.application.expense.Expense
-import community.flock.eco.workday.core.events.Event
+import community.flock.eco.workday.domain.common.Event
 
 sealed class ExpenseEvent(
     open val entity: Expense,

@@ -1,8 +1,8 @@
 package community.flock.eco.workday.application.services
 
-import community.flock.eco.workday.application.events.CreateExpenseEvent
-import community.flock.eco.workday.application.events.ExpenseEvent
-import community.flock.eco.workday.application.events.UpdateExpenseEvent
+import community.flock.eco.workday.domain.expense.CreateExpenseEvent
+import community.flock.eco.workday.domain.expense.ExpenseEvent
+import community.flock.eco.workday.domain.expense.UpdateExpenseEvent
 import community.flock.eco.workday.application.exactonline.clients.ExactonlineDocumentClient
 import community.flock.eco.workday.application.exactonline.model.ExactonlineDocument
 import community.flock.eco.workday.application.exactonline.model.ExactonlineDocumentAttachment

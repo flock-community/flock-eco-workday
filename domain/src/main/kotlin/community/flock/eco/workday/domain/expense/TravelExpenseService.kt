@@ -7,7 +7,6 @@ import jakarta.transaction.Transactional
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import java.util.UUID
-import community.flock.eco.workday.application.expense.TravelExpense as TravelExpenseEntity
 
 @Service
 class TravelExpenseService(
@@ -42,30 +41,3 @@ class TravelExpenseService(
     }
 }
 
-fun Expense.toEntity() =
-    when (this) {
-        is CostExpense -> toEntity()
-        is TravelExpense -> toEntity()
-    }
-
-fun TravelExpense.toEntity() =
-    TravelExpenseEntity(
-        id = id,
-        date = date,
-        description = description,
-        person = person.toEntity(),
-        status = status,
-        distance = distance,
-        allowance = allowance,
-    )
-
-fun TravelExpenseEntity.toDomain() =
-    TravelExpense(
-        id = id,
-        date = date,
-        description = description,
-        person = person.toDomain(),
-        status = status,
-        distance = distance,
-        allowance = allowance,
-    )

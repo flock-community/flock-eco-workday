@@ -3,15 +3,19 @@ package community.flock.eco.workday.application.expense
 import community.flock.eco.workday.api.model.CostExpenseInput
 import community.flock.eco.workday.api.model.TravelExpenseInput
 import community.flock.eco.workday.application.mappers.toDomain
+import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.domain.Status
 import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.domain.expense.CostExpense
+import community.flock.eco.workday.domain.expense.Expense
 import community.flock.eco.workday.domain.expense.TravelExpense
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.util.UUID
 import community.flock.eco.workday.api.model.ExpenseStatus as StatusApi
+import community.flock.eco.workday.application.expense.TravelExpense as TravelExpenseEntity
+import community.flock.eco.workday.application.expense.CostExpense as CostExpenseEntity
 
 @Component
 class TravelExpenseMapper(
@@ -71,3 +75,54 @@ fun StatusApi.consume(): Status =
         StatusApi.REJECTED -> Status.REJECTED
         StatusApi.DONE -> Status.DONE
     }
+
+fun Expense.toEntity() =
+    when (this) {
+        is CostExpense -> toEntity()
+        is TravelExpense -> toEntity()
+    }
+
+fun TravelExpense.toEntity() =
+    TravelExpenseEntity(
+        id = id,
+        date = date,
+        description = description,
+        person = person.toEntity(),
+        status = status,
+        distance = distance,
+        allowance = allowance,
+    )
+
+fun TravelExpenseEntity.toDomain() =
+    TravelExpense(
+        id = id,
+        date = date,
+        description = description,
+        person = person.toDomain(),
+        status = status,
+        distance = distance,
+        allowance = allowance,
+    )
+
+
+fun CostExpense.toEntity() =
+    CostExpenseEntity(
+        id = id,
+        date = date,
+        description = description,
+        person = person.toEntity(),
+        status = status,
+        amount = amount,
+        files = files.map { it.toEntity() }.toMutableList(),
+    )
+
+fun CostExpenseEntity.toDomain() =
+    CostExpense(
+        id = id,
+        date = date,
+        description = description,
+        person = person.toDomain(),
+        status = status,
+        amount = amount,
+        files = files.map { it.toDomain() },
+    )

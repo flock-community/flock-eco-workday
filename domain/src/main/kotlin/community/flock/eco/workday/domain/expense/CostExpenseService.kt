@@ -1,15 +1,11 @@
 package community.flock.eco.workday.domain.expense
 
-import community.flock.eco.workday.application.events.CreateExpenseEvent
-import community.flock.eco.workday.application.events.UpdateExpenseEvent
-import community.flock.eco.workday.core.utils.toNullable
 import jakarta.transaction.Transactional
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import java.util.UUID
 import community.flock.eco.workday.application.expense.CostExpense as CostExpenseEntity
 
-@Service
 class CostExpenseService(
     private val costExpenseRepository: CostExpenseRepository,
     private val applicationEventPublisher: ApplicationEventPublisher,
@@ -41,25 +37,3 @@ class CostExpenseService(
             }?.toDomain()
     }
 }
-
-fun CostExpense.toEntity() =
-    CostExpenseEntity(
-        id = id,
-        date = date,
-        description = description,
-        person = person.toEntity(),
-        status = status,
-        amount = amount,
-        files = files.map { it.toEntity() }.toMutableList(),
-    )
-
-fun CostExpenseEntity.toDomain() =
-    CostExpense(
-        id = id,
-        date = date,
-        description = description,
-        person = person.toDomain(),
-        status = status,
-        amount = amount,
-        files = files.map { it.toDomain() },
-    )

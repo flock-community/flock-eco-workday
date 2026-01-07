@@ -1,30 +1,22 @@
 package community.flock.eco.workday.domain.expense
 
-import community.flock.eco.workday.application.events.DeleteExpenseEvent
 import community.flock.eco.workday.domain.Status
-import jakarta.transaction.Transactional
-import org.springframework.context.ApplicationEventPublisher
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.stereotype.Service
+import community.flock.eco.workday.domain.common.ApplicationEventPublisher
+import community.flock.eco.workday.domain.common.Page
+import community.flock.eco.workday.domain.common.Pageable
 import java.util.UUID
-import community.flock.eco.workday.application.expense.Expense as ExpenseEntity
 
-@Service
 class ExpenseService(
-    private val expenseRepository: ExpenseRepository,
+    private val expenseRepository: ExpensePersistencePort,
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
     fun findAll(pageable: Pageable): Page<Expense> =
         expenseRepository
             .findAll(pageable)
-            .map { it.toExpenseDomain() }
 
     fun findById(id: UUID): Expense? =
         expenseRepository
             .findByIdOrNull(id)
-            ?.toExpenseDomain()
 
     fun findAllByPersonUuid(
         personId: UUID,
@@ -32,7 +24,6 @@ class ExpenseService(
     ): Page<Expense> =
         expenseRepository
             .findAllByPersonUuid(personId, pageable)
-            .map { it.toExpenseDomain() }
 
     fun findAllByPersonUserCode(
         personCode: String,
@@ -40,31 +31,17 @@ class ExpenseService(
     ): Page<Expense> =
         expenseRepository
             .findAllByPersonUserCode(personCode, pageable)
-            .map { it.toExpenseDomain() }
 
     fun findAllByStatus(status: Status): List<Expense> =
         expenseRepository
             .findAllByStatus(status)
-            .map { it.toExpenseDomain() }
 
-    @Transactional
     fun deleteById(id: UUID): Expense? =
         expenseRepository
-            .findByIdOrNull(id)
-            ?.run {
-                val expense = toExpenseDomain()
-                expenseRepository
-                    .delete(this)
-                    // TODO: nobody listens to this event, can we remove?
-                    //  especially since 'this' is removed from the hibernate cache
-                    .also { applicationEventPublisher.publishEvent(DeleteExpenseEvent(this)) }
-                expense
+            .delete(id)
+            ?.also {
+                // TODO: nobody listens to this event, can we remove?
+                //  especially since 'this' is removed from the hibernate cache
+                applicationEventPublisher.publishEvent(DeleteExpenseEvent(it))
             }
-
-    private fun ExpenseEntity.toExpenseDomain(): Expense =
-        when (this) {
-            is CostExpense -> toDomain()
-            is TravelExpense -> toDomain()
-            else -> error("Unsupported expense type")
-        }
 }
