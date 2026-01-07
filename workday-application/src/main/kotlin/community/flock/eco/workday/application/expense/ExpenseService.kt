@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-@Transactional
 class ExpenseService(
     private val expenseRepository: ExpenseRepository,
     private val applicationEventPublisher: ApplicationEventPublisher,
