@@ -1,4 +1,4 @@
-package community.flock.eco.workday.application.controllers
+package community.flock.eco.workday.application.expense
 
 import community.flock.eco.workday.api.endpoint.CostExpenseCreate
 import community.flock.eco.workday.api.endpoint.CostExpenseUpdate
@@ -13,13 +13,10 @@ import community.flock.eco.workday.api.model.Error
 import community.flock.eco.workday.api.model.ExpenseType
 import community.flock.eco.workday.api.model.TravelExpenseDetails
 import community.flock.eco.workday.api.model.validate
-import community.flock.eco.workday.application.expense.CostExpenseMapper
+import community.flock.eco.workday.application.controllers.isAssociatedWith
 import community.flock.eco.workday.domain.expense.CostExpenseService
-import community.flock.eco.workday.application.expense.ExpenseAuthority
 import community.flock.eco.workday.domain.expense.ExpenseService
-import community.flock.eco.workday.application.expense.TravelExpenseMapper
 import community.flock.eco.workday.domain.expense.TravelExpenseService
-import community.flock.eco.workday.application.expense.consume
 import community.flock.eco.workday.application.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.services.DocumentStorage

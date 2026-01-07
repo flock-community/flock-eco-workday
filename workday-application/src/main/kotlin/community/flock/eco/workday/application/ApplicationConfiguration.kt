@@ -5,6 +5,7 @@ import community.flock.eco.workday.application.config.MailjetClientConfig
 import community.flock.eco.workday.application.config.cloud.StubCloudConfiguration
 import community.flock.eco.workday.application.config.properties.PropertyConfig
 import community.flock.eco.workday.application.exactonline.ExactonlineConfiguration
+import community.flock.eco.workday.application.expense.ExpenseConfiguration
 import community.flock.eco.workday.user.UserConfiguration
 import community.flock.wirespec.integration.spring.kotlin.configuration.EnableWirespecController
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -20,6 +21,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EnableWirespecController
 @Import(
     UserConfiguration::class,
+    ExpenseConfiguration::class,
     ExactonlineConfiguration::class,
     ApplicationConstants::class,
     PropertyConfig::class,
