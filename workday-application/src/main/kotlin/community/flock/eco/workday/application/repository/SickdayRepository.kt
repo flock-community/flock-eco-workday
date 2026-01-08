@@ -1,7 +1,7 @@
 package community.flock.eco.workday.application.repository
 
 import community.flock.eco.workday.application.model.SickDay
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.common.Status
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

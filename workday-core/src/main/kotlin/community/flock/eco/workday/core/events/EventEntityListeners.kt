@@ -1,5 +1,6 @@
 package community.flock.eco.workday.core.events
 
+import community.flock.eco.workday.domain.common.Event
 import jakarta.persistence.PostPersist
 import jakarta.persistence.PostRemove
 import jakarta.persistence.PostUpdate

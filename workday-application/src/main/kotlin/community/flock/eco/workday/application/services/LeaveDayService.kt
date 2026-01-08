@@ -4,10 +4,10 @@ import community.flock.eco.workday.application.authorities.LeaveDayAuthority
 import community.flock.eco.workday.application.forms.LeaveDayForm
 import community.flock.eco.workday.application.interfaces.validate
 import community.flock.eco.workday.application.model.LeaveDay
-import community.flock.eco.workday.application.model.Status
 import community.flock.eco.workday.application.repository.LeaveDayRepository
 import community.flock.eco.workday.application.services.email.LeaveDayMailService
 import community.flock.eco.workday.core.utils.toNullable
+import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.user.model.User
 import jakarta.persistence.EntityManager
 import org.springframework.data.domain.Pageable

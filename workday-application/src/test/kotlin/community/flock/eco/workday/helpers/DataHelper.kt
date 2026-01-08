@@ -19,7 +19,7 @@ class DataHelper(
         val to = LocalDate.of(2021, 12, 31)
 
         val client = createHelper.createClient()
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
 
         val res = mutableMapOf<String, Assignment>()
         // In range
@@ -42,8 +42,8 @@ class DataHelper(
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2021, 12, 31)
 
-        val person1 = createHelper.createPerson()
-        val person2 = createHelper.createPerson()
+        val person1 = createHelper.createPersonEntity()
+        val person2 = createHelper.createPersonEntity()
 
         val res = mutableMapOf<String, Contract>()
         // In range
@@ -66,10 +66,10 @@ class DataHelper(
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2021, 12, 31)
 
-        val person1 = createHelper.createPerson()
-        val person2 = createHelper.createPerson()
-        val person3 = createHelper.createPerson()
-        val person4 = createHelper.createPerson()
+        val person1 = createHelper.createPersonEntity()
+        val person2 = createHelper.createPersonEntity()
+        val person3 = createHelper.createPersonEntity()
+        val person4 = createHelper.createPersonEntity()
 
         val res = mutableMapOf<String, Contract>()
         // In range
@@ -85,9 +85,9 @@ class DataHelper(
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 5)
 
-        val person1 = createHelper.createPerson()
-        val person2 = createHelper.createPerson()
-        val person3 = createHelper.createPerson()
+        val person1 = createHelper.createPersonEntity()
+        val person2 = createHelper.createPersonEntity()
+        val person3 = createHelper.createPersonEntity()
 
         val res = mutableMapOf<String, SickDay>()
         // In range
@@ -102,9 +102,9 @@ class DataHelper(
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 5)
 
-        val person1 = createHelper.createPerson()
-        val person2 = createHelper.createPerson()
-        val person3 = createHelper.createPerson()
+        val person1 = createHelper.createPersonEntity()
+        val person2 = createHelper.createPersonEntity()
+        val person3 = createHelper.createPersonEntity()
 
         val res = mutableMapOf<String, LeaveDay>()
         // In range
@@ -119,7 +119,7 @@ class DataHelper(
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 5)
 
-        val person1 = createHelper.createPerson()
+        val person1 = createHelper.createPersonEntity()
 
         val client = createHelper.createClient()
         val assignment1 = createHelper.createAssignment(client, person1, from, to)

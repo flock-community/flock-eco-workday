@@ -68,7 +68,7 @@ const findAllByPersonId = (personId, page, pageSize = EXPENSE_PAGE_SIZE) =>
     {
       page,
       size: pageSize,
-      sort: 'date,desc',
+      sort: 'date desc',
     },
     {
       personId,
@@ -88,7 +88,7 @@ const findAllByPersonIdNEW = async (
     {
       page,
       size: pageSize ?? 100,
-      sort: 'date,desc',
+      sort: 'date desc',
     },
     { personId },
   );

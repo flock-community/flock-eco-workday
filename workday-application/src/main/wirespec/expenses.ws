@@ -17,8 +17,8 @@ endpoint CostExpenseCreate POST CostExpenseInput /api/expenses-cost -> {
   200 -> Expense
   500 -> Error
 }
-endpoint ExpenseAll GET /api/expenses ? { personId: String, pageable: Pageable? } -> {
-  200 -> Expense[]
+endpoint ExpenseAll GET /api/expenses ? { personId: String, page: Integer32, size: Integer32, sort: String[] } -> {
+  200 -> Expense[] # { `x-total`: Integer32 }
 }
 endpoint ExpenseById GET /api/expenses/{id: String} -> {
   200 -> Expense

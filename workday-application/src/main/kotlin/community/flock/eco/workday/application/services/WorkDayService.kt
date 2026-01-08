@@ -4,12 +4,12 @@ import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import community.flock.eco.workday.application.forms.WorkDayForm
 import community.flock.eco.workday.application.model.Assignment
-import community.flock.eco.workday.application.model.Status
 import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.model.WorkDaySheet
 import community.flock.eco.workday.application.repository.WorkDayRepository
 import community.flock.eco.workday.application.services.email.WorkdayEmailService
 import community.flock.eco.workday.core.utils.toNullable
+import community.flock.eco.workday.domain.common.Status
 import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Pageable

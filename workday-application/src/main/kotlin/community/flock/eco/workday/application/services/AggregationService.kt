@@ -27,7 +27,6 @@ import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.model.PersonHackdayDetails
 import community.flock.eco.workday.application.model.PersonHolidayDetails
-import community.flock.eco.workday.application.model.Status
 import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.model.sumHoursWithinAPeriod
 import community.flock.eco.workday.application.utils.DateUtils.countWorkDaysInMonth
@@ -36,6 +35,7 @@ import community.flock.eco.workday.application.utils.DateUtils.isWorkingDay
 import community.flock.eco.workday.application.utils.DateUtils.toDateRange
 import community.flock.eco.workday.application.utils.NumericUtils.calculateRevenue
 import community.flock.eco.workday.application.utils.NumericUtils.sum
+import community.flock.eco.workday.domain.common.Status
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -729,7 +729,6 @@ class AggregationService(
                 .hoursPerDayInPeriod(from, to)
                 .map { it.value }
                 .sum()
-                .also { println("Days: ${day.from} to ${day.to}: $it") }
         }.sum()
 
     private fun Data.allPersons(): Set<Person> =

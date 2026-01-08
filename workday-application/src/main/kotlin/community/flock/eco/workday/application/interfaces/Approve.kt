@@ -1,12 +1,9 @@
 package community.flock.eco.workday.application.interfaces
 
-import community.flock.eco.workday.application.model.Status
+import community.flock.eco.workday.domain.common.Approve
+import community.flock.eco.workday.domain.common.Status
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
-
-interface Approve {
-    val status: Status
-}
 
 fun <T : Approve> T.applyAllowedToUpdate(
     status: Status,
