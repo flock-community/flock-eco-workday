@@ -37,33 +37,6 @@ fun UserEntity.toDomain() =
         created = created,
     )
 
-// fun UserAccount.toEntity(code: String): UserAccountEntity =
-//    when (this) {
-//        is UserAccountKey ->
-//            UserAccountKeyEntity(
-//                id = internalId,
-//                user = code ,
-//                key = key,
-//                label = label,
-//            )
-//
-//        is UserAccountOauth ->
-//            UserAccountOauthEntity(
-//                id = internalId,
-//                user = user.toEntity(),
-//                reference = reference,
-//                provider = provider.toEntity(),
-//            )
-//
-//        is UserAccountPassword ->
-//            UserAccountPasswordEntity(
-//                id = internalId,
-//                user = user.toEntity(),
-//                secret = secret,
-//                resetCode = resetCode,
-//            )
-//    }
-
 fun UserAccountEntity.toDomain(): UserAccount =
     when (this) {
         is UserAccountPasswordEntity -> {

@@ -27,12 +27,12 @@ fun toDomain(
  * - date desc, id
  * - person.personId, date desc
  *
- * NOTE: Current implementation only supports a single sort and will always sort asc
- * e.g. date,desc will sort by date ascending
+ * NOTE: Current implementation only supports a sorts and will always sort desc
+ * e.g. date desc will sort by date descending
  */
 private fun List<String>?.consumeSorting(defaultSort: List<Sort>?): List<Sort>? =
     this
         ?.firstOrNull()
-        ?.split(",")
-        ?.let { s -> listOf(Sort(s.first(), Direction.ASC)) }
+        ?.split(" ")
+        ?.let { s -> listOf(Sort(s.first(), Direction.DESC)) }
         ?: defaultSort
