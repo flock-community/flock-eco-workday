@@ -71,7 +71,6 @@ const findAllByPersonId = (personId, page, pageSize = EXPENSE_PAGE_SIZE) =>
       sort: 'date,desc',
     },
     {
-      "pageable.size": pageSize,
       personId,
     },
   );
