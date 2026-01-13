@@ -10,7 +10,7 @@ import java.nio.file.Paths
 import java.util.UUID
 
 @Service
-@ConditionalOnProperty(name = ["flock.eco.workday.google.enabled"], havingValue = "false", matchIfMissing = true)
+@ConditionalOnProperty(name = ["flock.eco.workday.google.enabled"], havingValue = "false", matchIfMissing = false)
 class LocalDocumentService : DocumentStorage {
     companion object {
         const val DOCUMENTS_PATH = "database/documents"
@@ -19,6 +19,7 @@ class LocalDocumentService : DocumentStorage {
 
     init {
         // Ensure the documents directory exists
+        logger.warn("⚠️⚠️ Using local file storage for documents")
         val documentsDir = File(DOCUMENTS_PATH)
         if (!documentsDir.exists()) {
             documentsDir.mkdirs()

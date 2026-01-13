@@ -11,13 +11,17 @@ import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-@ConditionalOnProperty(name = ["flock.eco.workday.google.enabled"], havingValue = "true")
+@ConditionalOnProperty(name = ["flock.eco.workday.google.enabled"], havingValue = "true", matchIfMissing = true)
 class GcpDocumentService(
     @Value("\${flock.eco.workday.bucket.documents}") val bucketName: String,
 ) : DocumentStorage {
     companion object {
         val storage: Storage = StorageOptions.getDefaultInstance().service
         var logger: Logger = LoggerFactory.getLogger(GcpDocumentService::class.java)
+    }
+
+    init {
+        logger.info("Using GCP storage for documents")
     }
 
     override fun storeDocument(byteArray: ByteArray): UUID {
