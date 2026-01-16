@@ -1,15 +1,17 @@
 package community.flock.eco.workday.application.mocks
 
-import community.flock.eco.workday.application.model.CostExpense
-import community.flock.eco.workday.application.model.Expense
-import community.flock.eco.workday.application.model.Person
-import community.flock.eco.workday.application.model.Status
-import community.flock.eco.workday.application.model.TravelExpense
-import community.flock.eco.workday.application.services.CostExpenseService
-import community.flock.eco.workday.application.services.TravelExpenseService
+import community.flock.eco.workday.application.mappers.toDomain
+import community.flock.eco.workday.domain.common.ApprovalStatus
+import community.flock.eco.workday.domain.expense.CostExpense
+import community.flock.eco.workday.domain.expense.CostExpenseService
+import community.flock.eco.workday.domain.expense.Expense
+import community.flock.eco.workday.domain.expense.TravelExpense
+import community.flock.eco.workday.domain.expense.TravelExpenseService
+import community.flock.eco.workday.domain.person.Person
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.LocalDate
+import java.util.UUID
 
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])
@@ -20,14 +22,14 @@ class LoadExpensesData(
     loadData: LoadData,
 ) {
     val now: LocalDate = LocalDate.now()
-    val data: MutableList<Expense> = mutableListOf()
+    val data: MutableList<Expense<*>> = mutableListOf()
 
     init {
         loadData.load {
             // To get some variety in the list sizes of expenses, the number of
             // expense sets (one of each type) is based on the list index
             loadPersonData.data.forEachIndexed { index, person ->
-                createExpenses(person, index)
+                createExpenses(person.toDomain(), index)
             }
         }
     }
@@ -38,31 +40,34 @@ class LoadExpensesData(
     ) {
         for (i in 1..sets + 1) {
             TravelExpense(
+                id = UUID.randomUUID(),
                 date = now.plusDays(i.toLong()),
                 description = "Travel expense description $i",
                 person = person,
                 distance = 100.0,
                 allowance = 0.19,
-                status = Status.REQUESTED,
+                status = ApprovalStatus.REQUESTED,
             ).save()
                 .apply { data.add(this) }
 
             CostExpense(
+                id = UUID.randomUUID(),
                 date = now.plusDays(i.toLong()),
                 description = "Cost expense description $i",
                 person = person,
                 amount = 50.0,
-                status = Status.REQUESTED,
+                status = ApprovalStatus.REQUESTED,
+                files = emptyList(),
             ).save()
                 .apply { data.add(this) }
         }
     }
 
-    private fun TravelExpense.save() =
+    private fun <T : ApprovalStatus> TravelExpense<T>.save() =
         travelExpenseService
             .create(this)
 
-    private fun CostExpense.save() =
+    private fun <T : ApprovalStatus> CostExpense<T>.save() =
         costExpenseService
             .create(this)
 }

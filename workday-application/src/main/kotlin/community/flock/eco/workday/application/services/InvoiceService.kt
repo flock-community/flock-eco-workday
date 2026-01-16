@@ -1,24 +1,26 @@
 package community.flock.eco.workday.application.services
 
-import community.flock.eco.workday.application.events.CreateExpenseEvent
-import community.flock.eco.workday.application.events.ExpenseEvent
-import community.flock.eco.workday.application.events.UpdateExpenseEvent
 import community.flock.eco.workday.application.exactonline.clients.ExactonlineDocumentClient
 import community.flock.eco.workday.application.exactonline.model.ExactonlineDocument
 import community.flock.eco.workday.application.exactonline.model.ExactonlineDocumentAttachment
 import community.flock.eco.workday.application.exactonline.model.ExactonlineDocumentType
 import community.flock.eco.workday.application.exactonline.services.ExactonlineAuthenticationService
-import community.flock.eco.workday.application.model.CostExpense
+import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.model.Document
 import community.flock.eco.workday.application.model.Invoice
 import community.flock.eco.workday.application.model.InvoiceStatus
 import community.flock.eco.workday.application.model.InvoiceType
 import community.flock.eco.workday.application.repository.InvoiceRepository
 import community.flock.eco.workday.core.utils.toNullable
+import community.flock.eco.workday.domain.expense.CostExpense
+import community.flock.eco.workday.domain.expense.CreateExpenseEvent
+import community.flock.eco.workday.domain.expense.ExpenseEvent
+import community.flock.eco.workday.domain.expense.UpdateExpenseEvent
 import jakarta.servlet.http.HttpSession
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
@@ -80,14 +82,14 @@ class InvoiceService(
         )
 
     @TransactionalEventListener(value = [CreateExpenseEvent::class, UpdateExpenseEvent::class], phase = TransactionPhase.BEFORE_COMMIT)
-    fun handleCreateExpenseEvent(ev: ExpenseEvent) =
+    fun handleCreateExpenseEvent(ev: ExpenseEvent<*>) =
         when (val entity = ev.entity) {
             is CostExpense -> generateCostExpenseInvoice(entity)
             else -> null
         }
 
     @Transactional
-    fun generateCostExpenseInvoice(expense: CostExpense) =
+    fun generateCostExpenseInvoice(expense: CostExpense<*>) =
         expense
             .apply { invoiceRepository.deleteByReference(id) }
             .run {
@@ -96,7 +98,7 @@ class InvoiceService(
                     type = InvoiceType.EXPENSE,
                     reference = expense.id,
                     amount = 100.0,
-                    documents = expense.files,
+                    documents = expense.files.map { it.toEntity() },
                     status = InvoiceStatus.NEW,
                 )
             }.run { invoiceRepository.save(this) }

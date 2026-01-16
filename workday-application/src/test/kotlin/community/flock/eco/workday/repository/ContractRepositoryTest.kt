@@ -22,7 +22,7 @@ class ContractRepositoryTest : WorkdayIntegrationTest() {
 
     @Test
     fun `create and update internal contract`() {
-        val person = createHelper.createPerson("Hello", "Bye")
+        val person = createHelper.createPersonEntity("Hello", "Bye")
         val new =
             ContractInternal(
                 person = person,
@@ -62,7 +62,7 @@ class ContractRepositoryTest : WorkdayIntegrationTest() {
 
     @Test
     fun `create and update external contract`() {
-        val person = createHelper.createPerson("Hello", "Bye")
+        val person = createHelper.createPersonEntity("Hello", "Bye")
         val new =
             ContractExternal(
                 person = person,

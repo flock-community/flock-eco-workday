@@ -84,7 +84,7 @@ class AggregationServiceTest(
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 31)
         val client = createHelper.createClient()
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
         val assignment = createHelper.createAssignment(client, person, from, to)
         val workDay =
             createHelper.createWorkDay(
@@ -146,7 +146,7 @@ class AggregationServiceTest(
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 1, 31)
         val client = createHelper.createClient()
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
         val assignment = createHelper.createAssignment(client, person, from, to)
         val workDay =
             createHelper.createWorkDay(
@@ -207,7 +207,7 @@ class AggregationServiceTest(
     fun `holiday balance one person full time`() {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
         createHelper.createContractInternal(person, from, to)
         val res =
             aggregationService
@@ -223,7 +223,7 @@ class AggregationServiceTest(
         val splita = LocalDate.of(2020, 6, 25)
         val splitb = LocalDate.of(2020, 6, 26)
         val to = LocalDate.of(2020, 12, 31)
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
         createHelper.createContractInternal(person, from, splita)
         createHelper.createContractInternal(person, splitb, to)
         val res =
@@ -238,7 +238,7 @@ class AggregationServiceTest(
     fun `holiday balance one person part time contract`() {
         val from = LocalDate.of(2020, 1, 1)
         val to = LocalDate.of(2020, 12, 31)
-        val person = createHelper.createPerson()
+        val person = createHelper.createPersonEntity()
         createHelper.createContractInternal(person, from, to, hoursPerWeek = 32)
         val res =
             aggregationService
@@ -588,11 +588,11 @@ class AggregationServiceTest(
     ): List<WorkDay> {
         val flockClient = createHelper.createClient("Flock.community")
         val otherClient = createHelper.createClient("Other.client")
-        val firstPerson = createHelper.createPerson("Jesse", "Pinkman")
-        val secondPerson = createHelper.createPerson("Thomas", "Creativelastname")
-        val thirdPerson = createHelper.createPerson("Person", "Lastname")
-        val fourthPersonWithoutDays = createHelper.createPerson("Bojack", "Horseman")
-        val fifthPersonWithoutDays = createHelper.createPerson("Walter", "White")
+        val firstPerson = createHelper.createPersonEntity("Jesse", "Pinkman")
+        val secondPerson = createHelper.createPersonEntity("Thomas", "Creativelastname")
+        val thirdPerson = createHelper.createPersonEntity("Person", "Lastname")
+        val fourthPersonWithoutDays = createHelper.createPersonEntity("Bojack", "Horseman")
+        val fifthPersonWithoutDays = createHelper.createPersonEntity("Walter", "White")
 
         val firstAssignment = createHelper.createAssignment(flockClient, firstPerson, startDate.minusDays(10), endDate)
         val secondAssignment =
@@ -754,8 +754,8 @@ class AggregationServiceTest(
 
     @Test
     fun `total per person me overview`() {
-        val person1 = createHelper.createPerson("Jesse", "Pinkman")
-        val person2 = createHelper.createPerson("Walter", "White")
+        val person1 = createHelper.createPersonEntity("Jesse", "Pinkman")
+        val person2 = createHelper.createPersonEntity("Walter", "White")
         val from = LocalDate.of(2021, 12, 1)
         val to = LocalDate.of(2021, 12, 5)
 

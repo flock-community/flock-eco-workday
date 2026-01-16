@@ -2,9 +2,9 @@ package community.flock.eco.workday.services
 
 import community.flock.eco.workday.application.model.LeaveDay
 import community.flock.eco.workday.application.model.LeaveDayType.HOLIDAY
-import community.flock.eco.workday.application.model.Status.APPROVED
 import community.flock.eco.workday.application.repository.LeaveDayRepository
 import community.flock.eco.workday.application.services.CalendarService
+import community.flock.eco.workday.domain.common.Status.APPROVED
 import community.flock.eco.workday.model.aPerson
 import io.mockk.every
 import io.mockk.mockk
