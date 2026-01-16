@@ -77,8 +77,9 @@ export function ExpenseList({
 
   const renderItem = (item: Expense, key: number) => {
     const totalAmount: number =
-      item?.costDetails?.amount ||
-      item?.travelDetails?.distance * item?.travelDetails?.allowance;
+      item.expenseType === 'COST'
+        ? item?.costDetails?.amount
+        : item?.travelDetails?.distance * item?.travelDetails?.allowance;
 
     return (
       <Grid key={`workday-list-item-${item.id}`} size={{ xs: 12 }}>
