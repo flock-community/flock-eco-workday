@@ -16,7 +16,7 @@ class TravelExpenseMailService(
 ) : TravelExpenseMailPort {
     private val log: Logger = LoggerFactory.getLogger(TravelExpenseMailService::class.java)
 
-    override fun sendUpdate(travelExpense: TravelExpense) {
+    override fun sendUpdate(travelExpense: TravelExpense<*>) {
         val recipient = travelExpense.person
 
         val subject = "Travel expense update: ${travelExpense.description ?: "description unknown"}"
@@ -38,7 +38,7 @@ class TravelExpenseMailService(
         )
     }
 
-    override fun sendNotification(travelExpense: TravelExpense) {
+    override fun sendNotification(travelExpense: TravelExpense<*>) {
         val employee = travelExpense.person
 
         val subject = "Travel expense update for ${employee.firstname}"
@@ -58,7 +58,7 @@ class TravelExpenseMailService(
         )
     }
 
-    private fun TravelExpense.html() =
+    private fun TravelExpense<*>.html() =
         // language=html
         """
         |<div>

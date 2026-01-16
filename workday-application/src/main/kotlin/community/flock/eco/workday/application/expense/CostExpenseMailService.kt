@@ -16,7 +16,7 @@ class CostExpenseMailService(
 ) : CostExpenseMailPort {
     private val log: Logger = LoggerFactory.getLogger(CostExpenseMailService::class.java)
 
-    override fun sendUpdate(costExpense: CostExpense) {
+    override fun sendUpdate(costExpense: CostExpense<*>) {
         val recipient = costExpense.person
 
         val subject = "Cost expense update: ${costExpense.description ?: "description unknown"}"
@@ -38,7 +38,7 @@ class CostExpenseMailService(
         )
     }
 
-    override fun sendNotification(costExpense: CostExpense) {
+    override fun sendNotification(costExpense: CostExpense<*>) {
         val employee = costExpense.person
 
         val subject = "Cost expense update for ${employee.firstname}"
@@ -59,7 +59,7 @@ class CostExpenseMailService(
         )
     }
 
-    private fun CostExpense.html() =
+    private fun CostExpense<*>.html() =
         // language=html
         """
         |<div>

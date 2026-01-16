@@ -15,6 +15,7 @@ import community.flock.eco.workday.application.services.LeaveDayService
 import community.flock.eco.workday.application.services.SickDayService
 import community.flock.eco.workday.application.services.WorkDayService
 import community.flock.eco.workday.core.authorities.Authority
+import community.flock.eco.workday.domain.common.ApprovalStatus
 import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.CostExpenseService
@@ -158,7 +159,7 @@ class TodoControllerTest : WorkdayIntegrationTest() {
             CostExpense(
                 id = UUID.randomUUID(),
                 description = "Test expense",
-                status = Status.REQUESTED,
+                status = ApprovalStatus.REQUESTED,
                 date = from,
                 person = person.toDomain(),
                 amount = 100.0,
@@ -308,7 +309,7 @@ class TodoControllerTest : WorkdayIntegrationTest() {
             CostExpense(
                 id = UUID.randomUUID(),
                 description = "Test expense",
-                status = Status.REQUESTED,
+                status = ApprovalStatus.REQUESTED,
                 date = LocalDate.of(2020, 1, 1),
                 person = person.toDomain(),
                 amount = 100.0,

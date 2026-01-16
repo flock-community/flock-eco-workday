@@ -29,7 +29,7 @@ abstract class Expense(
     @ManyToOne(fetch = FetchType.EAGER)
     open val person: Person,
     @Enumerated(EnumType.STRING)
-    override val status: Status = Status.REQUESTED,
+    val status: Status = Status.REQUESTED,
     @Enumerated(EnumType.STRING)
     open val type: ExpenseType,
-) : Approve
+)

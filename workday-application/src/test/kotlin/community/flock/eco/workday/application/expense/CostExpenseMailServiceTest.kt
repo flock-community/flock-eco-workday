@@ -3,7 +3,7 @@ package community.flock.eco.workday.application.expense
 import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.services.email.EmailService
-import community.flock.eco.workday.domain.common.Status
+import community.flock.eco.workday.domain.common.ApprovalStatus
 import community.flock.eco.workday.model.aPerson
 import io.mockk.every
 import io.mockk.mockk
@@ -27,7 +27,7 @@ class CostExpenseMailServiceTest {
                 date = LocalDate.of(2025, 2, 13),
                 description = "Aankoop ergonomische hagelslag",
                 person = aPerson().toDomain(),
-                status = Status.REQUESTED,
+                status = ApprovalStatus.REQUESTED,
                 amount = 43.21,
                 files = mutableListOf(),
             )

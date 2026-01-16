@@ -13,22 +13,22 @@ class TravelExpensePersistenceAdapter(
     private val travelExpenseRepository: TravelExpenseRepository,
     private val entityManager: EntityManager,
 ) : TravelExpensePersistencePort {
-    override fun create(travelExpense: TravelExpense): TravelExpense {
+    override fun create(travelExpense: TravelExpense<*>): TravelExpense<*> {
         val personReference = entityManager.getReference(Person::class.java, travelExpense.person.internalId)
         return travelExpenseRepository
             .save(travelExpense.toEntity(personReference))
             .toDomain()
     }
 
-    override fun findById(id: UUID): TravelExpense? =
+    override fun findById(id: UUID): TravelExpense<*>? =
         travelExpenseRepository
             .findByIdOrNull(id)
             ?.toDomain()
 
     override fun updateIfExists(
         id: UUID,
-        travelExpense: TravelExpense,
-    ): TravelExpense? {
+        travelExpense: TravelExpense<*>,
+    ): TravelExpense<*>? {
         require(travelExpense.id == id) { "Cannot update expense with different id" }
         return travelExpenseRepository
             .existsById(id)

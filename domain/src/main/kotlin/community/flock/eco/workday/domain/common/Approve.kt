@@ -1,7 +1,13 @@
 package community.flock.eco.workday.domain.common
 
-import community.flock.eco.workday.domain.common.Status
-
+/**
+ * @deprecated use [Approvable]
+ */
+@Deprecated("use [Approvable]")
 interface Approve {
     val status: Status
+}
+
+interface Approvable<T : ApprovalStatus> {
+    val status: T
 }

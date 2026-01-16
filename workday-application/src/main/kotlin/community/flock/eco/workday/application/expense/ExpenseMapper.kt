@@ -6,6 +6,7 @@ import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.domain.common.ApprovalStatus
 import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.domain.expense.CostExpense
@@ -30,7 +31,7 @@ class TravelExpenseMapper(
         description = input.description,
         distance = input.distance.toString().toDouble(),
         allowance = input.allowance.toString().toDouble(),
-        status = input.status.consume(),
+        status = input.status.consumeStatus(),
         person =
             personService
                 .findByUuid(UUID.fromString(input.personId.value))
@@ -59,7 +60,7 @@ class CostExpenseMapper(
                         file = UUID.fromString(it.file.value),
                     )
                 },
-        status = input.status.consume(),
+        status = input.status.consumeStatus(),
         person =
             personService
                 .findByUuid(UUID.fromString(input.personId.value))
@@ -67,6 +68,14 @@ class CostExpenseMapper(
                 ?: error("Cannot find person"),
     )
 }
+
+fun StatusApi.consumeStatus(): ApprovalStatus =
+    when (this) {
+        StatusApi.REQUESTED -> ApprovalStatus.REQUESTED
+        StatusApi.APPROVED -> ApprovalStatus.APPROVED
+        StatusApi.REJECTED -> ApprovalStatus.REJECTED
+        StatusApi.DONE -> ApprovalStatus.DONE
+    }
 
 fun StatusApi.consume(): Status =
     when (this) {
@@ -76,13 +85,13 @@ fun StatusApi.consume(): Status =
         StatusApi.DONE -> Status.DONE
     }
 
-fun TravelExpense.toEntity(personEntity: Person) =
+fun TravelExpense<*>.toEntity(personEntity: Person) =
     TravelExpenseEntity(
         id = id,
         date = date,
         description = description,
         person = personEntity,
-        status = status,
+        status = status.toEntity(),
         distance = distance,
         allowance = allowance,
     )
@@ -93,18 +102,18 @@ fun TravelExpenseEntity.toDomain() =
         date = date,
         description = description,
         person = person.toDomain(),
-        status = status,
+        status = status.toDomain(),
         distance = distance,
         allowance = allowance,
     )
 
-fun CostExpense.toEntity(personReference: Person) =
+fun CostExpense<*>.toEntity(personReference: Person) =
     CostExpenseEntity(
         id = id,
         date = date,
         description = description,
         person = personReference,
-        status = status,
+        status = status.toEntity(),
         amount = amount,
         files = files.map { it.toEntity() }.toMutableList(),
     )
@@ -115,7 +124,7 @@ fun CostExpenseEntity.toDomain() =
         date = date,
         description = description,
         person = person.toDomain(),
-        status = status,
+        status = status.toDomain(),
         amount = amount,
         files = files.map { it.toDomain() },
     )

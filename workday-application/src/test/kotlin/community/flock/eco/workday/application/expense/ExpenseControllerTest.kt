@@ -7,8 +7,8 @@ import community.flock.eco.workday.api.model.CostExpenseInput
 import community.flock.eco.workday.api.model.ExpenseStatus
 import community.flock.eco.workday.api.model.UUID
 import community.flock.eco.workday.application.controllers.produce
+import community.flock.eco.workday.domain.common.ApprovalStatus
 import community.flock.eco.workday.domain.common.Document
-import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.CostExpenseService
 import community.flock.eco.workday.domain.expense.TravelExpense
@@ -239,9 +239,9 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
         private fun aTravelExpense(
             user: User,
             expenseId: java.util.UUID = java.util.UUID.fromString("248F727C-3A23-4482-93F7-3AB977E33368"),
-        ): TravelExpense {
+        ): TravelExpense<*> {
             val description = "Travelling the stairway to heaven"
-            val status = Status.REQUESTED
+            val status = ApprovalStatus.REQUESTED
             val person = createHelper.createPerson("jane", "doe", user.code)
 
             val date = LocalDate.of(2025, 1, 23)
@@ -257,7 +257,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             )
         }
 
-        private fun ResultActions.andExpectBodyToMatch(expense: TravelExpense): ResultActions =
+        private fun ResultActions.andExpectBodyToMatch(expense: TravelExpense<*>): ResultActions =
             andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expense.id.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.personId").value(expense.person.uuid.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(expense.description))
@@ -458,9 +458,9 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
         private fun aCostExpense(
             user: User,
             expenseId: java.util.UUID = java.util.UUID.fromString("633B24EA-D03F-424B-BC1B-83D6F53A071E"),
-        ): CostExpense {
+        ): CostExpense<*> {
             val description = "Lucy in the sky with diamonds"
-            val status = Status.REQUESTED
+            val status = ApprovalStatus.REQUESTED
             val person = createHelper.createPerson("john", "doe", user.code)
 
             val date = LocalDate.of(2025, 1, 22)
@@ -479,7 +479,7 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
             )
         }
 
-        private fun ResultActions.andExpectBodyToMatch(costExpense: CostExpense): ResultActions =
+        private fun ResultActions.andExpectBodyToMatch(costExpense: CostExpense<*>): ResultActions =
             andExpect(MockMvcResultMatchers.jsonPath("$.id").value(costExpense.id.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.personId").value(costExpense.person.uuid.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(costExpense.description))

@@ -1,6 +1,7 @@
 package community.flock.eco.workday.domain.expense
 
 import community.flock.eco.workday.domain.common.ApplicationEventPublisher
+import community.flock.eco.workday.domain.common.ApprovalStatus
 import java.util.UUID
 
 class CostExpenseService(
@@ -8,7 +9,7 @@ class CostExpenseService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val costExpenseMailService: CostExpenseMailPort,
 ) {
-    fun create(costExpense: CostExpense): CostExpense =
+    fun create(costExpense: CostExpense<*>): CostExpense<*> =
         costExpenseRepository
             .create(costExpense)
             .also {
@@ -18,9 +19,9 @@ class CostExpenseService(
 
     fun update(
         id: UUID,
-        input: CostExpense,
+        input: CostExpense<*>,
         isUpdatedByOwner: Boolean,
-    ): CostExpense? =
+    ): CostExpense<*>? =
         costExpenseRepository
             .updateIfExists(id, input)
             ?.also {

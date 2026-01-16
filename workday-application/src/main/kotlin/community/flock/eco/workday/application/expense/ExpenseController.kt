@@ -18,10 +18,10 @@ import community.flock.eco.workday.application.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.application.services.DocumentStorage
 import community.flock.eco.workday.application.utils.toDomain
 import community.flock.eco.workday.core.utils.toResponse
+import community.flock.eco.workday.domain.common.ApprovalStatus
 import community.flock.eco.workday.domain.common.Direction
 import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.domain.common.Sort
-import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.CostExpenseService
 import community.flock.eco.workday.domain.expense.Expense
@@ -134,8 +134,8 @@ class ExpenseController(
                     .body(this)
             }
 
-    // TODO: convert this to a wirespec integaration to. For this, the network layer needs to support content-type multiplart/form-data.
-// or, the frontend needs to send the data raw as a base64 string
+    // TODO: convert this to a wirespec integration to. For this, the network layer needs to support content-type multiplart/form-data.
+    //   or, the frontend needs to send the data raw as a base64 string
     @PostMapping("/api/expenses/files")
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
     fun postFiles(
@@ -161,7 +161,7 @@ class ExpenseController(
         return expenseService
             .findById(id)
             ?.applyAuthentication(authentication())
-            ?.applyAllowedToUpdate(request.body.status.consume(), authentication().isAdmin())
+            ?.applyAllowedToUpdate(request.body.status.consumeStatus(), authentication().isAdmin())
             ?.run {
                 val consume = costExpenseMapper.consume(request.body, this.id)
                 costExpenseService.update(
@@ -188,7 +188,7 @@ class ExpenseController(
         return expenseService
             .findById(id)
             ?.applyAuthentication(authentication())
-            ?.applyAllowedToUpdate(request.body.status.consume(), authentication().isAdmin())
+            ?.applyAllowedToUpdate(request.body.status.consumeStatus(), authentication().isAdmin())
             ?.run {
                 val updatedExpense = travelExpenseMapper.consume(request.body, id)
                 travelExpenseService.update(
@@ -202,7 +202,7 @@ class ExpenseController(
     }
 }
 
-private fun TravelExpense.produce(): ExpenseApi =
+private fun TravelExpense<*>.produce(): ExpenseApi =
     ExpenseApi(
         id = id.toString(),
         personId = UUIDApi(person.uuid.toString()).also(UUIDApi::validate),
@@ -218,15 +218,15 @@ private fun TravelExpense.produce(): ExpenseApi =
             ),
     )
 
-private fun Status.produce(): StatusApi =
+private fun ApprovalStatus.produce(): StatusApi =
     when (this) {
-        Status.REQUESTED -> StatusApi.REQUESTED
-        Status.APPROVED -> StatusApi.APPROVED
-        Status.REJECTED -> StatusApi.REJECTED
-        Status.DONE -> StatusApi.DONE
+        ApprovalStatus.REQUESTED -> StatusApi.REQUESTED
+        ApprovalStatus.APPROVED -> StatusApi.APPROVED
+        ApprovalStatus.REJECTED -> StatusApi.REJECTED
+        ApprovalStatus.DONE -> StatusApi.DONE
     }
 
-private fun Expense.applyAuthentication(authentication: Authentication) =
+private fun Expense<*>.applyAuthentication(authentication: Authentication) =
     apply {
         if (!authentication.isAdmin() && !authentication.isOwnerOf(this)) {
             throw ResponseStatusException(
@@ -241,7 +241,7 @@ private fun Authentication.isAdmin(): Boolean =
         .map { it.authority }
         .contains(ExpenseAuthority.ADMIN.toName())
 
-private fun Authentication.isOwnerOf(expense: Expense) = isAssociatedWith(expense.person)
+private fun Authentication.isOwnerOf(expense: Expense<*>) = isAssociatedWith(expense.person)
 
 private fun getMediaType(name: String): MediaType {
     val extension = File(name).extension.lowercase()
@@ -249,7 +249,7 @@ private fun getMediaType(name: String): MediaType {
     return MediaType.parseMediaType(mime)
 }
 
-private fun CostExpense.produce() =
+private fun CostExpense<*>.produce() =
     ExpenseApi(
         id = id.toString(),
         personId = UUIDApi(person.uuid.toString()).also(UUIDApi::validate),

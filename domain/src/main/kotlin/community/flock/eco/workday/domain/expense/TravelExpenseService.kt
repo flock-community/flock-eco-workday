@@ -1,6 +1,7 @@
 package community.flock.eco.workday.domain.expense
 
 import community.flock.eco.workday.domain.common.ApplicationEventPublisher
+import community.flock.eco.workday.domain.common.ApprovalStatus
 import java.util.UUID
 
 class TravelExpenseService(
@@ -8,7 +9,7 @@ class TravelExpenseService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val travelExpenseMailService: TravelExpenseMailPort,
 ) {
-    fun create(travelExpense: TravelExpense): TravelExpense =
+    fun create(travelExpense: TravelExpense<*>): TravelExpense<*> =
         travelExpenseRepository
             .create(travelExpense)
             .also {
@@ -18,9 +19,9 @@ class TravelExpenseService(
 
     fun update(
         id: UUID,
-        input: TravelExpense,
+        input: TravelExpense<*>,
         isUpdatedByOwner: Boolean,
-    ): TravelExpense? =
+    ): TravelExpense<*>? =
         travelExpenseRepository
             .updateIfExists(id, input)
             ?.also {

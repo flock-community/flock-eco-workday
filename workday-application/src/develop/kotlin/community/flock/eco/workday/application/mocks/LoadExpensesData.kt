@@ -1,7 +1,7 @@
 package community.flock.eco.workday.application.mocks
 
 import community.flock.eco.workday.application.mappers.toDomain
-import community.flock.eco.workday.domain.common.Status
+import community.flock.eco.workday.domain.common.ApprovalStatus
 import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.CostExpenseService
 import community.flock.eco.workday.domain.expense.Expense
@@ -22,7 +22,7 @@ class LoadExpensesData(
     loadData: LoadData,
 ) {
     val now: LocalDate = LocalDate.now()
-    val data: MutableList<Expense> = mutableListOf()
+    val data: MutableList<Expense<*>> = mutableListOf()
 
     init {
         loadData.load {
@@ -46,7 +46,7 @@ class LoadExpensesData(
                 person = person,
                 distance = 100.0,
                 allowance = 0.19,
-                status = Status.REQUESTED,
+                status = ApprovalStatus.REQUESTED,
             ).save()
                 .apply { data.add(this) }
 
@@ -56,18 +56,18 @@ class LoadExpensesData(
                 description = "Cost expense description $i",
                 person = person,
                 amount = 50.0,
-                status = Status.REQUESTED,
+                status = ApprovalStatus.REQUESTED,
                 files = emptyList(),
             ).save()
                 .apply { data.add(this) }
         }
     }
 
-    private fun TravelExpense.save() =
+    private fun <T : ApprovalStatus> TravelExpense<T>.save() =
         travelExpenseService
             .create(this)
 
-    private fun CostExpense.save() =
+    private fun <T : ApprovalStatus> CostExpense<T>.save() =
         costExpenseService
             .create(this)
 }

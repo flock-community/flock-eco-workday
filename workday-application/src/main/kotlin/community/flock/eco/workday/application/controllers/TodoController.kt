@@ -18,6 +18,7 @@ import community.flock.eco.workday.application.services.LeaveDayService
 import community.flock.eco.workday.application.services.SickDayService
 import community.flock.eco.workday.application.services.WorkDayService
 import community.flock.eco.workday.core.authorities.Authority
+import community.flock.eco.workday.domain.common.ApprovalStatus
 import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.Expense
@@ -77,9 +78,9 @@ class TodoController(
             .findAllByStatus(Status.REQUESTED)
             .map { it.mapTodo() }
 
-    private fun findExpenseTodo() =
+    private fun findExpenseTodo(): List<Todo> =
         expenseService
-            .findAllByStatus(Status.REQUESTED)
+            .findAllByStatus<ApprovalStatus.REQUESTED>(Status.REQUESTED)
             .map { it.mapTodo() }
 
     private fun Person.fullName() = "$firstname $lastname"
@@ -120,7 +121,7 @@ class TodoController(
             description = "$from - $to",
         )
 
-    private fun Expense.mapTodo() =
+    private fun Expense<*>.mapTodo() =
         Todo(
             id = UUIDApi(id.toString()).also(UUIDApi::validate),
             todoType = TodoType.EXPENSE,
@@ -135,7 +136,7 @@ class TodoController(
             .contains(authority.toName())
 }
 
-private fun Expense.getAmount(): String =
+private fun Expense<*>.getAmount(): String =
     when (this) {
         is CostExpense -> amount.toString()
         is TravelExpense -> "$distance / $allowance"

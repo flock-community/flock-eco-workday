@@ -12,6 +12,7 @@ import community.flock.eco.workday.application.model.InvoiceStatus
 import community.flock.eco.workday.application.model.InvoiceType
 import community.flock.eco.workday.application.repository.InvoiceRepository
 import community.flock.eco.workday.core.utils.toNullable
+import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.CreateExpenseEvent
 import community.flock.eco.workday.domain.expense.ExpenseEvent
 import community.flock.eco.workday.domain.expense.UpdateExpenseEvent
@@ -19,6 +20,7 @@ import jakarta.servlet.http.HttpSession
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
@@ -80,14 +82,14 @@ class InvoiceService(
         )
 
     @TransactionalEventListener(value = [CreateExpenseEvent::class, UpdateExpenseEvent::class], phase = TransactionPhase.BEFORE_COMMIT)
-    fun handleCreateExpenseEvent(ev: ExpenseEvent) =
+    fun handleCreateExpenseEvent(ev: ExpenseEvent<*>) =
         when (val entity = ev.entity) {
-            is community.flock.eco.workday.domain.expense.CostExpense -> generateCostExpenseInvoice(entity)
+            is CostExpense -> generateCostExpenseInvoice(entity)
             else -> null
         }
 
     @Transactional
-    fun generateCostExpenseInvoice(expense: community.flock.eco.workday.domain.expense.CostExpense) =
+    fun generateCostExpenseInvoice(expense: CostExpense<*>) =
         expense
             .apply { invoiceRepository.deleteByReference(id) }
             .run {

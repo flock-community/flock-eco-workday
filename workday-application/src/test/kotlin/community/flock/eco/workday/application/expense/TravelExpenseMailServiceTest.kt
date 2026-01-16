@@ -3,7 +3,7 @@ package community.flock.eco.workday.application.expense
 import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.services.email.EmailService
-import community.flock.eco.workday.domain.common.Status
+import community.flock.eco.workday.domain.common.ApprovalStatus
 import community.flock.eco.workday.model.aPerson
 import io.mockk.every
 import io.mockk.mockk
@@ -29,7 +29,7 @@ class TravelExpenseMailServiceTest {
                 person = aPerson().toDomain(),
                 distance = 12.34,
                 allowance = 0.33,
-                status = Status.REQUESTED,
+                status = ApprovalStatus.REQUESTED,
             )
 
         val expectedEmailMessage =

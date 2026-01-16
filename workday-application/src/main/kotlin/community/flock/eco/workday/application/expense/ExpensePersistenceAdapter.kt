@@ -19,12 +19,12 @@ import community.flock.eco.workday.application.expense.TravelExpense as TravelEx
 class ExpensePersistenceAdapter(
     private val expenseRepository: ExpenseRepository,
 ) : ExpensePersistencePort {
-    override fun findAll(pageable: Pageable): Page<Expense> =
+    override fun findAll(pageable: Pageable): Page<Expense<*>> =
         expenseRepository
             .findAll(pageable.toEntity())
             .toDomainPage { toExpenseDomain() }
 
-    override fun findByIdOrNull(id: UUID): Expense? =
+    override fun findByIdOrNull(id: UUID): Expense<*>? =
         expenseRepository
             .findByIdOrNull(id)
             ?.toExpenseDomain()
@@ -32,7 +32,7 @@ class ExpensePersistenceAdapter(
     override fun findAllByPersonUuid(
         personId: UUID,
         pageable: Pageable,
-    ): Page<Expense> =
+    ): Page<Expense<*>> =
         expenseRepository
             .findAllByPersonUuid(personId, pageable.toEntity())
             .toDomainPage { toExpenseDomain() }
@@ -40,18 +40,18 @@ class ExpensePersistenceAdapter(
     override fun findAllByPersonUserCode(
         personCode: String,
         pageable: Pageable,
-    ): Page<Expense> =
+    ): Page<Expense<*>> =
         expenseRepository
             .findAllByPersonUserCode(personCode, pageable.toEntity())
             .toDomainPage { toExpenseDomain() }
 
-    override fun findAllByStatus(status: Status): List<Expense> =
+    override fun findAllByStatus(status: Status): List<Expense<*>> =
         expenseRepository
             .findAllByStatus(status)
             .map { it.toExpenseDomain() }
 
     @Transactional
-    override fun delete(id: UUID): Expense? =
+    override fun delete(id: UUID): Expense<*>? =
         expenseRepository
             .findByIdOrNull(id)
             ?.run {
@@ -60,7 +60,7 @@ class ExpensePersistenceAdapter(
                 expense
             }
 
-    private fun ExpenseEntity.toExpenseDomain(): Expense =
+    private fun ExpenseEntity.toExpenseDomain(): Expense<*> =
         when (this) {
             is CostExpenseEntity -> toDomain()
             is TravelExpenseEntity -> toDomain()
