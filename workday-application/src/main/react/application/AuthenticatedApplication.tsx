@@ -22,6 +22,7 @@ import { TodoFeature } from '../features/todo/TodoFeature';
 import WorkDayPage from '../features/workday/WorkDayPage';
 import { ApplicationDrawer } from './ApplicationDrawer';
 import { ApplicationLayout } from './ApplicationLayout';
+import {BudgetAllocationDemo} from "../features/budget/BudgetAllocationDemo";
 
 export const AuthenticatedApplication = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -57,6 +58,11 @@ export const AuthenticatedApplication = () => {
           path="/reports/assignment-overview"
           component={AssignmentOverview}
         />
+        <Route
+          path="/demo"
+          component={BudgetAllocationDemo}
+        />
+
         <Redirect to="/" />
       </Switch>
     </>
