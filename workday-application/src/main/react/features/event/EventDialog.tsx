@@ -7,11 +7,12 @@ import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import { useEffect, useState } from 'react';
-import { EventClient, type FlockEventRequest } from '../../clients/EventClient';
+import { EventClient, type FlockEventRequest, type FullFlockEvent } from '../../clients/EventClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { TransitionSlider } from '../../components/transitions/Slide';
 import { schema } from '../workday/WorkDayForm';
 import { EVENT_FORM_ID, EventForm } from './EventForm';
+import { EventBudgetManagementSection } from './EventBudgetManagementDialog';
 
 type EventDialogProps = {
   open: boolean;
@@ -21,6 +22,8 @@ type EventDialogProps = {
 
 export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
+  const [budgetExpanded, setBudgetExpanded] = useState(false);
+  const [eventData, setEventData] = useState<FullFlockEvent | null>(null);
 
   const [state, setState] = useState<FlockEventRequest | undefined>(undefined);
 
@@ -32,12 +35,15 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
             ...res,
             personIds: res.persons.map((it) => it.uuid) ?? [],
           });
+          setEventData(res); // Store full event data for budget dialog
         });
       } else {
         setState(schema.cast());
+        setEventData(null);
       }
     } else {
       setState(undefined);
+      setEventData(null);
     }
   }, [open, code]);
 
@@ -78,6 +84,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const handleClose = () => {
     onComplete?.();
   };
+
   return (
     <>
       <Dialog
@@ -108,6 +115,15 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
                 >
                   Event rating
                 </Button>
+              </Grid>
+            )}
+            {code && eventData && (
+              <Grid size={{ xs: 12 }}>
+                <EventBudgetManagementSection
+                  event={eventData}
+                  expanded={budgetExpanded}
+                  onChange={setBudgetExpanded}
+                />
               </Grid>
             )}
           </Grid>
