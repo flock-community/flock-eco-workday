@@ -711,7 +711,7 @@ This requires an event-centric view with bulk participant management, not a pers
 
 #### 1.3b: Events Feature - Event-Centric Allocation Management (NEW)
 **Duration:** 2-3 days
-**Status:** 🔜 TODO
+**Status:** ✅ COMPLETE
 
 Build event-centric budget allocation management in the Events feature:
 
@@ -719,13 +719,13 @@ Build event-centric budget allocation management in the Events feature:
 
 **Primary Workflow:** From Events page → Select event → Manage all participants and budget
 
-**Files to Create:**
-- `EventBudgetAllocationDialog.tsx` - Main dialog container
-- `EventBudgetParticipantList.tsx` - List of all participants
-- `EventBudgetParticipantRow.tsx` - Per-person allocation row
-- `EventBudgetFlockSection.tsx` - Flock company allocation
-- `EventBudgetSummaryBanner.tsx` - Live validation (Total vs Allocated)
-- `DailyTimeAllocationTable.tsx` - Per-day time tracking table (optional detail view)
+**Files Created:**
+- `EventBudgetManagementDialog.tsx` - Main dialog container (event-centric)
+- `EventBudgetParticipantList.tsx` - List of all participants with quick actions
+- `EventBudgetParticipantRow.tsx` - Per-person allocation row with time/money inputs
+- `EventBudgetFlockSection.tsx` - Flock company allocation section
+- `EventBudgetSummaryBanner.tsx` - Live validation banner (Total vs Allocated)
+- `EventDialog.tsx` - Modified to integrate "Manage Budget" button
 
 **Component Structure:**
 ```
@@ -835,12 +835,36 @@ console.log('Creating Event Budget Allocations:', {
 
 **Success Criteria:**
 - ✅ Can manage all participants from single dialog
-- ✅ Quick actions work correctly
-- ✅ Live validation updates
-- ✅ Creates correct allocation structure (logged)
-- ✅ Works with event defaults
+- ✅ Quick actions work correctly (Divide Time Equally, Divide Money Equally, Assign Remaining to Flock)
+- ✅ Live validation updates in real-time
+- ✅ Creates correct allocation structure (logged to console)
+- ✅ Works with event defaults (allocation type pre-selected)
 - ✅ File upload UI functional (placeholder)
 - ✅ Over-budget scenarios handled with warnings
+- ✅ "Manage Budget" button integrated into EventDialog
+- ✅ Daily breakdown collapsible per participant
+- ✅ Time and money allocations can be added/removed per participant
+- ✅ Flock money allocation with "Assign Remaining" button
+
+**Implementation Notes (Updated):**
+- Budget management is an **expandable accordion section** within EventDialog (not a separate dialog)
+- Accordion only shown for existing events (not during creation)
+- **Money and Time allocations completely separated** with distinct behaviors:
+  - **Money:** Must sum to event budget (costs), distributed among participants + Flock
+  - **Time:** Individual allocations (don't sum), exception-based display for defaults
+- Money allocation features:
+  - Quick actions: Distribute Equally, Distribute Remainder, Clear All
+  - Live remaining budget indicator
+  - Flock allocation integrated in same section
+- Time allocation features:
+  - Exception-based display (only shows participants with custom allocations)
+  - Toggle to show/hide participants using defaults
+  - Per-day overrides: hours, budget type (STUDY/HACK/None)
+  - Visual distinction for custom allocations (blue border)
+- All components use Material-UI for consistency
+- Mock data integration from `BudgetAllocationMocks.ts`
+- All mutations log to console (Phase 1 requirement)
+- Budget warnings non-blocking (soft warnings, not errors)
 
 #### 1.4: Dashboard Budget Charts
 **Duration:** 1 day
