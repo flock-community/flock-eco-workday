@@ -32,7 +32,7 @@ type PeriodInputFieldProps = {
   reset?: boolean;
 };
 
-function PeriodInputRenderer({
+export function PeriodInputRenderer({
   name,
   from,
   to,
@@ -104,7 +104,7 @@ type PeriodInputRendererProps = {
   from: dayjs.Dayjs;
   to: dayjs.Dayjs;
   reset?: boolean;
-  value: any;
+  value: number[];
   setFieldValue: (field: string, value: unknown) => void;
 };
 

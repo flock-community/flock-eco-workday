@@ -29,7 +29,8 @@ export interface BudgetAllocationBase {
   id: number;
   eventCode?: string | null;
   eventName?: string | null;
-  date: string; // ISO date string
+  dateFrom: string; // ISO date string
+  dateTo: string; // ISO date string
   description?: string | null;
   status: ApprovalStatus;
 }
@@ -137,21 +138,21 @@ const mockPersonNames = ['Alice Johnson', 'Bob Smith', 'Charlie Davis'];
 // ==================== MOCK BUDGET SUMMARY ====================
 
 export const mockBudgetSummary: BudgetSummary = {
-  hackHours: { budget: 120, used: 45, available: 75 },
-  studyHours: { budget: 40, used: 16, available: 24 },
-  studyMoney: { budget: 5000, used: 1200, available: 3800 },
+  hackHours: {budget: 120, used: 45, available: 75},
+  studyHours: {budget: 40, used: 16, available: 24},
+  studyMoney: {budget: 5000, used: 1200, available: 3800},
 };
 
 export const mockBudgetSummaryOverBudget: BudgetSummary = {
-  hackHours: { budget: 120, used: 135, available: -15 },
-  studyHours: { budget: 40, used: 48, available: -8 },
-  studyMoney: { budget: 5000, used: 5500, available: -500 },
+  hackHours: {budget: 120, used: 135, available: -15},
+  studyHours: {budget: 40, used: 48, available: -8},
+  studyMoney: {budget: 5000, used: 5500, available: -500},
 };
 
 export const mockBudgetSummaryEmpty: BudgetSummary = {
-  hackHours: { budget: 120, used: 0, available: 120 },
-  studyHours: { budget: 40, used: 0, available: 40 },
-  studyMoney: { budget: 5000, used: 0, available: 5000 },
+  hackHours: {budget: 120, used: 0, available: 120},
+  studyHours: {budget: 40, used: 0, available: 40},
+  studyMoney: {budget: 5000, used: 0, available: 5000},
 };
 
 // ==================== MOCK ALLOCATIONS ====================
@@ -161,16 +162,19 @@ export const mockStudyTimeBudgetAllocation: StudyTimeBudgetAllocation = {
   type: 'StudyTime',
   eventCode: 'REACT_CONF_2026',
   eventName: 'React Conference 2026',
-  date: '2026-01-15',
+  dateFrom: '2026-01-15',
+  dateTo: '2026-01-20',
   description: 'Attended React Conference',
   status: ApprovalStatus.APPROVED,
   personId: mockPersonIds[0],
   personName: mockPersonNames[0],
   dailyTimeAllocations: [
-    { date: '2026-01-15', hours: 8 },
-    { date: '2026-01-16', hours: 8 },
+    {date: '2026-01-15', hours: 8},
+    {date: '2026-01-16', hours: 8},
+    {date: '2026-01-17', hours: 8},
+    {date: '2026-01-20', hours: 8},
   ],
-  totalHours: 16,
+  totalHours: 32,
 };
 
 export const mockStudyMoneyBudgetAllocation: StudyMoneyBudgetAllocation = {
@@ -178,7 +182,8 @@ export const mockStudyMoneyBudgetAllocation: StudyMoneyBudgetAllocation = {
   type: 'StudyMoney',
   eventCode: 'REACT_CONF_2026',
   eventName: 'React Conference 2026',
-  date: '2026-01-15',
+  dateFrom: '2026-01-15',
+  dateTo: '2026-01-20',
   description: 'Conference ticket and travel',
   status: ApprovalStatus.APPROVED,
   personId: mockPersonIds[0],
@@ -204,7 +209,8 @@ export const mockStudyMoneyBudgetAllocationFreeForm: StudyMoneyBudgetAllocation 
     type: 'StudyMoney',
     eventCode: null,
     eventName: null,
-    date: '2026-01-20',
+    dateFrom: '2026-01-20',
+    dateTo: '2026-01-20',
     description: 'Online course: Advanced TypeScript Patterns',
     status: ApprovalStatus.REQUESTED,
     personId: mockPersonIds[0],
@@ -219,26 +225,47 @@ export const mockStudyMoneyBudgetAllocationFreeForm: StudyMoneyBudgetAllocation 
     ],
   };
 
-export const mockHackTimeBudgetAllocation: HackTimeBudgetAllocation = {
-  id: 4,
-  type: 'HackTime',
-  eventCode: 'FLOCK_HACK_DAY_JAN',
-  eventName: 'Flock Hack Day - January',
-  date: '2026-01-10',
-  description: 'Internal hackathon',
-  status: ApprovalStatus.APPROVED,
-  personId: mockPersonIds[0],
-  personName: mockPersonNames[0],
-  dailyTimeAllocations: [{ date: '2026-01-10', hours: 8 }],
-  totalHours: 8,
-};
+export const mockHackTimeBudgetAllocation: HackTimeBudgetAllocation[] = [
+
+  {
+    id: 4,
+    type: 'HackTime',
+    eventCode: 'FLOCK_HACK_DAY_JAN',
+    eventName: 'Flock Hack Day - January',
+    dateFrom: '2026-01-10',
+    dateTo: '2026-01-11',
+    description: 'Internal hackathon',
+    status: ApprovalStatus.APPROVED,
+    personId: mockPersonIds[0],
+    personName: mockPersonNames[0],
+    dailyTimeAllocations: [{date: '2026-01-10', hours: 8}],
+    totalHours: 8,
+  },
+  {
+    id: 10010234,
+    type: 'HackTime',
+    eventCode: 'REACT_CONF_20262',
+    eventName: 'React Conference 2026 abc',
+    dateFrom: '2026-01-15',
+    dateTo: '2026-01-20',
+    description: 'Attended React Conference',
+    status: ApprovalStatus.APPROVED,
+    personId: mockPersonIds[0],
+    personName: mockPersonNames[0],
+    dailyTimeAllocations: [
+      {date: '2026-01-18', hours: 8},
+      {date: '2026-01-19', hours: 8},
+    ],
+    totalHours: 16,
+  }];
 
 export const mockFlockMoneyBudgetAllocation: FlockMoneyBudgetAllocation = {
   id: 5,
   type: 'FlockMoney',
   eventCode: 'REACT_CONF_2026',
   eventName: 'React Conference 2026',
-  date: '2026-01-15',
+  dateFrom: '2026-01-15',
+  dateTo: '2026-01-20',
   description: 'Remaining conference budget allocated to company',
   status: ApprovalStatus.APPROVED,
   personId: null,
@@ -252,18 +279,19 @@ export const mockAllocationsForPerson: BudgetAllocation[] = [
   mockStudyTimeBudgetAllocation,
   mockStudyMoneyBudgetAllocation,
   mockStudyMoneyBudgetAllocationFreeForm,
-  mockHackTimeBudgetAllocation,
+  ...mockHackTimeBudgetAllocation,
   {
     id: 6,
     type: 'HackTime',
     eventCode: 'FLOCK_HACK_DAY_FEB',
     eventName: 'Flock Hack Day - February',
-    date: '2026-02-14',
+    dateFrom: '2026-02-14',
+    dateTo: '2026-02-14',
     description: 'Monthly hackathon',
     status: ApprovalStatus.APPROVED,
     personId: mockPersonIds[0],
     personName: mockPersonNames[0],
-    dailyTimeAllocations: [{ date: '2026-02-14', hours: 8 }],
+    dailyTimeAllocations: [{date: '2026-02-14', hours: 8}],
     totalHours: 8,
   },
   {
@@ -271,12 +299,13 @@ export const mockAllocationsForPerson: BudgetAllocation[] = [
     type: 'StudyTime',
     eventCode: 'KOTLIN_WORKSHOP',
     eventName: 'Kotlin Workshop',
-    date: '2026-02-20',
+    dateFrom: '2026-02-20',
+    dateTo: '2026-02-20',
     description: 'Kotlin workshop attendance',
     status: ApprovalStatus.REQUESTED,
     personId: mockPersonIds[0],
     personName: mockPersonNames[0],
-    dailyTimeAllocations: [{ date: '2026-02-20', hours: 4 }],
+    dailyTimeAllocations: [{date: '2026-02-20', hours: 4}],
     totalHours: 4,
   },
   {
@@ -284,7 +313,8 @@ export const mockAllocationsForPerson: BudgetAllocation[] = [
     type: 'StudyMoney',
     eventCode: null,
     eventName: null,
-    date: '2026-03-01',
+    dateFrom: '2026-03-01',
+    dateTo: '2026-03-01',
     description: 'Book purchase: Clean Architecture',
     status: ApprovalStatus.APPROVED,
     personId: mockPersonIds[0],
@@ -347,14 +377,32 @@ export const mockEventWithBudgetAllocations: Event = {
       type: 'StudyTime',
       eventCode: 'REACT_CONF_2026',
       eventName: 'React Conference 2026',
-      date: '2026-01-15',
+      dateFrom: '2026-01-15',
+      dateTo: '2026-01-20',
       description: 'Conference attendance',
       status: ApprovalStatus.APPROVED,
       personId: mockPersonIds[1],
       personName: mockPersonNames[1],
       dailyTimeAllocations: [
-        { date: '2026-01-15', hours: 8 },
-        { date: '2026-01-16', hours: 8 },
+        {date: '2026-01-15', hours: 8},
+        {date: '2026-01-16', hours: 8},
+      ],
+      totalHours: 16,
+    },
+    {
+      id: 91,
+      type: 'HackTime',
+      eventCode: 'REACT_CONF_2026',
+      eventName: 'React Conference 2026',
+      dateFrom: '2026-01-15',
+      dateTo: '2026-01-20',
+      description: 'Conference attendance',
+      status: ApprovalStatus.APPROVED,
+      personId: mockPersonIds[1],
+      personName: mockPersonNames[1],
+      dailyTimeAllocations: [
+        {date: '2026-01-17', hours: 8},
+        {date: '2026-01-18', hours: 8},
       ],
       totalHours: 16,
     },
@@ -363,12 +411,13 @@ export const mockEventWithBudgetAllocations: Event = {
       type: 'StudyMoney',
       eventCode: 'REACT_CONF_2026',
       eventName: 'React Conference 2026',
-      date: '2026-01-15',
+      dateFrom: '2026-01-15',
+      dateTo: '2026-01-20',
       description: 'Conference expenses',
       status: ApprovalStatus.APPROVED,
       personId: mockPersonIds[1],
       personName: mockPersonNames[1],
-      amount: 750,
+      amount: 22,
       files: [],
     },
   ],
@@ -384,18 +433,19 @@ export const mockEvents: Event[] = [
     to: '2026-01-10',
     defaultTimeAllocationType: BudgetAllocationType.HACK,
     budgetAllocations: [
-      mockHackTimeBudgetAllocation,
+      ...mockHackTimeBudgetAllocation,
       {
         id: 11,
         type: 'HackTime',
         eventCode: 'FLOCK_HACK_DAY_JAN',
         eventName: 'Flock Hack Day - January',
-        date: '2026-01-10',
+        dateFrom: '2026-01-10',
+        dateTo: '2026-01-10',
         description: 'Hack day participation',
         status: ApprovalStatus.APPROVED,
         personId: mockPersonIds[1],
         personName: mockPersonNames[1],
-        dailyTimeAllocations: [{ date: '2026-01-10', hours: 8 }],
+        dailyTimeAllocations: [{date: '2026-01-10', hours: 8}],
         totalHours: 8,
       },
       {
@@ -403,12 +453,13 @@ export const mockEvents: Event[] = [
         type: 'HackTime',
         eventCode: 'FLOCK_HACK_DAY_JAN',
         eventName: 'Flock Hack Day - January',
-        date: '2026-01-10',
+        dateFrom: '2026-01-10',
+        dateTo: '2026-01-10',
         description: 'Hack day participation',
         status: ApprovalStatus.APPROVED,
         personId: mockPersonIds[2],
         personName: mockPersonNames[2],
-        dailyTimeAllocations: [{ date: '2026-01-10', hours: 8 }],
+        dailyTimeAllocations: [{date: '2026-01-10', hours: 8}],
         totalHours: 8,
       },
     ],
@@ -480,7 +531,7 @@ export function generateMockBudgetDetailsForAllPersons(): BudgetAllocationDetail
       mockContracts[index].studyHours,
       mockContracts[index].studyMoney
     ),
-    allocations: mockAllocationsForPerson.slice(0, 3 + index),
+    allocations: mockAllocationsForPerson.filter((allocation) => allocation.personId === personId)
   }));
 }
 

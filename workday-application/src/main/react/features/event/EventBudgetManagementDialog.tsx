@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Box,
   Typography,
@@ -9,8 +9,8 @@ import {
   AccordionDetails,
   Button,
 } from '@mui/material';
-import { ExpandMore, Info, AccountBalance } from '@mui/icons-material';
-import type { FullFlockEvent } from '../../clients/EventClient';
+import {ExpandMore, Info, AccountBalance} from '@mui/icons-material';
+import type {FullFlockEvent} from '../../clients/EventClient';
 import {
   EventMoneyAllocationSection,
   type PersonMoneyAllocation,
@@ -23,18 +23,23 @@ import {
   BudgetAllocationType,
   mockEvents,
 } from '../budget/mocks/BudgetAllocationMocks';
+import Grid from "@mui/material/Grid";
 
 interface EventBudgetManagementSectionProps {
   event: FullFlockEvent | null;
-  expanded?: boolean;
-  onChange?: (expanded: boolean) => void;
+  timeExpanded?: boolean;
+  setTimeExpanded?: (expanded: boolean) => void;
+  moneyExpanded?: boolean;
+  setMoneyExpanded?: (expanded: boolean) => void;
 }
 
 export function EventBudgetManagementSection({
-  event,
-  expanded = false,
-  onChange,
-}: EventBudgetManagementSectionProps) {
+                                               event,
+                                               timeExpanded = false,
+                                               setTimeExpanded,
+                                               moneyExpanded = false,
+                                               setMoneyExpanded,
+                                             }: EventBudgetManagementSectionProps) {
   // Separate state for money and time allocations
   const [moneyParticipants, setMoneyParticipants] = useState<PersonMoneyAllocation[]>([]);
   const [timeParticipants, setTimeParticipants] = useState<PersonTimeAllocation[]>([]);
@@ -188,67 +193,100 @@ export function EventBudgetManagementSection({
   const defaultHoursPerDay = eventDays > 0 ? event.hours / eventDays : 8;
 
   return (
-    <Accordion
-      expanded={expanded}
-      onChange={(_, isExpanded) => onChange?.(isExpanded)}
-      sx={{ boxShadow: 'none', border: '1px solid', borderColor: 'divider' }}
-    >
-      <AccordionSummary
-        expandIcon={<ExpandMore />}
-        sx={{
-          bgcolor: 'action.hover',
-          '&:hover': { bgcolor: 'action.selected' },
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <AccountBalance color="action" />
-          <Typography variant="subtitle1" fontWeight="medium">
-            Budget Allocations
-          </Typography>
-        </Box>
-      </AccordionSummary>
+    <Grid container spacing={1}>
+      <Grid size={{xs: 12}}>
+        <Accordion
+          expanded={timeExpanded}
+          onChange={(_, isExpanded) => setTimeExpanded?.(isExpanded)}
 
-      <AccordionDetails sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {/* Info Alert */}
-          <Alert severity="info" icon={<Info />}>
-            <Typography variant="body2">
-              Allocate event budget (money) and time separately. Money allocations
-              must sum to the total event budget. Time allocations are individual
-              and don't sum.
-            </Typography>
-          </Alert>
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMore/>}
+            sx={{
+              bgcolor: 'action.hover',
+              '&:hover': {bgcolor: 'action.selected'},
+            }}
+          >
+            <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+              <AccountBalance color="action"/>
+              <Typography variant="subtitle1" fontWeight="medium">
+                Time Budget Allocations
+              </Typography>
+            </Box>
+          </AccordionSummary>
 
-          {/* Money Allocation Section */}
-          <EventMoneyAllocationSection
-            totalBudget={totalBudget}
-            participants={moneyParticipants}
-            flockAmount={flockAmount}
-            onParticipantsChange={setMoneyParticipants}
-            onFlockAmountChange={setFlockAmount}
-          />
+          <AccordionDetails sx={{p: 3}}>
+            <Box sx={{display: 'flex', flexDirection: 'column', gap: 3}}>
+              {/* Info Alert */}
+              <Alert severity="info" icon={<Info/>}>
+                <Typography variant="body2">
+                  Allocate event budget (money) and time separately. Money allocations
+                  must sum to the total event budget. Time allocations are individual
+                  and don't sum.
+                </Typography>
+              </Alert>
 
-          <Divider />
+              {/* Time Allocation Section */}
+              <EventTimeAllocationSection
+                eventDates={eventDates}
+                defaultHoursPerDay={defaultHoursPerDay}
+                defaultBudgetType={defaultBudgetType}
+                participants={timeParticipants}
+                onParticipantsChange={setTimeParticipants}
+              />
 
-          {/* Time Allocation Section */}
-          <EventTimeAllocationSection
-            eventDates={eventDates}
-            defaultHoursPerDay={defaultHoursPerDay}
-            defaultBudgetType={defaultBudgetType}
-            participants={timeParticipants}
-            onParticipantsChange={setTimeParticipants}
-          />
+              {/* Save Button */}
+              <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
+                <Button onClick={handleSave} variant="contained" color="primary">
+                  Save Time Allocations
+                </Button>
+              </Box>
+            </Box>
+          </AccordionDetails>
+        </Accordion>
+      </Grid>
+      <Grid size={{xs: 12}}>
+        <Accordion
+          expanded={moneyExpanded}
+          onChange={(_, isExpanded) => setMoneyExpanded?.(isExpanded)}
 
-          <Divider />
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMore/>}
+            sx={{
+              bgcolor: 'action.hover',
+              '&:hover': {bgcolor: 'action.selected'},
+            }}
+          >
+            <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+              <AccountBalance color="action"/>
+              <Typography variant="subtitle1" fontWeight="medium">
+                Money Budget Allocations
+              </Typography>
+            </Box>
+          </AccordionSummary>
 
-          {/* Save Button */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button onClick={handleSave} variant="contained" color="primary">
-              Save Allocations
-            </Button>
-          </Box>
-        </Box>
-      </AccordionDetails>
-    </Accordion>
-  );
+          <AccordionDetails sx={{p: 3}}>
+            <Box sx={{display: 'flex', flexDirection: 'column', gap: 3}}>
+              {/* Money Allocation Section */}
+              <EventMoneyAllocationSection
+                totalBudget={totalBudget}
+                participants={moneyParticipants}
+                flockAmount={flockAmount}
+                onParticipantsChange={setMoneyParticipants}
+                onFlockAmountChange={setFlockAmount}
+              />
+
+
+              {/* Save Button */}
+              <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
+                <Button onClick={handleSave} variant="contained" color="primary">
+                  Save Money Allocations
+                </Button>
+              </Box>
+            </Box>
+          </AccordionDetails>
+        </Accordion>
+      </Grid>
+    </Grid>);
 }

@@ -22,7 +22,8 @@ type EventDialogProps = {
 
 export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
-  const [budgetExpanded, setBudgetExpanded] = useState(false);
+  const [moneyBudgetExpanded, setMoneyBudgetExpanded] = useState(false);
+  const [timeBudgetExpanded, setTimeBudgetExpanded] = useState(false);
   const [eventData, setEventData] = useState<FullFlockEvent | null>(null);
 
   const [state, setState] = useState<FlockEventRequest | undefined>(undefined);
@@ -121,8 +122,10 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
               <Grid size={{ xs: 12 }}>
                 <EventBudgetManagementSection
                   event={eventData}
-                  expanded={budgetExpanded}
-                  onChange={setBudgetExpanded}
+                  timeExpanded={timeBudgetExpanded}
+                  setTimeExpanded={setTimeBudgetExpanded}
+                  moneyExpanded={moneyBudgetExpanded}
+                  setMoneyExpanded={setMoneyBudgetExpanded}
                 />
               </Grid>
             )}
