@@ -45,7 +45,6 @@ export function BudgetAllocationFeature({
 
   // Mock data for all persons (for admin selector)
   const allPersonsBudgetDetails = generateMockBudgetDetailsForAllPersons();
-
   // Load budget details when year or person changes
   useEffect(() => {
     const loadBudgetDetails = async () => {
@@ -139,6 +138,7 @@ export function BudgetAllocationFeature({
                   <FormControl sx={{minWidth: 200}}>
                     <InputLabel>Person</InputLabel>
                     <Select
+                      variant="standard"
                       value={selectedPersonId}
                       label="Person"
                       onChange={(e) => setSelectedPersonId(e.target.value)}

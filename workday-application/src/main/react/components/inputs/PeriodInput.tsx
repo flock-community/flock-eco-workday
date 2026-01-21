@@ -15,9 +15,10 @@ const daysOfWeek = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'];
 export type PeriodInputProps = {
   period: Period;
   onChange: (day: Dayjs, hours: number) => void;
+  readonly?: boolean
 };
 
-export function PeriodInput({ period, onChange }: PeriodInputProps) {
+export function PeriodInput({ period, onChange, readonly = false }: PeriodInputProps) {
   const grid = calcGrid(period);
 
   const totalHoursForPeriod = period.days?.reduce(
@@ -63,7 +64,7 @@ export function PeriodInput({ period, onChange }: PeriodInputProps) {
                   size="small"
                   label={day.disabled ? '-' : day.date.format('DD MMM')}
                   value={day.value}
-                  disabled={day.disabled}
+                  disabled={day.disabled || readonly}
                   onChange={(ev) =>
                     onChange(day.date, parseFloat(ev.target.value || '0'))
                   }

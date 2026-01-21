@@ -40,21 +40,28 @@ export function BudgetAllocationList({
     useState<StudyMoneyBudgetAllocation | null>(null);
 
   // Group allocations by event and date for unified display
-  const eventAllocations = allocations.reduce((acc, allocation) => {
+  const eventAllocations: Record<string, {
+    eventCode: string;
+    eventName: string;
+    dateFrom: string;
+    dateTo: string;
+    allocations: BudgetAllocation[]
+  }> = allocations.reduce((acc, allocation) => {
     if (allocation.eventCode) {
       const key = allocation.eventCode;
       if (!acc[key]) {
         acc[key] = {
           eventCode: allocation.eventCode,
           eventName: allocation.eventName || allocation.eventCode,
-          date: allocation.date,
+          dateFrom: allocation.dateFrom,
+          dateTo: allocation.dateTo,
           allocations: [],
         };
       }
       acc[key].allocations.push(allocation);
     }
     return acc;
-  }, {} as Record<string, { eventCode: string; eventName: string; date: string; allocations: BudgetAllocation[] }>);
+  }, {} satisfies Record<string, { eventCode: string; eventName: string; dateFrom: string; dateTo: string; allocations: BudgetAllocation[] }>);
 
   // Free-form study money allocations (no event)
   const freeFormStudyMoney = allocations.filter(
@@ -75,8 +82,8 @@ export function BudgetAllocationList({
       data: allocation,
     })),
   ].sort((a, b) => {
-    const dateA = a.type === 'event' ? a.data.date : a.data.date;
-    const dateB = b.type === 'event' ? b.data.date : b.data.date;
+    const dateA = a.type === 'event' ? a.data.dateFrom : a.data.dateFrom;
+    const dateB = b.type === 'event' ? b.data.dateFrom : b.data.dateFrom;
     return new Date(dateB).getTime() - new Date(dateA).getTime();
   });
 
@@ -157,6 +164,8 @@ export function BudgetAllocationList({
                     eventCode={item.data.eventCode}
                     eventName={item.data.eventName}
                     allocations={item.data.allocations}
+                    dateFrom={item.data.dateFrom}
+                    dateTo={item.data.dateTo}
                   />
                 ) : (
                   <StudyMoneyAllocationListItem
