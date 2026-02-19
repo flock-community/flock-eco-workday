@@ -32,6 +32,7 @@ export function HoursOverviewCard({ totalPerPersonMe }: HoursOverviewCardProps) 
           it.total -
             (it.workDays +
               it.leaveDayUsed +
+              it.paidLeaveHours +
               it.sickDays +
               it.event +
               it.paidParentalLeaveUsed +
@@ -89,6 +90,12 @@ export function HoursOverviewCard({ totalPerPersonMe }: HoursOverviewCardProps) 
               dataKey="leaveDayUsed"
               name="leave hours"
               fill="#42a5f5"
+            />
+            <Bar
+              stackId="days"
+              dataKey="paidLeaveHours"
+              name="paid leave"
+              fill="#AB47BC"
             />
             <Bar
               stackId="days"
