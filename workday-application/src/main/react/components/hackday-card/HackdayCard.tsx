@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, Typography } from '@mui/material';
+import { Button, Card, CardContent, CardHeader, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import { useCallback, useEffect, useState } from 'react';
@@ -93,12 +93,21 @@ export function HackdayCard() {
     <Root>
       <Card
         variant="outlined"
-        style={{ borderRadius: 0, cursor: 'pointer' }}
-        onClick={() =>
-          personHackDayDetails !== undefined && openLeaveDayDetailsDialog()
-        }
+        style={{ borderRadius: 0 }}
       >
-        <CardHeader title="Hack days" />
+        <CardHeader
+          title="Hack days"
+          action={
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={openLeaveDayDetailsDialog}
+              disabled={personHackDayDetails === undefined}
+            >
+              Update
+            </Button>
+          }
+        />
         <CardContent className={classes.containerWrapper}>
           {personHackDayDetails === undefined ? (
             <AlignedLoader />
