@@ -1,4 +1,5 @@
-import { Card, CardContent, CardHeader, Typography } from '@mui/material';
+import { Card, CardContent, CardHeader, IconButton, Typography } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import { useCallback, useEffect, useState } from 'react';
@@ -6,9 +7,7 @@ import {
   AggregationClient,
   type PersonHackdayDetails,
 } from '../../clients/AggregationClient';
-import { EventClient, type FlockEvent } from '../../clients/EventClient';
 import { HighlightSpan } from '../../theme/theme-light';
-import { subscribeToEvent, unsubscribeFromEvent } from '../../utils/EventUtils';
 import { hoursFormatter } from '../../utils/Hours';
 import { HackdayDetailDialog } from './HackdayDetailDialog';
 
@@ -49,11 +48,14 @@ const Root = styled('div')(() => ({
   },
 }));
 
-export function HackdayCard() {
+type HackdayCardProps = {
+  refreshKey?: number;
+};
+
+export function HackdayCard({ refreshKey }: HackdayCardProps) {
   const [hackdayDetailsOpen, setHackdayDetailsOpen] = useState<boolean>(false);
   const [personHackDayDetails, setPersonHackdayDetails] =
     useState<PersonHackdayDetails>(undefined);
-  const [flockEvents, setFlockEvents] = useState<FlockEvent[]>([]);
 
   const fetchHackdayDetailsForCurrentYear = useCallback(() => {
     AggregationClient.hackdayDetailsMeYear(new Date().getFullYear()).then(
@@ -61,16 +63,9 @@ export function HackdayCard() {
     );
   }, []);
 
-  const fetchEvents = useCallback(() => {
-    EventClient.getHackDays(new Date().getFullYear()).then((res) =>
-      setFlockEvents(res),
-    );
-  }, []);
-
   useEffect(() => {
     fetchHackdayDetailsForCurrentYear();
-    fetchEvents();
-  }, [fetchEvents, fetchHackdayDetailsForCurrentYear]);
+  }, [fetchHackdayDetailsForCurrentYear, refreshKey]);
 
   const openLeaveDayDetailsDialog = () => {
     setHackdayDetailsOpen(true);
@@ -80,25 +75,23 @@ export function HackdayCard() {
     setHackdayDetailsOpen(false);
   };
 
-  const eventToggled = (event: FlockEvent, isPresent: boolean) => {
-    (isPresent ? subscribeToEvent(event) : unsubscribeFromEvent(event)).then(
-      () => {
-        fetchHackdayDetailsForCurrentYear();
-        fetchEvents();
-      },
-    );
-  };
-
   return (
     <Root>
       <Card
         variant="outlined"
-        style={{ borderRadius: 0, cursor: 'pointer' }}
-        onClick={() =>
-          personHackDayDetails !== undefined && openLeaveDayDetailsDialog()
-        }
+        style={{ borderRadius: 0 }}
       >
-        <CardHeader title="Hack days" />
+        <CardHeader
+          title="Hack days"
+          action={
+            <IconButton
+              onClick={openLeaveDayDetailsDialog}
+              disabled={personHackDayDetails === undefined}
+            >
+              <InfoOutlined />
+            </IconButton>
+          }
+        />
         <CardContent className={classes.containerWrapper}>
           {personHackDayDetails === undefined ? (
             <AlignedLoader />
@@ -121,9 +114,7 @@ export function HackdayCard() {
         <HackdayDetailDialog
           open={hackdayDetailsOpen}
           item={personHackDayDetails}
-          hackEvents={flockEvents}
           onComplete={handleCloseLeaveDayDetailDialog}
-          onEventToggle={eventToggled}
         />
       )}
     </Root>

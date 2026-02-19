@@ -8,9 +8,7 @@ import { DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import { useEffect, useState } from 'react';
 import type { PersonHackdayDetails } from '../../clients/AggregationClient';
-import type { FlockEvent } from '../../clients/EventClient';
 import { hoursFormatter } from '../../utils/Hours';
-import { HackDayList } from './HackDayList';
 
 const initialData: PersonHackdayDetails = {
   name: '',
@@ -23,16 +21,12 @@ type HackdayDetailDialogProps = {
   open: boolean;
   item: PersonHackdayDetails;
   onComplete: () => void;
-  onEventToggle: (event: FlockEvent, isPresent: boolean) => void;
-  hackEvents: FlockEvent[];
 };
 
 export function HackdayDetailDialog({
   open,
   item,
   onComplete,
-  onEventToggle,
-  hackEvents,
 }: HackdayDetailDialogProps) {
   const [state, setState] = useState<PersonHackdayDetails>(initialData);
 
@@ -83,7 +77,6 @@ export function HackdayDetailDialog({
           </ListItem>
           <Divider />
         </List>
-        <HackDayList items={hackEvents} onEventToggle={onEventToggle} />
       </DialogBody>
     </Dialog>
   );
