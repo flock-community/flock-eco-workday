@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   AggregationClient,
   type PersonHolidayDetails,
@@ -14,8 +14,10 @@ import {
 } from '../../clients/PersonEventClient';
 import ContractsEnding from '../../components/contracts/ContractsEnding';
 import { ExpensesCard } from '../../components/expenses-card/ExpensesCard';
+import { HackDayEventsCard } from '../../components/hackday-card/HackDayEventsCard';
 import { HackdayCard } from '../../components/hackday-card/HackdayCard';
 import { HolidayCard } from '../../components/holiday-card/HolidayCard';
+import { HoursOverviewCard } from '../../components/hours-overview-card/HoursOverviewCard';
 import { MissingHoursCard } from '../../components/missing-hours-card/MissingHoursCard';
 import PersonEvents from '../../components/person/PersonEvents';
 import { QuickLinks } from '../../components/quick-links/QuickLinks';
@@ -35,6 +37,11 @@ export function HomeFeature() {
     useState<PersonHolidayDetails>();
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [hackdayRefreshKey, setHackdayRefreshKey] = useState(0);
+
+  const handleHackdayToggle = useCallback(() => {
+    setHackdayRefreshKey((k) => k + 1);
+  }, []);
 
   const hasAccess =
     status?.authorities !== undefined && status?.authorities?.length > 0;
@@ -106,12 +113,19 @@ export function HomeFeature() {
 
           <div className={'gid-auto-fit'}>
             <HolidayCard item={personHolidayDetails} />
-            <HackdayCard />
+            <HackdayCard refreshKey={hackdayRefreshKey} />
           </div>
+
+          <HoursOverviewCard totalPerPersonMe={totalPerPersonMe} />
 
           <div className={'gid-auto-fit'}>
             <MissingHoursCard totalPerPersonMe={totalPerPersonMe} />
             <ExpensesCard items={expenses} />
+          </div>
+
+          <div className={'gid-auto-fit'}>
+            <HackDayEventsCard onToggle={handleHackdayToggle} />
+            <div />
           </div>
         </section>
       )}

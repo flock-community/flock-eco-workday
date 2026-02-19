@@ -1,4 +1,5 @@
-import { Button, Card, CardContent, CardHeader, Typography } from '@mui/material';
+import { Card, CardContent, CardHeader, IconButton, Typography } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 import type { PersonHolidayDetails } from '../../clients/AggregationClient';
@@ -82,9 +83,9 @@ export function HolidayCard({ item }: HolidayCardProps) {
         <CardHeader
           title={'Leave days'}
           action={
-            <Button variant="outlined" size="small" onClick={openLeaveDayDetailsDialog}>
-              View
-            </Button>
+            <IconButton onClick={openLeaveDayDetailsDialog}>
+              <InfoOutlined />
+            </IconButton>
           }
         />
         <CardContent className={classes.containerWrapper}>

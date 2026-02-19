@@ -1,4 +1,3 @@
-import { Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import type { FlockEvent } from '../../clients/EventClient';
@@ -27,7 +26,6 @@ export function HackDayList({ items, onEventToggle }: UpcomingEventsCardProps) {
 
   return (
     <>
-      <Typography variant="h6">Hack days of this year</Typography>
       <EventList
         events={items.slice(
           page * rowsPerPage,
