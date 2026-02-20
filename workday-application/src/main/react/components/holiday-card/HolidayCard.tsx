@@ -1,4 +1,10 @@
-import { Card, CardContent, CardHeader, IconButton, Typography } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
@@ -76,10 +82,7 @@ export function HolidayCard({ item }: HolidayCardProps) {
 
   return (
     <Root>
-      <Card
-        variant={'outlined'}
-        style={{ borderRadius: 0 }}
-      >
+      <Card variant={'outlined'} style={{ borderRadius: 0 }}>
         <CardHeader
           title={'Leave days'}
           action={

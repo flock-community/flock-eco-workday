@@ -1,4 +1,10 @@
-import { Card, CardContent, CardHeader, IconButton, Typography } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
@@ -77,10 +83,7 @@ export function HackdayCard({ refreshKey }: HackdayCardProps) {
 
   return (
     <Root>
-      <Card
-        variant="outlined"
-        style={{ borderRadius: 0 }}
-      >
+      <Card variant="outlined" style={{ borderRadius: 0 }}>
         <CardHeader
           title="Hack days"
           action={

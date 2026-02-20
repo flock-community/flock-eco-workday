@@ -17,7 +17,9 @@ type HoursOverviewCardProps = {
   totalPerPersonMe: any;
 };
 
-export function HoursOverviewCard({ totalPerPersonMe }: HoursOverviewCardProps) {
+export function HoursOverviewCard({
+  totalPerPersonMe,
+}: HoursOverviewCardProps) {
   const data = useMemo(() => {
     if (!totalPerPersonMe) return [];
 
