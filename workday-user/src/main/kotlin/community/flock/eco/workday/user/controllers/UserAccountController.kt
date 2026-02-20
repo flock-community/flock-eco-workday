@@ -6,7 +6,6 @@ import community.flock.eco.workday.user.model.UserAccount
 import community.flock.eco.workday.user.repositories.UserAccountRepository
 import community.flock.eco.workday.user.services.UserAccountService
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/user-accounts")
@@ -58,22 +56,13 @@ class UserAccountController(
         @RequestBody form: UserKeyForm,
     ) = userAccountService
         .generateKeyForUserCode(authentication.name, form.label)
-        .toResponse()
-
-    @PutMapping("/update-key")
-    @PreAuthorize("isAuthenticated()")
-    fun updateKey(
-        authentication: Authentication,
-        @RequestParam key: String,
-        @RequestBody form: UserKeyForm,
-    ) = userAccountService
-        .run {
-            if (!this.findUserAccountKeyByUserCode(authentication.name).contains(this.findUserAccountKeyByKey(key))) {
-                throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to change this key")
-            }
-            this
-        }.updateKey(key, form)
-        .toResponse()
+        ?.let {
+            GenerateKeyResponse(
+                id = it.id.toString(),
+                key = it.plainKey,
+                label = it.label,
+            )
+        }.toResponse()
 
     @PostMapping("/revoke-key")
     @PreAuthorize("isAuthenticated()")
@@ -81,7 +70,7 @@ class UserAccountController(
         authentication: Authentication,
         @RequestBody form: KeyRevokeForm,
     ) = userAccountService
-        .revokeKeyForUserCode(authentication.name, form.key)
+        .revokeKeyByIdForUserCode(authentication.name, form.id)
         .toResponse()
 
     data class NewPasswordForm(
@@ -95,6 +84,12 @@ class UserAccountController(
     )
 
     data class KeyRevokeForm(
+        val id: Long,
+    )
+
+    data class GenerateKeyResponse(
+        val id: String,
         val key: String,
+        val label: String?,
     )
 }

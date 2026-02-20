@@ -119,7 +119,11 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
               open={state.anchorEl != null}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose} disabled>
+              <MenuItem
+                onClick={handleClose}
+                component={RouterLink}
+                to="/profile"
+              >
                 Profile
               </MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>

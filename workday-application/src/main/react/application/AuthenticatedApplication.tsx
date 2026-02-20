@@ -13,6 +13,7 @@ import LeaveDayPage from '../features/holiday/LeaveDayPage';
 import { HomeFeature } from '../features/home/HomeFeature';
 import { MonthFeature } from '../features/month/MonthFeature';
 import { PersonFeature } from '../features/person/PersonFeature';
+import { ProfileFeature } from '../features/profile/ProfileFeature';
 import { ProjectFeature } from '../features/project/ProjectFeature';
 import AssignmentReport from '../features/report/Assignment/AssignmentReport';
 import AssignmentOverview from '../features/report/AssignmentOverview/AssignmentOverview';
@@ -49,6 +50,7 @@ export const AuthenticatedApplication = () => {
         <Route path="/exactonline" component={ExactonlineFeature} />
         <Route path="/users" exact component={UserFeature} />
         <Route path="/person" component={PersonFeature} />
+        <Route path="/profile" component={ProfileFeature} />
         <Route path="/event" component={EventFeature} />
         <Route path="/event_rating/:eventCode" component={EventRatingFeature} />
         <Route path="/reports/assignment" component={AssignmentReport} />

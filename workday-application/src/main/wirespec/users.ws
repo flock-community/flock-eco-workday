@@ -46,7 +46,6 @@ type UserAccountKey {
   user: User?,
   created: String?,
   `type`: String,
-  key: String?,
   label: String?
 }
 type UserAccountOauth {

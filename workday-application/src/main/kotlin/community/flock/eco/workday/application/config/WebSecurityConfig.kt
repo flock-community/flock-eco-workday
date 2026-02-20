@@ -1,5 +1,6 @@
 package community.flock.eco.workday.application.config
 
+import community.flock.eco.workday.user.filters.UserKeyTokenFilter
 import community.flock.eco.workday.user.services.UserSecurityService
 import jakarta.servlet.DispatcherType
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
@@ -19,12 +21,16 @@ class WebSecurityConfig {
     @Autowired
     lateinit var userSecurityService: UserSecurityService
 
+    @Autowired
+    lateinit var userKeyTokenFilter: UserKeyTokenFilter
+
     @Value("\${flock.eco.workday.login:TEST}")
     lateinit var loginType: String
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
+            .addFilterBefore(userKeyTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
             .headers { headers ->
                 headers.frameOptions { it.sameOrigin() }
             }.csrf { it.disable() }

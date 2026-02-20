@@ -13,7 +13,6 @@ import community.flock.eco.workday.user.forms.UserAccountForm
 import community.flock.eco.workday.user.forms.UserAccountOauthForm
 import community.flock.eco.workday.user.forms.UserAccountPasswordForm
 import community.flock.eco.workday.user.forms.UserForm
-import community.flock.eco.workday.user.forms.UserKeyForm
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.model.UserAccountKey
 import community.flock.eco.workday.user.model.UserAccountOauth
@@ -27,6 +26,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.security.MessageDigest
 import java.util.UUID
 
 @Service
@@ -59,9 +59,7 @@ class UserAccountService(
 
     fun findUserAccountOauthByReference(reference: String) = userAccountOauthRepository.findByReference(reference).toNullable()
 
-    fun findUserAccountKeyByUserCode(code: String) = userAccountKeyRepository.findByUserCode(code)
-
-    fun findUserAccountKeyByKey(key: String) = userAccountKeyRepository.findByKey(key).toNullable()
+    fun findUserAccountKeyByKey(key: String) = userAccountKeyRepository.findByKey(hashKey(key)).toNullable()
 
     fun createUserAccountPassword(form: UserAccountPasswordForm): UserAccountPassword =
         findUserAccountPasswordByUserEmail(form.email)
@@ -125,28 +123,28 @@ class UserAccountService(
         ?.let(userAccountRepository::save)
         ?.let { applicationEventPublisher.publishEvent(UserAccountNewPasswordEvent(it)) }
 
+    data class GeneratedKey(
+        val id: Long,
+        val plainKey: String,
+        val label: String?,
+    )
+
     fun generateKeyForUserCode(
         userCode: String,
         label: String?,
-    ) = userService
-        .findByCode(userCode)
-        ?.let { user ->
-            UserAccountKey(
-                user = user,
-                key = UUID.randomUUID().toString(),
-                label = label,
-            )
-        }?.run {
-            userAccountRepository.save(this)
-        }
-
-    fun updateKey(
-        key: String,
-        form: UserKeyForm,
-    ): UserAccountKey? =
-        findUserAccountKeyByKey(key)
-            ?.let { it.merge(form) }
-            ?.let { userAccountKeyRepository.save(it) }
+    ): GeneratedKey? {
+        val plainKey = UUID.randomUUID().toString()
+        return userService
+            .findByCode(userCode)
+            ?.let { user ->
+                UserAccountKey(
+                    user = user,
+                    key = hashKey(plainKey),
+                    label = label,
+                )
+            }?.let { userAccountRepository.save(it) }
+            ?.let { GeneratedKey(id = it.id, plainKey = plainKey, label = it.label) }
+    }
 
     private fun UserAccountForm.createUser(): User =
         userService.create(
@@ -157,13 +155,13 @@ class UserAccountService(
             ),
         )
 
-    fun revokeKeyForUserCode(
+    fun revokeKeyByIdForUserCode(
         userCode: String,
-        key: String,
+        keyId: Long,
     ) = userAccountKeyRepository
         .findByUserCode(userCode)
         .find {
-            it.key == key
+            it.id == keyId
         }?.run {
             userAccountRepository.delete(this)
         }
@@ -199,11 +197,12 @@ class UserAccountService(
             resetCode = null,
         )
 
-    private fun UserAccountKey.merge(form: UserKeyForm) =
-        UserAccountKey(
-            id = id,
-            key = key,
-            label = form.label,
-            user = user,
-        )
+    companion object {
+        fun hashKey(plainKey: String): String {
+            val digest = MessageDigest.getInstance("SHA-256")
+            return digest
+                .digest(plainKey.toByteArray())
+                .joinToString("") { "%02x".format(it) }
+        }
+    }
 }
