@@ -28,5 +28,5 @@ export interface UserAccountOauth extends UserAccount {
 
 export interface UserAccountKey extends UserAccount {
   id: string;
-  key?: string;
+  label?: string;
 }

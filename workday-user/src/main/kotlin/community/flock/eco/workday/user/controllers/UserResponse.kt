@@ -19,18 +19,26 @@ data class UserGroupResponse(
 
 interface UserAccountResponse {
     val id: String
+    val type: String
+    val created: LocalDateTime?
 }
 
 data class UserAccountPasswordResponse(
     override val id: String,
+    override val type: String = "PASSWORD",
+    override val created: LocalDateTime? = null,
 ) : UserAccountResponse
 
 data class UserAccountOauthResponse(
     override val id: String,
+    override val type: String = "OAUTH",
+    override val created: LocalDateTime? = null,
     val provider: String?,
 ) : UserAccountResponse
 
 data class UserAccountKeyResponse(
     override val id: String,
-    val key: String?,
+    override val type: String = "KEY",
+    override val created: LocalDateTime? = null,
+    val label: String?,
 ) : UserAccountResponse

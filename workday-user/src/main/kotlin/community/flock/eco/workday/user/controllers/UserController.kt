@@ -144,8 +144,8 @@ private fun User.produce(): UserResponse =
 
 private fun UserAccount.produce(): UserAccountResponse =
     when (this) {
-        is UserAccountPassword -> UserAccountPasswordResponse(id = id.toString())
-        is UserAccountOauth -> UserAccountOauthResponse(id = id.toString(), provider = provider.name)
-        is UserAccountKey -> UserAccountKeyResponse(id = id.toString(), key = key)
+        is UserAccountPassword -> UserAccountPasswordResponse(id = id.toString(), created = created)
+        is UserAccountOauth -> UserAccountOauthResponse(id = id.toString(), created = created, provider = provider.name)
+        is UserAccountKey -> UserAccountKeyResponse(id = id.toString(), created = created, label = label)
         else -> error("Cannot map UserAccount")
     }

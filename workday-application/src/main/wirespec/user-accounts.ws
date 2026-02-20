@@ -1,6 +1,3 @@
-endpoint UpdateKey PUT UserKeyForm /api/user-accounts/update-key ? {key: String} -> {
-  200 -> UserAccountKey
-}
 endpoint ResetPasswordWithResetCode PUT PasswordResetForm /api/user-accounts/reset-password -> {
   200 -> Unit
 }
@@ -14,7 +11,7 @@ endpoint RevokeAccountKey POST KeyRevokeForm /api/user-accounts/revoke-key -> {
   200 -> Unit
 }
 endpoint GenerateKey POST UserKeyForm /api/user-accounts/generate-key -> {
-  200 -> UserAccountKey
+  200 -> GenerateKeyResponse
 }
 
 type UserKeyForm {
@@ -29,5 +26,10 @@ type NewPasswordForm {
   newPassword: String?
 }
 type KeyRevokeForm {
-  key: String?
+  id: Integer
+}
+type GenerateKeyResponse {
+  id: String,
+  key: String,
+  label: String?
 }

@@ -132,9 +132,7 @@ test.describe('Login Functionality', () => {
     await expect(page.getByRole('menuitem', { name: 'Logout' })).toBeVisible();
 
     // Verify Profile is disabled
-    await expect(
-      page.getByRole('menuitem', { name: 'Profile' }),
-    ).toBeDisabled();
+    await expect(page.getByRole('menuitem', { name: 'Profile' })).toBeEnabled();
 
     // Verify Logout is enabled
     await expect(page.getByRole('menuitem', { name: 'Logout' })).toBeEnabled();

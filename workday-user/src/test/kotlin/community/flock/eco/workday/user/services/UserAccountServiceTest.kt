@@ -8,7 +8,6 @@ import community.flock.eco.workday.user.exceptions.UserAccountNotFoundWrongOldPa
 import community.flock.eco.workday.user.forms.UserAccountOauthForm
 import community.flock.eco.workday.user.forms.UserAccountPasswordForm
 import community.flock.eco.workday.user.forms.UserForm
-import community.flock.eco.workday.user.forms.UserKeyForm
 import community.flock.eco.workday.user.model.UserAccountOauthProvider
 import community.flock.eco.workday.user.repositories.UserAccountPasswordRepository
 import jakarta.transaction.Transactional
@@ -195,29 +194,8 @@ class UserAccountServiceTest(
     fun `create account key for user with label`() {
         var label = "1 2 3 my key"
         val account = userAccountService.createUserAccountPassword(passwordForm.copy())
-        val accountKey = userAccountService.generateKeyForUserCode(account.user.code, label)
-        val foundAccountKey = userAccountService.findUserAccountKeyByKey(accountKey?.key!!)
+        val generatedKey = userAccountService.generateKeyForUserCode(account.user.code, label)
+        val foundAccountKey = userAccountService.findUserAccountKeyByKey(generatedKey?.plainKey!!)
         Assertions.assertEquals(label, foundAccountKey?.label)
-    }
-
-    @Test
-    fun `update account key for user with label`() {
-        var label = "1 2 3 my key"
-        var newLabel = "Alrighty then"
-
-        val form =
-            UserKeyForm(
-                label = newLabel,
-            )
-
-        val account = userAccountService.createUserAccountPassword(passwordForm.copy())
-
-        val accountKey = userAccountService.generateKeyForUserCode(account.user.code, label)
-
-        userAccountService.updateKey(accountKey?.key!!, form)
-
-        val foundAccountKey = userAccountService.findUserAccountKeyByKey(accountKey.key)
-
-        Assertions.assertEquals(newLabel, foundAccountKey?.label)
     }
 }
