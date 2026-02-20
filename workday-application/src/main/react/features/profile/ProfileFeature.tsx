@@ -27,8 +27,8 @@ import Button from '@mui/material/Button';
 import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { useEffect, useState } from 'react';
 import {
-  ApiKeyClient,
   type ApiKeyAccount,
+  ApiKeyClient,
   type GeneratedKey,
 } from '../../clients/ApiKeyClient';
 import { useUserMe } from '../../hooks/UserMeHook';

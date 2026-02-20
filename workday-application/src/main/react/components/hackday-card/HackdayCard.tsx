@@ -1,3 +1,4 @@
+import { InfoOutlined } from '@mui/icons-material';
 import {
   Card,
   CardContent,
@@ -5,7 +6,6 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import { InfoOutlined } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import { useCallback, useEffect, useState } from 'react';
