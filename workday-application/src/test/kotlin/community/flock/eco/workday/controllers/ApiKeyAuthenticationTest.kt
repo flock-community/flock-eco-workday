@@ -45,21 +45,21 @@ class ApiKeyAuthenticationTest : WorkdayIntegrationTest() {
     fun `should authenticate with valid API token and return user details`() {
         val (_, generatedKey) = createUserAndGenerateKey()
 
-        mvc.perform(
-            get("/api/users/me")
-                .header("Authorization", "TOKEN ${generatedKey.plainKey}"),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                get("/api/users/me")
+                    .header("Authorization", "TOKEN ${generatedKey.plainKey}"),
+            ).andExpect(status().isOk)
             .andExpect(jsonPath("$.name").value("Test User"))
     }
 
     @Test
     fun `should reject request with invalid API token`() {
-        mvc.perform(
-            get("/api/users/me")
-                .header("Authorization", "TOKEN invalid-key"),
-        )
-            .andExpect(status().is3xxRedirection)
+        mvc
+            .perform(
+                get("/api/users/me")
+                    .header("Authorization", "TOKEN invalid-key"),
+            ).andExpect(status().is3xxRedirection)
     }
 
     @Test
@@ -67,20 +67,20 @@ class ApiKeyAuthenticationTest : WorkdayIntegrationTest() {
         val (userCode, generatedKey) = createUserAndGenerateKey()
 
         // Verify the key works before revoking
-        mvc.perform(
-            get("/api/users/me")
-                .header("Authorization", "TOKEN ${generatedKey.plainKey}"),
-        )
-            .andExpect(status().isOk)
+        mvc
+            .perform(
+                get("/api/users/me")
+                    .header("Authorization", "TOKEN ${generatedKey.plainKey}"),
+            ).andExpect(status().isOk)
 
         // Revoke the key
         userAccountService.revokeKeyByIdForUserCode(userCode, generatedKey.id)
 
         // Verify the key no longer works
-        mvc.perform(
-            get("/api/users/me")
-                .header("Authorization", "TOKEN ${generatedKey.plainKey}"),
-        )
-            .andExpect(status().is3xxRedirection)
+        mvc
+            .perform(
+                get("/api/users/me")
+                    .header("Authorization", "TOKEN ${generatedKey.plainKey}"),
+            ).andExpect(status().is3xxRedirection)
     }
 }
