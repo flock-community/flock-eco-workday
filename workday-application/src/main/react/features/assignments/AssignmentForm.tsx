@@ -38,11 +38,7 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
   };
 
   const form = ({ values, setFieldValue }) => {
-    const handleRefresh = (promise) => {
-      promise.then((_res) => {
-        console.log(`Items in project selector updated`);
-      });
-    };
+    const handleRefresh = () => {};
 
     return (
       <Form id={ASSIGNMENT_FORM_ID}>
