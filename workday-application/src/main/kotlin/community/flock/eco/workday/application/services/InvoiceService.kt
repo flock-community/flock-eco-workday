@@ -102,5 +102,4 @@ class InvoiceService(
                     status = InvoiceStatus.NEW,
                 )
             }.run { invoiceRepository.save(this) }
-            .run { println(this) }
 }
