@@ -14,22 +14,6 @@ export type {
   JobStatus,
 } from '../wirespec/model';
 
-type RawRequest = Parameters<typeof wirespecFetch>[0];
-
-/**
- * wirespecFetch does not URL-encode query parameter values.
- * Complex values like serialized Pageable contain {, }, [, ] which Tomcat rejects.
- */
-const wirespecFetchSafe = (rawRequest: RawRequest) => {
-  const encodedQueries: Record<string, string> = {};
-  for (const [key, value] of Object.entries(rawRequest.queries)) {
-    if (value !== undefined) {
-      encodedQueries[key] = encodeURIComponent(String(value));
-    }
-  }
-  return wirespecFetch({ ...rawRequest, queries: encodedQueries });
-};
-
 const findAllEdge = JobFindAll.client(wirespecSerialization);
 const findByCodeEdge = JobFindByCode.client(wirespecSerialization);
 const createEdge = JobCreate.client(wirespecSerialization);
@@ -42,13 +26,11 @@ const findAllByPage = async (pageable: {
   sort: string;
 }) => {
   const request = JobFindAll.request({
-    pageable: {
-      page: pageable.page,
-      size: pageable.size,
-      sort: [pageable.sort],
-    },
+    page: pageable.page,
+    size: pageable.size,
+    sort: [pageable.sort],
   });
-  const raw = await wirespecFetchSafe(findAllEdge.to(request));
+  const raw = await wirespecFetch(findAllEdge.to(request));
   const response = findAllEdge.from(raw);
   return { list: response.body, count: response.body.length };
 };
@@ -56,9 +38,11 @@ const findAllByPage = async (pageable: {
 const findAllByStatus = async (status: JobStatus, page = 0, size = 100) => {
   const request = JobFindAll.request({
     status,
-    pageable: { page, size, sort: ['title,asc'] },
+    page,
+    size,
+    sort: ['title,asc'],
   });
-  const raw = await wirespecFetchSafe(findAllEdge.to(request));
+  const raw = await wirespecFetch(findAllEdge.to(request));
   const response = findAllEdge.from(raw);
   return { list: response.body, count: response.body.length };
 };

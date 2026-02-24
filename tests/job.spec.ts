@@ -65,12 +65,12 @@ test.describe('Job CRUD Operations', () => {
       .getByRole('textbox', { name: 'Description' })
       .fill(testJob.description);
 
-    // Select status "Open"
-    await page.getByLabel('Status').click();
+    // Select status "Open" (MUI Select combobox accessible name is its current value)
+    await page.getByRole('combobox', { name: 'Draft' }).click();
     await page.getByRole('option', { name: 'Open' }).click();
 
-    // Select a client
-    await page.getByLabel('Select Client').click();
+    // Select a client (MUI Select combobox has no accessible name, find by "None" text content)
+    await page.locator('[role="combobox"]').filter({ hasText: 'None' }).click();
     await page.getByRole('option', { name: 'Client A' }).click();
 
     // Save
@@ -78,9 +78,13 @@ test.describe('Job CRUD Operations', () => {
     await expect(page.getByText('Job form')).not.toBeVisible();
 
     // Verify job shows in list with client name and status
-    await expect(page.getByText(testJob.title)).toBeVisible();
-    await expect(page.getByText('Client A')).toBeVisible();
-    await expect(page.getByText('OPEN')).toBeVisible();
+    const jobHeading = page.getByRole('heading', { name: testJob.title });
+    await expect(jobHeading).toBeVisible();
+    const jobCard = jobHeading.locator(
+      'xpath=ancestor::div[contains(@class,"MuiCardContent-root")][1]',
+    );
+    await expect(jobCard.getByText('Client A')).toBeVisible();
+    await expect(jobCard.getByText('OPEN')).toBeVisible();
   });
 
   test('should edit an existing job', async ({ page }) => {
@@ -119,9 +123,13 @@ test.describe('Job CRUD Operations', () => {
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByText('Job form')).not.toBeVisible();
 
-    // Verify updated job appears in list
-    await expect(page.getByText(updatedTitle)).toBeVisible();
-    await expect(page.getByText('120/hr')).toBeVisible();
+    // Verify updated job appears in list with new hourly rate
+    const updatedHeading = page.getByRole('heading', { name: updatedTitle });
+    await expect(updatedHeading).toBeVisible();
+    const updatedCard = updatedHeading.locator(
+      'xpath=ancestor::div[contains(@class,"MuiCardContent-root")][1]',
+    );
+    await expect(updatedCard.getByText('120/hr')).toBeVisible();
   });
 
   test('should delete a job', async ({ page }) => {
@@ -151,8 +159,8 @@ test.describe('Job CRUD Operations', () => {
     // Click Delete button
     await page.getByRole('button', { name: 'Delete' }).click();
 
-    // Verify confirmation dialog
-    await expect(page.getByText(testJob.title)).toBeVisible();
+    // Verify confirmation dialog shows job title
+    await expect(page.getByText(testJob.title, { exact: true })).toBeVisible();
 
     // Confirm deletion
     await page.getByRole('button', { name: 'Confirm' }).click();
@@ -169,7 +177,7 @@ test.describe('Job CRUD Operations', () => {
     // Open the drawer
     await page.getByRole('button', { name: 'menu' }).click();
 
-    // Verify Jobs menu item is visible
-    await expect(page.getByText('Jobs')).toBeVisible();
+    // Verify Jobs menu item is visible in the drawer
+    await expect(page.getByRole('button', { name: 'Jobs' })).toBeVisible();
   });
 });

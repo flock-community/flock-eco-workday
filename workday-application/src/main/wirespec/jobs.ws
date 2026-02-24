@@ -33,7 +33,7 @@ enum JobStatus {
   DRAFT, OPEN, CLOSED
 }
 
-endpoint JobFindAll GET /api/jobs ? {status: String?, pageable: Pageable} -> {
+endpoint JobFindAll GET /api/jobs ? {status: String?, page: Integer?, size: Integer?, sort: String[]?} -> {
   200 -> Job[]
 }
 

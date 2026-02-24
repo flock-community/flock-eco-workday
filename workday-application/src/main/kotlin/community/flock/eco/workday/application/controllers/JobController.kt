@@ -43,7 +43,7 @@ class JobController(
 ) : JobHandler {
     @PreAuthorize("hasAuthority('JobAuthority.READ')")
     override suspend fun jobFindAll(request: JobFindAll.Request): JobFindAll.Response<*> {
-        val pageable = PageRequest.of(request.queries.pageable.page, request.queries.pageable.size)
+        val pageable = PageRequest.of((request.queries.page ?: 0).toInt(), (request.queries.size ?: 100).toInt())
         val page =
             if (request.queries.status != null) {
                 jobService.findAllByStatus(JobStatus.valueOf(request.queries.status!!), pageable)
