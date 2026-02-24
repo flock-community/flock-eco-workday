@@ -1,5 +1,5 @@
-import { wirespecFetch } from '@flock/wirespec/wirespec-fetch';
-import { wirespecSerialization } from '@flock/wirespec/wirespec-serialization';
+import { wirespecFetch } from '@flock/wirespec/fetch';
+import { wirespecSerialization } from '@flock/wirespec/serialization';
 import { JobCreate } from '../wirespec/endpoint/JobCreate';
 import { JobDeleteByCode } from '../wirespec/endpoint/JobDeleteByCode';
 import { JobFindAll } from '../wirespec/endpoint/JobFindAll';
