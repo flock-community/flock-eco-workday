@@ -15,6 +15,7 @@ import UserIcon from '@mui/icons-material/Person';
 import MonthIcon from '@mui/icons-material/Schedule';
 import HolidayIcon from '@mui/icons-material/WbSunny';
 import WorkdayIcon from '@mui/icons-material/Work';
+import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -93,6 +94,12 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
       icon: AssignmentIcon,
       url: '/assignments',
       authority: 'AssignmentAuthority.READ',
+    },
+    {
+      name: 'Jobs',
+      icon: WorkOutlineIcon,
+      url: '/jobs',
+      authority: 'JobAuthority.READ',
     },
     {
       name: 'Contracts',

@@ -1,0 +1,79 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-027-jobs-1
+      author: claude
+      changes:
+        - createTable:
+            tableName: job
+            columns:
+              - column:
+                  name: id
+                  autoIncrement: true
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: jobPK
+              - column:
+                  name: code
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: hourly_rate
+                  type: DOUBLE
+              - column:
+                  name: hours_per_week
+                  type: INT
+              - column:
+                  name: from_date
+                  type: DATE
+              - column:
+                  name: to_date
+                  type: DATE
+              - column:
+                  name: status
+                  type: VARCHAR(255)
+              - column:
+                  name: client_id
+                  type: BIGINT
+                  constraints:
+                    references: client(id)
+                    foreignKeyName: jobClientFK
+                    nullable: true
+  - changeSet:
+      id: db.changelog-027-jobs-2
+      author: claude
+      changes:
+        - createTable:
+            tableName: job_documents
+            columns:
+              - column:
+                  name: job_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file
+                  type: UUID
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+        - addForeignKeyConstraint:
+            baseColumnNames: job_id
+            baseTableName: job_documents
+            constraintName: jobDocumentsFK
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: job
+            validate: true

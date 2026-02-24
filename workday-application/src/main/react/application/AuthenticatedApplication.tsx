@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import AssignmentPage from '../features/assignments/AssignmentPage';
 import { ClientFeature } from '../features/client/ClientFeature';
+import { JobFeature } from '../features/job/JobFeature';
 import ContractPage from '../features/contract/ContractPage';
 import { DashboardFeature } from '../features/dashboard/DashboardFeature';
 import { EventFeature } from '../features/event/EventFeature';
@@ -43,6 +44,7 @@ export const AuthenticatedApplication = () => {
         <Route path="/contracts" exact component={ContractPage} />
         <Route path="/projects" exact component={ProjectFeature} />
         <Route path="/assignments" exact component={AssignmentPage} />
+        <Route path="/jobs" exact component={JobFeature} />
         <Route path="/workdays" exact component={WorkDayPage} />
         <Route path="/leave-days" exact component={LeaveDayPage} />
         <Route path="/sickdays" component={SickDayPage} />
