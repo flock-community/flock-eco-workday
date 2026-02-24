@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.services
 
-import community.flock.eco.workday.application.forms.JobForm
+import community.flock.eco.workday.api.model.JobForm
 import community.flock.eco.workday.application.model.Document
 import community.flock.eco.workday.application.model.Job
 import community.flock.eco.workday.application.model.JobStatus
@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import java.util.UUID
 
 @Service
@@ -63,9 +64,9 @@ class JobService(
             description = this.description,
             hourlyRate = this.hourlyRate,
             hoursPerWeek = this.hoursPerWeek,
-            from = this.from,
-            to = this.to,
-            status = this.status,
+            from = this.from?.let { LocalDate.parse(it) },
+            to = this.to?.let { LocalDate.parse(it) },
+            status = JobStatus.valueOf(this.status.name),
             client =
                 this.clientCode
                     ?.let { clientRepository.findByCode(it).toNullable() },

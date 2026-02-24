@@ -1,49 +1,83 @@
-import NonInternalizingClient from '../utils/NonInternalizingClient';
+import { wirespecFetch } from '@flock/wirespec/wirespec-fetch';
+import { wirespecSerialization } from '@flock/wirespec/wirespec-serialization';
+import { JobCreate } from '../wirespec/endpoint/JobCreate';
+import { JobDeleteByCode } from '../wirespec/endpoint/JobDeleteByCode';
+import { JobFindAll } from '../wirespec/endpoint/JobFindAll';
+import { JobFindByCode } from '../wirespec/endpoint/JobFindByCode';
+import { JobUpdate } from '../wirespec/endpoint/JobUpdate';
+import type { Job, JobForm, JobStatus } from '../wirespec/model';
 
-export type JobDocument = {
-  name: string;
-  file: string;
+export type {
+  Job,
+  JobDocument,
+  JobForm as JobRequest,
+  JobStatus,
+} from '../wirespec/model';
+
+const findAllEdge = JobFindAll.client(wirespecSerialization);
+const findByCodeEdge = JobFindByCode.client(wirespecSerialization);
+const createEdge = JobCreate.client(wirespecSerialization);
+const updateEdge = JobUpdate.client(wirespecSerialization);
+const deleteEdge = JobDeleteByCode.client(wirespecSerialization);
+
+const findAllByPage = async (pageable: {
+  page: number;
+  size: number;
+  sort: string;
+}) => {
+  const request = JobFindAll.request({
+    pageable: {
+      page: pageable.page,
+      size: pageable.size,
+      sort: [pageable.sort],
+    },
+  });
+  const raw = await wirespecFetch(findAllEdge.to(request));
+  const response = findAllEdge.from(raw);
+  return { list: response.body, count: response.body.length };
 };
 
-export type JobStatus = 'DRAFT' | 'OPEN' | 'CLOSED';
-
-export type Job = {
-  id: number;
-  code: string;
-  title: string;
-  description: string;
-  hourlyRate: number | null;
-  hoursPerWeek: number | null;
-  from: string | null;
-  to: string | null;
-  status: JobStatus;
-  client: { id: number; code: string; name: string } | null;
-  documents: JobDocument[];
+const findAllByStatus = async (status: JobStatus, page = 0, size = 100) => {
+  const request = JobFindAll.request({
+    status,
+    pageable: { page, size, sort: ['title,asc'] },
+  });
+  const raw = await wirespecFetch(findAllEdge.to(request));
+  const response = findAllEdge.from(raw);
+  return { list: response.body, count: response.body.length };
 };
 
-export type JobRequest = {
-  title: string;
-  description: string;
-  hourlyRate: number | null;
-  hoursPerWeek: number | null;
-  from: string | null;
-  to: string | null;
-  status: JobStatus;
-  clientCode: string | null;
-  documents: JobDocument[];
+const get = async (code: string): Promise<Job> => {
+  const request = JobFindByCode.request({ code });
+  const raw = await wirespecFetch(findByCodeEdge.to(request));
+  const response = findByCodeEdge.from(raw);
+  return response.body;
 };
 
-const path = '/api/jobs';
+const post = async (input: JobForm): Promise<Job> => {
+  const request = JobCreate.request({ body: input });
+  const raw = await wirespecFetch(createEdge.to(request));
+  const response = createEdge.from(raw);
+  return response.body;
+};
 
-const nonInternalizingClient = NonInternalizingClient<JobRequest, Job>(path);
+const put = async (code: string, input: JobForm): Promise<Job> => {
+  const request = JobUpdate.request({ code, body: input });
+  const raw = await wirespecFetch(updateEdge.to(request));
+  const response = updateEdge.from(raw);
+  return response.body;
+};
 
-const findAllByStatus = (status: JobStatus, page = 0, size = 100) =>
-  nonInternalizingClient.queryByPage(
-    { page, size, sort: 'title,asc' },
-    { status },
-  );
+const del = async (code: string): Promise<void> => {
+  const request = JobDeleteByCode.request({ code });
+  await wirespecFetch(deleteEdge.to(request));
+};
 
 export const JobClient = {
-  ...nonInternalizingClient,
+  findAllByPage,
   findAllByStatus,
+  get,
+  post,
+  put,
+  delete: del,
 };
