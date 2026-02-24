@@ -82,4 +82,7 @@ databaseChangeLog:
   - include:
       file: db.changelog-027-jobs.yaml
       relativeToChangelogFile: true
+  - include:
+      file: db.changelog-028-job-sequence.yaml
+      relativeToChangelogFile: true
 
