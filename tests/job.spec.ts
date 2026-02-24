@@ -33,10 +33,10 @@ test.describe('Job CRUD Operations', () => {
       .getByRole('textbox', { name: 'Description' })
       .fill(testJob.description);
     await page
-      .getByRole('textbox', { name: 'Hourly rate' })
+      .getByRole('spinbutton', { name: 'Hourly rate' })
       .fill(testJob.hourlyRate);
     await page
-      .getByRole('textbox', { name: 'Hours per week' })
+      .getByRole('spinbutton', { name: 'Hours per week' })
       .fill(testJob.hoursPerWeek);
 
     // Click Save
@@ -99,7 +99,7 @@ test.describe('Job CRUD Operations', () => {
       .getByRole('textbox', { name: 'Description' })
       .fill(originalJob.description);
     await page
-      .getByRole('textbox', { name: 'Hourly rate' })
+      .getByRole('spinbutton', { name: 'Hourly rate' })
       .fill(originalJob.hourlyRate);
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByText('Job form')).not.toBeVisible();
@@ -112,8 +112,8 @@ test.describe('Job CRUD Operations', () => {
     const updatedTitle = `Updated Job ${timestamp}`;
     await page.getByRole('textbox', { name: 'Title' }).clear();
     await page.getByRole('textbox', { name: 'Title' }).fill(updatedTitle);
-    await page.getByRole('textbox', { name: 'Hourly rate' }).clear();
-    await page.getByRole('textbox', { name: 'Hourly rate' }).fill('120');
+    await page.getByRole('spinbutton', { name: 'Hourly rate' }).clear();
+    await page.getByRole('spinbutton', { name: 'Hourly rate' }).fill('120');
 
     // Save changes
     await page.getByRole('button', { name: 'Save' }).click();
