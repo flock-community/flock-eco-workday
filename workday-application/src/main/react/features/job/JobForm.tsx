@@ -102,12 +102,7 @@ export function JobForm({ value, onSubmit }: JobFormProps) {
           <DatePickerField name="to" label="End date" minDate={values.from} />
         </Grid>
         <Grid size={{ xs: 12 }}>
-          <Field
-            name="status"
-            label="Status"
-            fullWidth
-            component={Select}
-          >
+          <Field name="status" label="Status" fullWidth component={Select}>
             <MenuItem value="DRAFT">Draft</MenuItem>
             <MenuItem value="OPEN">Open</MenuItem>
             <MenuItem value="CLOSED">Closed</MenuItem>

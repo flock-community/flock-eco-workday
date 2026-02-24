@@ -54,11 +54,7 @@ export function JobFeature() {
           <JobList refresh={reload} onItemClick={handleItem} />
         </CardContent>
       </Card>
-      <JobDialog
-        code={dialog.code}
-        open={dialog.open}
-        onClose={handleClose}
-      />
+      <JobDialog code={dialog.code} open={dialog.open} onClose={handleClose} />
     </Box>
   );
 }

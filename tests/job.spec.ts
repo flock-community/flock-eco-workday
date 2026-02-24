@@ -94,9 +94,7 @@ test.describe('Job CRUD Operations', () => {
     // Create job first
     await page.getByRole('button', { name: 'Add' }).click();
     await expect(page.getByText('Job form')).toBeVisible();
-    await page
-      .getByRole('textbox', { name: 'Title' })
-      .fill(originalJob.title);
+    await page.getByRole('textbox', { name: 'Title' }).fill(originalJob.title);
     await page
       .getByRole('textbox', { name: 'Description' })
       .fill(originalJob.description);
