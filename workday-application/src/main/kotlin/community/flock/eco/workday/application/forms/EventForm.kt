@@ -19,7 +19,7 @@ data class EventForm(
     override val to: LocalDate,
     override val hours: Double,
     override val days: MutableList<Double>,
-    val costs: Double,
+    val budget: Double,
     val personIds: List<UUID>,
     val type: EventType,
 ) : Daily

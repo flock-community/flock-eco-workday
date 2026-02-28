@@ -3,6 +3,8 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { DashboardComparison } from './DashboardComparison';
 import { AverageHoursPerDayChart } from '../../components/charts/AverageHoursPerDayChart';
 import { ExternalOverviewChart } from '../../components/charts/ExternalOverviewChart';
 import { HackDaysPerPersonChart } from '../../components/charts/HackDaysPerPersonChart';
@@ -20,12 +22,15 @@ export function DashboardFeature() {
   const startYear = 2019;
   const now = dayjs();
   const [year, setYear] = useState<number>(now.year());
+  const location = useLocation();
 
   return (
-    <Box
+    <>
+      <DashboardComparison currentPath={location.pathname} />
+      <Box
       className={'flow'}
       flow-gap={'wide'}
-      style={{ paddingBottom: '1.5rem' }}
+      style={{ paddingBottom: '1.5rem', marginTop: '60px' }}
     >
       <Card>
         <CardHeader title="Year" />
@@ -125,5 +130,6 @@ export function DashboardFeature() {
         </CardContent>
       </Card>
     </Box>
+    </>
   );
 }

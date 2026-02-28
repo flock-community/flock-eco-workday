@@ -1,4 +1,5 @@
 import { EventType } from '../clients/EventClient';
+import { BudgetAllocationType } from '../features/budget/mocks/BudgetAllocationMocks';
 
 export const EventTypeMapping: Record<EventType, string> = {
   [EventType.GENERAL_EVENT]: 'General event',
@@ -12,4 +13,11 @@ export const EventTypeMappingToBillable: Record<EventType, boolean> = {
   [EventType.FLOCK_HACK_DAY]: false,
   [EventType.FLOCK_COMMUNITY_DAY]: true,
   [EventType.CONFERENCE]: false,
+};
+
+export const EventTypeMappingToDefaultBudgetType: Record<EventType, BudgetAllocationType | null> = {
+  [EventType.GENERAL_EVENT]: null,
+  [EventType.FLOCK_HACK_DAY]: BudgetAllocationType.HACK,
+  [EventType.FLOCK_COMMUNITY_DAY]: null,
+  [EventType.CONFERENCE]: BudgetAllocationType.STUDY,
 };

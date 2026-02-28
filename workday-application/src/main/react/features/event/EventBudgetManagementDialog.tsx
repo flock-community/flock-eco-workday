@@ -10,6 +10,7 @@ import {
   Button,
 } from '@mui/material';
 import {ExpandMore, Info, AccountBalance} from '@mui/icons-material';
+import dayjs from 'dayjs';
 import type {FullFlockEvent} from '../../clients/EventClient';
 import {
   EventMoneyAllocationSection,
@@ -23,6 +24,7 @@ import {
   BudgetAllocationType,
   mockEvents,
 } from '../budget/mocks/BudgetAllocationMocks';
+import type { Period } from '../period/Period';
 import Grid from "@mui/material/Grid";
 
 interface EventBudgetManagementSectionProps {
@@ -45,10 +47,12 @@ export function EventBudgetManagementSection({
   const [timeParticipants, setTimeParticipants] = useState<PersonTimeAllocation[]>([]);
   const [flockAmount, setFlockAmount] = useState<number>(0);
 
-  // Mock data - in real implementation, fetch from backend
+  // Get default budget type from event (mock for now) or use STUDY as fallback
   const mockEventData = mockEvents.find((e) => e.code === event?.code);
   const defaultBudgetType =
-    mockEventData?.defaultTimeAllocationType || BudgetAllocationType.STUDY;
+    (event as any)?.defaultTimeAllocationType ||
+    mockEventData?.defaultTimeAllocationType ||
+    BudgetAllocationType.STUDY;
   const totalBudget = event?.costs || 0; // Event costs = total budget
 
   useEffect(() => {
@@ -78,25 +82,44 @@ export function EventBudgetManagementSection({
 
       setMoneyParticipants(initialMoneyParticipants);
 
-      // Initialize time participants (default to no overrides = using defaults)
+      // Initialize time participants (default to no custom periods = using defaults)
       const initialTimeParticipants: PersonTimeAllocation[] = event.persons.map(
         (person) => {
-          // Check if existing time allocation with custom days exists
-          const existingTimeAllocation = mockEventData?.budgetAllocations.find(
-            (a) =>
-              (a.type === 'StudyTime' || a.type === 'HackTime') &&
-              (a as any).personId === person.uuid
+          // Check if existing time allocations exist in mock data
+          const existingStudyAllocation = mockEventData?.budgetAllocations.find(
+            (a) => a.type === 'StudyTime' && (a as any).personId === person.uuid
+          );
+          const existingHackAllocation = mockEventData?.budgetAllocations.find(
+            (a) => a.type === 'HackTime' && (a as any).personId === person.uuid
           );
 
-          // Only store overrides (days that differ from default)
-          const dailyOverrides = existingTimeAllocation && 'dailyTimeAllocations' in existingTimeAllocation
-            ? (existingTimeAllocation as any).dailyTimeAllocations
-            : [];
+          // Convert dailyTimeAllocations to Period format
+          const convertToPeriod = (allocation: any): Period | null => {
+            if (!allocation || !('dailyTimeAllocations' in allocation)) return null;
+
+            const eventDays = event.to.diff(event.from, 'days') + 1;
+            const days = Array(eventDays).fill(0);
+
+            // Map daily allocations to days array
+            allocation.dailyTimeAllocations.forEach((daily: any) => {
+              const dayIndex = dayjs(daily.date).diff(event.from, 'days');
+              if (dayIndex >= 0 && dayIndex < days.length) {
+                days[dayIndex] = daily.hours;
+              }
+            });
+
+            return {
+              from: event.from,
+              to: event.to,
+              days,
+            };
+          };
 
           return {
             personId: person.uuid,
             personName: `${person.firstname} ${person.lastname}`,
-            dailyOverrides: dailyOverrides,
+            studyPeriod: convertToPeriod(existingStudyAllocation),
+            hackPeriod: convertToPeriod(existingHackAllocation),
           };
         }
       );
@@ -115,6 +138,74 @@ export function EventBudgetManagementSection({
     }
   }, [event, mockEventData, defaultBudgetType, totalBudget]);
 
+  // Helper: Generate time allocation summary
+  const getTimeSummary = (): string => {
+    const participantsWithExceptions = timeParticipants.filter(
+      (p) => p.studyPeriod !== null || p.hackPeriod !== null
+    );
+    const participantsWithDefaults = timeParticipants.filter(
+      (p) => p.studyPeriod === null && p.hackPeriod === null
+    );
+
+    const parts: string[] = [];
+
+    // Default count
+    if (participantsWithDefaults.length > 0) {
+      parts.push(
+        `${participantsWithDefaults.length} using defaults (${defaultHoursPerDay}h/day ${defaultBudgetType})`
+      );
+    }
+
+    // Exceptions count
+    if (participantsWithExceptions.length > 0) {
+      parts.push(`${participantsWithExceptions.length} custom allocation${participantsWithExceptions.length !== 1 ? 's' : ''}`);
+    }
+
+    return parts.join(', ') || 'No allocations';
+  };
+
+  // Helper: Generate money allocation summary
+  const getMoneySummary = (): string => {
+    const parts: string[] = [];
+
+    // Check if equal share
+    const participantAmounts = moneyParticipants.map((p) => p.amount);
+    const uniqueAmounts = [...new Set(participantAmounts)].filter((a) => a > 0);
+    const isEqualShare =
+      uniqueAmounts.length === 1 &&
+      participantAmounts.every((a) => a === uniqueAmounts[0]);
+
+    // Flock
+    if (flockAmount > 0) {
+      parts.push(`Flock: €${flockAmount.toLocaleString('nl-NL')}`);
+    }
+
+    // Participants
+    if (isEqualShare && uniqueAmounts.length > 0) {
+      parts.push(
+        `€${uniqueAmounts[0].toLocaleString('nl-NL')}/person (${moneyParticipants.length})`
+      );
+    } else if (uniqueAmounts.length > 0) {
+      const groups = uniqueAmounts
+        .map((amount) => ({
+          amount,
+          count: participantAmounts.filter((a) => a === amount).length,
+        }))
+        .sort((a, b) => b.amount - a.amount);
+
+      parts.push(
+        groups
+          .map(
+            (g) =>
+              `${g.count}×€${g.amount.toLocaleString('nl-NL')}`
+          )
+          .join(', ')
+      );
+    }
+
+    return parts.join('; ') || 'No allocations';
+  };
+
   const handleSave = () => {
     // Build allocation payload
     const allocations = [];
@@ -132,24 +223,61 @@ export function EventBudgetManagementSection({
       }
     });
 
-    // Add time allocations (only for participants with overrides or all if needed)
+    // Add time allocations
     timeParticipants.forEach((participant) => {
-      if (participant.dailyOverrides.length > 0) {
-        // Has custom time allocation
-        allocations.push({
-          type: 'CustomTime',
-          eventCode: event?.code,
-          personId: participant.personId,
-          personName: participant.personName,
-          dailyOverrides: participant.dailyOverrides,
-        });
+      const hasCustomAllocation = participant.studyPeriod !== null || participant.hackPeriod !== null;
+
+      if (hasCustomAllocation) {
+        // Convert Period to daily allocations for logging
+        // Add study time allocation if exists
+        if (participant.studyPeriod && participant.studyPeriod.days) {
+          const dailyStudyAllocations = participant.studyPeriod.days
+            .map((hours, index) => ({
+              date: event.from.add(index, 'days').format('YYYY-MM-DD'),
+              hours,
+            }))
+            .filter(daily => daily.hours > 0); // Only include days with hours
+
+          if (dailyStudyAllocations.length > 0) {
+            allocations.push({
+              type: 'StudyTime',
+              eventCode: event?.code,
+              personId: participant.personId,
+              personName: participant.personName,
+              dailyTimeAllocations: dailyStudyAllocations,
+              totalHours: dailyStudyAllocations.reduce((sum, d) => sum + d.hours, 0),
+            });
+          }
+        }
+
+        // Add hack time allocation if exists
+        if (participant.hackPeriod && participant.hackPeriod.days) {
+          const dailyHackAllocations = participant.hackPeriod.days
+            .map((hours, index) => ({
+              date: event.from.add(index, 'days').format('YYYY-MM-DD'),
+              hours,
+            }))
+            .filter(daily => daily.hours > 0); // Only include days with hours
+
+          if (dailyHackAllocations.length > 0) {
+            allocations.push({
+              type: 'HackTime',
+              eventCode: event?.code,
+              personId: participant.personId,
+              personName: participant.personName,
+              dailyTimeAllocations: dailyHackAllocations,
+              totalHours: dailyHackAllocations.reduce((sum, d) => sum + d.hours, 0),
+            });
+          }
+        }
       } else {
-        // Using defaults - could optionally log this
+        // Using defaults
         allocations.push({
           type: 'DefaultTime',
           eventCode: event?.code,
           personId: participant.personId,
           personName: participant.personName,
+          budgetType: defaultBudgetType,
           note: 'Using event defaults',
         });
       }
@@ -207,25 +335,21 @@ export function EventBudgetManagementSection({
               '&:hover': {bgcolor: 'action.selected'},
             }}
           >
-            <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-              <AccountBalance color="action"/>
-              <Typography variant="subtitle1" fontWeight="medium">
-                Time Budget Allocations
+            <Box sx={{display: 'flex', flexDirection: 'column', gap: 0.5, width: '100%'}}>
+              <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                <AccountBalance color="action"/>
+                <Typography variant="subtitle1" fontWeight="medium">
+                  Time Budget Allocations
+                </Typography>
+              </Box>
+              <Typography variant="caption" color="text.secondary">
+                {getTimeSummary()}
               </Typography>
             </Box>
           </AccordionSummary>
 
           <AccordionDetails sx={{p: 3}}>
             <Box sx={{display: 'flex', flexDirection: 'column', gap: 3}}>
-              {/* Info Alert */}
-              <Alert severity="info" icon={<Info/>}>
-                <Typography variant="body2">
-                  Allocate event budget (money) and time separately. Money allocations
-                  must sum to the total event budget. Time allocations are individual
-                  and don't sum.
-                </Typography>
-              </Alert>
-
               {/* Time Allocation Section */}
               <EventTimeAllocationSection
                 eventDates={eventDates}
@@ -258,10 +382,15 @@ export function EventBudgetManagementSection({
               '&:hover': {bgcolor: 'action.selected'},
             }}
           >
-            <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-              <AccountBalance color="action"/>
-              <Typography variant="subtitle1" fontWeight="medium">
-                Money Budget Allocations
+            <Box sx={{display: 'flex', flexDirection: 'column', gap: 0.5, width: '100%'}}>
+              <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                <AccountBalance color="action"/>
+                <Typography variant="subtitle1" fontWeight="medium">
+                  Money Budget Allocations
+                </Typography>
+              </Box>
+              <Typography variant="caption" color="text.secondary">
+                {getMoneySummary()}
               </Typography>
             </Box>
           </AccordionSummary>

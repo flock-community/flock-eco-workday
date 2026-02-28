@@ -106,6 +106,17 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
             <Grid>
               {state && <EventForm value={state} onSubmit={handleSubmit} />}
             </Grid>
+            {code && eventData && (
+              <Grid size={{ xs: 12 }}>
+                <EventBudgetManagementSection
+                  event={eventData}
+                  timeExpanded={timeBudgetExpanded}
+                  setTimeExpanded={setTimeBudgetExpanded}
+                  moneyExpanded={moneyBudgetExpanded}
+                  setMoneyExpanded={setMoneyBudgetExpanded}
+                />
+              </Grid>
+            )}
             {code && (
               <Grid>
                 <Button
@@ -118,17 +129,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
                 </Button>
               </Grid>
             )}
-            {code && eventData && (
-              <Grid size={{ xs: 12 }}>
-                <EventBudgetManagementSection
-                  event={eventData}
-                  timeExpanded={timeBudgetExpanded}
-                  setTimeExpanded={setTimeBudgetExpanded}
-                  moneyExpanded={moneyBudgetExpanded}
-                  setMoneyExpanded={setMoneyBudgetExpanded}
-                />
-              </Grid>
-            )}
+
           </Grid>
         </DialogBody>
         <Divider />

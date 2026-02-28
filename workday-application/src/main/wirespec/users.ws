@@ -43,14 +43,14 @@ type UserAccountsArray = UserAccountKey | UserAccountOauth | UserAccountPassword
 type UserAccount = UserAccountKey | UserAccountOauth | UserAccountPassword
 type UserAccountKey {
   id: Integer?,
-  user: User?,
+  code: String?,
   created: String?,
   `type`: String,
   label: String?
 }
 type UserAccountOauth {
   id: Integer?,
-  user: User?,
+  code: String?,
   created: String?,
   `type`: String,
   reference: String?,
@@ -61,7 +61,7 @@ enum UserAccountOauthProvider {
 }
 type UserAccountPassword {
   id: Integer?,
-  user: User?,
+  code: String?,
   created: String?,
   `type`: String
 }
