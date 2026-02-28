@@ -11,7 +11,7 @@ import {EventTypeMappingToBillable, EventTypeMappingToDefaultBudgetType} from '.
 import {mutatePeriod} from '../period/Period';
 import {EventTypeSelect} from './EventTypeSelect';
 import {FormControl, InputLabel, MenuItem, Select} from '@mui/material';
-import {BudgetAllocationType} from '../budget/mocks/BudgetAllocationMocks';
+import {BudgetAllocationType} from '../budget/mocks/BudgetAllocationTypes';
 
 export const EVENT_FORM_ID = 'event-form';
 

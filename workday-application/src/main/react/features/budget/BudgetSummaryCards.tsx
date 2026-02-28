@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid } from '@mui/material';
 import { BudgetCard } from './BudgetCard';
-import { BudgetSummary } from './mocks/BudgetAllocationMocks';
+import { BudgetSummary } from './mocks/BudgetAllocationTypes';
 
 interface BudgetSummaryCardsProps {
   summary: BudgetSummary;

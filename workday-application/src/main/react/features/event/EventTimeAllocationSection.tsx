@@ -18,7 +18,7 @@ import {
   Add,
 } from '@mui/icons-material';
 import dayjs, { type Dayjs } from 'dayjs';
-import type { BudgetAllocationType } from '../budget/mocks/BudgetAllocationMocks';
+import type { BudgetAllocationType } from '../budget/mocks/BudgetAllocationTypes';
 import { PeriodInput } from '../../components/inputs/PeriodInput';
 import { editDay, initDays, type Period } from '../period/Period';
 

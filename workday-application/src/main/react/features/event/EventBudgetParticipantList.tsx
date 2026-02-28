@@ -5,7 +5,7 @@ import {
   EventBudgetParticipantRow,
   type ParticipantAllocation,
 } from './EventBudgetParticipantRow';
-import type { BudgetAllocationType } from '../budget/mocks/BudgetAllocationMocks';
+import type { BudgetAllocationType } from '../budget/mocks/BudgetAllocationTypes';
 
 interface EventBudgetParticipantListProps {
   participants: ParticipantAllocation[];

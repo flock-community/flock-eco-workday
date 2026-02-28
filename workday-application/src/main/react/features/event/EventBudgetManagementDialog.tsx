@@ -20,10 +20,8 @@ import {
   EventTimeAllocationSection,
   type PersonTimeAllocation,
 } from './EventTimeAllocationSection';
-import {
-  BudgetAllocationType,
-  mockEvents,
-} from '../budget/mocks/BudgetAllocationMocks';
+import { BudgetAllocationType } from '../budget/mocks/BudgetAllocationTypes';
+import { mockEvents } from '../budget/mocks/BudgetAllocationMocks';
 import type { Period } from '../period/Period';
 import Grid from "@mui/material/Grid";
 
@@ -45,7 +43,7 @@ export function EventBudgetManagementSection({
   // Separate state for money and time allocations
   const [moneyParticipants, setMoneyParticipants] = useState<PersonMoneyAllocation[]>([]);
   const [timeParticipants, setTimeParticipants] = useState<PersonTimeAllocation[]>([]);
-  const [flockAmount, setFlockAmount] = useState<number>(0);
+  // FlockMoney removed from design
 
   // Get default budget type from event (mock for now) or use STUDY as fallback
   const mockEventData = mockEvents.find((e) => e.code === event?.code);
@@ -126,15 +124,7 @@ export function EventBudgetManagementSection({
 
       setTimeParticipants(initialTimeParticipants);
 
-      // Load existing Flock allocation
-      const existingFlockAllocation = mockEventData?.budgetAllocations.find(
-        (a) => a.type === 'FlockMoney'
-      );
-      if (existingFlockAllocation && 'amount' in existingFlockAllocation) {
-        setFlockAmount(existingFlockAllocation.amount);
-      } else {
-        setFlockAmount(0);
-      }
+      // FlockMoney removed from design
     }
   }, [event, mockEventData, defaultBudgetType, totalBudget]);
 
@@ -174,11 +164,6 @@ export function EventBudgetManagementSection({
     const isEqualShare =
       uniqueAmounts.length === 1 &&
       participantAmounts.every((a) => a === uniqueAmounts[0]);
-
-    // Flock
-    if (flockAmount > 0) {
-      parts.push(`Flock: €${flockAmount.toLocaleString('nl-NL')}`);
-    }
 
     // Participants
     if (isEqualShare && uniqueAmounts.length > 0) {
@@ -283,22 +268,12 @@ export function EventBudgetManagementSection({
       }
     });
 
-    // Add Flock allocation if present
-    if (flockAmount > 0) {
-      allocations.push({
-        type: 'FlockMoney',
-        eventCode: event?.code,
-        amount: flockAmount,
-      });
-    }
-
     console.log('Saving Event Budget Allocations:', {
       eventCode: event?.code,
       totalBudget,
       moneyAllocations: {
         participants: moneyParticipants,
-        flock: flockAmount,
-        total: moneyParticipants.reduce((sum, p) => sum + p.amount, 0) + flockAmount,
+        total: moneyParticipants.reduce((sum, p) => sum + p.amount, 0),
       },
       timeAllocations: {
         participants: timeParticipants,
@@ -401,9 +376,7 @@ export function EventBudgetManagementSection({
               <EventMoneyAllocationSection
                 totalBudget={totalBudget}
                 participants={moneyParticipants}
-                flockAmount={flockAmount}
                 onParticipantsChange={setMoneyParticipants}
-                onFlockAmountChange={setFlockAmount}
               />
 
 

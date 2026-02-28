@@ -21,11 +21,10 @@ import {
 import { WarningAmber, UploadFile, Add, Delete } from '@mui/icons-material';
 import {
   BudgetAllocationType,
-  ApprovalStatus,
-  DailyTimeAllocation,
-  Event,
-  mockEvents,
-} from './mocks/BudgetAllocationMocks';
+  type DailyTimeAllocation,
+  type Event,
+} from './mocks/BudgetAllocationTypes';
+import { mockEvents } from './mocks/BudgetAllocationMocks';
 
 interface EventBudgetAllocationDialogProps {
   open: boolean;
@@ -39,7 +38,7 @@ interface EventBudgetAllocationDialogProps {
 }
 
 interface EventAllocationFormData {
-  type: 'StudyTime' | 'HackTime' | 'StudyMoney' | 'FlockMoney';
+  type: 'StudyTime' | 'HackTime' | 'StudyMoney';
   eventCode: string;
   eventName: string;
   date: string;
@@ -122,8 +121,9 @@ export function EventBudgetAllocationDialog({
           selectedEvent.from,
           selectedEvent.to
         );
+        const effectiveType = selectedEvent.defaultTimeAllocationType || allocationType;
         setDailyTimeAllocations(
-          eventDays.map((date) => ({ date, hours: 8 }))
+          eventDays.map((date) => ({ date, hours: 8, type: effectiveType }))
         );
       }
     }
@@ -153,7 +153,7 @@ export function EventBudgetAllocationDialog({
 
     setDailyTimeAllocations([
       ...dailyTimeAllocations,
-      { date: lastDate, hours: 8 },
+      { date: lastDate, hours: 8, type: allocationType },
     ]);
   };
 
@@ -163,8 +163,8 @@ export function EventBudgetAllocationDialog({
 
   const handleDayChange = (
     index: number,
-    field: 'date' | 'hours',
-    value: string | number
+    field: 'date' | 'hours' | 'type',
+    value: string | number | BudgetAllocationType
   ) => {
     setDailyTimeAllocations((prev) =>
       prev.map((allocation, i) =>
@@ -373,6 +373,19 @@ export function EventBudgetAllocationDialog({
                               sx={{ width: 120 }}
                               inputProps={{ min: 0, step: 0.5 }}
                             />
+                            <FormControl sx={{ width: 120 }} size="small">
+                              <InputLabel>Type</InputLabel>
+                              <Select
+                                value={allocation.type}
+                                label="Type"
+                                onChange={(e) =>
+                                  handleDayChange(index, 'type', e.target.value as BudgetAllocationType)
+                                }
+                              >
+                                <MenuItem value={BudgetAllocationType.STUDY}>Study</MenuItem>
+                                <MenuItem value={BudgetAllocationType.HACK}>Hack</MenuItem>
+                              </Select>
+                            </FormControl>
                             <Button
                               size="small"
                               color="error"

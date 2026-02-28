@@ -11,10 +11,10 @@ import { Add, Info, OpenInNew } from '@mui/icons-material';
 import { EventAllocationListItem } from './EventAllocationListItem';
 import { StudyMoneyAllocationListItem } from './StudyMoneyAllocationListItem';
 import { StudyMoneyAllocationDialog } from './StudyMoneyAllocationDialog';
-import {
+import type {
   BudgetAllocation,
   StudyMoneyBudgetAllocation,
-} from './mocks/BudgetAllocationMocks';
+} from './mocks/BudgetAllocationTypes';
 
 interface BudgetAllocationListProps {
   allocations: BudgetAllocation[];

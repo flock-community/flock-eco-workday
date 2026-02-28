@@ -1,5 +1,5 @@
 import { EventType } from '../clients/EventClient';
-import { BudgetAllocationType } from '../features/budget/mocks/BudgetAllocationMocks';
+import { BudgetAllocationType } from '../features/budget/mocks/BudgetAllocationTypes';
 
 export const EventTypeMapping: Record<EventType, string> = {
   [EventType.GENERAL_EVENT]: 'General event',

@@ -15,12 +15,14 @@ import {
 } from '@mui/material';
 import {BudgetSummaryCards} from './BudgetSummaryCards';
 import {BudgetAllocationList} from './BudgetAllocationList';
-import {
+import type {
   BudgetAllocationDetails,
+  StudyMoneyBudgetAllocation,
+} from './mocks/BudgetAllocationTypes';
+import {
   generateMockBudgetDetailsForAllPersons,
   mockApiDelay,
   mockBudgetAllocationDetails,
-  StudyMoneyBudgetAllocation,
 } from './mocks/BudgetAllocationMocks';
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
