@@ -9,7 +9,6 @@ import {
 import dayjs from "dayjs";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import {mutatePeriod} from "../period/Period";
 import {PeriodInput} from "../../components/inputs/PeriodInput";
 
 interface EventAllocationListItemProps {
@@ -45,7 +44,6 @@ const getAccordion = (expanded: Record<string, boolean>, setExpanded: (value: ((
       return old;
     })}
     sx={{br: 0, m: 0}}
-    // sx={{boxShadow: 'none', border: '1px solid', borderColor: 'divider'}}
   >
 
     <AccordionSummary
@@ -68,15 +66,9 @@ const getAccordion = (expanded: Record<string, boolean>, setExpanded: (value: ((
           from: dayjs(allocation.dateFrom),
           to: dayjs(allocation.dateTo),
           days: findDays(allocation)
-        }}pm sta
-        onChange={(period, hours) => {
         }}
+        onChange={() => {}}
         readonly={true}
-        // from={dayjs(allocation.dateFrom)}
-        // to={dayjs(allocation.dateTo)}
-        // reset={reset}
-        // value={mutatePeriod({from: dayjs(allocation.dateFrom), to: dayjs(allocation.dateTo), days: undefined}).days}
-        // setFieldValue={(field, value) => {}}
       />
 
     </AccordionDetails>
@@ -161,107 +153,6 @@ export function EventAllocationListItem({
           </List>
         </Card>
       </Grid>
-
-      {/*<Card sx={{mb: 2}}>*/}
-      {/*  <CardContent>*/}
-      {/*    /!* Event header with icon and link *!/*/}
-      {/*    <Box sx={{mb: 2}}>*/}
-      {/*      <Box sx={{display: 'flex', alignItems: 'center', gap: 1, mb: 0.5}}>*/}
-      {/*        <Event color="primary"/>*/}
-      {/*        <Link*/}
-      {/*          component="button"*/}
-      {/*          variant="h6"*/}
-      {/*          onClick={handleNavigateToEvent}*/}
-      {/*          sx={{*/}
-      {/*            textAlign: 'left',*/}
-      {/*            color: 'text.primary',*/}
-      {/*            textDecoration: 'none',*/}
-      {/*            '&:hover': {*/}
-      {/*              textDecoration: 'underline',*/}
-      {/*              color: 'primary.main',*/}
-      {/*            },*/}
-      {/*          }}*/}
-      {/*        >*/}
-      {/*          {eventName}*/}
-      {/*        </Link>*/}
-      {/*        <Tooltip title="Manage event allocations from Events page">*/}
-      {/*          <IconButton*/}
-      {/*            size="small"*/}
-      {/*            onClick={handleNavigateToEvent}*/}
-      {/*            sx={{ml: 'auto'}}*/}
-      {/*          >*/}
-      {/*            <OpenInNew fontSize="small"/>*/}
-      {/*          </IconButton>*/}
-      {/*        </Tooltip>*/}
-      {/*      </Box>*/}
-      {/*      /!*<Typography variant="caption" color="text.secondary">*!/*/}
-      {/*      /!*  Event Code: {eventCode}*!/*/}
-      {/*      /!*</Typography>*!/*/}
-      {/*    </Box>*/}
-
-      {/*    <Divider sx={{mb: 2}}/>*/}
-
-      {/*    /!* Person allocations *!/*/}
-      {/*    {Object.entries(personAllocations).map(*/}
-      {/*      ([personId, {personName, allocations: personAllocs}]) => (*/}
-      {/*        <Box key={personId} sx={{mb: 2}}>*/}
-      {/*          <Typography variant="subtitle2" sx={{mb: 1}}>*/}
-      {/*            {personName}*/}
-      {/*          </Typography>*/}
-
-      {/*          <Stack spacing={1}>*/}
-      {/*            {personAllocs.map((allocation) => (*/}
-      {/*              <Box*/}
-      {/*                key={allocation.id}*/}
-      {/*                sx={{*/}
-      {/*                  display: 'flex',*/}
-      {/*                  alignItems: 'center',*/}
-      {/*                  gap: 1,*/}
-      {/*                  p: 1,*/}
-      {/*                  bgcolor: 'background.default',*/}
-      {/*                  borderRadius: 1,*/}
-      {/*                }}*/}
-      {/*              >*/}
-      {/*                /!* Icon based on type *!/*/}
-      {/*                {allocation.type === 'StudyTime' ||*/}
-      {/*                allocation.type === 'HackTime' ? (*/}
-      {/*                  <AccessTime fontSize="small" color="action"/>*/}
-      {/*                ) : (*/}
-      {/*                  <AttachMoney fontSize="small" color="action"/>*/}
-      {/*                )}*/}
-
-      {/*                /!* Allocation details *!/*/}
-      {/*                <Box sx={{flex: 1}}>*/}
-      {/*                  <Typography variant="body2">*/}
-      {/*                    {allocation.type === 'StudyTime' && (*/}
-      {/*                      <>*/}
-      {/*                        <strong>Study Time:</strong>{' '}*/}
-      {/*                        <pre>{JSON.stringify(allocation.dailyTimeAllocations, null, 0)}</pre>*/}
-      {/*                      </>*/}
-      {/*                    )}*/}
-      {/*                    {allocation.type === 'HackTime' && (*/}
-      {/*                      <>*/}
-      {/*                        <strong>Hack Time:</strong> {allocation.totalHours}h*/}
-      {/*                      </>*/}
-      {/*                    )}*/}
-      {/*                    {allocation.type === 'StudyMoney' && (*/}
-      {/*                      <>*/}
-      {/*                        <strong>Study Money:</strong> €*/}
-      {/*                        {allocation.amount.toLocaleString('nl-NL')}*/}
-      {/*                      </>*/}
-      {/*                    )}*/}
-      {/*                  </Typography>*/}
-      {/*                </Box>*/}
-
-      {/*              </Box>*/}
-      {/*            ))}*/}
-      {/*          </Stack>*/}
-
-      {/*        </Box>*/}
-      {/*      )*/}
-      {/*    )}*/}
-      {/*  </CardContent>*/}
-      {/*</Card>*/}
     </>
   );
 }
