@@ -14,17 +14,12 @@ import {
   AttachFile,
   Edit,
   Delete,
-  CheckCircle,
-  HourglassEmpty,
-  Cancel,
   Description, AccessTime, Business, AttachMoney,
 } from '@mui/icons-material';
 import {
   StudyMoneyBudgetAllocation,
-  ApprovalStatus,
-} from './mocks/BudgetAllocationMocks';
+} from './mocks/BudgetAllocationTypes';
 import Grid from "@mui/material/Grid";
-import {StatusMenu} from "../../components/status/StatusMenu";
 import dayjs from "dayjs";
 import ListItemText from "@mui/material/ListItemText";
 import ListItem from "@mui/material/ListItem";
@@ -42,29 +37,6 @@ export function StudyMoneyAllocationListItem({
                                                onEdit,
                                                onDelete,
                                              }: StudyMoneyAllocationListItemProps) {
-  const getStatusIcon = (status: ApprovalStatus) => {
-    switch (status) {
-      case ApprovalStatus.APPROVED:
-        return <CheckCircle fontSize="small" color="success"/>;
-      case ApprovalStatus.REQUESTED:
-        return <HourglassEmpty fontSize="small" color="warning"/>;
-      case ApprovalStatus.REJECTED:
-        return <Cancel fontSize="small" color="error"/>;
-    }
-  };
-
-  const getStatusColor = (
-    status: ApprovalStatus
-  ): 'success' | 'warning' | 'error' => {
-    switch (status) {
-      case ApprovalStatus.APPROVED:
-        return 'success';
-      case ApprovalStatus.REQUESTED:
-        return 'warning';
-      case ApprovalStatus.REJECTED:
-        return 'error';
-    }
-  };
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('nl-NL', {
@@ -90,14 +62,6 @@ export function StudyMoneyAllocationListItem({
         <Card onClick={() => {
         }}>
           <CardHeader
-            action={
-              <StatusMenu
-                onChange={() => {
-                }}
-                disabled={true}
-                value={allocation.status}
-              />
-            }
             title={
               <>
                 {/*Free-form icon*/}
@@ -180,13 +144,6 @@ export function StudyMoneyAllocationListItem({
       {/*              maximumFractionDigits: 2,*/}
       {/*            })}*/}
       {/*          </Typography>*/}
-      {/*          <Chip*/}
-      {/*            icon={getStatusIcon(allocation.status)}*/}
-      {/*            label={allocation.status}*/}
-      {/*            size="small"*/}
-      {/*            color={getStatusColor(allocation.status)}*/}
-      {/*            variant="outlined"*/}
-      {/*          />*/}
       {/*        </Box>*/}
 
       {/*        <Typography variant="body1" sx={{mb: 1}}>*/}
@@ -227,7 +184,7 @@ export function StudyMoneyAllocationListItem({
       {/*              <Edit fontSize="small"/>*/}
       {/*            </IconButton>*/}
       {/*          )}*/}
-      {/*          {onDelete && allocation.status !== ApprovalStatus.APPROVED && (*/}
+      {/*          {onDelete && (*/}
       {/*            <IconButton*/}
       {/*              size="small"*/}
       {/*              onClick={handleDelete}*/}

@@ -11,6 +11,10 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {
   ExpandMore,
@@ -19,10 +23,10 @@ import {
   Delete,
   Add,
 } from '@mui/icons-material';
-import type {
+import {
   BudgetAllocationType,
-  DailyTimeAllocation,
-} from '../budget/mocks/BudgetAllocationMocks';
+  type DailyTimeAllocation,
+} from '../budget/mocks/BudgetAllocationTypes';
 
 export interface ParticipantAllocation {
   personId: string;
@@ -109,8 +113,8 @@ export function EventBudgetParticipantRow({
 
   const handleDayChange = (
     index: number,
-    field: 'date' | 'hours',
-    value: string | number
+    field: 'date' | 'hours' | 'type',
+    value: string | number | BudgetAllocationType
   ) => {
     const updatedDays = [...(allocation.dailyTimeAllocations || [])];
     updatedDays[index] = {
@@ -141,7 +145,7 @@ export function EventBudgetParticipantRow({
 
     const updatedDays = [
       ...(allocation.dailyTimeAllocations || []),
-      { date: lastDate, hours: 8 },
+      { date: lastDate, hours: 8, type: allocation.allocationType || defaultAllocationType },
     ];
 
     onChange({
@@ -360,6 +364,19 @@ export function EventBudgetParticipantRow({
                             sx={{ width: 100 }}
                             inputProps={{ min: 0, step: 0.5 }}
                           />
+                          <FormControl sx={{ width: 110 }} size="small">
+                            <InputLabel>Type</InputLabel>
+                            <Select
+                              value={day.type}
+                              label="Type"
+                              onChange={(e) =>
+                                handleDayChange(index, 'type', e.target.value as BudgetAllocationType)
+                              }
+                            >
+                              <MenuItem value={BudgetAllocationType.STUDY}>Study</MenuItem>
+                              <MenuItem value={BudgetAllocationType.HACK}>Hack</MenuItem>
+                            </Select>
+                          </FormControl>
                           <IconButton
                             size="small"
                             color="error"

@@ -15,8 +15,7 @@ import {
 import { WarningAmber, UploadFile } from '@mui/icons-material';
 import {
   StudyMoneyBudgetAllocation,
-  ApprovalStatus,
-} from './mocks/BudgetAllocationMocks';
+} from './mocks/BudgetAllocationTypes';
 
 interface StudyMoneyAllocationDialogProps {
   open: boolean;
@@ -64,7 +63,6 @@ export function StudyMoneyAllocationDialog({
       description,
       amount: typeof amount === 'number' ? amount : 0,
       date,
-      status: ApprovalStatus.REQUESTED,
       type: 'StudyMoney',
     };
 
@@ -120,7 +118,7 @@ export function StudyMoneyAllocationDialog({
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
               })}
-              . You can still submit this request for approval.
+              . You can still record this allocation.
             </Alert>
           )}
 

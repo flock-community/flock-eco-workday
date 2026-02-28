@@ -7,7 +7,7 @@ import {
   LinearProgress,
   Stack,
 } from '@mui/material';
-import { BudgetItem } from './mocks/BudgetAllocationMocks';
+import { BudgetItem } from './mocks/BudgetAllocationTypes';
 
 interface BudgetCardProps {
   title: string;

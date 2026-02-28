@@ -1,12 +1,11 @@
 import React, {useState} from 'react';
 import {Accordion, AccordionDetails, AccordionSummary, Box, Card, CardHeader, Grid, Typography,} from '@mui/material';
-import {AccessTime, AttachMoney, Cancel, CheckCircle, Event, ExpandMore, HourglassEmpty,} from '@mui/icons-material';
+import {AccessTime, AttachMoney, Event, ExpandMore,} from '@mui/icons-material';
 import {
-  ApprovalStatus,
   BudgetAllocation,
   HackTimeBudgetAllocation,
   StudyTimeBudgetAllocation,
-} from './mocks/BudgetAllocationMocks';
+} from './mocks/BudgetAllocationTypes';
 import dayjs from "dayjs";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -104,30 +103,6 @@ export function EventAllocationListItem({
     return acc;
   }, {} as Record<string, { personName: string; allocations: BudgetAllocation[] }>);
 
-  const getStatusIcon = (status: ApprovalStatus) => {
-    switch (status) {
-      case ApprovalStatus.APPROVED:
-        return <CheckCircle fontSize="small" color="success"/>;
-      case ApprovalStatus.REQUESTED:
-        return <HourglassEmpty fontSize="small" color="warning"/>;
-      case ApprovalStatus.REJECTED:
-        return <Cancel fontSize="small" color="error"/>;
-    }
-  };
-
-  const getStatusColor = (
-    status: ApprovalStatus
-  ): 'success' | 'warning' | 'error' => {
-    switch (status) {
-      case ApprovalStatus.APPROVED:
-        return 'success';
-      case ApprovalStatus.REQUESTED:
-        return 'warning';
-      case ApprovalStatus.REJECTED:
-        return 'error';
-    }
-  };
-
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('nl-NL', {
       year: 'numeric',
@@ -148,13 +123,6 @@ export function EventAllocationListItem({
         <Card onClick={() => {
         }}>
           <CardHeader
-            // action={
-            //   <StatusMenu
-            //     onChange={() => {}}
-            //     disabled={true}
-            //     value={allocation.status}
-            //   />
-            // }
             title={<>
               <Event sx={{mt: 0.5, mr: 2}}/>
               {eventName}</>}
@@ -166,7 +134,6 @@ export function EventAllocationListItem({
           />
           <List>
             {allocations
-              .filter(a => a.type !== 'FlockMoney')
               .toSorted((a, b) => a.type === 'StudyMoney' ? -1 : 0)
               .map(allocation => {
                 return (
@@ -259,8 +226,6 @@ export function EventAllocationListItem({
       {/*                {allocation.type === 'StudyTime' ||*/}
       {/*                allocation.type === 'HackTime' ? (*/}
       {/*                  <AccessTime fontSize="small" color="action"/>*/}
-      {/*                ) : allocation.type === 'FlockMoney' ? (*/}
-      {/*                  <Business fontSize="small" color="action"/>*/}
       {/*                ) : (*/}
       {/*                  <AttachMoney fontSize="small" color="action"/>*/}
       {/*                )}*/}
@@ -285,35 +250,9 @@ export function EventAllocationListItem({
       {/*                        {allocation.amount.toLocaleString('nl-NL')}*/}
       {/*                      </>*/}
       {/*                    )}*/}
-      {/*                    {allocation.type === 'FlockMoney' && (*/}
-      {/*                      <>*/}
-      {/*                        <strong>Flock Money:</strong> €*/}
-      {/*                        {allocation.amount.toLocaleString('nl-NL')}*/}
-      {/*                      </>*/}
-      {/*                    )}*/}
       {/*                  </Typography>*/}
-      {/*                  /!*{allocation.description && (*!/*/}
-      {/*                  /!*  <Typography*!/*/}
-      {/*                  /!*    variant="caption"*!/*/}
-      {/*                  /!*    color="text.secondary"*!/*/}
-      {/*                  /!*    display="block"*!/*/}
-      {/*                  /!*  >*!/*/}
-      {/*                  /!*    {allocation.description}*!/*/}
-      {/*                  /!*  </Typography>*!/*/}
-      {/*                  /!*)}*!/*/}
-      {/*                  /!*<Typography variant="caption" color="text.secondary">*!/*/}
-      {/*                  /!*  {formatDate(allocation.date)}*!/*/}
-      {/*                  /!*</Typography>*!/*/}
       {/*                </Box>*/}
 
-      {/*                /!* Status *!/*/}
-      {/*                <Chip*/}
-      {/*                  icon={getStatusIcon(allocation.status)}*/}
-      {/*                  label={allocation.status}*/}
-      {/*                  size="small"*/}
-      {/*                  color={getStatusColor(allocation.status)}*/}
-      {/*                  variant="outlined"*/}
-      {/*                />*/}
       {/*              </Box>*/}
       {/*            ))}*/}
       {/*          </Stack>*/}
