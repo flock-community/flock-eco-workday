@@ -42,7 +42,7 @@ class LoadEventData(
                 days = mutableListOf(8.0),
                 hours = 8.0,
                 personIds = loadPersonData.data.map { it.uuid },
-                costs = 1000.0,
+                budget = 1000.0,
                 type = EventType.GENERAL_EVENT,
             ),
             EventForm(
@@ -52,7 +52,7 @@ class LoadEventData(
                 days = mutableListOf(8.0),
                 hours = 8.0,
                 personIds = loadPersonData.data.map { it.uuid },
-                costs = random.nextDouble(10.0, 1000.0),
+                budget = random.nextDouble(10.0, 1000.0),
                 type = EventType.GENERAL_EVENT,
             ),
             EventForm(
@@ -62,7 +62,7 @@ class LoadEventData(
                 days = mutableListOf(2.0),
                 hours = 2.0,
                 personIds = loadPersonData.data.map { it.uuid },
-                costs = random.nextDouble(1.0, 20.0),
+                budget = random.nextDouble(1.0, 20.0),
                 type = EventType.GENERAL_EVENT,
             ),
         )
@@ -78,7 +78,7 @@ class LoadEventData(
                     days = mutableListOf(7.0),
                     hours = 7.0,
                     personIds = loadPersonData.data.map { it.uuid },
-                    costs = 750.0,
+                    budget = 750.0,
                     type = EventType.FLOCK_COMMUNITY_DAY,
                 ),
             )
@@ -95,7 +95,7 @@ class LoadEventData(
                 days = mutableListOf(8.0, 8.0, 8.0),
                 hours = 24.0,
                 personIds = loadPersonData.data.take(2).map { it.uuid },
-                costs = 1000.0,
+                budget = 1000.0,
                 type = EventType.CONFERENCE,
             ),
         )
@@ -111,7 +111,7 @@ class LoadEventData(
                     days = mutableListOf(8.0),
                     hours = 8.0,
                     personIds = loadPersonData.data.map { it.uuid },
-                    costs = 750.0,
+                    budget = 750.0,
                     type = EventType.FLOCK_HACK_DAY,
                 ),
             )

@@ -3,19 +3,12 @@ import {
   Box,
   Typography,
   Paper,
-  TextField,
   Stack,
   Alert,
   Chip,
   IconButton,
   Collapse,
   Button,
-  ToggleButtonGroup,
-  ToggleButton,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from '@mui/material';
 import {
   Schedule,
@@ -23,20 +16,17 @@ import {
   ExpandLess,
   Info,
   Add,
-  Delete,
 } from '@mui/icons-material';
+import dayjs, { type Dayjs } from 'dayjs';
 import type { BudgetAllocationType } from '../budget/mocks/BudgetAllocationMocks';
-
-export interface DailyTimeOverride {
-  date: string;
-  hours: number | null; // null = not attending this day
-  budgetType: BudgetAllocationType | null; // null = not attending, otherwise STUDY or HACK
-}
+import { PeriodInput } from '../../components/inputs/PeriodInput';
+import { editDay, initDays, type Period } from '../period/Period';
 
 export interface PersonTimeAllocation {
   personId: string;
   personName: string;
-  dailyOverrides: DailyTimeOverride[]; // Only days that differ from default
+  studyPeriod: Period | null; // Study time hours per day, null if no study time
+  hackPeriod: Period | null; // Hack time hours per day, null if no hack time
 }
 
 interface EventTimeAllocationSectionProps {
@@ -56,9 +46,13 @@ export function EventTimeAllocationSection({
 }: EventTimeAllocationSectionProps) {
   const [showAll, setShowAll] = useState(false);
 
+  // Convert event dates to Period bounds
+  const eventFrom = dayjs(eventDates[0]);
+  const eventTo = dayjs(eventDates[eventDates.length - 1]);
+
   // Check if a participant has any custom allocations (exceptions)
   const hasExceptions = (participant: PersonTimeAllocation): boolean => {
-    return participant.dailyOverrides.length > 0;
+    return participant.studyPeriod !== null || participant.hackPeriod !== null;
   };
 
   // Get participants with exceptions
@@ -69,21 +63,27 @@ export function EventTimeAllocationSection({
     ? participants
     : participantsWithExceptions;
 
-  const handleAddOverride = (personId: string) => {
+  const handleAddCustomAllocation = (personId: string) => {
     const updated = participants.map((p) => {
       if (p.personId === personId) {
-        // Add first day as override if no overrides exist
-        const firstDate = eventDates[0];
+        // Initialize with default hours based on defaultBudgetType
+        const defaultPeriod: Period = {
+          from: eventFrom,
+          to: eventTo,
+          days: Array(eventDates.length).fill(defaultHoursPerDay),
+        };
+
+        // Initialize empty period for the other type
+        const emptyPeriod: Period = {
+          from: eventFrom,
+          to: eventTo,
+          days: Array(eventDates.length).fill(0),
+        };
+
         return {
           ...p,
-          dailyOverrides: [
-            ...p.dailyOverrides,
-            {
-              date: firstDate,
-              hours: defaultHoursPerDay,
-              budgetType: defaultBudgetType,
-            },
-          ],
+          studyPeriod: defaultBudgetType === 'STUDY' ? defaultPeriod : emptyPeriod,
+          hackPeriod: defaultBudgetType === 'HACK' ? defaultPeriod : emptyPeriod,
         };
       }
       return p;
@@ -91,12 +91,13 @@ export function EventTimeAllocationSection({
     onParticipantsChange(updated);
   };
 
-  const handleRemoveOverride = (personId: string, overrideIndex: number) => {
+  const handleRemoveCustomAllocation = (personId: string) => {
     const updated = participants.map((p) => {
       if (p.personId === personId) {
         return {
           ...p,
-          dailyOverrides: p.dailyOverrides.filter((_, i) => i !== overrideIndex),
+          studyPeriod: null,
+          hackPeriod: null,
         };
       }
       return p;
@@ -104,22 +105,35 @@ export function EventTimeAllocationSection({
     onParticipantsChange(updated);
   };
 
-  const handleOverrideChange = (
+  const handlePeriodChange = (
     personId: string,
-    overrideIndex: number,
-    field: keyof DailyTimeOverride,
-    value: string | number | BudgetAllocationType | null
+    type: 'study' | 'hack',
+    date: Dayjs,
+    hours: number
   ) => {
     const updated = participants.map((p) => {
       if (p.personId === personId) {
-        const updatedOverrides = [...p.dailyOverrides];
-        updatedOverrides[overrideIndex] = {
-          ...updatedOverrides[overrideIndex],
-          [field]: value,
-        };
+        const periodKey = type === 'study' ? 'studyPeriod' : 'hackPeriod';
+        const currentPeriod = p[periodKey];
+
+        // Initialize period if it doesn't exist
+        if (!currentPeriod) {
+          const basePeriod: Period = {
+            from: eventFrom,
+            to: eventTo,
+            days: Array(eventDates.length).fill(0),
+          };
+          const newPeriod = editDay(basePeriod, date, hours);
+          return {
+            ...p,
+            [periodKey]: newPeriod,
+          };
+        }
+
+        const newPeriod = editDay(currentPeriod, date, hours);
         return {
           ...p,
-          dailyOverrides: updatedOverrides,
+          [periodKey]: newPeriod,
         };
       }
       return p;
@@ -130,22 +144,56 @@ export function EventTimeAllocationSection({
   const getTotalHours = (participant: PersonTimeAllocation): number => {
     let total = 0;
 
-    eventDates.forEach((date) => {
-      const override = participant.dailyOverrides.find((o) => o.date === date);
-      if (override) {
-        // Use override hours (could be null if not attending)
-        total += override.hours || 0;
-      } else {
-        // Use default
-        total += defaultHoursPerDay;
-      }
-    });
+    // Add study hours
+    if (participant.studyPeriod?.days) {
+      total += participant.studyPeriod.days.reduce((sum, hours) => sum + hours, 0);
+    }
+
+    // Add hack hours
+    if (participant.hackPeriod?.days) {
+      total += participant.hackPeriod.days.reduce((sum, hours) => sum + hours, 0);
+    }
+
+    // If no custom allocation, use defaults
+    if (!participant.studyPeriod && !participant.hackPeriod) {
+      total = eventDates.length * defaultHoursPerDay;
+    }
 
     return total;
   };
 
+  // Validation: check for day overlap and hours exceeding event hours
+  const getValidationErrors = (participant: PersonTimeAllocation): string[] => {
+    const errors: string[] = [];
+
+    const studyDays = participant.studyPeriod?.days || [];
+    const hackDays = participant.hackPeriod?.days || [];
+
+    // Check each day
+    eventDates.forEach((_, index) => {
+      const studyHours = studyDays[index] || 0;
+      const hackHours = hackDays[index] || 0;
+      const totalDayHours = studyHours + hackHours;
+      const date = eventFrom.add(index, 'days').format('DD MMM YYYY');
+
+      // Check for overlap (both types on same day)
+      if (studyHours > 0 && hackHours > 0) {
+        errors.push(`${date}: Cannot have both study and hack hours on the same day`);
+      }
+
+      // Check for hours exceeding event hours per day
+      if (totalDayHours > defaultHoursPerDay) {
+        errors.push(
+          `${date}: Total hours (${totalDayHours}h) exceeds event hours (${defaultHoursPerDay}h)`
+        );
+      }
+    });
+
+    return errors;
+  };
+
   return (
-    <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider' }}>
+    < >
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
           <Schedule color="primary" />
@@ -155,35 +203,17 @@ export function EventTimeAllocationSection({
           By default, all participants attend for the full event duration (
           {eventDates.length} day{eventDates.length > 1 ? 's' : ''},{' '}
           {defaultHoursPerDay}h/day) with {defaultBudgetType.toLowerCase()} time
-          budget. Add exceptions for partial attendance or custom budget types.
+          budget. Add exceptions for partial attendance or custom budget types. Time allocations are individual
+          and don't sum.
         </Typography>
       </Box>
 
-      {/* Default Info */}
+      {/* Info: Default allocation */}
       <Alert severity="info" icon={<Info />} sx={{ mb: 3 }}>
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Chip
-            label={`Default: ${defaultHoursPerDay}h/day`}
-            size="small"
-            variant="outlined"
-          />
-          <Chip
-            label={`Type: ${defaultBudgetType}`}
-            size="small"
-            variant="outlined"
-          />
-          <Chip
-            label={`${participantsWithDefaults.length} participant${participantsWithDefaults.length !== 1 ? 's' : ''} using defaults`}
-            size="small"
-          />
-          {participantsWithExceptions.length > 0 && (
-            <Chip
-              label={`${participantsWithExceptions.length} with custom allocation${participantsWithExceptions.length !== 1 ? 's' : ''}`}
-              size="small"
-              color="primary"
-            />
-          )}
-        </Box>
+        <Typography variant="body2">
+          <strong>Default:</strong> {defaultHoursPerDay}h/day ({defaultBudgetType}) for{' '}
+          {eventDates.length} day{eventDates.length > 1 ? 's' : ''} - applies to all participants unless customized
+        </Typography>
       </Alert>
 
       {/* Toggle to show all */}
@@ -218,61 +248,68 @@ export function EventTimeAllocationSection({
           <ParticipantTimeRow
             key={participant.personId}
             participant={participant}
+            eventFrom={eventFrom}
+            eventTo={eventTo}
             eventDates={eventDates}
-            defaultHoursPerDay={defaultHoursPerDay}
-            defaultBudgetType={defaultBudgetType}
             totalHours={getTotalHours(participant)}
-            onAddOverride={() => handleAddOverride(participant.personId)}
-            onRemoveOverride={(index) =>
-              handleRemoveOverride(participant.personId, index)
-            }
-            onOverrideChange={(index, field, value) =>
-              handleOverrideChange(participant.personId, index, field, value)
+            validationErrors={getValidationErrors(participant)}
+            onAddCustomAllocation={() => handleAddCustomAllocation(participant.personId)}
+            onRemoveCustomAllocation={() => handleRemoveCustomAllocation(participant.personId)}
+            onPeriodChange={(type, date, hours) =>
+              handlePeriodChange(participant.personId, type, date, hours)
             }
           />
         ))}
       </Stack>
-    </Paper>
+    </>
   );
 }
 
 interface ParticipantTimeRowProps {
   participant: PersonTimeAllocation;
+  eventFrom: Dayjs;
+  eventTo: Dayjs;
   eventDates: string[];
-  defaultHoursPerDay: number;
-  defaultBudgetType: BudgetAllocationType;
   totalHours: number;
-  onAddOverride: () => void;
-  onRemoveOverride: (index: number) => void;
-  onOverrideChange: (
-    index: number,
-    field: keyof DailyTimeOverride,
-    value: string | number | BudgetAllocationType | null
-  ) => void;
+  validationErrors: string[];
+  onAddCustomAllocation: () => void;
+  onRemoveCustomAllocation: () => void;
+  onPeriodChange: (type: 'study' | 'hack', date: Dayjs, hours: number) => void;
 }
 
 function ParticipantTimeRow({
   participant,
+  eventFrom,
+  eventTo,
   eventDates,
-  defaultHoursPerDay,
-  defaultBudgetType,
   totalHours,
-  onAddOverride,
-  onRemoveOverride,
-  onOverrideChange,
+  validationErrors,
+  onAddCustomAllocation,
+  onRemoveCustomAllocation,
+  onPeriodChange,
 }: ParticipantTimeRowProps) {
-  const [expanded, setExpanded] = useState(participant.dailyOverrides.length > 0);
+  const hasExceptions = participant.studyPeriod !== null || participant.hackPeriod !== null;
 
-  const hasOverrides = participant.dailyOverrides.length > 0;
+  // Create empty period for display when no custom allocation exists
+  const getOrCreatePeriod = (type: 'study' | 'hack'): Period => {
+    const existing = type === 'study' ? participant.studyPeriod : participant.hackPeriod;
+    if (existing) return existing;
+
+    return {
+      from: eventFrom,
+      to: eventTo,
+      days: Array(eventDates.length).fill(0),
+    };
+  };
 
   return (
     <Box
       sx={{
         border: '1px solid',
-        borderColor: hasOverrides ? 'primary.main' : 'divider',
+        borderColor: hasExceptions ? 'primary.main' : 'divider',
         borderRadius: 1,
         p: 2,
-        bgcolor: hasOverrides ? 'primary.50' : 'background.paper',
+        bgcolor: hasExceptions ? 'action.hover' : 'background.paper',
       }}
     >
       {/* Header */}
@@ -281,7 +318,7 @@ function ParticipantTimeRow({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          mb: hasOverrides ? 2 : 0,
+          mb: hasExceptions ? 2 : 0,
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -289,7 +326,7 @@ function ParticipantTimeRow({
             {participant.personName}
           </Typography>
           <Chip label={`${totalHours}h total`} size="small" />
-          {!hasOverrides && (
+          {!hasExceptions && (
             <Chip
               label="Using defaults"
               size="small"
@@ -299,99 +336,99 @@ function ParticipantTimeRow({
           )}
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          {hasOverrides && (
-            <IconButton size="small" onClick={() => setExpanded(!expanded)}>
-              {expanded ? <ExpandLess /> : <ExpandMore />}
-            </IconButton>
+          {hasExceptions && (
+            <>
+              <Button
+                size="small"
+                color="error"
+                onClick={onRemoveCustomAllocation}
+              >
+                Remove Custom
+              </Button>
+            </>
           )}
-          <Button size="small" startIcon={<Add />} onClick={onAddOverride}>
-            {hasOverrides ? 'Add Day' : 'Customize'}
-          </Button>
+          {!hasExceptions && (
+            <Button size="small" startIcon={<Add />} onClick={onAddCustomAllocation}>
+              Customize
+            </Button>
+          )}
         </Box>
       </Box>
 
-      {/* Daily Overrides */}
-      {hasOverrides && (
-        <Collapse in={expanded}>
-          <Stack spacing={2}>
-            {participant.dailyOverrides.map((override, index) => (
-              <Box
-                key={index}
-                sx={{
-                  display: 'flex',
-                  gap: 1,
-                  alignItems: 'flex-start',
-                  p: 2,
-                  bgcolor: 'background.paper',
-                  borderRadius: 1,
-                }}
-              >
-                <FormControl size="small" sx={{ minWidth: 140 }}>
-                  <InputLabel>Date</InputLabel>
-                  <Select
-                    value={override.date}
-                    label="Date"
-                    onChange={(e) =>
-                      onOverrideChange(index, 'date', e.target.value)
-                    }
-                  >
-                    {eventDates.map((date) => (
-                      <MenuItem key={date} value={date}>
-                        {new Date(date).toLocaleDateString('nl-NL')}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+      {/* Validation Errors */}
+      {validationErrors.length > 0 && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          <Typography variant="body2" fontWeight="medium" gutterBottom>
+            Validation Errors:
+          </Typography>
+          {validationErrors.map((error, index) => (
+            <Typography key={index} variant="caption" display="block">
+              • {error}
+            </Typography>
+          ))}
+        </Alert>
+      )}
 
-                <TextField
-                  label="Hours"
-                  type="number"
-                  value={override.hours ?? ''}
-                  onChange={(e) =>
-                    onOverrideChange(
-                      index,
-                      'hours',
-                      e.target.value ? parseFloat(e.target.value) : null
-                    )
-                  }
-                  size="small"
-                  sx={{ width: 100 }}
-                  inputProps={{ min: 0, step: 0.5 }}
-                  placeholder="Not attending"
-                />
-
-                <FormControl size="small" sx={{ minWidth: 120 }}>
-                  <InputLabel>Budget Type</InputLabel>
-                  <Select
-                    value={override.budgetType ?? ''}
-                    label="Budget Type"
-                    onChange={(e) =>
-                      onOverrideChange(
-                        index,
-                        'budgetType',
-                        (e.target.value as BudgetAllocationType) || null
-                      )
-                    }
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
-                    </MenuItem>
-                    <MenuItem value="STUDY">Study</MenuItem>
-                    <MenuItem value="HACK">Hack</MenuItem>
-                  </Select>
-                </FormControl>
-
-                <IconButton
-                  size="small"
-                  color="error"
-                  onClick={() => onRemoveOverride(index)}
-                >
-                  <Delete fontSize="small" />
-                </IconButton>
+      {/* Period Inputs */}
+      {hasExceptions && (
+        <>
+          <Stack spacing={3}>
+            {/* Study Time Period */}
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <Typography variant="subtitle2" fontWeight="medium">
+                  Study Time
+                </Typography>
+                {participant.studyPeriod && (
+                  <Chip
+                    label={`${participant.studyPeriod.days?.reduce((sum, h) => sum + h, 0) || 0}h`}
+                    size="small"
+                    color="primary"
+                  />
+                )}
               </Box>
-            ))}
+              <Box sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 1 }}>
+                <PeriodInput
+                  period={getOrCreatePeriod('study')}
+                  onChange={(date, hours) => onPeriodChange('study', date, hours)}
+                  readonly={false}
+                />
+              </Box>
+            </Box>
+
+            {/* Hack Time Period */}
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <Typography variant="subtitle2" fontWeight="medium">
+                  Hack Time
+                </Typography>
+                {participant.hackPeriod && (
+                  <Chip
+                    label={`${participant.hackPeriod.days?.reduce((sum, h) => sum + h, 0) || 0}h`}
+                    size="small"
+                    color="secondary"
+                  />
+                )}
+              </Box>
+              <Box sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 1 }}>
+                <PeriodInput
+                  period={getOrCreatePeriod('hack')}
+                  onChange={(date, hours) => onPeriodChange('hack', date, hours)}
+                  readonly={false}
+                />
+              </Box>
+            </Box>
+
+            {/* Info Alert */}
+            <Alert severity="info" icon={<Info />}>
+              <Typography variant="caption">
+                Each day can only have hours in either Study Time OR Hack Time, not both.
+                Only fill in hours for the event dates ({eventFrom.format('DD MMM')} -{' '}
+                {eventTo.format('DD MMM')}).
+              </Typography>
+            </Alert>
           </Stack>
-        </Collapse>
+        </>
       )}
     </Box>
   );

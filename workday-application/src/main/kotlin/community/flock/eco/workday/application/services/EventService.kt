@@ -165,7 +165,7 @@ class EventService(
             persons = persons.toMutableList(),
             hours = hours,
             days = days.toMutableList(),
-            costs = costs,
+            costs = budget,
             type = type,
         )
     }

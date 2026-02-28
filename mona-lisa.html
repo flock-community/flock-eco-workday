@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Gioconda • Digital Renaissance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #D4AF37;
+            --rich-gold: #FFD700;
+            --deep-umber: #3E2723;
+            --warm-umber: #5D4037;
+            --emerald: #2C5F2D;
+            --sage: #87AE73;
+            --cream: #F5E6D3;
+            --shadow: rgba(0, 0, 0, 0.6);
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: linear-gradient(135deg, var(--deep-umber) 0%, var(--warm-umber) 50%, var(--emerald) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+            cursor: crosshair;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(135, 174, 115, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.02) 2px, rgba(255, 255, 255, 0.02) 4px);
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.3;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            padding: 60px 40px;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+            animation: slideDown 1s ease-out 0.3s backwards;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 900;
+            color: var(--gold);
+            letter-spacing: -0.02em;
+            line-height: 0.9;
+            margin-bottom: 20px;
+            text-shadow:
+                2px 2px 0 var(--deep-umber),
+                4px 4px 20px var(--shadow);
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .subtitle {
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            color: var(--cream);
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            opacity: 0.9;
+            margin-top: 30px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 60px;
+            align-items: center;
+            animation: fadeIn 1.2s ease-out 0.6s backwards;
+        }
+
+        @media (max-width: 1024px) {
+            .gallery {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        .portrait-container {
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .portrait-frame {
+            position: relative;
+            background: linear-gradient(135deg, var(--warm-umber), var(--deep-umber));
+            padding: 30px;
+            box-shadow:
+                0 20px 60px var(--shadow),
+                inset 0 0 0 1px rgba(212, 175, 55, 0.3),
+                inset 0 0 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 3px solid var(--gold);
+        }
+
+        .portrait-frame:hover {
+            transform: scale(1.02) rotateY(2deg);
+        }
+
+        .portrait-frame::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            pointer-events: none;
+        }
+
+        .portrait-inner {
+            position: relative;
+            background: linear-gradient(180deg, var(--emerald) 0%, var(--sage) 40%, var(--warm-umber) 100%);
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .portrait-layers {
+            position: absolute;
+            inset: 0;
+        }
+
+        .layer {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            animation: layerFade 8s ease-in-out infinite;
+        }
+
+        .layer:nth-child(1) { animation-delay: 0s; }
+        .layer:nth-child(2) { animation-delay: 2s; }
+        .layer:nth-child(3) { animation-delay: 4s; }
+        .layer:nth-child(4) { animation-delay: 6s; }
+
+        @keyframes layerFade {
+            0%, 100% { opacity: 0; transform: scale(1); }
+            25%, 75% { opacity: 0.8; transform: scale(1.05); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        .background-layer {
+            background: radial-gradient(ellipse at 50% 30%, var(--sage) 0%, var(--emerald) 60%);
+            filter: blur(40px);
+        }
+
+        .landscape-layer {
+            background:
+                radial-gradient(ellipse at 30% 50%, transparent 30%, var(--emerald) 80%),
+                radial-gradient(ellipse at 70% 50%, transparent 30%, var(--warm-umber) 80%);
+            opacity: 0.7;
+        }
+
+        .figure-layer {
+            background: radial-gradient(ellipse at 50% 40%, var(--cream) 20%, transparent 60%);
+            clip-path: polygon(30% 15%, 70% 15%, 75% 85%, 25% 85%);
+        }
+
+        .veil-layer {
+            background:
+                linear-gradient(180deg, transparent 0%, rgba(245, 230, 211, 0.1) 30%, transparent 100%),
+                radial-gradient(circle at 50% 50%, rgba(245, 230, 211, 0.2) 0%, transparent 70%);
+        }
+
+        .smile {
+            position: absolute;
+            bottom: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--warm-umber), transparent);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: smileGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes smileGlow {
+            0%, 100% { opacity: 0.4; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+        }
+
+        .eyes {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40%;
+            height: 10%;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .eye {
+            width: 12px;
+            height: 12px;
+            background: var(--deep-umber);
+            border-radius: 50%;
+            position: relative;
+            animation: blink 6s ease-in-out infinite;
+        }
+
+        .eye::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+        }
+
+        @keyframes blink {
+            0%, 48%, 52%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.1); }
+        }
+
+        .details {
+            padding: 40px 0;
+            animation: slideUp 1s ease-out 0.9s backwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .details h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--gold);
+            margin-bottom: 30px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .info-item {
+            background: rgba(62, 39, 35, 0.6);
+            padding: 25px 30px;
+            border-left: 4px solid var(--gold);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            border-radius: 2px;
+        }
+
+        .info-item:hover {
+            background: rgba(62, 39, 35, 0.8);
+            transform: translateX(10px);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--sage);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 1.3rem;
+            color: var(--cream);
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .description {
+            font-size: 1.2rem;
+            line-height: 1.9;
+            color: var(--cream);
+            font-weight: 300;
+            opacity: 0.95;
+            text-align: justify;
+        }
+
+        .description em {
+            color: var(--gold);
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .ornament {
+            text-align: center;
+            margin: 50px 0 30px;
+            font-size: 2rem;
+            color: var(--gold);
+            opacity: 0.5;
+            letter-spacing: 1em;
+        }
+
+        footer {
+            margin-top: 80px;
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            animation: fadeIn 1.5s ease-out 1.2s backwards;
+        }
+
+        footer p {
+            color: var(--sage);
+            font-size: 1rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0;
+            animation: float 15s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(0deg);
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        .interactive-hint {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(62, 39, 35, 0.9);
+            color: var(--gold);
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: 1px solid var(--gold);
+            animation: pulse 2s ease-in-out infinite;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <header>
+            <h1>La Gioconda</h1>
+            <p class="subtitle">Digital Renaissance</p>
+        </header>
+
+        <div class="gallery">
+            <div class="portrait-container">
+                <div class="portrait-frame">
+                    <div class="portrait-inner">
+                        <div class="portrait-layers">
+                            <div class="layer background-layer"></div>
+                            <div class="layer landscape-layer"></div>
+                            <div class="layer figure-layer"></div>
+                            <div class="layer veil-layer"></div>
+                        </div>
+                        <div class="eyes">
+                            <div class="eye"></div>
+                            <div class="eye"></div>
+                        </div>
+                        <div class="smile"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="details">
+                <h2>The Enigmatic Portrait</h2>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Artist</div>
+                        <div class="info-value">Leonardo da Vinci</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Created</div>
+                        <div class="info-value">c. 1503–1519</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Medium</div>
+                        <div class="info-value">Oil on poplar panel</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Location</div>
+                        <div class="info-value">Musée du Louvre, Paris</div>
+                    </div>
+                </div>
+
+                <div class="ornament">◆ ◆ ◆</div>
+
+                <div class="description">
+                    <em>The Mona Lisa</em> stands as perhaps the most celebrated portrait in the history of art.
+                    Leonardo's masterful use of <em>sfumato</em>—the subtle gradation of tone and color—creates an
+                    ethereal quality that has captivated viewers for centuries. Her enigmatic smile, the mysterious
+                    landscape behind her, and the revolutionary three-quarter pose combine to create an image of
+                    haunting beauty and psychological depth. The portrait transcends its Renaissance origins to
+                    become a universal symbol of artistic achievement and human expression.
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>A Digital Homage to Leonardo's Genius</p>
+        </footer>
+    </div>
+
+    <div class="interactive-hint">Hover to explore</div>
+
+    <script>
+        // Generate floating particles
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 30;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Interactive mouse tracking on portrait
+        const portraitFrame = document.querySelector('.portrait-frame');
+        const portraitInner = document.querySelector('.portrait-inner');
+
+        portraitFrame.addEventListener('mousemove', (e) => {
+            const rect = portraitFrame.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width;
+            const y = (e.clientY - rect.top) / rect.height;
+
+            const rotateY = (x - 0.5) * 10;
+            const rotateX = (y - 0.5) * -10;
+
+            portraitFrame.style.transform = `perspective(1000px) rotateY(${rotateY}deg) rotateX(${rotateX}deg) scale(1.02)`;
+        });
+
+        portraitFrame.addEventListener('mouseleave', () => {
+            portraitFrame.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) scale(1)';
+        });
+
+        // Eye tracking
+        const eyes = document.querySelectorAll('.eye');
+
+        document.addEventListener('mousemove', (e) => {
+            eyes.forEach(eye => {
+                const eyeRect = eye.getBoundingClientRect();
+                const eyeCenterX = eyeRect.left + eyeRect.width / 2;
+                const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+
+                const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
+                const distance = Math.min(3, Math.hypot(e.clientX - eyeCenterX, e.clientY - eyeCenterY) / 100);
+
+                const pupilX = Math.cos(angle) * distance;
+                const pupilY = Math.sin(angle) * distance;
+
+                eye.style.transform = `translate(${pupilX}px, ${pupilY}px)`;
+            });
+        });
+
+        // Fade out hint after interaction
+        let hintTimeout;
+        document.addEventListener('mousemove', () => {
+            clearTimeout(hintTimeout);
+            hintTimeout = setTimeout(() => {
+                document.querySelector('.interactive-hint').style.opacity = '0';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

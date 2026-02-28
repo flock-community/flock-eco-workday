@@ -39,10 +39,10 @@ type Event {
   from: String?,
   to: String?,
   hours: Number?,
-  costs: Number?,
+  budget: Number?,
   `type`: EventType?,
   days: Number[]?,
-  persons: Person[]?
+  persons: PersonCode[]?
 }
 enum EventType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT

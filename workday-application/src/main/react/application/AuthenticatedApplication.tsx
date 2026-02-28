@@ -23,6 +23,7 @@ import WorkDayPage from '../features/workday/WorkDayPage';
 import { ApplicationDrawer } from './ApplicationDrawer';
 import { ApplicationLayout } from './ApplicationLayout';
 import {BudgetAllocationDemo} from "../features/budget/BudgetAllocationDemo";
+import { NewDashboard } from '../features/dashboard/NewDashboard';
 
 export const AuthenticatedApplication = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -61,6 +62,11 @@ export const AuthenticatedApplication = () => {
         <Route
           path="/demo"
           component={BudgetAllocationDemo}
+        />
+        <Route
+          path="/dashboard-new"
+          exact
+          component={NewDashboard}
         />
 
         <Redirect to="/" />

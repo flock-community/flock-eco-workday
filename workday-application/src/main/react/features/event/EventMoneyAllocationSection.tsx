@@ -2,11 +2,9 @@ import React from 'react';
 import {
   Box,
   Typography,
-  Paper,
   TextField,
   Button,
   Stack,
-  Alert,
   Divider,
   Chip,
 } from '@mui/material';
@@ -15,7 +13,6 @@ import {
   Calculate,
   Clear,
   Business,
-  WarningAmber,
 } from '@mui/icons-material';
 
 export interface PersonMoneyAllocation {
@@ -95,7 +92,7 @@ export function EventMoneyAllocationSection({
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider' }}>
+    < >
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
           <AttachMoney color="primary" />
@@ -106,39 +103,6 @@ export function EventMoneyAllocationSection({
           budget (€{totalBudget.toLocaleString('nl-NL')}).
         </Typography>
       </Box>
-
-      {/* Budget Summary */}
-      <Alert
-        severity={
-          isOverAllocated ? 'warning' : isFullyAllocated ? 'success' : 'info'
-        }
-        icon={isOverAllocated ? <WarningAmber /> : undefined}
-        sx={{ mb: 3 }}
-      >
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Chip
-            label={`Total Budget: €${totalBudget.toLocaleString('nl-NL')}`}
-            size="small"
-            variant="outlined"
-          />
-          <Chip
-            label={`Allocated: €${totalAllocated.toLocaleString('nl-NL')}`}
-            size="small"
-            color={isOverAllocated ? 'warning' : 'default'}
-          />
-          <Chip
-            label={`Remaining: €${Math.abs(remaining).toLocaleString('nl-NL')}${isOverAllocated ? ' over' : ''}`}
-            size="small"
-            color={
-              isOverAllocated
-                ? 'error'
-                : isFullyAllocated
-                  ? 'success'
-                  : 'default'
-            }
-          />
-        </Box>
-      </Alert>
 
       {/* Quick Actions */}
       <Box sx={{ mb: 3 }}>
@@ -173,6 +137,30 @@ export function EventMoneyAllocationSection({
             Clear All
           </Button>
         </Stack>
+      </Box>
+
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+        <Chip
+          label={`Total Budget: €${totalBudget.toLocaleString('nl-NL')}`}
+          size="small"
+          variant="outlined"
+        />
+        <Chip
+          label={`Allocated: €${totalAllocated.toLocaleString('nl-NL')}`}
+          size="small"
+          color={isOverAllocated ? 'warning' : 'default'}
+        />
+        <Chip
+          label={`Remaining: €${Math.abs(remaining).toLocaleString('nl-NL')}${isOverAllocated ? ' over' : ''}`}
+          size="small"
+          color={
+            isOverAllocated
+              ? 'error'
+              : isFullyAllocated
+                ? 'success'
+                : 'default'
+          }
+        />
       </Box>
 
       <Divider sx={{ mb: 3 }} />
@@ -235,6 +223,6 @@ export function EventMoneyAllocationSection({
           ))}
         </Stack>
       </Box>
-    </Paper>
+    </>
   );
 }
