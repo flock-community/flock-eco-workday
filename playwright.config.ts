@@ -27,9 +27,12 @@ export default defineConfig({
     },
   ],
   // Run your local dev server before starting the tests.
-  webServer: {
-    command: 'npm run start',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-  },
+  // Skip when running in Docker where frontend is a separate service.
+  webServer: process.env.SKIP_WEB_SERVER
+    ? undefined
+    : {
+        command: 'npm run start',
+        url: 'http://localhost:3000',
+        reuseExistingServer: !process.env.CI,
+      },
 });

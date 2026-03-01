@@ -34,3 +34,10 @@ format:
 # Use at your own risk. Get a JAR as quickly as possible, excluding as many validation along the way. Ideal when experimenting or reviewing
 yolo :
 	./mvnw verify -DskipTests -Denforcer.skip -Dspotless.skip -Djacoco.skip -Pdevelop
+
+# Run backend + frontend in Docker and execute Playwright tests, showing only test output
+verify:
+	@docker compose down 2>/dev/null || true
+	@rm -rf database/
+	@docker compose up -d --wait backend frontend
+	@docker compose run --rm playwright; EXIT_CODE=$$?; docker compose down; exit $$EXIT_CODE

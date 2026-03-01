@@ -6,9 +6,11 @@ import community.flock.eco.workday.domain.expense.TravelExpensePersistencePort
 import jakarta.persistence.EntityManager
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Component
+@Transactional
 class TravelExpensePersistenceAdapter(
     private val travelExpenseRepository: TravelExpenseRepository,
     private val entityManager: EntityManager,
