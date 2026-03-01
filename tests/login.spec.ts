@@ -1,8 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 // Test configuration
-const LOGIN_URL = 'http://localhost:3000/auth';
-const BASE_URL = 'http://localhost:3000';
+const LOGIN_URL = '/auth';
 const VALID_USERNAME = 'tommy@sesam.straat'; // Real credentials from readme.md
 const VALID_PASSWORD = 'tommy';
 const INVALID_USERNAME = 'invalid@example.com';
@@ -40,7 +39,7 @@ test.describe('Login Functionality', () => {
     await page.click('button:has-text("Sign in")');
 
     // Verify successful login - check for redirect to main dashboard
-    await expect(page).toHaveURL(`${BASE_URL}/`);
+    await expect(page).toHaveURL('/');
 
     // Verify dashboard elements are present
     await expect(page.locator('h2:has-text("Hi, Tommy!")')).toBeVisible();
@@ -110,7 +109,7 @@ test.describe('Login Functionality', () => {
     await page.press('input[name="password"]', 'Enter');
 
     // Verify successful login
-    await expect(page).toHaveURL(`${BASE_URL}/`);
+    await expect(page).toHaveURL('/');
     await expect(page.locator('h2:has-text("Hi, Tommy!")')).toBeVisible();
   });
 
@@ -121,7 +120,7 @@ test.describe('Login Functionality', () => {
     await page.fill('input[name="username"]', VALID_USERNAME);
     await page.fill('input[name="password"]', VALID_PASSWORD);
     await page.click('button:has-text("Sign in")');
-    await page.waitForURL(`${BASE_URL}/`);
+    await page.waitForURL('/');
 
     // Click user menu button using the correct selector
     await page.click('button[aria-haspopup="true"]');
@@ -163,7 +162,7 @@ test.describe('Logout Functionality', () => {
     await page.fill('input[name="username"]', VALID_USERNAME);
     await page.fill('input[name="password"]', VALID_PASSWORD);
     await page.click('button:has-text("Sign in")');
-    await page.waitForURL(`${BASE_URL}/`);
+    await page.waitForURL('/');
   });
 
   test('should logout successfully', async ({ page }) => {
@@ -185,7 +184,7 @@ test.describe('Logout Functionality', () => {
     await expect(page.locator('h1:has-text("Workday Login")')).toBeVisible();
 
     // Verify user cannot access dashboard without logging in again
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await expect(page).toHaveURL(/.*\/auth/);
   });
 });

@@ -2,9 +2,7 @@ import { expect, test } from '@playwright/test';
 import { Given_I_am_logged_in_as_user } from './steps/workdaySteps';
 
 // Test configuration
-const BASE_URL = 'http://localhost:3000';
-const PERSON_URL = `${BASE_URL}/person`;
-const _VALID_USERNAME = 'tommy';
+const PERSON_URL = '/person';
 const ADMIN_USERNAME = 'bert';
 
 test.describe('Person CRUD Operations', () => {
