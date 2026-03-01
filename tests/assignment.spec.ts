@@ -19,17 +19,12 @@ test.describe('Assignment CRUD Operations', () => {
   }
 
   async function selectClient(page, clientName: string) {
-    const clientSelect = page
-      .getByRole('dialog')
-      .getByRole('combobox')
-      .first();
+    const clientSelect = page.getByRole('dialog').getByRole('combobox').first();
     await clientSelect.click();
     await page.getByRole('option', { name: clientName }).click();
   }
 
-  test('should display assignments for a selected person', async ({
-    page,
-  }) => {
+  test('should display assignments for a selected person', async ({ page }) => {
     // Select Tommy who has an existing assignment
     await selectPerson(page, 'Tommy Dog');
 
@@ -48,9 +43,7 @@ test.describe('Assignment CRUD Operations', () => {
     await page.getByRole('button', { name: 'Add' }).click();
 
     // Verify dialog is open
-    await expect(
-      page.getByText('Create / Edit an assignment'),
-    ).toBeVisible();
+    await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
 
     // Fill in assignment details
     await page.getByLabel('Hourly rate').clear();
@@ -88,7 +81,9 @@ test.describe('Assignment CRUD Operations', () => {
 
     // Verify the new assignment appears in the list
     await expect(
-      page.getByRole('heading', { name: 'Client B - Test automation engineer' }).first(),
+      page
+        .getByRole('heading', { name: 'Client B - Test automation engineer' })
+        .first(),
     ).toBeVisible();
     await expect(page.getByText('Hourly rate: 120').first()).toBeVisible();
     await expect(page.getByText('Hours per week: 40').first()).toBeVisible();
@@ -110,9 +105,7 @@ test.describe('Assignment CRUD Operations', () => {
     await clientCHeading.click();
 
     // Verify dialog is open in edit mode
-    await expect(
-      page.getByText('Create / Edit an assignment'),
-    ).toBeVisible();
+    await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
 
     // Verify the Delete button is visible (only in edit mode)
     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
@@ -135,7 +128,9 @@ test.describe('Assignment CRUD Operations', () => {
 
     // Verify updated assignment in the list
     await expect(
-      page.getByRole('heading', { name: 'Client C - Senior software engineer' }).first(),
+      page
+        .getByRole('heading', { name: 'Client C - Senior software engineer' })
+        .first(),
     ).toBeVisible();
     await expect(page.getByText('Hourly rate: 110').first()).toBeVisible();
   });
@@ -145,9 +140,7 @@ test.describe('Assignment CRUD Operations', () => {
     await selectPerson(page, 'Bert Muppets');
 
     await page.getByRole('button', { name: 'Add' }).click();
-    await expect(
-      page.getByText('Create / Edit an assignment'),
-    ).toBeVisible();
+    await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
 
     await page.getByLabel('Hourly rate').clear();
     await page.getByLabel('Hourly rate').fill('75');
@@ -172,14 +165,17 @@ test.describe('Assignment CRUD Operations', () => {
 
     // Verify the assignment was created
     await expect(
-      page.getByRole('heading', { name: 'Client D - Temporary contractor' }).first(),
+      page
+        .getByRole('heading', { name: 'Client D - Temporary contractor' })
+        .first(),
     ).toBeVisible();
 
     // Click the assignment to open edit dialog
-    await page.getByRole('heading', { name: 'Client D - Temporary contractor' }).first().click();
-    await expect(
-      page.getByText('Create / Edit an assignment'),
-    ).toBeVisible();
+    await page
+      .getByRole('heading', { name: 'Client D - Temporary contractor' })
+      .first()
+      .click();
+    await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
 
     // Click Delete button
     await page.getByRole('button', { name: 'Delete' }).click();
@@ -207,9 +203,7 @@ test.describe('Assignment CRUD Operations', () => {
 
     // Open dialog
     await page.getByRole('button', { name: 'Add' }).click();
-    await expect(
-      page.getByText('Create / Edit an assignment'),
-    ).toBeVisible();
+    await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
 
     // Fill some data
     await page.getByLabel('Role').fill('Should not be saved');
