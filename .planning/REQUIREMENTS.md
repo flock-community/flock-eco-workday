@@ -34,6 +34,8 @@
 - [ ] **EVT-02**: Admin can assign per-participant time allocations with per-day breakdown
 - [ ] **EVT-03**: Admin can assign per-participant money allocations
 - [ ] **EVT-04**: Smart defaults based on event type (FLOCK_HACK_DAY -> HackTime, CONFERENCE -> StudyTime)
+- [ ] **EVT-05**: Event form budget/type changes live-update the budget management sections (single source of truth)
+- [ ] **EVT-06**: Budget management section uses progressive disclosure (start simple, expand on demand)
 
 ### Contract Form
 
@@ -72,33 +74,35 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DOM-01 | TBD | Pending |
-| DOM-02 | TBD | Pending |
-| DOM-03 | TBD | Pending |
-| DOM-04 | TBD | Pending |
-| API-01 | TBD | Pending |
-| API-02 | TBD | Pending |
-| API-03 | TBD | Pending |
-| API-04 | TBD | Pending |
-| API-05 | TBD | Pending |
-| TAB-01 | TBD | Pending |
-| TAB-02 | TBD | Pending |
-| TAB-03 | TBD | Pending |
-| TAB-04 | TBD | Pending |
-| TAB-05 | TBD | Pending |
-| EVT-01 | TBD | Pending |
-| EVT-02 | TBD | Pending |
-| EVT-03 | TBD | Pending |
-| EVT-04 | TBD | Pending |
-| CTR-01 | TBD | Pending |
-| CTR-02 | TBD | Pending |
-| DEV-01 | TBD | Pending |
+| DOM-01 | Phase 3 | Pending |
+| DOM-02 | Phase 3 | Pending |
+| DOM-03 | Phase 4 | Pending |
+| DOM-04 | Phase 4 | Pending |
+| API-01 | Phase 5 | Pending |
+| API-02 | Phase 5 | Pending |
+| API-03 | Phase 5 | Pending |
+| API-04 | Phase 5 | Pending |
+| API-05 | Phase 5 | Pending |
+| TAB-01 | Phase 6 | Pending |
+| TAB-02 | Phase 6 | Pending |
+| TAB-03 | Phase 6 | Pending |
+| TAB-04 | Phase 6 | Pending |
+| TAB-05 | Phase 6 | Pending |
+| EVT-01 | Phase 7 | Pending |
+| EVT-02 | Phase 7 | Pending |
+| EVT-03 | Phase 7 | Pending |
+| EVT-04 | Phase 7 | Pending |
+| EVT-05 | Phase 2 | Pending |
+| EVT-06 | Phase 2 | Pending |
+| CTR-01 | Phase 8 | Pending |
+| CTR-02 | Phase 5 | Pending |
+| DEV-01 | Phase 8 | Pending |
 
 **Coverage:**
-- v1 requirements: 21 total
-- Mapped to phases: 0
-- Unmapped: 21
+- v1 requirements: 23 total
+- Mapped to phases: 23 (100%)
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-02*
-*Last updated: 2026-03-02 after initial definition*
+*Last updated: 2026-03-02 after revision (added EVT-05, EVT-06, renumbered phases)*

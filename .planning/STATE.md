@@ -1,0 +1,121 @@
+# Project State: Budget Allocations for Flock Workday
+
+**Last Updated:** 2026-03-02
+**Current Phase:** Phase 2 (Event Budget Flow Redesign)
+**Current Plan:** Not started
+**Status:** Ready to plan Phase 2
+
+## Project Reference
+
+**Core Value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
+
+**Current Focus:** Completing frontend prototype by redesigning the end-to-end flow of creating/editing an event with budget allocations. This addresses disconnected flow, cluttered UI, and duplicate logic issues in the current prototype.
+
+## Current Position
+
+**Phase:** 2 of 8 - Event Budget Flow Redesign
+**Plan:** Not started
+**Status:** Awaiting plan generation
+**Progress:** ▓▓▓░░░░░░░░░░░░░░░░░ 12.5% (1/8 phases complete - Phase 1 frontend prototype foundation)
+
+### Phase 2 Objective
+Event form and budget management sections work as a cohesive, intuitive single flow.
+
+**Success Criteria:**
+1. Admin changes event form costs/defaultTimeAllocationType and budget sections immediately reflect those changes (single source of truth)
+2. Budget management section starts in simple mode (basic form) and expands progressively on demand
+3. EventForm fields (costs, defaultTimeAllocationType) are the canonical source for budget defaults, not duplicated logic
+4. Admin experiences a natural flow: define event basics -> manage participant budgets, without feeling like two disconnected UIs
+
+**Requirements in Phase:** EVT-05, EVT-06
+
+**Key Problems Addressed:**
+- EventForm fields don't propagate to budget sections (disconnected flow)
+- Too cluttered UI (needs progressive disclosure)
+- Missing integration between form fields and budget sections
+- Duplicate logic in EventBudgetAllocationDialog
+
+**Files to Modify:**
+- EventForm.tsx
+- EventBudgetManagementDialog.tsx
+- EventTimeAllocationSection.tsx
+- EventMoneyAllocationSection.tsx
+- EventBudgetAllocationDialog.tsx
+
+## Performance Metrics
+
+### Velocity
+- **Phases completed:** 1 (Phase 1: Frontend Prototype foundation)
+- **Requirements completed:** 0 of 23 v1 requirements (Phase 1 not counted in v1, Phase 2 pending)
+- **Plans completed:** 0
+- **Completion rate:** 12.5% (1/8 phases complete)
+
+### Quality
+- **Build status:** Unknown (Phase 2 not started)
+- **Test coverage:** Unknown (Phase 2 not started)
+- **Blockers:** 0
+- **Technical debt:** 0 items logged
+
+## Accumulated Context
+
+### Key Decisions
+1. **2026-03-02**: Phase 1 prototype foundation complete, but event budget flow needs redesign before backend work
+2. **2026-03-02**: Phase 2 focuses on frontend-only fixes (progressive disclosure, single source of truth, natural flow)
+3. **2026-03-02**: Follow Expense domain pattern exactly (sealed interface + persistence port in domain, JPA JOINED inheritance + adapter in application) — rationale: proven pattern in this codebase, reduces risk
+4. **2026-03-02**: Use LAZY fetch for element collections with explicit JOIN FETCH queries — rationale: prevent N+1 query explosion observed in Expense domain
+5. **2026-03-02**: Unified Wirespec response type with discriminator + separate input types per allocation subtype — rationale: clean API with type-safe boundaries
+6. **2026-03-02**: Per-day type override on DailyTimeAllocation — rationale: single event can mix hack/study days (rare but valuable flexibility)
+
+### Active Todos
+- [ ] Generate Phase 2 plan (event budget flow redesign)
+- [ ] Verify Expense domain discriminator strategy (DTYPE vs. type field) before implementing Phase 3
+- [ ] Review Liquibase changeset ordering pattern from db.changelog-002-expenses.yaml before Phase 4
+
+### Known Blockers
+None.
+
+### Technical Debt
+None logged yet.
+
+## Roadmap Summary
+
+| Phase | Status | Requirements | Success Criteria |
+|-------|--------|--------------|------------------|
+| 1. Frontend Prototype | Complete | N/A | 5 criteria met |
+| 2. Event Budget Flow Redesign | Not started | EVT-05, EVT-06 | 4 criteria |
+| 3. Domain Layer | Not started | DOM-01, DOM-02 | 4 criteria |
+| 4. Persistence & Contract | Not started | DOM-03, DOM-04 | 4 criteria |
+| 5. API Layer | Not started | API-01, API-02, API-03, API-04, API-05, CTR-02 | 6 criteria |
+| 6. Budget Tab Integration | Not started | TAB-01, TAB-02, TAB-03, TAB-04, TAB-05 | 5 criteria |
+| 7. Event Integration | Not started | EVT-01, EVT-02, EVT-03, EVT-04 | 4 criteria |
+| 8. Contract Form & Dev Data | Not started | CTR-01, DEV-01 | 4 criteria |
+
+**Overall Progress:** 12.5% (Phase 1 complete, 7 phases remaining)
+
+## Session Continuity
+
+### Last Session Summary
+- Initialized GSD workflow for budget allocations feature
+- Created PROJECT.md, REQUIREMENTS.md, research/SUMMARY.md
+- Generated ROADMAP.md with 7 phases (Phase 1 already complete)
+- Revised ROADMAP.md: Added Phase 2 (Event Budget Flow Redesign), renumbered phases 3-8
+- Added new requirements EVT-05 and EVT-06
+- Updated STATE.md to reflect Phase 1.6 pending work as new Phase 2
+
+### Next Session
+Start with: `/gsd:plan-phase 2`
+
+This will decompose Phase 2 (Event Budget Flow Redesign) into executable plans for frontend refactoring.
+
+### Context for Next Agent
+- Phase 1 (frontend prototype foundation) complete with 15 commits on feat/hack-and-study-budget-allocations branch
+- Phase 2 is frontend-only work (no backend dependencies) addressing UX issues in event budget flow
+- Implementation plan at docs/plans/2026-02-28-budget-allocations-implementation.md has detailed context for Phase 2
+- Backend work starts in Phase 3 (domain layer)
+- Research identified Expense domain as exact pattern to follow for backend phases
+- Critical pitfalls documented: N+1 queries (LAZY fetch), FK ordering (Liquibase), BigDecimal precision, discriminator strategy
+- All work happens in `workday-application` module (workday-core and workday-user are frozen)
+
+---
+*State initialized: 2026-03-02*
+*Last updated: 2026-03-02 (revised: Phase 2 now current, Phase 1 not fully complete)*
