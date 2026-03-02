@@ -122,6 +122,27 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     onComplete?.();
   };
 
+  const handleBudgetStateChange = (budgetState: {
+    moneyParticipants: PersonMoneyAllocation[];
+    timeParticipants: PersonTimeAllocation[];
+    dirty: boolean;
+  }) => {
+    setBudgetsDirty(budgetState.dirty);
+    // Store budget state for save (convert to ParticipantBudgetState format)
+    const combinedState: ParticipantBudgetState[] = budgetState.moneyParticipants.map(money => {
+      const time = budgetState.timeParticipants.find(t => t.personId === money.personId);
+      return {
+        personId: money.personId,
+        personName: money.personName,
+        moneyAmount: money.amount,
+        moneyDirty: budgetState.dirty,
+        timeAllocation: time || { personId: money.personId, personName: money.personName, studyPeriod: null, hackPeriod: null },
+        timeDirty: budgetState.dirty,
+      };
+    });
+    setParticipantBudgets(combinedState);
+  };
+
   const initialValues = state ? { ...eventFormSchema.default(), ...mutatePeriod(state) } : eventFormSchema.default();
 
   return (
@@ -157,11 +178,13 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
                   {code && eventData && (
                     <Grid size={{ xs: 12 }}>
                       <EventBudgetManagementSection
-                        event={eventData}
+                        formValues={formik.values}
+                        persons={eventData.persons}
                         timeExpanded={timeBudgetExpanded}
                         setTimeExpanded={setTimeBudgetExpanded}
                         moneyExpanded={moneyBudgetExpanded}
                         setMoneyExpanded={setMoneyBudgetExpanded}
+                        onBudgetStateChange={handleBudgetStateChange}
                       />
                     </Grid>
                   )}
