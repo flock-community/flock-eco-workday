@@ -49,7 +49,23 @@ export function EventBudgetSummaryBanner({
   // Collapsed summary view for AccordionSummary
   if (isCollapsedMode) {
     const moneyPerPerson = participantCount > 0 ? totalBudget! / participantCount : 0;
-    const budgetTypeDisplay = defaultBudgetType || 'STUDY';
+
+    // Only show sections that have actual content
+    const hasTimeSection = defaultBudgetType !== null && defaultBudgetType !== undefined;
+    const hasMoneySection = hasBudget;
+
+    // Build summary text
+    let summaryText = `${participantCount} participant${participantCount !== 1 ? 's' : ''}`;
+
+    if (hasTimeSection && hasMoneySection) {
+      summaryText += ` × ${defaultHoursPerDay?.toFixed(0)}h/day ${defaultBudgetType}, ${currency}${moneyPerPerson.toFixed(0)}/person`;
+    } else if (hasMoneySection) {
+      summaryText += `, ${currency}${moneyPerPerson.toFixed(0)}/person`;
+    } else if (hasTimeSection) {
+      summaryText += ` × ${defaultHoursPerDay?.toFixed(0)}h/day ${defaultBudgetType}`;
+    } else {
+      summaryText += ' - no budget allocations for this event type';
+    }
 
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap', width: '100%', pr: 1 }}>
@@ -65,20 +81,26 @@ export function EventBudgetSummaryBanner({
           />
         )}
         <Typography variant="body2" sx={{ flexGrow: 1 }}>
-          {participantCount} participant{participantCount !== 1 ? 's' : ''} × {defaultHoursPerDay?.toFixed(0)}h/day {budgetTypeDisplay}, {currency}{moneyPerPerson.toFixed(0)}/person
+          {summaryText}
         </Typography>
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          <Chip
-            label={`Budget: ${currency}${totalBudget?.toLocaleString('nl-NL')}`}
-            size="small"
-            variant="outlined"
-          />
-          <Chip
-            label={`Allocated: ${currency}${totalAllocated.toLocaleString('nl-NL')}`}
-            size="small"
-            color={isOverBudget ? 'warning' : 'default'}
-          />
-        </Box>
+        {(hasMoneySection || hasTimeSection) && (
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            {hasBudget && (
+              <>
+                <Chip
+                  label={`Budget: ${currency}${totalBudget?.toLocaleString('nl-NL')}`}
+                  size="small"
+                  variant="outlined"
+                />
+                <Chip
+                  label={`Allocated: ${currency}${totalAllocated.toLocaleString('nl-NL')}`}
+                  size="small"
+                  color={isOverBudget ? 'warning' : 'default'}
+                />
+              </>
+            )}
+          </Box>
+        )}
       </Box>
     );
   }
