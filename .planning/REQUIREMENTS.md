@@ -35,7 +35,7 @@
 - [ ] **EVT-03**: Admin can assign per-participant money allocations
 - [ ] **EVT-04**: Smart defaults based on event type (FLOCK_HACK_DAY -> HackTime, CONFERENCE -> StudyTime)
 - [x] **EVT-05**: Event form budget/type changes live-update the budget management sections (single source of truth)
-- [ ] **EVT-06**: Budget management section uses progressive disclosure (start simple, expand on demand)
+- [x] **EVT-06**: Budget management section uses progressive disclosure (start simple, expand on demand)
 
 ### Contract Form
 
@@ -93,7 +93,7 @@
 | EVT-03 | Phase 7 | Pending |
 | EVT-04 | Phase 7 | Pending |
 | EVT-05 | Phase 2 | Complete |
-| EVT-06 | Phase 2 | Pending |
+| EVT-06 | Phase 2 | Complete |
 | CTR-01 | Phase 8 | Pending |
 | CTR-02 | Phase 5 | Pending |
 | DEV-01 | Phase 8 | Pending |
