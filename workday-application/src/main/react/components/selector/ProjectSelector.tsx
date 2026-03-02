@@ -19,7 +19,7 @@ type ProjectSelectorProps = FormControlProps & {
   multiple?: boolean;
   error?: string;
   refresh?: boolean;
-  onRefresh: (promise: Promise<void>) => void;
+  onRefresh?: (promise: Promise<void>) => void;
 };
 
 export function ProjectSelector({
@@ -39,7 +39,7 @@ export function ProjectSelector({
     const itemPromise = ProjectClient.all().then((res) => {
       setItems(res);
     });
-    onRefresh(itemPromise);
+    onRefresh?.(itemPromise);
   }, [onRefresh]);
 
   useEffect(() => {

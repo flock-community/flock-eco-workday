@@ -38,12 +38,6 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
   };
 
   const form = ({ values, setFieldValue }) => {
-    const handleRefresh = (promise) => {
-      promise.then((_res) => {
-        console.log(`Items in project selector updated`);
-      });
-    };
-
     return (
       <Form id={ASSIGNMENT_FORM_ID}>
         <Grid container spacing={1}>
@@ -89,7 +83,6 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
           </Grid>
           <Grid size={{ xs: 12 }}>
             <ProjectSelectorField
-              onRefresh={handleRefresh}
               refresh={doRefresh}
               name="projectCode"
               fullWidth
