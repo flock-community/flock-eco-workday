@@ -7,6 +7,11 @@ interface EventBudgetSummaryBannerProps {
   totalAllocated: number;
   totalTime?: number;
   currency?: string;
+  // New props for collapsed summary view
+  participantCount?: number;
+  defaultHoursPerDay?: number;
+  defaultBudgetType?: string | null;
+  hasUnsavedChanges?: boolean;
 }
 
 export function EventBudgetSummaryBanner({
@@ -14,11 +19,18 @@ export function EventBudgetSummaryBanner({
   totalAllocated,
   totalTime,
   currency = '€',
+  participantCount,
+  defaultHoursPerDay,
+  defaultBudgetType,
+  hasUnsavedChanges,
 }: EventBudgetSummaryBannerProps) {
   const hasBudget = totalBudget !== undefined && totalBudget > 0;
   const remaining = hasBudget ? totalBudget - totalAllocated : 0;
   const isOverBudget = hasBudget && totalAllocated > totalBudget;
   const isExact = hasBudget && totalAllocated === totalBudget;
+
+  // Detect if this is used as a collapsed summary (for AccordionSummary)
+  const isCollapsedMode = participantCount !== undefined;
 
   const getSeverity = () => {
     if (!hasBudget) return 'info';
@@ -34,6 +46,44 @@ export function EventBudgetSummaryBanner({
     return <Info />;
   };
 
+  // Collapsed summary view for AccordionSummary
+  if (isCollapsedMode) {
+    const moneyPerPerson = participantCount > 0 ? totalBudget! / participantCount : 0;
+    const budgetTypeDisplay = defaultBudgetType || 'STUDY';
+
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap', width: '100%', pr: 1 }}>
+        {hasUnsavedChanges && (
+          <Box
+            sx={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              bgcolor: 'warning.main',
+              flexShrink: 0,
+            }}
+          />
+        )}
+        <Typography variant="body2" sx={{ flexGrow: 1 }}>
+          {participantCount} participant{participantCount !== 1 ? 's' : ''} × {defaultHoursPerDay?.toFixed(0)}h/day {budgetTypeDisplay}, {currency}{moneyPerPerson.toFixed(0)}/person
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          <Chip
+            label={`Budget: ${currency}${totalBudget?.toLocaleString('nl-NL')}`}
+            size="small"
+            variant="outlined"
+          />
+          <Chip
+            label={`Allocated: ${currency}${totalAllocated.toLocaleString('nl-NL')}`}
+            size="small"
+            color={isOverBudget ? 'warning' : 'default'}
+          />
+        </Box>
+      </Box>
+    );
+  }
+
+  // Expanded detail view (original Alert-based design)
   return (
     <Alert severity={getSeverity()} icon={getIcon()} sx={{ mb: 2 }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
