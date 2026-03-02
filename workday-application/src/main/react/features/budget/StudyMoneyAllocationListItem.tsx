@@ -3,9 +3,13 @@ import {
   Card,
   Typography,
   CardHeader,
+  IconButton,
+  Stack,
 } from '@mui/material';
 import {
   Description,
+  Edit,
+  Delete,
 } from '@mui/icons-material';
 import {
   StudyMoneyBudgetAllocation,
@@ -27,14 +31,6 @@ export function StudyMoneyAllocationListItem({
                                                onDelete,
                                              }: StudyMoneyAllocationListItemProps) {
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('nl-NL', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   const handleEdit = () => {
     console.log('Edit StudyMoneyBudgetAllocation:', allocation.id);
     onEdit?.(allocation);
@@ -46,30 +42,39 @@ export function StudyMoneyAllocationListItem({
   };
 
   return (
-    <>
-      <Grid key={`workday-list-item-${allocation.id}`} size={{xs: 12}}>
-        <Card onClick={() => {
-        }}>
-          <CardHeader
-            title={
-              <>
-                {/*Free-form icon*/}
-                <Description color="action" sx={{mt: 0.5, mr: 2}}/>
-                {allocation.description ? allocation.description : 'empty'}
-              </>
-            }
-            subheader={
-              <Typography>
-                Date: {dayjs(allocation.date).format('DD-MM-YYYY')} | Total:{' '}
-                €
-                {allocation.amount.toLocaleString('nl-NL', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}              </Typography>
-            }
-          />
-        </Card>
-      </Grid>
-    </>
+    <Grid key={`workday-list-item-${allocation.id}`} size={{xs: 12}}>
+      <Card>
+        <CardHeader
+          title={
+            <>
+              <Description color="action" sx={{mt: 0.5, mr: 2}}/>
+              {allocation.description ? allocation.description : 'empty'}
+            </>
+          }
+          subheader={
+            <Typography>
+              Date: {dayjs(allocation.dateFrom).format('DD-MM-YYYY')} | Total:{' '}
+              €
+              {allocation.amount.toLocaleString('nl-NL', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </Typography>
+          }
+          action={
+            hasWritePermission ? (
+              <Stack direction="row" spacing={0.5}>
+                <IconButton size="small" onClick={handleEdit} aria-label="edit">
+                  <Edit fontSize="small" />
+                </IconButton>
+                <IconButton size="small" onClick={handleDelete} aria-label="delete">
+                  <Delete fontSize="small" />
+                </IconButton>
+              </Stack>
+            ) : undefined
+          }
+        />
+      </Card>
+    </Grid>
   );
 }

@@ -4,11 +4,9 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Container,
   FormControl,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   Stack,
   Typography,
@@ -100,95 +98,76 @@ export function BudgetAllocationFeature({
       <CardHeader
         title="Budget Allocation"
         action={
-          <Button onClick={() => {
-          }}>
-            <AddIcon/> Add Study Money Budget Allocation
-          </Button>
+          <Stack direction="row" spacing={2} alignItems="center">
+            {/* Year selector */}
+            <FormControl size="small" sx={{minWidth: 100}}>
+              <InputLabel>Year</InputLabel>
+              <Select
+                value={year}
+                label="Year"
+                onChange={(e) => setYear(e.target.value as number)}
+              >
+                {yearOptions.map((y) => (
+                  <MenuItem key={y} value={y}>
+                    {y}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Person selector (admin only) */}
+            {isAdmin && (
+              <FormControl size="small" sx={{minWidth: 200}}>
+                <InputLabel>Person</InputLabel>
+                <Select
+                  value={selectedPersonId}
+                  label="Person"
+                  onChange={(e) => setSelectedPersonId(e.target.value)}
+                >
+                  {allPersonsBudgetDetails.map((person) => (
+                    <MenuItem key={person.personId} value={person.personId}>
+                      {person.personName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon/>}
+              size="small"
+            >
+              Add Study Money
+            </Button>
+          </Stack>
         }
       />
       <CardContent>
-        <Container maxWidth="lg" sx={{py: 4}}>
-          {/* Header with filters */}
-          <Paper sx={{p: 3, mb: 3}}>
-            <Stack
-              direction={{xs: 'column', sm: 'row'}}
-              spacing={2}
-              alignItems={{xs: 'stretch', sm: 'center'}}
-              justifyContent="space-between"
-            >
-              <Typography variant="h4">Budget Allocation</Typography>
+        {/* Budget summary cards */}
+        {!loading && <BudgetSummaryCards summary={budgetDetails.summary}/>}
 
-              <Stack direction={{xs: 'column', sm: 'row'}} spacing={2}>
-                {/* Year selector */}
-                <FormControl sx={{minWidth: 120}}>
-                  <InputLabel>Year</InputLabel>
-                  <Select
-                    value={year}
-                    label="Year"
-                    onChange={(e) => setYear(e.target.value as number)}
-                  >
-                    {yearOptions.map((y) => (
-                      <MenuItem key={y} value={y}>
-                        {y}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+        {/* Allocation details */}
+        {!loading && (
+          <BudgetAllocationList
+            allocations={budgetDetails.allocations}
+            availableStudyMoney={budgetDetails.summary.studyMoney.available}
+            personName={budgetDetails.personName}
+            hasWritePermission={isAdmin}
+            onCreateStudyMoney={handleCreateStudyMoney}
+            onEditStudyMoney={handleEditStudyMoney}
+            onDeleteStudyMoney={handleDeleteStudyMoney}
+          />
+        )}
 
-                {/* Person selector (admin only) */}
-                {isAdmin && (
-                  <FormControl sx={{minWidth: 200}}>
-                    <InputLabel>Person</InputLabel>
-                    <Select
-                      variant="standard"
-                      value={selectedPersonId}
-                      label="Person"
-                      onChange={(e) => setSelectedPersonId(e.target.value)}
-                    >
-                      {allPersonsBudgetDetails.map((person) => (
-                        <MenuItem key={person.personId} value={person.personId}>
-                          {person.personName}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                )}
-              </Stack>
-            </Stack>
-
-            {/* Person info */}
-            <Box sx={{mt: 2}}>
-              <Typography variant="subtitle1" color="text.secondary">
-                {budgetDetails.personName}
-              </Typography>
-            </Box>
-          </Paper>
-
-          {/* Budget summary cards */}
-          {!loading && <BudgetSummaryCards summary={budgetDetails.summary}/>}
-
-          {/* Allocation details */}
-          {!loading && (
-            <BudgetAllocationList
-              allocations={budgetDetails.allocations}
-              availableStudyMoney={budgetDetails.summary.studyMoney.available}
-              personName={budgetDetails.personName}
-              hasWritePermission={isAdmin}
-              onCreateStudyMoney={handleCreateStudyMoney}
-              onEditStudyMoney={handleEditStudyMoney}
-              onDeleteStudyMoney={handleDeleteStudyMoney}
-            />
-          )}
-
-          {/* Loading state */}
-          {loading && (
-            <Box sx={{textAlign: 'center', py: 4}}>
-              <Typography variant="body1" color="text.secondary">
-                Loading budget details...
-              </Typography>
-            </Box>
-          )}
-        </Container>
+        {/* Loading state */}
+        {loading && (
+          <Box sx={{textAlign: 'center', py: 4}}>
+            <Typography variant="body1" color="text.secondary">
+              Loading budget details...
+            </Typography>
+          </Box>
+        )}
       </CardContent>
     </Card>
   )

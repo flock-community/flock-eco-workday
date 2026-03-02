@@ -16,15 +16,27 @@ interface BudgetCardProps {
   color?: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
 }
 
+function getStatusColor(percentage: number, isOverBudget: boolean) {
+  if (isOverBudget) return 'error' as const;
+  if (percentage > 75) return 'warning' as const;
+  return 'success' as const;
+}
+
+function getStatusBgTint(percentage: number, isOverBudget: boolean): string {
+  if (isOverBudget) return 'rgba(211, 47, 47, 0.04)';
+  if (percentage > 75) return 'rgba(237, 108, 2, 0.04)';
+  return 'rgba(46, 125, 50, 0.03)';
+}
+
 export function BudgetCard({
   title,
   budgetItem,
   unit,
-  color = 'primary',
 }: Readonly<BudgetCardProps>) {
   const { budget, used, available } = budgetItem;
   const percentage = budget > 0 ? (used / budget) * 100 : 0;
   const isOverBudget = available < 0;
+  const statusColor = getStatusColor(percentage, isOverBudget);
 
   const formatValue = (value: number): string => {
     if (unit === '€') {
@@ -37,57 +49,49 @@ export function BudgetCard({
   };
 
   return (
-    <Card sx={{ height: '100%' }}>
+    <Card
+      sx={{
+        height: '100%',
+        bgcolor: getStatusBgTint(percentage, isOverBudget),
+        transition: 'background-color 0.3s ease',
+      }}
+    >
       <CardContent>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
           {title}
         </Typography>
 
         <Stack spacing={2}>
-          {/* Budget values */}
+          {/* Hero: Available amount */}
           <Box>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="baseline"
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              color={isOverBudget ? 'error.main' : 'success.main'}
+              sx={{ lineHeight: 1.2 }}
             >
-              <Typography variant="body2" color="text.secondary">
-                Budget
-              </Typography>
-              <Typography variant="h6">{formatValue(budget)}</Typography>
-            </Box>
+              {formatValue(available)}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              available
+            </Typography>
+          </Box>
 
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="baseline"
+          {/* Secondary: Budget / Used */}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="baseline"
+          >
+            <Typography variant="body2" color="text.secondary">
+              Budget: {formatValue(budget)}
+            </Typography>
+            <Typography
+              variant="body2"
+              color={isOverBudget ? 'error.main' : 'text.secondary'}
             >
-              <Typography variant="body2" color="text.secondary">
-                Used
-              </Typography>
-              <Typography
-                variant="h6"
-                color={isOverBudget ? 'error' : 'inherit'}
-              >
-                {formatValue(used)}
-              </Typography>
-            </Box>
-
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="baseline"
-            >
-              <Typography variant="body2" color="text.secondary">
-                Available
-              </Typography>
-              <Typography
-                variant="h6"
-                color={isOverBudget ? 'error' : 'success.main'}
-              >
-                {formatValue(available)}
-              </Typography>
-            </Box>
+              Used: {formatValue(used)}
+            </Typography>
           </Box>
 
           {/* Progress bar */}
@@ -95,8 +99,15 @@ export function BudgetCard({
             <LinearProgress
               variant="determinate"
               value={Math.min(percentage, 100)}
-              color={isOverBudget ? 'error' : color}
-              sx={{ height: 8, borderRadius: 1 }}
+              color={statusColor}
+              sx={{
+                height: 10,
+                borderRadius: 5,
+                bgcolor: 'action.hover',
+                '& .MuiLinearProgress-bar': {
+                  borderRadius: 5,
+                },
+              }}
             />
             <Typography
               variant="caption"

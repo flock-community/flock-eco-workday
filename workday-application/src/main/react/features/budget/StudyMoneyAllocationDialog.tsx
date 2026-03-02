@@ -36,7 +36,7 @@ export function StudyMoneyAllocationDialog({
 }: StudyMoneyAllocationDialogProps) {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState<number | ''>('');
-  const [date, setDate] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
   const [files, setFiles] = useState<File[]>([]);
 
   const isEdit = !!allocation;
@@ -47,13 +47,13 @@ export function StudyMoneyAllocationDialog({
     if (allocation) {
       setDescription(allocation.description || '');
       setAmount(allocation.amount);
-      setDate(allocation.date);
+      setDateFrom(allocation.dateFrom);
       setFiles([]);
     } else {
       // Reset form for new allocation
       setDescription('');
       setAmount('');
-      setDate(new Date().toISOString().split('T')[0]);
+      setDateFrom(new Date().toISOString().split('T')[0]);
       setFiles([]);
     }
   }, [allocation, open]);
@@ -62,7 +62,7 @@ export function StudyMoneyAllocationDialog({
     const allocationData: Partial<StudyMoneyBudgetAllocation> = {
       description,
       amount: typeof amount === 'number' ? amount : 0,
-      date,
+      dateFrom,
       type: 'StudyMoney',
     };
 
@@ -87,7 +87,7 @@ export function StudyMoneyAllocationDialog({
     description.trim() !== '' &&
     typeof amount === 'number' &&
     amount > 0 &&
-    date !== '';
+    dateFrom !== '';
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -151,8 +151,8 @@ export function StudyMoneyAllocationDialog({
           <TextField
             label="Date"
             type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
             fullWidth
             required
             InputLabelProps={{ shrink: true }}

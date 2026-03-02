@@ -82,77 +82,50 @@ export function EventAllocationListItem({
                                           dateTo,
                                         }: EventAllocationListItemProps) {
   const [expanded, setExpanded] = useState({} satisfies Record<string, boolean>);
-  // Group allocations by person
-  const personAllocations = allocations.reduce((acc, allocation) => {
-    const personId = allocation.personId || 'flock';
-    if (!acc[personId]) {
-      acc[personId] = {
-        personName: allocation.personName || 'Flock Company',
-        allocations: [],
-      };
-    }
-    acc[personId].allocations.push(allocation);
-    return acc;
-  }, {} as Record<string, { personName: string; allocations: BudgetAllocation[] }>);
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('nl-NL', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const handleNavigateToEvent = () => {
-    // In real implementation, this would navigate to the event page
-    console.log('Navigate to event:', eventCode);
-    // Example: navigate(`/events/${eventCode}`);
-  };
 
   return (
-    <>
-      <Grid key={`workday-list-item-${eventCode}`} size={{xs: 12}}>
-        <Card onClick={() => {
-        }}>
-          <CardHeader
-            title={<>
-              <Event sx={{mt: 0.5, mr: 2}}/>
-              {eventName}</>}
-            subheader={
-              <Typography>
-                Dates: {dayjs(dateFrom).format('DD-MM-YYYY')} - {dayjs(dateTo).format('DD-MM-YYYY')}
-              </Typography>
-            }
-          />
-          <List>
-            {allocations
-              .toSorted((a, b) => a.type === 'StudyMoney' ? -1 : 0)
-              .map(allocation => {
-                return (
-                  <ListItem key={allocation.id}>
-                    <Grid container spacing={1} size={{xs: 12}}>
-                      {/* Allocation details */}
-                      {(allocation.type === 'StudyTime' || allocation.type === 'HackTime') &&
-                        getAccordion(expanded, setExpanded, allocation)
-                      }
-                      {allocation.type === 'StudyMoney' && (
-                        <>
-                          <Grid>
-                            <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                              <AttachMoney fontSize="small" color="action"/>
-                              <Typography variant="subtitle1" fontWeight="medium">
-                                Study Money:{' '}{allocation.amount.toLocaleString('nl-NL')}
-                              </Typography>
-                            </Box>
-                          </Grid>
-                        </>
-                      )}
-                    </Grid>
-                  </ListItem>)
-              })}
-          </List>
-        </Card>
-      </Grid>
-    </>
+    <Grid key={`workday-list-item-${eventCode}`} size={{xs: 12}}>
+      <Card>
+        <CardHeader
+          title={<>
+            <Event sx={{mt: 0.5, mr: 2}}/>
+            {eventName}</>}
+          subheader={
+            <Typography>
+              Dates: {dayjs(dateFrom).format('DD-MM-YYYY')} - {dayjs(dateTo).format('DD-MM-YYYY')}
+            </Typography>
+          }
+        />
+        <List>
+          {allocations
+            .toSorted((a, b) => {
+              // Time allocations first, then money
+              const typeOrder = {HackTime: 0, StudyTime: 1, StudyMoney: 2};
+              return (typeOrder[a.type] ?? 99) - (typeOrder[b.type] ?? 99);
+            })
+            .map(allocation => {
+              return (
+                <ListItem key={allocation.id}>
+                  <Grid container spacing={1} size={{xs: 12}}>
+                    {/* Allocation details */}
+                    {(allocation.type === 'StudyTime' || allocation.type === 'HackTime') &&
+                      getAccordion(expanded, setExpanded, allocation)
+                    }
+                    {allocation.type === 'StudyMoney' && (
+                      <Grid>
+                        <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                          <AttachMoney fontSize="small" color="action"/>
+                          <Typography variant="subtitle1" fontWeight="medium">
+                            Study Money:{' '}{allocation.amount.toLocaleString('nl-NL')}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    )}
+                  </Grid>
+                </ListItem>)
+            })}
+        </List>
+      </Card>
+    </Grid>
   );
 }
