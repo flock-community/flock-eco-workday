@@ -1,9 +1,9 @@
 ---
-status: diagnosed
+status: complete
 phase: 02-event-budget-flow-redesign
-source: [02-01-SUMMARY.md, 02-02-SUMMARY.md]
+source: [02-01-SUMMARY.md, 02-02-SUMMARY.md, 02-03-SUMMARY.md]
 started: 2026-03-02T12:00:00Z
-updated: 2026-03-02T12:05:00Z
+updated: 2026-03-02T12:12:00Z
 ---
 
 ## Current Test
@@ -36,85 +36,61 @@ result: pass
 expected: Change the default time allocation type (event type). Untouched participant time allocations should update to the new type. Manually-edited participant time allocations should be preserved.
 result: pass
 
-### 7. Participant add/remove reactivity
-expected: Add a new participant to the event. They should appear in the budget sections with default allocations. Remove a participant — they should disappear from the budget sections.
+### 7. Participant add/remove reactivity (retest)
+expected: Remove a participant — they disappear from money budget and budget redistributes among remaining untouched participants. Add a participant — they appear with default allocations.
 result: issue
-reported: "Removing persons from an event doesn't remove them from the money budget, nor is redistribution happening."
-severity: major
+reported: "Removal works fine. However, redistribution doesn't respect dirty tracking. Example: 4 persons, 1 manually set to 50%. Remove someone — other two get 1/3 each instead of splitting the remainder. User decision: simplify to Option C — no auto-redistribution. Removed person's allocation disappears, show allocated vs total indicator, admin adjusts manually."
+severity: minor
 
 ### 8. Unsaved changes indicator
 expected: Make a change to any budget allocation. A small colored dot (warning indicator) should appear on the collapsed summary banner, signaling unsaved changes even when the section is collapsed.
 result: pass
 
-### 8a. Allocation type defaults (found during test 8)
-expected: Time budget allocation should not appear for events with 'None' time allocation type. Money budget allocation should only default for Flock hack day and Conference type events, not the other two.
-result: issue
-reported: "Time budget allocation still happens for events with 'None' default time allocation. This should not be the case. Ideally we'd also have similar behaviour when it comes to money budget allocation. This should only occur for Flock hack day and Conference type events (by default), not for the other two."
-severity: major
+### 8a. Conditional section visibility (retest)
+expected: For a GENERAL_EVENT or FLOCK_COMMUNITY_DAY event, the time and money allocation sections should NOT appear. For a FLOCK_HACK_DAY or CONFERENCE event, both sections should appear.
+result: pass
 
 ### 9. Unsaved changes warning on close
 expected: Make a change to budget allocations, then try to close the EventDialog. A confirmation dialog should appear warning about unsaved changes.
 result: pass
 
-### 10. Guidance note for missing allocation type
-expected: Set the event's default time allocation type to None/empty. An info alert should appear with guidance about setting the event type.
-result: issue
-reported: "Info alert does appear. However, the accordion below suggests there are default allocations on the study budget. This should not be the case when allocation type is None."
-severity: major
+### 10. No STUDY defaults when type is None (retest)
+expected: Set the event's default time allocation type to None/empty. The time allocation section should be hidden entirely — no accordion, no STUDY defaults. The summary banner should not mention STUDY.
+result: pass
 
 ## Summary
 
 total: 12
-passed: 8
-issues: 3
+passed: 10
+issues: 1
 pending: 0
 skipped: 0
 
 ## Gaps
 
-- truth: "Removing a participant from the event should remove them from the money budget and redistribute amounts"
+- truth: "Money budget should not auto-redistribute on participant changes. Show allocated vs total indicator instead, let admin adjust manually."
   status: failed
-  reason: "User reported: Removing persons from an event doesn't remove them from the money budget, nor is redistribution happening."
-  severity: major
+  reason: "User reported: Redistribution doesn't respect dirty tracking. Simplify to no auto-redistribution (Option C). Remove person's allocation disappears, show budget gap, admin adjusts."
+  severity: minor
   test: 7
-  root_cause: "Two competing useEffect hooks in EventBudgetManagementDialog.tsx both fire when participantIds changes; Effect 2 (budget recalculation) reads stale moneyParticipants from closure and overwrites Effect 1's correctly-filtered result, causing removed persons to reappear with no redistribution."
+  root_cause: "Current redistribution logic splits total among untouched participants, ignoring locked amounts. Design decision: remove auto-redistribution entirely for money allocations."
   artifacts:
     - path: "workday-application/src/main/react/features/event/EventBudgetManagementDialog.tsx"
-      issue: "Effect 1 (line ~74) correctly filters but Effect 2 (line ~140) overwrites with stale data"
+      issue: "Remove redistribution logic from merged useEffect, add allocated vs total indicator"
   missing:
-    - "Merge the two useEffects into a single effect that filters participants AND redistributes budget in one setMoneyParticipants call"
-  debug_session: ".planning/debug/event-budget-person-removal.md"
+    - "Remove money redistribution logic — when participant removed, just remove their allocation"
+    - "Remove money redistribution on budget total change — keep existing per-person amounts"
+    - "Add 'EUR X allocated / EUR Y total' indicator to money section header or summary banner"
+  debug_session: ""
 
-- truth: "Time/money budget allocation sections should only appear for relevant event types (time: only when allocation type is set; money: only for Flock hack day and Conference)"
-  status: failed
-  reason: "User reported: Time budget allocation still happens for events with 'None' default time allocation. Money budget allocation should only occur for Flock hack day and Conference type events by default, not for the other two."
+- truth: "Time/money budget allocation sections should only appear for relevant event types"
+  status: resolved
+  reason: "Fixed in plan 02-03"
   severity: major
   test: 8a
-  root_cause: "EventBudgetManagementSection renders both time and money accordions unconditionally with zero conditional rendering, and falls back to BudgetAllocationType.STUDY via || operator when defaultTimeAllocationType is null."
-  artifacts:
-    - path: "workday-application/src/main/react/features/event/EventBudgetManagementDialog.tsx"
-      issue: "Line ~70: || BudgetAllocationType.STUDY fallback is wrong; lines ~350-419: both accordions rendered unconditionally; formValues interface missing event type field"
-    - path: "workday-application/src/main/react/features/event/EventBudgetSummaryBanner.tsx"
-      issue: "Line ~52: another STUDY fallback; banner always shows budget type even when None"
-    - path: "workday-application/src/main/react/utils/mappings.ts"
-      issue: "Correctly maps GENERAL_EVENT and FLOCK_COMMUNITY_DAY to null (no changes needed)"
-  missing:
-    - "Add event type to formValues interface"
-    - "Wrap time accordion in conditional: only render when defaultTimeAllocationType is non-null"
-    - "Wrap money accordion in conditional: only render for FLOCK_HACK_DAY and CONFERENCE event types"
-    - "Remove || BudgetAllocationType.STUDY fallback, handle null explicitly"
-    - "Update summary banner to not show time info when type is None"
-  debug_session: ".planning/debug/budget-section-visibility.md"
 
 - truth: "When allocation type is None, time allocation section should show no default allocations"
-  status: failed
-  reason: "User reported: Info alert does appear but accordion below suggests there are default allocations on the study budget. This should not be the case when allocation type is None."
+  status: resolved
+  reason: "Fixed in plan 02-03"
   severity: major
   test: 10
-  root_cause: "Same root cause as gap 2: || BudgetAllocationType.STUDY fallback on line ~70 of EventBudgetManagementDialog.tsx causes null/None allocation type to resolve to STUDY, and the time accordion renders unconditionally showing STUDY defaults."
-  artifacts:
-    - path: "workday-application/src/main/react/features/event/EventBudgetManagementDialog.tsx"
-      issue: "STUDY fallback + unconditional time accordion rendering"
-  missing:
-    - "Same fix as gap 2 — conditional rendering and removing STUDY fallback will resolve this"
-  debug_session: ".planning/debug/budget-section-visibility.md"
