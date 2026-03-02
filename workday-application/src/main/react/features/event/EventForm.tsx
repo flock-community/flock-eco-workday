@@ -17,7 +17,7 @@ export const EVENT_FORM_ID = 'event-form';
 
 const now = dayjs();
 
-const schema = Yup.object().shape({
+export const eventFormSchema = Yup.object().shape({
   description: Yup.string().required('Description is required').default(''),
   from: Yup.date().required('From date is required').default(now),
   to: Yup.date().required('To date is required').default(now),
@@ -38,7 +38,7 @@ type EventFormFieldsProps = {
   setFieldValue: FormikProps<any>['setFieldValue'];
 };
 
-function EventFormFields({values, setFieldValue}: EventFormFieldsProps) {
+export function EventFormFields({values, setFieldValue}: EventFormFieldsProps) {
   const [resetHours, setResetHours] = useState<boolean>(false);
 
   const handleEventTypeChange = (newValue: string) => {
@@ -139,14 +139,14 @@ export function EventForm({value, onSubmit}: EventFormProps) {
     });
   };
 
-  const init = {...schema.default(), ...mutatePeriod(value)};
+  const init = {...eventFormSchema.default(), ...mutatePeriod(value)};
   return (
     value && (
       <Formik
         enableReinitialize
         initialValues={init}
         onSubmit={handleSubmit}
-        validationSchema={schema}
+        validationSchema={eventFormSchema}
       >
         {({values, setFieldValue}) => (
           <EventFormFields values={values} setFieldValue={setFieldValue}/>
