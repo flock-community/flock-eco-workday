@@ -1,9 +1,25 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+current_phase: Phase 2 (Event Budget Flow Redesign)
+current_plan: 02 of 02
+status: executing
+last_updated: "2026-03-02T13:28:37.854Z"
+progress:
+  total_phases: 1
+  completed_phases: 0
+  total_plans: 2
+  completed_plans: 1
+  percent: 5
+---
+
 # Project State: Budget Allocations for Flock Workday
 
 **Last Updated:** 2026-03-02
 **Current Phase:** Phase 2 (Event Budget Flow Redesign)
-**Current Plan:** Not started
-**Status:** Ready to plan Phase 2
+**Current Plan:** 02 of 02
+**Status:** In progress
 
 ## Project Reference
 
@@ -14,8 +30,8 @@
 ## Current Position
 
 **Phase:** 2 of 8 - Event Budget Flow Redesign
-**Plan:** Not started
-**Status:** Awaiting plan generation
+**Plan:** 02 of 02 (Plan 01 complete)
+**Status:** In progress
 **Progress:** ▓▓▓░░░░░░░░░░░░░░░░░ 12.5% (1/8 phases complete - Phase 1 frontend prototype foundation)
 
 ### Phase 2 Objective
@@ -65,9 +81,13 @@ Event form and budget management sections work as a cohesive, intuitive single f
 4. **2026-03-02**: Use LAZY fetch for element collections with explicit JOIN FETCH queries — rationale: prevent N+1 query explosion observed in Expense domain
 5. **2026-03-02**: Unified Wirespec response type with discriminator + separate input types per allocation subtype — rationale: clean API with type-safe boundaries
 6. **2026-03-02**: Per-day type override on DailyTimeAllocation — rationale: single event can mix hack/study days (rare but valuable flexibility)
+7. **2026-03-02**: Lifted Formik state to EventDialog to enable reactive budget sections — rationale: single source of truth for form values enabling budget sections to auto-update
+8. **2026-03-02**: Per-participant dirty tracking using Set<string> — rationale: O(1) lookup efficiency when preserving manual edits during reactive updates
 
 ### Active Todos
-- [ ] Generate Phase 2 plan (event budget flow redesign)
+- [x] Generate Phase 2 plan (event budget flow redesign) — Complete
+- [x] Execute Phase 2 Plan 01 (lift Formik state) — Complete
+- [ ] Execute Phase 2 Plan 02 (progressive disclosure)
 - [ ] Verify Expense domain discriminator strategy (DTYPE vs. type field) before implementing Phase 3
 - [ ] Review Liquibase changeset ordering pattern from db.changelog-002-expenses.yaml before Phase 4
 
@@ -91,21 +111,23 @@ None logged yet.
 | 8. Contract Form & Dev Data | Not started | CTR-01, DEV-01 | 4 criteria |
 
 **Overall Progress:** 12.5% (Phase 1 complete, 7 phases remaining)
+| Phase 02 P01 | 7 | 2 tasks | 3 files |
 
 ## Session Continuity
 
 ### Last Session Summary
-- Initialized GSD workflow for budget allocations feature
-- Created PROJECT.md, REQUIREMENTS.md, research/SUMMARY.md
-- Generated ROADMAP.md with 7 phases (Phase 1 already complete)
-- Revised ROADMAP.md: Added Phase 2 (Event Budget Flow Redesign), renumbered phases 3-8
-- Added new requirements EVT-05 and EVT-06
-- Updated STATE.md to reflect Phase 1.6 pending work as new Phase 2
+- Executed Phase 2 Plan 01: Lift Formik State and Wire Budget Sections
+- Lifted Formik state to EventDialog (2 tasks, 2 commits, 7 minutes)
+- EventBudgetManagementSection now derives from formValues (single source of truth)
+- Added per-participant dirty tracking for preserving manual edits
+- Removed individual save buttons, consolidated to single dialog-level save
+- Created 02-01-SUMMARY.md documenting implementation
+- EVT-05 satisfied: budget sections now reactively update from form values
 
 ### Next Session
-Start with: `/gsd:plan-phase 2`
+Start with: `/gsd:execute-plan 02-02`
 
-This will decompose Phase 2 (Event Budget Flow Redesign) into executable plans for frontend refactoring.
+This will execute Phase 2 Plan 02 (progressive disclosure) to address "too cluttered UI" problem.
 
 ### Context for Next Agent
 - Phase 1 (frontend prototype foundation) complete with 15 commits on feat/hack-and-study-budget-allocations branch
