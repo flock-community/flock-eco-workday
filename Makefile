@@ -38,6 +38,6 @@ yolo :
 # Run backend + frontend in Docker and execute Playwright tests, showing only test output
 verify:
 	@docker compose down 2>/dev/null || true
-	@rm -rf database/
+	@rm -rf database/ workday-application/database/
 	@docker compose up -d --wait backend frontend
 	@docker compose run --rm playwright; EXIT_CODE=$$?; docker compose down; exit $$EXIT_CODE
