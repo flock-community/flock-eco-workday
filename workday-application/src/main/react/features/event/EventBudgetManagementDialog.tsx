@@ -23,6 +23,7 @@ import { BudgetAllocationType } from '../budget/mocks/BudgetAllocationTypes';
 import type { Period } from '../period/Period';
 import Grid from "@mui/material/Grid";
 import { EventBudgetSummaryBanner } from './EventBudgetSummaryBanner';
+import { EventType } from '../../clients/EventClient';
 
 interface EventBudgetManagementSectionProps {
   formValues: {
@@ -32,6 +33,7 @@ interface EventBudgetManagementSectionProps {
     from: Dayjs;
     to: Dayjs;
     days: number[];
+    type: string;
   };
   persons: Array<{ uuid: string; firstname: string; lastname: string }>;
   timeExpanded?: boolean;
@@ -67,8 +69,14 @@ export function EventBudgetManagementSection({
 
   // Derive values from formValues (single source of truth)
   const totalBudget = formValues.budget;
-  const defaultBudgetType = (formValues.defaultTimeAllocationType as BudgetAllocationType) || BudgetAllocationType.STUDY;
+  const defaultBudgetType = formValues.defaultTimeAllocationType
+    ? (formValues.defaultTimeAllocationType as BudgetAllocationType)
+    : null;
   const participantIds = formValues.personIds;
+
+  // Determine section visibility
+  const showTimeSection = defaultBudgetType !== null;
+  const showMoneySection = formValues.type === EventType.FLOCK_HACK_DAY || formValues.type === EventType.CONFERENCE;
 
   // Merged effect: participant sync + budget redistribution (atomic state update)
   useEffect(() => {
@@ -196,6 +204,8 @@ export function EventBudgetManagementSection({
 
   // Helper: Generate time allocation summary
   const getTimeSummary = (): string => {
+    if (!defaultBudgetType) return 'No allocations';
+
     const participantsWithExceptions = timeParticipants.filter(
       (p) => p.studyPeriod !== null || p.hackPeriod !== null
     );
@@ -334,85 +344,96 @@ export function EventBudgetManagementSection({
       </AccordionSummary>
 
       <AccordionDetails sx={{ p: 2 }}>
-        {!formValues.defaultTimeAllocationType && (
+        {!showTimeSection && !showMoneySection && (
           <Alert severity="info" icon={<Info />} sx={{ mb: 2 }}>
             <Typography variant="body2">
-              No default allocation type set. Set the event type above to enable auto-fill for time allocations.
+              No budget allocations for this event type. Time allocations require a default allocation type. Money allocations are available for Hack Day and Conference events.
+            </Typography>
+          </Alert>
+        )}
+        {!showTimeSection && showMoneySection && (
+          <Alert severity="info" icon={<Info />} sx={{ mb: 2 }}>
+            <Typography variant="body2">
+              No default allocation type set. Set the event type above to enable time allocations.
             </Typography>
           </Alert>
         )}
 
         <Grid container spacing={1}>
-          <Grid size={{xs: 12}}>
-            <Accordion
-              expanded={timeExpanded}
-              onChange={(_, isExpanded) => setTimeExpanded?.(isExpanded)}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMore/>}
-                sx={{
-                  bgcolor: 'action.hover',
-                  '&:hover': {bgcolor: 'action.selected'},
-                }}
+          {showTimeSection && (
+            <Grid size={{xs: 12}}>
+              <Accordion
+                expanded={timeExpanded}
+                onChange={(_, isExpanded) => setTimeExpanded?.(isExpanded)}
               >
-                <Box sx={{display: 'flex', flexDirection: 'column', gap: 0.5, width: '100%'}}>
-                  <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                    <AccountBalance color="action"/>
-                    <Typography variant="subtitle1" fontWeight="medium">
-                      Time Budget Allocations
+                <AccordionSummary
+                  expandIcon={<ExpandMore/>}
+                  sx={{
+                    bgcolor: 'action.hover',
+                    '&:hover': {bgcolor: 'action.selected'},
+                  }}
+                >
+                  <Box sx={{display: 'flex', flexDirection: 'column', gap: 0.5, width: '100%'}}>
+                    <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                      <AccountBalance color="action"/>
+                      <Typography variant="subtitle1" fontWeight="medium">
+                        Time Budget Allocations
+                      </Typography>
+                    </Box>
+                    <Typography variant="caption" color="text.secondary">
+                      {getTimeSummary()}
                     </Typography>
                   </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    {getTimeSummary()}
-                  </Typography>
-                </Box>
-              </AccordionSummary>
+                </AccordionSummary>
 
-              <AccordionDetails sx={{p: 3}}>
-                <EventTimeAllocationSection
-                  eventDates={eventDates}
-                  defaultHoursPerDay={defaultHoursPerDay}
-                  defaultBudgetType={defaultBudgetType}
-                  participants={timeParticipants}
-                  onParticipantsChange={handleTimeParticipantsChange}
-                />
-              </AccordionDetails>
-            </Accordion>
-          </Grid>
-          <Grid size={{xs: 12}}>
-            <Accordion
-              expanded={moneyExpanded}
-              onChange={(_, isExpanded) => setMoneyExpanded?.(isExpanded)}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMore/>}
-                sx={{
-                  bgcolor: 'action.hover',
-                  '&:hover': {bgcolor: 'action.selected'},
-                }}
+                <AccordionDetails sx={{p: 3}}>
+                  <EventTimeAllocationSection
+                    eventDates={eventDates}
+                    defaultHoursPerDay={defaultHoursPerDay}
+                    defaultBudgetType={defaultBudgetType!}
+                    participants={timeParticipants}
+                    onParticipantsChange={handleTimeParticipantsChange}
+                  />
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+          )}
+          {showMoneySection && (
+            <Grid size={{xs: 12}}>
+              <Accordion
+                expanded={moneyExpanded}
+                onChange={(_, isExpanded) => setMoneyExpanded?.(isExpanded)}
               >
-                <Box sx={{display: 'flex', flexDirection: 'column', gap: 0.5, width: '100%'}}>
-                  <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                    <AccountBalance color="action"/>
-                    <Typography variant="subtitle1" fontWeight="medium">
-                      Money Budget Allocations
+                <AccordionSummary
+                  expandIcon={<ExpandMore/>}
+                  sx={{
+                    bgcolor: 'action.hover',
+                    '&:hover': {bgcolor: 'action.selected'},
+                  }}
+                >
+                  <Box sx={{display: 'flex', flexDirection: 'column', gap: 0.5, width: '100%'}}>
+                    <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                      <AccountBalance color="action"/>
+                      <Typography variant="subtitle1" fontWeight="medium">
+                        Money Budget Allocations
+                      </Typography>
+                    </Box>
+                    <Typography variant="caption" color="text.secondary">
+                      {getMoneySummary()}
                     </Typography>
                   </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    {getMoneySummary()}
-                  </Typography>
-                </Box>
-              </AccordionSummary>
+                </AccordionSummary>
 
-              <AccordionDetails sx={{p: 3}}>
-                <EventMoneyAllocationSection
-                  totalBudget={totalBudget}
-                  participants={moneyParticipants}
-                  onParticipantsChange={handleMoneyParticipantsChange}
-                />
-              </AccordionDetails>
-            </Accordion>
-          </Grid>
+                <AccordionDetails sx={{p: 3}}>
+                  <EventMoneyAllocationSection
+                    totalBudget={totalBudget}
+                    participants={moneyParticipants}
+                    onParticipantsChange={handleMoneyParticipantsChange}
+                  />
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+          )}
         </Grid>
       </AccordionDetails>
     </Accordion>
