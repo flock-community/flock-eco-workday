@@ -78,38 +78,42 @@ export function EventBudgetManagementSection({
   const showTimeSection = defaultBudgetType !== null;
   const showMoneySection = formValues.type === EventType.FLOCK_HACK_DAY || formValues.type === EventType.CONFERENCE;
 
-  // Merged effect: participant sync + budget redistribution (atomic state update)
+  // Participant sync effect: add/remove participants without auto-redistribution
+  // Money: new participants get equal share of remaining budget, existing keep their amounts
+  // Admin adjusts manually — "allocated vs total" indicator shows the gap
   useEffect(() => {
     setMoneyParticipants(prev => {
       const participantCount = participantIds.length;
       if (participantCount === 0) return [];
 
-      const defaultMoneyShare = Math.floor((totalBudget / participantCount) * 100) / 100;
-
       // Get current participants as a map
       const currentMap = new Map(prev.map(p => [p.personId, p]));
 
-      // Build new participant list
+      // Calculate default share for NEW participants only
+      const existingTotal = participantIds
+        .filter(id => currentMap.has(id))
+        .reduce((sum, id) => sum + currentMap.get(id)!.amount, 0);
+      const newParticipantCount = participantIds.filter(id => !currentMap.has(id)).length;
+      const remainingBudget = Math.max(0, totalBudget - existingTotal);
+      const newParticipantShare = newParticipantCount > 0
+        ? Math.floor((remainingBudget / newParticipantCount) * 100) / 100
+        : 0;
+
+      // Build new participant list — preserve existing amounts, assign remainder to new
       const result: PersonMoneyAllocation[] = participantIds.map(personId => {
         const person = persons.find(p => p.uuid === personId);
         if (!person) return null;
 
-        // If participant already exists, preserve or update their allocation
+        // Existing participant: always preserve their current amount
         if (currentMap.has(personId)) {
-          const existing = currentMap.get(personId)!;
-          // If this participant is dirty (manually edited), preserve their amount
-          if (dirtyMoney.has(personId)) {
-            return existing;
-          }
-          // Otherwise, redistribute with default share
-          return { ...existing, amount: defaultMoneyShare };
+          return currentMap.get(personId)!;
         }
 
-        // New participant: default allocation
+        // New participant: share of remaining budget
         return {
           personId: person.uuid,
           personName: `${person.firstname} ${person.lastname}`,
-          amount: defaultMoneyShare,
+          amount: newParticipantShare,
         };
       }).filter(Boolean) as PersonMoneyAllocation[];
 
@@ -156,7 +160,7 @@ export function EventBudgetManagementSection({
       });
       return newSet;
     });
-  }, [participantIds, persons, totalBudget, dirtyMoney]); // React to all relevant changes
+  }, [participantIds, persons, totalBudget]); // React to participant and budget changes
 
   // React to defaultTimeAllocationType changes: update untouched time allocations
   useEffect(() => {
@@ -418,8 +422,8 @@ export function EventBudgetManagementSection({
                         Money Budget Allocations
                       </Typography>
                     </Box>
-                    <Typography variant="caption" color="text.secondary">
-                      {getMoneySummary()}
+                    <Typography variant="caption" color={totalMoneyAllocated > totalBudget ? 'warning.main' : 'text.secondary'}>
+                      {getMoneySummary()} — €{totalMoneyAllocated.toLocaleString('nl-NL')} / €{totalBudget.toLocaleString('nl-NL')} allocated
                     </Typography>
                   </Box>
                 </AccordionSummary>
