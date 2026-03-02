@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 02
-current_plan: Not started
+current_plan: 03 (complete)
 status: completed
-last_updated: "2026-03-02T13:42:04.155Z"
+last_updated: "2026-03-02T16:43:09.669Z"
 progress:
   total_phases: 1
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 3
+  completed_plans: 3
   percent: 100
 ---
 
@@ -18,8 +18,8 @@ progress:
 
 **Last Updated:** 2026-03-02
 **Current Phase:** 02
-**Current Plan:** Not started
-**Status:** Milestone complete
+**Current Plan:** 03 of 03 (complete)
+**Status:** Phase 2 complete
 
 ## Project Reference
 
@@ -30,8 +30,8 @@ progress:
 ## Current Position
 
 **Phase:** 2 of 8 - Event Budget Flow Redesign
-**Plan:** 02 of 02 (Plan 01 complete)
-**Status:** In progress
+**Plan:** 03 of 03 (All plans complete)
+**Status:** Phase complete
 **Progress:** [██████████] 100%
 
 ### Phase 2 Objective
@@ -61,10 +61,10 @@ Event form and budget management sections work as a cohesive, intuitive single f
 ## Performance Metrics
 
 ### Velocity
-- **Phases completed:** 1 (Phase 1: Frontend Prototype foundation)
-- **Requirements completed:** 0 of 23 v1 requirements (Phase 1 not counted in v1, Phase 2 pending)
-- **Plans completed:** 0
-- **Completion rate:** 12.5% (1/8 phases complete)
+- **Phases completed:** 2 (Phase 1: Frontend Prototype foundation, Phase 2: Event Budget Flow Redesign)
+- **Requirements completed:** 2 of 23 v1 requirements (EVT-05, EVT-06 satisfied)
+- **Plans completed:** 3 (02-01, 02-02, 02-03)
+- **Completion rate:** 25% (2/8 phases complete)
 
 ### Quality
 - **Build status:** Unknown (Phase 2 not started)
@@ -85,11 +85,14 @@ Event form and budget management sections work as a cohesive, intuitive single f
 8. **2026-03-02**: Per-participant dirty tracking using Set<string> — rationale: O(1) lookup efficiency when preserving manual edits during reactive updates
 9. **2026-03-02**: Budget section wrapped in top-level accordion that starts collapsed — rationale: progressive disclosure reduces cognitive load, lets admins see overview before drilling down
 10. **2026-03-02**: Three-level disclosure hierarchy (summary banner -> sections -> per-participant details) — rationale: matches user mental model of budget management from high-level to detailed view
+11. **2026-03-02**: Merged two competing useEffects into single atomic effect using functional updater pattern — rationale: prevent stale closure overwrites during participant removal and budget redistribution
+12. **2026-03-02**: Added EventType-based conditional rendering for money section (only FLOCK_HACK_DAY and CONFERENCE) — rationale: follows domain model where event types determine allowed budget types
 
 ### Active Todos
 - [x] Generate Phase 2 plan (event budget flow redesign) — Complete
 - [x] Execute Phase 2 Plan 01 (lift Formik state) — Complete
 - [x] Execute Phase 2 Plan 02 (progressive disclosure) — Complete
+- [x] Execute Phase 2 Plan 03 (UAT bugfixes) — Complete
 - [ ] Verify Expense domain discriminator strategy (DTYPE vs. type field) before implementing Phase 3
 - [ ] Review Liquibase changeset ordering pattern from db.changelog-002-expenses.yaml before Phase 4
 
@@ -104,7 +107,7 @@ None logged yet.
 | Phase | Status | Requirements | Success Criteria |
 |-------|--------|--------------|------------------|
 | 1. Frontend Prototype | Complete | N/A | 5 criteria met |
-| 2. Event Budget Flow Redesign | Not started | EVT-05, EVT-06 | 4 criteria |
+| 2. Event Budget Flow Redesign | Complete | EVT-05, EVT-06 | 4 criteria met |
 | 3. Domain Layer | Not started | DOM-01, DOM-02 | 4 criteria |
 | 4. Persistence & Contract | Not started | DOM-03, DOM-04 | 4 criteria |
 | 5. API Layer | Not started | API-01, API-02, API-03, API-04, API-05, CTR-02 | 6 criteria |
@@ -112,21 +115,23 @@ None logged yet.
 | 7. Event Integration | Not started | EVT-01, EVT-02, EVT-03, EVT-04 | 4 criteria |
 | 8. Contract Form & Dev Data | Not started | CTR-01, DEV-01 | 4 criteria |
 
-**Overall Progress:** 12.5% (Phase 1 complete, 7 phases remaining)
+**Overall Progress:** 25% (Phases 1-2 complete, 6 phases remaining)
 | Phase 02 P01 | 7 | 2 tasks | 3 files |
 | Phase 02-event-budget-flow-redesign P02 | 3 | 1 tasks | 2 files |
+| Phase 02-event-budget-flow-redesign P03 | 3 | 2 tasks | 2 files |
+| Phase 02 P03 | 3 | 2 tasks | 2 files |
 
 ## Session Continuity
 
 ### Last Session Summary
-- Executed Phase 2 Plan 02: Progressive Disclosure for Budget Management
-- Implemented three-level progressive disclosure (summary banner -> sections -> per-participant details)
-- Budget section defaults to collapsed with summary banner showing allocation totals
-- Added unsaved changes visual indicator (8px dot on banner)
-- Guidance note appears when no defaultTimeAllocationType set
-- Created 02-02-SUMMARY.md documenting implementation (1 task, 1 commit, 3 minutes)
-- EVT-06 satisfied: budget management now starts simple and expands on demand
-- Phase 2 complete: both EVT-05 and EVT-06 requirements satisfied
+- Executed Phase 2 Plan 03: UAT Bugfixes
+- Fixed three critical bugs: participant removal sync, conditional section rendering, STUDY fallback
+- Merged competing useEffects into single atomic effect using functional updater pattern
+- Added EventType-based conditional rendering for time/money sections
+- Removed STUDY fallback when allocation type is None
+- Created 02-03-SUMMARY.md documenting implementation (2 tasks, 2 commits, 3 minutes)
+- Phase 2 complete: all three plans executed (02-01, 02-02, 02-03)
+- Requirements EVT-05 and EVT-06 fully satisfied
 
 ### Next Session
 Start with: `/gsd:plan-phase 03`
