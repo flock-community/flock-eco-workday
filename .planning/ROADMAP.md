@@ -25,7 +25,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Frontend Prototype | N/A | Complete | 2026-03-02 |
-| 2. Event Budget Flow Redesign | 0/2 | In progress | - |
+| 2. Event Budget Flow Redesign | 2/3 | In progress (gap closure) | - |
 | 3. Domain Layer | 0/? | Not started | - |
 | 4. Persistence & Contract | 0/? | Not started | - |
 | 5. API Layer | 0/? | Not started | - |
@@ -57,11 +57,12 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
   2. Budget management section starts in simple mode (basic form) and expands progressively on demand
   3. EventForm fields (costs, defaultTimeAllocationType) are the canonical source for budget defaults, not duplicated logic
   4. Admin experiences a natural flow: define event basics -> manage participant budgets, without feeling like two disconnected UIs
-**Plans**: 2 plans
+**Plans**: 3 plans
 Plans:
-- [ ] 02-01-PLAN.md -- Lift Formik state to EventDialog, wire budget section to form values, single save, dirty tracking, unsaved changes warning (EVT-05)
-- [ ] 02-02-PLAN.md -- Progressive disclosure with collapsed summary banner, expand-on-click, per-participant row expansion, guidance notes (EVT-06)
-**Status**: In progress
+- [x] 02-01-PLAN.md -- Lift Formik state to EventDialog, wire budget section to form values, single save, dirty tracking, unsaved changes warning (EVT-05)
+- [x] 02-02-PLAN.md -- Progressive disclosure with collapsed summary banner, expand-on-click, per-participant row expansion, guidance notes (EVT-06)
+- [ ] 02-03-PLAN.md -- Gap closure: fix participant removal sync, conditional section rendering, remove STUDY fallback (EVT-05, EVT-06)
+**Status**: In progress (gap closure from UAT)
 **Files**: EventDialog.tsx, EventForm.tsx, EventBudgetManagementDialog.tsx, EventBudgetSummaryBanner.tsx
 
 ### Phase 3: Domain Layer
@@ -162,4 +163,4 @@ All 23 v1 requirements mapped. No orphans.
 - Phase 8 executes last (requires contract entity changes from Phase 4 and API from Phase 5)
 
 ---
-*Last updated: 2026-03-02 (revised: added Phase 2, renumbered phases 3-8)*
+*Last updated: 2026-03-02 (revised: added gap closure plan 02-03 for UAT fixes)*
