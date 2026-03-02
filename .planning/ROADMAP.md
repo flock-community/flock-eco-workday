@@ -25,7 +25,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Frontend Prototype | N/A | Complete | 2026-03-02 |
-| 2. Event Budget Flow Redesign | 0/? | Not started | - |
+| 2. Event Budget Flow Redesign | 0/2 | In progress | - |
 | 3. Domain Layer | 0/? | Not started | - |
 | 4. Persistence & Contract | 0/? | Not started | - |
 | 5. API Layer | 0/? | Not started | - |
@@ -57,9 +57,12 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
   2. Budget management section starts in simple mode (basic form) and expands progressively on demand
   3. EventForm fields (costs, defaultTimeAllocationType) are the canonical source for budget defaults, not duplicated logic
   4. Admin experiences a natural flow: define event basics -> manage participant budgets, without feeling like two disconnected UIs
-**Plans**: TBD
-**Status**: Pending (this is Phase 1.6 from implementation doc)
-**Files**: EventForm.tsx, EventBudgetManagementDialog.tsx, EventTimeAllocationSection.tsx, EventMoneyAllocationSection.tsx, EventBudgetAllocationDialog.tsx
+**Plans**: 2 plans
+Plans:
+- [ ] 02-01-PLAN.md -- Lift Formik state to EventDialog, wire budget section to form values, single save, dirty tracking, unsaved changes warning (EVT-05)
+- [ ] 02-02-PLAN.md -- Progressive disclosure with collapsed summary banner, expand-on-click, per-participant row expansion, guidance notes (EVT-06)
+**Status**: In progress
+**Files**: EventDialog.tsx, EventForm.tsx, EventBudgetManagementDialog.tsx, EventBudgetSummaryBanner.tsx
 
 ### Phase 3: Domain Layer
 **Goal**: Core business logic exists with zero infrastructure dependencies
