@@ -12,7 +12,6 @@ import {
   AttachMoney,
   Calculate,
   Clear,
-  Business,
 } from '@mui/icons-material';
 
 export interface PersonMoneyAllocation {
@@ -24,24 +23,19 @@ export interface PersonMoneyAllocation {
 interface EventMoneyAllocationSectionProps {
   totalBudget: number; // Event costs (total budget)
   participants: PersonMoneyAllocation[];
-  flockAmount: number;
   onParticipantsChange: (participants: PersonMoneyAllocation[]) => void;
-  onFlockAmountChange: (amount: number) => void;
 }
 
 export function EventMoneyAllocationSection({
   totalBudget,
   participants,
-  flockAmount,
   onParticipantsChange,
-  onFlockAmountChange,
 }: EventMoneyAllocationSectionProps) {
   // Calculate totals
-  const totalParticipantAllocation = participants.reduce(
+  const totalAllocated = participants.reduce(
     (sum, p) => sum + p.amount,
     0
   );
-  const totalAllocated = totalParticipantAllocation + flockAmount;
   const remaining = totalBudget - totalAllocated;
   const isOverAllocated = totalAllocated > totalBudget;
   const isFullyAllocated = remaining === 0;
@@ -54,24 +48,7 @@ export function EventMoneyAllocationSection({
       amount: amountPerPerson,
     }));
     onParticipantsChange(updated);
-    onFlockAmountChange(0); // Clear Flock when distributing equally
     console.log('Distributed money equally:', amountPerPerson, 'per person');
-  };
-
-  const handleDistributeRemainder = () => {
-    const remainderAfterFlock = totalBudget - flockAmount;
-    if (remainderAfterFlock <= 0) {
-      console.warn('No remainder to distribute after Flock allocation');
-      return;
-    }
-    const amountPerPerson =
-      Math.floor((remainderAfterFlock / participants.length) * 100) / 100;
-    const updated = participants.map((p) => ({
-      ...p,
-      amount: amountPerPerson,
-    }));
-    onParticipantsChange(updated);
-    console.log('Distributed remainder:', amountPerPerson, 'per person');
   };
 
   const handleClear = () => {
@@ -80,7 +57,6 @@ export function EventMoneyAllocationSection({
       amount: 0,
     }));
     onParticipantsChange(updated);
-    onFlockAmountChange(0);
     console.log('Cleared all money allocations');
   };
 
@@ -92,14 +68,14 @@ export function EventMoneyAllocationSection({
   };
 
   return (
-    < >
+    <>
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
           <AttachMoney color="primary" />
           <Typography variant="h6">Money Allocation</Typography>
         </Box>
         <Typography variant="body2" color="text.secondary">
-          Allocate event budget across participants and Flock. Total must sum to event
+          Allocate event budget across participants. Total must sum to event
           budget (€{totalBudget.toLocaleString('nl-NL')}).
         </Typography>
       </Box>
@@ -117,15 +93,6 @@ export function EventMoneyAllocationSection({
             onClick={handleDistributeEqually}
           >
             Distribute Equally
-          </Button>
-          <Button
-            size="small"
-            variant="outlined"
-            startIcon={<Business />}
-            onClick={handleDistributeRemainder}
-            disabled={flockAmount === 0}
-          >
-            Distribute Remainder
           </Button>
           <Button
             size="small"
@@ -160,27 +127,6 @@ export function EventMoneyAllocationSection({
                 ? 'success'
                 : 'default'
           }
-        />
-      </Box>
-
-      <Divider sx={{ mb: 3 }} />
-
-      {/* Flock Allocation */}
-      <Box sx={{ mb: 3, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <Business color="action" />
-          <Typography variant="subtitle1" fontWeight="medium">
-            Flock Company Allocation
-          </Typography>
-        </Box>
-        <TextField
-          label="Amount (€)"
-          type="number"
-          value={flockAmount || ''}
-          onChange={(e) => onFlockAmountChange(parseFloat(e.target.value) || 0)}
-          size="small"
-          fullWidth
-          inputProps={{ min: 0, step: 0.01 }}
         />
       </Box>
 
