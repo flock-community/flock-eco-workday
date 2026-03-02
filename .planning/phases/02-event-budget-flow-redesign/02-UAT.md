@@ -1,9 +1,9 @@
 ---
-status: complete
+status: resolved
 phase: 02-event-budget-flow-redesign
 source: [02-01-SUMMARY.md, 02-02-SUMMARY.md, 02-03-SUMMARY.md]
 started: 2026-03-02T12:00:00Z
-updated: 2026-03-02T12:12:00Z
+updated: 2026-03-02T12:15:00Z
 ---
 
 ## Current Test
@@ -38,9 +38,7 @@ result: pass
 
 ### 7. Participant add/remove reactivity (retest)
 expected: Remove a participant — they disappear from money budget and budget redistributes among remaining untouched participants. Add a participant — they appear with default allocations.
-result: issue
-reported: "Removal works fine. However, redistribution doesn't respect dirty tracking. Example: 4 persons, 1 manually set to 50%. Remove someone — other two get 1/3 each instead of splitting the remainder. User decision: simplify to Option C — no auto-redistribution. Removed person's allocation disappears, show allocated vs total indicator, admin adjusts manually."
-severity: minor
+result: pass (retest after Option C fix — no auto-redistribution, allocated vs total indicator added)
 
 ### 8. Unsaved changes indicator
 expected: Make a change to any budget allocation. A small colored dot (warning indicator) should appear on the collapsed summary banner, signaling unsaved changes even when the section is collapsed.
@@ -61,8 +59,8 @@ result: pass
 ## Summary
 
 total: 12
-passed: 10
-issues: 1
+passed: 11
+issues: 0
 pending: 0
 skipped: 0
 
