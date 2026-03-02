@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {
   Box,
   Typography,
@@ -10,8 +10,7 @@ import {
   Button,
 } from '@mui/material';
 import {ExpandMore, Info, AccountBalance} from '@mui/icons-material';
-import dayjs from 'dayjs';
-import type {FullFlockEvent} from '../../clients/EventClient';
+import dayjs, { type Dayjs } from 'dayjs';
 import {
   EventMoneyAllocationSection,
   type PersonMoneyAllocation,
@@ -21,112 +20,161 @@ import {
   type PersonTimeAllocation,
 } from './EventTimeAllocationSection';
 import { BudgetAllocationType } from '../budget/mocks/BudgetAllocationTypes';
-import { mockEvents } from '../budget/mocks/BudgetAllocationMocks';
 import type { Period } from '../period/Period';
 import Grid from "@mui/material/Grid";
 
 interface EventBudgetManagementSectionProps {
-  event: FullFlockEvent | null;
+  formValues: {
+    budget: number;
+    defaultTimeAllocationType: string | null;
+    personIds: string[];
+    from: Dayjs;
+    to: Dayjs;
+    days: number[];
+  };
+  persons: Array<{ uuid: string; firstname: string; lastname: string }>;
   timeExpanded?: boolean;
   setTimeExpanded?: (expanded: boolean) => void;
   moneyExpanded?: boolean;
   setMoneyExpanded?: (expanded: boolean) => void;
+  onBudgetStateChange?: (state: {
+    moneyParticipants: PersonMoneyAllocation[];
+    timeParticipants: PersonTimeAllocation[];
+    dirty: boolean
+  }) => void;
 }
 
 export function EventBudgetManagementSection({
-                                               event,
+                                               formValues,
+                                               persons,
                                                timeExpanded = false,
                                                setTimeExpanded,
                                                moneyExpanded = false,
                                                setMoneyExpanded,
+                                               onBudgetStateChange,
                                              }: EventBudgetManagementSectionProps) {
   // Separate state for money and time allocations
   const [moneyParticipants, setMoneyParticipants] = useState<PersonMoneyAllocation[]>([]);
   const [timeParticipants, setTimeParticipants] = useState<PersonTimeAllocation[]>([]);
-  // FlockMoney removed from design
 
-  // Get default budget type from event (mock for now) or use STUDY as fallback
-  const mockEventData = mockEvents.find((e) => e.code === event?.code);
-  const defaultBudgetType =
-    (event as any)?.defaultTimeAllocationType ||
-    mockEventData?.defaultTimeAllocationType ||
-    BudgetAllocationType.STUDY;
-  const totalBudget = event?.costs || 0; // Event costs = total budget
+  // Dirty tracking: which participants have been manually edited
+  const [dirtyMoney, setDirtyMoney] = useState<Set<string>>(new Set());
+  const [dirtyTime, setDirtyTime] = useState<Set<string>>(new Set());
 
+  // Derive values from formValues (single source of truth)
+  const totalBudget = formValues.budget;
+  const defaultBudgetType = (formValues.defaultTimeAllocationType as BudgetAllocationType) || BudgetAllocationType.STUDY;
+  const participantIds = formValues.personIds;
+
+  // Initialize participants when personIds change (new participants added/removed)
   useEffect(() => {
-    if (event) {
-      // Initialize money participants (default to equal share)
-      const participantCount = event.persons.length;
-      const defaultMoneyShare = participantCount > 0
-        ? Math.floor((totalBudget / participantCount) * 100) / 100
-        : 0;
+    const participantCount = participantIds.length;
+    const defaultMoneyShare = participantCount > 0
+      ? Math.floor((totalBudget / participantCount) * 100) / 100
+      : 0;
 
-      const initialMoneyParticipants: PersonMoneyAllocation[] = event.persons.map(
-        (person) => {
-          // Check if existing allocation exists in mock data
-          const existingMoneyAllocation = mockEventData?.budgetAllocations.find(
-            (a) => a.type === 'StudyMoney' && (a as any).personId === person.uuid
-          );
+    // Get current participants who are still in personIds
+    const currentMoneyMap = new Map(moneyParticipants.map(p => [p.personId, p]));
+    const currentTimeMap = new Map(timeParticipants.map(p => [p.personId, p]));
 
-          return {
-            personId: person.uuid,
-            personName: `${person.firstname} ${person.lastname}`,
-            amount: existingMoneyAllocation && 'amount' in existingMoneyAllocation
-              ? existingMoneyAllocation.amount
-              : defaultMoneyShare,
-          };
-        }
-      );
+    const newMoneyParticipants: PersonMoneyAllocation[] = participantIds.map(personId => {
+      const person = persons.find(p => p.uuid === personId);
+      if (!person) return null;
 
-      setMoneyParticipants(initialMoneyParticipants);
+      // Preserve existing allocation if person already exists
+      if (currentMoneyMap.has(personId)) {
+        return currentMoneyMap.get(personId)!;
+      }
 
-      // Initialize time participants (default to no custom periods = using defaults)
-      const initialTimeParticipants: PersonTimeAllocation[] = event.persons.map(
-        (person) => {
-          // Check if existing time allocations exist in mock data
-          const existingStudyAllocation = mockEventData?.budgetAllocations.find(
-            (a) => a.type === 'StudyTime' && (a as any).personId === person.uuid
-          );
-          const existingHackAllocation = mockEventData?.budgetAllocations.find(
-            (a) => a.type === 'HackTime' && (a as any).personId === person.uuid
-          );
+      // New participant: default allocation (not dirty)
+      return {
+        personId: person.uuid,
+        personName: `${person.firstname} ${person.lastname}`,
+        amount: defaultMoneyShare,
+      };
+    }).filter(Boolean) as PersonMoneyAllocation[];
 
-          // Convert dailyTimeAllocations to Period format
-          const convertToPeriod = (allocation: any): Period | null => {
-            if (!allocation || !('dailyTimeAllocations' in allocation)) return null;
+    const newTimeParticipants: PersonTimeAllocation[] = participantIds.map(personId => {
+      const person = persons.find(p => p.uuid === personId);
+      if (!person) return null;
 
-            const eventDays = event.to.diff(event.from, 'days') + 1;
-            const days = Array(eventDays).fill(0);
+      // Preserve existing allocation if person already exists
+      if (currentTimeMap.has(personId)) {
+        return currentTimeMap.get(personId)!;
+      }
 
-            // Map daily allocations to days array
-            allocation.dailyTimeAllocations.forEach((daily: any) => {
-              const dayIndex = dayjs(daily.date).diff(event.from, 'days');
-              if (dayIndex >= 0 && dayIndex < days.length) {
-                days[dayIndex] = daily.hours;
-              }
-            });
+      // New participant: using defaults (no custom periods)
+      return {
+        personId: person.uuid,
+        personName: `${person.firstname} ${person.lastname}`,
+        studyPeriod: null,
+        hackPeriod: null,
+      };
+    }).filter(Boolean) as PersonTimeAllocation[];
 
-            return {
-              from: event.from,
-              to: event.to,
-              days,
-            };
-          };
+    setMoneyParticipants(newMoneyParticipants);
+    setTimeParticipants(newTimeParticipants);
 
-          return {
-            personId: person.uuid,
-            personName: `${person.firstname} ${person.lastname}`,
-            studyPeriod: convertToPeriod(existingStudyAllocation),
-            hackPeriod: convertToPeriod(existingHackAllocation),
-          };
-        }
-      );
+    // Remove dirty flags for participants no longer in list
+    setDirtyMoney(prev => {
+      const newSet = new Set(prev);
+      Array.from(newSet).forEach(id => {
+        if (!participantIds.includes(id)) newSet.delete(id);
+      });
+      return newSet;
+    });
+    setDirtyTime(prev => {
+      const newSet = new Set(prev);
+      Array.from(newSet).forEach(id => {
+        if (!participantIds.includes(id)) newSet.delete(id);
+      });
+      return newSet;
+    });
+  }, [participantIds, persons, totalBudget]); // Only re-initialize when personIds/persons/totalBudget change
 
-      setTimeParticipants(initialTimeParticipants);
+  // React to budget changes: recalculate money for untouched participants
+  useEffect(() => {
+    if (moneyParticipants.length === 0) return;
 
-      // FlockMoney removed from design
-    }
-  }, [event, mockEventData, defaultBudgetType, totalBudget]);
+    const untouchedParticipants = moneyParticipants.filter(p => !dirtyMoney.has(p.personId));
+    if (untouchedParticipants.length === 0) return; // All manually edited
+
+    const defaultMoneyShare = untouchedParticipants.length > 0
+      ? Math.floor((totalBudget / participantIds.length) * 100) / 100
+      : 0;
+
+    const updated = moneyParticipants.map(p => {
+      if (dirtyMoney.has(p.personId)) return p; // Preserve manual edits
+      return { ...p, amount: defaultMoneyShare };
+    });
+
+    setMoneyParticipants(updated);
+  }, [totalBudget, participantIds.length]); // React to budget and participant count changes
+
+  // React to defaultTimeAllocationType changes: update untouched time allocations
+  useEffect(() => {
+    if (timeParticipants.length === 0) return;
+
+    // For participants not manually edited, clear their custom periods (revert to defaults)
+    // This forces them to use the new defaultTimeAllocationType
+    const updated = timeParticipants.map(p => {
+      if (dirtyTime.has(p.personId)) return p; // Preserve manual edits
+      // Clear custom periods to use new defaults
+      return { ...p, studyPeriod: null, hackPeriod: null };
+    });
+
+    setTimeParticipants(updated);
+  }, [defaultBudgetType]); // React to allocation type changes
+
+  // Notify parent of budget state changes
+  useEffect(() => {
+    const isDirty = dirtyMoney.size > 0 || dirtyTime.size > 0;
+    onBudgetStateChange?.({
+      moneyParticipants,
+      timeParticipants,
+      dirty: isDirty,
+    });
+  }, [moneyParticipants, timeParticipants, dirtyMoney, dirtyTime, onBudgetStateChange]);
 
   // Helper: Generate time allocation summary
   const getTimeSummary = (): string => {
@@ -191,109 +239,53 @@ export function EventBudgetManagementSection({
     return parts.join('; ') || 'No allocations';
   };
 
-  const handleSave = () => {
-    // Build allocation payload
-    const allocations = [];
-
-    // Add money allocations
-    moneyParticipants.forEach((participant) => {
-      if (participant.amount > 0) {
-        allocations.push({
-          type: 'StudyMoney',
-          eventCode: event?.code,
-          personId: participant.personId,
-          personName: participant.personName,
-          amount: participant.amount,
-        });
+  // Handle money participant changes with dirty tracking
+  const handleMoneyParticipantsChange = (updated: PersonMoneyAllocation[]) => {
+    // Mark changed participants as dirty
+    updated.forEach(updatedP => {
+      const original = moneyParticipants.find(p => p.personId === updatedP.personId);
+      if (original && original.amount !== updatedP.amount) {
+        setDirtyMoney(prev => new Set(prev).add(updatedP.personId));
       }
     });
-
-    // Add time allocations
-    timeParticipants.forEach((participant) => {
-      const hasCustomAllocation = participant.studyPeriod !== null || participant.hackPeriod !== null;
-
-      if (hasCustomAllocation) {
-        // Convert Period to daily allocations for logging
-        // Add study time allocation if exists
-        if (participant.studyPeriod && participant.studyPeriod.days) {
-          const dailyStudyAllocations = participant.studyPeriod.days
-            .map((hours, index) => ({
-              date: event.from.add(index, 'days').format('YYYY-MM-DD'),
-              hours,
-            }))
-            .filter(daily => daily.hours > 0); // Only include days with hours
-
-          if (dailyStudyAllocations.length > 0) {
-            allocations.push({
-              type: 'StudyTime',
-              eventCode: event?.code,
-              personId: participant.personId,
-              personName: participant.personName,
-              dailyTimeAllocations: dailyStudyAllocations,
-              totalHours: dailyStudyAllocations.reduce((sum, d) => sum + d.hours, 0),
-            });
-          }
-        }
-
-        // Add hack time allocation if exists
-        if (participant.hackPeriod && participant.hackPeriod.days) {
-          const dailyHackAllocations = participant.hackPeriod.days
-            .map((hours, index) => ({
-              date: event.from.add(index, 'days').format('YYYY-MM-DD'),
-              hours,
-            }))
-            .filter(daily => daily.hours > 0); // Only include days with hours
-
-          if (dailyHackAllocations.length > 0) {
-            allocations.push({
-              type: 'HackTime',
-              eventCode: event?.code,
-              personId: participant.personId,
-              personName: participant.personName,
-              dailyTimeAllocations: dailyHackAllocations,
-              totalHours: dailyHackAllocations.reduce((sum, d) => sum + d.hours, 0),
-            });
-          }
-        }
-      } else {
-        // Using defaults
-        allocations.push({
-          type: 'DefaultTime',
-          eventCode: event?.code,
-          personId: participant.personId,
-          personName: participant.personName,
-          budgetType: defaultBudgetType,
-          note: 'Using event defaults',
-        });
-      }
-    });
-
-    console.log('Saving Event Budget Allocations:', {
-      eventCode: event?.code,
-      totalBudget,
-      moneyAllocations: {
-        participants: moneyParticipants,
-        total: moneyParticipants.reduce((sum, p) => sum + p.amount, 0),
-      },
-      timeAllocations: {
-        participants: timeParticipants,
-        defaultHoursPerDay: event?.hours / (event.to.diff(event.from, 'days') + 1),
-        defaultType: defaultBudgetType,
-      },
-    });
+    setMoneyParticipants(updated);
   };
 
-  if (!event) return null;
+  // Handle time participant changes with dirty tracking
+  const handleTimeParticipantsChange = (updated: PersonTimeAllocation[]) => {
+    // Mark changed participants as dirty
+    updated.forEach(updatedP => {
+      const original = timeParticipants.find(p => p.personId === updatedP.personId);
+      if (original) {
+        const hadCustom = original.studyPeriod !== null || original.hackPeriod !== null;
+        const hasCustom = updatedP.studyPeriod !== null || updatedP.hackPeriod !== null;
+        if (hadCustom !== hasCustom || (hasCustom && (
+          JSON.stringify(original.studyPeriod) !== JSON.stringify(updatedP.studyPeriod) ||
+          JSON.stringify(original.hackPeriod) !== JSON.stringify(updatedP.hackPeriod)
+        ))) {
+          setDirtyTime(prev => new Set(prev).add(updatedP.personId));
+        }
+      }
+    });
+    setTimeParticipants(updated);
+  };
 
-  // Generate event dates
-  const eventDays = event.to.diff(event.from, 'days') + 1;
-  const eventDates: string[] = [];
-  for (let i = 0; i < eventDays; i++) {
-    eventDates.push(event.from.add(i, 'days').format('YYYY-MM-DD'));
-  }
+  // Generate event dates from formValues
+  const eventDays = formValues.to.diff(formValues.from, 'days') + 1;
+  const eventDates: string[] = useMemo(() => {
+    const dates: string[] = [];
+    for (let i = 0; i < eventDays; i++) {
+      dates.push(formValues.from.add(i, 'days').format('YYYY-MM-DD'));
+    }
+    return dates;
+  }, [formValues.from, formValues.to, eventDays]);
 
-  // Calculate default hours per day from event total hours
-  const defaultHoursPerDay = eventDays > 0 ? event.hours / eventDays : 8;
+  // Calculate default hours per day from formValues.days
+  const defaultHoursPerDay = useMemo(() => {
+    if (!formValues.days || formValues.days.length === 0) return 8;
+    const totalHours = formValues.days.reduce((acc, cur) => acc + parseFloat(String(cur || 0)), 0);
+    return eventDays > 0 ? totalHours / eventDays : 8;
+  }, [formValues.days, eventDays]);
 
   return (
     <Grid container spacing={1}>
@@ -324,23 +316,13 @@ export function EventBudgetManagementSection({
           </AccordionSummary>
 
           <AccordionDetails sx={{p: 3}}>
-            <Box sx={{display: 'flex', flexDirection: 'column', gap: 3}}>
-              {/* Time Allocation Section */}
-              <EventTimeAllocationSection
-                eventDates={eventDates}
-                defaultHoursPerDay={defaultHoursPerDay}
-                defaultBudgetType={defaultBudgetType}
-                participants={timeParticipants}
-                onParticipantsChange={setTimeParticipants}
-              />
-
-              {/* Save Button */}
-              <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
-                <Button onClick={handleSave} variant="contained" color="primary">
-                  Save Time Allocations
-                </Button>
-              </Box>
-            </Box>
+            <EventTimeAllocationSection
+              eventDates={eventDates}
+              defaultHoursPerDay={defaultHoursPerDay}
+              defaultBudgetType={defaultBudgetType}
+              participants={timeParticipants}
+              onParticipantsChange={handleTimeParticipantsChange}
+            />
           </AccordionDetails>
         </Accordion>
       </Grid>
@@ -371,22 +353,11 @@ export function EventBudgetManagementSection({
           </AccordionSummary>
 
           <AccordionDetails sx={{p: 3}}>
-            <Box sx={{display: 'flex', flexDirection: 'column', gap: 3}}>
-              {/* Money Allocation Section */}
-              <EventMoneyAllocationSection
-                totalBudget={totalBudget}
-                participants={moneyParticipants}
-                onParticipantsChange={setMoneyParticipants}
-              />
-
-
-              {/* Save Button */}
-              <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
-                <Button onClick={handleSave} variant="contained" color="primary">
-                  Save Money Allocations
-                </Button>
-              </Box>
-            </Box>
+            <EventMoneyAllocationSection
+              totalBudget={totalBudget}
+              participants={moneyParticipants}
+              onParticipantsChange={handleMoneyParticipantsChange}
+            />
           </AccordionDetails>
         </Accordion>
       </Grid>
