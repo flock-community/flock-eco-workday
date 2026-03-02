@@ -70,56 +70,70 @@ export function EventBudgetManagementSection({
   const defaultBudgetType = (formValues.defaultTimeAllocationType as BudgetAllocationType) || BudgetAllocationType.STUDY;
   const participantIds = formValues.personIds;
 
-  // Initialize participants when personIds change (new participants added/removed)
+  // Merged effect: participant sync + budget redistribution (atomic state update)
   useEffect(() => {
-    const participantCount = participantIds.length;
-    const defaultMoneyShare = participantCount > 0
-      ? Math.floor((totalBudget / participantCount) * 100) / 100
-      : 0;
+    setMoneyParticipants(prev => {
+      const participantCount = participantIds.length;
+      if (participantCount === 0) return [];
 
-    // Get current participants who are still in personIds
-    const currentMoneyMap = new Map(moneyParticipants.map(p => [p.personId, p]));
-    const currentTimeMap = new Map(timeParticipants.map(p => [p.personId, p]));
+      const defaultMoneyShare = Math.floor((totalBudget / participantCount) * 100) / 100;
 
-    const newMoneyParticipants: PersonMoneyAllocation[] = participantIds.map(personId => {
-      const person = persons.find(p => p.uuid === personId);
-      if (!person) return null;
+      // Get current participants as a map
+      const currentMap = new Map(prev.map(p => [p.personId, p]));
 
-      // Preserve existing allocation if person already exists
-      if (currentMoneyMap.has(personId)) {
-        return currentMoneyMap.get(personId)!;
-      }
+      // Build new participant list
+      const result: PersonMoneyAllocation[] = participantIds.map(personId => {
+        const person = persons.find(p => p.uuid === personId);
+        if (!person) return null;
 
-      // New participant: default allocation (not dirty)
-      return {
-        personId: person.uuid,
-        personName: `${person.firstname} ${person.lastname}`,
-        amount: defaultMoneyShare,
-      };
-    }).filter(Boolean) as PersonMoneyAllocation[];
+        // If participant already exists, preserve or update their allocation
+        if (currentMap.has(personId)) {
+          const existing = currentMap.get(personId)!;
+          // If this participant is dirty (manually edited), preserve their amount
+          if (dirtyMoney.has(personId)) {
+            return existing;
+          }
+          // Otherwise, redistribute with default share
+          return { ...existing, amount: defaultMoneyShare };
+        }
 
-    const newTimeParticipants: PersonTimeAllocation[] = participantIds.map(personId => {
-      const person = persons.find(p => p.uuid === personId);
-      if (!person) return null;
+        // New participant: default allocation
+        return {
+          personId: person.uuid,
+          personName: `${person.firstname} ${person.lastname}`,
+          amount: defaultMoneyShare,
+        };
+      }).filter(Boolean) as PersonMoneyAllocation[];
 
-      // Preserve existing allocation if person already exists
-      if (currentTimeMap.has(personId)) {
-        return currentTimeMap.get(personId)!;
-      }
+      return result;
+    });
 
-      // New participant: using defaults (no custom periods)
-      return {
-        personId: person.uuid,
-        personName: `${person.firstname} ${person.lastname}`,
-        studyPeriod: null,
-        hackPeriod: null,
-      };
-    }).filter(Boolean) as PersonTimeAllocation[];
+    // Update time participants separately
+    setTimeParticipants(prev => {
+      const currentMap = new Map(prev.map(p => [p.personId, p]));
 
-    setMoneyParticipants(newMoneyParticipants);
-    setTimeParticipants(newTimeParticipants);
+      const result: PersonTimeAllocation[] = participantIds.map(personId => {
+        const person = persons.find(p => p.uuid === personId);
+        if (!person) return null;
 
-    // Remove dirty flags for participants no longer in list
+        // Preserve existing allocation if person already exists
+        if (currentMap.has(personId)) {
+          return currentMap.get(personId)!;
+        }
+
+        // New participant: using defaults (no custom periods)
+        return {
+          personId: person.uuid,
+          personName: `${person.firstname} ${person.lastname}`,
+          studyPeriod: null,
+          hackPeriod: null,
+        };
+      }).filter(Boolean) as PersonTimeAllocation[];
+
+      return result;
+    });
+
+    // Clean up dirty flags for participants no longer in list
     setDirtyMoney(prev => {
       const newSet = new Set(prev);
       Array.from(newSet).forEach(id => {
@@ -134,26 +148,7 @@ export function EventBudgetManagementSection({
       });
       return newSet;
     });
-  }, [participantIds, persons, totalBudget]); // Only re-initialize when personIds/persons/totalBudget change
-
-  // React to budget changes: recalculate money for untouched participants
-  useEffect(() => {
-    if (moneyParticipants.length === 0) return;
-
-    const untouchedParticipants = moneyParticipants.filter(p => !dirtyMoney.has(p.personId));
-    if (untouchedParticipants.length === 0) return; // All manually edited
-
-    const defaultMoneyShare = untouchedParticipants.length > 0
-      ? Math.floor((totalBudget / participantIds.length) * 100) / 100
-      : 0;
-
-    const updated = moneyParticipants.map(p => {
-      if (dirtyMoney.has(p.personId)) return p; // Preserve manual edits
-      return { ...p, amount: defaultMoneyShare };
-    });
-
-    setMoneyParticipants(updated);
-  }, [totalBudget, participantIds.length]); // React to budget and participant count changes
+  }, [participantIds, persons, totalBudget, dirtyMoney]); // React to all relevant changes
 
   // React to defaultTimeAllocationType changes: update untouched time allocations
   useEffect(() => {
