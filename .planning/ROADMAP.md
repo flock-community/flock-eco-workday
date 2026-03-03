@@ -26,7 +26,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 |-------|----------------|--------|-----------|
 | 1. Frontend Prototype | N/A | Complete | 2026-03-02 |
 | 2. Event Budget Flow Redesign | 3/3 | Complete | 2026-03-02 |
-| 3. Domain Layer | 0/2 | Not started | - |
+| 3. Domain Layer | 2/2 | Complete | 2026-03-03 |
 | 4. Persistence & Contract | 0/? | Not started | - |
 | 5. API Layer | 0/? | Not started | - |
 | 6. Budget Tab Integration | 0/? | Not started | - |
@@ -76,8 +76,8 @@ Plans:
   4. Developer can run domain layer tests without Spring context or database
 **Plans**: 2 plans
 Plans:
-- [ ] 03-01-PLAN.md -- Domain entities (sealed hierarchy, value objects, persistence ports) (DOM-01, DOM-02)
-- [ ] 03-02-PLAN.md -- Domain services, events, and unit tests (DOM-01, DOM-02)
+- [x] 03-01-PLAN.md -- Domain entities (sealed hierarchy, value objects, persistence ports) (DOM-01, DOM-02)
+- [x] 03-02-PLAN.md -- Domain services, events, and unit tests (DOM-01, DOM-02)
 
 ### Phase 4: Persistence & Contract
 **Goal**: Application can store and retrieve budget allocations from database
@@ -166,4 +166,4 @@ All 23 v1 requirements mapped. No orphans.
 - Phase 8 executes last (requires contract entity changes from Phase 4 and API from Phase 5)
 
 ---
-*Last updated: 2026-03-02 (Phase 2 marked complete, current phase advanced to Phase 3)*
+*Last updated: 2026-03-03 (Phase 3 marked complete with 2/2 plans finished)*
