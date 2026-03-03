@@ -3,7 +3,7 @@
 **Project:** Budget Allocation Tracking
 **Created:** 2026-03-02
 **Status:** Active
-**Current Phase:** Phase 2
+**Current Phase:** Phase 3
 
 ## Project Overview
 
@@ -12,7 +12,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 ## Phases
 
 - [x] **Phase 1: Frontend Prototype** - Frontend UI with mocked data (COMPLETE)
-- [ ] **Phase 2: Event Budget Flow Redesign** - Redesign end-to-end event budget allocation flow (frontend-only)
+- [x] **Phase 2: Event Budget Flow Redesign** - Redesign end-to-end event budget allocation flow (frontend-only)
 - [ ] **Phase 3: Domain Layer** - Business entities and persistence contracts
 - [ ] **Phase 4: Persistence & Contract** - Database schema and contract extensions
 - [ ] **Phase 5: API Layer** - REST endpoints with type-safe contracts
@@ -25,7 +25,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Frontend Prototype | N/A | Complete | 2026-03-02 |
-| 2. Event Budget Flow Redesign | 2/3 | In progress (gap closure) | - |
+| 2. Event Budget Flow Redesign | 3/3 | Complete | 2026-03-02 |
 | 3. Domain Layer | 0/? | Not started | - |
 | 4. Persistence & Contract | 0/? | Not started | - |
 | 5. API Layer | 0/? | Not started | - |
@@ -61,8 +61,8 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 Plans:
 - [x] 02-01-PLAN.md -- Lift Formik state to EventDialog, wire budget section to form values, single save, dirty tracking, unsaved changes warning (EVT-05)
 - [x] 02-02-PLAN.md -- Progressive disclosure with collapsed summary banner, expand-on-click, per-participant row expansion, guidance notes (EVT-06)
-- [ ] 02-03-PLAN.md -- Gap closure: fix participant removal sync, conditional section rendering, remove STUDY fallback (EVT-05, EVT-06)
-**Status**: In progress (gap closure from UAT)
+- [x] 02-03-PLAN.md -- Gap closure: fix participant removal sync, conditional section rendering, remove STUDY fallback (EVT-05, EVT-06)
+**Status**: Complete
 **Files**: EventDialog.tsx, EventForm.tsx, EventBudgetManagementDialog.tsx, EventBudgetSummaryBanner.tsx
 
 ### Phase 3: Domain Layer
@@ -163,4 +163,4 @@ All 23 v1 requirements mapped. No orphans.
 - Phase 8 executes last (requires contract entity changes from Phase 4 and API from Phase 5)
 
 ---
-*Last updated: 2026-03-02 (revised: added gap closure plan 02-03 for UAT fixes)*
+*Last updated: 2026-03-02 (Phase 2 marked complete, current phase advanced to Phase 3)*
