@@ -7,8 +7,8 @@
 
 ### Domain & Persistence
 
-- [ ] **DOM-01**: System stores BudgetAllocation as sealed hierarchy (HackTime, StudyTime, StudyMoney) with JOINED inheritance
-- [ ] **DOM-02**: DailyTimeAllocation tracks per-day hours with type override (STUDY/HACK)
+- [x] **DOM-01**: System stores BudgetAllocation as sealed hierarchy (HackTime, StudyTime, StudyMoney) with JOINED inheritance
+- [x] **DOM-02**: DailyTimeAllocation tracks per-day hours with type override (STUDY/HACK)
 - [ ] **DOM-03**: Liquibase migrations create budget_allocation table hierarchy and element collection tables
 - [ ] **DOM-04**: ContractInternal entity extended with studyHours and studyMoney fields
 
@@ -74,8 +74,8 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DOM-01 | Phase 3 | Pending |
-| DOM-02 | Phase 3 | Pending |
+| DOM-01 | Phase 3 | Complete |
+| DOM-02 | Phase 3 | Complete |
 | DOM-03 | Phase 4 | Pending |
 | DOM-04 | Phase 4 | Pending |
 | API-01 | Phase 5 | Pending |
