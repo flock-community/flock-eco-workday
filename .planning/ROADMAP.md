@@ -26,7 +26,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 |-------|----------------|--------|-----------|
 | 1. Frontend Prototype | N/A | Complete | 2026-03-02 |
 | 2. Event Budget Flow Redesign | 3/3 | Complete | 2026-03-02 |
-| 3. Domain Layer | 0/? | Not started | - |
+| 3. Domain Layer | 0/2 | Not started | - |
 | 4. Persistence & Contract | 0/? | Not started | - |
 | 5. API Layer | 0/? | Not started | - |
 | 6. Budget Tab Integration | 0/? | Not started | - |
@@ -74,7 +74,10 @@ Plans:
   2. Developer can call DailyTimeAllocation with per-day type override (STUDY/HACK) for mixed-type events
   3. Developer can invoke domain services through persistence port interfaces without database dependency
   4. Developer can run domain layer tests without Spring context or database
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 03-01-PLAN.md -- Domain entities (sealed hierarchy, value objects, persistence ports) (DOM-01, DOM-02)
+- [ ] 03-02-PLAN.md -- Domain services, events, and unit tests (DOM-01, DOM-02)
 
 ### Phase 4: Persistence & Contract
 **Goal**: Application can store and retrieve budget allocations from database
