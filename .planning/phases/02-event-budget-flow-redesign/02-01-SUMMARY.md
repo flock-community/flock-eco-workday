@@ -21,6 +21,7 @@ decisions:
   - Per-participant dirty tracking using Set<string> for efficient lookups
   - Budget section derives all defaults from formValues (budget, defaultTimeAllocationType, personIds, days)
   - Unsaved changes warning on dialog close when budgetsDirty flag is true
+requirements-completed: [EVT-05]
 metrics:
   duration_minutes: 7
   tasks_completed: 2
