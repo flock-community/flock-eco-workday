@@ -3,7 +3,7 @@
 **Project:** Budget Allocation Tracking
 **Created:** 2026-03-02
 **Status:** Active
-**Current Phase:** Phase 3
+**Current Phase:** Phase 4
 
 ## Project Overview
 
@@ -13,7 +13,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 
 - [x] **Phase 1: Frontend Prototype** - Frontend UI with mocked data (COMPLETE)
 - [x] **Phase 2: Event Budget Flow Redesign** - Redesign end-to-end event budget allocation flow (frontend-only)
-- [ ] **Phase 3: Domain Layer** - Business entities and persistence contracts
+- [x] **Phase 3: Domain Layer** - Business entities and persistence contracts
 - [ ] **Phase 4: Persistence & Contract** - Database schema and contract extensions
 - [ ] **Phase 5: API Layer** - REST endpoints with type-safe contracts
 - [ ] **Phase 6: Budget Tab Integration** - Connect person-centric UI to real API
@@ -27,7 +27,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 | 1. Frontend Prototype | N/A | Complete | 2026-03-02 |
 | 2. Event Budget Flow Redesign | 3/3 | Complete | 2026-03-02 |
 | 3. Domain Layer | 2/2 | Complete | 2026-03-03 |
-| 4. Persistence & Contract | 0/? | Not started | - |
+| 4. Persistence & Contract | 0/3 | In progress | - |
 | 5. API Layer | 0/? | Not started | - |
 | 6. Budget Tab Integration | 0/? | Not started | - |
 | 7. Event Integration | 0/? | Not started | - |
@@ -88,7 +88,11 @@ Plans:
   2. Developer can run Liquibase migrations locally without FK constraint failures
   3. ContractInternal entity persists studyHours and studyMoney fields with correct types (BigDecimal)
   4. JPA repositories can save and retrieve all three allocation types with lazy-loaded daily breakdowns
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 04-01-PLAN.md -- Liquibase migrations and JPA entity classes for BudgetAllocation JOINED inheritance hierarchy (DOM-03)
+- [ ] 04-02-PLAN.md -- Repositories, domain-entity mappers, persistence adapters, and integration tests (DOM-03)
+- [ ] 04-03-PLAN.md -- ContractInternal studyHours/studyMoney fields with Liquibase migration (DOM-04)
 
 ### Phase 5: API Layer
 **Goal**: External clients can query and mutate budget allocations via REST API
@@ -166,4 +170,4 @@ All 23 v1 requirements mapped. No orphans.
 - Phase 8 executes last (requires contract entity changes from Phase 4 and API from Phase 5)
 
 ---
-*Last updated: 2026-03-03 (Phase 3 marked complete with 2/2 plans finished)*
+*Last updated: 2026-03-05 (Phase 4 planned with 3 plans in 2 waves)*
