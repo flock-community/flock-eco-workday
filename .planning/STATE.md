@@ -86,9 +86,10 @@ Application can store and retrieve budget allocations from database with JOINED 
 15. **2026-03-03**: Separate polymorphic (reads) and type-specific (mutations) persistence ports — rationale: clean type-safe boundaries following Expense pattern
 16. **2026-03-03**: Use JUnit 5 instead of pure kotlin-test for domain layer tests — rationale: maintain consistency with existing codebase test infrastructure
 17. **2026-03-03**: Manual test doubles (object expressions and lambdas) instead of mocking frameworks — rationale: keep domain tests lightweight and dependency-free
-18. **2026-03-05**: Use BigDecimal for studyMoney field to ensure monetary precision without floating-point errors
-19. **2026-03-05**: Use explicit column name 'study_money_budget' (not 'study_money') via @Column annotation per user decision
-20. **2026-03-05**: Default values of 0 and BigDecimal.ZERO for backward compatibility with existing contracts
+18. **2026-03-05**: Use explicit @Table and @CollectionTable annotations on all entities — rationale: ensure entity-derived table names match Liquibase schema exactly, prevent naming mismatches
+19. **2026-03-05**: Use BigDecimal for studyMoney field to ensure monetary precision without floating-point errors
+20. **2026-03-05**: Use explicit column name 'study_money_budget' (not 'study_money') via @Column annotation per user decision
+21. **2026-03-05**: Default values of 0 and BigDecimal.ZERO for backward compatibility with existing contracts
 
 ### Active Todos
 - [x] Generate Phase 2 plan (event budget flow redesign) — Complete
@@ -126,20 +127,20 @@ None logged yet.
 | Phase 02 P03 | 3 | 2 tasks | 2 files |
 | Phase 03 P01 | 1 | 2 tasks | 7 files |
 | Phase 03 P02 | 4 | 2 tasks | 6 files |
+| Phase 04 P01 | 11 | 3 tasks | 8 files |
 | Phase 04 P03 | 8 | 3 tasks | 8 files |
 
 ## Session Continuity
 
 ### Last Session Summary
-- Executed Phase 4 Plan 03: Contract Internal Study Budget Fields
-- Created Liquibase changelog-028 adding study_hours and study_money_budget columns to contract_internal
-- Extended ContractInternal entity with studyHours (Int) and studyMoney (BigDecimal) fields
-- Extended ContractInternalForm with matching fields for API input
-- Updated ContractService.internalize to map new fields
-- Created ContractInternalPersistenceTest with 4 integration tests (all passing)
-- Auto-fixed blocking issues from parallel Plan 04-01 (EventForm parameter rename)
-- Created 04-03-SUMMARY.md documenting implementation (3 tasks, 3 commits, 485 seconds)
-- Phase 4 complete (all plans finished)
+- Executed Phase 4 Plan 01: Database Schema & JPA Entities
+- Created Liquibase changelog-027 with 8 changesets (base table + 3 child + 3 element collection + all FKs)
+- Created 5 JPA entity/embeddable classes with JOINED inheritance and LAZY element collections
+- Created BudgetAllocationSchemaTest with 5 passing integration tests validating schema structure
+- Auto-fixed spotless formatting violations in domain module (blocking issue)
+- Added explicit @Table and @CollectionTable annotations to match Liquibase schema
+- Created 04-01-SUMMARY.md documenting implementation (3 tasks, 4 commits, 11 minutes)
+- Phase 4 Plan 01 complete (note: Plans 04-02 and 04-03 executed in parallel)
 
 ### Next Session
 Execute Phase 5 (API Layer) to create Wirespec contracts and REST endpoints for budget allocations.
