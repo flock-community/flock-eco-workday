@@ -18,7 +18,7 @@
 - [ ] **API-02**: Admin can query allocations by event code via GET endpoint
 - [ ] **API-03**: Admin can create/update/delete StudyMoney allocations via REST API
 - [ ] **API-04**: Admin can create/update HackTime and StudyTime allocations via REST API
-- [ ] **API-05**: Authority-based access control (READ for viewing, ADMIN for mutations)
+- [x] **API-05**: Authority-based access control (READ for viewing, ADMIN for mutations)
 
 ### Budget Tab (Person-Centric)
 
@@ -40,7 +40,7 @@
 ### Contract Form
 
 - [ ] **CTR-01**: Contract form shows studyHours and studyMoney fields for internal contracts
-- [ ] **CTR-02**: Wirespec contract updated with new ContractInternal fields
+- [x] **CTR-02**: Wirespec contract updated with new ContractInternal fields
 
 ### Development
 
@@ -82,7 +82,7 @@
 | API-02 | Phase 5 | Pending |
 | API-03 | Phase 5 | Pending |
 | API-04 | Phase 5 | Pending |
-| API-05 | Phase 5 | Pending |
+| API-05 | Phase 5 | Complete |
 | TAB-01 | Phase 6 | Pending |
 | TAB-02 | Phase 6 | Pending |
 | TAB-03 | Phase 6 | Pending |
@@ -95,7 +95,7 @@
 | EVT-05 | Phase 2 | Complete |
 | EVT-06 | Phase 2 | Complete |
 | CTR-01 | Phase 8 | Pending |
-| CTR-02 | Phase 5 | Pending |
+| CTR-02 | Phase 5 | Complete |
 | DEV-01 | Phase 8 | Pending |
 
 **Coverage:**
