@@ -25,7 +25,7 @@ fun <T : Approve> T.applyAllowedToUpdate(
 private fun validateApprovalStatusChange(
     currentStatus: ApprovalStatus,
     requestedNewStatus: ApprovalStatus,
-    isAdmin: Boolean
+    isAdmin: Boolean,
 ) {
     if (currentStatus !== ApprovalStatus.REQUESTED && !isAdmin) {
         throw ResponseStatusException(
