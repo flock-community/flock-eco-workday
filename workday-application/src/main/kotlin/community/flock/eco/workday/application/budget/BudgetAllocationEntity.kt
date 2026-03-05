@@ -7,10 +7,12 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
 import java.time.LocalDate
 import java.util.UUID
 
 @Entity
+@Table(name = "budget_allocation")
 @Inheritance(strategy = InheritanceType.JOINED)
 abstract class BudgetAllocationEntity(
     id: Long = 0,
