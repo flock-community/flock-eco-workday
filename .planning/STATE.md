@@ -2,63 +2,65 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 03
-current_plan: Not started
-status: completed
-last_updated: "2026-03-03T10:51:28.714Z"
+current_phase: 05
+current_plan: 01 of 02
+status: in-progress
+last_updated: "2026-03-05T22:00:15Z"
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
-  percent: 100
+  total_phases: 8
+  completed_phases: 4
+  total_plans: 9
+  completed_plans: 9
+  percent: 56
 ---
 
 # Project State: Budget Allocations for Flock Workday
 
-**Last Updated:** 2026-03-03
-**Current Phase:** 03
-**Current Plan:** Not started
-**Status:** Milestone complete
+**Last Updated:** 2026-03-05
+**Current Phase:** 05
+**Current Plan:** 01 of 02
+**Status:** In progress (Phase 5 API Layer)
 
 ## Project Reference
 
 **Core Value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
 
-**Current Focus:** Completing frontend prototype by redesigning the end-to-end flow of creating/editing an event with budget allocations. This addresses disconnected flow, cluttered UI, and duplicate logic issues in the current prototype.
+**Current Focus:** Building API layer for budget allocations — wirespec contracts, code generation, controller implementation, and security configuration.
 
 ## Current Position
 
-**Phase:** 4 of 8 - Persistence & Contract
-**Plan:** 03 of 03
-**Status:** Complete (All plans finished)
-**Progress:** [██████████] 100%
+**Phase:** 5 of 8 - API Layer
+**Plan:** 01 of 02 (Plan 01 complete)
+**Status:** In progress
+**Progress:** [█████░░░░░] 56%
 
-### Phase 4 Objective
-Application can store and retrieve budget allocations from database with JOINED inheritance and contract study budget fields.
+### Phase 5 Objective
+REST API endpoints for budget allocations with wirespec contract-first approach, controller implementation, and security configuration.
 
 **Success Criteria:**
-1. Database schema includes budget_allocation hierarchy with JOINED inheritance (base + child + element collection tables)
-2. Developer can run Liquibase migrations locally without FK constraint failures
-3. ContractInternal entity persists studyHours and studyMoney fields with correct types (BigDecimal)
-4. JPA repositories can save and retrieve all three allocation types with lazy-loaded daily breakdowns
+1. 8 wirespec endpoints defined in budget-allocations.ws
+2. ContractInternal/ContractInternalForm wirespec types include studyHours and studyMoney
+3. Kotlin handler interfaces generated (BudgetAllocationAll.Handler, etc.)
+4. TypeScript types generated for both budget-allocations and updated contracts
+5. BudgetAllocationAuthority enum with READ, WRITE, ADMIN
+6. All 4 domain services wired as Spring beans via Configuration
 
-**Requirements in Phase:** DOM-03, DOM-04
+**Requirements in Phase:** API-01, API-02, API-03, API-04, API-05, CTR-02
 
-**Key Implementation:**
-- Liquibase changelog-027 creates budget_allocation hierarchy with JOINED inheritance
-- JPA entities map to database schema with @Inheritance(strategy = InheritanceType.JOINED)
-- @ElementCollection for daily_time_allocations with LAZY fetch + explicit JOIN FETCH queries
-- ContractInternal extended with studyHours (Int) and studyMoney (BigDecimal) via changelog-028
-- Spring Data JPA repositories with domain-entity mappers implementing persistence ports
+**Key Implementation (Plan 01):**
+- Wirespec budget-allocations.ws with 8 endpoints and complete type definitions
+- ContractInternal types extended with studyHours/studyMoney in wirespec
+- BudgetAllocationAuthority enum for access control
+- BudgetAllocationConfiguration wiring 4 domain services as Spring beans
+- Kotlin handler interfaces and TypeScript types generated from wirespec
 
 ## Performance Metrics
 
 ### Velocity
 - **Phases completed:** 4 (Phase 1: Frontend Prototype, Phase 2: Event Budget Flow Redesign, Phase 3: Domain Layer, Phase 4: Persistence & Contract)
-- **Requirements completed:** 6 of 23 v1 requirements (EVT-05, EVT-06, DOM-01, DOM-02, DOM-03, DOM-04 satisfied)
-- **Plans completed:** 8 (02-01, 02-02, 02-03, 03-01, 03-02, 04-01, 04-02, 04-03) — all with passing tests
-- **Completion rate:** 50% (4/8 phases complete)
+- **Requirements completed:** 8 of 23 v1 requirements (EVT-05, EVT-06, DOM-01, DOM-02, DOM-03, DOM-04, CTR-02, API-05 satisfied)
+- **Plans completed:** 9 (02-01, 02-02, 02-03, 03-01, 03-02, 04-01, 04-02, 04-03, 05-01) — all with passing builds
+- **Completion rate:** 56% (4/8 phases complete, Phase 5 Plan 1 done)
 
 ### Quality
 - **Build status:** Pass (workday-application compiles cleanly with all tests passing)
@@ -90,6 +92,8 @@ Application can store and retrieve budget allocations from database with JOINED 
 19. **2026-03-05**: Use BigDecimal for studyMoney field to ensure monetary precision without floating-point errors
 20. **2026-03-05**: Use explicit column name 'study_money_budget' (not 'study_money') via @Column annotation per user decision
 21. **2026-03-05**: Default values of 0 and BigDecimal.ZERO for backward compatibility with existing contracts
+22. **2026-03-05**: Escaped `type` field with backticks in wirespec — rationale: `type` is a reserved keyword in wirespec language
+23. **2026-03-05**: TypeScript wirespec output gitignored, generated on demand via `npm run generate` — rationale: follows existing project convention
 
 ### Active Todos
 - [x] Generate Phase 2 plan (event budget flow redesign) — Complete
@@ -113,7 +117,7 @@ None logged yet.
 | 2. Event Budget Flow Redesign | Complete | EVT-05, EVT-06 | 4 criteria met |
 | 3. Domain Layer | Complete | DOM-01, DOM-02 | 4 criteria met |
 | 4. Persistence & Contract | Complete | DOM-03, DOM-04 | 4 criteria met |
-| 5. API Layer | Not started | API-01, API-02, API-03, API-04, API-05, CTR-02 | 6 criteria |
+| 5. API Layer | In progress (1/2 plans) | API-01, API-02, API-03, API-04, API-05, CTR-02 | 6 criteria |
 | 6. Budget Tab Integration | Not started | TAB-01, TAB-02, TAB-03, TAB-04, TAB-05 | 5 criteria |
 | 7. Event Integration | Not started | EVT-01, EVT-02, EVT-03, EVT-04 | 4 criteria |
 | 8. Contract Form & Dev Data | Not started | CTR-01, DEV-01 | 4 criteria |
@@ -129,27 +133,26 @@ None logged yet.
 | Phase 03 P02 | 4 | 2 tasks | 6 files |
 | Phase 04 P01 | 11 | 3 tasks | 8 files |
 | Phase 04 P03 | 8 | 3 tasks | 8 files |
+| Phase 05 P01 | 3 | 2 tasks | 4 files |
 
 ## Session Continuity
 
 ### Last Session Summary
-- Executed Phase 4 in 2 waves: Wave 1 (04-01, 04-03 parallel) + Wave 2 (04-02)
-- Plan 04-01: Liquibase changelog-027, 5 JPA entities, 5 schema validation tests
-- Plan 04-03: ContractInternal extended with studyHours/studyMoney, 4 persistence tests
-- Plan 04-02: 4 repositories, mapper, 4 persistence adapters, 7 integration tests
-- All 16 phase tests pass (5 schema + 4 contract + 7 persistence)
-- Phase 4 complete: persistence layer fully wired to domain ports
+- Executed Phase 5 Plan 01 (Wirespec Contracts and Spring DI)
+- Created budget-allocations.ws with 8 endpoints and complete type definitions
+- Updated contracts.ws with studyHours/studyMoney on ContractInternal types
+- Created BudgetAllocationAuthority enum and BudgetAllocationConfiguration
+- Generated Kotlin handler interfaces and TypeScript types
+- Maven compile succeeds cleanly
 
 ### Next Session
-Execute Phase 5 (API Layer) to create Wirespec contracts and REST endpoints for budget allocations.
+Execute Phase 5 Plan 02 (Controller implementation) to create REST controller implementing wirespec handler interfaces.
 
 ### Context for Next Agent
-- Phase 1 (frontend prototype foundation) complete with 15 commits on feat/hack-and-study-budget-allocations branch
-- Phase 2 is frontend-only work (no backend dependencies) addressing UX issues in event budget flow
-- Implementation plan at docs/plans/2026-02-28-budget-allocations-implementation.md has detailed context for Phase 2
-- Backend work starts in Phase 3 (domain layer)
-- Research identified Expense domain as exact pattern to follow for backend phases
-- Critical pitfalls documented: N+1 queries (LAZY fetch), FK ordering (Liquibase), BigDecimal precision, discriminator strategy
+- Phase 5 Plan 01 complete: wirespec contracts defined, Kotlin handlers generated, domain services wired as beans
+- Controller (Plan 02) should implement generated handler interfaces (BudgetAllocationAll.Handler, etc.)
+- Inject BudgetAllocationService, HackTime/StudyTime/StudyMoney services via Configuration beans
+- Use BudgetAllocationAuthority for @PreAuthorize annotations
 - All work happens in `workday-application` module (workday-core and workday-user are frozen)
 
 ---
