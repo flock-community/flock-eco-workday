@@ -180,6 +180,8 @@ class ContractService(
             hoursPerWeek = hoursPerWeek,
             holidayHours = holidayHours,
             hackHours = hackHours,
+            studyHours = studyHours,
+            studyMoney = studyMoney,
             person =
                 it?.person
                     ?: personId.let { personRepository.findByUuid(it).toNullable() }
