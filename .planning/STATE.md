@@ -29,40 +29,40 @@ progress:
 
 ## Current Position
 
-**Phase:** 3 of 8 - Domain Layer
-**Plan:** 02 of 02
+**Phase:** 4 of 8 - Persistence & Contract
+**Plan:** 03 of 03
 **Status:** Complete (All plans finished)
 **Progress:** [██████████] 100%
 
-### Phase 3 Objective
-Create complete domain layer (types, ports, services, events) for BudgetAllocation following hexagonal architecture pattern.
+### Phase 4 Objective
+Application can store and retrieve budget allocations from database with JOINED inheritance and contract study budget fields.
 
 **Success Criteria:**
-1. BudgetAllocation sealed type hierarchy with 3 concrete implementations (HackTime, StudyTime, StudyMoney)
-2. Persistence port interfaces (1 polymorphic + 3 type-specific) define all data access contracts
-3. Domain services delegate to ports and publish events (Create/Update/Delete)
-4. Domain layer compiles with zero infrastructure dependencies and passes unit tests without Spring/DB
+1. Database schema includes budget_allocation hierarchy with JOINED inheritance (base + child + element collection tables)
+2. Developer can run Liquibase migrations locally without FK constraint failures
+3. ContractInternal entity persists studyHours and studyMoney fields with correct types (BigDecimal)
+4. JPA repositories can save and retrieve all three allocation types with lazy-loaded daily breakdowns
 
-**Requirements in Phase:** DOM-01, DOM-02
+**Requirements in Phase:** DOM-03, DOM-04
 
 **Key Implementation:**
-- Sealed interface BudgetAllocation with Long id for JOINED inheritance
-- DailyTimeAllocation value object with per-day type override (BudgetAllocationType)
-- BigDecimal for StudyMoneyBudgetAllocation amount (monetary precision)
-- Polymorphic queries vs type-specific mutations pattern
-- Domain events for cross-cutting concerns
+- Liquibase changelog-027 creates budget_allocation hierarchy with JOINED inheritance
+- JPA entities map to database schema with @Inheritance(strategy = InheritanceType.JOINED)
+- @ElementCollection for daily_time_allocations with LAZY fetch + explicit JOIN FETCH queries
+- ContractInternal extended with studyHours (Int) and studyMoney (BigDecimal) via changelog-028
+- Spring Data JPA repositories with domain-entity mappers implementing persistence ports
 
 ## Performance Metrics
 
 ### Velocity
-- **Phases completed:** 3 (Phase 1: Frontend Prototype, Phase 2: Event Budget Flow Redesign, Phase 3: Domain Layer)
-- **Requirements completed:** 4 of 23 v1 requirements (EVT-05, EVT-06, DOM-01, DOM-02 satisfied)
-- **Plans completed:** 5 (02-01, 02-02, 02-03, 03-01, 03-02)
-- **Completion rate:** 38% (3/8 phases complete)
+- **Phases completed:** 4 (Phase 1: Frontend Prototype, Phase 2: Event Budget Flow Redesign, Phase 3: Domain Layer, Phase 4: Persistence & Contract)
+- **Requirements completed:** 6 of 23 v1 requirements (EVT-05, EVT-06, DOM-01, DOM-02, DOM-03, DOM-04 satisfied)
+- **Plans completed:** 8 (02-01, 02-02, 02-03, 03-01, 03-02, 04-01, 04-02, 04-03)
+- **Completion rate:** 50% (4/8 phases complete)
 
 ### Quality
-- **Build status:** Pass (domain module compiles cleanly with 7 passing tests)
-- **Test coverage:** Domain layer fully tested without Spring/DB dependencies
+- **Build status:** Pass (workday-application compiles cleanly with all tests passing)
+- **Test coverage:** Domain layer + persistence layer integration tests (all passing)
 - **Blockers:** 0
 - **Technical debt:** 0 items logged
 
@@ -86,6 +86,9 @@ Create complete domain layer (types, ports, services, events) for BudgetAllocati
 15. **2026-03-03**: Separate polymorphic (reads) and type-specific (mutations) persistence ports — rationale: clean type-safe boundaries following Expense pattern
 16. **2026-03-03**: Use JUnit 5 instead of pure kotlin-test for domain layer tests — rationale: maintain consistency with existing codebase test infrastructure
 17. **2026-03-03**: Manual test doubles (object expressions and lambdas) instead of mocking frameworks — rationale: keep domain tests lightweight and dependency-free
+18. **2026-03-05**: Use BigDecimal for studyMoney field to ensure monetary precision without floating-point errors
+19. **2026-03-05**: Use explicit column name 'study_money_budget' (not 'study_money') via @Column annotation per user decision
+20. **2026-03-05**: Default values of 0 and BigDecimal.ZERO for backward compatibility with existing contracts
 
 ### Active Todos
 - [x] Generate Phase 2 plan (event budget flow redesign) — Complete
@@ -108,13 +111,13 @@ None logged yet.
 | 1. Frontend Prototype | Complete | N/A | 5 criteria met |
 | 2. Event Budget Flow Redesign | Complete | EVT-05, EVT-06 | 4 criteria met |
 | 3. Domain Layer | Complete | DOM-01, DOM-02 | 4 criteria met |
-| 4. Persistence & Contract | Not started | DOM-03, DOM-04 | 4 criteria |
+| 4. Persistence & Contract | Complete | DOM-03, DOM-04 | 4 criteria met |
 | 5. API Layer | Not started | API-01, API-02, API-03, API-04, API-05, CTR-02 | 6 criteria |
 | 6. Budget Tab Integration | Not started | TAB-01, TAB-02, TAB-03, TAB-04, TAB-05 | 5 criteria |
 | 7. Event Integration | Not started | EVT-01, EVT-02, EVT-03, EVT-04 | 4 criteria |
 | 8. Contract Form & Dev Data | Not started | CTR-01, DEV-01 | 4 criteria |
 
-**Overall Progress:** 38% (Phases 1-3 complete, 5 phases remaining)
+**Overall Progress:** 50% (Phases 1-4 complete, 4 phases remaining)
 
 | Plan | Duration (min) | Tasks | Files |
 |------|----------------|-------|-------|
@@ -123,23 +126,23 @@ None logged yet.
 | Phase 02 P03 | 3 | 2 tasks | 2 files |
 | Phase 03 P01 | 1 | 2 tasks | 7 files |
 | Phase 03 P02 | 4 | 2 tasks | 6 files |
-| Phase 03 P02 | 232 | 2 tasks | 6 files |
+| Phase 04 P03 | 8 | 3 tasks | 8 files |
 
 ## Session Continuity
 
 ### Last Session Summary
-- Executed Phase 3 Plan 02: Domain Services, Events, and Tests
-- Created BudgetAllocationEvent sealed interface with Create/Update/Delete variants
-- Created 4 domain services (1 polymorphic + 3 type-specific) delegating to persistence ports
-- All services publish domain events on create/update/delete operations
-- Created BudgetAllocationTest with 7 unit tests using manual test doubles
-- All tests pass without Spring context or database dependencies
-- Added JUnit 5 dependencies to domain module for test infrastructure
-- Created 03-02-SUMMARY.md documenting implementation (2 tasks, 2 commits, 232 seconds)
-- Phase 3 complete (all plans finished)
+- Executed Phase 4 Plan 03: Contract Internal Study Budget Fields
+- Created Liquibase changelog-028 adding study_hours and study_money_budget columns to contract_internal
+- Extended ContractInternal entity with studyHours (Int) and studyMoney (BigDecimal) fields
+- Extended ContractInternalForm with matching fields for API input
+- Updated ContractService.internalize to map new fields
+- Created ContractInternalPersistenceTest with 4 integration tests (all passing)
+- Auto-fixed blocking issues from parallel Plan 04-01 (EventForm parameter rename)
+- Created 04-03-SUMMARY.md documenting implementation (3 tasks, 3 commits, 485 seconds)
+- Phase 4 complete (all plans finished)
 
 ### Next Session
-Execute Phase 4 (Persistence & Contract Layer) to implement JPA adapters and Wirespec contracts.
+Execute Phase 5 (API Layer) to create Wirespec contracts and REST endpoints for budget allocations.
 
 ### Context for Next Agent
 - Phase 1 (frontend prototype foundation) complete with 15 commits on feat/hack-and-study-budget-allocations branch
