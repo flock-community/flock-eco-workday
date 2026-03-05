@@ -1,0 +1,225 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-027-budget-allocations-1
+      author: claude-opus-4.6
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: budget_allocationPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    unique: true
+                  name: code
+                  type: VARCHAR(255)
+              - column:
+                  name: person_id
+                  type: BIGINT
+              - column:
+                  name: event_code
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: date
+                  type: DATE
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+            tableName: budget_allocation
+  - changeSet:
+      id: db.changelog-027-budget-allocations-2
+      author: claude-opus-4.6
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: hack_time_budget_allocationPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: total_hours
+                  type: DOUBLE
+            tableName: hack_time_budget_allocation
+  - changeSet:
+      id: db.changelog-027-budget-allocations-3
+      author: claude-opus-4.6
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: study_time_budget_allocationPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: total_hours
+                  type: DOUBLE
+            tableName: study_time_budget_allocation
+  - changeSet:
+      id: db.changelog-027-budget-allocations-4
+      author: claude-opus-4.6
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: study_money_budget_allocationPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: amount
+                  type: DECIMAL(19, 2)
+            tableName: study_money_budget_allocation
+  - changeSet:
+      id: db.changelog-027-budget-allocations-5
+      author: claude-opus-4.6
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: hack_time_budget_allocation_id
+                  type: BIGINT
+              - column:
+                  name: date
+                  type: DATE
+              - column:
+                  name: hours
+                  type: DOUBLE
+              - column:
+                  name: type
+                  type: VARCHAR(255)
+            tableName: hack_time_budget_allocation_daily_time_allocations
+  - changeSet:
+      id: db.changelog-027-budget-allocations-6
+      author: claude-opus-4.6
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: study_time_budget_allocation_id
+                  type: BIGINT
+              - column:
+                  name: date
+                  type: DATE
+              - column:
+                  name: hours
+                  type: DOUBLE
+              - column:
+                  name: type
+                  type: VARCHAR(255)
+            tableName: study_time_budget_allocation_daily_time_allocations
+  - changeSet:
+      id: db.changelog-027-budget-allocations-7
+      author: claude-opus-4.6
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: study_money_budget_allocation_id
+                  type: BIGINT
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: file
+                  type: UUID
+            tableName: study_money_budget_allocation_files
+  - changeSet:
+      id: db.changelog-027-budget-allocations-8
+      author: claude-opus-4.6
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: person_id
+            baseTableName: budget_allocation
+            constraintName: FK_budget_allocation_person
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: person
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: id
+            baseTableName: hack_time_budget_allocation
+            constraintName: FK_hack_time_budget_allocation_budget_allocation
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: budget_allocation
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: id
+            baseTableName: study_time_budget_allocation
+            constraintName: FK_study_time_budget_allocation_budget_allocation
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: budget_allocation
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: id
+            baseTableName: study_money_budget_allocation
+            constraintName: FK_study_money_budget_allocation_budget_allocation
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: budget_allocation
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: hack_time_budget_allocation_id
+            baseTableName: hack_time_budget_allocation_daily_time_allocations
+            constraintName: FK_hack_time_daily_allocations_hack_time_budget_allocation
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: hack_time_budget_allocation
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: study_time_budget_allocation_id
+            baseTableName: study_time_budget_allocation_daily_time_allocations
+            constraintName: FK_study_time_daily_allocations_study_time_budget_allocation
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: study_time_budget_allocation
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: study_money_budget_allocation_id
+            baseTableName: study_money_budget_allocation_files
+            constraintName: FK_study_money_files_study_money_budget_allocation
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: study_money_budget_allocation
+            validate: true

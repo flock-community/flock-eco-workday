@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-028-contract-internal-study-budget
+      author: claude-opus-4.6
+      changes:
+        - addColumn:
+            tableName: contract_internal
+            columns:
+              - column:
+                  name: study_hours
+                  type: integer
+                  defaultValue: "0"
+              - column:
+                  name: study_money_budget
+                  type: DECIMAL(19, 2)
+                  defaultValue: "0.00"
