@@ -3,7 +3,7 @@
 **Project:** Budget Allocation Tracking
 **Created:** 2026-03-02
 **Status:** Active
-**Current Phase:** Phase 4
+**Current Phase:** Phase 5
 
 ## Project Overview
 
@@ -14,7 +14,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 - [x] **Phase 1: Frontend Prototype** - Frontend UI with mocked data (COMPLETE)
 - [x] **Phase 2: Event Budget Flow Redesign** - Redesign end-to-end event budget allocation flow (frontend-only)
 - [x] **Phase 3: Domain Layer** - Business entities and persistence contracts
-- [ ] **Phase 4: Persistence & Contract** - Database schema and contract extensions
+- [x] **Phase 4: Persistence & Contract** - Database schema and contract extensions
 - [ ] **Phase 5: API Layer** - REST endpoints with type-safe contracts
 - [ ] **Phase 6: Budget Tab Integration** - Connect person-centric UI to real API
 - [ ] **Phase 7: Event Integration** - Connect event-centric budget management to real API
@@ -27,8 +27,8 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 | 1. Frontend Prototype | N/A | Complete | 2026-03-02 |
 | 2. Event Budget Flow Redesign | 3/3 | Complete | 2026-03-02 |
 | 3. Domain Layer | 2/2 | Complete | 2026-03-03 |
-| 4. Persistence & Contract | 0/3 | In progress | - |
-| 5. API Layer | 0/? | Not started | - |
+| 4. Persistence & Contract | 3/3 | Complete | 2026-03-05 |
+| 5. API Layer | 0/2 | In progress | - |
 | 6. Budget Tab Integration | 0/? | Not started | - |
 | 7. Event Integration | 0/? | Not started | - |
 | 8. Contract Form & Dev Data | 0/? | Not started | - |
@@ -90,9 +90,9 @@ Plans:
   4. JPA repositories can save and retrieve all three allocation types with lazy-loaded daily breakdowns
 **Plans**: 3 plans
 Plans:
-- [ ] 04-01-PLAN.md -- Liquibase migrations and JPA entity classes for BudgetAllocation JOINED inheritance hierarchy (DOM-03)
-- [ ] 04-02-PLAN.md -- Repositories, domain-entity mappers, persistence adapters, and integration tests (DOM-03)
-- [ ] 04-03-PLAN.md -- ContractInternal studyHours/studyMoney fields with Liquibase migration (DOM-04)
+- [x] 04-01-PLAN.md -- Liquibase migrations and JPA entity classes for BudgetAllocation JOINED inheritance hierarchy (DOM-03)
+- [x] 04-02-PLAN.md -- Repositories, domain-entity mappers, persistence adapters, and integration tests (DOM-03)
+- [x] 04-03-PLAN.md -- ContractInternal studyHours/studyMoney fields with Liquibase migration (DOM-04)
 
 ### Phase 5: API Layer
 **Goal**: External clients can query and mutate budget allocations via REST API
@@ -105,7 +105,10 @@ Plans:
   4. Admin can POST/PUT hack time and study time allocations with daily breakdowns
   5. Non-admin user receives 403 Forbidden when attempting mutations (authority-based access control enforced)
   6. Wirespec generates TypeScript types matching Kotlin controller signatures (ContractInternal with new fields included)
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 05-01-PLAN.md -- Wirespec contracts (budget-allocations.ws + contracts.ws update), code generation, Authority enum, Spring Configuration (CTR-02, API-05)
+- [ ] 05-02-PLAN.md -- BudgetAllocationMapper, BudgetAllocationController with file endpoints, integration tests (API-01, API-02, API-03, API-04, API-05)
 
 ### Phase 6: Budget Tab Integration
 **Goal**: Users see real budget data in the Budget Allocation tab
@@ -170,4 +173,4 @@ All 23 v1 requirements mapped. No orphans.
 - Phase 8 executes last (requires contract entity changes from Phase 4 and API from Phase 5)
 
 ---
-*Last updated: 2026-03-05 (Phase 4 planned with 3 plans in 2 waves)*
+*Last updated: 2026-03-05 (Phase 5 planned with 2 plans in 2 waves)*
