@@ -232,7 +232,7 @@ class CreateHelper(
         hours = hours ?: ((ChronoUnit.DAYS.between(from, to) + 1) * 8.0),
         days = days?.toMutableList() ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 }.toMutableList(),
         personIds = persons,
-        costs = 538.38,
+        budget = 538.38,
         type = EventType.GENERAL_EVENT,
     ).run {
         eventService.create(this)

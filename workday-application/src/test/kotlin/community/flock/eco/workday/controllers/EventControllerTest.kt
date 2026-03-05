@@ -85,7 +85,7 @@ class EventControllerTest : WorkdayIntegrationTest() {
         to = to,
         hours = 16.0,
         days = mutableListOf(8.0, 8.0),
-        costs = 200.0,
+        budget = 200.0,
         personIds = ids,
         type = type,
     ).run { eventService.create(this) }
