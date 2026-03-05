@@ -4,6 +4,7 @@ import community.flock.eco.workday.application.interfaces.Monthly
 import community.flock.eco.workday.application.interfaces.Period
 import community.flock.eco.workday.application.utils.NumericUtils.sum
 import community.flock.eco.workday.core.events.EventEntityListeners
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
 import java.math.BigDecimal
@@ -25,6 +26,9 @@ class ContractInternal(
     val holidayHours: Int,
     val hackHours: Int,
     val billable: Boolean = true,
+    val studyHours: Int = 0,
+    @Column(name = "study_money_budget")
+    val studyMoney: BigDecimal = BigDecimal.ZERO,
 ) : Contract(id, code, from, to, person, ContractType.INTERNAL),
     Monthly {
     init {
@@ -60,6 +64,13 @@ class ContractInternal(
         this
             .toDateRangeInPeriod(period)
             .sumOf { this.hackHours }
+            .toBigDecimal()
+            .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
+
+    fun totalStudyDayHoursInPeriod(period: Period): BigDecimal =
+        this
+            .toDateRangeInPeriod(period)
+            .sumOf { this.studyHours }
             .toBigDecimal()
             .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
 }

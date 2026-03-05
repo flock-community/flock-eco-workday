@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.forms
 
 import community.flock.eco.workday.application.interfaces.Period
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 
@@ -13,4 +14,6 @@ data class ContractInternalForm(
     val holidayHours: Int,
     val hackHours: Int,
     val billable: Boolean,
+    val studyHours: Int = 0,
+    val studyMoney: BigDecimal = BigDecimal.ZERO,
 ) : Period
