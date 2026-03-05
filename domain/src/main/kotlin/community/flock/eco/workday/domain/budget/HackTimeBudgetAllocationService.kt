@@ -7,10 +7,15 @@ class HackTimeBudgetAllocationService(
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
     fun create(allocation: HackTimeBudgetAllocation): HackTimeBudgetAllocation =
-        repository.create(allocation)
+        repository
+            .create(allocation)
             .also { applicationEventPublisher.publishEvent(CreateBudgetAllocationEvent(it)) }
 
-    fun update(id: Long, allocation: HackTimeBudgetAllocation): HackTimeBudgetAllocation? =
-        repository.updateIfExists(id, allocation)
+    fun update(
+        id: Long,
+        allocation: HackTimeBudgetAllocation,
+    ): HackTimeBudgetAllocation? =
+        repository
+            .updateIfExists(id, allocation)
             ?.also { applicationEventPublisher.publishEvent(UpdateBudgetAllocationEvent(it)) }
 }

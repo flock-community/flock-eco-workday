@@ -7,10 +7,15 @@ class StudyTimeBudgetAllocationService(
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
     fun create(allocation: StudyTimeBudgetAllocation): StudyTimeBudgetAllocation =
-        repository.create(allocation)
+        repository
+            .create(allocation)
             .also { applicationEventPublisher.publishEvent(CreateBudgetAllocationEvent(it)) }
 
-    fun update(id: Long, allocation: StudyTimeBudgetAllocation): StudyTimeBudgetAllocation? =
-        repository.updateIfExists(id, allocation)
+    fun update(
+        id: Long,
+        allocation: StudyTimeBudgetAllocation,
+    ): StudyTimeBudgetAllocation? =
+        repository
+            .updateIfExists(id, allocation)
             ?.also { applicationEventPublisher.publishEvent(UpdateBudgetAllocationEvent(it)) }
 }

@@ -31,5 +31,3 @@ class User(
 ) : AbstractIdEntity(id) {
     override fun toString(): String = "User(id=$id, code='$code', name='$name', email='$email')"
 }
-
-
