@@ -57,7 +57,7 @@ Application can store and retrieve budget allocations from database with JOINED 
 ### Velocity
 - **Phases completed:** 4 (Phase 1: Frontend Prototype, Phase 2: Event Budget Flow Redesign, Phase 3: Domain Layer, Phase 4: Persistence & Contract)
 - **Requirements completed:** 6 of 23 v1 requirements (EVT-05, EVT-06, DOM-01, DOM-02, DOM-03, DOM-04 satisfied)
-- **Plans completed:** 8 (02-01, 02-02, 02-03, 03-01, 03-02, 04-01, 04-02, 04-03)
+- **Plans completed:** 8 (02-01, 02-02, 02-03, 03-01, 03-02, 04-01, 04-02, 04-03) — all with passing tests
 - **Completion rate:** 50% (4/8 phases complete)
 
 ### Quality
@@ -133,14 +133,12 @@ None logged yet.
 ## Session Continuity
 
 ### Last Session Summary
-- Executed Phase 4 Plan 01: Database Schema & JPA Entities
-- Created Liquibase changelog-027 with 8 changesets (base table + 3 child + 3 element collection + all FKs)
-- Created 5 JPA entity/embeddable classes with JOINED inheritance and LAZY element collections
-- Created BudgetAllocationSchemaTest with 5 passing integration tests validating schema structure
-- Auto-fixed spotless formatting violations in domain module (blocking issue)
-- Added explicit @Table and @CollectionTable annotations to match Liquibase schema
-- Created 04-01-SUMMARY.md documenting implementation (3 tasks, 4 commits, 11 minutes)
-- Phase 4 Plan 01 complete (note: Plans 04-02 and 04-03 executed in parallel)
+- Executed Phase 4 in 2 waves: Wave 1 (04-01, 04-03 parallel) + Wave 2 (04-02)
+- Plan 04-01: Liquibase changelog-027, 5 JPA entities, 5 schema validation tests
+- Plan 04-03: ContractInternal extended with studyHours/studyMoney, 4 persistence tests
+- Plan 04-02: 4 repositories, mapper, 4 persistence adapters, 7 integration tests
+- All 16 phase tests pass (5 schema + 4 contract + 7 persistence)
+- Phase 4 complete: persistence layer fully wired to domain ports
 
 ### Next Session
 Execute Phase 5 (API Layer) to create Wirespec contracts and REST endpoints for budget allocations.
