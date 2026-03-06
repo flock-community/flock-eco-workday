@@ -11,6 +11,7 @@ import java.util.UUID
 class BudgetAllocationPersistenceAdapter(
     private val repository: BudgetAllocationRepository,
 ) : BudgetAllocationPersistencePort {
+    @Transactional(readOnly = true)
     override fun findAllByPersonUuid(
         personUuid: UUID,
         year: Int,
@@ -19,11 +20,13 @@ class BudgetAllocationPersistenceAdapter(
             .findAllByPersonUuidAndYear(personUuid, year)
             .map { it.toBudgetAllocationDomain() }
 
+    @Transactional(readOnly = true)
     override fun findAllByEventCode(eventCode: String): List<BudgetAllocation> =
         repository
             .findAllByEventCode(eventCode)
             .map { it.toBudgetAllocationDomain() }
 
+    @Transactional(readOnly = true)
     override fun findById(id: Long): BudgetAllocation? =
         repository
             .findByIdOrNull(id)
