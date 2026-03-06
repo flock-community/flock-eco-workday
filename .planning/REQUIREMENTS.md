@@ -14,10 +14,10 @@
 
 ### API
 
-- [ ] **API-01**: Admin can query allocations by person+year via GET endpoint
-- [ ] **API-02**: Admin can query allocations by event code via GET endpoint
-- [ ] **API-03**: Admin can create/update/delete StudyMoney allocations via REST API
-- [ ] **API-04**: Admin can create/update HackTime and StudyTime allocations via REST API
+- [x] **API-01**: Admin can query allocations by person+year via GET endpoint
+- [x] **API-02**: Admin can query allocations by event code via GET endpoint
+- [x] **API-03**: Admin can create/update/delete StudyMoney allocations via REST API
+- [x] **API-04**: Admin can create/update HackTime and StudyTime allocations via REST API
 - [x] **API-05**: Authority-based access control (READ for viewing, ADMIN for mutations)
 
 ### Budget Tab (Person-Centric)
@@ -78,10 +78,10 @@
 | DOM-02 | Phase 3 | Complete |
 | DOM-03 | Phase 4 | Pending |
 | DOM-04 | Phase 4 | Complete |
-| API-01 | Phase 5 | Pending |
-| API-02 | Phase 5 | Pending |
-| API-03 | Phase 5 | Pending |
-| API-04 | Phase 5 | Pending |
+| API-01 | Phase 5 | Complete |
+| API-02 | Phase 5 | Complete |
+| API-03 | Phase 5 | Complete |
+| API-04 | Phase 5 | Complete |
 | API-05 | Phase 5 | Complete |
 | TAB-01 | Phase 6 | Pending |
 | TAB-02 | Phase 6 | Pending |
