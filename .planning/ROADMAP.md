@@ -3,7 +3,7 @@
 **Project:** Budget Allocation Tracking
 **Created:** 2026-03-02
 **Status:** Active
-**Current Phase:** Phase 5
+**Current Phase:** Phase 6
 
 ## Project Overview
 
@@ -15,7 +15,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 - [x] **Phase 2: Event Budget Flow Redesign** - Redesign end-to-end event budget allocation flow (frontend-only)
 - [x] **Phase 3: Domain Layer** - Business entities and persistence contracts
 - [x] **Phase 4: Persistence & Contract** - Database schema and contract extensions
-- [ ] **Phase 5: API Layer** - REST endpoints with type-safe contracts
+- [x] **Phase 5: API Layer** - REST endpoints with type-safe contracts
 - [ ] **Phase 6: Budget Tab Integration** - Connect person-centric UI to real API
 - [ ] **Phase 7: Event Integration** - Connect event-centric budget management to real API
 - [ ] **Phase 8: Contract Form & Dev Data** - Contract form updates and mock data loader
@@ -28,8 +28,8 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 | 2. Event Budget Flow Redesign | 3/3 | Complete | 2026-03-02 |
 | 3. Domain Layer | 2/2 | Complete | 2026-03-03 |
 | 4. Persistence & Contract | 3/3 | Complete | 2026-03-05 |
-| 5. API Layer | 0/2 | In progress | - |
-| 6. Budget Tab Integration | 0/? | Not started | - |
+| 5. API Layer | 2/2 | Complete | 2026-03-06 |
+| 6. Budget Tab Integration | 0/3 | In progress | - |
 | 7. Event Integration | 0/? | Not started | - |
 | 8. Contract Form & Dev Data | 0/? | Not started | - |
 
@@ -107,8 +107,8 @@ Plans:
   6. Wirespec generates TypeScript types matching Kotlin controller signatures (ContractInternal with new fields included)
 **Plans**: 2 plans
 Plans:
-- [ ] 05-01-PLAN.md -- Wirespec contracts (budget-allocations.ws + contracts.ws update), code generation, Authority enum, Spring Configuration (CTR-02, API-05)
-- [ ] 05-02-PLAN.md -- BudgetAllocationMapper, BudgetAllocationController with file endpoints, integration tests (API-01, API-02, API-03, API-04, API-05)
+- [x] 05-01-PLAN.md -- Wirespec contracts (budget-allocations.ws + contracts.ws update), code generation, Authority enum, Spring Configuration (CTR-02, API-05)
+- [x] 05-02-PLAN.md -- BudgetAllocationMapper, BudgetAllocationController with file endpoints, integration tests (API-01, API-02, API-03, API-04, API-05)
 
 ### Phase 6: Budget Tab Integration
 **Goal**: Users see real budget data in the Budget Allocation tab
@@ -120,7 +120,11 @@ Plans:
   3. Admin can create/edit/delete standalone StudyMoney allocations and changes persist to database
   4. User changes year selector and allocation list updates with filtered data from API
   5. Admin switches between persons using person selector and tab displays correct budget data
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 06-01-PLAN.md -- Backend budget summary endpoint: wirespec contract, BudgetSummaryService, controller handler, integration tests (TAB-01, TAB-05)
+- [ ] 06-02-PLAN.md -- Frontend client + component refactoring: BudgetAllocationClient, wirespec type migration, routing, navigation (TAB-02, TAB-04, TAB-05)
+- [ ] 06-03-PLAN.md -- StudyMoney CRUD wiring, delete confirmation dialog, mock/demo cleanup (TAB-03)
 
 ### Phase 7: Event Integration
 **Goal**: Admins manage budget allocations from event dialog with real persistence
@@ -173,4 +177,4 @@ All 23 v1 requirements mapped. No orphans.
 - Phase 8 executes last (requires contract entity changes from Phase 4 and API from Phase 5)
 
 ---
-*Last updated: 2026-03-05 (Phase 5 planned with 2 plans in 2 waves)*
+*Last updated: 2026-03-11 (Phase 6 planned with 3 plans in 2 waves)*
