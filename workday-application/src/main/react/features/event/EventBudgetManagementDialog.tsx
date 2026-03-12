@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useMemo, useRef} from 'react';
 import {
   Box,
   Typography,
@@ -45,6 +45,8 @@ interface EventBudgetManagementSectionProps {
     timeParticipants: PersonTimeAllocation[];
     dirty: boolean
   }) => void;
+  initialTimeParticipants?: PersonTimeAllocation[];
+  initialMoneyParticipants?: PersonMoneyAllocation[];
 }
 
 export function EventBudgetManagementSection({
@@ -55,7 +57,12 @@ export function EventBudgetManagementSection({
                                                moneyExpanded = false,
                                                setMoneyExpanded,
                                                onBudgetStateChange,
+                                               initialTimeParticipants,
+                                               initialMoneyParticipants,
                                              }: EventBudgetManagementSectionProps) {
+  // Track whether initial API data has been applied (only once per dialog open)
+  const initialLoadedRef = useRef(false);
+
   // Top-level accordion state: collapsed by default
   const [budgetExpanded, setBudgetExpanded] = useState(false);
 
@@ -78,6 +85,13 @@ export function EventBudgetManagementSection({
   const showTimeSection = defaultBudgetType !== null;
   const showMoneySection = formValues.type === EventType.FLOCK_HACK_DAY || formValues.type === EventType.CONFERENCE;
 
+  // Reset initialLoadedRef when participants go to 0 (dialog reopened)
+  useEffect(() => {
+    if (participantIds.length === 0) {
+      initialLoadedRef.current = false;
+    }
+  }, [participantIds.length]);
+
   // Participant sync effect: add/remove participants without auto-redistribution
   // Money: new participants get equal share of remaining budget, existing keep their amounts
   // Admin adjusts manually — "allocated vs total" indicator shows the gap
@@ -85,6 +99,32 @@ export function EventBudgetManagementSection({
     setMoneyParticipants(prev => {
       const participantCount = participantIds.length;
       if (participantCount === 0) return [];
+
+      // On first render with empty prev, use initial data from API if available
+      if (prev.length === 0 && !initialLoadedRef.current && initialMoneyParticipants && initialMoneyParticipants.length > 0) {
+        initialLoadedRef.current = true;
+        // Merge initial data with current participant list
+        const initialMap = new Map(initialMoneyParticipants.map(p => [p.personId, p]));
+        const existingTotal = participantIds
+          .filter(id => initialMap.has(id))
+          .reduce((sum, id) => sum + initialMap.get(id)!.amount, 0);
+        const newParticipantCount = participantIds.filter(id => !initialMap.has(id)).length;
+        const remainingBudget = Math.max(0, totalBudget - existingTotal);
+        const newParticipantShare = newParticipantCount > 0
+          ? Math.floor((remainingBudget / newParticipantCount) * 100) / 100
+          : 0;
+
+        return participantIds.map(personId => {
+          const person = persons.find(p => p.uuid === personId);
+          if (!person) return null;
+          if (initialMap.has(personId)) return initialMap.get(personId)!;
+          return {
+            personId: person.uuid,
+            personName: `${person.firstname} ${person.lastname}`,
+            amount: newParticipantShare,
+          };
+        }).filter(Boolean) as PersonMoneyAllocation[];
+      }
 
       // Get current participants as a map
       const currentMap = new Map(prev.map(p => [p.personId, p]));
@@ -122,6 +162,22 @@ export function EventBudgetManagementSection({
 
     // Update time participants separately
     setTimeParticipants(prev => {
+      // On first render with empty prev, use initial data from API if available
+      if (prev.length === 0 && initialTimeParticipants && initialTimeParticipants.length > 0) {
+        const initialMap = new Map(initialTimeParticipants.map(p => [p.personId, p]));
+        return participantIds.map(personId => {
+          const person = persons.find(p => p.uuid === personId);
+          if (!person) return null;
+          if (initialMap.has(personId)) return initialMap.get(personId)!;
+          return {
+            personId: person.uuid,
+            personName: `${person.firstname} ${person.lastname}`,
+            studyPeriod: null,
+            hackPeriod: null,
+          };
+        }).filter(Boolean) as PersonTimeAllocation[];
+      }
+
       const currentMap = new Map(prev.map(p => [p.personId, p]));
 
       const result: PersonTimeAllocation[] = participantIds.map(personId => {
