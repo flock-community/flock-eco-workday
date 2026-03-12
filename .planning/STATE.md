@@ -3,36 +3,36 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 06
-current_plan: 02 of 03
-status: in-progress
-last_updated: "2026-03-12T08:34:00Z"
+current_plan: 03 of 03
+status: phase-complete
+last_updated: "2026-03-12T09:22:00Z"
 progress:
   total_phases: 8
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 14
-  completed_plans: 13
-  percent: 71
+  completed_plans: 14
+  percent: 79
 ---
 
 # Project State: Budget Allocations for Flock Workday
 
 **Last Updated:** 2026-03-12
 **Current Phase:** 06
-**Current Plan:** 01 of 03
-**Status:** Phase 6 in progress (Plan 01 complete)
+**Current Plan:** 03 of 03
+**Status:** Phase 6 complete (all 3 plans done)
 
 ## Project Reference
 
 **Core Value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
 
-**Current Focus:** Phase 6 Budget Tab Integration -- Plan 02 (frontend client + components) complete, Plan 03 (StudyMoney CRUD) next.
+**Current Focus:** Phase 6 Budget Tab Integration complete. Phase 7 (Event Integration) next.
 
 ## Current Position
 
 **Phase:** 6 of 8 - Budget Tab Integration
-**Plan:** 02 of 03 (Plan 02 complete)
-**Status:** In progress
-**Progress:** [███████▓░░] 71%
+**Plan:** 03 of 03 (Phase complete)
+**Status:** Complete
+**Progress:** [████████░░] 79%
 
 ### Phase 6 Objective
 Connect person-centric budget allocation UI to real API endpoints with budget summary, allocation lists, and CRUD operations.
@@ -57,9 +57,9 @@ Connect person-centric budget allocation UI to real API endpoints with budget su
 
 ### Velocity
 - **Phases completed:** 5 (Phase 1: Frontend Prototype, Phase 2: Event Budget Flow Redesign, Phase 3: Domain Layer, Phase 4: Persistence & Contract, Phase 5: API Layer)
-- **Requirements completed:** 15 of 23 v1 requirements (EVT-05, EVT-06, DOM-01, DOM-02, DOM-03, DOM-04, CTR-02, API-01, API-02, API-03, API-04, API-05, TAB-01, TAB-05 satisfied)
-- **Plans completed:** 13 (02-01, 02-02, 02-03, 03-01, 03-02, 04-01, 04-02, 04-03, 05-01, 05-02, 06-01, 06-02) -- all with passing builds
-- **Completion rate:** 71% (5/8 phases complete, Phase 6 in progress)
+- **Requirements completed:** 16 of 23 v1 requirements (EVT-05, EVT-06, DOM-01, DOM-02, DOM-03, DOM-04, CTR-02, API-01, API-02, API-03, API-04, API-05, TAB-01, TAB-03, TAB-05 satisfied)
+- **Plans completed:** 14 (02-01, 02-02, 02-03, 03-01, 03-02, 04-01, 04-02, 04-03, 05-01, 05-02, 06-01, 06-02, 06-03) -- all with passing builds
+- **Completion rate:** 79% (6/8 phases complete, Phase 6 complete)
 
 ### Quality
 - **Build status:** Pass (workday-application compiles cleanly with all tests passing)
@@ -98,6 +98,8 @@ Connect person-centric budget allocation UI to real API endpoints with budget su
 26. **2026-03-12**: BudgetSummaryService as @Service with ContractService + BudgetAllocationService injection -- rationale: application-layer service joining contract budget fields with allocation sums for summary endpoint
 27. **2026-03-12**: Direct fetch client for BudgetAllocationClient instead of NonInternalizingClient -- rationale: budget API paths are type-specific (not generic CRUD), cleaner API surface
 28. **2026-03-12**: PersonSelector onChange wrapped with handler function -- rationale: bridge string state type with any-typed callback from PersonSelector component
+29. **2026-03-12**: EventBudgetType constant preserves old STUDY/HACK values for event forms, separate from wirespec BudgetAllocationType -- rationale: event forms use different enum values than budget allocation API
+30. **2026-03-12**: Deleted EventBudgetAllocationDialog.tsx prototype -- rationale: depended entirely on mock data, Phase 7 will rebuild event integration from scratch
 
 ### Active Todos
 - [x] Generate Phase 2 plan (event budget flow redesign) — Complete
@@ -122,11 +124,11 @@ None logged yet.
 | 3. Domain Layer | Complete | DOM-01, DOM-02 | 4 criteria met |
 | 4. Persistence & Contract | Complete | DOM-03, DOM-04 | 4 criteria met |
 | 5. API Layer | Complete (2/2 plans) | API-01, API-02, API-03, API-04, API-05, CTR-02 | 6 criteria met |
-| 6. Budget Tab Integration | In progress (2/3 plans) | TAB-01, TAB-02, TAB-03, TAB-04, TAB-05 | 5 criteria |
+| 6. Budget Tab Integration | Complete (3/3 plans) | TAB-01, TAB-02, TAB-03, TAB-04, TAB-05 | 5 criteria met |
 | 7. Event Integration | Not started | EVT-01, EVT-02, EVT-03, EVT-04 | 4 criteria |
 | 8. Contract Form & Dev Data | Not started | CTR-01, DEV-01 | 4 criteria |
 
-**Overall Progress:** 71% (Phases 1-5 complete, Phase 6 in progress, 2 phases remaining)
+**Overall Progress:** 79% (Phases 1-6 complete, 2 phases remaining)
 
 | Plan | Duration (min) | Tasks | Files |
 |------|----------------|-------|-------|
@@ -141,29 +143,31 @@ None logged yet.
 | Phase 05 P02 | 64 | 2 tasks | 4 files |
 | Phase 06 P01 | 7 | 2 tasks | 5 files |
 | Phase 06 P02 | 7 | 2 tasks | 10 files |
+| Phase 06 P03 | 55 | 2 tasks | 17 files |
 
 ## Session Continuity
 
 ### Last Session Summary
-- Executed Phase 6 Plan 02 (Frontend Client + Component Refactoring)
-- Created BudgetAllocationClient with typed fetch methods for all budget API endpoints
-- Refactored BudgetAllocationFeature from mock data to real API via BudgetAllocationClient
-- Refactored all child components (BudgetSummaryCards, BudgetCard, BudgetAllocationList, EventAllocationListItem, StudyMoneyAllocationListItem) to wirespec types
-- Registered /budget-allocations route and added Budget navigation item in drawer
-- Removed mock imports from all modified budget feature files
+- Executed Phase 6 Plan 03 (StudyMoney CRUD Wiring and Prototype Cleanup)
+- Refactored StudyMoneyAllocationDialog to use BudgetAllocationClient.createStudyMoney with file upload
+- Added ConfirmDialog for delete confirmation in BudgetAllocationFeature
+- Added "Add Study Money" button for admin users
+- Deleted all mock files, demo component, prototype documentation (2533 lines removed)
+- Migrated event form files from deleted mock BudgetAllocationType to EventBudgetType constant
+- Phase 6 complete: all 3 plans done
 
 ### Next Session
-Execute Phase 6 Plan 03 (StudyMoney CRUD operations).
+Execute Phase 7 (Event Integration).
 
 ### Context for Next Agent
-- Phase 6 Plan 02 complete: Budget tab accessible at /budget-allocations with real API data
+- Phase 6 complete: Budget tab fully functional with real API data + StudyMoney CRUD
 - BudgetAllocationClient provides: findAll, getSummary, createStudyMoney, deleteById, uploadFile, downloadFile
 - All budget components use wirespec types (BudgetAllocation, BudgetSummaryResponse, BudgetItem)
-- Admin sees PersonSelector via BudgetAllocationAuthority.ADMIN check
-- EventBudgetAllocationDialog and BudgetAllocationDemo still have mock imports (Plan 03 scope)
-- StudyMoneyAllocationDialog has a TS error (missing eventCode in StudyMoneyAllocationInput) -- Plan 03 should fix
+- Admin sees PersonSelector, Add Study Money button, delete confirmation dialog
+- All mock files and prototype docs deleted; EventBudgetAllocationDialog deleted (Phase 7 rebuilds)
+- EventBudgetType constant in mappings.ts preserves STUDY/HACK values for event forms
 - All work happens in `workday-application` module (workday-core and workday-user are frozen)
 
 ---
 *State initialized: 2026-03-02*
-*Last updated: 2026-03-12 (Phase 6 Plan 02 complete)*
+*Last updated: 2026-03-12 (Phase 6 Plan 03 complete, Phase 6 complete)*
