@@ -5,12 +5,12 @@ import {
   EventBudgetParticipantRow,
   type ParticipantAllocation,
 } from './EventBudgetParticipantRow';
-import type { BudgetAllocationType } from '../budget/mocks/BudgetAllocationTypes';
+import type { EventBudgetType } from '../../utils/mappings';
 
 interface EventBudgetParticipantListProps {
   participants: ParticipantAllocation[];
   onParticipantChange: (index: number, allocation: ParticipantAllocation) => void;
-  defaultAllocationType: BudgetAllocationType;
+  defaultAllocationType: EventBudgetType;
   eventDuration: number; // Total hours based on event date range
   totalBudget?: number;
   // Budget info per person (simplified for Phase 1 - assume same for all)
