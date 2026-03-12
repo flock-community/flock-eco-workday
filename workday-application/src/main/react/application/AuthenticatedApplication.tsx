@@ -22,7 +22,7 @@ import { TodoFeature } from '../features/todo/TodoFeature';
 import WorkDayPage from '../features/workday/WorkDayPage';
 import { ApplicationDrawer } from './ApplicationDrawer';
 import { ApplicationLayout } from './ApplicationLayout';
-import {BudgetAllocationDemo} from "../features/budget/BudgetAllocationDemo";
+import {BudgetAllocationFeature} from '../features/budget';
 import { NewDashboard } from '../features/dashboard/NewDashboard';
 
 export const AuthenticatedApplication = () => {
@@ -59,10 +59,7 @@ export const AuthenticatedApplication = () => {
           path="/reports/assignment-overview"
           component={AssignmentOverview}
         />
-        <Route
-          path="/demo"
-          component={BudgetAllocationDemo}
-        />
+        <Route path="/budget-allocations" exact component={BudgetAllocationFeature} />
         <Route
           path="/dashboard-new"
           exact
