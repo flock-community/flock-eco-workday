@@ -16,7 +16,11 @@ import {BudgetAllocationList} from './BudgetAllocationList';
 import {BudgetAllocationClient} from '../../clients/BudgetAllocationClient';
 import {useUserMe} from '../../hooks/UserMeHook';
 import {PersonSelector} from '../../components/selector/PersonSelector';
+import {StudyMoneyAllocationDialog} from './StudyMoneyAllocationDialog';
+import {ConfirmDialog} from '@workday-core/components/ConfirmDialog';
 import type {BudgetAllocation, BudgetSummaryResponse} from '../../wirespec/model';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
 
 export function BudgetAllocationFeature() {
   const [user] = useUserMe();
@@ -28,6 +32,8 @@ export function BudgetAllocationFeature() {
   const [summary, setSummary] = useState<BudgetSummaryResponse | null>(null);
   const [allocations, setAllocations] = useState<BudgetAllocation[]>([]);
   const [loading, setLoading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<BudgetAllocation | null>(null);
 
   const loadData = useCallback(() => {
     setLoading(true);
@@ -50,6 +56,18 @@ export function BudgetAllocationFeature() {
   const refresh = useCallback(() => {
     loadData();
   }, [loadData]);
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget?.id) return;
+    try {
+      await BudgetAllocationClient.deleteById(deleteTarget.id);
+      setDeleteTarget(null);
+      refresh();
+    } catch (err) {
+      console.error('Failed to delete allocation:', err);
+      setDeleteTarget(null);
+    }
+  };
 
   // Generate year options (current year and previous 2 years)
   const currentYear = new Date().getFullYear();
@@ -88,6 +106,17 @@ export function BudgetAllocationFeature() {
                 sx={{minWidth: 200}}
               />
             )}
+
+            {isAdmin && (
+              <Button
+                variant="outlined"
+                startIcon={<AddIcon />}
+                size="small"
+                onClick={() => setDialogOpen(true)}
+              >
+                Add Study Money
+              </Button>
+            )}
           </Stack>
         }
       />
@@ -100,6 +129,7 @@ export function BudgetAllocationFeature() {
           <BudgetAllocationList
             allocations={allocations}
             hasWritePermission={isAdmin}
+            onDelete={(allocation) => setDeleteTarget(allocation)}
           />
         )}
 
@@ -112,6 +142,23 @@ export function BudgetAllocationFeature() {
           </Box>
         )}
       </CardContent>
+
+      {/* Create StudyMoney dialog */}
+      <StudyMoneyAllocationDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onSaved={refresh}
+        personId={isAdmin ? selectedPersonId : undefined}
+      />
+
+      {/* Delete confirmation dialog */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteConfirm}
+      >
+        Are you sure you want to delete this study money allocation?
+      </ConfirmDialog>
     </Card>
   );
 }
