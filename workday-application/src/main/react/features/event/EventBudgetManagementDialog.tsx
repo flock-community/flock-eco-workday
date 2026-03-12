@@ -19,7 +19,7 @@ import {
   EventTimeAllocationSection,
   type PersonTimeAllocation,
 } from './EventTimeAllocationSection';
-import { BudgetAllocationType } from '../budget/mocks/BudgetAllocationTypes';
+import { EventBudgetType } from '../../utils/mappings';
 import type { Period } from '../period/Period';
 import Grid from "@mui/material/Grid";
 import { EventBudgetSummaryBanner } from './EventBudgetSummaryBanner';
@@ -70,7 +70,7 @@ export function EventBudgetManagementSection({
   // Derive values from formValues (single source of truth)
   const totalBudget = formValues.budget;
   const defaultBudgetType = formValues.defaultTimeAllocationType
-    ? (formValues.defaultTimeAllocationType as BudgetAllocationType)
+    ? (formValues.defaultTimeAllocationType as EventBudgetType)
     : null;
   const participantIds = formValues.personIds;
 

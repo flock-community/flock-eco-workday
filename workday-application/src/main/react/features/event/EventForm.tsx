@@ -11,7 +11,7 @@ import {EventTypeMappingToBillable, EventTypeMappingToDefaultBudgetType} from '.
 import {mutatePeriod} from '../period/Period';
 import {EventTypeSelect} from './EventTypeSelect';
 import {FormControl, InputLabel, MenuItem, Select} from '@mui/material';
-import {BudgetAllocationType} from '../budget/mocks/BudgetAllocationTypes';
+import {EventBudgetType} from '../../utils/mappings';
 
 export const EVENT_FORM_ID = 'event-form';
 
@@ -97,10 +97,10 @@ export function EventFormFields({values, setFieldValue}: EventFormFieldsProps) {
               <MenuItem value="">
                 <em>None (no time tracking)</em>
               </MenuItem>
-              <MenuItem value={BudgetAllocationType.STUDY}>
+              <MenuItem value={EventBudgetType.STUDY}>
                 Study Time (deducts from study hours budget)
               </MenuItem>
-              <MenuItem value={BudgetAllocationType.HACK}>
+              <MenuItem value={EventBudgetType.HACK}>
                 Hack Time (deducts from hack hours budget)
               </MenuItem>
             </Select>

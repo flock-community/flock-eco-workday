@@ -18,7 +18,7 @@ import {
   Add,
 } from '@mui/icons-material';
 import dayjs, { type Dayjs } from 'dayjs';
-import type { BudgetAllocationType } from '../budget/mocks/BudgetAllocationTypes';
+import type { EventBudgetType } from '../../utils/mappings';
 import { PeriodInput } from '../../components/inputs/PeriodInput';
 import { editDay, initDays, type Period } from '../period/Period';
 
@@ -32,7 +32,7 @@ export interface PersonTimeAllocation {
 interface EventTimeAllocationSectionProps {
   eventDates: string[]; // All dates in event range (ISO strings)
   defaultHoursPerDay: number; // Event's daily hours
-  defaultBudgetType: BudgetAllocationType; // Event's default budget type
+  defaultBudgetType: EventBudgetType; // Event's default budget type
   participants: PersonTimeAllocation[];
   onParticipantsChange: (participants: PersonTimeAllocation[]) => void;
 }

@@ -23,16 +23,19 @@ import {
   Delete,
   Add,
 } from '@mui/icons-material';
-import {
-  BudgetAllocationType,
-  type DailyTimeAllocation,
-} from '../budget/mocks/BudgetAllocationTypes';
+import { EventBudgetType } from '../../utils/mappings';
+
+interface DailyTimeAllocation {
+  date: string;
+  hours: number;
+  type: EventBudgetType;
+}
 
 export interface ParticipantAllocation {
   personId: string;
   personName: string;
   // Time allocation
-  allocationType?: BudgetAllocationType;
+  allocationType?: EventBudgetType;
   totalHours?: number;
   dailyTimeAllocations?: DailyTimeAllocation[];
   // Money allocation
@@ -47,7 +50,7 @@ interface EventBudgetParticipantRowProps {
   availableStudyHours: number;
   availableHackHours: number;
   availableStudyMoney: number;
-  defaultAllocationType: BudgetAllocationType;
+  defaultAllocationType: EventBudgetType;
   showDailyBreakdown?: boolean;
 }
 
@@ -76,7 +79,7 @@ export function EventBudgetParticipantRow({
 
   const handleAllocationTypeChange = (
     _: React.MouseEvent<HTMLElement>,
-    newType: BudgetAllocationType | null
+    newType: EventBudgetType | null
   ) => {
     if (newType !== null) {
       onChange({
@@ -114,7 +117,7 @@ export function EventBudgetParticipantRow({
   const handleDayChange = (
     index: number,
     field: 'date' | 'hours' | 'type',
-    value: string | number | BudgetAllocationType
+    value: string | number | EventBudgetType
   ) => {
     const updatedDays = [...(allocation.dailyTimeAllocations || [])];
     updatedDays[index] = {
@@ -370,11 +373,11 @@ export function EventBudgetParticipantRow({
                               value={day.type}
                               label="Type"
                               onChange={(e) =>
-                                handleDayChange(index, 'type', e.target.value as BudgetAllocationType)
+                                handleDayChange(index, 'type', e.target.value as EventBudgetType)
                               }
                             >
-                              <MenuItem value={BudgetAllocationType.STUDY}>Study</MenuItem>
-                              <MenuItem value={BudgetAllocationType.HACK}>Hack</MenuItem>
+                              <MenuItem value={EventBudgetType.STUDY}>Study</MenuItem>
+                              <MenuItem value={EventBudgetType.HACK}>Hack</MenuItem>
                             </Select>
                           </FormControl>
                           <IconButton
