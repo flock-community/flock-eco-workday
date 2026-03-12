@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Box,
   Card,
@@ -13,81 +13,43 @@ import {
 } from '@mui/material';
 import {BudgetSummaryCards} from './BudgetSummaryCards';
 import {BudgetAllocationList} from './BudgetAllocationList';
-import type {
-  BudgetAllocationDetails,
-  StudyMoneyBudgetAllocation,
-} from './mocks/BudgetAllocationTypes';
-import {
-  generateMockBudgetDetailsForAllPersons,
-  mockApiDelay,
-  mockBudgetAllocationDetails,
-} from './mocks/BudgetAllocationMocks';
-import Button from "@mui/material/Button";
-import AddIcon from "@mui/icons-material/Add";
+import {BudgetAllocationClient} from '../../clients/BudgetAllocationClient';
+import {useUserMe} from '../../hooks/UserMeHook';
+import {PersonSelector} from '../../components/selector/PersonSelector';
+import type {BudgetAllocation, BudgetSummaryResponse} from '../../wirespec/model';
 
-interface BudgetAllocationFeatureProps {
-  // For admin mode - allow selecting different persons
-  isAdmin?: boolean;
-  // Current user's person ID
-  currentPersonId?: string;
-}
+export function BudgetAllocationFeature() {
+  const [user] = useUserMe();
+  const isAdmin = user?.authorities?.includes('BudgetAllocationAuthority.ADMIN') ?? false;
 
-export function BudgetAllocationFeature({
-                                          isAdmin = false,
-                                          currentPersonId = '550e8400-e29b-41d4-a716-446655440000',
-                                        }: BudgetAllocationFeatureProps) {
   const [year, setYear] = useState(new Date().getFullYear());
-  const [selectedPersonId, setSelectedPersonId] = useState(currentPersonId);
-  const [budgetDetails, setBudgetDetails] = useState<BudgetAllocationDetails>(
-    mockBudgetAllocationDetails
-  );
+  const [selectedPersonId, setSelectedPersonId] = useState<string>('');
+  const handlePersonChange = (selected: any) => setSelectedPersonId(selected ?? '');
+  const [summary, setSummary] = useState<BudgetSummaryResponse | null>(null);
+  const [allocations, setAllocations] = useState<BudgetAllocation[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Mock data for all persons (for admin selector)
-  const allPersonsBudgetDetails = generateMockBudgetDetailsForAllPersons();
-  // Load budget details when year or person changes
+  const loadData = useCallback(() => {
+    setLoading(true);
+    const personId = isAdmin && selectedPersonId !== '' ? selectedPersonId : undefined;
+    Promise.all([
+      BudgetAllocationClient.getSummary(personId, year),
+      BudgetAllocationClient.findAll(personId, year),
+    ])
+      .then(([summaryData, allocationData]) => {
+        setSummary(summaryData);
+        setAllocations(allocationData);
+      })
+      .finally(() => setLoading(false));
+  }, [year, selectedPersonId, isAdmin]);
+
   useEffect(() => {
-    const loadBudgetDetails = async () => {
-      setLoading(true);
-      console.log('Loading budget details for:', {
-        personId: selectedPersonId,
-        year,
-      });
+    loadData();
+  }, [loadData]);
 
-      // Simulate API delay
-      await mockApiDelay(300);
-
-      // Find budget details for selected person
-      const personDetails = allPersonsBudgetDetails.find(
-        (p) => p.personId === selectedPersonId
-      );
-
-      if (personDetails) {
-        setBudgetDetails(personDetails);
-      }
-
-      setLoading(false);
-    };
-
-    loadBudgetDetails();
-  }, [year, selectedPersonId]);
-
-  const handleCreateStudyMoney = (
-    allocation: Partial<StudyMoneyBudgetAllocation>
-  ) => {
-    console.log('Creating StudyMoneyBudgetAllocation:', allocation);
-    // In real implementation, this would call the API
-  };
-
-  const handleEditStudyMoney = (allocation: StudyMoneyBudgetAllocation) => {
-    console.log('Updating StudyMoneyBudgetAllocation:', allocation);
-    // In real implementation, this would call the API
-  };
-
-  const handleDeleteStudyMoney = (allocation: StudyMoneyBudgetAllocation) => {
-    console.log('Deleting StudyMoneyBudgetAllocation:', allocation.id);
-    // In real implementation, this would call the API
-  };
+  const refresh = useCallback(() => {
+    loadData();
+  }, [loadData]);
 
   // Generate year options (current year and previous 2 years)
   const currentYear = new Date().getFullYear();
@@ -117,46 +79,27 @@ export function BudgetAllocationFeature({
 
             {/* Person selector (admin only) */}
             {isAdmin && (
-              <FormControl size="small" sx={{minWidth: 200}}>
-                <InputLabel>Person</InputLabel>
-                <Select
-                  value={selectedPersonId}
-                  label="Person"
-                  onChange={(e) => setSelectedPersonId(e.target.value)}
-                >
-                  {allPersonsBudgetDetails.map((person) => (
-                    <MenuItem key={person.personId} value={person.personId}>
-                      {person.personName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <PersonSelector
+                embedded
+                value={selectedPersonId}
+                onChange={handlePersonChange}
+                label="Person"
+                size="small"
+                sx={{minWidth: 200}}
+              />
             )}
-
-            <Button
-              variant="outlined"
-              startIcon={<AddIcon/>}
-              size="small"
-            >
-              Add Study Money
-            </Button>
           </Stack>
         }
       />
       <CardContent>
         {/* Budget summary cards */}
-        {!loading && <BudgetSummaryCards summary={budgetDetails.summary}/>}
+        {!loading && <BudgetSummaryCards summary={summary} />}
 
         {/* Allocation details */}
         {!loading && (
           <BudgetAllocationList
-            allocations={budgetDetails.allocations}
-            availableStudyMoney={budgetDetails.summary.studyMoney.available}
-            personName={budgetDetails.personName}
+            allocations={allocations}
             hasWritePermission={isAdmin}
-            onCreateStudyMoney={handleCreateStudyMoney}
-            onEditStudyMoney={handleEditStudyMoney}
-            onDeleteStudyMoney={handleDeleteStudyMoney}
           />
         )}
 
@@ -170,5 +113,5 @@ export function BudgetAllocationFeature({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
