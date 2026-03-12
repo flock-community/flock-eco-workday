@@ -8,12 +8,16 @@ import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import { useEffect, useState } from 'react';
 import { Formik, Form } from 'formik';
+import dayjs from 'dayjs';
 import { EventClient, type FlockEventRequest, type FullFlockEvent } from '../../clients/EventClient';
+import { BudgetAllocationClient } from '../../clients/BudgetAllocationClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { TransitionSlider } from '../../components/transitions/Slide';
 import { mutatePeriod } from '../period/Period';
 import { EVENT_FORM_ID, EventFormFields, eventFormSchema } from './EventForm';
 import { EventBudgetManagementSection } from './EventBudgetManagementDialog';
+import { apiAllocationsToTimeParticipants, apiAllocationsToMoneyParticipants, diffAllocations } from './eventBudgetTransformers';
+import type { BudgetAllocation } from '../../wirespec/model';
 import type { PersonTimeAllocation } from './EventTimeAllocationSection';
 import type { PersonMoneyAllocation } from './EventMoneyAllocationSection';
 
@@ -40,6 +44,9 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const [budgetsDirty, setBudgetsDirty] = useState(false);
   const [showCloseWarning, setShowCloseWarning] = useState(false);
   const [participantBudgets, setParticipantBudgets] = useState<ParticipantBudgetState[]>([]);
+  const [loadedAllocations, setLoadedAllocations] = useState<BudgetAllocation[]>([]);
+  const [initialTimeParticipants, setInitialTimeParticipants] = useState<PersonTimeAllocation[] | undefined>(undefined);
+  const [initialMoneyParticipants, setInitialMoneyParticipants] = useState<PersonMoneyAllocation[] | undefined>(undefined);
 
   const [state, setState] = useState<FlockEventRequest | undefined>(undefined);
 
@@ -52,6 +59,17 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
             personIds: res.persons.map((it) => it.uuid) ?? [],
           });
           setEventData(res); // Store full event data for budget dialog
+
+          // Load budget allocations for this event
+          BudgetAllocationClient.findAll(undefined, undefined, code).then((allocations) => {
+            setLoadedAllocations(allocations);
+            const timeParts = apiAllocationsToTimeParticipants(
+              allocations, res.persons, dayjs(res.from), dayjs(res.to),
+            );
+            const moneyParts = apiAllocationsToMoneyParticipants(allocations, res.persons);
+            setInitialTimeParticipants(timeParts);
+            setInitialMoneyParticipants(moneyParts);
+          });
         });
       } else {
         setState(eventFormSchema.cast());
@@ -60,6 +78,9 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     } else {
       setState(undefined);
       setEventData(null);
+      setLoadedAllocations([]);
+      setInitialTimeParticipants(undefined);
+      setInitialMoneyParticipants(undefined);
     }
   }, [open, code]);
 
@@ -76,24 +97,46 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       : EventClient.post(eventData);
 
     savePromise.then((res) => {
-      // Log budget allocations (API integration in Phase 7)
-      if (budgetsDirty && participantBudgets.length > 0) {
-        console.log('[Phase 2] Budget allocations to save (API integration in Phase 7):', {
-          eventCode: res.code,
-          moneyAllocations: participantBudgets.map(p => ({
-            personId: p.personId,
-            personName: p.personName,
-            amount: p.moneyAmount,
-          })),
-          timeAllocations: participantBudgets.map(p => ({
-            personId: p.personId,
-            personName: p.personName,
-            timeAllocation: p.timeAllocation,
-          })),
+      if (participantBudgets.length > 0) {
+        const defaultBudgetType = it.defaultTimeAllocationType || null;
+        const { toCreate, toUpdate, toDelete } = diffAllocations(
+          loadedAllocations,
+          participantBudgets.map(p => p.timeAllocation),
+          participantBudgets.map(p => ({ personId: p.personId, personName: p.personName, amount: p.moneyAmount })),
+          res.code,
+          dayjs(it.from),
+          defaultBudgetType,
+        );
+
+        const promises: Promise<any>[] = [];
+        // Deletes
+        toDelete.forEach(id => promises.push(BudgetAllocationClient.deleteById(id)));
+        // Creates
+        toCreate.forEach(({ type, input }) => {
+          if (type === 'hack') promises.push(BudgetAllocationClient.createHackTime(input as any));
+          else if (type === 'study') promises.push(BudgetAllocationClient.createStudyTime(input as any));
+          else if (type === 'money') promises.push(BudgetAllocationClient.createStudyMoney(input as any));
         });
+        // Updates
+        toUpdate.forEach(({ type, id, input }) => {
+          if (type === 'hack') promises.push(BudgetAllocationClient.updateHackTime(id, input as any));
+          else if (type === 'study') promises.push(BudgetAllocationClient.updateStudyTime(id, input as any));
+          else if (type === 'money') promises.push(BudgetAllocationClient.updateStudyMoney(id, input as any));
+        });
+
+        Promise.all(promises).then(() => {
+          setBudgetsDirty(false);
+          onComplete?.(res);
+        }).catch(err => {
+          console.error('Failed to save budget allocations:', err);
+          // Still complete the event save, but log the budget error
+          setBudgetsDirty(false);
+          onComplete?.(res);
+        });
+      } else {
+        setBudgetsDirty(false);
+        onComplete?.(res);
       }
-      setBudgetsDirty(false);
-      onComplete?.(res);
     });
   };
 
@@ -185,6 +228,8 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
                         moneyExpanded={moneyBudgetExpanded}
                         setMoneyExpanded={setMoneyBudgetExpanded}
                         onBudgetStateChange={handleBudgetStateChange}
+                        initialTimeParticipants={initialTimeParticipants}
+                        initialMoneyParticipants={initialMoneyParticipants}
                       />
                     </Grid>
                   )}
