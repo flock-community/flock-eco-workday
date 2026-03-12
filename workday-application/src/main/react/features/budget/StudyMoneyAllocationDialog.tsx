@@ -7,75 +7,85 @@ import {
   Button,
   TextField,
   Box,
-  Alert,
   Typography,
   Chip,
   Stack,
+  CircularProgress,
 } from '@mui/material';
-import { WarningAmber, UploadFile } from '@mui/icons-material';
-import {
-  StudyMoneyBudgetAllocation,
-} from './mocks/BudgetAllocationTypes';
+import { UploadFile } from '@mui/icons-material';
+import type { StudyMoneyAllocationInput, BudgetAllocationFile } from '../../wirespec/model';
+import { BudgetAllocationClient } from '../../clients/BudgetAllocationClient';
 
 interface StudyMoneyAllocationDialogProps {
   open: boolean;
   onClose: () => void;
-  onSave: (allocation: Partial<StudyMoneyBudgetAllocation>) => void;
-  allocation?: StudyMoneyBudgetAllocation | null;
-  availableBudget: number;
-  personName: string;
+  onSaved: () => void;
+  personId?: string;
 }
 
 export function StudyMoneyAllocationDialog({
   open,
   onClose,
-  onSave,
-  allocation,
-  availableBudget,
-  personName,
+  onSaved,
+  personId,
 }: StudyMoneyAllocationDialogProps) {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState<number | ''>('');
-  const [dateFrom, setDateFrom] = useState('');
+  const [date, setDate] = useState('');
   const [files, setFiles] = useState<File[]>([]);
-
-  const isEdit = !!allocation;
-  const isOverBudget =
-    typeof amount === 'number' && amount > availableBudget;
+  const [uploadedFiles, setUploadedFiles] = useState<BudgetAllocationFile[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (allocation) {
-      setDescription(allocation.description || '');
-      setAmount(allocation.amount);
-      setDateFrom(allocation.dateFrom);
-      setFiles([]);
-    } else {
-      // Reset form for new allocation
+    if (open) {
       setDescription('');
       setAmount('');
-      setDateFrom(new Date().toISOString().split('T')[0]);
+      setDate(new Date().toISOString().split('T')[0]);
       setFiles([]);
+      setUploadedFiles([]);
+      setError(null);
     }
-  }, [allocation, open]);
+  }, [open]);
 
-  const handleSave = () => {
-    const allocationData: Partial<StudyMoneyBudgetAllocation> = {
-      description,
-      amount: typeof amount === 'number' ? amount : 0,
-      dateFrom,
-      type: 'StudyMoney',
-    };
+  const handleSave = async () => {
+    if (!date || typeof amount !== 'number' || amount <= 0) return;
 
-    console.log('Saving StudyMoneyBudgetAllocation:', allocationData);
-    onSave(allocationData);
-    onClose();
+    setSaving(true);
+    setError(null);
+
+    try {
+      // Upload files first
+      const fileResults: BudgetAllocationFile[] = [...uploadedFiles];
+      for (const file of files) {
+        const result = await BudgetAllocationClient.uploadFile(file);
+        fileResults.push({ name: result.name, file: result.id });
+      }
+
+      const input: StudyMoneyAllocationInput = {
+        personId: personId ?? '',
+        eventCode: undefined,
+        date,
+        description: description || undefined,
+        amount: typeof amount === 'number' ? amount : 0,
+        files: fileResults,
+      };
+
+      await BudgetAllocationClient.createStudyMoney(input);
+      onSaved();
+      onClose();
+    } catch (err) {
+      console.error('Failed to create study money allocation:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create allocation');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const newFiles = Array.from(event.target.files);
       setFiles((prev) => [...prev, ...newFiles]);
-      console.log('Files selected:', newFiles.map((f) => f.name));
     }
   };
 
@@ -84,42 +94,19 @@ export function StudyMoneyAllocationDialog({
   };
 
   const isValid =
-    description.trim() !== '' &&
     typeof amount === 'number' &&
     amount > 0 &&
-    dateFrom !== '';
+    date !== '';
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
-        {isEdit ? 'Edit Study Money Allocation' : 'Add Study Money Allocation'}
-      </DialogTitle>
+      <DialogTitle>Add Study Money Allocation</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
-          {/* Budget info */}
-          <Alert severity="info">
-            <Typography variant="body2">
-              <strong>{personName}</strong>
+          {error && (
+            <Typography color="error" variant="body2">
+              {error}
             </Typography>
-            <Typography variant="body2">
-              Available budget: €
-              {availableBudget.toLocaleString('nl-NL', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              })}
-            </Typography>
-          </Alert>
-
-          {/* Over budget warning */}
-          {isOverBudget && (
-            <Alert severity="warning" icon={<WarningAmber />}>
-              This amount exceeds your available budget by €
-              {((amount as number) - availableBudget).toLocaleString('nl-NL', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              })}
-              . You can still record this allocation.
-            </Alert>
           )}
 
           {/* Description */}
@@ -128,7 +115,6 @@ export function StudyMoneyAllocationDialog({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             fullWidth
-            required
             multiline
             rows={3}
             placeholder="e.g., Online course: Advanced TypeScript Patterns"
@@ -136,7 +122,7 @@ export function StudyMoneyAllocationDialog({
 
           {/* Amount */}
           <TextField
-            label="Amount (€)"
+            label="Amount (EUR)"
             type="number"
             value={amount}
             onChange={(e) =>
@@ -151,8 +137,8 @@ export function StudyMoneyAllocationDialog({
           <TextField
             label="Date"
             type="date"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
             fullWidth
             required
             InputLabelProps={{ shrink: true }}
@@ -195,14 +181,13 @@ export function StudyMoneyAllocationDialog({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose} disabled={saving}>Cancel</Button>
         <Button
           onClick={handleSave}
           variant="contained"
-          disabled={!isValid}
-          color={isOverBudget ? 'warning' : 'primary'}
+          disabled={!isValid || saving}
         >
-          {isEdit ? 'Update' : 'Create'}
+          {saving ? <CircularProgress size={24} /> : 'Create'}
         </Button>
       </DialogActions>
     </Dialog>
