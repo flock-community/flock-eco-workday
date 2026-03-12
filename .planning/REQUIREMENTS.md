@@ -23,9 +23,9 @@
 ### Budget Tab (Person-Centric)
 
 - [x] **TAB-01**: User sees summary cards showing budget/used/available for hack hours, study hours, study money
-- [ ] **TAB-02**: User sees allocation list grouped by type with event links
+- [x] **TAB-02**: User sees allocation list grouped by type with event links
 - [ ] **TAB-03**: Admin can create/edit/delete standalone StudyMoney allocations from the tab
-- [ ] **TAB-04**: Year selector filters displayed allocations
+- [x] **TAB-04**: Year selector filters displayed allocations
 - [x] **TAB-05**: Admin can switch between persons
 
 ### Event Budget Management
@@ -84,9 +84,9 @@
 | API-04 | Phase 5 | Complete |
 | API-05 | Phase 5 | Complete |
 | TAB-01 | Phase 6 | Complete (06-01) |
-| TAB-02 | Phase 6 | Pending |
+| TAB-02 | Phase 6 | Complete |
 | TAB-03 | Phase 6 | Pending |
-| TAB-04 | Phase 6 | Pending |
+| TAB-04 | Phase 6 | Complete |
 | TAB-05 | Phase 6 | Complete (06-01) |
 | EVT-01 | Phase 7 | Pending |
 | EVT-02 | Phase 7 | Pending |
