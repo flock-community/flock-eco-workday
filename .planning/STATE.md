@@ -2,69 +2,68 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 05
-current_plan: 02 of 02
-status: phase-complete
-last_updated: "2026-03-06T21:00:00Z"
+current_phase: 06
+current_plan: 01 of 03
+status: in-progress
+last_updated: "2026-03-12T08:18:00Z"
 progress:
   total_phases: 8
   completed_phases: 5
-  total_plans: 11
-  completed_plans: 11
-  percent: 63
+  total_plans: 14
+  completed_plans: 12
+  percent: 67
 ---
 
 # Project State: Budget Allocations for Flock Workday
 
-**Last Updated:** 2026-03-06
-**Current Phase:** 05
-**Current Plan:** 02 of 02
-**Status:** Phase 5 complete
+**Last Updated:** 2026-03-12
+**Current Phase:** 06
+**Current Plan:** 01 of 03
+**Status:** Phase 6 in progress (Plan 01 complete)
 
 ## Project Reference
 
 **Core Value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
 
-**Current Focus:** Phase 5 API Layer complete. Ready for Phase 6 Budget Tab Integration.
+**Current Focus:** Phase 6 Budget Tab Integration -- Plan 01 (budget summary endpoint) complete, Plan 02 (frontend client + components) next.
 
 ## Current Position
 
-**Phase:** 5 of 8 - API Layer
-**Plan:** 02 of 02 (Phase complete)
-**Status:** Complete
-**Progress:** [██████░░░░] 63%
+**Phase:** 6 of 8 - Budget Tab Integration
+**Plan:** 01 of 03 (Plan 01 complete)
+**Status:** In progress
+**Progress:** [██████▓░░░] 67%
 
-### Phase 5 Objective
-REST API endpoints for budget allocations with wirespec contract-first approach, controller implementation, and security configuration.
+### Phase 6 Objective
+Connect person-centric budget allocation UI to real API endpoints with budget summary, allocation lists, and CRUD operations.
 
 **Success Criteria:**
-1. 8 wirespec endpoints defined in budget-allocations.ws
-2. ContractInternal/ContractInternalForm wirespec types include studyHours and studyMoney
-3. Kotlin handler interfaces generated (BudgetAllocationAll.Handler, etc.)
-4. TypeScript types generated for both budget-allocations and updated contracts
-5. BudgetAllocationAuthority enum with READ, WRITE, ADMIN
-6. All 4 domain services wired as Spring beans via Configuration
+1. User opens Budget Allocation tab and sees summary cards with real budget/used/available calculated from API data
+2. User sees allocation list populated from API with event links that navigate to real event records
+3. Admin can create/edit/delete standalone StudyMoney allocations and changes persist to database
+4. User changes year selector and allocation list updates with filtered data from API
+5. Admin switches between persons using person selector and tab displays correct budget data
 
-**Requirements in Phase:** API-01, API-02, API-03, API-04, API-05, CTR-02
+**Requirements in Phase:** TAB-01, TAB-02, TAB-03, TAB-04, TAB-05
 
 **Key Implementation (Plan 01):**
-- Wirespec budget-allocations.ws with 8 endpoints and complete type definitions
-- ContractInternal types extended with studyHours/studyMoney in wirespec
-- BudgetAllocationAuthority enum for access control
-- BudgetAllocationConfiguration wiring 4 domain services as Spring beans
-- Kotlin handler interfaces and TypeScript types generated from wirespec
+- GET /api/budget-summary endpoint with BudgetSummaryResponse and BudgetItem wirespec types
+- BudgetSummaryService joining ContractInternal budget fields with allocation sums
+- BudgetSummary.Handler wired into BudgetAllocationController
+- 4 integration tests (happy path, no contract, non-admin auto-scope, admin cross-person)
+- TypeScript types generated for frontend consumption
 
 ## Performance Metrics
 
 ### Velocity
 - **Phases completed:** 5 (Phase 1: Frontend Prototype, Phase 2: Event Budget Flow Redesign, Phase 3: Domain Layer, Phase 4: Persistence & Contract, Phase 5: API Layer)
-- **Requirements completed:** 13 of 23 v1 requirements (EVT-05, EVT-06, DOM-01, DOM-02, DOM-03, DOM-04, CTR-02, API-01, API-02, API-03, API-04, API-05 satisfied)
-- **Plans completed:** 11 (02-01, 02-02, 02-03, 03-01, 03-02, 04-01, 04-02, 04-03, 05-01, 05-02) -- all with passing builds
-- **Completion rate:** 63% (5/8 phases complete)
+- **Requirements completed:** 15 of 23 v1 requirements (EVT-05, EVT-06, DOM-01, DOM-02, DOM-03, DOM-04, CTR-02, API-01, API-02, API-03, API-04, API-05, TAB-01, TAB-05 satisfied)
+- **Plans completed:** 12 (02-01, 02-02, 02-03, 03-01, 03-02, 04-01, 04-02, 04-03, 05-01, 05-02, 06-01) -- all with passing builds
+- **Completion rate:** 67% (5/8 phases complete, Phase 6 in progress)
 
 ### Quality
 - **Build status:** Pass (workday-application compiles cleanly with all tests passing)
-- **Test coverage:** Domain layer + persistence layer + API controller integration tests (all passing)
+- **Test coverage:** Domain layer + persistence layer + API controller + budget summary integration tests (all passing)
 - **Blockers:** 0
 - **Technical debt:** 0 items logged
 
@@ -96,6 +95,7 @@ REST API endpoints for budget allocations with wirespec contract-first approach,
 23. **2026-03-05**: TypeScript wirespec output gitignored, generated on demand via `npm run generate` -- rationale: follows existing project convention
 24. **2026-03-06**: Runtime auth checks (requireWrite/requireRead) instead of @PreAuthorize for wirespec handler methods -- rationale: @PreAuthorize not intercepted on wirespec-dispatched suspend methods via @EnableWirespecController
 25. **2026-03-06**: @Transactional(readOnly=true) on persistence adapter read methods -- rationale: prevent LazyInitializationException on lazy element collections during entity-to-domain mapping
+26. **2026-03-12**: BudgetSummaryService as @Service with ContractService + BudgetAllocationService injection -- rationale: application-layer service joining contract budget fields with allocation sums for summary endpoint
 
 ### Active Todos
 - [x] Generate Phase 2 plan (event budget flow redesign) — Complete
@@ -120,11 +120,11 @@ None logged yet.
 | 3. Domain Layer | Complete | DOM-01, DOM-02 | 4 criteria met |
 | 4. Persistence & Contract | Complete | DOM-03, DOM-04 | 4 criteria met |
 | 5. API Layer | Complete (2/2 plans) | API-01, API-02, API-03, API-04, API-05, CTR-02 | 6 criteria met |
-| 6. Budget Tab Integration | Not started | TAB-01, TAB-02, TAB-03, TAB-04, TAB-05 | 5 criteria |
+| 6. Budget Tab Integration | In progress (1/3 plans) | TAB-01, TAB-02, TAB-03, TAB-04, TAB-05 | 5 criteria |
 | 7. Event Integration | Not started | EVT-01, EVT-02, EVT-03, EVT-04 | 4 criteria |
 | 8. Contract Form & Dev Data | Not started | CTR-01, DEV-01 | 4 criteria |
 
-**Overall Progress:** 63% (Phases 1-5 complete, 3 phases remaining)
+**Overall Progress:** 67% (Phases 1-5 complete, Phase 6 in progress, 2 phases remaining)
 
 | Plan | Duration (min) | Tasks | Files |
 |------|----------------|-------|-------|
@@ -137,26 +137,28 @@ None logged yet.
 | Phase 04 P03 | 8 | 3 tasks | 8 files |
 | Phase 05 P01 | 3 | 2 tasks | 4 files |
 | Phase 05 P02 | 64 | 2 tasks | 4 files |
+| Phase 06 P01 | 7 | 2 tasks | 5 files |
 
 ## Session Continuity
 
 ### Last Session Summary
-- Executed Phase 5 Plan 02 (Controller Implementation)
-- Created BudgetAllocationApiMapper with consume/produce functions for all 3 allocation types
-- Created BudgetAllocationController implementing all 8 wirespec handler methods + file endpoints
-- Fixed LazyInitializationException with @Transactional on persistence adapter reads
-- Discovered @PreAuthorize doesn't work on wirespec-dispatched methods, replaced with runtime auth checks
-- 7 integration tests all passing
+- Executed Phase 6 Plan 01 (Budget Summary Endpoint)
+- Added BudgetSummary wirespec endpoint with BudgetSummaryResponse and BudgetItem types
+- Created BudgetSummaryService joining ContractInternal budget fields with allocation sums
+- Wired BudgetSummary.Handler into BudgetAllocationController with admin/non-admin routing
+- Extended CreateHelper.createContractInternal with studyHours/studyMoney params
+- 4 new integration tests passing (11 total budget tests)
 
 ### Next Session
-Begin Phase 6 (Budget Tab Integration) to connect frontend to the API endpoints.
+Execute Phase 6 Plan 02 (Frontend client + component refactoring).
 
 ### Context for Next Agent
-- Phase 5 complete: all budget allocation REST API endpoints operational with tests
-- Key pattern: wirespec handler methods need runtime auth checks (requireWrite/requireRead), not @PreAuthorize
-- API endpoints: GET /api/budget-allocations (with personId/year/eventCode params), POST hack-time/study-time/study-money, DELETE by id, file upload/download
+- Phase 6 Plan 01 complete: GET /api/budget-summary endpoint operational with tests
+- New endpoint: GET /api/budget-summary?personId=X&year=Y returns {hackHours, studyHours, studyMoney} each with {budget, used, available}
+- TypeScript types generated: BudgetSummaryResponse, BudgetItem in wirespec/model/
+- Admin can query any person; non-admin auto-scoped to own data
 - All work happens in `workday-application` module (workday-core and workday-user are frozen)
 
 ---
 *State initialized: 2026-03-02*
-*Last updated: 2026-03-06 (Phase 5 complete)*
+*Last updated: 2026-03-12 (Phase 6 Plan 01 complete)*

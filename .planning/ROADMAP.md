@@ -29,7 +29,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 | 3. Domain Layer | 2/2 | Complete | 2026-03-03 |
 | 4. Persistence & Contract | 3/3 | Complete | 2026-03-05 |
 | 5. API Layer | 2/2 | Complete | 2026-03-06 |
-| 6. Budget Tab Integration | 0/3 | In progress | - |
+| 6. Budget Tab Integration | 1/3 | In progress | - |
 | 7. Event Integration | 0/? | Not started | - |
 | 8. Contract Form & Dev Data | 0/? | Not started | - |
 
