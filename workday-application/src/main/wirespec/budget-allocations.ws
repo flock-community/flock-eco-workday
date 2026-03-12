@@ -1,3 +1,19 @@
+endpoint BudgetSummary GET /api/budget-summary ? { personId: String?, year: Integer32? } -> {
+  200 -> BudgetSummaryResponse
+}
+
+type BudgetSummaryResponse {
+  hackHours: BudgetItem,
+  studyHours: BudgetItem,
+  studyMoney: BudgetItem
+}
+
+type BudgetItem {
+  budget: Number,
+  used: Number,
+  available: Number
+}
+
 endpoint BudgetAllocationAll GET /api/budget-allocations ? { personId: String?, year: Integer32?, eventCode: String? } -> {
   200 -> BudgetAllocation[]
 }
