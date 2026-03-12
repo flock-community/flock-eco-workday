@@ -1,6 +1,8 @@
 import type {
   BudgetAllocation,
   BudgetSummaryResponse,
+  HackTimeAllocationInput,
+  StudyTimeAllocationInput,
   StudyMoneyAllocationInput,
 } from '../wirespec/model';
 
@@ -46,6 +48,69 @@ const createStudyMoney = async (
   return res.json();
 };
 
+const createHackTime = async (
+  input: HackTimeAllocationInput,
+): Promise<BudgetAllocation> => {
+  const res = await fetch(`${basePath}/hack-time`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(`Failed to create hack time allocation: ${res.status}`);
+  return res.json();
+};
+
+const updateHackTime = async (
+  id: string,
+  input: HackTimeAllocationInput,
+): Promise<BudgetAllocation> => {
+  const res = await fetch(`${basePath}/hack-time/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(`Failed to update hack time allocation: ${res.status}`);
+  return res.json();
+};
+
+const createStudyTime = async (
+  input: StudyTimeAllocationInput,
+): Promise<BudgetAllocation> => {
+  const res = await fetch(`${basePath}/study-time`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(`Failed to create study time allocation: ${res.status}`);
+  return res.json();
+};
+
+const updateStudyTime = async (
+  id: string,
+  input: StudyTimeAllocationInput,
+): Promise<BudgetAllocation> => {
+  const res = await fetch(`${basePath}/study-time/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(`Failed to update study time allocation: ${res.status}`);
+  return res.json();
+};
+
+const updateStudyMoney = async (
+  id: string,
+  input: StudyMoneyAllocationInput,
+): Promise<BudgetAllocation> => {
+  const res = await fetch(`${basePath}/study-money/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(`Failed to update study money allocation: ${res.status}`);
+  return res.json();
+};
+
 const deleteById = async (id: string): Promise<void> => {
   const res = await fetch(`${basePath}/${id}`, {
     method: 'DELETE',
@@ -71,7 +136,12 @@ const downloadFile = (fileId: string): string => {
 export const BudgetAllocationClient = {
   findAll,
   getSummary,
+  createHackTime,
+  updateHackTime,
+  createStudyTime,
+  updateStudyTime,
   createStudyMoney,
+  updateStudyMoney,
   deleteById,
   uploadFile,
   downloadFile,
