@@ -2,6 +2,7 @@ package community.flock.eco.workday.application.budget
 
 import community.flock.eco.workday.api.endpoint.BudgetAllocationAll
 import community.flock.eco.workday.api.endpoint.BudgetAllocationDeleteById
+import community.flock.eco.workday.api.endpoint.BudgetSummary
 import community.flock.eco.workday.api.endpoint.HackTimeAllocationCreate
 import community.flock.eco.workday.api.endpoint.HackTimeAllocationUpdate
 import community.flock.eco.workday.api.endpoint.StudyMoneyAllocationCreate
@@ -41,6 +42,7 @@ import java.util.UUID
 interface BudgetAllocationHandler :
     BudgetAllocationAll.Handler,
     BudgetAllocationDeleteById.Handler,
+    BudgetSummary.Handler,
     HackTimeAllocationCreate.Handler,
     HackTimeAllocationUpdate.Handler,
     StudyTimeAllocationCreate.Handler,
@@ -56,6 +58,7 @@ class BudgetAllocationController(
     private val studyTimeBudgetAllocationService: StudyTimeBudgetAllocationService,
     private val studyMoneyBudgetAllocationService: StudyMoneyBudgetAllocationService,
     private val budgetAllocationMapper: BudgetAllocationApiMapper,
+    private val budgetSummaryService: BudgetSummaryService,
     private val personService: PersonService,
 ) : BudgetAllocationHandler {
     fun authentication(): Authentication = SecurityContextHolder.getContext().authentication
@@ -70,6 +73,25 @@ class BudgetAllocationController(
         if (!authentication().hasAuthority(BudgetAllocationAuthority.WRITE)) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "Requires BudgetAllocationAuthority.WRITE")
         }
+    }
+
+    override suspend fun budgetSummary(request: BudgetSummary.Request): BudgetSummary.Response<*> {
+        requireRead()
+        val personId = request.queries.personId
+        val year = request.queries.year ?: LocalDate.now().year
+
+        val personUuid = when {
+            authentication().isAdmin() && personId != null -> UUID.fromString(personId)
+            else -> {
+                val person = personService.findByUserCode(authentication().name)
+                    ?.toDomain()
+                    ?: error("Cannot find person for current user")
+                person.uuid
+            }
+        }
+
+        val summary = budgetSummaryService.getSummary(personUuid, year)
+        return BudgetSummary.Response200(summary)
     }
 
     override suspend fun budgetAllocationAll(request: BudgetAllocationAll.Request): BudgetAllocationAll.Response<*> {
