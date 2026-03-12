@@ -3,7 +3,7 @@
 **Project:** Budget Allocation Tracking
 **Created:** 2026-03-02
 **Status:** Active
-**Current Phase:** Phase 6
+**Current Phase:** Phase 7
 
 ## Project Overview
 
@@ -16,7 +16,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 - [x] **Phase 3: Domain Layer** - Business entities and persistence contracts
 - [x] **Phase 4: Persistence & Contract** - Database schema and contract extensions
 - [x] **Phase 5: API Layer** - REST endpoints with type-safe contracts
-- [ ] **Phase 6: Budget Tab Integration** - Connect person-centric UI to real API
+- [x] **Phase 6: Budget Tab Integration** - Connect person-centric UI to real API
 - [ ] **Phase 7: Event Integration** - Connect event-centric budget management to real API
 - [ ] **Phase 8: Contract Form & Dev Data** - Contract form updates and mock data loader
 
@@ -29,8 +29,8 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 | 3. Domain Layer | 2/2 | Complete | 2026-03-03 |
 | 4. Persistence & Contract | 3/3 | Complete | 2026-03-05 |
 | 5. API Layer | 2/2 | Complete | 2026-03-06 |
-| 6. Budget Tab Integration | 1/3 | In progress | - |
-| 7. Event Integration | 0/? | Not started | - |
+| 6. Budget Tab Integration | 3/3 | Complete | 2026-03-12 |
+| 7. Event Integration | 0/1 | Planning | - |
 | 8. Contract Form & Dev Data | 0/? | Not started | - |
 
 ## Phase Details
@@ -122,9 +122,9 @@ Plans:
   5. Admin switches between persons using person selector and tab displays correct budget data
 **Plans**: 3 plans
 Plans:
-- [ ] 06-01-PLAN.md -- Backend budget summary endpoint: wirespec contract, BudgetSummaryService, controller handler, integration tests (TAB-01, TAB-05)
-- [ ] 06-02-PLAN.md -- Frontend client + component refactoring: BudgetAllocationClient, wirespec type migration, routing, navigation (TAB-02, TAB-04, TAB-05)
-- [ ] 06-03-PLAN.md -- StudyMoney CRUD wiring, delete confirmation dialog, mock/demo cleanup (TAB-03)
+- [x] 06-01-PLAN.md -- Backend budget summary endpoint: wirespec contract, BudgetSummaryService, controller handler, integration tests (TAB-01, TAB-05)
+- [x] 06-02-PLAN.md -- Frontend client + component refactoring: BudgetAllocationClient, wirespec type migration, routing, navigation (TAB-02, TAB-04, TAB-05)
+- [x] 06-03-PLAN.md -- StudyMoney CRUD wiring, delete confirmation dialog, mock/demo cleanup (TAB-03)
 
 ### Phase 7: Event Integration
 **Goal**: Admins manage budget allocations from event dialog with real persistence
@@ -136,7 +136,9 @@ Plans:
   3. Admin assigns money allocations to participants and data persists on save
   4. Admin creates FLOCK_HACK_DAY event and form pre-fills with HackTime allocation type (smart defaults based on event type)
   5. Event form changes (costs, allocation type) immediately update budget management sections (Phase 2 redesign wired to real API)
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 07-01-PLAN.md -- Extend BudgetAllocationClient with full CRUD, create event budget transformers, wire EventDialog to load/save allocations via API (EVT-01, EVT-02, EVT-03, EVT-04)
 
 ### Phase 8: Contract Form & Dev Data
 **Goal**: Contract management includes budget fields and dev environment has test data
@@ -177,4 +179,4 @@ All 23 v1 requirements mapped. No orphans.
 - Phase 8 executes last (requires contract entity changes from Phase 4 and API from Phase 5)
 
 ---
-*Last updated: 2026-03-11 (Phase 6 planned with 3 plans in 2 waves)*
+*Last updated: 2026-03-12 (Phase 7 planned with 1 plan in 1 wave)*
