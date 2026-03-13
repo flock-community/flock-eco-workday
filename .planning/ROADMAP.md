@@ -3,7 +3,7 @@
 **Project:** Budget Allocation Tracking
 **Created:** 2026-03-02
 **Status:** Active
-**Current Phase:** Phase 7
+**Current Phase:** Phase 8
 
 ## Project Overview
 
@@ -17,7 +17,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 - [x] **Phase 4: Persistence & Contract** - Database schema and contract extensions
 - [x] **Phase 5: API Layer** - REST endpoints with type-safe contracts
 - [x] **Phase 6: Budget Tab Integration** - Connect person-centric UI to real API
-- [ ] **Phase 7: Event Integration** - Connect event-centric budget management to real API
+- [x] **Phase 7: Event Integration** - Connect event-centric budget management to real API
 - [ ] **Phase 8: Contract Form & Dev Data** - Contract form updates and mock data loader
 
 ## Progress
@@ -30,8 +30,8 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 | 4. Persistence & Contract | 3/3 | Complete | 2026-03-05 |
 | 5. API Layer | 2/2 | Complete | 2026-03-06 |
 | 6. Budget Tab Integration | 3/3 | Complete | 2026-03-12 |
-| 7. Event Integration | 0/1 | Planning | - |
-| 8. Contract Form & Dev Data | 0/? | Not started | - |
+| 7. Event Integration | 1/1 | Complete | 2026-03-12 |
+| 8. Contract Form & Dev Data | 0/1 | Planned | - |
 
 ## Phase Details
 
@@ -138,7 +138,7 @@ Plans:
   5. Event form changes (costs, allocation type) immediately update budget management sections (Phase 2 redesign wired to real API)
 **Plans**: 1 plan
 Plans:
-- [ ] 07-01-PLAN.md -- Extend BudgetAllocationClient with full CRUD, create event budget transformers, wire EventDialog to load/save allocations via API (EVT-01, EVT-02, EVT-03, EVT-04)
+- [x] 07-01-PLAN.md -- Extend BudgetAllocationClient with full CRUD, create event budget transformers, wire EventDialog to load/save allocations via API (EVT-01, EVT-02, EVT-03, EVT-04)
 
 ### Phase 8: Contract Form & Dev Data
 **Goal**: Contract management includes budget fields and dev environment has test data
@@ -149,7 +149,9 @@ Plans:
   2. Admin saves contract with studyHours=100 and studyMoney=2500.00 and values persist correctly
   3. Developer runs application with -Pdevelop profile and sees budget allocations pre-loaded for test persons
   4. Developer can test full budget allocation workflow without manual data entry
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 08-01-PLAN.md -- Add studyHours/studyMoney fields to contract form, update dev contract data, create budget allocation dev data loader (CTR-01, DEV-01)
 
 ## Coverage Matrix
 
@@ -179,4 +181,4 @@ All 23 v1 requirements mapped. No orphans.
 - Phase 8 executes last (requires contract entity changes from Phase 4 and API from Phase 5)
 
 ---
-*Last updated: 2026-03-12 (Phase 7 planned with 1 plan in 1 wave)*
+*Last updated: 2026-03-13 (Phase 8 planned — 1 plan)*
