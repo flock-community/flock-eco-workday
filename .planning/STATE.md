@@ -2,64 +2,61 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 7
-current_plan: Not started
-status: planning
-last_updated: "2026-03-12T09:30:55.256Z"
+current_phase: 8
+current_plan: 1 of 1 (Phase complete)
+status: complete
+last_updated: "2026-03-16T10:28:56Z"
 progress:
   total_phases: 8
-  completed_phases: 5
-  total_plans: 13
-  completed_plans: 13
-  percent: 79
+  completed_phases: 8
+  total_plans: 16
+  completed_plans: 16
+  percent: 100
 ---
 
 # Project State: Budget Allocations for Flock Workday
 
-**Last Updated:** 2026-03-12
-**Current Phase:** 7
-**Current Plan:** Not started
-**Status:** Ready to plan
+**Last Updated:** 2026-03-16
+**Current Phase:** 8
+**Current Plan:** 01 of 01 (Phase complete)
+**Status:** Project complete
 
 ## Project Reference
 
 **Core Value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
 
-**Current Focus:** Phase 6 Budget Tab Integration complete. Phase 7 (Event Integration) next.
+**Current Focus:** All phases complete. Budget allocations feature fully implemented.
 
 ## Current Position
 
-**Phase:** 6 of 8 - Budget Tab Integration
-**Plan:** 03 of 03 (Phase complete)
-**Status:** Complete
-**Progress:** [████████░░] 79%
+**Phase:** 8 of 8 - Contract Form & Dev Data
+**Plan:** 01 of 01 (Phase complete)
+**Status:** Project Complete
+**Progress:** [██████████] 100%
 
-### Phase 6 Objective
-Connect person-centric budget allocation UI to real API endpoints with budget summary, allocation lists, and CRUD operations.
+### Phase 8 Objective
+Add studyHours and studyMoney fields to internal contract form and create dev data loader for budget allocations.
 
 **Success Criteria:**
-1. User opens Budget Allocation tab and sees summary cards with real budget/used/available calculated from API data
-2. User sees allocation list populated from API with event links that navigate to real event records
-3. Admin can create/edit/delete standalone StudyMoney allocations and changes persist to database
-4. User changes year selector and allocation list updates with filtered data from API
-5. Admin switches between persons using person selector and tab displays correct budget data
+1. Admin edits internal contract and sees studyHours and studyMoney input fields
+2. Admin saves contract with studyHours and studyMoney values and they persist correctly
+3. Developer runs app with -Pdevelop and sees budget allocations pre-loaded for test persons
+4. Developer can test full budget allocation workflow without manual data entry
 
-**Requirements in Phase:** TAB-01, TAB-02, TAB-03, TAB-04, TAB-05
+**Requirements in Phase:** CTR-01, DEV-01
 
 **Key Implementation (Plan 01):**
-- GET /api/budget-summary endpoint with BudgetSummaryResponse and BudgetItem wirespec types
-- BudgetSummaryService joining ContractInternal budget fields with allocation sums
-- BudgetSummary.Handler wired into BudgetAllocationController
-- 4 integration tests (happy path, no contract, non-admin auto-scope, admin cross-person)
-- TypeScript types generated for frontend consumption
+- studyHours and studyMoney fields added to ContractFormInternal.tsx (JSX, init, schema)
+- LoadContractData updated with studyHours/studyMoney values on internal contracts
+- LoadBudgetAllocationData created seeding all 3 allocation types for 3 persons across 2 years
 
 ## Performance Metrics
 
 ### Velocity
-- **Phases completed:** 5 (Phase 1: Frontend Prototype, Phase 2: Event Budget Flow Redesign, Phase 3: Domain Layer, Phase 4: Persistence & Contract, Phase 5: API Layer)
-- **Requirements completed:** 16 of 23 v1 requirements (EVT-05, EVT-06, DOM-01, DOM-02, DOM-03, DOM-04, CTR-02, API-01, API-02, API-03, API-04, API-05, TAB-01, TAB-03, TAB-05 satisfied)
-- **Plans completed:** 14 (02-01, 02-02, 02-03, 03-01, 03-02, 04-01, 04-02, 04-03, 05-01, 05-02, 06-01, 06-02, 06-03) -- all with passing builds
-- **Completion rate:** 79% (6/8 phases complete, Phase 6 complete)
+- **Phases completed:** 8 (Phase 1-8 all complete)
+- **Requirements completed:** 22 of 23 v1 requirements (EVT-01, EVT-02, EVT-03, EVT-04, EVT-05, EVT-06, DOM-01, DOM-02, DOM-03, DOM-04, CTR-01, CTR-02, DEV-01, API-01, API-02, API-03, API-04, API-05, TAB-01, TAB-02, TAB-03, TAB-04, TAB-05 satisfied)
+- **Plans completed:** 16 (02-01, 02-02, 02-03, 03-01, 03-02, 04-01, 04-02, 04-03, 05-01, 05-02, 06-01, 06-02, 06-03, 07-01, 08-01) -- all with passing builds
+- **Completion rate:** 100% (8/8 phases complete)
 
 ### Quality
 - **Build status:** Pass (workday-application compiles cleanly with all tests passing)
@@ -125,10 +122,10 @@ None logged yet.
 | 4. Persistence & Contract | Complete | DOM-03, DOM-04 | 4 criteria met |
 | 5. API Layer | Complete (2/2 plans) | API-01, API-02, API-03, API-04, API-05, CTR-02 | 6 criteria met |
 | 6. Budget Tab Integration | Complete (3/3 plans) | TAB-01, TAB-02, TAB-03, TAB-04, TAB-05 | 5 criteria met |
-| 7. Event Integration | Not started | EVT-01, EVT-02, EVT-03, EVT-04 | 4 criteria |
-| 8. Contract Form & Dev Data | Not started | CTR-01, DEV-01 | 4 criteria |
+| 7. Event Integration | Complete | EVT-01, EVT-02, EVT-03, EVT-04 | 5 criteria met |
+| 8. Contract Form & Dev Data | Complete (1/1 plans) | CTR-01, DEV-01 | 4 criteria met |
 
-**Overall Progress:** 79% (Phases 1-6 complete, 2 phases remaining)
+**Overall Progress:** 100% (All 8 phases complete)
 
 | Plan | Duration (min) | Tasks | Files |
 |------|----------------|-------|-------|
@@ -144,30 +141,28 @@ None logged yet.
 | Phase 06 P01 | 7 | 2 tasks | 5 files |
 | Phase 06 P02 | 7 | 2 tasks | 10 files |
 | Phase 06 P03 | 55 | 2 tasks | 17 files |
+| Phase 07 P01 | 5 | 2 tasks | 4 files |
+| Phase 08 P01 | 3 | 2 tasks | 3 files |
 
 ## Session Continuity
 
 ### Last Session Summary
-- Executed Phase 6 Plan 03 (StudyMoney CRUD Wiring and Prototype Cleanup)
-- Refactored StudyMoneyAllocationDialog to use BudgetAllocationClient.createStudyMoney with file upload
-- Added ConfirmDialog for delete confirmation in BudgetAllocationFeature
-- Added "Add Study Money" button for admin users
-- Deleted all mock files, demo component, prototype documentation (2533 lines removed)
-- Migrated event form files from deleted mock BudgetAllocationType to EventBudgetType constant
-- Phase 6 complete: all 3 plans done
+- Executed Phase 8 Plan 01 (Contract Form & Dev Data)
+- Added studyHours and studyMoney fields to ContractFormInternal.tsx
+- Updated LoadContractData with studyHours/studyMoney values on internal contracts
+- Created LoadBudgetAllocationData seeding all 3 allocation types for 3 persons across 2 years
+- Phase 8 complete: 1/1 plans done
+- Project complete: all 8 phases finished
 
 ### Next Session
-Execute Phase 7 (Event Integration).
+Project complete. All budget allocation feature work is done.
 
 ### Context for Next Agent
-- Phase 6 complete: Budget tab fully functional with real API data + StudyMoney CRUD
-- BudgetAllocationClient provides: findAll, getSummary, createStudyMoney, deleteById, uploadFile, downloadFile
-- All budget components use wirespec types (BudgetAllocation, BudgetSummaryResponse, BudgetItem)
-- Admin sees PersonSelector, Add Study Money button, delete confirmation dialog
-- All mock files and prototype docs deleted; EventBudgetAllocationDialog deleted (Phase 7 rebuilds)
-- EventBudgetType constant in mappings.ts preserves STUDY/HACK values for event forms
-- All work happens in `workday-application` module (workday-core and workday-user are frozen)
+- All 8 phases complete: budget allocations feature fully implemented end-to-end
+- Contract form shows studyHours and studyMoney fields for internal contracts
+- Dev data loader seeds HackTime, StudyTime, and StudyMoney allocations for testing
+- Full stack: domain model, persistence, API, budget tab, event integration, contract form, dev data
 
 ---
 *State initialized: 2026-03-02*
-*Last updated: 2026-03-12 (Phase 6 Plan 03 complete, Phase 6 complete)*
+*Last updated: 2026-03-16 (Phase 8 Plan 01 complete, project complete)*
