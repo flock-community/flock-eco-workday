@@ -30,21 +30,21 @@
 
 ### Event Budget Management
 
-- [ ] **EVT-01**: Event dialog shows budget management section for allocations
-- [ ] **EVT-02**: Admin can assign per-participant time allocations with per-day breakdown
-- [ ] **EVT-03**: Admin can assign per-participant money allocations
-- [ ] **EVT-04**: Smart defaults based on event type (FLOCK_HACK_DAY -> HackTime, CONFERENCE -> StudyTime)
+- [x] **EVT-01**: Event dialog shows budget management section for allocations
+- [x] **EVT-02**: Admin can assign per-participant time allocations with per-day breakdown
+- [x] **EVT-03**: Admin can assign per-participant money allocations
+- [x] **EVT-04**: Smart defaults based on event type (FLOCK_HACK_DAY -> HackTime, CONFERENCE -> StudyTime)
 - [x] **EVT-05**: Event form budget/type changes live-update the budget management sections (single source of truth)
 - [x] **EVT-06**: Budget management section uses progressive disclosure (start simple, expand on demand)
 
 ### Contract Form
 
-- [ ] **CTR-01**: Contract form shows studyHours and studyMoney fields for internal contracts
+- [x] **CTR-01**: Contract form shows studyHours and studyMoney fields for internal contracts
 - [x] **CTR-02**: Wirespec contract updated with new ContractInternal fields
 
 ### Development
 
-- [ ] **DEV-01**: Mock data loader seeds budget allocations for development profile
+- [x] **DEV-01**: Mock data loader seeds budget allocations for development profile
 
 ## v2 Requirements
 
@@ -88,15 +88,15 @@
 | TAB-03 | Phase 6 | Complete |
 | TAB-04 | Phase 6 | Complete |
 | TAB-05 | Phase 6 | Complete (06-01) |
-| EVT-01 | Phase 7 | Pending |
-| EVT-02 | Phase 7 | Pending |
-| EVT-03 | Phase 7 | Pending |
-| EVT-04 | Phase 7 | Pending |
+| EVT-01 | Phase 7 | Complete |
+| EVT-02 | Phase 7 | Complete |
+| EVT-03 | Phase 7 | Complete |
+| EVT-04 | Phase 7 | Complete |
 | EVT-05 | Phase 2 | Complete |
 | EVT-06 | Phase 2 | Complete |
-| CTR-01 | Phase 8 | Pending |
+| CTR-01 | Phase 8 | Complete |
 | CTR-02 | Phase 5 | Complete |
-| DEV-01 | Phase 8 | Pending |
+| DEV-01 | Phase 8 | Complete |
 
 **Coverage:**
 - v1 requirements: 23 total
