@@ -72,6 +72,24 @@ export const ContractFormInternal = ({
             component={TextField}
           />
         </Grid>
+        <Grid size={{ xs: 12 }}>
+          <Field
+            name="studyHours"
+            type="number"
+            label="Study hours"
+            fullWidth
+            component={TextField}
+          />
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <Field
+            name="studyMoney"
+            type="number"
+            label="Study money"
+            fullWidth
+            component={TextField}
+          />
+        </Grid>
       </Grid>
     </Form>
   );
@@ -84,6 +102,8 @@ export const ContractFormInternal = ({
     billable: value.billable,
     holidayHours: value.holidayHours,
     hackHours: value.hackHours,
+    studyHours: value.studyHours,
+    studyMoney: value.studyMoney,
   };
 
   const schema = object({
@@ -94,6 +114,8 @@ export const ContractFormInternal = ({
     billable: boolean().default(true),
     holidayHours: number().required().default(192),
     hackHours: number().required().default(160),
+    studyHours: number().required().default(0),
+    studyMoney: number().required().default(0),
   });
 
   return (
