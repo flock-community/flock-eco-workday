@@ -9,6 +9,7 @@ import community.flock.eco.workday.application.model.ContractType
 import community.flock.eco.workday.application.repository.ContractRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
+import java.math.BigDecimal
 import java.time.LocalDate
 
 @Component
@@ -24,8 +25,8 @@ class LoadContractData(
     init {
         loadData.load {
             create("tommy@sesam.straat", ContractType.EXTERNAL, now.minusMonths(2))
-            create("ieniemienie@sesam.straat", ContractType.INTERNAL, now.minusMonths(8), now.plusMonths(8))
-            create("pino@sesam.straat", ContractType.INTERNAL, now.minusMonths(12), now.plusMonths(4))
+            create("ieniemienie@sesam.straat", ContractType.INTERNAL, now.minusMonths(8), now.plusMonths(8), studyHours = 200, studyMoney = BigDecimal("5000.00"))
+            create("pino@sesam.straat", ContractType.INTERNAL, now.minusMonths(12), now.plusMonths(4), studyHours = 100, studyMoney = BigDecimal("2500.00"))
             create("bert@sesam.straat", ContractType.EXTERNAL, now.minusWeeks(50), now.plusWeeks(2))
             create("ernie@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2020, 10, 27), LocalDate.of(2021, 10, 26))
             create("ernie@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2021, 10, 27), LocalDate.of(2021, 12, 31))
@@ -42,6 +43,8 @@ class LoadContractData(
         type: ContractType,
         from: LocalDate,
         to: LocalDate? = null,
+        studyHours: Int = 0,
+        studyMoney: BigDecimal = BigDecimal.ZERO,
     ) = when (type) {
         ContractType.INTERNAL ->
             ContractInternal(
@@ -50,6 +53,8 @@ class LoadContractData(
                 monthlySalary = 6000.0,
                 holidayHours = 192,
                 hackHours = 160,
+                studyHours = studyHours,
+                studyMoney = studyMoney,
                 from = from,
                 to = to,
             )
