@@ -29,6 +29,7 @@ decisions:
 metrics:
   duration: 232
   completed: "2026-03-03T10:44:27Z"
+requirements_completed: [DOM-01, DOM-02]
 ---
 
 # Phase 03 Plan 02: Domain Services, Events, and Tests Summary

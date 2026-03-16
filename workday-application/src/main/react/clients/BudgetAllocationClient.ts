@@ -129,8 +129,8 @@ const uploadFile = async (file: File): Promise<{ id: string; name: string }> => 
   return res.json();
 };
 
-const downloadFile = (fileId: string): string => {
-  return `/api/budget-allocations/files/${fileId}`;
+const downloadFile = (fileId: string, fileName: string): string => {
+  return `/api/budget-allocations/files/${fileId}/${fileName}`;
 };
 
 export const BudgetAllocationClient = {
