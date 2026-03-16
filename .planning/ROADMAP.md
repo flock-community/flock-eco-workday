@@ -3,7 +3,7 @@
 **Project:** Budget Allocation Tracking
 **Created:** 2026-03-02
 **Status:** Active
-**Current Phase:** Phase 8
+**Current Phase:** Phase 9
 
 ## Project Overview
 
@@ -19,6 +19,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 - [x] **Phase 6: Budget Tab Integration** - Connect person-centric UI to real API
 - [x] **Phase 7: Event Integration** - Connect event-centric budget management to real API
 - [x] **Phase 8: Contract Form & Dev Data** - Contract form updates and mock data loader (completed 2026-03-16)
+- [ ] **Phase 9: Verification Gap Closure** - Formal verification of phases 04/05/07, documentation fixes, downloadFile bug fix
 
 ## Progress
 
@@ -32,6 +33,7 @@ Adding budget tracking capability to Flock Workday for hack hours, study hours, 
 | 6. Budget Tab Integration | 3/3 | Complete | 2026-03-12 |
 | 7. Event Integration | 1/1 | Complete | 2026-03-12 |
 | 8. Contract Form & Dev Data | 1/1 | Complete   | 2026-03-16 |
+| 9. Verification Gap Closure | 0/1 | Not started | - |
 
 ## Phase Details
 
@@ -153,6 +155,23 @@ Plans:
 Plans:
 - [ ] 08-01-PLAN.md -- Add studyHours/studyMoney fields to contract form, update dev contract data, create budget allocation dev data loader (CTR-01, DEV-01)
 
+### Phase 9: Verification Gap Closure
+**Goal**: All milestone requirements formally verified with VERIFICATION.md, documentation gaps fixed, latent code bug resolved
+**Depends on**: All prior phases (verification of completed work)
+**Requirements**: DOM-01, DOM-02, DOM-03, DOM-04, API-01, API-02, API-03, API-04, API-05, CTR-02, EVT-01, EVT-02, EVT-03, EVT-04
+**Gap Closure**: Closes gaps from v1.0 milestone audit
+**Success Criteria** (what must be TRUE):
+  1. Phase 04 has VERIFICATION.md with passed status for DOM-03 and DOM-04
+  2. Phase 05 has VERIFICATION.md with passed status for API-01 through API-05 and CTR-02
+  3. Phase 07 has VERIFICATION.md with passed status for EVT-01 through EVT-04
+  4. DOM-01 and DOM-02 listed in Phase 3 SUMMARY frontmatter requirements_completed
+  5. DOM-03 checkbox in REQUIREMENTS.md updated to [x]
+  6. BudgetAllocationClient.downloadFile() URL pattern matches backend controller path
+  7. Re-audit shows 23/23 requirements satisfied
+**Plans**: 1 plan
+Plans:
+- [ ] 09-01-PLAN.md -- Run formal verification on phases 04/05/07, fix SUMMARY frontmatter, update REQUIREMENTS.md, fix downloadFile URL
+
 ## Coverage Matrix
 
 | Phase | Requirements | Count |
@@ -164,9 +183,10 @@ Plans:
 | 6 - Budget Tab Integration | TAB-01, TAB-02, TAB-03, TAB-04, TAB-05 | 5 |
 | 7 - Event Integration | EVT-01, EVT-02, EVT-03, EVT-04 | 4 |
 | 8 - Contract Form & Dev Data | CTR-01, DEV-01 | 2 |
-| **Total** | | **23** |
+| 9 - Verification Gap Closure | DOM-01, DOM-02, DOM-03, DOM-04, API-01-05, CTR-02, EVT-01-04 | 14 |
+| **Total** | | **23** (14 re-verified in Phase 9) |
 
-All 23 v1 requirements mapped. No orphans.
+All 23 v1 requirements mapped. Phase 9 re-verifies 14 requirements from phases 03/04/05/07.
 
 ## Notes
 
@@ -181,4 +201,4 @@ All 23 v1 requirements mapped. No orphans.
 - Phase 8 executes last (requires contract entity changes from Phase 4 and API from Phase 5)
 
 ---
-*Last updated: 2026-03-13 (Phase 8 planned — 1 plan)*
+*Last updated: 2026-03-16 (Phase 9 added — verification gap closure from milestone audit)*
