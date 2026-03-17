@@ -72,9 +72,10 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
                 eventCode = null,
                 date = LocalDate.of(2026, 3, 1),
                 description = "Hack day",
-                dailyTimeAllocations = listOf(
-                    DailyTimeAllocation(LocalDate.of(2026, 3, 1), 8.0, BudgetAllocationType.HACK),
-                ),
+                dailyTimeAllocations =
+                    listOf(
+                        DailyTimeAllocation(LocalDate.of(2026, 3, 1), 8.0, BudgetAllocationType.HACK),
+                    ),
                 totalHours = 8.0,
             ),
         )
@@ -86,9 +87,10 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
                 eventCode = null,
                 date = LocalDate.of(2026, 3, 2),
                 description = "Study day",
-                dailyTimeAllocations = listOf(
-                    DailyTimeAllocation(LocalDate.of(2026, 3, 2), 4.0, BudgetAllocationType.STUDY),
-                ),
+                dailyTimeAllocations =
+                    listOf(
+                        DailyTimeAllocation(LocalDate.of(2026, 3, 2), 4.0, BudgetAllocationType.STUDY),
+                    ),
                 totalHours = 4.0,
             ),
         )

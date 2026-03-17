@@ -21,8 +21,7 @@ class StudyMoneyBudgetAllocationPersistenceAdapter(
         return entity.toDomain()
     }
 
-    override fun findById(id: Long): StudyMoneyBudgetAllocation? =
-        repository.findByIdOrNull(id)?.toDomain()
+    override fun findById(id: Long): StudyMoneyBudgetAllocation? = repository.findByIdOrNull(id)?.toDomain()
 
     @Transactional
     override fun updateIfExists(

@@ -16,7 +16,6 @@ import kotlin.test.assertTrue
 
 @Transactional
 class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
-
     @Autowired
     lateinit var createHelper: CreateHelper
 
@@ -33,18 +32,19 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
     fun testStudyHoursPersistsAsInt() {
         // Create a person + contract with studyHours = 120
         val person = createHelper.createPersonEntity()
-        val contract = ContractInternalForm(
-            personId = person.uuid,
-            monthlySalary = 4000.0,
-            hoursPerWeek = 40,
-            from = LocalDate.now(),
-            to = null,
-            holidayHours = 192,
-            hackHours = 160,
-            billable = true,
-            studyHours = 120,
-            studyMoney = BigDecimal.ZERO
-        ).let { contractService.create(it) }
+        val contract =
+            ContractInternalForm(
+                personId = person.uuid,
+                monthlySalary = 4000.0,
+                hoursPerWeek = 40,
+                from = LocalDate.now(),
+                to = null,
+                holidayHours = 192,
+                hackHours = 160,
+                billable = true,
+                studyHours = 120,
+                studyMoney = BigDecimal.ZERO,
+            ).let { contractService.create(it) }
 
         // Force flush and clear persistence context
         entityManager.flush()
@@ -59,18 +59,19 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
     fun testStudyMoneyPersistsAsBigDecimal() {
         // Create contract with studyMoney = BigDecimal("2500.50")
         val person = createHelper.createPersonEntity()
-        val contract = ContractInternalForm(
-            personId = person.uuid,
-            monthlySalary = 4000.0,
-            hoursPerWeek = 40,
-            from = LocalDate.now(),
-            to = null,
-            holidayHours = 192,
-            hackHours = 160,
-            billable = true,
-            studyHours = 0,
-            studyMoney = BigDecimal("2500.50")
-        ).let { contractService.create(it) }
+        val contract =
+            ContractInternalForm(
+                personId = person.uuid,
+                monthlySalary = 4000.0,
+                hoursPerWeek = 40,
+                from = LocalDate.now(),
+                to = null,
+                holidayHours = 192,
+                hackHours = 160,
+                billable = true,
+                studyHours = 0,
+                studyMoney = BigDecimal("2500.50"),
+            ).let { contractService.create(it) }
 
         // Force flush and clear persistence context
         entityManager.flush()
@@ -81,7 +82,7 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
         assertEquals(
             0,
             BigDecimal("2500.50").compareTo((retrieved as ContractInternal).studyMoney),
-            "studyMoney should persist as BigDecimal with value 2500.50"
+            "studyMoney should persist as BigDecimal with value 2500.50",
         )
     }
 
@@ -89,11 +90,12 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
     fun testDefaultValuesForExistingContracts() {
         // Create contract without specifying studyHours/studyMoney (use defaults)
         val person = createHelper.createPersonEntity()
-        val contract = createHelper.createContractInternal(
-            person = person,
-            from = LocalDate.now(),
-            to = null
-        )
+        val contract =
+            createHelper.createContractInternal(
+                person = person,
+                from = LocalDate.now(),
+                to = null,
+            )
 
         // Force flush and clear persistence context
         entityManager.flush()
@@ -105,7 +107,7 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
         assertEquals(
             0,
             BigDecimal.ZERO.compareTo(retrieved.studyMoney),
-            "Default studyMoney should be BigDecimal.ZERO"
+            "Default studyMoney should be BigDecimal.ZERO",
         )
     }
 

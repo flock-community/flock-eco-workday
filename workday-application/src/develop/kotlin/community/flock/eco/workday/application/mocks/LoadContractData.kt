@@ -25,8 +25,22 @@ class LoadContractData(
     init {
         loadData.load {
             create("tommy@sesam.straat", ContractType.EXTERNAL, now.minusMonths(2))
-            create("ieniemienie@sesam.straat", ContractType.INTERNAL, now.minusMonths(8), now.plusMonths(8), studyHours = 200, studyMoney = BigDecimal("5000.00"))
-            create("pino@sesam.straat", ContractType.INTERNAL, now.minusMonths(12), now.plusMonths(4), studyHours = 100, studyMoney = BigDecimal("2500.00"))
+            create(
+                "ieniemienie@sesam.straat",
+                ContractType.INTERNAL,
+                now.minusMonths(8),
+                now.plusMonths(8),
+                studyHours = 200,
+                studyMoney = BigDecimal("5000.00"),
+            )
+            create(
+                "pino@sesam.straat",
+                ContractType.INTERNAL,
+                now.minusMonths(12),
+                now.plusMonths(4),
+                studyHours = 100,
+                studyMoney = BigDecimal("2500.00"),
+            )
             create("bert@sesam.straat", ContractType.EXTERNAL, now.minusWeeks(50), now.plusWeeks(2))
             create("ernie@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2020, 10, 27), LocalDate.of(2021, 10, 26))
             create("ernie@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2021, 10, 27), LocalDate.of(2021, 12, 31))

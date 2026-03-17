@@ -17,14 +17,18 @@ class BudgetSummaryService(
     private val contractService: ContractService,
     private val budgetAllocationService: BudgetAllocationService,
 ) {
-    fun getSummary(personUuid: UUID, year: Int): BudgetSummaryResponse {
+    fun getSummary(
+        personUuid: UUID,
+        year: Int,
+    ): BudgetSummaryResponse {
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
 
         // Find active internal contracts for person in the given year
-        val internalContracts = contractService
-            .findAllActiveByPerson(from, to, personUuid)
-            .filterIsInstance<ContractInternal>()
+        val internalContracts =
+            contractService
+                .findAllActiveByPerson(from, to, personUuid)
+                .filterIsInstance<ContractInternal>()
 
         // Sum budget from all active internal contracts
         val totalHackHours = internalContracts.sumOf { it.hackHours }.toDouble()
@@ -35,34 +39,40 @@ class BudgetSummaryService(
         val allocations = budgetAllocationService.findAllByPersonUuid(personUuid, year)
 
         // Sum used amounts from allocations
-        val usedHackHours = allocations
-            .filterIsInstance<HackTimeBudgetAllocation>()
-            .sumOf { it.totalHours }
+        val usedHackHours =
+            allocations
+                .filterIsInstance<HackTimeBudgetAllocation>()
+                .sumOf { it.totalHours }
 
-        val usedStudyHours = allocations
-            .filterIsInstance<StudyTimeBudgetAllocation>()
-            .sumOf { it.totalHours }
+        val usedStudyHours =
+            allocations
+                .filterIsInstance<StudyTimeBudgetAllocation>()
+                .sumOf { it.totalHours }
 
-        val usedStudyMoney = allocations
-            .filterIsInstance<StudyMoneyBudgetAllocation>()
-            .sumOf { it.amount.toDouble() }
+        val usedStudyMoney =
+            allocations
+                .filterIsInstance<StudyMoneyBudgetAllocation>()
+                .sumOf { it.amount.toDouble() }
 
         return BudgetSummaryResponse(
-            hackHours = BudgetItem(
-                budget = totalHackHours,
-                used = usedHackHours,
-                available = totalHackHours - usedHackHours,
-            ),
-            studyHours = BudgetItem(
-                budget = totalStudyHours,
-                used = usedStudyHours,
-                available = totalStudyHours - usedStudyHours,
-            ),
-            studyMoney = BudgetItem(
-                budget = totalStudyMoney,
-                used = usedStudyMoney,
-                available = totalStudyMoney - usedStudyMoney,
-            ),
+            hackHours =
+                BudgetItem(
+                    budget = totalHackHours,
+                    used = usedHackHours,
+                    available = totalHackHours - usedHackHours,
+                ),
+            studyHours =
+                BudgetItem(
+                    budget = totalStudyHours,
+                    used = usedStudyHours,
+                    available = totalStudyHours - usedStudyHours,
+                ),
+            studyMoney =
+                BudgetItem(
+                    budget = totalStudyMoney,
+                    used = usedStudyMoney,
+                    available = totalStudyMoney - usedStudyMoney,
+                ),
         )
     }
 }

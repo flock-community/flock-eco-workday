@@ -99,7 +99,7 @@ const internalizeFull = (it: FlockEventRaw): FullFlockEvent => ({
 export const EVENT_PAGE_SIZE: number = 10;
 
 const internalizingClient = InternalizingClient<
-  FlockEventRequest,
+FlockEventRequest,
   FlockEventRaw,
   FullFlockEvent
 >(path, internalizeFull);

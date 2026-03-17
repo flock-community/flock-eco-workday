@@ -80,15 +80,18 @@ class BudgetAllocationController(
         val personId = request.queries.personId
         val year = request.queries.year ?: LocalDate.now().year
 
-        val personUuid = when {
-            authentication().isAdmin() && personId != null -> UUID.fromString(personId)
-            else -> {
-                val person = personService.findByUserCode(authentication().name)
-                    ?.toDomain()
-                    ?: error("Cannot find person for current user")
-                person.uuid
+        val personUuid =
+            when {
+                authentication().isAdmin() && personId != null -> UUID.fromString(personId)
+                else -> {
+                    val person =
+                        personService
+                            .findByUserCode(authentication().name)
+                            ?.toDomain()
+                            ?: error("Cannot find person for current user")
+                    person.uuid
+                }
             }
-        }
 
         val summary = budgetSummaryService.getSummary(personUuid, year)
         return BudgetSummary.Response200(summary)
@@ -100,19 +103,23 @@ class BudgetAllocationController(
         val eventCode = request.queries.eventCode
         val year = request.queries.year ?: LocalDate.now().year
 
-        val allocations = when {
-            authentication().isAdmin() -> when {
-                eventCode != null -> budgetAllocationService.findAllByEventCode(eventCode)
-                personId != null -> budgetAllocationService.findAllByPersonUuid(UUID.fromString(personId), year)
-                else -> emptyList()
+        val allocations =
+            when {
+                authentication().isAdmin() ->
+                    when {
+                        eventCode != null -> budgetAllocationService.findAllByEventCode(eventCode)
+                        personId != null -> budgetAllocationService.findAllByPersonUuid(UUID.fromString(personId), year)
+                        else -> emptyList()
+                    }
+                else -> {
+                    val person =
+                        personService
+                            .findByUserCode(authentication().name)
+                            ?.toDomain()
+                            ?: error("Cannot find person for current user")
+                    budgetAllocationService.findAllByPersonUuid(person.uuid, year)
+                }
             }
-            else -> {
-                val person = personService.findByUserCode(authentication().name)
-                    ?.toDomain()
-                    ?: error("Cannot find person for current user")
-                budgetAllocationService.findAllByPersonUuid(person.uuid, year)
-            }
-        }
 
         return BudgetAllocationAll.Response200(
             allocations.map {
@@ -128,7 +135,8 @@ class BudgetAllocationController(
     override suspend fun budgetAllocationDeleteById(request: BudgetAllocationDeleteById.Request): BudgetAllocationDeleteById.Response<*> {
         requireWrite()
         val id = request.path.id.toLong()
-        return budgetAllocationService.deleteById(id)
+        return budgetAllocationService
+            .deleteById(id)
             ?.let { BudgetAllocationDeleteById.Response204(Unit) }
             ?: BudgetAllocationDeleteById.Response404(Error("Budget allocation not found"))
     }

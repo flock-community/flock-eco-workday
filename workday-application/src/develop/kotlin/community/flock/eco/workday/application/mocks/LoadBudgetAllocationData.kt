@@ -167,24 +167,27 @@ class LoadBudgetAllocationData(
         dayCount: Int,
     ) {
         val hoursPerDay = totalHours / dayCount
-        val dailyAllocations = (0 until dayCount).map { dayOffset ->
-            DailyTimeAllocationEmbeddable(
-                date = date.plusDays(dayOffset.toLong()),
-                hours = hoursPerDay,
-                type = BudgetAllocationType.HACK,
-            )
-        }.toMutableList()
+        val dailyAllocations =
+            (0 until dayCount)
+                .map { dayOffset ->
+                    DailyTimeAllocationEmbeddable(
+                        date = date.plusDays(dayOffset.toLong()),
+                        hours = hoursPerDay,
+                        type = BudgetAllocationType.HACK,
+                    )
+                }.toMutableList()
 
-        hackTimeRepo.save(
-            HackTimeBudgetAllocationEntity(
-                person = person,
-                eventCode = eventCode,
-                date = date,
-                description = description,
-                totalHours = totalHours,
-                dailyTimeAllocations = dailyAllocations,
-            ),
-        ).also { data.add(it) }
+        hackTimeRepo
+            .save(
+                HackTimeBudgetAllocationEntity(
+                    person = person,
+                    eventCode = eventCode,
+                    date = date,
+                    description = description,
+                    totalHours = totalHours,
+                    dailyTimeAllocations = dailyAllocations,
+                ),
+            ).also { data.add(it) }
     }
 
     private fun createStudyTimeAllocation(
@@ -196,24 +199,27 @@ class LoadBudgetAllocationData(
         dayCount: Int,
     ) {
         val hoursPerDay = totalHours / dayCount
-        val dailyAllocations = (0 until dayCount).map { dayOffset ->
-            DailyTimeAllocationEmbeddable(
-                date = date.plusDays(dayOffset.toLong()),
-                hours = hoursPerDay,
-                type = BudgetAllocationType.STUDY,
-            )
-        }.toMutableList()
+        val dailyAllocations =
+            (0 until dayCount)
+                .map { dayOffset ->
+                    DailyTimeAllocationEmbeddable(
+                        date = date.plusDays(dayOffset.toLong()),
+                        hours = hoursPerDay,
+                        type = BudgetAllocationType.STUDY,
+                    )
+                }.toMutableList()
 
-        studyTimeRepo.save(
-            StudyTimeBudgetAllocationEntity(
-                person = person,
-                eventCode = eventCode,
-                date = date,
-                description = description,
-                totalHours = totalHours,
-                dailyTimeAllocations = dailyAllocations,
-            ),
-        ).also { data.add(it) }
+        studyTimeRepo
+            .save(
+                StudyTimeBudgetAllocationEntity(
+                    person = person,
+                    eventCode = eventCode,
+                    date = date,
+                    description = description,
+                    totalHours = totalHours,
+                    dailyTimeAllocations = dailyAllocations,
+                ),
+            ).also { data.add(it) }
     }
 
     private fun createStudyMoneyAllocation(
@@ -223,15 +229,16 @@ class LoadBudgetAllocationData(
         description: String,
         amount: BigDecimal,
     ) {
-        studyMoneyRepo.save(
-            StudyMoneyBudgetAllocationEntity(
-                person = person,
-                eventCode = eventCode,
-                date = date,
-                description = description,
-                amount = amount,
-                files = mutableListOf(),
-            ),
-        ).also { data.add(it) }
+        studyMoneyRepo
+            .save(
+                StudyMoneyBudgetAllocationEntity(
+                    person = person,
+                    eventCode = eventCode,
+                    date = date,
+                    description = description,
+                    amount = amount,
+                    files = mutableListOf(),
+                ),
+            ).also { data.add(it) }
     }
 }

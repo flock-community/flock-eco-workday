@@ -60,18 +60,20 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
         val user = createHelper.createUser(adminAuthorities)
         val person = createHelper.createPerson("alice", "budget", user.code)
 
-        val allocation = hackTimeBudgetAllocationService.create(
-            HackTimeBudgetAllocation(
-                person = person,
-                eventCode = null,
-                date = LocalDate.of(2026, 3, 1),
-                description = "Hack day",
-                dailyTimeAllocations = listOf(
-                    DailyTimeAllocation(LocalDate.of(2026, 3, 1), 8.0, BudgetAllocationType.HACK),
+        val allocation =
+            hackTimeBudgetAllocationService.create(
+                HackTimeBudgetAllocation(
+                    person = person,
+                    eventCode = null,
+                    date = LocalDate.of(2026, 3, 1),
+                    description = "Hack day",
+                    dailyTimeAllocations =
+                        listOf(
+                            DailyTimeAllocation(LocalDate.of(2026, 3, 1), 8.0, BudgetAllocationType.HACK),
+                        ),
+                    totalHours = 8.0,
                 ),
-                totalHours = 8.0,
-            ),
-        )
+            )
 
         mvc
             .perform(
@@ -98,9 +100,10 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
                 eventCode = "EVT-TEST-123",
                 date = LocalDate.of(2026, 3, 1),
                 description = "Event hack day",
-                dailyTimeAllocations = listOf(
-                    DailyTimeAllocation(LocalDate.of(2026, 3, 1), 4.0, BudgetAllocationType.HACK),
-                ),
+                dailyTimeAllocations =
+                    listOf(
+                        DailyTimeAllocation(LocalDate.of(2026, 3, 1), 4.0, BudgetAllocationType.HACK),
+                    ),
                 totalHours = 4.0,
             ),
         )
@@ -123,15 +126,17 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
         val user = createHelper.createUser(adminAuthorities)
         val person = createHelper.createPerson("charlie", "budget", user.code)
 
-        val input = HackTimeAllocationInput(
-            personId = UUIDApi(person.uuid.toString()),
-            eventCode = null,
-            date = "2026-03-01",
-            description = "TDD hack day",
-            dailyAllocations = listOf(
-                DailyTimeAllocationItem("2026-03-01", 8.0, DailyAllocationType.HACK),
-            ),
-        )
+        val input =
+            HackTimeAllocationInput(
+                personId = UUIDApi(person.uuid.toString()),
+                eventCode = null,
+                date = "2026-03-01",
+                description = "TDD hack day",
+                dailyAllocations =
+                    listOf(
+                        DailyTimeAllocationItem("2026-03-01", 8.0, DailyAllocationType.HACK),
+                    ),
+            )
 
         mvc
             .perform(
@@ -157,14 +162,15 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
         val user = createHelper.createUser(adminAuthorities)
         val person = createHelper.createPerson("diana", "budget", user.code)
 
-        val input = StudyMoneyAllocationInput(
-            personId = UUIDApi(person.uuid.toString()),
-            eventCode = null,
-            date = "2026-03-01",
-            description = "Study budget",
-            amount = 250.50,
-            files = emptyList(),
-        )
+        val input =
+            StudyMoneyAllocationInput(
+                personId = UUIDApi(person.uuid.toString()),
+                eventCode = null,
+                date = "2026-03-01",
+                description = "Study budget",
+                amount = 250.50,
+                files = emptyList(),
+            )
 
         mvc
             .perform(
@@ -186,15 +192,16 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
         val user = createHelper.createUser(adminAuthorities)
         val person = createHelper.createPerson("eve", "budget", user.code)
 
-        val allocation = studyMoneyBudgetAllocationService.create(
-            StudyMoneyBudgetAllocation(
-                person = person,
-                eventCode = null,
-                date = LocalDate.of(2026, 3, 1),
-                description = "To be deleted",
-                amount = BigDecimal("100.00"),
-            ),
-        )
+        val allocation =
+            studyMoneyBudgetAllocationService.create(
+                StudyMoneyBudgetAllocation(
+                    person = person,
+                    eventCode = null,
+                    date = LocalDate.of(2026, 3, 1),
+                    description = "To be deleted",
+                    amount = BigDecimal("100.00"),
+                ),
+            )
 
         mvc
             .perform(
@@ -212,15 +219,17 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
         val user = createHelper.createUser(readOnlyAuthorities)
         val person = createHelper.createPerson("frank", "budget", user.code)
 
-        val input = HackTimeAllocationInput(
-            personId = UUIDApi(person.uuid.toString()),
-            eventCode = null,
-            date = "2026-03-01",
-            description = "Should fail",
-            dailyAllocations = listOf(
-                DailyTimeAllocationItem("2026-03-01", 8.0, DailyAllocationType.HACK),
-            ),
-        )
+        val input =
+            HackTimeAllocationInput(
+                personId = UUIDApi(person.uuid.toString()),
+                eventCode = null,
+                date = "2026-03-01",
+                description = "Should fail",
+                dailyAllocations =
+                    listOf(
+                        DailyTimeAllocationItem("2026-03-01", 8.0, DailyAllocationType.HACK),
+                    ),
+            )
 
         mvc
             .perform(
@@ -249,9 +258,10 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
                 eventCode = null,
                 date = LocalDate.of(2026, 3, 1),
                 description = "Admin's hack day",
-                dailyTimeAllocations = listOf(
-                    DailyTimeAllocation(LocalDate.of(2026, 3, 1), 8.0, BudgetAllocationType.HACK),
-                ),
+                dailyTimeAllocations =
+                    listOf(
+                        DailyTimeAllocation(LocalDate.of(2026, 3, 1), 8.0, BudgetAllocationType.HACK),
+                    ),
                 totalHours = 8.0,
             ),
         )
@@ -263,9 +273,10 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
                 eventCode = null,
                 date = LocalDate.of(2026, 3, 2),
                 description = "Regular's hack day",
-                dailyTimeAllocations = listOf(
-                    DailyTimeAllocation(LocalDate.of(2026, 3, 2), 4.0, BudgetAllocationType.HACK),
-                ),
+                dailyTimeAllocations =
+                    listOf(
+                        DailyTimeAllocation(LocalDate.of(2026, 3, 2), 4.0, BudgetAllocationType.HACK),
+                    ),
                 totalHours = 4.0,
             ),
         )

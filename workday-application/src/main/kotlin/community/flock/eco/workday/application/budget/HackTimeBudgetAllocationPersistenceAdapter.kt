@@ -21,8 +21,7 @@ class HackTimeBudgetAllocationPersistenceAdapter(
         return entity.toDomain()
     }
 
-    override fun findById(id: Long): HackTimeBudgetAllocation? =
-        repository.findByIdOrNull(id)?.toDomain()
+    override fun findById(id: Long): HackTimeBudgetAllocation? = repository.findByIdOrNull(id)?.toDomain()
 
     @Transactional
     override fun updateIfExists(

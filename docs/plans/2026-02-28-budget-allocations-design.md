@@ -121,9 +121,17 @@ Add fields:
 
 ## Phases
 
-### Phase 1: Frontend Prototype (mocked data) - Mostly complete
+### Phase 1: Frontend Prototype (mocked data) - Complete
 
-Budget tab, event dialog budget section, dashboard charts, contract form changes. All mocked.
+Budget tab, event dialog budget section, dashboard charts, contract form changes. All mocked. Cleanup done: removed FlockMoney, ApprovalStatus, added per-day type field to DailyTimeAllocation.
+
+### Phase 1.4: Code Cleanup
+
+Split `BudgetAllocationMocks.ts` into types and data (cleaner wirespec migration in Phase 3). Remove dead commented-out JSX from allocation list items.
+
+### Phase 1.5: Frontend Design Polish
+
+Review and elevate all budget allocation UI surfaces from prototype to production-grade design using the `frontend-design` skill. Covers Budget Allocation tab, Event dialog budget management, and Dashboard charts. Can run in parallel with Phase 2.
 
 ### Phase 2: Backend + API
 

@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.budget
 
 import community.flock.eco.workday.api.model.BudgetAllocationFile
+import community.flock.eco.workday.api.model.DailyTimeAllocationItem
 import community.flock.eco.workday.api.model.HackTimeAllocationInput
 import community.flock.eco.workday.api.model.HackTimeDetails
 import community.flock.eco.workday.api.model.StudyMoneyAllocationInput
@@ -23,7 +24,6 @@ import java.util.UUID
 import community.flock.eco.workday.api.model.BudgetAllocation as BudgetAllocationApi
 import community.flock.eco.workday.api.model.BudgetAllocationType as BudgetAllocationTypeApi
 import community.flock.eco.workday.api.model.DailyAllocationType as DailyAllocationTypeApi
-import community.flock.eco.workday.api.model.DailyTimeAllocationItem
 import community.flock.eco.workday.api.model.UUID as UUIDApi
 
 @Component
@@ -34,10 +34,11 @@ class BudgetAllocationApiMapper(
         input: HackTimeAllocationInput,
         id: Long? = null,
     ): HackTimeBudgetAllocation {
-        val person = personService
-            .findByUuid(UUID.fromString(input.personId.value))
-            ?.toDomain()
-            ?: error("Cannot find person")
+        val person =
+            personService
+                .findByUuid(UUID.fromString(input.personId.value))
+                ?.toDomain()
+                ?: error("Cannot find person")
         return HackTimeBudgetAllocation(
             id = id ?: 0,
             person = person,
@@ -53,10 +54,11 @@ class BudgetAllocationApiMapper(
         input: StudyTimeAllocationInput,
         id: Long? = null,
     ): StudyTimeBudgetAllocation {
-        val person = personService
-            .findByUuid(UUID.fromString(input.personId.value))
-            ?.toDomain()
-            ?: error("Cannot find person")
+        val person =
+            personService
+                .findByUuid(UUID.fromString(input.personId.value))
+                ?.toDomain()
+                ?: error("Cannot find person")
         return StudyTimeBudgetAllocation(
             id = id ?: 0,
             person = person,
@@ -72,10 +74,11 @@ class BudgetAllocationApiMapper(
         input: StudyMoneyAllocationInput,
         id: Long? = null,
     ): StudyMoneyBudgetAllocation {
-        val person = personService
-            .findByUuid(UUID.fromString(input.personId.value))
-            ?.toDomain()
-            ?: error("Cannot find person")
+        val person =
+            personService
+                .findByUuid(UUID.fromString(input.personId.value))
+                ?.toDomain()
+                ?: error("Cannot find person")
         return StudyMoneyBudgetAllocation(
             id = id ?: 0,
             person = person,
@@ -83,12 +86,13 @@ class BudgetAllocationApiMapper(
             date = LocalDate.parse(input.date),
             description = input.description,
             amount = BigDecimal(input.amount.toString()),
-            files = input.files.map {
-                Document(
-                    name = it.name,
-                    file = UUID.fromString(it.file.value),
-                )
-            },
+            files =
+                input.files.map {
+                    Document(
+                        name = it.name,
+                        file = UUID.fromString(it.file.value),
+                    )
+                },
         )
     }
 
@@ -96,10 +100,11 @@ class BudgetAllocationApiMapper(
         DailyTimeAllocation(
             date = LocalDate.parse(date),
             hours = hours,
-            type = when (type) {
-                DailyAllocationTypeApi.STUDY -> BudgetAllocationType.STUDY
-                DailyAllocationTypeApi.HACK -> BudgetAllocationType.HACK
-            },
+            type =
+                when (type) {
+                    DailyAllocationTypeApi.STUDY -> BudgetAllocationType.STUDY
+                    DailyAllocationTypeApi.HACK -> BudgetAllocationType.HACK
+                },
         )
 }
 
@@ -113,10 +118,11 @@ internal fun HackTimeBudgetAllocation.produce(): BudgetAllocationApi =
         date = date.toString(),
         description = description,
         type = BudgetAllocationTypeApi.HACK_TIME,
-        hackTimeDetails = HackTimeDetails(
-            totalHours = totalHours,
-            dailyAllocations = dailyTimeAllocations.map { it.produce() },
-        ),
+        hackTimeDetails =
+            HackTimeDetails(
+                totalHours = totalHours,
+                dailyAllocations = dailyTimeAllocations.map { it.produce() },
+            ),
         studyTimeDetails = null,
         studyMoneyDetails = null,
     )
@@ -130,10 +136,11 @@ internal fun StudyTimeBudgetAllocation.produce(): BudgetAllocationApi =
         description = description,
         type = BudgetAllocationTypeApi.STUDY_TIME,
         hackTimeDetails = null,
-        studyTimeDetails = StudyTimeDetails(
-            totalHours = totalHours,
-            dailyAllocations = dailyTimeAllocations.map { it.produce() },
-        ),
+        studyTimeDetails =
+            StudyTimeDetails(
+                totalHours = totalHours,
+                dailyAllocations = dailyTimeAllocations.map { it.produce() },
+            ),
         studyMoneyDetails = null,
     )
 
@@ -147,20 +154,22 @@ internal fun StudyMoneyBudgetAllocation.produce(): BudgetAllocationApi =
         type = BudgetAllocationTypeApi.STUDY_MONEY,
         hackTimeDetails = null,
         studyTimeDetails = null,
-        studyMoneyDetails = StudyMoneyDetails(
-            amount = amount.toDouble(),
-            files = files.map { it.produceBudgetFile() },
-        ),
+        studyMoneyDetails =
+            StudyMoneyDetails(
+                amount = amount.toDouble(),
+                files = files.map { it.produceBudgetFile() },
+            ),
     )
 
 internal fun DailyTimeAllocation.produce(): DailyTimeAllocationItem =
     DailyTimeAllocationItem(
         date = date.toString(),
         hours = hours,
-        type = when (type) {
-            BudgetAllocationType.HACK -> DailyAllocationTypeApi.HACK
-            BudgetAllocationType.STUDY -> DailyAllocationTypeApi.STUDY
-        },
+        type =
+            when (type) {
+                BudgetAllocationType.HACK -> DailyAllocationTypeApi.HACK
+                BudgetAllocationType.STUDY -> DailyAllocationTypeApi.STUDY
+            },
     )
 
 internal fun Document.produceBudgetFile(): BudgetAllocationFile =
