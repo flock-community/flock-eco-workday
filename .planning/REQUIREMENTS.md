@@ -59,30 +59,30 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BMGT-01 | — | Pending |
-| BMGT-02 | — | Pending |
-| BMGT-03 | — | Pending |
-| BMGT-04 | — | Pending |
-| BMGT-05 | — | Pending |
-| BMGT-06 | — | Pending |
-| EVNT-01 | — | Pending |
-| EVNT-02 | — | Pending |
-| EVNT-03 | — | Pending |
-| EVNT-04 | — | Pending |
-| EMPV-01 | — | Pending |
-| EMPV-02 | — | Pending |
-| EMPV-03 | — | Pending |
-| CTRT-01 | — | Pending |
-| CTRT-02 | — | Pending |
-| CALC-01 | — | Pending |
-| CALC-02 | — | Pending |
-| CALC-03 | — | Pending |
+| BMGT-01 | Phase 10 | Pending |
+| BMGT-02 | Phase 10 | Pending |
+| BMGT-03 | Phase 10 | Pending |
+| BMGT-04 | Phase 10 | Pending |
+| BMGT-05 | Phase 10 | Pending |
+| BMGT-06 | Phase 10 | Pending |
+| EVNT-01 | Phase 11 | Pending |
+| EVNT-02 | Phase 11 | Pending |
+| EVNT-03 | Phase 11 | Pending |
+| EVNT-04 | Phase 11 | Pending |
+| EMPV-01 | Phase 12 | Pending |
+| EMPV-02 | Phase 12 | Pending |
+| EMPV-03 | Phase 12 | Pending |
+| CTRT-01 | Phase 12 | Pending |
+| CTRT-02 | Phase 12 | Pending |
+| CALC-01 | Phase 13 | Pending |
+| CALC-02 | Phase 13 | Pending |
+| CALC-03 | Phase 13 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 19 total
-- Mapped to phases: 0
-- Unmapped: 19 ⚠️
+- v1.1 requirements: 18 total
+- Mapped to phases: 18
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-18 after initial definition*
+*Last updated: 2026-03-18 (traceability updated after roadmap creation)*
