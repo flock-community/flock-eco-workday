@@ -30,7 +30,11 @@ Admins can track and manage budget consumption (hack hours, study hours, study m
 
 ### Active
 
-(None — define next milestone requirements with `/gsd:new-milestone`)
+- [ ] E2E Playwright tests for budget allocation admin workflows (CRUD, summaries)
+- [ ] E2E Playwright tests for event-linked budget allocation workflows
+- [ ] E2E Playwright tests for employee read-only budget view
+- [ ] E2E Playwright tests for contract budget field impact on summaries
+- [ ] SpringBootTest for budget calculation correctness
 
 ### Out of Scope
 
@@ -79,5 +83,16 @@ Admins can track and manage budget consumption (hack hours, study hours, study m
 | Direct fetch client for BudgetAllocationClient | Type-specific API paths, not generic CRUD | ✓ Good — cleaner API surface than NonInternalizingClient |
 | Diff-based save for event allocations | Only send create/update/delete for changed allocations | ✓ Good — efficient and correct |
 
+## Current Milestone: v1.1 E2E Tests for Budget Allocations
+
+**Goal:** Comprehensive Playwright e2e tests and SpringBootTests proving budget allocation feature works end-to-end — admin CRUD, event workflows, employee views, and calculation correctness.
+
+**Target features:**
+- Admin budget management tests (create, edit, delete allocations by type)
+- Event-linked allocation workflow tests (per-day breakdowns, participant management)
+- Employee read-only view tests
+- Contract budget field smoke tests
+- SpringBootTest for budget calculation logic
+
 ---
-*Last updated: 2026-03-17 after v1.0 milestone*
+*Last updated: 2026-03-18 after v1.1 milestone start*
