@@ -19,8 +19,8 @@ Requirements for e2e test coverage of budget allocation feature.
 ### Event Workflow (Admin)
 
 - [x] **EVNT-01**: Admin can create an event and add budget allocations for participants with per-day breakdowns
-- [ ] **EVNT-02**: Admin can modify event allocation day types (hack/study) and hours per day
-- [ ] **EVNT-03**: Admin can add/remove participants from event allocations
+- [x] **EVNT-02**: Admin can modify event allocation day types (hack/study) and hours per day
+- [x] **EVNT-03**: Admin can add/remove participants from event allocations
 - [x] **EVNT-04**: Event allocations reflect correctly in participant budget summaries
 
 ### Employee View
@@ -66,8 +66,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BMGT-05 | Phase 10 | Complete |
 | BMGT-06 | Phase 10 | Complete |
 | EVNT-01 | Phase 11 | Complete |
-| EVNT-02 | Phase 11 | Pending |
-| EVNT-03 | Phase 11 | Pending |
+| EVNT-02 | Phase 11 | Complete |
+| EVNT-03 | Phase 11 | Complete |
 | EVNT-04 | Phase 11 | Complete |
 | EMPV-01 | Phase 12 | Pending |
 | EMPV-02 | Phase 12 | Pending |
