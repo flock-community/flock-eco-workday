@@ -1,25 +1,25 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.1
-milestone_name: E2E Tests for Budget Allocations
-current_phase: 10
-current_plan: 02
+milestone_name: E2E Tests
+current_phase: 11
+current_plan: 01
 status: in_progress
-last_updated: "2026-03-21T15:59:00Z"
-last_activity: 2026-03-21 -- Completed 10-02-PLAN.md
+last_updated: "2026-03-21T17:37:00Z"
+last_activity: 2026-03-21 -- Completed 11-01-PLAN.md (event workflow tests)
 progress:
   total_phases: 4
-  completed_phases: 0
-  total_plans: 2
-  completed_plans: 2
-  percent: 100
+  completed_phases: 1
+  total_plans: 5
+  completed_plans: 4
+  percent: 80
 ---
 
 # Project State: Budget Allocations for Flock Workday
 
 **Last Updated:** 2026-03-21
-**Current Phase:** Phase 10 (Budget Management Admin Tests)
-**Current Plan:** 10-02 (complete)
+**Current Phase:** Phase 11 (Event Workflow Tests)
+**Current Plan:** 11-01 (complete)
 **Status:** In progress
 
 ## Project Reference
@@ -27,17 +27,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
-**Current focus:** v1.1 Phase 10 -- Budget Management Admin Tests (complete)
+**Current focus:** v1.1 Phase 11 -- Event Workflow Tests (11-01 complete)
 
 ## Current Position
 
 **Milestone:** v1.1 E2E Tests for Budget Allocations
-**Progress:** [██████████] 100%
+**Progress:** [████████░░] 80%
 
-Phase: 10 of 13 (Budget Management Admin Tests) -- ALL PLANS COMPLETE
-Plan: 10-02 complete
+Phase: 11 of 13 (Event Workflow Tests)
+Plan: 11-01 complete (1 of 2)
 Status: In progress
-Last activity: 2026-03-21 -- Completed 10-02 (budget admin edit/delete tests)
+Last activity: 2026-03-21 -- Completed 11-01 (event workflow step helpers and EVNT-01/EVNT-04 tests)
 
 ## Accumulated Context
 
@@ -52,6 +52,8 @@ v1.1 decisions:
 - Amount format differs by component: BudgetCard uses 0-decimal (€350), StudyMoneyAllocationListItem uses 2-decimal nl-NL (€350,00)
 - BMGT-03/04/05 edit tests use test.fixme() -- onEdit is NOT wired in BudgetAllocationFeature.tsx (only onDelete passed to BudgetAllocationList); edit button does not render
 - BMGT-06 delete test fully runnable: onDelete IS wired, ConfirmDialog confirm flow works
+- EventBudgetSummaryBanner uses "participant" text in collapsed mode, not "Budget Allocations" heading -- use participant text to locate budget accordion
+- Customize button must be clicked on participant row to materialize default allocations; diffAllocations only processes non-null periods
 
 ### Known Blockers
 
@@ -65,14 +67,14 @@ Pre-existing: workdaySteps.ts has dayjs default import error (esModuleInterop) -
 ## Session Continuity
 
 ### Last Session Summary
-- Completed 10-02: Added Edit and Delete describe block to budget-admin.spec.ts
-  - BMGT-03/04/05 marked test.fixme() documenting onEdit not wired in BudgetAllocationFeature
-  - BMGT-06 fully runnable: delete via ConfirmDialog, list removal + summary card revert verified
-  - All 6 BMGT requirements now covered in budget-admin.spec.ts
+- Completed 11-01: Created event workflow step helpers and Playwright tests
+  - tests/steps/eventSteps.ts: 12 BDD step helpers for event page, form, budget accordion, participant customization
+  - tests/event-workflow.spec.ts: EVNT-01 (two-step event creation with budget allocations) and EVNT-04 (budget summary verification)
+  - Customize button must be clicked to materialize default allocations before save
 
 ### Next Session
-Phase 10 complete. Next: Phase 11 (employee-facing budget tests) or Phase 12 (event-linked tests).
+Continue Phase 11: 11-02 (remaining event workflow tests).
 
 ---
 *State initialized: 2026-03-02*
-*Last updated: 2026-03-21 (10-02 complete)*
+*Last updated: 2026-03-21 (11-01 complete)*
