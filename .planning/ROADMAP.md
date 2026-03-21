@@ -46,11 +46,11 @@
   2. Playwright test creates a standalone study money allocation, saves it, and verifies it appears in the allocation list with correct amount and description
   3. Playwright test edits existing allocations (study money, study time, and hack time variants) and verifies updated values persist after page reload
   4. Playwright test deletes an allocation and verifies it is removed from the list and summary cards update accordingly
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 10-01: TBD
-- [ ] 10-02: TBD
+- [ ] 10-01-PLAN.md — BDD step helpers and view-summary + create-allocation tests (BMGT-01, BMGT-02)
+- [ ] 10-02-PLAN.md — Edit and delete allocation tests (BMGT-03, BMGT-04, BMGT-05, BMGT-06)
 
 ### Phase 11: Event Workflow Tests
 **Goal**: Admin can create events with budget allocations, modify per-day breakdowns, and see allocations reflected in participant summaries
@@ -118,4 +118,4 @@ Phases execute in numeric order: 10 → 11 → 12 → 13
 
 ---
 *Full v1.0 details: .planning/milestones/v1.0-ROADMAP.md*
-*Last updated: 2026-03-18 (v1.1 roadmap created)*
+*Last updated: 2026-03-21 (Phase 10 plans created)*
