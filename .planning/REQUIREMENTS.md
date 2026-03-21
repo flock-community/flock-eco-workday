@@ -9,8 +9,8 @@ Requirements for e2e test coverage of budget allocation feature.
 
 ### Budget Management (Admin)
 
-- [ ] **BMGT-01**: Admin can view budget summary cards showing used/remaining for hack hours, study hours, and study money
-- [ ] **BMGT-02**: Admin can create a standalone study money allocation with amount and description
+- [x] **BMGT-01**: Admin can view budget summary cards showing used/remaining for hack hours, study hours, and study money
+- [x] **BMGT-02**: Admin can create a standalone study money allocation with amount and description
 - [ ] **BMGT-03**: Admin can edit an existing study money allocation (amount, description)
 - [ ] **BMGT-04**: Admin can edit an existing study time allocation (hours, dates)
 - [ ] **BMGT-05**: Admin can edit an existing hack time allocation (hours, dates)
@@ -59,8 +59,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BMGT-01 | Phase 10 | Pending |
-| BMGT-02 | Phase 10 | Pending |
+| BMGT-01 | Phase 10 | Complete |
+| BMGT-02 | Phase 10 | Complete |
 | BMGT-03 | Phase 10 | Pending |
 | BMGT-04 | Phase 10 | Pending |
 | BMGT-05 | Phase 10 | Pending |
