@@ -77,11 +77,11 @@ Plans:
   2. Playwright test verifies allocation list shows correct details (dates, hours, amounts) for the logged-in employee
   3. Playwright test confirms that create, edit, and delete controls are not visible or not functional for an employee user
   4. Playwright test logs in as admin, edits a contract's studyHours and studyMoney fields, saves, and verifies the budget summary cards reflect the updated contract values
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 12-01: TBD
-- [ ] 12-02: TBD
+- [ ] 12-01-PLAN.md — Employee read-only view tests: summary cards, allocation list, no admin controls (EMPV-01, EMPV-02, EMPV-03)
+- [ ] 12-02-PLAN.md — Contract budget field impact tests: edit studyHours/studyMoney, verify summary updates (CTRT-01, CTRT-02)
 
 ### Phase 13: Budget Calculation Tests
 **Goal**: Backend budget calculations are correct — remaining budget equals contract value minus sum of allocations, scoped by type and year
@@ -119,4 +119,4 @@ Phases execute in numeric order: 10 → 11 → 12 → 13
 
 ---
 *Full v1.0 details: .planning/milestones/v1.0-ROADMAP.md*
-*Last updated: 2026-03-21 (Phase 11 plans created)*
+*Last updated: 2026-03-21 (Phase 12 plans created)*
