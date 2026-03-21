@@ -30,7 +30,7 @@
 
 **Milestone Goal:** Comprehensive Playwright e2e tests and SpringBootTests proving budget allocation feature works end-to-end.
 
-- [x] **Phase 10: Budget Management Admin Tests** - Playwright tests for admin CRUD flows on budget allocations (completed 2026-03-21)
+- [ ] **Phase 10: Budget Management Admin Tests** - Playwright tests for admin CRUD flows on budget allocations (gap closure in progress)
 - [ ] **Phase 11: Event Workflow Tests** - Playwright tests for event-linked allocation creation, editing, and summary impact
 - [ ] **Phase 12: Employee View and Contract Tests** - Playwright tests for employee read-only view and contract budget field impact
 - [ ] **Phase 13: Budget Calculation Tests** - SpringBootTests for backend budget calculation correctness
@@ -46,11 +46,12 @@
   2. Playwright test creates a standalone study money allocation, saves it, and verifies it appears in the allocation list with correct amount and description
   3. Playwright test edits existing allocations (study money, study time, and hack time variants) and verifies updated values persist after page reload
   4. Playwright test deletes an allocation and verifies it is removed from the list and summary cards update accordingly
-**Plans**: 2 plans
+**Plans**: 3 plans
 
 Plans:
 - [ ] 10-01-PLAN.md — BDD step helpers and view-summary + create-allocation tests (BMGT-01, BMGT-02)
 - [ ] 10-02-PLAN.md — Edit and delete allocation tests (BMGT-03, BMGT-04, BMGT-05, BMGT-06)
+- [ ] 10-03-PLAN.md — Gap closure: wire onEdit, extend dialog for edit mode, replace BMGT-03 fixme with real test (BMGT-03)
 
 ### Phase 11: Event Workflow Tests
 **Goal**: Admin can create events with budget allocations, modify per-day breakdowns, and see allocations reflected in participant summaries
@@ -111,11 +112,11 @@ Phases execute in numeric order: 10 → 11 → 12 → 13
 | 7. Event Integration | v1.0 | 1/1 | Complete | 2026-03-12 |
 | 8. Contract Form & Dev Data | v1.0 | 1/1 | Complete | 2026-03-16 |
 | 9. Verification Gap Closure | v1.0 | 1/1 | Complete | 2026-03-17 |
-| 10. Budget Management Admin Tests | 2/2 | Complete   | 2026-03-21 | - |
+| 10. Budget Management Admin Tests | v1.1 | 2/3 | Gap closure in progress | - |
 | 11. Event Workflow Tests | v1.1 | 0/2 | Not started | - |
 | 12. Employee View and Contract Tests | v1.1 | 0/2 | Not started | - |
 | 13. Budget Calculation Tests | v1.1 | 0/1 | Not started | - |
 
 ---
 *Full v1.0 details: .planning/milestones/v1.0-ROADMAP.md*
-*Last updated: 2026-03-21 (Phase 10 plans created)*
+*Last updated: 2026-03-21 (Phase 10 gap closure plan 10-03 created)*
