@@ -34,6 +34,7 @@ export function BudgetAllocationFeature() {
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<BudgetAllocation | null>(null);
+  const [editTarget, setEditTarget] = useState<BudgetAllocation | null>(null);
 
   const loadData = useCallback(() => {
     setLoading(true);
@@ -130,6 +131,7 @@ export function BudgetAllocationFeature() {
             allocations={allocations}
             hasWritePermission={isAdmin}
             onDelete={(allocation) => setDeleteTarget(allocation)}
+            onEdit={(allocation) => setEditTarget(allocation)}
           />
         )}
 
@@ -143,12 +145,16 @@ export function BudgetAllocationFeature() {
         )}
       </CardContent>
 
-      {/* Create StudyMoney dialog */}
+      {/* Create/Edit StudyMoney dialog */}
       <StudyMoneyAllocationDialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
+        open={dialogOpen || !!editTarget}
+        onClose={() => {
+          setDialogOpen(false);
+          setEditTarget(null);
+        }}
         onSaved={refresh}
         personId={isAdmin ? selectedPersonId : undefined}
+        editAllocation={editTarget ?? undefined}
       />
 
       {/* Delete confirmation dialog */}

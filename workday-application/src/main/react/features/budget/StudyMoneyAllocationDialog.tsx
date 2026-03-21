@@ -13,7 +13,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { UploadFile } from '@mui/icons-material';
-import type { StudyMoneyAllocationInput, BudgetAllocationFile } from '../../wirespec/model';
+import type { StudyMoneyAllocationInput, BudgetAllocationFile, BudgetAllocation } from '../../wirespec/model';
 import { BudgetAllocationClient } from '../../clients/BudgetAllocationClient';
 
 interface StudyMoneyAllocationDialogProps {
@@ -21,6 +21,7 @@ interface StudyMoneyAllocationDialogProps {
   onClose: () => void;
   onSaved: () => void;
   personId?: string;
+  editAllocation?: BudgetAllocation;  // when present: edit mode
 }
 
 export function StudyMoneyAllocationDialog({
@@ -28,6 +29,7 @@ export function StudyMoneyAllocationDialog({
   onClose,
   onSaved,
   personId,
+  editAllocation,
 }: StudyMoneyAllocationDialogProps) {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState<number | ''>('');
@@ -39,14 +41,20 @@ export function StudyMoneyAllocationDialog({
 
   useEffect(() => {
     if (open) {
-      setDescription('');
-      setAmount('');
-      setDate(new Date().toISOString().split('T')[0]);
+      if (editAllocation) {
+        setDescription(editAllocation.description ?? '');
+        setAmount(editAllocation.amount ?? '');
+        setDate(editAllocation.date ?? new Date().toISOString().split('T')[0]);
+      } else {
+        setDescription('');
+        setAmount('');
+        setDate(new Date().toISOString().split('T')[0]);
+      }
       setFiles([]);
       setUploadedFiles([]);
       setError(null);
     }
-  }, [open]);
+  }, [open, editAllocation]);
 
   const handleSave = async () => {
     if (!date || typeof amount !== 'number' || amount <= 0) return;
@@ -63,7 +71,7 @@ export function StudyMoneyAllocationDialog({
       }
 
       const input: StudyMoneyAllocationInput = {
-        personId: personId ?? '',
+        personId: editAllocation?.personId ?? personId ?? '',
         eventCode: undefined,
         date,
         description: description || undefined,
@@ -71,12 +79,16 @@ export function StudyMoneyAllocationDialog({
         files: fileResults,
       };
 
-      await BudgetAllocationClient.createStudyMoney(input);
+      if (editAllocation?.id) {
+        await BudgetAllocationClient.updateStudyMoney(editAllocation.id, input);
+      } else {
+        await BudgetAllocationClient.createStudyMoney(input);
+      }
       onSaved();
       onClose();
     } catch (err) {
-      console.error('Failed to create study money allocation:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create allocation');
+      console.error('Failed to save allocation:', err);
+      setError(err instanceof Error ? err.message : 'Failed to save allocation');
     } finally {
       setSaving(false);
     }
@@ -100,7 +112,7 @@ export function StudyMoneyAllocationDialog({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Add Study Money Allocation</DialogTitle>
+      <DialogTitle>{editAllocation ? 'Edit Study Money Allocation' : 'Add Study Money Allocation'}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
           {error && (
@@ -187,7 +199,7 @@ export function StudyMoneyAllocationDialog({
           variant="contained"
           disabled={!isValid || saving}
         >
-          {saving ? <CircularProgress size={24} /> : 'Create'}
+          {saving ? <CircularProgress size={24} /> : (editAllocation ? 'Save' : 'Create')}
         </Button>
       </DialogActions>
     </Dialog>
