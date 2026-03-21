@@ -169,25 +169,34 @@ export function diffAllocations(
 
     if (person.hackPeriod !== null) {
       const dailyAllocations = periodToDailyAllocations(person.hackPeriod, 'HACK');
-      const input: HackTimeAllocationInput = {
-        personId: person.personId,
-        eventCode,
-        date: dateStr,
-        description: undefined,
-        dailyAllocations,
-      };
 
-      if (loadedHack?.id) {
-        accountedKeys.add(hackKey);
-        // Check if changed
-        const loadedDaily = loadedHack.hackTimeDetails?.dailyAllocations || [];
-        if (hasDailyAllocationsChanged(loadedDaily, dailyAllocations)) {
-          toUpdate.push({ type: 'hack', id: loadedHack.id, input });
-        } else {
-          accountedKeys.add(hackKey); // unchanged, but accounted for
+      // Skip if no actual hours (all days are 0h)
+      if (dailyAllocations.length === 0) {
+        if (loadedHack?.id) {
+          toDelete.push(loadedHack.id);
+          accountedKeys.add(hackKey);
         }
       } else {
-        toCreate.push({ type: 'hack', input });
+        const input: HackTimeAllocationInput = {
+          personId: person.personId,
+          eventCode,
+          date: dateStr,
+          description: undefined,
+          dailyAllocations,
+        };
+
+        if (loadedHack?.id) {
+          accountedKeys.add(hackKey);
+          // Check if changed
+          const loadedDaily = loadedHack.hackTimeDetails?.dailyAllocations || [];
+          if (hasDailyAllocationsChanged(loadedDaily, dailyAllocations)) {
+            toUpdate.push({ type: 'hack', id: loadedHack.id, input });
+          } else {
+            accountedKeys.add(hackKey); // unchanged, but accounted for
+          }
+        } else {
+          toCreate.push({ type: 'hack', input });
+        }
       }
     } else if (loadedHack?.id) {
       // Period removed -> delete
@@ -201,22 +210,31 @@ export function diffAllocations(
 
     if (person.studyPeriod !== null) {
       const dailyAllocations = periodToDailyAllocations(person.studyPeriod, 'STUDY');
-      const input: StudyTimeAllocationInput = {
-        personId: person.personId,
-        eventCode,
-        date: dateStr,
-        description: undefined,
-        dailyAllocations,
-      };
 
-      if (loadedStudy?.id) {
-        accountedKeys.add(studyKey);
-        const loadedDaily = loadedStudy.studyTimeDetails?.dailyAllocations || [];
-        if (hasDailyAllocationsChanged(loadedDaily, dailyAllocations)) {
-          toUpdate.push({ type: 'study', id: loadedStudy.id, input });
+      // Skip if no actual hours (all days are 0h)
+      if (dailyAllocations.length === 0) {
+        if (loadedStudy?.id) {
+          toDelete.push(loadedStudy.id);
+          accountedKeys.add(studyKey);
         }
       } else {
-        toCreate.push({ type: 'study', input });
+        const input: StudyTimeAllocationInput = {
+          personId: person.personId,
+          eventCode,
+          date: dateStr,
+          description: undefined,
+          dailyAllocations,
+        };
+
+        if (loadedStudy?.id) {
+          accountedKeys.add(studyKey);
+          const loadedDaily = loadedStudy.studyTimeDetails?.dailyAllocations || [];
+          if (hasDailyAllocationsChanged(loadedDaily, dailyAllocations)) {
+            toUpdate.push({ type: 'study', id: loadedStudy.id, input });
+          }
+        } else {
+          toCreate.push({ type: 'study', input });
+        }
       }
     } else if (loadedStudy?.id) {
       toDelete.push(loadedStudy.id);

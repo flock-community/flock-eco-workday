@@ -73,17 +73,10 @@ export function EventTimeAllocationSection({
           days: Array(eventDates.length).fill(defaultHoursPerDay),
         };
 
-        // Initialize empty period for the other type
-        const emptyPeriod: Period = {
-          from: eventFrom,
-          to: eventTo,
-          days: Array(eventDates.length).fill(0),
-        };
-
         return {
           ...p,
-          studyPeriod: defaultBudgetType === 'STUDY' ? defaultPeriod : emptyPeriod,
-          hackPeriod: defaultBudgetType === 'HACK' ? defaultPeriod : emptyPeriod,
+          studyPeriod: defaultBudgetType === 'STUDY' ? defaultPeriod : null,
+          hackPeriod: defaultBudgetType === 'HACK' ? defaultPeriod : null,
         };
       }
       return p;

@@ -1,6 +1,6 @@
 // Event workflow BDD step helpers. Run against a freshly started dev server (-Pdevelop).
 import { type Page, expect } from '@playwright/test';
-import { Given_I_am_logged_in_as_user } from './workdaySteps';
+import { Given_I_am_logged_in_as_user, selectDateInPicker } from './workdaySteps';
 
 /**
  * Navigate to the events page as an admin user.
@@ -12,7 +12,7 @@ export async function Given_I_am_on_events_page(
   await Given_I_am_logged_in_as_user(page, adminUser);
   await page.goto('/event');
   await expect(
-    page.getByRole('heading', { name: 'Events' }),
+    page.locator('.MuiCardHeader-title', { hasText: 'Events' }),
   ).toBeVisible();
 }
 
@@ -21,7 +21,7 @@ export async function Given_I_am_on_events_page(
  */
 export async function When_I_click_add_event(page: Page) {
   await page.getByRole('button', { name: 'Add' }).click();
-  await expect(page.locator('form#event-form')).toBeVisible();
+  await expect(page.locator('form#event-form').first()).toBeVisible();
 }
 
 /**
@@ -48,21 +48,22 @@ export async function When_I_fill_event_form(
   await budgetField.clear();
   await budgetField.fill(options.budget);
 
-  // Select Event type via MUI Select
+  // Set dates using selectDateInPicker (DD-MM-YYYY format, handles MUI DatePicker properly).
+  // Dates must be set BEFORE event type (event type triggers PeriodInputField which
+  // calls .startOf() on from/to dates).
+  // Parse YYYY-MM-DD input format to day/month/year components.
+  const [fromYear, fromMonth, fromDay] = options.from.split('-').map(Number);
+  const [toYear, toMonth, toDay] = options.to.split('-').map(Number);
+  await selectDateInPicker(page, 'From', fromDay, fromMonth, fromYear);
+  await selectDateInPicker(page, 'To', toDay, toMonth, toYear);
+
+  // Select Event type via MUI Select (after dates are set)
   const eventTypeControl = page
     .locator('.MuiFormControl-root')
     .filter({ hasText: 'Event type' })
     .first();
   await eventTypeControl.getByRole('combobox').click();
   await page.getByRole('option', { name: options.eventType }).click();
-
-  // Set From date
-  const fromInput = page.getByLabel('From');
-  await fromInput.fill(options.from);
-
-  // Set To date
-  const toInput = page.getByLabel('To');
-  await toInput.fill(options.to);
 }
 
 /**
@@ -72,13 +73,18 @@ export async function When_I_add_participant(
   page: Page,
   personName: string,
 ) {
-  const personInput = page.getByLabel('Person');
-  await personInput.click();
-  await personInput.fill(personName);
-  await page.waitForTimeout(500);
+  // PersonSelectorField is an MUI multi-Select, not Autocomplete
+  const personControl = page
+    .locator('.MuiFormControl-root')
+    .filter({ hasText: 'Person' })
+    .first();
+  await personControl.getByRole('combobox').click();
   await page
     .getByRole('option', { name: new RegExp(personName, 'i') })
     .click();
+  // Close the dropdown
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(300);
 }
 
 /**
@@ -97,13 +103,34 @@ export async function When_I_open_event_by_description(
   page: Page,
   description: string,
 ) {
+  // Click the h6 heading with the event description.
+  // Each event in EventList renders description as <Typography variant="h6">.
+  // Clicking the h6 bubbles up to the Card's onClick handler which opens EventDialog.
+  // We avoid using .MuiCard-root because the outer EventFeature Card also matches.
   await page
-    .locator('.MuiCard-root')
+    .locator('h6')
     .filter({ hasText: description })
     .first()
     .click();
-  await expect(page.locator('form#event-form')).toBeVisible();
+  await expect(page.locator('form#event-form').first()).toBeVisible();
   await page.waitForLoadState('networkidle');
+}
+
+/**
+ * Set the Default Time Allocation Type in the EventDialog.
+ * Must be called after opening an event — the backend doesn't persist this field.
+ * @param allocationType - Display text of the option, e.g. "Hack Time (deducts from hack hours budget)"
+ */
+export async function When_I_set_default_time_allocation_type(
+  page: Page,
+  allocationType: string,
+) {
+  const control = page
+    .locator('.MuiFormControl-root')
+    .filter({ hasText: 'Default Time Allocation Type' })
+    .first();
+  await control.getByRole('combobox').click();
+  await page.getByRole('option', { name: new RegExp(allocationType, 'i') }).click();
 }
 
 /**
@@ -124,7 +151,7 @@ export async function When_I_expand_budget_accordion(page: Page) {
     .click();
   // Wait for accordion details to be visible
   await expect(
-    budgetAccordion.locator('.MuiAccordionDetails-root'),
+    budgetAccordion.locator('.MuiAccordionDetails-root').first(),
   ).toBeVisible({ timeout: 5000 });
 }
 
@@ -133,7 +160,9 @@ export async function When_I_expand_budget_accordion(page: Page) {
  */
 export async function When_I_expand_time_accordion(page: Page) {
   await page.getByText('Time Budget Allocations').click();
-  await expect(page.getByText('Time Allocation')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Time Allocation', level: 6 }),
+  ).toBeVisible();
 }
 
 /**
@@ -161,23 +190,34 @@ export async function When_I_customize_participant_allocation(
     .first();
   await participantRow
     .getByRole('button', { name: 'Customize' })
+    .first()
     .click();
+  // Wait for "Remove Custom" button to appear (confirms allocation was materialized)
+  await page
+    .locator('div')
+    .filter({ hasText: new RegExp(personName) })
+    .filter({ has: page.getByRole('button', { name: 'Remove Custom' }) })
+    .first()
+    .waitFor({ state: 'visible', timeout: 5000 });
 }
 
 /**
  * Save the event by clicking the Save button in the DialogFooter.
+ * Waits for the dialog to close (onComplete fires after all saves including allocations).
  * Handles the close-warning ConfirmDialog if budget changes are dirty.
  */
 export async function When_I_save_event(page: Page) {
   await page.getByRole('button', { name: 'Save' }).click();
-  await page.waitForLoadState('networkidle');
 
   // Handle close-warning ConfirmDialog if it appears
   const closeWarning = page.getByText('You have unsaved budget changes');
   if (await closeWarning.isVisible({ timeout: 1000 }).catch(() => false)) {
     await page.getByRole('button', { name: 'Confirm' }).click();
-    await page.waitForLoadState('networkidle');
   }
+
+  // Wait for the event dialog to close — onComplete fires only after all allocation saves complete
+  await expect(page.locator('.MuiDialog-root form#event-form').first()).not.toBeVisible({ timeout: 15000 });
+  await page.waitForLoadState('networkidle');
 }
 
 /**
@@ -187,11 +227,9 @@ export async function Then_event_list_contains(
   page: Page,
   description: string,
 ) {
+  // Check for the event description h6 heading in the EventList
   await expect(
-    page
-      .locator('.MuiCard-root')
-      .filter({ hasText: description })
-      .first(),
+    page.locator('h6').filter({ hasText: description }).first(),
   ).toBeVisible();
 }
 
@@ -237,12 +275,10 @@ export async function When_I_customize_participant_hours(
     .filter({ has: page.getByRole('button', { name: 'Remove Custom' }) })
     .first();
 
-  // Within that box, find the section for the period type (subtitle2 heading)
-  const periodSection = participantBox
-    .locator('div')
-    .filter({ hasText: new RegExp(`^${periodType}$`) })
-    .first()
-    .locator('..');
+  // Within that box, find the section heading (Typography subtitle2 with exact text).
+  // Navigate up two levels: heading → heading-row Box → section container Box.
+  const heading = participantBox.getByText(periodType, { exact: true }).first();
+  const periodSection = heading.locator('..').locator('..');
 
   // The PeriodInput renders TextField type="number" for each day.
   // Find enabled number inputs in the period section.

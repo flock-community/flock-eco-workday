@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Formik, Form } from 'formik';
 import dayjs from 'dayjs';
 import { EventClient, type FlockEventRequest, type FullFlockEvent } from '../../clients/EventClient';
@@ -44,7 +44,9 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const [budgetsDirty, setBudgetsDirty] = useState(false);
   const [showCloseWarning, setShowCloseWarning] = useState(false);
   const [participantBudgets, setParticipantBudgets] = useState<ParticipantBudgetState[]>([]);
+  const participantBudgetsRef = useRef<ParticipantBudgetState[]>([]);
   const [loadedAllocations, setLoadedAllocations] = useState<BudgetAllocation[]>([]);
+  const loadedAllocationsRef = useRef<BudgetAllocation[]>([]);
   const [initialTimeParticipants, setInitialTimeParticipants] = useState<PersonTimeAllocation[] | undefined>(undefined);
   const [initialMoneyParticipants, setInitialMoneyParticipants] = useState<PersonMoneyAllocation[] | undefined>(undefined);
 
@@ -62,6 +64,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
 
           // Load budget allocations for this event
           BudgetAllocationClient.findAll(undefined, undefined, code).then((allocations) => {
+            loadedAllocationsRef.current = allocations;
             setLoadedAllocations(allocations);
             const timeParts = apiAllocationsToTimeParticipants(
               allocations, res.persons, dayjs(res.from), dayjs(res.to),
@@ -78,66 +81,67 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     } else {
       setState(undefined);
       setEventData(null);
+      loadedAllocationsRef.current = [];
       setLoadedAllocations([]);
+      participantBudgetsRef.current = [];
       setInitialTimeParticipants(undefined);
       setInitialMoneyParticipants(undefined);
     }
   }, [open, code]);
 
-  const handleSubmit = (it) => {
-    const eventData = {
-      ...it,
-      from: it.from.format(ISO_8601_DATE),
-      to: it.to.format(ISO_8601_DATE),
-      hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
-    };
+  const handleSubmit = async (it) => {
+    try {
+      const eventData = {
+        ...it,
+        from: it.from.format(ISO_8601_DATE),
+        to: it.to.format(ISO_8601_DATE),
+        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
+      };
 
-    const savePromise = code
-      ? EventClient.put(code, eventData)
-      : EventClient.post(eventData);
+      const res = code
+        ? await EventClient.put(code, eventData)
+        : await EventClient.post(eventData);
 
-    savePromise.then((res) => {
-      if (participantBudgets.length > 0) {
+      // Use refs to get the latest budget state (avoids stale closure from React render cycle)
+      const currentBudgets = participantBudgetsRef.current;
+      const currentLoaded = loadedAllocationsRef.current;
+
+      if (currentBudgets.length > 0) {
         const defaultBudgetType = it.defaultTimeAllocationType || null;
         const { toCreate, toUpdate, toDelete } = diffAllocations(
-          loadedAllocations,
-          participantBudgets.map(p => p.timeAllocation),
-          participantBudgets.map(p => ({ personId: p.personId, personName: p.personName, amount: p.moneyAmount })),
+          currentLoaded,
+          currentBudgets.map(p => p.timeAllocation),
+          currentBudgets.map(p => ({ personId: p.personId, personName: p.personName, amount: p.moneyAmount })),
           res.code,
           dayjs(it.from),
           defaultBudgetType,
         );
 
         const promises: Promise<any>[] = [];
-        // Deletes
         toDelete.forEach(id => promises.push(BudgetAllocationClient.deleteById(id)));
-        // Creates
         toCreate.forEach(({ type, input }) => {
           if (type === 'hack') promises.push(BudgetAllocationClient.createHackTime(input as any));
           else if (type === 'study') promises.push(BudgetAllocationClient.createStudyTime(input as any));
           else if (type === 'money') promises.push(BudgetAllocationClient.createStudyMoney(input as any));
         });
-        // Updates
         toUpdate.forEach(({ type, id, input }) => {
           if (type === 'hack') promises.push(BudgetAllocationClient.updateHackTime(id, input as any));
           else if (type === 'study') promises.push(BudgetAllocationClient.updateStudyTime(id, input as any));
           else if (type === 'money') promises.push(BudgetAllocationClient.updateStudyMoney(id, input as any));
         });
 
-        Promise.all(promises).then(() => {
-          setBudgetsDirty(false);
-          onComplete?.(res);
-        }).catch(err => {
+        try {
+          await Promise.all(promises);
+        } catch (err) {
           console.error('Failed to save budget allocations:', err);
-          // Still complete the event save, but log the budget error
-          setBudgetsDirty(false);
-          onComplete?.(res);
-        });
-      } else {
-        setBudgetsDirty(false);
-        onComplete?.(res);
+        }
       }
-    });
+
+      setBudgetsDirty(false);
+      onComplete?.(res);
+    } catch (err) {
+      console.error('EventDialog handleSubmit failed:', err);
+    }
   };
 
   const handleDelete = () => {
@@ -172,21 +176,31 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   }) => {
     setBudgetsDirty(budgetState.dirty);
     // Store budget state for save (convert to ParticipantBudgetState format)
-    const combinedState: ParticipantBudgetState[] = budgetState.moneyParticipants.map(money => {
-      const time = budgetState.timeParticipants.find(t => t.personId === money.personId);
+    // Build union of all participant IDs from both money and time arrays
+    const allPersonIds = new Set([
+      ...budgetState.moneyParticipants.map(m => m.personId),
+      ...budgetState.timeParticipants.map(t => t.personId),
+    ]);
+    const combinedState: ParticipantBudgetState[] = Array.from(allPersonIds).map(personId => {
+      const money = budgetState.moneyParticipants.find(m => m.personId === personId);
+      const time = budgetState.timeParticipants.find(t => t.personId === personId);
       return {
-        personId: money.personId,
-        personName: money.personName,
-        moneyAmount: money.amount,
+        personId,
+        personName: money?.personName || time?.personName || '',
+        moneyAmount: money?.amount || 0,
         moneyDirty: budgetState.dirty,
-        timeAllocation: time || { personId: money.personId, personName: money.personName, studyPeriod: null, hackPeriod: null },
+        timeAllocation: time || { personId, personName: money?.personName || '', studyPeriod: null, hackPeriod: null },
         timeDirty: budgetState.dirty,
       };
     });
+    participantBudgetsRef.current = combinedState;
     setParticipantBudgets(combinedState);
   };
 
-  const initialValues = state ? { ...eventFormSchema.default(), ...mutatePeriod(state) } : eventFormSchema.default();
+  const initialValues = useMemo(
+    () => state ? { ...eventFormSchema.default(), ...mutatePeriod(state) } : eventFormSchema.default(),
+    [state],
+  );
 
   return (
     <>

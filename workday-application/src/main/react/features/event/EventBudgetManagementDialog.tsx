@@ -69,6 +69,12 @@ export function EventBudgetManagementSection({
   // Separate state for money and time allocations
   const [moneyParticipants, setMoneyParticipants] = useState<PersonMoneyAllocation[]>([]);
   const [timeParticipants, setTimeParticipants] = useState<PersonTimeAllocation[]>([]);
+  // Refs to always have latest values for synchronous parent notification
+  const moneyParticipantsRef = useRef<PersonMoneyAllocation[]>([]);
+  const timeParticipantsRef = useRef<PersonTimeAllocation[]>([]);
+  // Keep refs in sync with state (covers initial load and participant sync effects)
+  moneyParticipantsRef.current = moneyParticipants;
+  timeParticipantsRef.current = timeParticipants;
 
   // Dirty tracking: which participants have been manually edited
   const [dirtyMoney, setDirtyMoney] = useState<Set<string>>(new Set());
@@ -330,18 +336,28 @@ export function EventBudgetManagementSection({
   // Handle money participant changes with dirty tracking
   const handleMoneyParticipantsChange = (updated: PersonMoneyAllocation[]) => {
     // Mark changed participants as dirty
+    let newDirty = false;
     updated.forEach(updatedP => {
       const original = moneyParticipants.find(p => p.personId === updatedP.personId);
       if (original && original.amount !== updatedP.amount) {
         setDirtyMoney(prev => new Set(prev).add(updatedP.personId));
+        newDirty = true;
       }
     });
+    moneyParticipantsRef.current = updated;
     setMoneyParticipants(updated);
+    // Synchronously notify parent (useEffect is async and may miss fast interactions)
+    onBudgetStateChange?.({
+      moneyParticipants: updated,
+      timeParticipants: timeParticipantsRef.current,
+      dirty: newDirty || isDirty,
+    });
   };
 
   // Handle time participant changes with dirty tracking
   const handleTimeParticipantsChange = (updated: PersonTimeAllocation[]) => {
     // Mark changed participants as dirty
+    let newDirty = false;
     updated.forEach(updatedP => {
       const original = timeParticipants.find(p => p.personId === updatedP.personId);
       if (original) {
@@ -352,10 +368,18 @@ export function EventBudgetManagementSection({
           JSON.stringify(original.hackPeriod) !== JSON.stringify(updatedP.hackPeriod)
         ))) {
           setDirtyTime(prev => new Set(prev).add(updatedP.personId));
+          newDirty = true;
         }
       }
     });
+    timeParticipantsRef.current = updated;
     setTimeParticipants(updated);
+    // Synchronously notify parent (useEffect is async and may miss fast interactions)
+    onBudgetStateChange?.({
+      moneyParticipants: moneyParticipantsRef.current,
+      timeParticipants: updated,
+      dirty: newDirty || isDirty,
+    });
   };
 
   // Generate event dates from formValues

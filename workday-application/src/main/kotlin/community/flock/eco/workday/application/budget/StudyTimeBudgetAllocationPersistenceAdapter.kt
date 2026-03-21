@@ -34,7 +34,9 @@ class StudyTimeBudgetAllocationPersistenceAdapter(
             .takeIf { it }
             ?.let {
                 val personReference = entityManager.getReference(Person::class.java, allocation.person.internalId)
-                repository.save(allocation.toEntity(personReference))
+                val entity = repository.save(allocation.toEntity(personReference))
+                entityManager.flush()
+                entity
             }?.toDomain()
     }
 }
