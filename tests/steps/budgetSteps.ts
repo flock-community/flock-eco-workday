@@ -119,6 +119,37 @@ export async function Then_allocation_list_does_not_contain(
 }
 
 /**
+ * Finds the allocation card with the given description and clicks its edit button.
+ * The edit button renders as <IconButton aria-label="edit"> when onEdit is wired.
+ */
+export async function When_I_edit_allocation(page: Page, description: string): Promise<void> {
+  const paper = page.locator('.MuiPaper-root').filter({ hasText: 'Budget Allocations' }).first();
+  const card = paper.locator('.MuiCard-root').filter({ hasText: description }).first();
+  await card.getByRole('button', { name: 'edit' }).click();
+  await expect(page.getByText('Edit Study Money Allocation')).toBeVisible();
+}
+
+/**
+ * Clears the Amount (EUR) field in the open study money dialog and types a new value.
+ * Call after When_I_edit_allocation (dialog must already be open).
+ */
+export async function When_I_update_study_money_amount(page: Page, newAmount: string): Promise<void> {
+  const amountField = page.getByLabel('Amount (EUR)');
+  await amountField.clear();
+  await amountField.fill(newAmount);
+}
+
+/**
+ * Clicks the "Save" button in the open study money edit dialog.
+ * Waits for dialog to close and data to refresh.
+ */
+export async function When_I_click_save_button(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByText('Edit Study Money Allocation')).not.toBeVisible();
+  await page.waitForLoadState('networkidle');
+}
+
+/**
  * Find the allocation card matching description, click its delete button,
  * confirm in the ConfirmDialog, and wait for the list to refresh.
  */

@@ -21,6 +21,9 @@ import {
   Then_allocation_list_contains,
   When_I_delete_allocation,
   Then_allocation_list_does_not_contain,
+  When_I_edit_allocation,
+  When_I_update_study_money_amount,
+  When_I_click_save_button,
 } from './steps/budgetSteps';
 
 test.describe('Budget Admin - View and Create', () => {
@@ -99,25 +102,29 @@ test.describe('Budget Admin - Edit and Delete', () => {
   });
 
   // BMGT-03: Edit study money allocation
-  // onEdit is NOT passed from BudgetAllocationFeature to BudgetAllocationList,
-  // so the edit IconButton (aria-label="edit") does not render for study money items.
-  // This test is marked fixme to document the gap without blocking the suite.
-  test.fixme(
-    'BMGT-03: Edit study money allocation',
-    async ({ page }) => {
-      // Edit button not rendered — onEdit is not wired in BudgetAllocationFeature.tsx.
-      // BudgetAllocationFeature passes only onDelete to BudgetAllocationList; onEdit is omitted.
-      // When onEdit is wired, this test should:
-      //   1. Navigate to budget tab for pino
-      //   2. Find the "Playwright test course" allocation card
-      //   3. Click the edit button (aria-label="edit")
-      //   4. Change amount to 500 in the dialog
-      //   5. Click Save/Update
-      //   6. Verify the list shows the updated amount "500,00"
-      //   7. Verify summary card shows used=€500, available=€2.000
-      await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
-    },
-  );
+  // Requires: "Playwright test course" allocation created by BMGT-02 (amount=350).
+  // After edit: amount becomes 500. Summary card: used=€500, available=€2.000.
+  test('BMGT-03: Edit study money allocation', async ({ page }) => {
+    await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
+
+    // Verify the allocation from BMGT-02 is present before editing
+    await Then_allocation_list_contains(page, 'Playwright test course', '350,00');
+
+    // Click edit button on the "Playwright test course" card
+    await When_I_edit_allocation(page, 'Playwright test course');
+
+    // Change the amount from 350 to 500
+    await When_I_update_study_money_amount(page, '500');
+
+    // Save the changes
+    await When_I_click_save_button(page);
+
+    // Verify the list item shows the updated amount
+    await Then_allocation_list_contains(page, 'Playwright test course', '500,00');
+
+    // Verify summary card updated: used=€500, available=€2.000
+    await Then_summary_card_shows(page, 'Study Money', '€2.000', '€2.500', '€500');
+  });
 
   // BMGT-04: Edit study time allocation
   // Pino has no standalone study time allocations in dev data.
@@ -152,9 +159,9 @@ test.describe('Budget Admin - Edit and Delete', () => {
   test('BMGT-06: Delete study money allocation', async ({ page }) => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
 
-    // Verify the allocation from BMGT-02 exists before attempting deletion.
-    // After BMGT-02: study money used=€350, available=€2.150
-    await Then_allocation_list_contains(page, 'Playwright test course', '350,00');
+    // Verify the allocation exists before attempting deletion.
+    // After BMGT-03 edit: study money amount is 500 (was 350 from BMGT-02)
+    await Then_allocation_list_contains(page, 'Playwright test course', '500,00');
 
     // Delete via confirm dialog: clicks delete button, waits for ConfirmDialog, clicks Confirm
     await When_I_delete_allocation(page, 'Playwright test course');
