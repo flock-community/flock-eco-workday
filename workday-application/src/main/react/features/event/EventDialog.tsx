@@ -42,6 +42,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const [timeBudgetExpanded, setTimeBudgetExpanded] = useState(false);
   const [eventData, setEventData] = useState<FullFlockEvent | null>(null);
   const [budgetsDirty, setBudgetsDirty] = useState(false);
+  const budgetsDirtyRef = useRef(false);
   const [showCloseWarning, setShowCloseWarning] = useState(false);
   const [participantBudgets, setParticipantBudgets] = useState<ParticipantBudgetState[]>([]);
   const participantBudgetsRef = useRef<ParticipantBudgetState[]>([]);
@@ -84,6 +85,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       loadedAllocationsRef.current = [];
       setLoadedAllocations([]);
       participantBudgetsRef.current = [];
+      budgetsDirtyRef.current = false;
       setInitialTimeParticipants(undefined);
       setInitialMoneyParticipants(undefined);
     }
@@ -106,7 +108,11 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       const currentBudgets = participantBudgetsRef.current;
       const currentLoaded = loadedAllocationsRef.current;
 
-      if (currentBudgets.length > 0) {
+      // Only process budget allocations if the user actually modified budgets.
+      // Without this guard, the participant sync effect (which runs before loaded allocations
+      // are fetched) would populate participantBudgetsRef with null periods, causing
+      // diffAllocations to incorrectly delete existing allocations.
+      if (currentBudgets.length > 0 && budgetsDirtyRef.current) {
         const defaultBudgetType = it.defaultTimeAllocationType || null;
         const { toCreate, toUpdate, toDelete } = diffAllocations(
           currentLoaded,
@@ -138,6 +144,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       }
 
       setBudgetsDirty(false);
+      budgetsDirtyRef.current = false;
       onComplete?.(res);
     } catch (err) {
       console.error('EventDialog handleSubmit failed:', err);
@@ -175,6 +182,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     dirty: boolean;
   }) => {
     setBudgetsDirty(budgetState.dirty);
+    if (budgetState.dirty) budgetsDirtyRef.current = true;
     // Store budget state for save (convert to ParticipantBudgetState format)
     // Build union of all participant IDs from both money and time arrays
     const allPersonIds = new Set([
