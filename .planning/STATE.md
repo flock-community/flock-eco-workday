@@ -3,23 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: E2E Tests for Budget Allocations
 current_phase: 10
-current_plan: 01
+current_plan: 02
 status: in_progress
-last_updated: "2026-03-21T15:48:30Z"
-last_activity: 2026-03-21 -- Completed 10-01-PLAN.md
+last_updated: "2026-03-21T15:59:00Z"
+last_activity: 2026-03-21 -- Completed 10-02-PLAN.md
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 2
-  completed_plans: 1
-  percent: 50
+  completed_plans: 2
+  percent: 100
 ---
 
 # Project State: Budget Allocations for Flock Workday
 
 **Last Updated:** 2026-03-21
 **Current Phase:** Phase 10 (Budget Management Admin Tests)
-**Current Plan:** 10-01 (complete)
+**Current Plan:** 10-02 (complete)
 **Status:** In progress
 
 ## Project Reference
@@ -27,17 +27,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
-**Current focus:** v1.1 Phase 10 -- Budget Management Admin Tests
+**Current focus:** v1.1 Phase 10 -- Budget Management Admin Tests (complete)
 
 ## Current Position
 
 **Milestone:** v1.1 E2E Tests for Budget Allocations
-**Progress:** [█████░░░░░] 50%
+**Progress:** [██████████] 100%
 
-Phase: 10 of 13 (Budget Management Admin Tests)
-Plan: 10-01 complete, next: 10-02
+Phase: 10 of 13 (Budget Management Admin Tests) -- ALL PLANS COMPLETE
+Plan: 10-02 complete
 Status: In progress
-Last activity: 2026-03-21 -- Completed 10-01 (budget BDD helpers + admin view/create tests)
+Last activity: 2026-03-21 -- Completed 10-02 (budget admin edit/delete tests)
 
 ## Accumulated Context
 
@@ -50,6 +50,8 @@ v1.1 decisions:
 - BudgetCard renders EUR values with `€` symbol (U+20AC) via nl-NL locale, NOT "EUR" text prefix -- confirmed from BudgetCard.tsx formatValue
 - BDD step helpers established in tests/steps/budgetSteps.ts: 8 exported helpers reusable across phases 10-12
 - Amount format differs by component: BudgetCard uses 0-decimal (€350), StudyMoneyAllocationListItem uses 2-decimal nl-NL (€350,00)
+- BMGT-03/04/05 edit tests use test.fixme() -- onEdit is NOT wired in BudgetAllocationFeature.tsx (only onDelete passed to BudgetAllocationList); edit button does not render
+- BMGT-06 delete test fully runnable: onDelete IS wired, ConfirmDialog confirm flow works
 
 ### Known Blockers
 
@@ -63,12 +65,14 @@ Pre-existing: workdaySteps.ts has dayjs default import error (esModuleInterop) -
 ## Session Continuity
 
 ### Last Session Summary
-- Completed 10-01: Created tests/steps/budgetSteps.ts (8 BDD helpers) and tests/budget-admin.spec.ts (BMGT-01, BMGT-02)
-- Fixed EUR symbol assertion (plan had "EUR2.500", source renders "€2.500")
+- Completed 10-02: Added Edit and Delete describe block to budget-admin.spec.ts
+  - BMGT-03/04/05 marked test.fixme() documenting onEdit not wired in BudgetAllocationFeature
+  - BMGT-06 fully runnable: delete via ConfirmDialog, list removal + summary card revert verified
+  - All 6 BMGT requirements now covered in budget-admin.spec.ts
 
 ### Next Session
-Execute 10-02: Budget admin edit and delete allocation tests
+Phase 10 complete. Next: Phase 11 (employee-facing budget tests) or Phase 12 (event-linked tests).
 
 ---
 *State initialized: 2026-03-02*
-*Last updated: 2026-03-21 (10-01 complete)*
+*Last updated: 2026-03-21 (10-02 complete)*
