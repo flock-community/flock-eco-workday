@@ -27,6 +27,9 @@ import {
   When_I_save_event,
   Then_event_list_contains,
   Then_budget_tab_shows_event_allocation,
+  When_I_customize_participant_hours,
+  When_I_remove_participant_from_event,
+  When_I_add_second_participant,
 } from './steps/eventSteps';
 import {
   Given_I_am_on_budget_tab_for_person,
@@ -103,5 +106,100 @@ test.describe('Event Workflow - Create and Budget Verification', () => {
     await expect(
       page.getByText('Event allocations are managed from the Events page'),
     ).toBeVisible();
+  });
+});
+
+test.describe('Event Workflow - Modify Allocations', () => {
+  test.beforeEach(async ({ context }) => {
+    await context.clearCookies();
+  });
+
+  test.afterEach(async ({ page, context }) => {
+    await context.clearCookies();
+    await page.evaluate(() => {
+      if (typeof window.localStorage !== 'undefined')
+        window.localStorage.clear();
+      if (typeof window.sessionStorage !== 'undefined')
+        window.sessionStorage.clear();
+    });
+  });
+
+  test('EVNT-02: Modify event allocation hours per day', async ({ page }) => {
+    // Reopen the "PW Test Hack Day" event created by EVNT-01
+    await Given_I_am_on_events_page(page, 'bert');
+    await When_I_open_event_by_description(page, 'PW Test Hack Day');
+
+    // Expand the budget sections
+    await When_I_expand_budget_accordion(page);
+    await When_I_expand_time_accordion(page);
+
+    // Pino has a customized allocation from EVNT-01, should be visible.
+    // Change Pino's hack hours from 8h to 4h for the single day (index 0).
+    await When_I_customize_participant_hours(page, 'Pino', 'Hack Time', 0, '4');
+
+    // Save the event with modified allocation
+    await When_I_save_event(page);
+
+    // Verify the change persisted on Pino's budget tab
+    await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
+
+    // Was: used=24h (16h original + 8h event). After edit: used=16+4=20h. Available=160-20=140h.
+    await Then_summary_card_shows(page, 'Hack Hours', '140h', '160h', '20h');
+
+    // Verify study hours unchanged
+    await Then_summary_card_shows(page, 'Study Hours', '100h', '100h', '0h');
+  });
+
+  test('EVNT-03: Add and remove participants from event allocations', async ({ page }) => {
+    // --- Part A: Add Ieniemienie as a second participant ---
+    await Given_I_am_on_events_page(page, 'bert');
+    await When_I_open_event_by_description(page, 'PW Test Hack Day');
+
+    // Add Ieniemienie to the event via the Person multi-select
+    await When_I_add_second_participant(page, 'Ieniemienie Mouse');
+
+    // Save the form first so the server knows about the new participant
+    // Then reopen to configure budgets (budget section uses server-side persons)
+    await When_I_submit_event_form(page);
+    await When_I_open_event_by_description(page, 'PW Test Hack Day');
+
+    // Expand budget sections and show all participants
+    await When_I_expand_budget_accordion(page);
+    await When_I_expand_time_accordion(page);
+    await When_I_click_show_all_participants(page);
+
+    // Verify Ieniemienie appears in the time allocation section
+    await expect(page.getByText('Ieniemienie Mouse').first()).toBeVisible();
+
+    // Click "Customize" on Ieniemienie's row to materialize the default allocation
+    await When_I_customize_participant_allocation(page, 'Ieniemienie');
+
+    // Save the event with the new participant's allocation
+    await When_I_save_event(page);
+
+    // Verify on Ieniemienie's budget tab
+    // Contract: hackHours=160, studyHours=200, studyMoney=5000
+    // Existing allocations: HackTime 40h ("Hack Day - February"), StudyTime 24h, StudyMoney 500
+    // After adding 8h hack from PW Test Hack Day: hack used=48h, avail=112h
+    await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Ieniemienie');
+    await Then_summary_card_shows(page, 'Hack Hours', '112h', '160h', '48h');
+
+    // Verify the event allocation appears in the list
+    await Then_budget_tab_shows_event_allocation(page, 'Hack Time', '8h');
+
+    // --- Part B: Remove Pino from the event ---
+    await Given_I_am_on_events_page(page, 'bert');
+    await When_I_open_event_by_description(page, 'PW Test Hack Day');
+
+    // Remove Pino from the Person multi-select
+    await When_I_remove_participant_from_event(page, 'Pino Woodpecker');
+
+    // Save the event (this removes Pino's allocation server-side)
+    await When_I_submit_event_form(page);
+
+    // Verify Pino's hack hours reverted (event allocation removed)
+    // Back to original: used=16h (only "Hack Day - March"), avail=144h
+    await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
+    await Then_summary_card_shows(page, 'Hack Hours', '144h', '160h', '16h');
   });
 });

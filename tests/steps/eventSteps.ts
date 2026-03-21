@@ -213,3 +213,93 @@ export async function Then_budget_tab_shows_event_allocation(
     ),
   ).toBeVisible();
 }
+
+/**
+ * Customize a participant's time allocation hours for a specific day in the PeriodInput.
+ * The participant must already have a customized allocation (not "Using defaults").
+ *
+ * @param personName - Display name of the participant (e.g., "Pino")
+ * @param periodType - "Study Time" or "Hack Time"
+ * @param dayIndex - Zero-based index of the day input within that period section
+ * @param hours - New hours value to enter
+ */
+export async function When_I_customize_participant_hours(
+  page: Page,
+  personName: string,
+  periodType: 'Study Time' | 'Hack Time',
+  dayIndex: number,
+  hours: string,
+) {
+  // Find the participant's customized Box (has personName + "Remove Custom" button)
+  const participantBox = page
+    .locator('div')
+    .filter({ hasText: new RegExp(`^.*${personName}.*$`) })
+    .filter({ has: page.getByRole('button', { name: 'Remove Custom' }) })
+    .first();
+
+  // Within that box, find the section for the period type (subtitle2 heading)
+  const periodSection = participantBox
+    .locator('div')
+    .filter({ hasText: new RegExp(`^${periodType}$`) })
+    .first()
+    .locator('..');
+
+  // The PeriodInput renders TextField type="number" for each day.
+  // Find enabled number inputs in the period section.
+  const numberInputs = periodSection.locator('input[type="number"]:not([disabled])');
+  const targetInput = numberInputs.nth(dayIndex);
+  await targetInput.clear();
+  await targetInput.fill(hours);
+}
+
+/**
+ * Remove a participant from the event by deselecting them in the Person MUI multi-Select.
+ * The PersonSelector uses a standard MUI Select (not Autocomplete), so toggling
+ * a selected MenuItem deselects it.
+ *
+ * @param personName - The full display name as shown in the select (e.g., "Pino Woodpecker")
+ */
+export async function When_I_remove_participant_from_event(
+  page: Page,
+  personName: string,
+) {
+  // Open the Person multi-select dropdown
+  const personControl = page
+    .locator('.MuiFormControl-root')
+    .filter({ hasText: 'Person' })
+    .first();
+  await personControl.getByRole('combobox').click();
+  // Click the already-selected MenuItem to deselect it
+  await page
+    .getByRole('option', { name: new RegExp(personName, 'i') })
+    .click();
+  // Close the dropdown by pressing Escape
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(300);
+}
+
+/**
+ * Add a second (or additional) participant to an already-populated Person MUI multi-Select.
+ * Opens the dropdown and clicks the MenuItem for the given person.
+ *
+ * @param personName - The full display name (e.g., "Ieniemienie Mouse")
+ */
+export async function When_I_add_second_participant(
+  page: Page,
+  personName: string,
+) {
+  // Open the Person multi-select dropdown
+  const personControl = page
+    .locator('.MuiFormControl-root')
+    .filter({ hasText: 'Person' })
+    .first();
+  await personControl.getByRole('combobox').click();
+  await page.waitForTimeout(300);
+  // Click the MenuItem to select the additional person
+  await page
+    .getByRole('option', { name: new RegExp(personName, 'i') })
+    .click();
+  // Close the dropdown
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(300);
+}
