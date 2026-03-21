@@ -12,10 +12,10 @@ export async function Given_I_am_on_budget_tab_for_person(
 ) {
   await Given_I_am_logged_in_as_user(page, adminUser);
   await page.goto('/budget-allocations');
-  // Open the Person autocomplete and select the matching option
-  await page.getByLabel('Person').click();
-  const listbox = page.getByRole('listbox');
-  await listbox.waitFor({ state: 'visible', timeout: 5000 });
+  // Open the Person MUI Select dropdown — the combobox has no accessible name,
+  // so locate via the FormControl container that has the "Person" label text.
+  const personControl = page.locator('.MuiFormControl-root').filter({ hasText: 'Person' }).first();
+  await personControl.getByRole('combobox').click();
   await page
     .getByRole('option', { name: new RegExp(personName, 'i') })
     .click();
@@ -37,15 +37,15 @@ export async function Then_summary_card_shows(
   budget: string,
   used: string,
 ) {
-  const card = page
-    .locator('.MuiCard-root')
-    .filter({ hasText: cardTitle })
-    .first();
-  await expect(card.getByRole('heading', { level: 4 })).toContainText(
+  // Each BudgetCard has an h6 title — scope to its CardContent to avoid matching parent cards
+  const cardContent = page
+    .getByRole('heading', { name: cardTitle, level: 6 })
+    .locator('xpath=ancestor::*[contains(@class,"MuiCardContent-root")][1]');
+  await expect(cardContent.getByRole('heading', { level: 4 })).toContainText(
     available,
   );
-  await expect(card.getByText('Budget:')).toContainText(budget);
-  await expect(card.getByText('Used:')).toContainText(used);
+  await expect(cardContent.getByText('Budget:')).toContainText(budget);
+  await expect(cardContent.getByText('Used:')).toContainText(used);
 }
 
 /**
