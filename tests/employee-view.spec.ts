@@ -10,6 +10,7 @@
 import { test, expect } from '@playwright/test';
 import { Given_I_am_logged_in_as_user } from './steps/workdaySteps';
 import {
+  Given_I_am_on_budget_tab_for_person,
   Then_summary_card_shows,
   Then_allocation_list_contains,
 } from './steps/budgetSteps';
@@ -75,5 +76,103 @@ test.describe('Employee View (Read-Only)', () => {
     const paper = page.locator('.MuiPaper-root').filter({ hasText: 'Budget Allocations' });
     await expect(paper.getByRole('button', { name: 'edit' })).not.toBeVisible();
     await expect(paper.getByRole('button', { name: 'delete' })).not.toBeVisible();
+  });
+});
+
+/**
+ * Helper: Navigate to contracts page, select a person, open their INTERNAL contract.
+ * Returns after the contract dialog is visible.
+ */
+async function openInternalContract(page: import('@playwright/test').Page, personName: string) {
+  await Given_I_am_logged_in_as_user(page, 'bert');
+  await page.goto('/contracts');
+  await page.waitForLoadState('networkidle');
+
+  // PersonLayout uses PersonSelector with label "Select person" (MUI Select)
+  const personControl = page.locator('.MuiFormControl-root').filter({ hasText: 'Select person' }).first();
+  await personControl.getByRole('combobox').click();
+  await page.getByRole('option', { name: new RegExp(personName, 'i') }).click();
+  await page.waitForLoadState('networkidle');
+
+  // Click on the INTERNAL contract card
+  const contractCard = page.locator('.MuiCard-root').filter({ hasText: 'INTERNAL' }).first();
+  await contractCard.click();
+  await expect(page.getByText('Contract form')).toBeVisible({ timeout: 10000 });
+}
+
+/**
+ * Helper: Save and close the contract dialog.
+ */
+async function saveContract(page: import('@playwright/test').Page) {
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByText('Contract form')).not.toBeVisible({ timeout: 10000 });
+  await page.waitForLoadState('networkidle');
+}
+
+test.describe('Contract Budget Field Impact', () => {
+  test.beforeEach(async ({ context }) => {
+    await context.clearCookies();
+  });
+
+  test.afterEach(async ({ page, context }) => {
+    await context.clearCookies();
+    await page.evaluate(() => {
+      if (typeof window.localStorage !== 'undefined')
+        window.localStorage.clear();
+      if (typeof window.sessionStorage !== 'undefined')
+        window.sessionStorage.clear();
+    });
+  });
+
+  test('CTRT-01: Admin can view and edit contract budget fields', async ({ page }) => {
+    // Open Pino's internal contract
+    await openInternalContract(page, 'Pino');
+
+    // Verify current studyHours value and edit it
+    const studyHoursField = page.getByLabel('Study hours');
+    await expect(studyHoursField).toHaveValue('100');
+    await studyHoursField.clear();
+    await studyHoursField.fill('150');
+    await saveContract(page);
+
+    // Verify budget summary reflects the change
+    await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
+    await Then_summary_card_shows(page, 'Study Hours', '150h', '150h', '0h');
+    // Other cards unchanged
+    await Then_summary_card_shows(page, 'Hack Hours', '144h', '160h', '16h');
+    await Then_summary_card_shows(page, 'Study Money', '€2.500', '€2.500', '€0');
+
+    // Restore original value
+    await openInternalContract(page, 'Pino');
+    const studyHoursRestore = page.getByLabel('Study hours');
+    await studyHoursRestore.clear();
+    await studyHoursRestore.fill('100');
+    await saveContract(page);
+  });
+
+  test('CTRT-02: Contract budget changes update summary values', async ({ page }) => {
+    // Open Pino's internal contract
+    await openInternalContract(page, 'Pino');
+
+    // Verify current studyMoney value and edit it
+    const studyMoneyField = page.getByLabel('Study money');
+    await expect(studyMoneyField).toHaveValue('2500');
+    await studyMoneyField.clear();
+    await studyMoneyField.fill('3000');
+    await saveContract(page);
+
+    // Verify budget summary reflects the change
+    await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
+    await Then_summary_card_shows(page, 'Study Money', '€3.000', '€3.000', '€0');
+    // Other cards unchanged
+    await Then_summary_card_shows(page, 'Hack Hours', '144h', '160h', '16h');
+    await Then_summary_card_shows(page, 'Study Hours', '100h', '100h', '0h');
+
+    // Restore original value
+    await openInternalContract(page, 'Pino');
+    const studyMoneyRestore = page.getByLabel('Study money');
+    await studyMoneyRestore.clear();
+    await studyMoneyRestore.fill('2500');
+    await saveContract(page);
   });
 });
