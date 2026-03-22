@@ -32,7 +32,7 @@
 
 - [x] **Phase 10: Budget Management Admin Tests** - Playwright tests for admin CRUD flows on budget allocations (gap closure in progress) (completed 2026-03-21)
 - [x] **Phase 11: Event Workflow Tests** - Playwright tests for event-linked allocation creation, editing, and summary impact (completed 2026-03-21)
-- [ ] **Phase 12: Employee View and Contract Tests** - Playwright tests for employee read-only view and contract budget field impact
+- [x] **Phase 12: Employee View and Contract Tests** - Playwright tests for employee read-only view and contract budget field impact (completed 2026-03-22)
 - [ ] **Phase 13: Budget Calculation Tests** - SpringBootTests for backend budget calculation correctness
 
 ## Phase Details
@@ -91,10 +91,10 @@ Plans:
   1. SpringBootTest asserts that budget remaining for a person/year equals contract budget minus sum of allocations for that person/year
   2. SpringBootTest asserts that hack hours, study hours, and study money calculations are independent — allocating study hours does not affect hack hour budget
   3. SpringBootTest asserts that allocations from a different year are excluded from the current year's budget calculation
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 13-01: TBD
+- [ ] 13-01-PLAN.md — Add CALC-01/02/03 tests to BudgetSummaryControllerTest: multi-allocation sum, type independence, year scoping (CALC-01, CALC-02, CALC-03)
 
 ## Progress
 
@@ -114,9 +114,9 @@ Phases execute in numeric order: 10 → 11 → 12 → 13
 | 9. Verification Gap Closure | v1.0 | 1/1 | Complete | 2026-03-17 |
 | 10. Budget Management Admin Tests | 3/3 | Complete   | 2026-03-21 | - |
 | 11. Event Workflow Tests | 2/2 | Complete   | 2026-03-21 | - |
-| 12. Employee View and Contract Tests | v1.1 | 0/2 | Not started | - |
+| 12. Employee View and Contract Tests | v1.1 | 2/2 | Complete | 2026-03-22 |
 | 13. Budget Calculation Tests | v1.1 | 0/1 | Not started | - |
 
 ---
 *Full v1.0 details: .planning/milestones/v1.0-ROADMAP.md*
-*Last updated: 2026-03-21 (Phase 12 plans created)*
+*Last updated: 2026-03-22 (Phase 13 plan created)*
