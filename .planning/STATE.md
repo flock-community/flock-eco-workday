@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: E2E Tests
-current_phase: 11
-current_plan: 02
+current_phase: 13
+current_plan: 01
 status: phase_complete
-last_updated: "2026-03-21T17:43:00Z"
-last_activity: 2026-03-21 -- Completed 11-02-PLAN.md (event modify allocations tests)
+last_updated: "2026-03-22T08:37:07Z"
+last_activity: 2026-03-22 -- Completed 13-01-PLAN.md (CALC-01/02/03 budget calculation SpringBootTests)
 progress:
   total_phases: 4
-  completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
+  completed_phases: 4
+  total_plans: 8
+  completed_plans: 8
   percent: 100
 ---
 
 # Project State: Budget Allocations for Flock Workday
 
-**Last Updated:** 2026-03-21
-**Current Phase:** Phase 11 (Event Workflow Tests)
-**Current Plan:** 11-02 (complete)
+**Last Updated:** 2026-03-22
+**Current Phase:** Phase 13 (Budget Calculation Tests)
+**Current Plan:** 13-01 (complete)
 **Status:** Phase complete
 
 ## Project Reference
@@ -27,17 +27,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
-**Current focus:** v1.1 Phase 11 -- Event Workflow Tests (complete)
+**Current focus:** v1.1 Phase 13 -- Budget Calculation Tests (complete)
 
 ## Current Position
 
 **Milestone:** v1.1 E2E Tests for Budget Allocations
 **Progress:** [██████████] 100%
 
-Phase: 11 of 13 (Event Workflow Tests)
-Plan: 11-02 complete (2 of 2)
-Status: Phase complete
-Last activity: 2026-03-21 -- Completed 11-02 (EVNT-02 modify hours, EVNT-03 add/remove participants)
+Phase: 13 of 13 (Budget Calculation Tests)
+Plan: 13-01 complete (1 of 1)
+Status: Phase complete — milestone v1.1 complete
+Last activity: 2026-03-22 -- Completed 13-01 (CALC-01/02/03 budget calculation SpringBootTests)
 
 ## Accumulated Context
 
@@ -69,14 +69,16 @@ Pre-existing: workdaySteps.ts has dayjs default import error (esModuleInterop) -
 ## Session Continuity
 
 ### Last Session Summary
-- Completed 11-02: Added EVNT-02 and EVNT-03 tests for event modification
-  - EVNT-02: Modify Pino's hack hours from 8h to 4h, verify budget summary update
-  - EVNT-03: Add Ieniemienie Mouse as participant, remove Pino, verify budget impact
-  - 3 new helpers in eventSteps.ts adapted for MUI Select pattern
-  - Phase 11 (Event Workflow Tests) fully complete: 2 plans, 4 test cases
+- Completed Phase 13: Budget Calculation Tests
+  - 13-01: CALC-01/02/03 SpringBootTests for BudgetSummaryController
+    - CALC-01: two hack allocations sum correctly (8h + 12h = 20h used, 80h available)
+    - CALC-02: study-time allocation does not affect hackHours or studyMoney values
+    - CALC-03: year scoping excludes 2025 allocations when querying year=2026
+  - BudgetSummaryControllerTest now has 7 tests, all passing
+  - Milestone v1.1 (E2E Tests for Budget Allocations) complete
 
 ### Next Session
-Phase 11 complete. Proceed to next phase.
+Milestone v1.1 complete. All phases (10-13) done.
 
 ---
 *State initialized: 2026-03-02*

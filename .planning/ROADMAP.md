@@ -2,12 +2,12 @@
 
 **Project:** Budget Allocation Tracking
 **Created:** 2026-03-02
-**Status:** v1.1 In Progress
+**Status:** v1.1 Complete
 
 ## Milestones
 
 - ✅ **v1.0 Budget Allocations** — Phases 1-9 (shipped 2026-03-17)
-- 🚧 **v1.1 E2E Tests** — Phases 10-13 (in progress)
+- ✅ **v1.1 E2E Tests** — Phases 10-13 (complete 2026-03-22)
 
 ## Phases
 
@@ -26,14 +26,14 @@
 
 </details>
 
-### 🚧 v1.1 E2E Tests (In Progress)
+### ✅ v1.1 E2E Tests (Complete 2026-03-22)
 
 **Milestone Goal:** Comprehensive Playwright e2e tests and SpringBootTests proving budget allocation feature works end-to-end.
 
 - [x] **Phase 10: Budget Management Admin Tests** - Playwright tests for admin CRUD flows on budget allocations (gap closure in progress) (completed 2026-03-21)
 - [x] **Phase 11: Event Workflow Tests** - Playwright tests for event-linked allocation creation, editing, and summary impact (completed 2026-03-21)
 - [x] **Phase 12: Employee View and Contract Tests** - Playwright tests for employee read-only view and contract budget field impact (completed 2026-03-22)
-- [ ] **Phase 13: Budget Calculation Tests** - SpringBootTests for backend budget calculation correctness
+- [x] **Phase 13: Budget Calculation Tests** - SpringBootTests for backend budget calculation correctness (completed 2026-03-22)
 
 ## Phase Details
 
@@ -94,7 +94,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 13-01-PLAN.md — Add CALC-01/02/03 tests to BudgetSummaryControllerTest: multi-allocation sum, type independence, year scoping (CALC-01, CALC-02, CALC-03)
+- [x] 13-01-PLAN.md — Add CALC-01/02/03 tests to BudgetSummaryControllerTest: multi-allocation sum, type independence, year scoping (CALC-01, CALC-02, CALC-03)
 
 ## Progress
 
@@ -115,8 +115,8 @@ Phases execute in numeric order: 10 → 11 → 12 → 13
 | 10. Budget Management Admin Tests | 3/3 | Complete   | 2026-03-21 | - |
 | 11. Event Workflow Tests | 2/2 | Complete   | 2026-03-21 | - |
 | 12. Employee View and Contract Tests | v1.1 | 2/2 | Complete | 2026-03-22 |
-| 13. Budget Calculation Tests | v1.1 | 0/1 | Not started | - |
+| 13. Budget Calculation Tests | v1.1 | 1/1 | Complete | 2026-03-22 |
 
 ---
 *Full v1.0 details: .planning/milestones/v1.0-ROADMAP.md*
-*Last updated: 2026-03-22 (Phase 13 plan created)*
+*Last updated: 2026-03-22 (Phase 13 complete — milestone v1.1 complete)*

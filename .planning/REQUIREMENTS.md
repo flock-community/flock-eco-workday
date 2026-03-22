@@ -25,20 +25,20 @@ Requirements for e2e test coverage of budget allocation feature.
 
 ### Employee View
 
-- [ ] **EMPV-01**: Employee can view their own budget allocation tab with summary cards
-- [ ] **EMPV-02**: Employee can see allocation list with correct details (dates, hours, amounts)
-- [ ] **EMPV-03**: Employee cannot create, edit, or delete allocations (read-only)
+- [x] **EMPV-01**: Employee can view their own budget allocation tab with summary cards
+- [x] **EMPV-02**: Employee can see allocation list with correct details (dates, hours, amounts)
+- [x] **EMPV-03**: Employee cannot create, edit, or delete allocations (read-only)
 
 ### Contract Setup (E2E)
 
-- [ ] **CTRT-01**: Admin can view/edit contract with studyHours and studyMoney fields
-- [ ] **CTRT-02**: Changing contract budget fields updates the budget summary values
+- [x] **CTRT-01**: Admin can view/edit contract with studyHours and studyMoney fields
+- [x] **CTRT-02**: Changing contract budget fields updates the budget summary values
 
 ### Budget Calculation (SpringBootTest)
 
-- [ ] **CALC-01**: Budget remaining equals contract budget minus sum of allocations for a given person and year
-- [ ] **CALC-02**: Budget calculation handles multiple allocation types (hack hours, study hours, study money) independently
-- [ ] **CALC-03**: Budget calculation scopes allocations to the correct year
+- [x] **CALC-01**: Budget remaining equals contract budget minus sum of allocations for a given person and year
+- [x] **CALC-02**: Budget calculation handles multiple allocation types (hack hours, study hours, study money) independently
+- [x] **CALC-03**: Budget calculation scopes allocations to the correct year
 
 ## v2 Requirements
 
@@ -69,14 +69,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EVNT-02 | Phase 11 | Complete |
 | EVNT-03 | Phase 11 | Complete |
 | EVNT-04 | Phase 11 | Complete |
-| EMPV-01 | Phase 12 | Pending |
-| EMPV-02 | Phase 12 | Pending |
-| EMPV-03 | Phase 12 | Pending |
-| CTRT-01 | Phase 12 | Pending |
-| CTRT-02 | Phase 12 | Pending |
-| CALC-01 | Phase 13 | Pending |
-| CALC-02 | Phase 13 | Pending |
-| CALC-03 | Phase 13 | Pending |
+| EMPV-01 | Phase 12 | Complete |
+| EMPV-02 | Phase 12 | Complete |
+| EMPV-03 | Phase 12 | Complete |
+| CTRT-01 | Phase 12 | Complete |
+| CTRT-02 | Phase 12 | Complete |
+| CALC-01 | Phase 13 | Complete |
+| CALC-02 | Phase 13 | Complete |
+| CALC-03 | Phase 13 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 18 total
