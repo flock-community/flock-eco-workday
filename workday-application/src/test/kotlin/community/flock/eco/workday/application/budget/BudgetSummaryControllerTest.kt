@@ -206,6 +206,165 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.budget").value(200.0))
     }
 
+    @Test
+    fun `multiple hack time allocations sum correctly for CALC-01`() {
+        val user = createHelper.createUser(adminAuthorities)
+        val personEntity = createHelper.createPersonEntity("calc01", "multi", user.code)
+        val person = personEntity.toDomain()
+
+        createHelper.createContractInternal(
+            person = personEntity,
+            from = LocalDate.of(2026, 1, 1),
+            to = LocalDate.of(2026, 12, 31),
+            hackHours = 100,
+            studyHours = 0,
+            studyMoney = BigDecimal.ZERO,
+        )
+
+        hackTimeBudgetAllocationService.create(
+            HackTimeBudgetAllocation(
+                person = person,
+                eventCode = null,
+                date = LocalDate.of(2026, 3, 1),
+                description = "First hack day",
+                dailyTimeAllocations =
+                    listOf(
+                        DailyTimeAllocation(LocalDate.of(2026, 3, 1), 8.0, BudgetAllocationType.HACK),
+                    ),
+                totalHours = 8.0,
+            ),
+        )
+
+        hackTimeBudgetAllocationService.create(
+            HackTimeBudgetAllocation(
+                person = person,
+                eventCode = null,
+                date = LocalDate.of(2026, 4, 1),
+                description = "Second hack day",
+                dailyTimeAllocations =
+                    listOf(
+                        DailyTimeAllocation(LocalDate.of(2026, 4, 1), 12.0, BudgetAllocationType.HACK),
+                    ),
+                totalHours = 12.0,
+            ),
+        )
+
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get("$baseUrl?personId=${person.uuid}&year=2026")
+                    .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.budget").value(100.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.used").value(20.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.available").value(80.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.used").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.used").value(0.0))
+    }
+
+    @Test
+    fun `study time allocation does not affect hack hours or study money for CALC-02`() {
+        val user = createHelper.createUser(adminAuthorities)
+        val personEntity = createHelper.createPersonEntity("calc02", "typeindep", user.code)
+        val person = personEntity.toDomain()
+
+        createHelper.createContractInternal(
+            person = personEntity,
+            from = LocalDate.of(2026, 1, 1),
+            to = LocalDate.of(2026, 12, 31),
+            hackHours = 100,
+            studyHours = 80,
+            studyMoney = BigDecimal("2500.00"),
+        )
+
+        studyTimeBudgetAllocationService.create(
+            StudyTimeBudgetAllocation(
+                person = person,
+                eventCode = null,
+                date = LocalDate.of(2026, 5, 1),
+                description = "Study course",
+                dailyTimeAllocations =
+                    listOf(
+                        DailyTimeAllocation(LocalDate.of(2026, 5, 1), 40.0, BudgetAllocationType.STUDY),
+                    ),
+                totalHours = 40.0,
+            ),
+        )
+
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get("$baseUrl?personId=${person.uuid}&year=2026")
+                    .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.used").value(40.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.available").value(40.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.used").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.available").value(100.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.used").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.available").value(2500.0))
+    }
+
+    @Test
+    fun `allocations from different year are excluded from budget calculation for CALC-03`() {
+        val user = createHelper.createUser(adminAuthorities)
+        val personEntity = createHelper.createPersonEntity("calc03", "yearscope", user.code)
+        val person = personEntity.toDomain()
+
+        createHelper.createContractInternal(
+            person = personEntity,
+            from = LocalDate.of(2025, 1, 1),
+            to = LocalDate.of(2026, 12, 31),
+            hackHours = 100,
+            studyHours = 0,
+            studyMoney = BigDecimal.ZERO,
+        )
+
+        hackTimeBudgetAllocationService.create(
+            HackTimeBudgetAllocation(
+                person = person,
+                eventCode = null,
+                date = LocalDate.of(2025, 6, 1),
+                description = "2025 hack day",
+                dailyTimeAllocations =
+                    listOf(
+                        DailyTimeAllocation(LocalDate.of(2025, 6, 1), 50.0, BudgetAllocationType.HACK),
+                    ),
+                totalHours = 50.0,
+            ),
+        )
+
+        hackTimeBudgetAllocationService.create(
+            HackTimeBudgetAllocation(
+                person = person,
+                eventCode = null,
+                date = LocalDate.of(2026, 3, 1),
+                description = "2026 hack day",
+                dailyTimeAllocations =
+                    listOf(
+                        DailyTimeAllocation(LocalDate.of(2026, 3, 1), 20.0, BudgetAllocationType.HACK),
+                    ),
+                totalHours = 20.0,
+            ),
+        )
+
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get("$baseUrl?personId=${person.uuid}&year=2026")
+                    .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.budget").value(100.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.used").value(20.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.available").value(80.0))
+    }
+
     private fun ResultActions.asyncDispatch() =
         mvc.perform(
             MockMvcRequestBuilders.asyncDispatch(
