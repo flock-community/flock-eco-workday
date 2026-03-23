@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Polish & Gap Closure
-current_phase: not_started
+current_phase: 14
 current_plan: —
-status: defining_requirements
-last_updated: "2026-03-22T12:00:00Z"
-last_activity: 2026-03-22 -- Milestone v1.2 started
+status: roadmap_ready
+last_updated: "2026-03-23T00:00:00Z"
+last_activity: 2026-03-23 -- v1.2 roadmap created (phases 14-17, 11 requirements)
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,27 +17,27 @@ progress:
 
 # Project State: Budget Allocations for Flock Workday
 
-**Last Updated:** 2026-03-22
-**Current Phase:** Not started (defining requirements)
+**Last Updated:** 2026-03-23
+**Current Phase:** 14 — Event Dialog Bug Fix
 **Current Plan:** —
-**Status:** Defining requirements
+**Status:** Roadmap ready, planning phase 14
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
-**Current focus:** v1.2 Polish & Gap Closure — starting
+**Current focus:** v1.2 Polish & Gap Closure — event allocation persistence, list UX, bug fixes
 
 ## Current Position
 
 **Milestone:** v1.2 Polish & Gap Closure
-**Progress:** [░░░░░░░░░░] 0%
+**Progress:** [░░░░░░░░░░] 0% (0/4 phases)
 
-Phase: Not started
+Phase: 14 — Event Dialog Bug Fix
 Plan: —
-Status: Defining requirements
-Last activity: 2026-03-22 -- Milestone v1.2 started (11 requirements across 5 categories)
+Status: Roadmap ready
+Last activity: 2026-03-23 -- v1.2 roadmap created (phases 14-17, 11 requirements mapped)
 
 ## Accumulated Context
 
@@ -57,6 +57,10 @@ v1.1 decisions:
 - PersonSelector uses MUI Select (not Autocomplete), add/remove participants via MenuItem toggle
 - EVNT-03 requires save-reopen cycle: budget section uses server-side eventData.persons, not form personIds
 
+v1.2 decisions:
+- Phase 14 (BUG-01 infinite render fix) is prerequisite for Phase 15 (ALLOC work) -- both touch EventDialog
+- Phase 16 (list UX) and Phase 17 (money summary + UI polish) are independent of ALLOC work and can proceed after Phase 14
+
 ### Known Blockers
 
 None.
@@ -72,10 +76,11 @@ Pre-existing: workdaySteps.ts has dayjs default import error (esModuleInterop) -
 - Completed milestone v1.1 (E2E Tests for Budget Allocations) — all 18 requirements verified
 - Conducted post-milestone review, identified 11 issues across 5 categories for v1.2
 - Started milestone v1.2: Polish & Gap Closure
+- Created v1.2 roadmap: 4 phases (14-17), 11 requirements fully mapped
 
 ### Next Session
-Milestone v1.2 requirements defined. Proceed to roadmap creation then /gsd:plan-phase 14.
+Roadmap ready. Proceed to /gsd:plan-phase 14 (Event Dialog Bug Fix — BUG-01).
 
 ---
 *State initialized: 2026-03-02*
-*Last updated: 2026-03-21 (11-02 complete)*
+*Last updated: 2026-03-23 (v1.2 roadmap created — phases 14-17)*

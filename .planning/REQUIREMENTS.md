@@ -107,12 +107,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CALC-01 | Phase 13 | Complete |
 | CALC-02 | Phase 13 | Complete |
 | CALC-03 | Phase 13 | Complete |
+| BUG-01 | Phase 14 | Pending |
+| ALLOC-01 | Phase 15 | Pending |
+| ALLOC-02 | Phase 15 | Pending |
+| ALLOC-03 | Phase 15 | Pending |
+| ALLOC-04 | Phase 15 | Pending |
+| ALLOC-05 | Phase 15 | Pending |
+| LIST-01 | Phase 16 | Pending |
+| LIST-02 | Phase 16 | Pending |
+| LIST-03 | Phase 16 | Pending |
+| SUMM-01 | Phase 17 | Pending |
+| UI-01 | Phase 17 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 18 total
-- Mapped to phases: 18
-- Unmapped: 0
+- v1.1 requirements: 18 total — mapped to phases: 18 — unmapped: 0
+- v1.2 requirements: 11 total — mapped to phases: 11 — unmapped: 0
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-22 (v1.2 requirements added)*
+*Last updated: 2026-03-23 (v1.2 traceability added — phases 14-17)*
