@@ -114,7 +114,10 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Opening the event dialog and saving an event with budget allocations does not produce a `Maximum update depth exceeded` console error
   2. The event dialog can be opened, modified, and saved multiple times in a session without browser freezing or React error overlay appearing
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 14-01-PLAN.md — Stabilize handleBudgetStateChange with useCallback; remove onBudgetStateChange from child useEffect deps (BUG-01)
 
 ### Phase 15: Event Allocation Persistence
 **Goal**: Saving an event automatically creates and syncs budget allocations for all participants — no manual "Customize" step required
@@ -167,11 +170,11 @@ v1.2 phases execute in order: 14 → 15 → 16 → 17 (16 and 17 can run in para
 | 11. Event Workflow Tests | v1.1 | 2/2 | Complete | 2026-03-21 |
 | 12. Employee View and Contract Tests | v1.1 | 2/2 | Complete | 2026-03-22 |
 | 13. Budget Calculation Tests | v1.1 | 1/1 | Complete | 2026-03-22 |
-| 14. Event Dialog Bug Fix | v1.2 | 0/TBD | Not started | - |
+| 14. Event Dialog Bug Fix | v1.2 | 0/1 | Not started | - |
 | 15. Event Allocation Persistence | v1.2 | 0/TBD | Not started | - |
 | 16. Budget Allocation List UX | v1.2 | 0/TBD | Not started | - |
 | 17. Event Money Summary and UI Polish | v1.2 | 0/TBD | Not started | - |
 
 ---
 *Full v1.0 details: .planning/milestones/v1.0-ROADMAP.md*
-*Last updated: 2026-03-23 (v1.2 roadmap created — phases 14-17)*
+*Last updated: 2026-03-23 (phase 14 planned — 1 plan)*
