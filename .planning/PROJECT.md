@@ -28,13 +28,27 @@ Admins can track and manage budget consumption (hack hours, study hours, study m
 - ✓ Contract form updated with studyHours and studyMoney inputs — v1.0
 - ✓ Development mock data loader for budget allocations — v1.0
 
+### Validated
+
+- ✓ E2E Playwright tests for budget allocation admin workflows (CRUD, summaries) — v1.1
+- ✓ E2E Playwright tests for event-linked budget allocation workflows — v1.1
+- ✓ E2E Playwright tests for employee read-only budget view — v1.1
+- ✓ E2E Playwright tests for contract budget field impact on summaries — v1.1
+- ✓ SpringBootTest for budget calculation correctness — v1.1
+
 ### Active
 
-- [ ] E2E Playwright tests for budget allocation admin workflows (CRUD, summaries)
-- [ ] E2E Playwright tests for event-linked budget allocation workflows
-- [ ] E2E Playwright tests for employee read-only budget view
-- [ ] E2E Playwright tests for contract budget field impact on summaries
-- [ ] SpringBootTest for budget calculation correctness
+- [ ] Event allocations auto-created for all participants on event save (no "Customize" required)
+- [ ] Default time allocation type persisted on event entity
+- [ ] Study money allocations auto-created with equal share per participant on event save
+- [ ] Budget type change on event propagates to existing allocations
+- [ ] Event money budget change redistributes study money allocations equally
+- [ ] Budget allocation list shows event name (not event code)
+- [ ] Admin can click event allocation to navigate to that event
+- [ ] Budget allocation list supports filter chips by type
+- [ ] Money allocation summary distinguishes assigned vs unassigned amounts
+- [ ] "Add study money" button uses site-wide + Add pattern
+- [ ] Event dialog infinite render loop (`Maximum update depth exceeded`) fixed
 
 ### Out of Scope
 
@@ -83,16 +97,16 @@ Admins can track and manage budget consumption (hack hours, study hours, study m
 | Direct fetch client for BudgetAllocationClient | Type-specific API paths, not generic CRUD | ✓ Good — cleaner API surface than NonInternalizingClient |
 | Diff-based save for event allocations | Only send create/update/delete for changed allocations | ✓ Good — efficient and correct |
 
-## Current Milestone: v1.1 E2E Tests for Budget Allocations
+## Current Milestone: v1.2 Polish & Gap Closure
 
-**Goal:** Comprehensive Playwright e2e tests and SpringBootTests proving budget allocation feature works end-to-end — admin CRUD, event workflows, employee views, and calculation correctness.
+**Goal:** Fix event allocation persistence (allocations always saved on event save, not requiring manual "Customize"), improve budget allocation list UX (event names, clickable links, filter chips), and resolve the infinite render loop in the event dialog.
 
 **Target features:**
-- Admin budget management tests (create, edit, delete allocations by type)
-- Event-linked allocation workflow tests (per-day breakdowns, participant management)
-- Employee read-only view tests
-- Contract budget field smoke tests
-- SpringBootTest for budget calculation logic
+- Event allocation persistence: auto-create allocations for all participants on event save, persist default type, equal-share study money distribution
+- Budget allocation list UX: event names, admin-clickable event links, filter chips
+- Event money summary: assigned vs unassigned distinction
+- UI consistency: "Add study money" button matches site-wide + Add pattern
+- Bug fix: `Maximum update depth exceeded` infinite render loop in event dialog
 
 ---
-*Last updated: 2026-03-18 after v1.1 milestone start*
+*Last updated: 2026-03-22 after v1.2 milestone start*

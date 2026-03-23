@@ -1,43 +1,43 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: E2E Tests
-current_phase: 13
-current_plan: 01
-status: phase_complete
-last_updated: "2026-03-22T08:37:07Z"
-last_activity: 2026-03-22 -- Completed 13-01-PLAN.md (CALC-01/02/03 budget calculation SpringBootTests)
+milestone: v1.2
+milestone_name: Polish & Gap Closure
+current_phase: not_started
+current_plan: —
+status: defining_requirements
+last_updated: "2026-03-22T12:00:00Z"
+last_activity: 2026-03-22 -- Milestone v1.2 started
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State: Budget Allocations for Flock Workday
 
 **Last Updated:** 2026-03-22
-**Current Phase:** Phase 13 (Budget Calculation Tests)
-**Current Plan:** 13-01 (complete)
-**Status:** Phase complete
+**Current Phase:** Not started (defining requirements)
+**Current Plan:** —
+**Status:** Defining requirements
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-18)
+See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
-**Current focus:** v1.1 Phase 13 -- Budget Calculation Tests (complete)
+**Current focus:** v1.2 Polish & Gap Closure — starting
 
 ## Current Position
 
-**Milestone:** v1.1 E2E Tests for Budget Allocations
-**Progress:** [██████████] 100%
+**Milestone:** v1.2 Polish & Gap Closure
+**Progress:** [░░░░░░░░░░] 0%
 
-Phase: 13 of 13 (Budget Calculation Tests)
-Plan: 13-01 complete (1 of 1)
-Status: Phase complete — milestone v1.1 complete
-Last activity: 2026-03-22 -- Completed 13-01 (CALC-01/02/03 budget calculation SpringBootTests)
+Phase: Not started
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-22 -- Milestone v1.2 started (11 requirements across 5 categories)
 
 ## Accumulated Context
 
@@ -69,16 +69,12 @@ Pre-existing: workdaySteps.ts has dayjs default import error (esModuleInterop) -
 ## Session Continuity
 
 ### Last Session Summary
-- Completed Phase 13: Budget Calculation Tests
-  - 13-01: CALC-01/02/03 SpringBootTests for BudgetSummaryController
-    - CALC-01: two hack allocations sum correctly (8h + 12h = 20h used, 80h available)
-    - CALC-02: study-time allocation does not affect hackHours or studyMoney values
-    - CALC-03: year scoping excludes 2025 allocations when querying year=2026
-  - BudgetSummaryControllerTest now has 7 tests, all passing
-  - Milestone v1.1 (E2E Tests for Budget Allocations) complete
+- Completed milestone v1.1 (E2E Tests for Budget Allocations) — all 18 requirements verified
+- Conducted post-milestone review, identified 11 issues across 5 categories for v1.2
+- Started milestone v1.2: Polish & Gap Closure
 
 ### Next Session
-Milestone v1.1 complete. All phases (10-13) done.
+Milestone v1.2 requirements defined. Proceed to roadmap creation then /gsd:plan-phase 14.
 
 ---
 *State initialized: 2026-03-02*
