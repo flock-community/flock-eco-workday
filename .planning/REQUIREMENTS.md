@@ -1,4 +1,4 @@
-# Requirements: Budget Allocations E2E Tests
+# Requirements: Budget Allocations
 
 **Defined:** 2026-03-18
 **Core Value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
@@ -40,9 +40,39 @@ Requirements for e2e test coverage of budget allocation feature.
 - [x] **CALC-02**: Budget calculation handles multiple allocation types (hack hours, study hours, study money) independently
 - [x] **CALC-03**: Budget calculation scopes allocations to the correct year
 
+## v1.2 Requirements
+
+Requirements for v1.2 Polish & Gap Closure milestone.
+
+### Event Allocation Persistence
+
+- [ ] **ALLOC-01**: When an admin saves an event, time allocations are automatically created for all participants using the default type — no "Customize" step required
+- [ ] **ALLOC-02**: The default time allocation type is persisted on the event entity and restored on reopen
+- [ ] **ALLOC-03**: Study money allocations are automatically created with equal share per participant when saving an event that has a budget amount
+- [ ] **ALLOC-04**: Changing the budget type on an existing event updates all existing allocations to the new type
+- [ ] **ALLOC-05**: Changing the event's total money budget redistributes study money allocations equally across all participants
+
+### Budget Allocation List UX
+
+- [ ] **LIST-01**: Event allocations in the budget allocation list display the event name instead of the event code
+- [ ] **LIST-02**: Admin clicking an event allocation navigates to that event; employees see it as non-clickable text
+- [ ] **LIST-03**: User can filter the budget allocation list by type using chips (Hack Hours / Study Hours / Study Money)
+
+### Event Money Summary
+
+- [ ] **SUMM-01**: The event money allocation summary distinguishes between assigned (€X/person) and unassigned (€Y remaining) amounts
+
+### UI Consistency
+
+- [ ] **UI-01**: The "Add study money" button uses the same `+ Add` pattern as other resource pages (Projects, Assignments, Workdays)
+
+### Bug Fixes
+
+- [ ] **BUG-01**: The event dialog no longer triggers a `Maximum update depth exceeded` infinite render loop
+
 ## v2 Requirements
 
-None — this is a test-focused milestone.
+None defined yet.
 
 ## Out of Scope
 
@@ -85,4 +115,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-18 (traceability updated after roadmap creation)*
+*Last updated: 2026-03-22 (v1.2 requirements added)*
