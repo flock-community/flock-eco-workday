@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Formik, Form } from 'formik';
 import dayjs from 'dayjs';
 import { EventClient, type FlockEventRequest, type FullFlockEvent } from '../../clients/EventClient';
@@ -176,7 +176,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     onComplete?.();
   };
 
-  const handleBudgetStateChange = (budgetState: {
+  const handleBudgetStateChange = useCallback((budgetState: {
     moneyParticipants: PersonMoneyAllocation[];
     timeParticipants: PersonTimeAllocation[];
     dirty: boolean;
@@ -203,7 +203,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     });
     participantBudgetsRef.current = combinedState;
     setParticipantBudgets(combinedState);
-  };
+  }, []);
 
   const initialValues = useMemo(
     () => state ? { ...eventFormSchema.default(), ...mutatePeriod(state) } : eventFormSchema.default(),

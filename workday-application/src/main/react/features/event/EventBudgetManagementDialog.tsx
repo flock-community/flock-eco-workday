@@ -266,7 +266,8 @@ export function EventBudgetManagementSection({
       timeParticipants,
       dirty: isDirty,
     });
-  }, [moneyParticipants, timeParticipants, isDirty, onBudgetStateChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moneyParticipants, timeParticipants, isDirty]);
 
   // Helper: Generate time allocation summary
   const getTimeSummary = (): string => {
