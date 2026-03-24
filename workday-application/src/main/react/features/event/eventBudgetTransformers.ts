@@ -310,6 +310,47 @@ export function eventBudgetTypeToDailyType(
   return budgetType as DailyAllocationType;
 }
 
+/**
+ * Generate default time and money allocations from event form values.
+ * Used when saving an event without manual budget customization.
+ */
+export function generateDefaultAllocations(
+  personIds: string[],
+  persons: Array<{ uuid: string; firstname: string; lastname: string }>,
+  eventFrom: Dayjs,
+  days: number[],
+  defaultBudgetType: EventBudgetType | null,
+  totalBudget: number,
+): { timeParticipants: PersonTimeAllocation[]; moneyParticipants: PersonMoneyAllocation[] } {
+  const eventTo = eventFrom.add(Math.max(days.length - 1, 0), 'day');
+  const perPersonAmount = personIds.length > 0
+    ? Math.floor((totalBudget / personIds.length) * 100) / 100
+    : 0;
+
+  const timeParticipants: PersonTimeAllocation[] = personIds.map(personId => {
+    const person = persons.find(p => p.uuid === personId);
+    const personName = person ? `${person.firstname} ${person.lastname}` : '';
+    const period: Period | null = days.length > 0
+      ? { from: eventFrom, to: eventTo, days: [...days] }
+      : null;
+
+    return {
+      personId,
+      personName,
+      hackPeriod: defaultBudgetType === 'HACK' ? period : null,
+      studyPeriod: defaultBudgetType === 'STUDY' ? period : null,
+    };
+  });
+
+  const moneyParticipants: PersonMoneyAllocation[] = personIds.map(personId => {
+    const person = persons.find(p => p.uuid === personId);
+    const personName = person ? `${person.firstname} ${person.lastname}` : '';
+    return { personId, personName, amount: perPersonAmount };
+  });
+
+  return { timeParticipants, moneyParticipants };
+}
+
 // Helper: check if daily allocations have changed
 function hasDailyAllocationsChanged(
   loaded: DailyTimeAllocationItem[],

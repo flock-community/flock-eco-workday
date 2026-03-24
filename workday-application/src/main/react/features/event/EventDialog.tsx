@@ -16,7 +16,7 @@ import { TransitionSlider } from '../../components/transitions/Slide';
 import { mutatePeriod } from '../period/Period';
 import { EVENT_FORM_ID, EventFormFields, eventFormSchema } from './EventForm';
 import { EventBudgetManagementSection } from './EventBudgetManagementDialog';
-import { apiAllocationsToTimeParticipants, apiAllocationsToMoneyParticipants, diffAllocations } from './eventBudgetTransformers';
+import { apiAllocationsToTimeParticipants, apiAllocationsToMoneyParticipants, diffAllocations, generateDefaultAllocations } from './eventBudgetTransformers';
 import type { BudgetAllocation } from '../../wirespec/model';
 import type { PersonTimeAllocation } from './EventTimeAllocationSection';
 import type { PersonMoneyAllocation } from './EventMoneyAllocationSection';
@@ -104,20 +104,41 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         ? await EventClient.put(code, eventData)
         : await EventClient.post(eventData);
 
-      // Use refs to get the latest budget state (avoids stale closure from React render cycle)
+      // Process budget allocations: either from manual customization or auto-generated defaults
       const currentBudgets = participantBudgetsRef.current;
       const currentLoaded = loadedAllocationsRef.current;
+      const hasParticipants = it.personIds?.length > 0;
+      const hasAllocationType = !!it.defaultTimeAllocationType;
+      const hasBudget = (it.budget || 0) > 0;
 
-      // Only process budget allocations if the user actually modified budgets.
-      // Without this guard, the participant sync effect (which runs before loaded allocations
-      // are fetched) would populate participantBudgetsRef with null periods, causing
-      // diffAllocations to incorrectly delete existing allocations.
-      if (currentBudgets.length > 0 && budgetsDirtyRef.current) {
+      if (hasParticipants && (hasAllocationType || hasBudget)) {
+        let timeToProcess;
+        let moneyToProcess;
+
+        if (budgetsDirtyRef.current && currentBudgets.length > 0) {
+          // Path A: User manually customized budgets — use their state
+          timeToProcess = currentBudgets.map(p => p.timeAllocation);
+          moneyToProcess = currentBudgets.map(p => ({ personId: p.personId, personName: p.personName, amount: p.moneyAmount }));
+        } else {
+          // Path B: Auto-generate defaults from form values
+          const persons = eventData?.persons || it.personIds.map(id => ({ uuid: id, firstname: '', lastname: '' }));
+          const defaults = generateDefaultAllocations(
+            it.personIds,
+            persons,
+            dayjs(it.from),
+            it.days.map(d => parseFloat(d || 0)),
+            it.defaultTimeAllocationType || null,
+            it.budget || 0,
+          );
+          timeToProcess = defaults.timeParticipants;
+          moneyToProcess = defaults.moneyParticipants;
+        }
+
         const defaultBudgetType = it.defaultTimeAllocationType || null;
         const { toCreate, toUpdate, toDelete } = diffAllocations(
           currentLoaded,
-          currentBudgets.map(p => p.timeAllocation),
-          currentBudgets.map(p => ({ personId: p.personId, personName: p.personName, amount: p.moneyAmount })),
+          timeToProcess,
+          moneyToProcess,
           res.code,
           dayjs(it.from),
           defaultBudgetType,
