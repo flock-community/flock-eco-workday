@@ -9,7 +9,7 @@ import {
 import {Info, OpenInNew} from '@mui/icons-material';
 import {EventAllocationListItem} from './EventAllocationListItem';
 import {StudyMoneyAllocationListItem} from './StudyMoneyAllocationListItem';
-import type {BudgetAllocation} from '../../wirespec/model';
+import type {BudgetAllocation, BudgetAllocationType} from '../../wirespec/model';
 
 interface BudgetAllocationListProps {
   allocations: BudgetAllocation[];
@@ -17,6 +17,9 @@ interface BudgetAllocationListProps {
   onDelete?: (allocation: BudgetAllocation) => void;
   onEdit?: (allocation: BudgetAllocation) => void;
   onCreate?: () => void;
+  isAdmin: boolean;
+  eventNameMap?: Record<string, string>;
+  typeFilter?: BudgetAllocationType | null;
 }
 
 export function BudgetAllocationList({
@@ -24,7 +27,15 @@ export function BudgetAllocationList({
   hasWritePermission = false,
   onDelete,
   onEdit,
+  isAdmin,
+  eventNameMap = {},
+  typeFilter = null,
 }: BudgetAllocationListProps) {
+  // Apply type filter
+  const filteredAllocations = typeFilter
+    ? allocations.filter(a => a.type === typeFilter)
+    : allocations;
+
   // Group event-linked allocations by eventCode
   const eventAllocations: Record<string, {
     eventCode: string;
@@ -33,7 +44,7 @@ export function BudgetAllocationList({
 
   const freeFormStudyMoney: BudgetAllocation[] = [];
 
-  allocations.forEach((allocation) => {
+  filteredAllocations.forEach((allocation) => {
     if (allocation.eventCode) {
       const key = allocation.eventCode;
       if (!eventAllocations[key]) {
@@ -79,7 +90,7 @@ export function BudgetAllocationList({
           </Box>
 
           {/* Info alert about event allocations */}
-          {allItems.some((item) => item.type === 'event') && (
+          {isAdmin && allItems.some((item) => item.type === 'event') && (
             <Alert severity="info" icon={<Info />}>
               Event allocations are managed from the Events page. Click the event
               name or{' '}
@@ -105,8 +116,10 @@ export function BudgetAllocationList({
               item.type === 'event' ? (
                 <EventAllocationListItem
                   key={item.data.eventCode}
+                  eventName={eventNameMap[item.data.eventCode] || item.data.eventCode}
                   eventCode={item.data.eventCode}
                   allocations={item.data.allocations}
+                  isAdmin={isAdmin}
                 />
               ) : (
                 <StudyMoneyAllocationListItem

@@ -14,16 +14,20 @@ import {
   AttachMoney,
   Event,
   ExpandMore,
+  OpenInNew,
 } from '@mui/icons-material';
 import type {BudgetAllocation} from '../../wirespec/model';
 import dayjs from 'dayjs';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import Link from '@mui/material/Link';
 import {PeriodInput} from '../../components/inputs/PeriodInput';
 
 interface EventAllocationListItemProps {
+  eventName: string;
   eventCode: string;
   allocations: BudgetAllocation[];
+  isAdmin?: boolean;
 }
 
 /**
@@ -118,8 +122,10 @@ const getAccordion = (
 };
 
 export function EventAllocationListItem({
+  eventName,
   eventCode,
   allocations,
+  isAdmin = false,
 }: EventAllocationListItemProps) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
@@ -132,13 +138,20 @@ export function EventAllocationListItem({
   const dateTo = allDates[allDates.length - 1];
 
   return (
-    <Grid key={`workday-list-item-${eventCode}`} size={{xs: 12}}>
+    <Grid size={{xs: 12}}>
       <Card>
         <CardHeader
           title={
             <>
               <Event sx={{mt: 0.5, mr: 2}} />
-              {eventCode}
+              {isAdmin ? (
+                <Link href="/event" underline="hover" sx={{display: 'inline-flex', alignItems: 'center', gap: 0.5}}>
+                  {eventName}
+                  <OpenInNew sx={{fontSize: 16}} />
+                </Link>
+              ) : (
+                eventName
+              )}
             </>
           }
           subheader={
