@@ -124,14 +124,8 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
               </FormControl>
             )}
             {isAdmin && (
-              // Add Study Money button
-              <Button
-                variant="outlined"
-                startIcon={<AddIcon/>}
-                size="small"
-                onClick={() => setDialogOpen(true)}
-              >
-                Add Study Money
+              <Button onClick={() => setDialogOpen(true)}>
+                <AddIcon/> Add
               </Button>
             )}
           </Stack>

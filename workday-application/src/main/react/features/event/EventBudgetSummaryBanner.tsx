@@ -48,7 +48,8 @@ export function EventBudgetSummaryBanner({
 
   // Collapsed summary view for AccordionSummary
   if (isCollapsedMode) {
-    const moneyPerPerson = participantCount > 0 ? totalBudget! / participantCount : 0;
+    const assignedPerPerson = participantCount > 0 ? totalAllocated / participantCount : 0;
+    const unassigned = hasBudget ? totalBudget! - totalAllocated : 0;
 
     // Only show sections that have actual content
     const hasTimeSection = defaultBudgetType !== null && defaultBudgetType !== undefined;
@@ -57,13 +58,22 @@ export function EventBudgetSummaryBanner({
     // Build summary text
     let summaryText = `${participantCount} participant${participantCount !== 1 ? 's' : ''}`;
 
-    if (hasTimeSection && hasMoneySection) {
-      summaryText += ` × ${defaultHoursPerDay?.toFixed(0)}h/day ${defaultBudgetType}, ${currency}${moneyPerPerson.toFixed(0)}/person`;
-    } else if (hasMoneySection) {
-      summaryText += `, ${currency}${moneyPerPerson.toFixed(0)}/person`;
-    } else if (hasTimeSection) {
+    if (hasTimeSection) {
       summaryText += ` × ${defaultHoursPerDay?.toFixed(0)}h/day ${defaultBudgetType}`;
-    } else {
+    }
+
+    if (hasMoneySection) {
+      const assignedStr = `assigned ${currency}${assignedPerPerson.toFixed(0)}/person`;
+      if (unassigned > 0) {
+        summaryText += `, ${assignedStr}, ${currency}${unassigned.toFixed(0)} unassigned`;
+      } else if (unassigned < 0) {
+        summaryText += `, ${assignedStr}, ${currency}${Math.abs(unassigned).toFixed(0)} over budget`;
+      } else {
+        summaryText += `, ${assignedStr} (fully allocated)`;
+      }
+    }
+
+    if (!hasTimeSection && !hasMoneySection) {
       summaryText += ' - no budget allocations for this event type';
     }
 
