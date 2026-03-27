@@ -60,11 +60,11 @@ Requirements for v1.2 Polish & Gap Closure milestone.
 
 ### Event Money Summary
 
-- [ ] **SUMM-01**: The event money allocation summary distinguishes between assigned (€X/person) and unassigned (€Y remaining) amounts
+- [x] **SUMM-01**: The event money allocation summary distinguishes between assigned (€X/person) and unassigned (€Y remaining) amounts
 
 ### UI Consistency
 
-- [ ] **UI-01**: The "Add study money" button uses the same `+ Add` pattern as other resource pages (Projects, Assignments, Workdays)
+- [x] **UI-01**: The "Add study money" button uses the same `+ Add` pattern as other resource pages (Projects, Assignments, Workdays)
 
 ### Bug Fixes
 
@@ -116,8 +116,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LIST-01 | Phase 16 | Pending |
 | LIST-02 | Phase 16 | Pending |
 | LIST-03 | Phase 16 | Pending |
-| SUMM-01 | Phase 17 | Pending |
-| UI-01 | Phase 17 | Pending |
+| SUMM-01 | Phase 17 | Complete |
+| UI-01 | Phase 17 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 18 total — mapped to phases: 18 — unmapped: 0

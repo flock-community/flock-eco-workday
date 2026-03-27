@@ -44,7 +44,7 @@
 - [x] **Phase 14: Event Dialog Bug Fix** - Fix the infinite render loop in EventDialog so event saving is stable (completed 2026-03-25)
 - [x] **Phase 15: Event Allocation Persistence** - Auto-create and sync allocations for all participants on event save without requiring manual "Customize" (completed 2026-03-25)
 - [x] **Phase 16: Budget Allocation List UX** - Show event names, make event allocations clickable for admins, add filter chips by type (completed 2026-03-27)
-- [ ] **Phase 17: Event Money Summary and UI Polish** - Distinguish assigned vs unassigned money in summary; align "Add study money" with site-wide + Add pattern
+- [x] **Phase 17: Event Money Summary and UI Polish** - Distinguish assigned vs unassigned money in summary; align "Add study money" with site-wide + Add pattern (completed 2026-03-27)
 
 ## Phase Details
 
@@ -154,7 +154,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 17-01-PLAN.md — Fix EventBudgetSummaryBanner fully-allocated wording; add EVNT-06 and UI-01 Playwright tests (SUMM-01, UI-01)
+- [x] 17-01-PLAN.md — Fix EventBudgetSummaryBanner fully-allocated wording; add EVNT-06 and UI-01 Playwright tests (SUMM-01, UI-01)
 
 ## Progress
 
@@ -179,7 +179,7 @@ v1.2 phases execute in order: 14 → 15 → 16 → 17 (16 and 17 can run in para
 | 14. Event Dialog Bug Fix | v1.2 | 1/1 | Complete | 2026-03-25 |
 | 15. Event Allocation Persistence | v1.2 | 1/1 | Complete | 2026-03-25 |
 | 16. Budget Allocation List UX | v1.2 | 0/1 | Complete    | 2026-03-27 |
-| 17. Event Money Summary and UI Polish | v1.2 | 0/1 | Not started | - |
+| 17. Event Money Summary and UI Polish | v1.2 | 1/1 | Complete   | 2026-03-27 |
 
 ---
 
@@ -189,7 +189,7 @@ v1.2 phases execute in order: 14 → 15 → 16 → 17 (16 and 17 can run in para
 
 **Goal:** [Captured for future planning]
 **Requirements:** TBD
-**Plans:** 0 plans
+**Plans:** 1/1 plans complete
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
