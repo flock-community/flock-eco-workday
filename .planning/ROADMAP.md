@@ -151,7 +151,10 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. The event money allocation summary shows two distinct values: amount assigned per participant and amount remaining unassigned, not a single total
   2. The "Add study money" button renders as `+ Add` consistent with the Projects, Assignments, and Workdays resource pages
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 17-01-PLAN.md — Fix EventBudgetSummaryBanner fully-allocated wording; add EVNT-06 and UI-01 Playwright tests (SUMM-01, UI-01)
 
 ## Progress
 
@@ -176,7 +179,7 @@ v1.2 phases execute in order: 14 → 15 → 16 → 17 (16 and 17 can run in para
 | 14. Event Dialog Bug Fix | v1.2 | 1/1 | Complete | 2026-03-25 |
 | 15. Event Allocation Persistence | v1.2 | 1/1 | Complete | 2026-03-25 |
 | 16. Budget Allocation List UX | v1.2 | 0/1 | Complete    | 2026-03-27 |
-| 17. Event Money Summary and UI Polish | v1.2 | 0/TBD | Not started | - |
+| 17. Event Money Summary and UI Polish | v1.2 | 0/1 | Not started | - |
 
 ---
 
@@ -193,4 +196,4 @@ Plans:
 
 ---
 *Full v1.0 details: .planning/milestones/v1.0-ROADMAP.md*
-*Last updated: 2026-03-27 (backlog item 999.1 added)*
+*Last updated: 2026-03-27 (phase 17 planned — 1 plan)*
