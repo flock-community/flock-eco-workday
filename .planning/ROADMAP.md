@@ -41,8 +41,8 @@
 
 **Milestone Goal:** Fix event allocation persistence so allocations are always saved automatically on event save, improve budget allocation list UX, and resolve the infinite render loop in the event dialog.
 
-- [ ] **Phase 14: Event Dialog Bug Fix** - Fix the infinite render loop in EventDialog so event saving is stable
-- [ ] **Phase 15: Event Allocation Persistence** - Auto-create and sync allocations for all participants on event save without requiring manual "Customize"
+- [x] **Phase 14: Event Dialog Bug Fix** - Fix the infinite render loop in EventDialog so event saving is stable (completed 2026-03-25)
+- [x] **Phase 15: Event Allocation Persistence** - Auto-create and sync allocations for all participants on event save without requiring manual "Customize" (completed 2026-03-25)
 - [ ] **Phase 16: Budget Allocation List UX** - Show event names, make event allocations clickable for admins, add filter chips by type
 - [ ] **Phase 17: Event Money Summary and UI Polish** - Distinguish assigned vs unassigned money in summary; align "Add study money" with site-wide + Add pattern
 
@@ -139,7 +139,10 @@ Plans:
   1. Event-linked allocations in the budget allocation list show the event name (e.g., "React Summit 2026") rather than the raw event code
   2. Admin clicks an event allocation row and is navigated to that event's edit dialog; employee sees the same row as plain non-clickable text
   3. User selects a filter chip (Hack Hours, Study Hours, or Study Money) and the allocation list shows only items of that type; selecting no chip shows all
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 16-01-PLAN.md — Fix admin event link href from /event to /event?code={eventCode} in EventAllocationListItem (LIST-01, LIST-02, LIST-03)
 
 ### Phase 17: Event Money Summary and UI Polish
 **Goal**: The event money summary is informative (shows assigned vs unassigned amounts) and the "Add study money" button matches the site-wide add pattern
@@ -170,11 +173,11 @@ v1.2 phases execute in order: 14 → 15 → 16 → 17 (16 and 17 can run in para
 | 11. Event Workflow Tests | v1.1 | 2/2 | Complete | 2026-03-21 |
 | 12. Employee View and Contract Tests | v1.1 | 2/2 | Complete | 2026-03-22 |
 | 13. Budget Calculation Tests | v1.1 | 1/1 | Complete | 2026-03-22 |
-| 14. Event Dialog Bug Fix | v1.2 | 0/1 | Not started | - |
-| 15. Event Allocation Persistence | v1.2 | 0/TBD | Not started | - |
-| 16. Budget Allocation List UX | v1.2 | 0/TBD | Not started | - |
+| 14. Event Dialog Bug Fix | v1.2 | 1/1 | Complete | 2026-03-25 |
+| 15. Event Allocation Persistence | v1.2 | 1/1 | Complete | 2026-03-25 |
+| 16. Budget Allocation List UX | v1.2 | 0/1 | Not started | - |
 | 17. Event Money Summary and UI Polish | v1.2 | 0/TBD | Not started | - |
 
 ---
 *Full v1.0 details: .planning/milestones/v1.0-ROADMAP.md*
-*Last updated: 2026-03-23 (phase 14 planned — 1 plan)*
+*Last updated: 2026-03-27 (phase 16 planned)*
