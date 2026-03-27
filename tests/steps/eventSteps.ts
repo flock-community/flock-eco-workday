@@ -98,27 +98,39 @@ export async function When_I_submit_event_form(page: Page) {
 
 /**
  * Open an existing event from the EventList by clicking on its card.
+ * Events are sorted by date desc (page size 10). If the heading isn't
+ * visible within 5 s the page is reloaded once to pick up a freshly
+ * created event that may not have been in the initial list response.
  */
 export async function When_I_open_event_by_description(
   page: Page,
   description: string,
 ) {
-  // Click the h6 heading with the event description.
-  // Each event in EventList renders description as <Typography variant="h6">.
-  // Clicking the h6 bubbles up to the Card's onClick handler which opens EventDialog.
-  // We avoid using .MuiCard-root because the outer EventFeature Card also matches.
-  await page
-    .locator('h6')
-    .filter({ hasText: description })
-    .first()
-    .click();
-  await expect(page.locator('form#event-form').first()).toBeVisible();
+  const heading = page.locator('h6').filter({ hasText: description }).first();
+
+  // Wait for the heading to appear; if it doesn't, reload the events page and retry
+  const visible = await heading
+    .waitFor({ state: 'visible', timeout: 5000 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (!visible) {
+    await page.goto('/event');
+    await expect(
+      page.locator('.MuiCardHeader-title', { hasText: 'Events' }),
+    ).toBeVisible();
+    await heading.waitFor({ state: 'visible', timeout: 10000 });
+  }
+
+  await heading.click();
+  await expect(page.locator('form#event-form').first()).toBeVisible({
+    timeout: 10000,
+  });
   await page.waitForLoadState('networkidle');
 }
 
 /**
  * Set the Default Time Allocation Type in the EventDialog.
- * Must be called after opening an event — the backend doesn't persist this field.
  * @param allocationType - Display text of the option, e.g. "Hack Time (deducts from hack hours budget)"
  */
 export async function When_I_set_default_time_allocation_type(
@@ -275,6 +287,9 @@ export async function When_I_customize_participant_hours(
     .filter({ has: page.getByRole('button', { name: 'Remove Custom' }) })
     .first();
 
+  // Scroll the participant box into view — it may be below the dialog viewport
+  await participantBox.scrollIntoViewIfNeeded();
+
   // Within that box, find the section heading (Typography subtitle2 with exact text).
   // Navigate up two levels: heading → heading-row Box → section container Box.
   const heading = participantBox.getByText(periodType, { exact: true }).first();
@@ -284,6 +299,7 @@ export async function When_I_customize_participant_hours(
   // Find enabled number inputs in the period section.
   const numberInputs = periodSection.locator('input[type="number"]:not([disabled])');
   const targetInput = numberInputs.nth(dayIndex);
+  await targetInput.scrollIntoViewIfNeeded();
   await targetInput.clear();
   await targetInput.fill(hours);
 }
@@ -338,4 +354,30 @@ export async function When_I_add_second_participant(
   // Close the dropdown
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
+}
+
+/**
+ * Assert that the collapsed EventBudgetSummaryBanner inside the EventDialog
+ * shows both the assigned-per-person and unassigned amounts.
+ * The banner is rendered in the AccordionSummary — it must already be visible
+ * (call When_I_open_event_by_description first; accordion is collapsed by default).
+ *
+ * @param assignedPerPersonText - Substring to find, e.g. "assigned €500/person"
+ * @param unassignedText - Substring to find, e.g. "€0 unassigned" or "€250 unassigned"
+ */
+export async function Then_collapsed_banner_shows_money_summary(
+  page: Page,
+  assignedPerPersonText: string,
+  unassignedText: string,
+): Promise<void> {
+  // The banner is inside .MuiAccordion-root > .MuiAccordionSummary-root
+  // It renders as a Typography body2 element containing the summary text.
+  const accordionSummary = page
+    .locator('.MuiAccordion-root')
+    .filter({ hasText: 'participant' })
+    .first()
+    .locator('.MuiAccordionSummary-root')
+    .first();
+  await expect(accordionSummary.locator('p')).toContainText(assignedPerPersonText, { timeout: 5000 });
+  await expect(accordionSummary.locator('p')).toContainText(unassignedText, { timeout: 5000 });
 }

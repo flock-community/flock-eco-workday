@@ -69,7 +69,7 @@ export function EventBudgetSummaryBanner({
       } else if (unassigned < 0) {
         summaryText += `, ${assignedStr}, ${currency}${Math.abs(unassigned).toFixed(0)} over budget`;
       } else {
-        summaryText += `, ${assignedStr} (fully allocated)`;
+        summaryText += `, ${assignedStr}, ${currency}0 unassigned (fully allocated)`;
       }
     }
 
