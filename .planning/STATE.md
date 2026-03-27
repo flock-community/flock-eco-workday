@@ -2,48 +2,42 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Polish & Gap Closure
-current_phase: 16
-current_plan: —
-status: in_progress
-last_updated: "2026-03-27T00:00:00Z"
-last_activity: 2026-03-27 -- Refactored e2e money assertions from absolute to delta-based
+current_phase: 17
+current_plan: Not started
+status: planning
+last_updated: "2026-03-27T13:15:35.375Z"
 progress:
-  total_phases: 4
-  completed_phases: 2
-  total_plans: 2
-  completed_plans: 2
-  percent: 50
+  total_phases: 8
+  completed_phases: 6
+  total_plans: 11
+  completed_plans: 9
 ---
 
 # Project State: Budget Allocations for Flock Workday
 
 **Last Updated:** 2026-03-27
-**Current Phase:** 16 — Budget Allocation List UX
-**Current Plan:** —
-**Status:** Tests stable (13/13 passing, 3 skipped). Ready for Phase 16.
+**Current Phase:** 17
+**Current Plan:** Not started
+**Status:** Ready to plan
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
-**Current focus:** v1.2 Polish & Gap Closure — list UX improvements, money summary polish
+**Current focus:** Phase 16 — budget-allocation-list-ux
 
 ## Current Position
 
-**Milestone:** v1.2 Polish & Gap Closure
-**Progress:** [█████░░░░░] 50% (2/4 phases)
-
-Phase: 16 — Budget Allocation List UX
-Plan: —
-Status: Ready to start
-Last activity: 2026-03-27 -- Tests stabilized (13/13 passing)
+Phase: 16 (budget-allocation-list-ux) — EXECUTING
+Plan: 1 of 1
 
 ## Accumulated Context
 
 ### Key Decisions
 
 v1.2 decisions (updated 2026-03-27):
+
 - **Backend owns event allocation lifecycle** — `EventService.syncBudgetAllocations` creates, updates, and deletes allocations atomically. Frontend does NOT orchestrate allocation CRUD for events.
 - **Event endpoints return budgetAllocations** — GET /api/events/{code}, POST, PUT all return `budgetAllocations[]` in the Event response via `@Transient` field. Frontend gets allocations from event response, no separate BudgetAllocationClient calls needed for event-linked allocations.
 - **`costs` renamed to `budget` across the full stack** — wirespec EventForm, Kotlin Event entity (`@Column(name = "costs")` preserves DB column), EventService, EventController, EventClient.ts, EventList.tsx. No migration needed.
@@ -72,9 +66,11 @@ None.
 ## Session Continuity
 
 ### Last Session Summary (2026-03-27)
+
 Refactored all e2e money assertions from absolute to delta-based per user feedback. Verified stable across 2 consecutive fresh DB runs.
 
 **Completed:**
+
 - `budgetSteps.ts`: Added `readCardUsedValue`, `Then_money_used_changed_by`, `parseEuroValue`/`formatEuro` helpers. Made `Then_summary_card_shows` support `null` params. Fixed heading selector ambiguity with `exact: true`. Fixed MUI dropdown stability with `waitForLoadState` + `expect(option).toBeVisible()`.
 - `eventSteps.ts`: Made `When_I_open_event_by_description` resilient — retries with page reload if heading not visible within 5s.
 - `budget-admin.spec.ts`: BMGT-01 uses `null` for money (budget-only). BMGT-02/03/06 capture baseline, assert delta (+350, +150, -500).
@@ -82,12 +78,14 @@ Refactored all e2e money assertions from absolute to delta-based per user feedba
 - `event-workflow.spec.ts`: EVNT-01 captures `pinoMoneyBaseline`. EVNT-04 asserts +€500 delta. EVNT-03 captures baselines for Ieniemienie (+€250) and Pino (-€250). EVNT-02 marked `test.fixme` (backend doesn't persist per-person overrides).
 
 **Test Results (stable, verified 2× on fresh DB):**
+
 - `budget-admin.spec.ts`: **4 passed, 2 skipped** (BMGT-04/05)
 - `employee-view.spec.ts`: **7 passed** (5 tests + 2 contract tests)
 - `event-workflow.spec.ts`: **4 passed, 1 skipped** (EVNT-02)
 - **Total: 13 passed, 3 skipped, 0 failed — 2.0m runtime**
 
 **Key fixes during stabilization:**
+
 - `exact: true` on heading selectors to avoid ambiguity with allocation list items ("Study Money" vs "Study Money: 125")
 - MUI dropdown animation stability: added `waitForLoadState('networkidle')` + `expect(option).toBeVisible()` before clicking
 - Cleanup function: added per-step timeouts (10-15s) and `.catch` on `context.close()`
