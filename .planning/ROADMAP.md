@@ -179,7 +179,7 @@ v1.2 phases execute in order: 14 → 15 → 16 → 17 (16 and 17 can run in para
 | 14. Event Dialog Bug Fix | v1.2 | 1/1 | Complete | 2026-03-25 |
 | 15. Event Allocation Persistence | v1.2 | 1/1 | Complete | 2026-03-25 |
 | 16. Budget Allocation List UX | v1.2 | 0/1 | Complete    | 2026-03-27 |
-| 17. Event Money Summary and UI Polish | v1.2 | 1/1 | Complete   | 2026-03-27 |
+| 17. Event Money Summary and UI Polish | v1.2 | 1/1 | Complete    | 2026-03-27 |
 
 ---
 
