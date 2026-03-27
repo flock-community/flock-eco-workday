@@ -43,7 +43,7 @@
 
 - [x] **Phase 14: Event Dialog Bug Fix** - Fix the infinite render loop in EventDialog so event saving is stable (completed 2026-03-25)
 - [x] **Phase 15: Event Allocation Persistence** - Auto-create and sync allocations for all participants on event save without requiring manual "Customize" (completed 2026-03-25)
-- [ ] **Phase 16: Budget Allocation List UX** - Show event names, make event allocations clickable for admins, add filter chips by type
+- [x] **Phase 16: Budget Allocation List UX** - Show event names, make event allocations clickable for admins, add filter chips by type (completed 2026-03-27)
 - [ ] **Phase 17: Event Money Summary and UI Polish** - Distinguish assigned vs unassigned money in summary; align "Add study money" with site-wide + Add pattern
 
 ## Phase Details
@@ -175,9 +175,22 @@ v1.2 phases execute in order: 14 → 15 → 16 → 17 (16 and 17 can run in para
 | 13. Budget Calculation Tests | v1.1 | 1/1 | Complete | 2026-03-22 |
 | 14. Event Dialog Bug Fix | v1.2 | 1/1 | Complete | 2026-03-25 |
 | 15. Event Allocation Persistence | v1.2 | 1/1 | Complete | 2026-03-25 |
-| 16. Budget Allocation List UX | v1.2 | 0/1 | Not started | - |
+| 16. Budget Allocation List UX | v1.2 | 0/1 | Complete    | 2026-03-27 |
 | 17. Event Money Summary and UI Polish | v1.2 | 0/TBD | Not started | - |
 
 ---
+
+## Backlog
+
+### Phase 999.1: Make e2e tests independent with dedicated test users and suite-level cleanup (BACKLOG)
+
+**Goal:** [Captured for future planning]
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
+---
 *Full v1.0 details: .planning/milestones/v1.0-ROADMAP.md*
-*Last updated: 2026-03-27 (phase 16 planned)*
+*Last updated: 2026-03-27 (backlog item 999.1 added)*
