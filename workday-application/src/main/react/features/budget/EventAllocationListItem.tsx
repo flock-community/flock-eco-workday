@@ -145,7 +145,7 @@ export function EventAllocationListItem({
             <>
               <Event sx={{mt: 0.5, mr: 2}} />
               {isAdmin ? (
-                <Link href="/event" underline="hover" sx={{display: 'inline-flex', alignItems: 'center', gap: 0.5}}>
+                <Link href={`/event?code=${eventCode}`} underline="hover" sx={{display: 'inline-flex', alignItems: 'center', gap: 0.5}}>
                   {eventName}
                   <OpenInNew sx={{fontSize: 16}} />
                 </Link>
