@@ -3,6 +3,11 @@
 **Defined:** 2026-03-18
 **Core Value:** Admins can track and manage budget consumption (hack hours, study hours, study money) per person per year, with clear visibility into what's been used and what remains.
 
+**Allocation type intent:**
+- **Study Money** — standalone CRUD. Money spent on courses, tools, books in free time. The only type that exists without an event.
+- **Study Hours** — always event-linked. Compensated study time through events (conferences, workshops).
+- **Hack Hours** — always event-linked. Compensated hack time through events (hack days).
+
 ## v1.1 Requirements
 
 Requirements for e2e test coverage of budget allocation feature.

@@ -92,10 +92,11 @@ Currently working on: Creating Playwright tests for user with admin role.
 ## Quick Reference
 
 For detailed commands, see `readme.md`. Most common:
-- Build all: `./mvnw clean install` (from root)
-- Run backend: `cd workday-application && ../mvnw spring-boot:run -Pdevelop`
-- Run frontend: `npm start` (from root)
-- Generate API types: `npm run generate` (from root)
+- Build all: `make build`
+- Run backend: `docker compose up -d backend`
+- Run frontend: `npm start`
+- Generate API types: `npm run generate`
+- See [Migration Notes](Makefile)
 
 ## Migration Notes
 

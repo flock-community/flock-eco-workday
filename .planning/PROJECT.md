@@ -68,7 +68,12 @@ Admins can track and manage budget consumption (hack hours, study hours, study m
 
 **Budget types:** Three budgets defined on ContractInternal — hackHours (existing), studyHours (new), studyMoney (new). Budget = contract values minus sum of allocations for person/year.
 
-**Allocation types:** HackTimeBudgetAllocation and StudyTimeBudgetAllocation have per-day breakdowns with type override (DailyTimeAllocation embeddable). StudyMoneyBudgetAllocation has amount + files. All allocations are optionally linked to an event.
+**Allocation types and intent:**
+- **StudyMoney** — standalone CRUD. Represents money spent on courses, tools, books done in free time. The only allocation type that exists without an event.
+- **StudyTime** — always event-linked. Represents compensated study time allocated through events (conferences, workshops).
+- **HackTime** — always event-linked. Represents compensated hack time allocated through events (hack days).
+
+HackTimeBudgetAllocation and StudyTimeBudgetAllocation have per-day breakdowns with type override (DailyTimeAllocation embeddable). StudyMoneyBudgetAllocation has amount + files.
 
 **Architecture delivered:**
 - Domain: sealed BudgetAllocation hierarchy, persistence ports, domain services
