@@ -7,6 +7,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: 1, // Sequential execution — tests share H2 database state
   reporter: 'line',
+  timeout: 120000, // 2 min per test — backend syncBudgetAllocations can be slow
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',

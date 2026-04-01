@@ -4,9 +4,13 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-      - maven-repo:/root/.m2
+      - ~/.m2:/root/.m2
     ports:
       - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 4g
     command: ./mvnw spring-boot:run -pl workday-application -am -Pdevelop -Dspring-boot.run.profiles=develop
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
@@ -25,7 +29,12 @@ services:
       - "3000:3000"
     environment:
       - VITE_BACKEND_URL=http://backend:8080
+      - NODE_OPTIONS=--max-old-space-size=1536
     command: sh -c "npm ci && npx vite --host 0.0.0.0"
+    deploy:
+      resources:
+        limits:
+          memory: 4g
     healthcheck:
       test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000', r => r.statusCode === 200 ? process.exit(0) : process.exit(1)).on('error', () => process.exit(1))\""]
       interval: 10s
