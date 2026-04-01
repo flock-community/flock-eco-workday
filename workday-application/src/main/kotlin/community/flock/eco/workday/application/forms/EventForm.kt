@@ -22,4 +22,5 @@ data class EventForm(
     val budget: Double,
     val personIds: List<UUID>,
     val type: EventType,
+    val defaultTimeAllocationType: String? = null,
 ) : Daily

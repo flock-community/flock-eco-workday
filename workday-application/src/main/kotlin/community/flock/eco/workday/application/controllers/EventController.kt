@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.controllers
 
 import community.flock.eco.workday.application.authorities.EventAuthority
+import community.flock.eco.workday.application.budget.produce
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.forms.EventRatingForm
 import community.flock.eco.workday.application.model.Event
@@ -11,6 +12,10 @@ import community.flock.eco.workday.application.services.EventService
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.isUser
 import community.flock.eco.workday.core.utils.toResponse
+import community.flock.eco.workday.domain.budget.BudgetAllocationService
+import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocation
+import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocation
+import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocation
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
 import org.springframework.data.domain.Pageable
@@ -39,6 +44,7 @@ class EventController(
     private val eventRatingService: EventRatingService,
     private val userService: UserService,
     private val personService: PersonService,
+    private val budgetAllocationService: BudgetAllocationService,
 ) {
     @GetMapping()
     @PreAuthorize("hasAuthority('EventAuthority.READ')")
@@ -51,7 +57,7 @@ class EventController(
             if (!it.isAuthenticated(authentication)) {
                 Event(
                     description = "N/A - ${it.description}",
-                    costs = 0.00,
+                    budget = 0.00,
                     days = null,
                     persons = mutableListOf(),
                     // keep fields the same from below
@@ -61,6 +67,7 @@ class EventController(
                     to = it.to,
                     hours = it.hours,
                     type = it.type,
+                    defaultTimeAllocationType = it.defaultTimeAllocationType,
                 )
             } else {
                 it
@@ -85,6 +92,7 @@ class EventController(
     ) = eventService
         .findByCode(code)
         ?.applyAuthentication(authentication)
+        ?.withAllocations()
         .toResponse()
 
     // @PreAuthorize("hasAuthority('EventAuthority.READ')")
@@ -177,6 +185,19 @@ class EventController(
 
         return eventService.unsubscribeFromEvent(eventCode, person)
     }
+
+    private fun Event.withAllocations(): Event =
+        apply {
+            budgetAllocations =
+                budgetAllocationService.findAllByEventCode(code).map { alloc ->
+                    when (alloc) {
+                        is HackTimeBudgetAllocation -> alloc.produce()
+                        is StudyTimeBudgetAllocation -> alloc.produce()
+                        is StudyMoneyBudgetAllocation -> alloc.produce()
+                        else -> alloc
+                    }
+                }
+        }
 
     private fun Authentication.isAdmin(): Boolean =
         this.authorities

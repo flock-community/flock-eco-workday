@@ -1,5 +1,14 @@
 databaseChangeLog:
   - changeSet:
+      id: db.changelog-027-budget-allocations-0
+      author: claude-opus-4.6
+      comment: Create sequence for BudgetAllocation entity hierarchy (JOINED inheritance)
+      changes:
+        - createSequence:
+            sequenceName: budget_allocation_seq
+            startValue: 1
+            incrementBy: 50
+  - changeSet:
       id: db.changelog-027-budget-allocations-1
       author: claude-opus-4.6
       changes:

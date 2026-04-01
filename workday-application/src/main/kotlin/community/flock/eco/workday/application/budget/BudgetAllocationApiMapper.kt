@@ -34,6 +34,7 @@ class BudgetAllocationApiMapper(
         input: HackTimeAllocationInput,
         id: Long? = null,
     ): HackTimeBudgetAllocation {
+        require(input.dailyAllocations.all { it.hours >= 0 }) { "Hours cannot be negative" }
         val person =
             personService
                 .findByUuid(UUID.fromString(input.personId.value))
@@ -54,6 +55,7 @@ class BudgetAllocationApiMapper(
         input: StudyTimeAllocationInput,
         id: Long? = null,
     ): StudyTimeBudgetAllocation {
+        require(input.dailyAllocations.all { it.hours >= 0 }) { "Hours cannot be negative" }
         val person =
             personService
                 .findByUuid(UUID.fromString(input.personId.value))
@@ -74,6 +76,7 @@ class BudgetAllocationApiMapper(
         input: StudyMoneyAllocationInput,
         id: Long? = null,
     ): StudyMoneyBudgetAllocation {
+        require(input.amount >= 0) { "Amount cannot be negative" }
         val person =
             personService
                 .findByUuid(UUID.fromString(input.personId.value))

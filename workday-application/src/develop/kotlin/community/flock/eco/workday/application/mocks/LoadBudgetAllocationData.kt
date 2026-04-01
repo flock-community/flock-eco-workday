@@ -70,7 +70,7 @@ class LoadBudgetAllocationData(
                 dayCount = 5,
             )
 
-            // Prior year StudyTime: 2 allocations (~160 hours total = 80% of 200 budget)
+            // Prior year StudyTime: 1 event-linked allocation (~80 hours)
             createStudyTimeAllocation(
                 person = personA,
                 eventCode = conferenceEvents.getOrNull(0)?.code,
@@ -79,16 +79,15 @@ class LoadBudgetAllocationData(
                 totalHours = 80.0,
                 dayCount = 10,
             )
-            createStudyTimeAllocation(
+            createStudyMoneyAllocation(
                 person = personA,
                 eventCode = null,
                 date = LocalDate.of(priorYear, 10, 5),
                 description = "Online training - cloud architecture",
-                totalHours = 80.0,
-                dayCount = 10,
+                amount = BigDecimal("1200.00"),
             )
 
-            // Prior year StudyMoney: 2 standalone allocations (~4000 of 5000 budget = 80%)
+            // Prior year StudyMoney: 3 standalone allocations (~5200 of 5000 budget)
             createStudyMoneyAllocation(
                 person = personA,
                 eventCode = null,
@@ -114,14 +113,13 @@ class LoadBudgetAllocationData(
                 dayCount = 5,
             )
 
-            // Current year StudyTime: 1 allocation (~24 hours)
-            createStudyTimeAllocation(
+            // Current year StudyMoney: workshop registration fee
+            createStudyMoneyAllocation(
                 person = personA,
                 eventCode = null,
                 date = LocalDate.of(currentYear, 1, 20),
                 description = "Team workshop - reactive programming",
-                totalHours = 24.0,
-                dayCount = 3,
+                amount = BigDecimal("750.00"),
             )
 
             // Current year StudyMoney: 1 standalone allocation (~500)
