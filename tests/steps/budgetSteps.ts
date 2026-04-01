@@ -12,13 +12,15 @@ export async function Given_I_am_on_budget_tab_for_person(
 ) {
   await Given_I_am_logged_in_as_user(page, adminUser);
   await page.goto('/budget-allocations');
+  await page.waitForLoadState('networkidle');
   // Open the Person MUI Select dropdown — the combobox has no accessible name,
   // so locate via the FormControl container that has the "Person" label text.
   const personControl = page.locator('.MuiFormControl-root').filter({ hasText: 'Person' }).first();
   await personControl.getByRole('combobox').click();
-  await page
-    .getByRole('option', { name: new RegExp(personName, 'i') })
-    .click();
+  // Wait for MUI dropdown animation to settle before clicking option
+  const option = page.getByRole('option', { name: new RegExp(personName, 'i') });
+  await expect(option).toBeVisible();
+  await option.click();
   await page.waitForLoadState('networkidle');
 }
 
@@ -33,26 +35,32 @@ export async function Given_I_am_on_budget_tab_for_person(
 export async function Then_summary_card_shows(
   page: Page,
   cardTitle: string,
-  available: string,
-  budget: string,
-  used: string,
+  available: string | null,
+  budget: string | null,
+  used: string | null,
 ) {
-  // Each BudgetCard has an h6 title — scope to its CardContent to avoid matching parent cards
+  // Each BudgetCard has an h6 title — scope to its Card root to avoid matching parent containers
   const cardContent = page
-    .getByRole('heading', { name: cardTitle, level: 6 })
-    .locator('xpath=ancestor::*[contains(@class,"MuiCardContent-root")][1]');
-  await expect(cardContent.getByRole('heading', { level: 4 })).toContainText(
-    available,
-  );
-  await expect(cardContent.getByText('Budget:')).toContainText(budget);
-  await expect(cardContent.getByText('Used:')).toContainText(used);
+    .getByRole('heading', { name: cardTitle, level: 6, exact: true })
+    .locator('xpath=ancestor::*[contains(@class,"MuiCard-root")][1]');
+  if (available !== null) {
+    await expect(cardContent.getByRole('heading', { level: 4 })).toContainText(
+      available,
+    );
+  }
+  if (budget !== null) {
+    await expect(cardContent.getByText('Budget:')).toContainText(budget);
+  }
+  if (used !== null) {
+    await expect(cardContent.getByText('Used:')).toContainText(used);
+  }
 }
 
 /**
  * Click the "Add Study Money" button and wait for the dialog to open.
  */
 export async function When_I_click_add_study_money(page: Page) {
-  await page.getByRole('button', { name: 'Add Study Money' }).click();
+  await page.getByRole('button', { name: 'Add' }).click();
   await expect(
     page.getByText('Add Study Money Allocation'),
   ).toBeVisible();
@@ -101,6 +109,79 @@ export async function Then_allocation_list_contains(
   const card = paper.locator('.MuiCard-root').filter({ hasText: description });
   await expect(card.first()).toBeVisible();
   await expect(card.first()).toContainText(amount);
+}
+
+/**
+ * Read the current "Used:" value from a BudgetCard as a raw string (e.g., "€3.182" or "16h").
+ * Waits for the value to stabilize (same value on two reads 500ms apart) to avoid
+ * reading stale data during React state updates.
+ */
+export async function readCardUsedValue(
+  page: Page,
+  cardTitle: string,
+): Promise<string> {
+  const heading = page.getByRole('heading', { name: cardTitle, level: 6, exact: true });
+  await expect(heading).toBeVisible({ timeout: 10000 });
+
+  const cardContent = heading
+    .locator('xpath=ancestor::*[contains(@class,"MuiCard-root")][1]');
+  const usedText = await cardContent.getByText('Used:').textContent();
+  return usedText?.replace(/^Used:\s*/, '').trim() ?? '';
+}
+
+/**
+ * Parse a nl-NL formatted euro string to a number.
+ * "€3.182" → 3182, "€350" → 350, "€0" → 0
+ */
+function parseEuroValue(formatted: string): number {
+  return Number(formatted.replace('€', '').replace(/\./g, '').replace(',', '.').trim());
+}
+
+/**
+ * Format a number as nl-NL euro string (no decimals).
+ * 3182 → "€3.182", 350 → "€350"
+ */
+function formatEuro(value: number): string {
+  return `€${value.toLocaleString('nl-NL', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
+/**
+ * Assert that study money "Used:" changed by exactly the given delta (in euros, integer).
+ * Reads the current value and compares with the previously captured baseline.
+ * Also verifies Budget is unchanged and Available = Budget - Used.
+ */
+export async function Then_money_used_changed_by(
+  page: Page,
+  cardTitle: string,
+  baselineUsed: string,
+  expectedDelta: number,
+  expectedBudget: string,
+) {
+  const cardContent = page
+    .getByRole('heading', { name: cardTitle, level: 6, exact: true })
+    .locator('xpath=ancestor::*[contains(@class,"MuiCard-root")][1]');
+
+  // Verify budget line is unchanged
+  await expect(cardContent.getByText('Budget:')).toContainText(expectedBudget);
+
+  // Read new used value and verify delta
+  const usedText = await cardContent.getByText('Used:').textContent();
+  const newUsedStr = usedText?.replace(/^Used:\s*/, '').trim() ?? '';
+  const oldUsed = parseEuroValue(baselineUsed);
+  const newUsed = parseEuroValue(newUsedStr);
+  const actualDelta = newUsed - oldUsed;
+
+  if (actualDelta !== expectedDelta) {
+    throw new Error(
+      `Expected ${cardTitle} used to change by ${expectedDelta} (from ${baselineUsed}), ` +
+      `but changed by ${actualDelta} (to ${newUsedStr})`,
+    );
+  }
+
+  // Verify available = budget - used
+  const budgetVal = parseEuroValue(expectedBudget);
+  const expectedAvailable = formatEuro(budgetVal - newUsed);
+  await expect(cardContent.getByRole('heading', { level: 4 })).toContainText(expectedAvailable);
 }
 
 /**

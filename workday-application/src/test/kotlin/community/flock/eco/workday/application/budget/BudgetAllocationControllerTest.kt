@@ -13,6 +13,8 @@ import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocation
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocationService
 import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocation
 import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocationService
+import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocation
+import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocationService
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.wirespec.integration.jackson.kotlin.WirespecModuleKotlin
 import org.junit.jupiter.api.Test
@@ -45,6 +47,9 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
 
     @Autowired
     private lateinit var studyMoneyBudgetAllocationService: StudyMoneyBudgetAllocationService
+
+    @Autowired
+    private lateinit var studyTimeBudgetAllocationService: StudyTimeBudgetAllocationService
 
     private val baseUrl = "/api/budget-allocations"
 
@@ -87,6 +92,87 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].personId").value(person.uuid.toString()))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].hackTimeDetails.totalHours").value(8.0))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].hackTimeDetails.dailyAllocations[0].hours").value(8.0))
+    }
+
+    @Test
+    fun `admin can GET study-time allocations by personId and year`() {
+        val user = createHelper.createUser(adminAuthorities)
+        val person = createHelper.createPerson("study", "time", user.code)
+
+        studyTimeBudgetAllocationService.create(
+            StudyTimeBudgetAllocation(
+                person = person,
+                eventCode = null,
+                date = LocalDate.of(2026, 3, 1),
+                description = "Study course",
+                dailyTimeAllocations =
+                    listOf(
+                        DailyTimeAllocation(LocalDate.of(2026, 3, 1), 4.0, BudgetAllocationType.STUDY),
+                    ),
+                totalHours = 4.0,
+            ),
+        )
+
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get("$baseUrl?personId=${person.uuid}&year=2026")
+                    .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].type").value("STUDY_TIME"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].personId").value(person.uuid.toString()))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].studyTimeDetails.totalHours").value(4.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].studyTimeDetails.dailyAllocations[0].hours").value(4.0))
+    }
+
+    @Test
+    fun `admin can GET all three allocation types together`() {
+        val user = createHelper.createUser(adminAuthorities)
+        val person = createHelper.createPerson("all", "types", user.code)
+
+        hackTimeBudgetAllocationService.create(
+            HackTimeBudgetAllocation(
+                person = person,
+                eventCode = null,
+                date = LocalDate.of(2026, 1, 1),
+                description = "Hack day",
+                dailyTimeAllocations =
+                    listOf(DailyTimeAllocation(LocalDate.of(2026, 1, 1), 8.0, BudgetAllocationType.HACK)),
+                totalHours = 8.0,
+            ),
+        )
+        studyTimeBudgetAllocationService.create(
+            StudyTimeBudgetAllocation(
+                person = person,
+                eventCode = null,
+                date = LocalDate.of(2026, 2, 1),
+                description = "Study day",
+                dailyTimeAllocations =
+                    listOf(DailyTimeAllocation(LocalDate.of(2026, 2, 1), 4.0, BudgetAllocationType.STUDY)),
+                totalHours = 4.0,
+            ),
+        )
+        studyMoneyBudgetAllocationService.create(
+            StudyMoneyBudgetAllocation(
+                person = person,
+                eventCode = null,
+                date = LocalDate.of(2026, 3, 1),
+                description = "Conference fee",
+                amount = BigDecimal("500.00"),
+            ),
+        )
+
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get("$baseUrl?personId=${person.uuid}&year=2026")
+                    .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(3))
     }
 
     @Test

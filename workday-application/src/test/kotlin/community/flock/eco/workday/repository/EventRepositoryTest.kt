@@ -31,7 +31,7 @@ class EventRepositoryTest : WorkdayIntegrationTest() {
                 hours = 40.0,
                 days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0),
                 persons = mutableListOf(person1, person2),
-                costs = 538.38,
+                budget = 538.38,
                 type = EventType.GENERAL_EVENT,
             )
 

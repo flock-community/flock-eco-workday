@@ -3,18 +3,26 @@ import dayjs from 'dayjs';
 
 export async function Given_I_am_logged_in_as_user(page, username: string) {
   await page.goto('/auth');
-  await page.getByLabel('Username').fill(`${username}@sesam.straat`);
-  await page.getByLabel('Password').fill(username);
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await page.waitForURL('**/*');
+  await page.waitForLoadState('networkidle');
   // Capitalize first letter for welcome message format
   const capitalizedUsername =
     username.charAt(0).toUpperCase() + username.slice(1);
-  const welcomeMessage = await page.getByRole('heading', {
+  const welcomeHeading = page.getByRole('heading', {
     level: 2,
     name: `Hi, ${capitalizedUsername}!`,
   });
-  await expect(welcomeMessage).toBeVisible();
+  // If already logged in, /auth redirects to dashboard — skip login form
+  const usernameField = page.getByLabel('Username');
+  const isLoginPage = await usernameField
+    .waitFor({ state: 'visible', timeout: 5000 })
+    .then(() => true)
+    .catch(() => false);
+  if (isLoginPage) {
+    await usernameField.fill(`${username}@sesam.straat`);
+    await page.getByLabel('Password').fill(username);
+    await page.getByRole('button', { name: 'Sign in' }).click();
+  }
+  await expect(welcomeHeading).toBeVisible({ timeout: 20000 });
 }
 
 export async function When_I_go_to_my_work_days(page) {
