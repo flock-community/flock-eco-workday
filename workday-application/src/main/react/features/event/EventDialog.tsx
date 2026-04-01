@@ -6,18 +6,16 @@ import Typography from '@mui/material/Typography';
 import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Formik, Form } from 'formik';
 import dayjs from 'dayjs';
 import { EventClient, type FlockEventRequest, type FullFlockEvent } from '../../clients/EventClient';
-import { BudgetAllocationClient } from '../../clients/BudgetAllocationClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { TransitionSlider } from '../../components/transitions/Slide';
 import { mutatePeriod } from '../period/Period';
 import { EVENT_FORM_ID, EventFormFields, eventFormSchema } from './EventForm';
 import { EventBudgetManagementSection } from './EventBudgetManagementDialog';
-import { apiAllocationsToTimeParticipants, apiAllocationsToMoneyParticipants, diffAllocations, generateDefaultAllocations } from './eventBudgetTransformers';
-import type { BudgetAllocation } from '../../wirespec/model';
+import { apiAllocationsToTimeParticipants, apiAllocationsToMoneyParticipants } from './eventBudgetTransformers';
 import type { PersonTimeAllocation } from './EventTimeAllocationSection';
 import type { PersonMoneyAllocation } from './EventMoneyAllocationSection';
 
@@ -27,27 +25,11 @@ type EventDialogProps = {
   onComplete?: (item?: any) => void;
 };
 
-interface ParticipantBudgetState {
-  personId: string;
-  personName: string;
-  moneyAmount: number;
-  moneyDirty: boolean;
-  timeAllocation: PersonTimeAllocation;
-  timeDirty: boolean;
-}
-
 export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
   const [moneyBudgetExpanded, setMoneyBudgetExpanded] = useState(false);
   const [timeBudgetExpanded, setTimeBudgetExpanded] = useState(false);
   const [eventData, setEventData] = useState<FullFlockEvent | null>(null);
-  const [budgetsDirty, setBudgetsDirty] = useState(false);
-  const budgetsDirtyRef = useRef(false);
-  const [showCloseWarning, setShowCloseWarning] = useState(false);
-  const [participantBudgets, setParticipantBudgets] = useState<ParticipantBudgetState[]>([]);
-  const participantBudgetsRef = useRef<ParticipantBudgetState[]>([]);
-  const [loadedAllocations, setLoadedAllocations] = useState<BudgetAllocation[]>([]);
-  const loadedAllocationsRef = useRef<BudgetAllocation[]>([]);
   const [initialTimeParticipants, setInitialTimeParticipants] = useState<PersonTimeAllocation[] | undefined>(undefined);
   const [initialMoneyParticipants, setInitialMoneyParticipants] = useState<PersonMoneyAllocation[] | undefined>(undefined);
 
@@ -61,19 +43,16 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
             ...res,
             personIds: res.persons.map((it) => it.uuid) ?? [],
           });
-          setEventData(res); // Store full event data for budget dialog
+          setEventData(res);
 
-          // Load budget allocations for this event
-          BudgetAllocationClient.findAll(undefined, undefined, code).then((allocations) => {
-            loadedAllocationsRef.current = allocations;
-            setLoadedAllocations(allocations);
-            const timeParts = apiAllocationsToTimeParticipants(
-              allocations, res.persons, dayjs(res.from), dayjs(res.to),
-            );
-            const moneyParts = apiAllocationsToMoneyParticipants(allocations, res.persons);
-            setInitialTimeParticipants(timeParts);
-            setInitialMoneyParticipants(moneyParts);
-          });
+          // Use allocations from the event response (backend provides them)
+          const allocations = res.budgetAllocations ?? [];
+          const timeParts = apiAllocationsToTimeParticipants(
+            allocations, res.persons, dayjs(res.from), dayjs(res.to),
+          );
+          const moneyParts = apiAllocationsToMoneyParticipants(allocations, res.persons);
+          setInitialTimeParticipants(timeParts);
+          setInitialMoneyParticipants(moneyParts);
         });
       } else {
         setState(eventFormSchema.cast());
@@ -82,10 +61,6 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     } else {
       setState(undefined);
       setEventData(null);
-      loadedAllocationsRef.current = [];
-      setLoadedAllocations([]);
-      participantBudgetsRef.current = [];
-      budgetsDirtyRef.current = false;
       setInitialTimeParticipants(undefined);
       setInitialMoneyParticipants(undefined);
     }
@@ -100,72 +75,11 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
       };
 
+      // Backend handles all budget allocation sync atomically
       const res = code
         ? await EventClient.put(code, eventData)
         : await EventClient.post(eventData);
 
-      // Process budget allocations: either from manual customization or auto-generated defaults
-      const currentBudgets = participantBudgetsRef.current;
-      const currentLoaded = loadedAllocationsRef.current;
-      const hasParticipants = it.personIds?.length > 0;
-      const hasAllocationType = !!it.defaultTimeAllocationType;
-      const hasBudget = (it.budget || 0) > 0;
-
-      if (hasParticipants && (hasAllocationType || hasBudget)) {
-        let timeToProcess;
-        let moneyToProcess;
-
-        if (budgetsDirtyRef.current && currentBudgets.length > 0) {
-          // Path A: User manually customized budgets — use their state
-          timeToProcess = currentBudgets.map(p => p.timeAllocation);
-          moneyToProcess = currentBudgets.map(p => ({ personId: p.personId, personName: p.personName, amount: p.moneyAmount }));
-        } else {
-          // Path B: Auto-generate defaults from form values
-          const persons = eventData?.persons || it.personIds.map(id => ({ uuid: id, firstname: '', lastname: '' }));
-          const defaults = generateDefaultAllocations(
-            it.personIds,
-            persons,
-            dayjs(it.from),
-            it.days.map(d => parseFloat(d || 0)),
-            it.defaultTimeAllocationType || null,
-            it.budget || 0,
-          );
-          timeToProcess = defaults.timeParticipants;
-          moneyToProcess = defaults.moneyParticipants;
-        }
-
-        const defaultBudgetType = it.defaultTimeAllocationType || null;
-        const { toCreate, toUpdate, toDelete } = diffAllocations(
-          currentLoaded,
-          timeToProcess,
-          moneyToProcess,
-          res.code,
-          dayjs(it.from),
-          defaultBudgetType,
-        );
-
-        const promises: Promise<any>[] = [];
-        toDelete.forEach(id => promises.push(BudgetAllocationClient.deleteById(id)));
-        toCreate.forEach(({ type, input }) => {
-          if (type === 'hack') promises.push(BudgetAllocationClient.createHackTime(input as any));
-          else if (type === 'study') promises.push(BudgetAllocationClient.createStudyTime(input as any));
-          else if (type === 'money') promises.push(BudgetAllocationClient.createStudyMoney(input as any));
-        });
-        toUpdate.forEach(({ type, id, input }) => {
-          if (type === 'hack') promises.push(BudgetAllocationClient.updateHackTime(id, input as any));
-          else if (type === 'study') promises.push(BudgetAllocationClient.updateStudyTime(id, input as any));
-          else if (type === 'money') promises.push(BudgetAllocationClient.updateStudyMoney(id, input as any));
-        });
-
-        try {
-          await Promise.all(promises);
-        } catch (err) {
-          console.error('Failed to save budget allocations:', err);
-        }
-      }
-
-      setBudgetsDirty(false);
-      budgetsDirtyRef.current = false;
       onComplete?.(res);
     } catch (err) {
       console.error('EventDialog handleSubmit failed:', err);
@@ -185,46 +99,8 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     setOpenDelete(false);
   };
   const handleClose = () => {
-    if (budgetsDirty) {
-      setShowCloseWarning(true);
-    } else {
-      onComplete?.();
-    }
-  };
-  const handleConfirmClose = () => {
-    setBudgetsDirty(false);
-    setShowCloseWarning(false);
     onComplete?.();
   };
-
-  const handleBudgetStateChange = useCallback((budgetState: {
-    moneyParticipants: PersonMoneyAllocation[];
-    timeParticipants: PersonTimeAllocation[];
-    dirty: boolean;
-  }) => {
-    setBudgetsDirty(budgetState.dirty);
-    if (budgetState.dirty) budgetsDirtyRef.current = true;
-    // Store budget state for save (convert to ParticipantBudgetState format)
-    // Build union of all participant IDs from both money and time arrays
-    const allPersonIds = new Set([
-      ...budgetState.moneyParticipants.map(m => m.personId),
-      ...budgetState.timeParticipants.map(t => t.personId),
-    ]);
-    const combinedState: ParticipantBudgetState[] = Array.from(allPersonIds).map(personId => {
-      const money = budgetState.moneyParticipants.find(m => m.personId === personId);
-      const time = budgetState.timeParticipants.find(t => t.personId === personId);
-      return {
-        personId,
-        personName: money?.personName || time?.personName || '',
-        moneyAmount: money?.amount || 0,
-        moneyDirty: budgetState.dirty,
-        timeAllocation: time || { personId, personName: money?.personName || '', studyPeriod: null, hackPeriod: null },
-        timeDirty: budgetState.dirty,
-      };
-    });
-    participantBudgetsRef.current = combinedState;
-    setParticipantBudgets(combinedState);
-  }, []);
 
   const initialValues = useMemo(
     () => state ? { ...eventFormSchema.default(), ...mutatePeriod(state) } : eventFormSchema.default(),
@@ -270,7 +146,6 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
                         setTimeExpanded={setTimeBudgetExpanded}
                         moneyExpanded={moneyBudgetExpanded}
                         setMoneyExpanded={setMoneyBudgetExpanded}
-                        onBudgetStateChange={handleBudgetStateChange}
                         initialTimeParticipants={initialTimeParticipants}
                         initialMoneyParticipants={initialMoneyParticipants}
                       />
@@ -306,13 +181,6 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         onConfirm={handleDelete}
       >
         <Typography>Are you sure you want to remove this event?</Typography>
-      </ConfirmDialog>
-      <ConfirmDialog
-        open={showCloseWarning}
-        onClose={() => setShowCloseWarning(false)}
-        onConfirm={handleConfirmClose}
-      >
-        <Typography>You have unsaved budget changes. Close anyway?</Typography>
       </ConfirmDialog>
     </>
   );

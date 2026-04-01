@@ -18,23 +18,28 @@ interface BudgetAllocationListProps {
   onEdit?: (allocation: BudgetAllocation) => void;
   onCreate?: () => void;
   isAdmin: boolean;
-  eventNameMap?: Record<string, string>;
   typeFilter?: BudgetAllocationType | null;
+  eventCodeFilter?: string | null;
 }
 
 export function BudgetAllocationList({
-  allocations,
-  hasWritePermission = false,
-  onDelete,
-  onEdit,
-  isAdmin,
-  eventNameMap = {},
-  typeFilter = null,
-}: BudgetAllocationListProps) {
+                                       allocations,
+                                       hasWritePermission = false,
+                                       onDelete,
+                                       onEdit,
+                                       isAdmin,
+                                       typeFilter = null,
+                                       eventCodeFilter = null,
+                                     }: BudgetAllocationListProps) {
   // Apply type filter
-  const filteredAllocations = typeFilter
+  let filteredAllocations = typeFilter
     ? allocations.filter(a => a.type === typeFilter)
     : allocations;
+
+  // Apply event code filter
+  if (eventCodeFilter) {
+    filteredAllocations = filteredAllocations.filter(a => a.eventCode === eventCodeFilter);
+  }
 
   // Group event-linked allocations by eventCode
   const eventAllocations: Record<string, {
@@ -42,7 +47,7 @@ export function BudgetAllocationList({
     allocations: BudgetAllocation[];
   }> = {};
 
-  const freeFormStudyMoney: BudgetAllocation[] = [];
+  const freeFormAllocations: BudgetAllocation[] = [];
 
   filteredAllocations.forEach((allocation) => {
     if (allocation.eventCode) {
@@ -54,21 +59,21 @@ export function BudgetAllocationList({
         };
       }
       eventAllocations[key].allocations.push(allocation);
-    } else if (allocation.type === 'STUDY_MONEY') {
-      freeFormStudyMoney.push(allocation);
+    } else {
+      freeFormAllocations.push(allocation);
     }
   });
 
   // Combine and sort all items by date (most recent first)
   const allItems: Array<
-    | {type: 'event'; data: typeof eventAllocations[string]}
-    | {type: 'freeform'; data: BudgetAllocation}
+    | { type: 'event'; data: typeof eventAllocations[string] }
+    | { type: 'freeform'; data: BudgetAllocation }
   > = [
     ...Object.values(eventAllocations).map((event) => ({
       type: 'event' as const,
       data: event,
     })),
-    ...freeFormStudyMoney.map((allocation) => ({
+    ...freeFormAllocations.map((allocation) => ({
       type: 'freeform' as const,
       data: allocation,
     })),
@@ -79,61 +84,56 @@ export function BudgetAllocationList({
   });
 
   return (
-    <Paper sx={{mb: 3}}>
-      <Box sx={{p: 3}}>
-        <Stack spacing={2}>
-          {/* Header */}
-          <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-            <Typography variant="h6">
-              Budget Allocations ({allItems.length})
-            </Typography>
-          </Box>
-
-          {/* Info alert about event allocations */}
-          {isAdmin && allItems.some((item) => item.type === 'event') && (
-            <Alert severity="info" icon={<Info />}>
-              Event allocations are managed from the Events page. Click the event
-              name or{' '}
-              <OpenInNew
-                sx={{fontSize: 14, verticalAlign: 'middle', mx: 0.5}}
-              />{' '}
-              icon to navigate to the event.
-            </Alert>
-          )}
-
-          {/* Unified list of all allocations */}
-          {allItems.length === 0 ? (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              textAlign="center"
-              sx={{py: 4}}
-            >
-              No budget allocations yet
-            </Typography>
-          ) : (
-            allItems.map((item) =>
-              item.type === 'event' ? (
-                <EventAllocationListItem
-                  key={item.data.eventCode}
-                  eventName={eventNameMap[item.data.eventCode] || item.data.eventCode}
-                  eventCode={item.data.eventCode}
-                  allocations={item.data.allocations}
-                  isAdmin={isAdmin}
-                />
-              ) : (
-                <StudyMoneyAllocationListItem
-                  key={item.data.id ?? item.data.date}
-                  allocation={item.data}
-                  hasWritePermission={hasWritePermission}
-                  onEdit={hasWritePermission && onEdit ? () => onEdit(item.data) : undefined}
-                  onDelete={hasWritePermission && onDelete ? () => onDelete(item.data) : undefined}
-                />
-              ),
-            )
-          )}
-        </Stack>
+    <Stack spacing={2}>
+      {/* Header */}
+      <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <Typography variant="h6">
+          Budget Allocations ({allItems.length})
+        </Typography>
       </Box>
-    </Paper>
+
+      {/* Info alert about event allocations */}
+      {isAdmin && allItems.some((item) => item.type === 'event') && (
+        <Alert severity="info" icon={<Info/>}>
+          Event allocations are managed from the Events page. Click the event
+          name or{' '}
+          <OpenInNew
+            sx={{fontSize: 14, verticalAlign: 'middle', mx: 0.5}}
+          />{' '}
+          icon to navigate to the event.
+        </Alert>
+      )}
+
+      {/* Unified list of all allocations */}
+      {allItems.length === 0 ? (
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          textAlign="center"
+          sx={{py: 4}}
+        >
+          No budget allocations yet
+        </Typography>
+      ) : (
+        allItems.map((item) =>
+          item.type === 'event' ? (
+            <EventAllocationListItem
+              key={item.data.eventCode}
+              eventCode={item.data.eventCode}
+              allocations={item.data.allocations}
+              isAdmin={isAdmin}
+            />
+          ) : (
+            <StudyMoneyAllocationListItem
+              key={item.data.id ?? item.data.date}
+              allocation={item.data}
+              hasWritePermission={hasWritePermission}
+              onEdit={hasWritePermission && onEdit ? () => onEdit(item.data) : undefined}
+              onDelete={hasWritePermission && onDelete ? () => onDelete(item.data) : undefined}
+            />
+          ),
+        )
+      )}
+    </Stack>
   );
 }

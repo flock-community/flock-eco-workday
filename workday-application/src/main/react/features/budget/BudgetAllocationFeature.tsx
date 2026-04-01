@@ -12,10 +12,10 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import {useHistory, useLocation} from 'react-router-dom';
 import {BudgetSummaryCards} from './BudgetSummaryCards';
 import {BudgetAllocationList} from './BudgetAllocationList';
 import {BudgetAllocationClient} from '../../clients/BudgetAllocationClient';
-import {EventClient} from '../../clients/EventClient';
 import {useUserMe} from '../../hooks/UserMeHook';
 import {StudyMoneyAllocationDialog} from './StudyMoneyAllocationDialog';
 import {ConfirmDialog} from '@workday-core/components/ConfirmDialog';
@@ -39,16 +39,50 @@ type BudgetAllocationFeatureProps = {
   isAdmin: boolean;
 };
 
+function useQueryParams() {
+  const location = useLocation();
+  const history = useHistory();
+  const params = new URLSearchParams(location.search);
+
+  const setParams = useCallback((updates: Record<string, string | null>) => {
+    const newParams = new URLSearchParams(location.search);
+    for (const [key, value] of Object.entries(updates)) {
+      if (value === null) newParams.delete(key);
+      else newParams.set(key, value);
+    }
+    history.replace({...location, search: newParams.toString()});
+  }, [history, location]);
+
+  return {params, setParams};
+}
+
 function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps) {
-  const [year, setYear] = useState(new Date().getFullYear());
+  const {params, setParams} = useQueryParams();
+  const urlYear = params.get('year');
+  const urlEventCode = params.get('eventCode');
+
+  const [year, setYearState] = useState(() => {
+    const parsed = urlYear ? parseInt(urlYear, 10) : NaN;
+    return isNaN(parsed) ? new Date().getFullYear() : parsed;
+  });
+  const [eventCodeFilter, setEventCodeFilter] = useState<string | null>(urlEventCode);
   const [summary, setSummary] = useState<BudgetSummaryResponse | null>(null);
   const [allocations, setAllocations] = useState<BudgetAllocation[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<BudgetAllocation | null>(null);
   const [editTarget, setEditTarget] = useState<BudgetAllocation | null>(null);
-  const [eventNameMap, setEventNameMap] = useState<Record<string, string>>({});
   const [typeFilter, setTypeFilter] = useState<BudgetAllocationType | null>(null);
+
+  const setYear = useCallback((newYear: number) => {
+    setYearState(newYear);
+    setParams({year: String(newYear)});
+  }, [setParams]);
+
+  const clearEventCodeFilter = useCallback(() => {
+    setEventCodeFilter(null);
+    setParams({eventCode: null});
+  }, [setParams]);
 
   const loadData = useCallback(() => {
     setLoading(true);
@@ -59,19 +93,6 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
       .then(([summaryData, allocationData]) => {
         setSummary(summaryData);
         setAllocations(allocationData);
-
-        // Resolve event names from unique event codes
-        const eventCodes = [...new Set(allocationData.filter(a => a.eventCode).map(a => a.eventCode!))];
-        if (eventCodes.length > 0) {
-          Promise.all(eventCodes.map(code => EventClient.get(code).catch(() => null)))
-            .then(events => {
-              const nameMap: Record<string, string> = {};
-              events.forEach((event, i) => {
-                if (event) nameMap[eventCodes[i]] = event.description;
-              });
-              setEventNameMap(nameMap);
-            });
-        }
       })
       .finally(() => setLoading(false));
   }, [year, person]);
@@ -135,6 +156,26 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
         {/* Budget summary cards */}
         {!loading && <BudgetSummaryCards summary={summary}/>}
 
+        {/* Event filter banner */}
+        {!loading && eventCodeFilter && (
+          <Box sx={{
+            mb: 2,
+            p: 1.5,
+            bgcolor: 'info.main',
+            color: 'info.contrastText',
+            borderRadius: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <Typography variant="body2">
+              Filtered by event: <strong>{eventCodeFilter}</strong>
+            </Typography>
+            <Chip label="Clear filter" size="small" onDelete={clearEventCodeFilter} onClick={clearEventCodeFilter}
+                  sx={{bgcolor: 'background.paper'}}/>
+          </Box>
+        )}
+
         {/* Filter chips */}
         {!loading && allocations.length > 0 && (
           <Stack direction="row" spacing={1} sx={{mb: 2}}>
@@ -173,8 +214,8 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
             onDelete={(allocation) => setDeleteTarget(allocation)}
             onEdit={(allocation) => setEditTarget(allocation)}
             isAdmin={isAdmin}
-            eventNameMap={eventNameMap}
             typeFilter={typeFilter}
+            eventCodeFilter={eventCodeFilter}
           />
         )}
 
@@ -206,7 +247,9 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDeleteConfirm}
       >
-        Are you sure you want to delete this study money allocation?
+        <Typography>
+          Are you sure you want to delete this study money allocation?
+        </Typography>
       </ConfirmDialog>
     </Card>
   );

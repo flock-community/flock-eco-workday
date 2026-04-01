@@ -1,30 +1,29 @@
-import { UserFeature } from '@workday-user';
-import { useState } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import {UserFeature} from '@workday-user';
+import {useState} from 'react';
+import {Redirect, Route, Switch} from 'react-router-dom';
 import AssignmentPage from '../features/assignments/AssignmentPage';
-import { ClientFeature } from '../features/client/ClientFeature';
+import {BudgetAllocationPage} from '../features/budget';
+import {ClientFeature} from '../features/client/ClientFeature';
 import ContractPage from '../features/contract/ContractPage';
-import { DashboardFeature } from '../features/dashboard/DashboardFeature';
-import { EventFeature } from '../features/event/EventFeature';
-import { EventRatingFeature } from '../features/event_rating/EventRatingFeature';
-import { ExactonlineFeature } from '../features/exactonline/ExactonlineFeature';
+import {DashboardFeature} from "../features/dashboard/DashboardFeature";
+import {EventFeature} from '../features/event/EventFeature';
+import {EventRatingFeature} from '../features/event_rating/EventRatingFeature';
+import {ExactonlineFeature} from '../features/exactonline/ExactonlineFeature';
 import ExpensePage from '../features/expense/ExpensePage';
 import LeaveDayPage from '../features/holiday/LeaveDayPage';
-import { HomeFeature } from '../features/home/HomeFeature';
-import { MonthFeature } from '../features/month/MonthFeature';
-import { PersonFeature } from '../features/person/PersonFeature';
-import { ProfileFeature } from '../features/profile/ProfileFeature';
-import { ProjectFeature } from '../features/project/ProjectFeature';
+import {HomeFeature} from '../features/home/HomeFeature';
+import {MonthFeature} from '../features/month/MonthFeature';
+import {PersonFeature} from '../features/person/PersonFeature';
+import {ProfileFeature} from '../features/profile/ProfileFeature';
+import {ProjectFeature} from '../features/project/ProjectFeature';
 import AssignmentReport from '../features/report/Assignment/AssignmentReport';
 import AssignmentOverview from '../features/report/AssignmentOverview/AssignmentOverview';
 import ContractOverview from '../features/report/ContractOverview/ContractOverview';
 import SickDayPage from '../features/sickday/SickDayPage';
-import { TodoFeature } from '../features/todo/TodoFeature';
+import {TodoFeature} from '../features/todo/TodoFeature';
 import WorkDayPage from '../features/workday/WorkDayPage';
-import { ApplicationDrawer } from './ApplicationDrawer';
-import { ApplicationLayout } from './ApplicationLayout';
-import {BudgetAllocationFeature} from '../features/budget';
-import { NewDashboard } from '../features/dashboard/NewDashboard';
+import {ApplicationDrawer} from './ApplicationDrawer';
+import {ApplicationLayout} from './ApplicationLayout';
 
 export const AuthenticatedApplication = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -35,40 +34,35 @@ export const AuthenticatedApplication = () => {
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
       />
-      <ApplicationLayout onDrawer={() => setOpenDrawer(true)} />
+      <ApplicationLayout onDrawer={() => setOpenDrawer(true)}/>
       <Switch>
-        <Route path="/" exact component={HomeFeature} />
-        <Route path="/dashboard" exact component={DashboardFeature} />
-        <Route path="/month" exact component={MonthFeature} />
-        <Route path="/todo" exact component={TodoFeature} />
-        <Route path="/clients" exact component={ClientFeature} />
-        <Route path="/contracts" exact component={ContractPage} />
-        <Route path="/projects" exact component={ProjectFeature} />
-        <Route path="/assignments" exact component={AssignmentPage} />
-        <Route path="/workdays" exact component={WorkDayPage} />
-        <Route path="/leave-days" exact component={LeaveDayPage} />
-        <Route path="/sickdays" component={SickDayPage} />
-        <Route path="/expenses" component={ExpensePage} />
-        <Route path="/exactonline" component={ExactonlineFeature} />
-        <Route path="/users" exact component={UserFeature} />
-        <Route path="/person" component={PersonFeature} />
-        <Route path="/profile" component={ProfileFeature} />
-        <Route path="/event" component={EventFeature} />
-        <Route path="/event_rating/:eventCode" component={EventRatingFeature} />
-        <Route path="/reports/assignment" component={AssignmentReport} />
-        <Route path="/reports/contract-overview" component={ContractOverview} />
+        <Route path="/" exact component={HomeFeature}/>
+        <Route path="/dashboard" exact component={DashboardFeature}/>
+        <Route path="/month" exact component={MonthFeature}/>
+        <Route path="/todo" exact component={TodoFeature}/>
+        <Route path="/clients" exact component={ClientFeature}/>
+        <Route path="/contracts" exact component={ContractPage}/>
+        <Route path="/projects" exact component={ProjectFeature}/>
+        <Route path="/assignments" exact component={AssignmentPage}/>
+        <Route path="/workdays" exact component={WorkDayPage}/>
+        <Route path="/leave-days" exact component={LeaveDayPage}/>
+        <Route path="/sickdays" component={SickDayPage}/>
+        <Route path="/expenses" component={ExpensePage}/>
+        <Route path="/exactonline" component={ExactonlineFeature}/>
+        <Route path="/users" exact component={UserFeature}/>
+        <Route path="/person" component={PersonFeature}/>
+        <Route path="/profile" component={ProfileFeature}/>
+        <Route path="/event" component={EventFeature}/>
+        <Route path="/event_rating/:eventCode" component={EventRatingFeature}/>
+        <Route path="/reports/assignment" component={AssignmentReport}/>
+        <Route path="/reports/contract-overview" component={ContractOverview}/>
         <Route
           path="/reports/assignment-overview"
           component={AssignmentOverview}
         />
-        <Route path="/budget-allocations" exact component={BudgetAllocationFeature} />
-        <Route
-          path="/dashboard-new"
-          exact
-          component={NewDashboard}
-        />
+        <Route path="/budget-allocations" exact component={BudgetAllocationPage}/>
 
-        <Redirect to="/" />
+        <Redirect to="/"/>
       </Switch>
     </>
   );

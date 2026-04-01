@@ -1,36 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import {UploadFile} from '@mui/icons-material';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
   Box,
-  Typography,
+  Button,
   Chip,
-  Stack,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+  Typography,
 } from '@mui/material';
-import { UploadFile } from '@mui/icons-material';
-import type { StudyMoneyAllocationInput, BudgetAllocationFile, BudgetAllocation } from '../../wirespec/model';
-import { BudgetAllocationClient } from '../../clients/BudgetAllocationClient';
+import type React from 'react';
+import {useEffect, useState} from 'react';
+import {BudgetAllocationClient} from '../../clients/BudgetAllocationClient';
+import type {Person} from "../../clients/PersonClient";
+import type {BudgetAllocation, BudgetAllocationFile, StudyMoneyAllocationInput} from '../../wirespec/model';
 
 interface StudyMoneyAllocationDialogProps {
   open: boolean;
   onClose: () => void;
   onSaved: () => void;
-  personId?: string;
+  person?: Person;
   editAllocation?: BudgetAllocation;  // when present: edit mode
 }
 
 export function StudyMoneyAllocationDialog({
-  open,
-  onClose,
-  onSaved,
-  personId,
-  editAllocation,
-}: StudyMoneyAllocationDialogProps) {
+                                             open,
+                                             onClose,
+                                             onSaved,
+                                             person,
+                                             editAllocation,
+                                           }: StudyMoneyAllocationDialogProps) {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState<number | ''>('');
   const [date, setDate] = useState('');
@@ -43,7 +45,7 @@ export function StudyMoneyAllocationDialog({
     if (open) {
       if (editAllocation) {
         setDescription(editAllocation.description ?? '');
-        setAmount(editAllocation.amount ?? '');
+        setAmount(editAllocation.studyMoneyDetails?.amount ?? '');
         setDate(editAllocation.date ?? new Date().toISOString().split('T')[0]);
       } else {
         setDescription('');
@@ -67,11 +69,11 @@ export function StudyMoneyAllocationDialog({
       const fileResults: BudgetAllocationFile[] = [...uploadedFiles];
       for (const file of files) {
         const result = await BudgetAllocationClient.uploadFile(file);
-        fileResults.push({ name: result.name, file: result.id });
+        fileResults.push({name: result.name, file: result.id});
       }
 
       const input: StudyMoneyAllocationInput = {
-        personId: editAllocation?.personId ?? personId ?? '',
+        personId: editAllocation?.personId ?? person?.uuid?.toString() ?? '',
         eventCode: undefined,
         date,
         description: description || undefined,
@@ -114,7 +116,7 @@ export function StudyMoneyAllocationDialog({
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>{editAllocation ? 'Edit Study Money Allocation' : 'Add Study Money Allocation'}</DialogTitle>
       <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+        <Box sx={{display: 'flex', flexDirection: 'column', gap: 2, pt: 1}}>
           {error && (
             <Typography color="error" variant="body2">
               {error}
@@ -142,7 +144,7 @@ export function StudyMoneyAllocationDialog({
             }
             fullWidth
             required
-            inputProps={{ min: 0, step: 0.01 }}
+            inputProps={{min: 0, step: 1}}
           />
 
           {/* Date */}
@@ -153,7 +155,7 @@ export function StudyMoneyAllocationDialog({
             onChange={(e) => setDate(e.target.value)}
             fullWidth
             required
-            InputLabelProps={{ shrink: true }}
+            InputLabelProps={{shrink: true}}
           />
 
           {/* File upload */}
@@ -161,7 +163,7 @@ export function StudyMoneyAllocationDialog({
             <Button
               variant="outlined"
               component="label"
-              startIcon={<UploadFile />}
+              startIcon={<UploadFile/>}
               fullWidth
             >
               Upload Receipt/Invoice
@@ -174,19 +176,19 @@ export function StudyMoneyAllocationDialog({
               />
             </Button>
             {files.length > 0 && (
-              <Stack direction="row" spacing={1} sx={{ mt: 1 }} flexWrap="wrap">
+              <Stack direction="row" spacing={1} sx={{mt: 1}} flexWrap="wrap">
                 {files.map((file, index) => (
                   <Chip
-                    key={index}
+                    key={file.name+file.size+file.lastModified}
                     label={file.name}
                     onDelete={() => handleRemoveFile(index)}
                     size="small"
-                    sx={{ mb: 1 }}
+                    sx={{mb: 1}}
                   />
                 ))}
               </Stack>
             )}
-            <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+            <Typography variant="caption" color="text.secondary" display="block" sx={{mt: 0.5}}>
               Optional: Upload receipts or invoices (PDF, JPG, PNG)
             </Typography>
           </Box>
@@ -199,7 +201,7 @@ export function StudyMoneyAllocationDialog({
           variant="contained"
           disabled={!isValid || saving}
         >
-          {saving ? <CircularProgress size={24} /> : (editAllocation ? 'Save' : 'Create')}
+          {saving ? <CircularProgress size={24}/> : (editAllocation ? 'Save' : 'Create')}
         </Button>
       </DialogActions>
     </Dialog>

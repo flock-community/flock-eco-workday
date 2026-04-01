@@ -2,6 +2,7 @@ import { checkResponse, validateResponse } from '@workday-core';
 import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
 import type { Person, PersonLight } from './PersonClient';
+import type { BudgetAllocation } from '../wirespec/model';
 
 const path = '/api/events';
 
@@ -26,8 +27,10 @@ export type FullFlockEvent = {
   hours: number;
   days: number[];
   persons: Person[];
-  costs: number;
+  budget: number;
   type: EventType;
+  defaultTimeAllocationType?: string | null;
+  budgetAllocations?: BudgetAllocation[];
 };
 
 type FlockEventRawProjection = {
@@ -49,8 +52,10 @@ type FlockEventRaw = {
   hours: number;
   days: number[];
   persons: Person[];
-  costs: number;
+  budget: number;
   type: EventType;
+  defaultTimeAllocationType?: string | null;
+  budgetAllocations?: BudgetAllocation[];
 };
 
 export type FlockEventRequest = {
@@ -62,8 +67,9 @@ export type FlockEventRequest = {
   hours: number;
   days: number[];
   personIds: string[];
-  costs: number;
+  budget: number;
   type: EventType;
+  defaultTimeAllocationType?: string | null;
 };
 
 export enum EventType {
@@ -93,7 +99,9 @@ const internalizeFull = (it: FlockEventRaw): FullFlockEvent => ({
   type: it.type,
   id: it.id,
   days: it.days,
-  costs: it.costs,
+  budget: it.budget,
+  defaultTimeAllocationType: it.defaultTimeAllocationType,
+  budgetAllocations: it.budgetAllocations,
 });
 
 export const EVENT_PAGE_SIZE: number = 10;

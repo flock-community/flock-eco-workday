@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import {
   AccessTime,
-  AttachMoney,
+  Euro,
   Event,
   ExpandMore,
   OpenInNew,
@@ -24,7 +24,6 @@ import Link from '@mui/material/Link';
 import {PeriodInput} from '../../components/inputs/PeriodInput';
 
 interface EventAllocationListItemProps {
-  eventName: string;
   eventCode: string;
   allocations: BudgetAllocation[];
   isAdmin?: boolean;
@@ -122,12 +121,14 @@ const getAccordion = (
 };
 
 export function EventAllocationListItem({
-  eventName,
   eventCode,
   allocations,
   isAdmin = false,
 }: EventAllocationListItemProps) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+  // Derive event name from first allocation description
+  const eventName = allocations[0]?.description ?? eventCode;
 
   // Derive date range from allocations
   const allDates = allocations
@@ -136,6 +137,7 @@ export function EventAllocationListItem({
     .sort();
   const dateFrom = allDates[0];
   const dateTo = allDates[allDates.length - 1];
+  const isSingleDay = dateFrom === dateTo;
 
   return (
     <Grid size={{xs: 12}}>
@@ -155,10 +157,11 @@ export function EventAllocationListItem({
             </>
           }
           subheader={
-            dateFrom && dateTo && (
+            dateFrom && (
               <Typography>
-                Dates: {dayjs(dateFrom).format('DD-MM-YYYY')} -{' '}
-                {dayjs(dateTo).format('DD-MM-YYYY')}
+                {isSingleDay
+                  ? `Date: ${dayjs(dateFrom).format('DD-MM-YYYY')}`
+                  : `Dates: ${dayjs(dateFrom).format('DD-MM-YYYY')} - ${dayjs(dateTo).format('DD-MM-YYYY')}`}
               </Typography>
             )
           }
@@ -176,13 +179,17 @@ export function EventAllocationListItem({
                     getAccordion(expanded, setExpanded, allocation)}
                   {allocation.type === 'STUDY_MONEY' && (
                     <Grid>
-                      <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                        <AttachMoney fontSize="small" color="action" />
+                      <Grid size={{xs: 12}} sx={{pl:1,
+                      }}>
+
+                      <Box sx={{m: 1, display: 'flex', alignItems: 'center', gap: 1}}>
+                        <Euro fontSize="small" color="action" />
                         <Typography variant="subtitle1" fontWeight="medium">
-                          Study Money:{' '}
+                          Study Money:{'  '}€{''}
                           {(allocation.studyMoneyDetails?.amount ?? 0).toLocaleString('nl-NL')}
                         </Typography>
                       </Box>
+                      </Grid>
                     </Grid>
                   )}
                 </Grid>

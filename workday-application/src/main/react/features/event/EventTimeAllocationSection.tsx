@@ -169,6 +169,11 @@ export function EventTimeAllocationSection({
       const totalDayHours = studyHours + hackHours;
       const date = eventFrom.add(index, 'days').format('DD MMM YYYY');
 
+      // Check for negative hours
+      if (studyHours < 0 || hackHours < 0) {
+        errors.push(`${date}: Hours cannot be negative`);
+      }
+
       // Check for overlap (both types on same day)
       if (studyHours > 0 && hackHours > 0) {
         errors.push(`${date}: Cannot have both study and hack hours on the same day`);
@@ -354,8 +359,8 @@ function ParticipantTimeRow({
           <Typography variant="body2" fontWeight="medium" gutterBottom>
             Validation Errors:
           </Typography>
-          {validationErrors.map((error, index) => (
-            <Typography key={index} variant="caption" display="block">
+          {validationErrors.map((error) => (
+            <Typography key={error} variant="caption" display="block">
               • {error}
             </Typography>
           ))}
@@ -364,8 +369,7 @@ function ParticipantTimeRow({
 
       {/* Period Inputs */}
       {hasExceptions && (
-        <>
-          <Stack spacing={3}>
+        <Stack spacing={3}>
             {/* Study Time Period */}
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
@@ -421,7 +425,6 @@ function ParticipantTimeRow({
               </Typography>
             </Alert>
           </Stack>
-        </>
       )}
     </Box>
   );

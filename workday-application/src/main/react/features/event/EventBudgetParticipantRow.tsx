@@ -445,7 +445,7 @@ export function EventBudgetParticipantRow({
                 onChange={(e) => handleAmountChange(e.target.value)}
                 size="small"
                 fullWidth
-                inputProps={{ min: 0, step: 0.01 }}
+                inputProps={{ min: 0, step: 1 }}
               />
 
               <TextField

@@ -65,10 +65,12 @@ export function PeriodInput({ period, onChange, readonly = false }: PeriodInputP
                   label={day.disabled ? '-' : day.date.format('DD MMM')}
                   value={day.value}
                   disabled={day.disabled || readonly}
-                  onChange={(ev) =>
-                    onChange(day.date, parseFloat(ev.target.value || '0'))
-                  }
+                  onChange={(ev) => {
+                    const val = parseFloat(ev.target.value || '0');
+                    onChange(day.date, Math.max(0, val));
+                  }}
                   type="number"
+                  slotProps={{ htmlInput: { min: 0, step: 0.5 } }}
                 />
               </Grid>
             ))}

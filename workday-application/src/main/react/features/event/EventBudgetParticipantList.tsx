@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, Button, Stack, Divider } from '@mui/material';
-import { Calculate, AttachMoney } from '@mui/icons-material';
+import { Calculate, Euro } from '@mui/icons-material';
 import {
   EventBudgetParticipantRow,
   type ParticipantAllocation,
@@ -98,7 +98,7 @@ export function EventBudgetParticipantList({
             <Button
               size="small"
               variant="outlined"
-              startIcon={<AttachMoney />}
+              startIcon={<Euro />}
               onClick={handleDivideMoneyEqually}
             >
               Divide Money Equally

@@ -5,6 +5,7 @@ import type {
   StudyTimeAllocationInput,
   StudyMoneyAllocationInput,
 } from '../wirespec/model';
+import {Person} from "./PersonClient";
 
 const basePath = '/api/budget-allocations';
 const summaryPath = '/api/budget-summary';
@@ -16,21 +17,21 @@ const buildQueryString = (params: Record<string, string | number | undefined>): 
 };
 
 const findAll = async (
-  personId?: string,
+  personId?: Person,
   year?: number,
   eventCode?: string,
 ): Promise<BudgetAllocation[]> => {
-  const query = buildQueryString({ personId, year, eventCode });
+  const query = buildQueryString({ personId: personId?.uuid, year, eventCode });
   const res = await fetch(`${basePath}${query}`);
   if (!res.ok) throw new Error(`Failed to fetch budget allocations: ${res.status}`);
   return res.json();
 };
 
 const getSummary = async (
-  personId?: string,
+  personId?: Person,
   year?: number,
 ): Promise<BudgetSummaryResponse> => {
-  const query = buildQueryString({ personId, year });
+  const query = buildQueryString({ personId: personId?.uuid, year });
   const res = await fetch(`${summaryPath}${query}`);
   if (!res.ok) throw new Error(`Failed to fetch budget summary: ${res.status}`);
   return res.json();

@@ -9,7 +9,7 @@ import {
   Chip,
 } from '@mui/material';
 import {
-  AttachMoney,
+  Euro,
   Calculate,
   Clear,
 } from '@mui/icons-material';
@@ -71,7 +71,7 @@ export function EventMoneyAllocationSection({
     <>
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <AttachMoney color="primary" />
+          <Euro color="primary" />
           <Typography variant="h6">Money Allocation</Typography>
         </Box>
         <Typography variant="body2" color="text.secondary">
@@ -163,7 +163,7 @@ export function EventMoneyAllocationSection({
                 }
                 size="small"
                 sx={{ width: 150 }}
-                inputProps={{ min: 0, step: 0.01 }}
+                inputProps={{ min: 0, step: 1 }}
               />
             </Box>
           ))}

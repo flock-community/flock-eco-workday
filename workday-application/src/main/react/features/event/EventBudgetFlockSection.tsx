@@ -85,7 +85,7 @@ export function EventBudgetFlockSection({
             }
             size="small"
             sx={{ flex: 1 }}
-            inputProps={{ min: 0, step: 0.01 }}
+            inputProps={{ min: 0, step: 1 }}
           />
           {hasBudget && remainingBudget > 0 && (
             <Button
