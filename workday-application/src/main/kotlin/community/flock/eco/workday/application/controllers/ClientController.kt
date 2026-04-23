@@ -7,6 +7,8 @@ import community.flock.eco.workday.api.endpoint.PostClient
 import community.flock.eco.workday.api.endpoint.PutClient
 import community.flock.eco.workday.application.forms.ClientForm
 import community.flock.eco.workday.application.services.ClientService
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 import community.flock.eco.workday.api.model.Client as ClientApi
@@ -22,12 +24,19 @@ class ClientController(
     PutClient.Handler,
     DeleteClient.Handler {
     @PreAuthorize("hasAuthority('ClientAuthority.READ')")
-    override suspend fun getClientAll(request: GetClientAll.Request): GetClientAll.Response<*> =
-        GetClientAll.Response200(
+    override suspend fun getClientAll(request: GetClientAll.Request): GetClientAll.Response<*> {
+        val page = PageRequest.of(
+            request.queries.page ?: 0,
+            request.queries.size ?: 20,
+            request.queries.sort?.toSort() ?: Sort.unsorted(),
+        )
+        return GetClientAll.Response200(
             clientService
-                .findAll()
+                .findAll(page)
+                .content
                 .map { it.externalize() },
         )
+    }
 
     @PreAuthorize("hasAuthority('ClientAuthority.READ')")
     override suspend fun getClientByCode(request: GetClientByCode.Request): GetClientByCode.Response<*> {
@@ -70,4 +79,20 @@ class ClientController(
         ClientForm(
             name = name ?: "",
         )
+
+    private fun String.toSort(): Sort =
+        split(",")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .let { parts ->
+                when {
+                    parts.isEmpty() -> Sort.unsorted()
+                    parts.size == 1 -> Sort.by(parts[0])
+                    parts.last().equals("asc", ignoreCase = true) ->
+                        Sort.by(Sort.Direction.ASC, *parts.dropLast(1).toTypedArray())
+                    parts.last().equals("desc", ignoreCase = true) ->
+                        Sort.by(Sort.Direction.DESC, *parts.dropLast(1).toTypedArray())
+                    else -> Sort.by(*parts.toTypedArray())
+                }
+            }
 }

@@ -1,4 +1,4 @@
-endpoint GetClientAll GET /api/clients -> {
+endpoint GetClientAll GET /api/clients ? {page: Integer32?, size: Integer32?, sort: String?} -> {
   200 -> Client[]
 }
 endpoint GetClientByCode GET /api/clients/{code: String} -> {
