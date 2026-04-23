@@ -1,67 +1,80 @@
 package community.flock.eco.workday.application.controllers
 
+import community.flock.eco.workday.api.endpoint.DeleteClient
+import community.flock.eco.workday.api.endpoint.GetClientAll
+import community.flock.eco.workday.api.endpoint.GetClientByCode
+import community.flock.eco.workday.api.endpoint.PostClient
+import community.flock.eco.workday.api.endpoint.PutClient
 import community.flock.eco.workday.application.forms.ClientForm
-import community.flock.eco.workday.application.model.Client
 import community.flock.eco.workday.application.services.ClientService
-import community.flock.eco.workday.core.utils.toResponse
-import org.springframework.data.domain.Pageable
-import org.springframework.http.ResponseEntity
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import community.flock.eco.workday.api.model.Client as ClientApi
+import community.flock.eco.workday.api.model.ClientForm as ClientFormApi
+import community.flock.eco.workday.application.model.Client as ClientInternal
 
 @RestController
-@RequestMapping("/api/clients")
 class ClientController(
     private val clientService: ClientService,
-) {
-    @GetMapping
+) : GetClientAll.Handler,
+    GetClientByCode.Handler,
+    PostClient.Handler,
+    PutClient.Handler,
+    DeleteClient.Handler {
     @PreAuthorize("hasAuthority('ClientAuthority.READ')")
-    fun findAll(pageable: Pageable): ResponseEntity<List<Client>> =
-        clientService
-            .findAll(pageable)
-            .toResponse()
+    override suspend fun getClientAll(request: GetClientAll.Request): GetClientAll.Response<*> {
+        val pageable = request.queries.pageable
+        val sort = pageable.sort?.takeIf { it.isNotEmpty() }?.let { Sort.by(*it.toTypedArray()) } ?: Sort.unsorted()
+        val page = PageRequest.of(pageable.page, pageable.size, sort)
+        return GetClientAll.Response200(
+            clientService
+                .findAll(page)
+                .content
+                .map { it.externalize() },
+        )
+    }
 
-    @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('ClientAuthority.READ')")
-    fun findByCode(
-        @PathVariable code: String,
-    ): ResponseEntity<Client> =
-        clientService
-            .findByCode(code)
-            .toResponse()
+    override suspend fun getClientByCode(request: GetClientByCode.Request): GetClientByCode.Response<*> {
+        val client =
+            clientService.findByCode(request.path.code)
+                ?: error("Client with code ${request.path.code} not found")
+        return GetClientByCode.Response200(client.externalize())
+    }
 
-    @PostMapping
     @PreAuthorize("hasAuthority('ClientAuthority.WRITE')")
-    fun post(
-        @RequestBody form: ClientForm,
-    ): ResponseEntity<Client> =
-        clientService
-            .create(form)
-            .toResponse()
+    override suspend fun postClient(request: PostClient.Request): PostClient.Response<*> {
+        val client =
+            clientService.create(request.body.internalize())
+                ?: error("Could not create client")
+        return PostClient.Response200(client.externalize())
+    }
 
-    @PutMapping("{code}")
     @PreAuthorize("hasAuthority('ClientAuthority.WRITE')")
-    fun put(
-        @PathVariable code: String,
-        @RequestBody form: ClientForm,
-    ): ResponseEntity<Client> =
-        clientService
-            .update(code, form)
-            .toResponse()
+    override suspend fun putClient(request: PutClient.Request): PutClient.Response<*> {
+        val client =
+            clientService.update(request.path.code, request.body.internalize())
+                ?: error("Client with code ${request.path.code} not found")
+        return PutClient.Response200(client.externalize())
+    }
 
-    @DeleteMapping("{code}")
     @PreAuthorize("hasAuthority('ClientAuthority.WRITE')")
-    fun delete(
-        @PathVariable code: String,
-    ): ResponseEntity<Unit> =
-        clientService
-            .delete(code)
-            .toResponse()
+    override suspend fun deleteClient(request: DeleteClient.Request): DeleteClient.Response<*> {
+        clientService.delete(request.path.code)
+        return DeleteClient.Response200(Unit)
+    }
+
+    private fun ClientInternal.externalize() =
+        ClientApi(
+            id = id,
+            code = code,
+            name = name,
+        )
+
+    private fun ClientFormApi.internalize() =
+        ClientForm(
+            name = name ?: "",
+        )
 }
