@@ -7,8 +7,6 @@ import community.flock.eco.workday.api.endpoint.PostClient
 import community.flock.eco.workday.api.endpoint.PutClient
 import community.flock.eco.workday.application.forms.ClientForm
 import community.flock.eco.workday.application.services.ClientService
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 import community.flock.eco.workday.api.model.Client as ClientApi
@@ -24,17 +22,12 @@ class ClientController(
     PutClient.Handler,
     DeleteClient.Handler {
     @PreAuthorize("hasAuthority('ClientAuthority.READ')")
-    override suspend fun getClientAll(request: GetClientAll.Request): GetClientAll.Response<*> {
-        val pageable = request.queries.pageable
-        val sort = pageable.sort?.takeIf { it.isNotEmpty() }?.let { Sort.by(*it.toTypedArray()) } ?: Sort.unsorted()
-        val page = PageRequest.of(pageable.page, pageable.size, sort)
-        return GetClientAll.Response200(
+    override suspend fun getClientAll(request: GetClientAll.Request): GetClientAll.Response<*> =
+        GetClientAll.Response200(
             clientService
-                .findAll(page)
-                .content
+                .findAll()
                 .map { it.externalize() },
         )
-    }
 
     @PreAuthorize("hasAuthority('ClientAuthority.READ')")
     override suspend fun getClientByCode(request: GetClientByCode.Request): GetClientByCode.Response<*> {

@@ -1,4 +1,4 @@
-endpoint GetClientAll GET /api/clients ? {pageable: Pageable} -> {
+endpoint GetClientAll GET /api/clients -> {
   200 -> Client[]
 }
 endpoint GetClientByCode GET /api/clients/{code: String} -> {
