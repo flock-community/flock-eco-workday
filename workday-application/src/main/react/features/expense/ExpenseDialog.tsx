@@ -54,6 +54,10 @@ const toExpenseCostForm = (state?: Expense): ExpenseCostForm | undefined => {
             name: f.name,
             fileReference: f.file,
           })) ?? [],
+        recurrencePeriod: state.costDetails?.recurrencePeriod ?? 'NONE',
+        recurrenceEndDate: state.costDetails?.recurrenceEndDate
+          ? dayjs(state.costDetails.recurrenceEndDate)
+          : null,
       }
     : undefined;
 };
@@ -104,6 +108,12 @@ export function ExpenseDialog({
                     file: f.fileReference,
                   }) satisfies CostExpenseFile,
               ),
+              recurrencePeriod: expenseForm.recurrencePeriod,
+              recurrenceEndDate:
+                expenseForm.recurrencePeriod !== 'NONE' &&
+                expenseForm.recurrenceEndDate
+                  ? expenseForm.recurrenceEndDate.toISOString()
+                  : null,
             }
           : undefined,
       travelDetails:

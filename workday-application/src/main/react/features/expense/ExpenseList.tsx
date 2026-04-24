@@ -1,6 +1,7 @@
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import MoneyIcon from '@mui/icons-material/Money';
-import { Box, Card, Typography } from '@mui/material';
+import RepeatIcon from '@mui/icons-material/Repeat';
+import { Box, Card, Chip, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Grid from '@mui/material/Grid';
@@ -15,7 +16,19 @@ import { EXPENSE_PAGE_SIZE, ExpenseClient } from '../../clients/ExpenseClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { StatusMenu } from '../../components/status/StatusMenu';
 import type { DayListProps } from '../../types';
-import type { Expense, ExpenseStatus } from '../../wirespec/model';
+import type {
+  Expense,
+  ExpenseStatus,
+  RecurrencePeriod,
+} from '../../wirespec/model';
+
+const RECURRENCE_LABEL: Record<RecurrencePeriod, string> = {
+  NONE: '',
+  WEEK: 'Wekelijks',
+  MONTH: 'Maandelijks',
+  QUARTER: 'Per kwartaal',
+  YEAR: 'Jaarlijks',
+};
 
 const PREFIX = 'ExpenseList';
 
@@ -103,13 +116,35 @@ export function ExpenseList({
               </>
             }
             subheader={
-              <Typography>
-                Date: {dayjs(item.date).format('DD-MM-YYYY')} | Total:{' '}
-                {totalAmount?.toLocaleString('nl-NL', {
-                  style: 'currency',
-                  currency: 'EUR',
-                })}
-              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 1,
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <Typography component="span">
+                  Date: {dayjs(item.date).format('DD-MM-YYYY')} | Total:{' '}
+                  {totalAmount?.toLocaleString('nl-NL', {
+                    style: 'currency',
+                    currency: 'EUR',
+                  })}
+                </Typography>
+                {item.expenseType === 'COST' &&
+                  item.costDetails?.recurrencePeriod &&
+                  item.costDetails.recurrencePeriod !== 'NONE' && (
+                    <Chip
+                      size="small"
+                      icon={<RepeatIcon />}
+                      label={
+                        item.costDetails.recurrenceEndDate
+                          ? `${RECURRENCE_LABEL[item.costDetails.recurrencePeriod]} t/m ${dayjs(item.costDetails.recurrenceEndDate).format('DD-MM-YYYY')}`
+                          : RECURRENCE_LABEL[item.costDetails.recurrencePeriod]
+                      }
+                    />
+                  )}
+              </Box>
             }
           />
           <List>

@@ -14,4 +14,17 @@ data class CostExpense<T : ApprovalStatus>(
     override val status: T,
     val amount: Double,
     val files: List<Document>,
-) : Expense<T>
+    val recurrencePeriod: RecurrencePeriod = RecurrencePeriod.NONE,
+    val recurrenceEndDate: LocalDate? = null,
+) : Expense<T> {
+    fun occurrences(until: LocalDate): Sequence<LocalDate> =
+        generateSequence(date) { previous ->
+            if (recurrencePeriod == RecurrencePeriod.NONE) return@generateSequence null
+            val next = recurrencePeriod.advance(previous)
+            when {
+                next.isAfter(until) -> null
+                recurrenceEndDate != null && next.isAfter(recurrenceEndDate) -> null
+                else -> next
+            }
+        }
+}

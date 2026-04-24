@@ -10,11 +10,13 @@ import community.flock.eco.workday.domain.common.ApprovalStatus
 import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.domain.common.Status
 import community.flock.eco.workday.domain.expense.CostExpense
+import community.flock.eco.workday.domain.expense.RecurrencePeriod
 import community.flock.eco.workday.domain.expense.TravelExpense
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.util.UUID
 import community.flock.eco.workday.api.model.ExpenseStatus as StatusApi
+import community.flock.eco.workday.api.model.RecurrencePeriod as RecurrencePeriodApi
 import community.flock.eco.workday.application.expense.CostExpense as CostExpenseEntity
 import community.flock.eco.workday.application.expense.TravelExpense as TravelExpenseEntity
 
@@ -66,8 +68,28 @@ class CostExpenseMapper(
                 .findByUuid(UUID.fromString(input.personId.value))
                 ?.toDomain()
                 ?: error("Cannot find person"),
+        recurrencePeriod = input.recurrencePeriod.consume(),
+        recurrenceEndDate = input.recurrenceEndDate?.let(LocalDate::parse),
     )
 }
+
+fun RecurrencePeriodApi.consume(): RecurrencePeriod =
+    when (this) {
+        RecurrencePeriodApi.NONE -> RecurrencePeriod.NONE
+        RecurrencePeriodApi.WEEK -> RecurrencePeriod.WEEK
+        RecurrencePeriodApi.MONTH -> RecurrencePeriod.MONTH
+        RecurrencePeriodApi.QUARTER -> RecurrencePeriod.QUARTER
+        RecurrencePeriodApi.YEAR -> RecurrencePeriod.YEAR
+    }
+
+fun RecurrencePeriod.produce(): RecurrencePeriodApi =
+    when (this) {
+        RecurrencePeriod.NONE -> RecurrencePeriodApi.NONE
+        RecurrencePeriod.WEEK -> RecurrencePeriodApi.WEEK
+        RecurrencePeriod.MONTH -> RecurrencePeriodApi.MONTH
+        RecurrencePeriod.QUARTER -> RecurrencePeriodApi.QUARTER
+        RecurrencePeriod.YEAR -> RecurrencePeriodApi.YEAR
+    }
 
 fun StatusApi.consumeStatus(): ApprovalStatus =
     when (this) {
@@ -116,6 +138,8 @@ fun CostExpense<*>.toEntity(personReference: Person) =
         status = status.toEntity(),
         amount = amount,
         files = files.map { it.toEntity() }.toMutableList(),
+        recurrencePeriod = recurrencePeriod,
+        recurrenceEndDate = recurrenceEndDate,
     )
 
 fun CostExpenseEntity.toDomain() =
@@ -127,4 +151,6 @@ fun CostExpenseEntity.toDomain() =
         status = status.toDomain(),
         amount = amount,
         files = files.map { it.toDomain() },
+        recurrencePeriod = recurrencePeriod,
+        recurrenceEndDate = recurrenceEndDate,
     )

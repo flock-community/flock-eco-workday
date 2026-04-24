@@ -41,4 +41,9 @@ class CostExpensePersistenceAdapter(
                 costExpenseRepository.save(entity)
             }?.toDomain()
     }
+
+    override fun findAll(): List<CostExpense<*>> =
+        costExpenseRepository
+            .findAll()
+            .map { it.toDomain() }
 }

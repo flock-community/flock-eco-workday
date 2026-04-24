@@ -92,6 +92,8 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                                 ),
                             ),
                         ),
+                    recurrencePeriod = community.flock.eco.workday.api.model.RecurrencePeriod.NONE,
+                    recurrenceEndDate = null,
                 )
 
             mvc
@@ -200,6 +202,8 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                     date = "2025-01-22",
                     amount = 12.0,
                     files = listOf(),
+                    recurrencePeriod = community.flock.eco.workday.api.model.RecurrencePeriod.NONE,
+                    recurrenceEndDate = null,
                 )
 
             mvc
@@ -311,6 +315,8 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                                 ),
                             ),
                         ),
+                    recurrencePeriod = community.flock.eco.workday.api.model.RecurrencePeriod.NONE,
+                    recurrenceEndDate = null,
                 )
 
             mvc
@@ -419,6 +425,8 @@ class ExpenseControllerTest : WorkdayIntegrationTest() {
                     date = "2025-01-22",
                     amount = 12.0,
                     files = listOf(),
+                    recurrencePeriod = community.flock.eco.workday.api.model.RecurrencePeriod.NONE,
+                    recurrenceEndDate = null,
                 )
 
             mvc

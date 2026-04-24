@@ -79,4 +79,7 @@ databaseChangeLog:
   - include:
       file: db.changelog-026-hibernate6-sequences.yaml
       relativeToChangelogFile: true
+  - include:
+      file: db.changelog-027-cost-expense-recurrence.yaml
+      relativeToChangelogFile: true
 

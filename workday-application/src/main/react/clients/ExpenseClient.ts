@@ -36,6 +36,10 @@ const serializeCost = (it: Expense): CostExpenseInput => {
     status: it.status,
     personId: it.personId,
     date: dayjs(it.date).format(ISO_8601_DATE),
+    recurrencePeriod: it?.costDetails?.recurrencePeriod ?? 'NONE',
+    recurrenceEndDate: it?.costDetails?.recurrenceEndDate
+      ? dayjs(it.costDetails.recurrenceEndDate).format(ISO_8601_DATE)
+      : null,
   };
 };
 

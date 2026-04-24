@@ -18,6 +18,8 @@ export function createTestCostExpense(
     costDetails: {
       amount,
       files: [],
+      recurrencePeriod: 'NONE',
+      recurrenceEndDate: undefined,
     },
     date: date.format('YYYY-MM-DD'),
     description: `Cost expense ${dateMonth}`,

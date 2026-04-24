@@ -23,6 +23,8 @@ import community.flock.eco.workday.domain.common.Direction
 import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.domain.common.Sort
 import community.flock.eco.workday.domain.expense.CostExpense
+import community.flock.eco.workday.domain.expense.CostExpenseExportRow
+import community.flock.eco.workday.domain.expense.CostExpenseExportService
 import community.flock.eco.workday.domain.expense.CostExpenseService
 import community.flock.eco.workday.domain.expense.Expense
 import community.flock.eco.workday.domain.expense.ExpenseService
@@ -43,6 +45,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import java.io.File
+import java.time.LocalDate
 import java.util.UUID
 import community.flock.eco.workday.api.model.Expense as ExpenseApi
 import community.flock.eco.workday.api.model.ExpenseStatus as StatusApi
@@ -65,6 +68,7 @@ class ExpenseController(
     private val travelExpenseService: TravelExpenseService,
     private val costExpenseService: CostExpenseService,
     private val costExpenseMapper: CostExpenseMapper,
+    private val costExpenseExportService: CostExpenseExportService,
 ) : ExpenseHandler {
     fun authentication(): Authentication = SecurityContextHolder.getContext().authentication
 
@@ -144,6 +148,24 @@ class ExpenseController(
         documentService
             .storeDocument(file.bytes)
             .toResponse()
+
+    @GetMapping("/api/expenses-cost/export.csv")
+    @PreAuthorize("hasAuthority('ExpenseAuthority.ADMIN')")
+    fun exportCostCsv(
+        @RequestParam(required = false) from: String?,
+        @RequestParam(required = false) to: String?,
+    ): ResponseEntity<ByteArray> {
+        val toDate = to?.let(LocalDate::parse) ?: LocalDate.now().withMonth(12).withDayOfMonth(31)
+        val fromDate = from?.let(LocalDate::parse)
+        val rows = costExpenseExportService.export(fromDate, toDate)
+        val csv = rows.toCsv().toByteArray(Charsets.UTF_8)
+        val filename = "cost-expenses-${fromDate ?: "all"}_$toDate.csv"
+        return ResponseEntity
+            .ok()
+            .header("Content-Type", "text/csv; charset=UTF-8")
+            .header("Content-Disposition", "attachment; filename=\"$filename\"")
+            .body(csv)
+    }
 
     @PreAuthorize("hasAuthority('ExpenseAuthority.WRITE')")
     override suspend fun costExpenseCreate(request: CostExpenseCreate.Request): CostExpenseCreate.Response<*> =
@@ -262,6 +284,8 @@ private fun CostExpense<*>.produce() =
             CostExpenseDetails(
                 amount = amount,
                 files = files.map { it.produce() },
+                recurrencePeriod = recurrencePeriod.produce(),
+                recurrenceEndDate = recurrenceEndDate?.toString(),
             ),
     )
 
@@ -270,3 +294,44 @@ private fun Document.produce() =
         name = name,
         file = UUIDApi(file.toString()).also(UUIDApi::validate),
     )
+
+private val csvHeader =
+    listOf(
+        "Datum",
+        "Medewerker",
+        "Omschrijving",
+        "Bedrag",
+        "Status",
+        "Herhaling",
+        "Herhalende regel",
+        "Expense ID",
+    )
+
+private fun List<CostExpenseExportRow>.toCsv(): String =
+    buildString {
+        append(csvHeader.joinToCsvRow())
+        append("\r\n")
+        this@toCsv.forEach { row ->
+            append(
+                listOf(
+                    row.occurrenceDate.toString(),
+                    row.personName,
+                    row.description.orEmpty(),
+                    "%.2f".format(row.amount),
+                    row.status,
+                    row.recurrencePeriod.name,
+                    if (row.isRecurringInstance) "Ja" else "Nee",
+                    row.expenseId.toString(),
+                ).joinToCsvRow(),
+            )
+            append("\r\n")
+        }
+    }
+
+private fun List<String>.joinToCsvRow(): String = joinToString(",") { it.escapeCsv() }
+
+private fun String.escapeCsv(): String {
+    val needsQuoting = any { it == ',' || it == '"' || it == '\n' || it == '\r' }
+    val escaped = replace("\"", "\"\"")
+    return if (needsQuoting) "\"$escaped\"" else escaped
+}

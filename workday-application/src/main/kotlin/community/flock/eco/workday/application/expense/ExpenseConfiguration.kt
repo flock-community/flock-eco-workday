@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.expense
 
 import community.flock.eco.workday.domain.common.ApplicationEventPublisher
+import community.flock.eco.workday.domain.expense.CostExpenseExportService
 import community.flock.eco.workday.domain.expense.CostExpenseService
 import community.flock.eco.workday.domain.expense.ExpenseService
 import community.flock.eco.workday.domain.expense.TravelExpenseService
@@ -28,6 +29,12 @@ class ExpenseConfiguration {
         applicationEventPublisher = applicationEventPublisher,
         costExpenseMailService = costExpenseMailService,
     )
+
+    @Bean
+    fun costExpenseExportService(costExpensePersistenceAdapter: CostExpensePersistenceAdapter) =
+        CostExpenseExportService(
+            costExpenseRepository = costExpensePersistenceAdapter,
+        )
 
     @Bean
     fun travelExpenseService(

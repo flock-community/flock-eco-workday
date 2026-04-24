@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-027-cost-expense-recurrence
+      author: pimvangurp
+      changes:
+        - addColumn:
+            tableName: cost_expense
+            columns:
+              - column:
+                  name: recurrence_period
+                  type: VARCHAR(32)
+                  defaultValue: 'NONE'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recurrence_end_date
+                  type: date
+                  constraints:
+                    nullable: true

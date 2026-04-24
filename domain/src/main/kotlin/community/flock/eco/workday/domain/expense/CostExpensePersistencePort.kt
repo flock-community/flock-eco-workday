@@ -11,4 +11,6 @@ interface CostExpensePersistencePort {
         id: UUID,
         costExpense: CostExpense<*>,
     ): CostExpense<*>?
+
+    fun findAll(): List<CostExpense<*>>
 }

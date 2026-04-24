@@ -43,7 +43,12 @@ type TravelExpenseInput {
 }
 type CostExpenseDetails {
   amount: Number,
-  files: CostExpenseFile[]
+  files: CostExpenseFile[],
+  recurrencePeriod: RecurrencePeriod,
+  recurrenceEndDate: String?
+}
+enum RecurrencePeriod {
+  NONE, WEEK, MONTH, QUARTER, YEAR
 }
 type CostExpenseFile {
   name: String,
@@ -76,7 +81,9 @@ type CostExpenseInput {
   date: String,
   status: ExpenseStatus,
   amount: Number,
-  files: CostExpenseFileInput[]
+  files: CostExpenseFileInput[],
+  recurrencePeriod: RecurrencePeriod,
+  recurrenceEndDate: String?
 }
 enum ExpenseStatus {
   REQUESTED, APPROVED, REJECTED, DONE
