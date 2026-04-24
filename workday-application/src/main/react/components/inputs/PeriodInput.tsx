@@ -21,26 +21,29 @@ export type PeriodInputProps = {
 
 type CellStyle = {
   borderColor: string;
-  borderStyle: 'solid' | 'dashed';
+  borderStyle: 'solid' | 'dashed' | 'dotted';
   background: string;
 };
 
+// Flock-aligned palette: green for hackdays, sun-yellow for leave.
+// Approved leave is solid yellow; requested leave is the same hue but dotted
+// to imply "not yet final".
 const HACKDAY_STYLE: CellStyle = {
-  borderColor: 'info.main',
+  borderColor: '#2E7D32',
   borderStyle: 'solid',
-  background: 'rgba(2, 136, 209, 0.08)',
+  background: 'rgba(46, 125, 50, 0.08)',
 };
 
-const LEAVE_FINAL_STYLE: CellStyle = {
-  borderColor: 'warning.main',
+const LEAVE_APPROVED_STYLE: CellStyle = {
+  borderColor: '#F5B800',
   borderStyle: 'solid',
-  background: 'rgba(237, 108, 2, 0.10)',
+  background: 'rgba(245, 184, 0, 0.14)',
 };
 
 const LEAVE_REQUESTED_STYLE: CellStyle = {
-  borderColor: 'warning.light',
-  borderStyle: 'dashed',
-  background: 'rgba(237, 108, 2, 0.04)',
+  borderColor: '#F5B800',
+  borderStyle: 'dotted',
+  background: 'rgba(245, 184, 0, 0.05)',
 };
 
 const cellStyleFor = (meta: DayMeta | undefined): CellStyle | undefined => {
@@ -49,7 +52,7 @@ const cellStyleFor = (meta: DayMeta | undefined): CellStyle | undefined => {
   if (meta.leave) {
     return meta.leave.status === 'REQUESTED'
       ? LEAVE_REQUESTED_STYLE
-      : LEAVE_FINAL_STYLE;
+      : LEAVE_APPROVED_STYLE;
   }
   return undefined;
 };
