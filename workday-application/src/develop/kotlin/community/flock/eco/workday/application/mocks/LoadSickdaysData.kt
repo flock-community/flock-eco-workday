@@ -15,6 +15,7 @@ class LoadSickdaysData(
     private val service: SickDayService,
     loadPersonData: LoadPersonData,
     loadData: LoadData,
+    usersWithDefinedHours: UsersWithDefinedHours,
 ) {
     final val startOfYear: LocalDate = LocalDate.now().withDayOfYear(1).withDayOfMonth(1)
 
@@ -22,15 +23,9 @@ class LoadSickdaysData(
 
     init {
         loadData.load {
-
-            loadPersonData.data
-                // Tommy is the demo user for the Hours overview chart — we
-                // want his bars mostly worked hours + a little paid leave, so
-                // we skip the randomized sick-day stripe.
-                .filter { it.user?.email != "tommy@sesam.straat" }
-                .forEach {
-                    createSickdays(it)
-                }
+            (loadPersonData.data - usersWithDefinedHours.persons).forEach {
+                createSickdays(it)
+            }
         }
     }
 

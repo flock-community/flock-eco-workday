@@ -16,25 +16,20 @@ class LoadLeaveDayData(
     private val leaveDayService: LeaveDayService,
     loadData: LoadData,
     loadPersonData: LoadPersonData,
+    usersWithDefinedHours: UsersWithDefinedHours,
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
     final val startOfYear: LocalDate = LocalDate.now().withDayOfYear(1).withDayOfMonth(1)
 
     init {
         loadData.load {
-            loadPersonData.data.forEach {
+            val randomized = loadPersonData.data - usersWithDefinedHours.persons
+            randomized.forEach {
+                createHolidays(it)
                 createPlusDays(it)
-                // Tommy is the demo user for the Hours overview chart — we
-                // want his bars to consist of worked hours + scattered paid
-                // leave + hack-day events, so we skip the random stripes for
-                // holidays and parental leave. His paid leave is painted by
-                // LoadRealisticHoursData.
-                if (it.user?.email != "tommy@sesam.straat") {
-                    createHolidays(it)
-                    createPaidParentalLeave(it)
-                    createUnpaidParentalLeave(it)
-                    createPaidLeave(it)
-                }
+                createPaidParentalLeave(it)
+                createUnpaidParentalLeave(it)
+                createPaidLeave(it)
             }
         }
     }
