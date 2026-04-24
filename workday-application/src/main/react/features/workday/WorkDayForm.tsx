@@ -13,6 +13,7 @@ import { DatePickerField } from '../../components/fields/DatePickerField';
 import { DropzoneAreaField } from '../../components/fields/DropzoneAreaField';
 import { PeriodInputField } from '../../components/fields/PeriodInputField';
 import { StatusSelect } from '../../components/status/StatusSelect';
+import { useDayMeta } from '../../hooks/DayMetaHook';
 import { usePerson } from '../../hooks/PersonHook';
 import { type DatePreset, datePresets } from '../../utils/DatePreset';
 import { isDefined } from '../../utils/validation';
@@ -39,6 +40,19 @@ type WorkDayFormProps = {
   value: any;
   onSubmit?: (data: any) => Promise<void> | void;
 };
+
+function WorkDayPeriodField({
+  from,
+  to,
+  personId,
+}: {
+  from: dayjs.Dayjs;
+  to: dayjs.Dayjs;
+  personId: string | undefined;
+}) {
+  const dayMeta = useDayMeta(personId, from, to);
+  return <PeriodInputField name="days" from={from} to={to} dayMeta={dayMeta} />;
+}
 
 export function WorkDayForm({ value, onSubmit }: WorkDayFormProps) {
   const [person] = usePerson();
@@ -123,7 +137,11 @@ export function WorkDayForm({ value, onSubmit }: WorkDayFormProps) {
             component={TextField}
           />
         ) : (
-          <PeriodInputField name="days" from={values.from} to={values.to} />
+          <WorkDayPeriodField
+            from={values.from}
+            to={values.to}
+            personId={person?.uuid}
+          />
         )}
       </Grid>
     </>
