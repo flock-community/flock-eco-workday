@@ -1,5 +1,6 @@
 import { InfoOutlined } from '@mui/icons-material';
 import {
+  Box,
   Card,
   CardContent,
   CardHeader,
@@ -108,7 +109,15 @@ export function HackdayCard({ refreshKey }: HackdayCardProps) {
                   )}
                 </HighlightSpan>
               </div>
-              <Typography variant="body1">hours left</Typography>
+              <Typography variant="body1">
+                hours left
+                <Box component="span" display="block" fontStyle="italic">
+                  {hoursFormatter.format(
+                    (personHackDayDetails?.totalHoursRemaining ?? 0) / 8,
+                  )}{' '}
+                  days
+                </Box>
+              </Typography>
             </div>
           )}
         </CardContent>

@@ -1,5 +1,6 @@
 import { InfoOutlined } from '@mui/icons-material';
 import {
+  Box,
   Card,
   CardContent,
   CardHeader,
@@ -97,7 +98,12 @@ export function HolidayCard({ item }: HolidayCardProps) {
             <div className={classes.hoursLeft}>
               <HighlightSpan>{hoursFormatter.format(available)}</HighlightSpan>
             </div>
-            <Typography variant="body1">hours left</Typography>
+            <Typography variant="body1">
+              hours left
+              <Box component="span" display="block" fontStyle="italic">
+                {hoursFormatter.format(available / 8)} days
+              </Box>
+            </Typography>
           </div>
         </CardContent>
       </Card>
