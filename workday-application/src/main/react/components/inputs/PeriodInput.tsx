@@ -1,4 +1,4 @@
-import { Box, InputAdornment, TextField, Tooltip } from '@mui/material';
+import { Box, TextField, Tooltip } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import dayjs, { type Dayjs } from 'dayjs';
@@ -19,24 +19,16 @@ export type PeriodInputProps = {
   dayMeta?: Map<string, DayMeta>;
 };
 
-type CellAdornment = {
-  icon: string;
-  opacity: number;
-};
+// Background-only fill — green for hackdays, purple for leave (no
+// distinction between requested/approved). Green + purple stays distinct
+// across deuteranopia, protanopia, and tritanopia.
+const HACKDAY_BG = 'rgba(46, 125, 50, 0.16)';
+const LEAVE_BG = 'rgba(126, 87, 194, 0.18)';
 
-const HACKDAY_ICON = '💻';
-const LEAVE_ICON = '🌴';
-
-const adornmentFor = (meta: DayMeta | undefined): CellAdornment | undefined => {
+const backgroundFor = (meta: DayMeta | undefined): string | undefined => {
   if (!meta) return undefined;
-  if (meta.hackday) return { icon: HACKDAY_ICON, opacity: 1 };
-  if (meta.leave) {
-    return {
-      icon: LEAVE_ICON,
-      // Requested leave is rendered dimmer to imply "not yet final".
-      opacity: meta.leave.status === 'REQUESTED' ? 0.45 : 1,
-    };
-  }
+  if (meta.hackday) return HACKDAY_BG;
+  if (meta.leave) return LEAVE_BG;
   return undefined;
 };
 
@@ -94,33 +86,15 @@ export function PeriodInput({ period, onChange, dayMeta }: PeriodInputProps) {
             </Grid>
             {week.days?.map((day) => {
               const meta = day.disabled ? undefined : dayMeta?.get(day.key);
-              const adornment = adornmentFor(meta);
+              const background = backgroundFor(meta);
               const tooltip = tooltipFor(meta);
-              const endAdornment = adornment ? (
-                <InputAdornment
-                  position="end"
-                  sx={{
-                    opacity: adornment.opacity,
-                    ml: 0,
-                    mr: -0.25,
-                    alignSelf: 'flex-end',
-                    marginBottom: '-3px',
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: '0.66rem',
-                      lineHeight: 1,
-                      display: 'inline-block',
-                      transform: 'scale(0.84)',
-                      transformOrigin: 'bottom right',
-                    }}
-                  >
-                    {adornment.icon}
-                  </span>
-                </InputAdornment>
-              ) : undefined;
+              const sx = background
+                ? {
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: background,
+                    },
+                  }
+                : undefined;
               const field = (
                 <TextField
                   size="small"
@@ -131,10 +105,7 @@ export function PeriodInput({ period, onChange, dayMeta }: PeriodInputProps) {
                     onChange(day.date, parseFloat(ev.target.value || '0'))
                   }
                   type="number"
-                  slotProps={{
-                    input: { endAdornment },
-                    htmlInput: { style: { paddingRight: 2 } },
-                  }}
+                  sx={sx}
                 />
               );
               return (
