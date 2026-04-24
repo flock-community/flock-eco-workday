@@ -110,22 +110,17 @@ export function PeriodInput({ period, onChange, dayMeta }: PeriodInputProps) {
               const meta = day.disabled ? undefined : dayMeta?.get(day.key);
               const style = cellStyleFor(meta);
               const tooltip = tooltipFor(meta);
-              // Bottom-border-only indicator via a pseudo-element so that
-              // dashed strokes render correctly (boxShadow can't do dashed).
               const sx = style
                 ? {
-                    '& .MuiOutlinedInput-root': {
-                      position: 'relative',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: style.borderColor,
+                      borderStyle: style.borderStyle,
+                      borderWidth: 2,
                     },
-                    '& .MuiOutlinedInput-root::after': {
-                      content: '""',
-                      position: 'absolute',
-                      left: 4,
-                      right: 4,
-                      bottom: -1,
-                      borderBottom: `3px ${style.borderStyle} ${style.borderColor}`,
-                      pointerEvents: 'none',
-                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline, & .Mui-focused .MuiOutlinedInput-notchedOutline':
+                      {
+                        borderColor: style.borderColor,
+                      },
                   }
                 : undefined;
               const field = (
