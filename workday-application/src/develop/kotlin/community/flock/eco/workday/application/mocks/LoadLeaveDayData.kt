@@ -23,11 +23,18 @@ class LoadLeaveDayData(
     init {
         loadData.load {
             loadPersonData.data.forEach {
-                createHolidays(it)
                 createPlusDays(it)
-                createPaidParentalLeave(it)
-                createUnpaidParentalLeave(it)
-                createPaidLeave(it)
+                // Tommy is the demo user for the Hours overview chart — we
+                // want his bars to consist of worked hours + scattered paid
+                // leave + hack-day events, so we skip the random stripes for
+                // holidays and parental leave. His paid leave is painted by
+                // LoadRealisticHoursData.
+                if (it.user?.email != "tommy@sesam.straat") {
+                    createHolidays(it)
+                    createPaidParentalLeave(it)
+                    createUnpaidParentalLeave(it)
+                    createPaidLeave(it)
+                }
             }
         }
     }

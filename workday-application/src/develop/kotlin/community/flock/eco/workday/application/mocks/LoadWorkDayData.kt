@@ -36,6 +36,10 @@ class LoadWorkDayData(
             val now = LocalDate.now()
             loadAssignmentData.data
                 .filter { it.to.let { date -> date == null || date > now } }
+                // Tommy's workdays are seeded in LoadRealisticHoursData so the
+                // Hours overview demo has at least one user whose working days
+                // are filled end-to-end with a realistic mix of categories.
+                .filter { it.person?.user?.email != "tommy@sesam.straat" }
                 .map { assignment ->
                     (1..12)
                         .map {

@@ -23,9 +23,14 @@ class LoadSickdaysData(
     init {
         loadData.load {
 
-            loadPersonData.data.forEach {
-                createSickdays(it)
-            }
+            loadPersonData.data
+                // Tommy is the demo user for the Hours overview chart — we
+                // want his bars mostly worked hours + a little paid leave, so
+                // we skip the randomized sick-day stripe.
+                .filter { it.user?.email != "tommy@sesam.straat" }
+                .forEach {
+                    createSickdays(it)
+                }
         }
     }
 

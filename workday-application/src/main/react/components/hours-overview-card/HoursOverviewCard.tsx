@@ -100,7 +100,7 @@ export function HoursOverviewCard({
             <XAxis
               type="number"
               domain={[0, 100]}
-              tickFormatter={(t) => `${t}%`}
+              tickFormatter={(t) => `${Math.round(t)}%`}
             />
             <YAxis type="category" dataKey="label" width={100} />
             <Tooltip
