@@ -1,4 +1,4 @@
-import { Box, TextField, Tooltip } from '@mui/material';
+import { Box, InputAdornment, TextField, Tooltip } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import dayjs, { type Dayjs } from 'dayjs';
@@ -19,37 +19,23 @@ export type PeriodInputProps = {
   dayMeta?: Map<string, DayMeta>;
 };
 
-type CellStyle = {
-  borderColor: string;
-  borderStyle: 'solid' | 'dashed';
+type CellAdornment = {
+  icon: string;
+  opacity: number;
 };
 
-// Subtle bottom-border indicators only. Green + purple stays distinct under
-// red-green colourblindness (deuteranopia/protanopia) and on the blue-yellow
-// axis (tritanopia), and avoids the "warning/error" connotation that
-// yellow/orange carries.
-const HACKDAY_STYLE: CellStyle = {
-  borderColor: '#2E7D32',
-  borderStyle: 'solid',
-};
+const HACKDAY_ICON = '💻';
+const LEAVE_ICON = '🌴';
 
-const LEAVE_APPROVED_STYLE: CellStyle = {
-  borderColor: '#7E57C2',
-  borderStyle: 'solid',
-};
-
-const LEAVE_REQUESTED_STYLE: CellStyle = {
-  borderColor: '#7E57C2',
-  borderStyle: 'dashed',
-};
-
-const cellStyleFor = (meta: DayMeta | undefined): CellStyle | undefined => {
+const adornmentFor = (meta: DayMeta | undefined): CellAdornment | undefined => {
   if (!meta) return undefined;
-  if (meta.hackday) return HACKDAY_STYLE;
+  if (meta.hackday) return { icon: HACKDAY_ICON, opacity: 1 };
   if (meta.leave) {
-    return meta.leave.status === 'REQUESTED'
-      ? LEAVE_REQUESTED_STYLE
-      : LEAVE_APPROVED_STYLE;
+    return {
+      icon: LEAVE_ICON,
+      // Requested leave is rendered dimmer to imply "not yet final".
+      opacity: meta.leave.status === 'REQUESTED' ? 0.45 : 1,
+    };
   }
   return undefined;
 };
@@ -108,21 +94,22 @@ export function PeriodInput({ period, onChange, dayMeta }: PeriodInputProps) {
             </Grid>
             {week.days?.map((day) => {
               const meta = day.disabled ? undefined : dayMeta?.get(day.key);
-              const style = cellStyleFor(meta);
+              const adornment = adornmentFor(meta);
               const tooltip = tooltipFor(meta);
-              const sx = style
-                ? {
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: style.borderColor,
-                      borderStyle: style.borderStyle,
-                      borderWidth: 2,
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline, & .Mui-focused .MuiOutlinedInput-notchedOutline':
-                      {
-                        borderColor: style.borderColor,
-                      },
-                  }
-                : undefined;
+              const endAdornment = adornment ? (
+                <InputAdornment
+                  position="end"
+                  sx={{
+                    fontSize: '0.95rem',
+                    opacity: adornment.opacity,
+                    ml: 0,
+                    mr: -0.5,
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {adornment.icon}
+                </InputAdornment>
+              ) : undefined;
               const field = (
                 <TextField
                   size="small"
@@ -133,7 +120,10 @@ export function PeriodInput({ period, onChange, dayMeta }: PeriodInputProps) {
                     onChange(day.date, parseFloat(ev.target.value || '0'))
                   }
                   type="number"
-                  sx={sx}
+                  slotProps={{
+                    input: { endAdornment },
+                    htmlInput: { style: { paddingRight: 2 } },
+                  }}
                 />
               );
               return (
