@@ -27,9 +27,8 @@ export function HoursOverviewCard({
       .map((monthYear) => ({ ...totalPerPersonMe[monthYear], monthYear }))
       .filter((it) => it !== null)
       .filter((it) => it.assignment > 0)
-      .map((it) => ({
-        ...it,
-        missing: Math.max(
+      .map((it) => {
+        const missing = Math.max(
           0,
           it.total -
             (it.workDays +
@@ -39,8 +38,9 @@ export function HoursOverviewCard({
               it.event +
               it.paidParentalLeaveUsed +
               it.unpaidParentalLeaveUsed),
-        ),
-      }))
+        );
+        return missing > 0 ? { ...it, missing } : { ...it };
+      })
       .sort((a, b) => a.monthYear.localeCompare(b.monthYear))
       .slice(-6)
       .map((it) => ({
@@ -51,6 +51,8 @@ export function HoursOverviewCard({
         }),
       }));
   }, [totalPerPersonMe]);
+
+  const hasMissing = data.some((it) => (it.missing ?? 0) > 0);
 
   if (!totalPerPersonMe) return <AlignedLoader />;
 
@@ -79,6 +81,7 @@ export function HoursOverviewCard({
             <Tooltip
               // @ts-expect-error
               formatter={(value) => new Intl.NumberFormat().format(value)}
+              filterNull
             />
             <Legend />
             <Bar
@@ -123,12 +126,14 @@ export function HoursOverviewCard({
               name="event hours"
               fill="#fed766"
             />
-            <Bar
-              stackId="days"
-              dataKey="missing"
-              name="missing hours"
-              fill="#9e9e9e"
-            />
+            {hasMissing && (
+              <Bar
+                stackId="days"
+                dataKey="missing"
+                name="missing hours"
+                fill="#9e9e9e"
+              />
+            )}
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

@@ -255,6 +255,7 @@ private fun AggregationPerson.produce() =
         total = total,
         leaveDayUsed = leaveDayUsed.produce(),
         leaveDayBalance = leaveDayBalance.produce(),
+        paidLeaveHours = paidLeaveHours.produce(),
         paidParentalLeaveUsed = paidParentalLeaveUsed.produce(),
         unpaidParentalLeaveUsed = unpaidParentalLeaveUsed.produce(),
         revenue =
