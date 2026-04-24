@@ -21,29 +21,26 @@ export type PeriodInputProps = {
 
 type CellStyle = {
   borderColor: string;
-  borderStyle: 'solid' | 'dashed' | 'dotted';
-  background: string;
+  borderStyle: 'solid' | 'dashed';
 };
 
-// Flock-aligned palette: green for hackdays, sun-yellow for leave.
-// Approved leave is solid yellow; requested leave is the same hue but dotted
-// to imply "not yet final".
+// Subtle bottom-border indicators only. Green + purple stays distinct under
+// red-green colourblindness (deuteranopia/protanopia) and on the blue-yellow
+// axis (tritanopia), and avoids the "warning/error" connotation that
+// yellow/orange carries.
 const HACKDAY_STYLE: CellStyle = {
   borderColor: '#2E7D32',
   borderStyle: 'solid',
-  background: 'rgba(46, 125, 50, 0.08)',
 };
 
 const LEAVE_APPROVED_STYLE: CellStyle = {
-  borderColor: '#F5B800',
+  borderColor: '#7E57C2',
   borderStyle: 'solid',
-  background: 'rgba(245, 184, 0, 0.14)',
 };
 
 const LEAVE_REQUESTED_STYLE: CellStyle = {
-  borderColor: '#F5B800',
-  borderStyle: 'dotted',
-  background: 'rgba(245, 184, 0, 0.05)',
+  borderColor: '#7E57C2',
+  borderStyle: 'dashed',
 };
 
 const cellStyleFor = (meta: DayMeta | undefined): CellStyle | undefined => {
@@ -113,18 +110,22 @@ export function PeriodInput({ period, onChange, dayMeta }: PeriodInputProps) {
               const meta = day.disabled ? undefined : dayMeta?.get(day.key);
               const style = cellStyleFor(meta);
               const tooltip = tooltipFor(meta);
+              // Bottom-border-only indicator via a pseudo-element so that
+              // dashed strokes render correctly (boxShadow can't do dashed).
               const sx = style
                 ? {
-                    backgroundColor: style.background,
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: style.borderColor,
-                      borderStyle: style.borderStyle,
-                      borderWidth: 2,
+                    '& .MuiOutlinedInput-root': {
+                      position: 'relative',
                     },
-                    '&:hover .MuiOutlinedInput-notchedOutline, & .Mui-focused .MuiOutlinedInput-notchedOutline':
-                      {
-                        borderColor: style.borderColor,
-                      },
+                    '& .MuiOutlinedInput-root::after': {
+                      content: '""',
+                      position: 'absolute',
+                      left: 4,
+                      right: 4,
+                      bottom: -1,
+                      borderBottom: `3px ${style.borderStyle} ${style.borderColor}`,
+                      pointerEvents: 'none',
+                    },
                   }
                 : undefined;
               const field = (
