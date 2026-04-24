@@ -103,6 +103,8 @@ export function PeriodInput({ period, onChange, dayMeta }: PeriodInputProps) {
                     opacity: adornment.opacity,
                     ml: 0,
                     mr: -0.25,
+                    alignSelf: 'flex-end',
+                    marginBottom: '-3px',
                     pointerEvents: 'none',
                   }}
                 >
@@ -111,8 +113,8 @@ export function PeriodInput({ period, onChange, dayMeta }: PeriodInputProps) {
                       fontSize: '0.66rem',
                       lineHeight: 1,
                       display: 'inline-block',
-                      transform: 'scale(0.7)',
-                      transformOrigin: 'center',
+                      transform: 'scale(0.84)',
+                      transformOrigin: 'bottom right',
                     }}
                   >
                     {adornment.icon}
