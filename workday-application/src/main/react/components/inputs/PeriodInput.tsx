@@ -100,14 +100,23 @@ export function PeriodInput({ period, onChange, dayMeta }: PeriodInputProps) {
                 <InputAdornment
                   position="end"
                   sx={{
-                    fontSize: '0.95rem',
                     opacity: adornment.opacity,
                     ml: 0,
-                    mr: -0.5,
+                    mr: -0.25,
                     pointerEvents: 'none',
                   }}
                 >
-                  {adornment.icon}
+                  <span
+                    style={{
+                      fontSize: '0.66rem',
+                      lineHeight: 1,
+                      display: 'inline-block',
+                      transform: 'scale(0.7)',
+                      transformOrigin: 'center',
+                    }}
+                  >
+                    {adornment.icon}
+                  </span>
                 </InputAdornment>
               ) : undefined;
               const field = (
