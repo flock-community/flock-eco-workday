@@ -5,6 +5,7 @@ import {
   CardContent,
   CardHeader,
   IconButton,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -100,9 +101,11 @@ export function HolidayCard({ item }: HolidayCardProps) {
             </div>
             <Typography variant="body1">
               hours left
-              <Box component="span" display="block" fontStyle="italic">
-                {hoursFormatter.format(available / 8)} days
-              </Box>
+              <Tooltip title="Based on 8 work hours per day">
+                <Box component="span" display="block" fontStyle="italic">
+                  {hoursFormatter.format(available / 8)} days
+                </Box>
+              </Tooltip>
             </Typography>
           </div>
         </CardContent>
