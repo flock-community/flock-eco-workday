@@ -11,6 +11,7 @@ import {
   mutatePeriod,
   type Period,
 } from '../../features/period/Period';
+import type { DayMeta } from '../../hooks/DayMetaHook';
 import { PeriodInput } from '../inputs/PeriodInput';
 
 const PREFIX = 'PeriodInputField';
@@ -30,6 +31,7 @@ type PeriodInputFieldProps = {
   from: dayjs.Dayjs;
   to: dayjs.Dayjs;
   reset?: boolean;
+  dayMeta?: Map<string, DayMeta>;
 };
 
 function PeriodInputRenderer({
@@ -39,6 +41,7 @@ function PeriodInputRenderer({
   reset,
   value,
   setFieldValue,
+  dayMeta,
 }: Readonly<PeriodInputRendererProps>) {
   const [period, setPeriod] = useState<Period>({
     from,
@@ -83,7 +86,11 @@ function PeriodInputRenderer({
 
   return (
     <>
-      <PeriodInput period={period} onChange={handlePeriodChange} />
+      <PeriodInput
+        period={period}
+        onChange={handlePeriodChange}
+        dayMeta={dayMeta}
+      />
       <ButtonGroup className={classes.buttons} size="small" fullWidth>
         <Button variant="outlined" onClick={() => setHoursPerDay(0)}>
           Clear all
@@ -106,6 +113,7 @@ type PeriodInputRendererProps = {
   reset?: boolean;
   value: any;
   setFieldValue: (field: string, value: unknown) => void;
+  dayMeta?: Map<string, DayMeta>;
 };
 
 export function PeriodInputField({
@@ -113,6 +121,7 @@ export function PeriodInputField({
   from,
   to,
   reset,
+  dayMeta,
 }: Readonly<PeriodInputFieldProps>) {
   return (
     <StyledField id={name} name={name}>
@@ -124,6 +133,7 @@ export function PeriodInputField({
           reset={reset}
           value={value}
           setFieldValue={setFieldValue}
+          dayMeta={dayMeta}
         />
       )}
     </StyledField>
