@@ -15,6 +15,7 @@ class LoadSickdaysData(
     private val service: SickDayService,
     loadPersonData: LoadPersonData,
     loadData: LoadData,
+    usersWithDefinedHours: UsersWithDefinedHours,
 ) {
     final val startOfYear: LocalDate = LocalDate.now().withDayOfYear(1).withDayOfMonth(1)
 
@@ -22,8 +23,7 @@ class LoadSickdaysData(
 
     init {
         loadData.load {
-
-            loadPersonData.data.forEach {
+            (loadPersonData.data - usersWithDefinedHours.persons).forEach {
                 createSickdays(it)
             }
         }

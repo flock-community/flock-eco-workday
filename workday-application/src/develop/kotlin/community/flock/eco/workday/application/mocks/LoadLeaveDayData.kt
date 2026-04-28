@@ -16,13 +16,15 @@ class LoadLeaveDayData(
     private val leaveDayService: LeaveDayService,
     loadData: LoadData,
     loadPersonData: LoadPersonData,
+    usersWithDefinedHours: UsersWithDefinedHours,
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
     final val startOfYear: LocalDate = LocalDate.now().withDayOfYear(1).withDayOfMonth(1)
 
     init {
         loadData.load {
-            loadPersonData.data.forEach {
+            val randomized = loadPersonData.data - usersWithDefinedHours.persons
+            randomized.forEach {
                 createHolidays(it)
                 createPlusDays(it)
                 createPaidParentalLeave(it)
