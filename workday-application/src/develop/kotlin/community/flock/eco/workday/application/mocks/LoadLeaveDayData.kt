@@ -33,6 +33,26 @@ class LoadLeaveDayData(
     }
 
     private fun createHolidays(it: Person) {
+        // Deterministic demo entries that exercise the weekday/calendar-day distinction:
+        //   Fri 2040-04-06 → Fri 2040-04-13 — 8 calendar days, 6 weekdays, 48h (spans a weekend)
+        //   Mon 2040-04-16 → Fri 2040-04-20 — 5 calendar days, 5 weekdays, 40h (no weekend)
+        LeaveDayForm(
+            description = "Demo holiday ${it.firstname} (spans weekend)",
+            from = LocalDate.of(2040, 4, 6),
+            to = LocalDate.of(2040, 4, 13),
+            days = mutableListOf(8.0, 0.0, 0.0, 8.0, 8.0, 8.0, 8.0, 8.0),
+            hours = 48.0,
+            personId = it.uuid,
+        ).create()
+        LeaveDayForm(
+            description = "Demo holiday ${it.firstname} (no weekend)",
+            from = LocalDate.of(2040, 4, 16),
+            to = LocalDate.of(2040, 4, 20),
+            days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0),
+            hours = 40.0,
+            personId = it.uuid,
+        ).create()
+
         for (i in 0 until 10) {
             val random = (0..200).random().toLong()
             LeaveDayForm(
