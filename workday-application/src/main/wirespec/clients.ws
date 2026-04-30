@@ -1,17 +1,17 @@
-endpoint FindByCode_6 GET /api/clients/{code: String} -> {
-  200 -> Client
-}
-endpoint Put_5 PUT ClientForm /api/clients/{code: String} -> {
-  200 -> Client
-}
-endpoint Delete_7 DELETE /api/clients/{code: String} -> {
-  200 -> Unit
-}
-endpoint FindAll_1 GET /api/clients ? {pageable: Pageable} -> {
+endpoint GetClientAll GET /api/clients ? {page: Integer32?, size: Integer32?, sort: String?} -> {
   200 -> Client[]
 }
-endpoint Post_5 POST ClientForm /api/clients -> {
+endpoint GetClientByCode GET /api/clients/{code: String} -> {
   200 -> Client
+}
+endpoint PostClient POST ClientForm /api/clients -> {
+  200 -> Client
+}
+endpoint PutClient PUT ClientForm /api/clients/{code: String} -> {
+  200 -> Client
+}
+endpoint DeleteClient DELETE /api/clients/{code: String} -> {
+  200 -> Unit
 }
 
 type ClientForm {
