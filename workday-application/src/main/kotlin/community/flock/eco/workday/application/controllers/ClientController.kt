@@ -25,11 +25,12 @@ class ClientController(
     DeleteClient.Handler {
     @PreAuthorize("hasAuthority('ClientAuthority.READ')")
     override suspend fun getClientAll(request: GetClientAll.Request): GetClientAll.Response<*> {
-        val page = PageRequest.of(
-            request.queries.page ?: 0,
-            request.queries.size ?: 20,
-            request.queries.sort?.toSort() ?: Sort.unsorted(),
-        )
+        val page =
+            PageRequest.of(
+                request.queries.page ?: 0,
+                request.queries.size ?: 20,
+                request.queries.sort?.toSort() ?: Sort.unsorted(),
+            )
         return GetClientAll.Response200(
             clientService
                 .findAll(page)

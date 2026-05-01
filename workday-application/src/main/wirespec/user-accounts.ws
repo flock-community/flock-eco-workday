@@ -1,29 +1,29 @@
-endpoint ResetPasswordWithResetCode PUT PasswordResetForm /api/user-accounts/reset-password -> {
-  200 -> Unit
-}
-endpoint ResetPasswordWithNew PUT NewPasswordForm /api/user-accounts/new-password -> {
-  200 -> Unit
-}
-endpoint FindAllAccounts GET /api/user-accounts ? {search: String?,page: Pageable} -> {
+endpoint GetUserAccountAll GET /api/user-accounts ? {search: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
   200 -> UserAccount[]
 }
-endpoint RevokeAccountKey POST KeyRevokeForm /api/user-accounts/revoke-key -> {
+endpoint PutUserAccountResetPassword PUT PasswordResetForm /api/user-accounts/reset-password -> {
   200 -> Unit
 }
-endpoint GenerateKey POST UserKeyForm /api/user-accounts/generate-key -> {
+endpoint PutUserAccountNewPassword PUT NewPasswordForm /api/user-accounts/new-password -> {
+  200 -> Unit
+}
+endpoint PostUserAccountGenerateKey POST UserKeyForm /api/user-accounts/generate-key -> {
   200 -> GenerateKeyResponse
 }
-
-type UserKeyForm {
-  label: String?
+endpoint PostUserAccountRevokeKey POST KeyRevokeForm /api/user-accounts/revoke-key -> {
+  200 -> Unit
 }
+
 type PasswordResetForm {
-  resetCode: String?,
-  password: String?
+  resetCode: String,
+  password: String
 }
 type NewPasswordForm {
-  oldPassword: String?,
-  newPassword: String?
+  oldPassword: String,
+  newPassword: String
+}
+type UserKeyForm {
+  label: String?
 }
 type KeyRevokeForm {
   id: Integer

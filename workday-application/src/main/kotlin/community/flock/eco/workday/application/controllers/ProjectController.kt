@@ -25,11 +25,12 @@ class ProjectController(
     DeleteProject.Handler {
     @PreAuthorize("hasAuthority('ProjectAuthority.READ')")
     override suspend fun getProjectAll(request: GetProjectAll.Request): GetProjectAll.Response<*> {
-        val page = PageRequest.of(
-            request.queries.page ?: 0,
-            request.queries.size ?: 20,
-            request.queries.sort?.toSort() ?: Sort.unsorted(),
-        )
+        val page =
+            PageRequest.of(
+                request.queries.page ?: 0,
+                request.queries.size ?: 20,
+                request.queries.sort?.toSort() ?: Sort.unsorted(),
+            )
         return GetProjectAll.Response200(
             projectService
                 .findAll(page)
