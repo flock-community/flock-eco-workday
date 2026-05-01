@@ -1,17 +1,17 @@
-endpoint FindByCode_2 GET /api/projects/{code: String} -> {
-  200 -> Project
-}
-endpoint Update PUT ProjectForm /api/projects/{code: String} -> {
-  200 -> Project
-}
-endpoint Delete_2 DELETE /api/projects/{code: String} -> {
-  200 -> Unit
-}
-endpoint FindAll GET /api/projects ? {pageable: Pageable} -> {
+endpoint GetProjectAll GET /api/projects ? {page: Integer32?, size: Integer32?, sort: String?} -> {
   200 -> Project[]
 }
-endpoint Create POST ProjectForm /api/projects -> {
+endpoint GetProjectByCode GET /api/projects/{code: String} -> {
   200 -> Project
+}
+endpoint PostProject POST ProjectForm /api/projects -> {
+  200 -> Project
+}
+endpoint PutProject PUT ProjectForm /api/projects/{code: String} -> {
+  200 -> Project
+}
+endpoint DeleteProject DELETE /api/projects/{code: String} -> {
+  200 -> Unit
 }
 
 type ProjectForm {
