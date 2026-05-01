@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -58,7 +60,8 @@ class ContractControllerTest(
                     .content(mapper.writeValueAsString(form))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.id").exists())
             .andExpect(jsonPath("$.code").exists())
@@ -94,7 +97,8 @@ class ContractControllerTest(
                     .content(mapper.writeValueAsString(form))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.id").exists())
             .andExpect(jsonPath("$.code").exists())
@@ -126,7 +130,8 @@ class ContractControllerTest(
                     .content(mapper.writeValueAsString(form))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.id").exists())
             .andExpect(jsonPath("$.code").exists())
@@ -155,7 +160,8 @@ class ContractControllerTest(
                     .content(mapper.writeValueAsString(form))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.id").exists())
             .andExpect(jsonPath("$.code").exists())
@@ -181,7 +187,8 @@ class ContractControllerTest(
                 get("$baseUrl/${contract.code}")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.code").value(contract.code))
             .andExpect(jsonPath("$.from").value(contract.from.toString()))
@@ -217,7 +224,8 @@ class ContractControllerTest(
                     .content(mapper.writeValueAsString(updateForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.monthlySalary").value(updateForm.monthlySalary))
             .andExpect(jsonPath("$.hoursPerWeek").value(updateForm.hoursPerWeek))
@@ -255,7 +263,8 @@ class ContractControllerTest(
                     .content(mapper.writeValueAsString(updateForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.hourlyRate").value(updateForm.hourlyRate))
             .andExpect(jsonPath("$.hoursPerWeek").value(updateForm.hoursPerWeek))
@@ -278,7 +287,8 @@ class ContractControllerTest(
                 delete("$baseUrl/${contract.code}")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isNoContent)
     }
 
     @Test
@@ -297,7 +307,8 @@ class ContractControllerTest(
                 delete("$baseUrl/${contract.code}")
                     .with(user(CreateHelper.UserSecurity(regularUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isForbidden)
+            ).asyncDispatch()
+            .andExpect(status().isForbidden)
     }
 
     @Test
@@ -309,7 +320,8 @@ class ContractControllerTest(
                 get(baseUrl)
                     .with(user(CreateHelper.UserSecurity(regularUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isForbidden)
+            ).asyncDispatch()
+            .andExpect(status().isForbidden)
     }
 
     @Test
@@ -327,7 +339,8 @@ class ContractControllerTest(
                 get("$baseUrl?personId=${person.uuid}")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$[0].person.uuid").value(person.uuid.toString()))
@@ -349,6 +362,10 @@ class ContractControllerTest(
                 get("$baseUrl/${contract.code}")
                     .with(user(CreateHelper.UserSecurity(unauthorizedUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isForbidden)
+            ).asyncDispatch()
+            .andExpect(status().isForbidden)
     }
+
+    private fun ResultActions.asyncDispatch(): ResultActions =
+        mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
 }

@@ -1,189 +1,328 @@
 package community.flock.eco.workday.application.controllers
 
+import community.flock.eco.workday.api.endpoint.DeleteContract
+import community.flock.eco.workday.api.endpoint.GetContractAll
+import community.flock.eco.workday.api.endpoint.GetContractByCode
+import community.flock.eco.workday.api.endpoint.PostContractExternal
+import community.flock.eco.workday.api.endpoint.PostContractInternal
+import community.flock.eco.workday.api.endpoint.PostContractManagement
+import community.flock.eco.workday.api.endpoint.PostContractService
+import community.flock.eco.workday.api.endpoint.PutContractExternal
+import community.flock.eco.workday.api.endpoint.PutContractInternal
+import community.flock.eco.workday.api.endpoint.PutContractManagement
+import community.flock.eco.workday.api.endpoint.PutContractService
 import community.flock.eco.workday.application.authorities.ContractAuthority
 import community.flock.eco.workday.application.forms.ContractExternalForm
 import community.flock.eco.workday.application.forms.ContractInternalForm
 import community.flock.eco.workday.application.forms.ContractManagementForm
 import community.flock.eco.workday.application.forms.ContractServiceForm
 import community.flock.eco.workday.application.model.Contract
-import community.flock.eco.workday.application.services.ContractService
-import community.flock.eco.workday.core.utils.toResponse
+import community.flock.eco.workday.application.model.ContractExternal
+import community.flock.eco.workday.application.model.ContractInternal
+import community.flock.eco.workday.application.model.ContractManagement
+import community.flock.eco.workday.application.model.ContractService
+import community.flock.eco.workday.application.services.ContractService as ContractDomainService
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
-import org.springframework.format.annotation.DateTimeFormat
-import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.data.domain.Sort
+import org.springframework.http.HttpStatus
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
-import java.security.Principal
+import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 import java.util.UUID
+import community.flock.eco.workday.api.model.Contract as ContractApi
+import community.flock.eco.workday.api.model.ContractExternal as ContractExternalApi
+import community.flock.eco.workday.api.model.ContractExternalForm as ContractExternalFormApi
+import community.flock.eco.workday.api.model.ContractInternal as ContractInternalApi
+import community.flock.eco.workday.api.model.ContractInternalForm as ContractInternalFormApi
+import community.flock.eco.workday.api.model.ContractManagement as ContractManagementApi
+import community.flock.eco.workday.api.model.ContractManagementForm as ContractManagementFormApi
+import community.flock.eco.workday.api.model.ContractService as ContractServiceApi
+import community.flock.eco.workday.api.model.ContractServiceForm as ContractServiceFormApi
+import community.flock.eco.workday.api.model.ContractType as ContractTypeApi
+import community.flock.eco.workday.api.model.Person as PersonApi
+import community.flock.eco.workday.application.model.ContractType as ContractTypeInternal
+import community.flock.eco.workday.application.model.Person as PersonInternal
 
 @RestController
-@RequestMapping("/api")
 class ContractController(
     private val userService: UserService,
-    private val contractService: ContractService,
-) {
-    @GetMapping("/contracts")
-    @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
-    fun findAll(page: Pageable): ResponseEntity<List<Contract>> =
-        contractService
-            .findAll(page)
-            .sortedBy { it.to }
-            .toResponse()
+    private val contractService: ContractDomainService,
+) : GetContractAll.Handler,
+    GetContractByCode.Handler,
+    DeleteContract.Handler,
+    PostContractInternal.Handler,
+    PutContractInternal.Handler,
+    PostContractExternal.Handler,
+    PutContractExternal.Handler,
+    PostContractManagement.Handler,
+    PutContractManagement.Handler,
+    PostContractService.Handler,
+    PutContractService.Handler {
+    override suspend fun getContractAll(request: GetContractAll.Request): GetContractAll.Response<*> {
+        val q = request.queries
+        val pageable = q.toPageable()
 
-    @GetMapping("/contracts", params = ["to"])
-    @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
-    fun findAllByToAfterOrToNull(
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate?,
-        page: Pageable,
-    ): ResponseEntity<List<Contract>> =
-        contractService
-            .findAllByToAfterOrToNull(to, page)
-            .toResponse()
+        val to = q.to?.let(LocalDate::parse)
+        val start = q.start?.let(LocalDate::parse)
+        val end = q.end?.let(LocalDate::parse)
+        val personId = q.personId?.let(UUID::fromString)
 
-    @GetMapping("/contracts", params = ["start", "end"])
-    @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
-    fun findAllByToBetween(
-        page: Pageable,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) start: LocalDate?,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) end: LocalDate?,
-    ): ResponseEntity<List<Contract>> =
-        contractService
-            .findAllByToBetween(start, end)
-            .sortedByDescending { it.to }
-            .toResponse()
-
-    @GetMapping("/contracts", params = ["personId"])
-    @PreAuthorize("hasAuthority('ContractAuthority.READ')")
-    fun findAllByPersonCode(
-        @RequestParam(required = false) personId: UUID?,
-        page: Pageable,
-        principal: Principal,
-    ): ResponseEntity<List<Contract>> =
-        principal
-            .findUser()
-            ?.let { user ->
-                when {
-                    user.isAdmin() && personId != null -> contractService.findAllByPersonUuid(personId, page)
-                    else -> contractService.findAllByPersonUserCode(user.code, page)
+        val contracts: List<Contract> =
+            when {
+                personId != null -> {
+                    val user = requireAuthority(ContractAuthority.READ)
+                    if (user.hasAuthority(ContractAuthority.ADMIN)) {
+                        contractService.findAllByPersonUuid(personId, pageable).content
+                    } else {
+                        contractService.findAllByPersonUserCode(user.code, pageable).content
+                    }
                 }
-            }.toResponse()
-
-    @GetMapping("/contracts/{code}")
-    @PreAuthorize("hasAuthority('ContractAuthority.READ')")
-    fun findByCode(
-        @PathVariable code: String,
-    ): ResponseEntity<Contract> =
-        contractService
-            .findByCode(code)
-            .toResponse()
-
-    @PostMapping("/contracts-internal")
-    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun postInternal(
-        @RequestBody form: ContractInternalForm,
-        principal: Principal,
-    ) = principal
-        .findUser()
-        ?.let { person ->
-            val personCode =
-                when {
-                    person.isAdmin() -> form.personId
-                    else -> UUID.fromString(person.code)
+                to != null -> {
+                    requireAuthority(ContractAuthority.ADMIN)
+                    contractService.findAllByToAfterOrToNull(to, pageable).content
                 }
-            contractService.create(form.copy(personId = personCode))
-        }.toResponse()
+                start != null || end != null -> {
+                    requireAuthority(ContractAuthority.ADMIN)
+                    contractService.findAllByToBetween(start, end).sortedByDescending { it.to }
+                }
+                else -> {
+                    requireAuthority(ContractAuthority.ADMIN)
+                    contractService.findAll(pageable).content.sortedBy { it.to }
+                }
+            }
 
-    @PostMapping("/contracts-external")
-    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun postExternal(
-        @RequestBody form: ContractExternalForm,
-    ) = contractService
-        .create(form)
-        .toResponse()
+        return GetContractAll.Response200(contracts.map { it.externalize() })
+    }
 
-    @PostMapping("/contracts-management")
-    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun postManagement(
-        @RequestBody form: ContractManagementForm,
-    ) = contractService
-        .create(form)
-        .toResponse()
+    override suspend fun getContractByCode(request: GetContractByCode.Request): GetContractByCode.Response<*> {
+        requireAuthority(ContractAuthority.READ)
+        val contract =
+            contractService.findByCode(request.path.code)
+                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Contract not found")
+        return GetContractByCode.Response200(contract.externalize())
+    }
 
-    @PostMapping("/contracts-service")
-    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun postService(
-        @RequestBody form: ContractServiceForm,
-    ) = contractService
-        .create(form)
-        .toResponse()
+    override suspend fun deleteContract(request: DeleteContract.Request): DeleteContract.Response<*> {
+        requireAuthority(ContractAuthority.ADMIN)
+        contractService.deleteByCode(request.path.code)
+        return DeleteContract.Response204(Unit)
+    }
 
-    @PutMapping("/contracts-internal/{code}")
-    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun putInternal(
-        @PathVariable code: String,
-        @RequestBody form: ContractInternalForm,
-        principal: Principal,
-    ) = contractService
-        .update(code, form)
-        .toResponse()
+    override suspend fun postContractInternal(request: PostContractInternal.Request): PostContractInternal.Response<*> {
+        val user = requireAuthority(ContractAuthority.WRITE)
+        val isAdmin = user.hasAuthority(ContractAuthority.ADMIN)
+        val form = request.body.internalize()
+        val personId = if (isAdmin) form.personId else UUID.fromString(user.code)
+        val created =
+            contractService.create(form.copy(personId = personId))
+                ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not create internal contract")
+        return PostContractInternal.Response200(created.externalize())
+    }
 
-    @PutMapping("/contracts-external/{code}")
-    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun putExternal(
-        @PathVariable code: String,
-        @RequestBody form: ContractExternalForm,
-        principal: Principal,
-    ) = contractService
-        .update(code, form)
-        .toResponse()
+    override suspend fun putContractInternal(request: PutContractInternal.Request): PutContractInternal.Response<*> {
+        requireAuthority(ContractAuthority.WRITE)
+        val updated =
+            contractService.update(request.path.code, request.body.internalize())
+                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Contract not found")
+        return PutContractInternal.Response200(updated.externalize())
+    }
 
-    @PutMapping("/contracts-management/{code}")
-    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun putManagement(
-        @PathVariable code: String,
-        @RequestBody form: ContractManagementForm,
-        principal: Principal,
-    ) = contractService
-        .update(code, form)
-        .toResponse()
+    override suspend fun postContractExternal(request: PostContractExternal.Request): PostContractExternal.Response<*> {
+        requireAuthority(ContractAuthority.WRITE)
+        val created =
+            contractService.create(request.body.internalize())
+                ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not create external contract")
+        return PostContractExternal.Response200(created.externalize())
+    }
 
-    @PutMapping("/contracts-service/{code}")
-    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
-    fun putService(
-        @PathVariable code: String,
-        @RequestBody form: ContractServiceForm,
-        principal: Principal,
-    ) = contractService
-        .update(code, form)
-        .toResponse()
+    override suspend fun putContractExternal(request: PutContractExternal.Request): PutContractExternal.Response<*> {
+        requireAuthority(ContractAuthority.WRITE)
+        val updated =
+            contractService.update(request.path.code, request.body.internalize())
+                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Contract not found")
+        return PutContractExternal.Response200(updated.externalize())
+    }
 
-    @DeleteMapping("/contracts/{code}")
-    @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
-    fun delete(
-        @PathVariable code: String,
-        principal: Principal,
-    ) = contractService
-        .deleteByCode(code)
-        .toResponse()
-        .toResponse()
+    override suspend fun postContractManagement(request: PostContractManagement.Request): PostContractManagement.Response<*> {
+        requireAuthority(ContractAuthority.WRITE)
+        val created =
+            contractService.create(request.body.internalize())
+                ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not create management contract")
+        return PostContractManagement.Response200(created.externalize())
+    }
 
-    private fun Principal.findUser(): User? =
-        userService
-            .findByCode(this.name)
+    override suspend fun putContractManagement(request: PutContractManagement.Request): PutContractManagement.Response<*> {
+        requireAuthority(ContractAuthority.WRITE)
+        val updated =
+            contractService.update(request.path.code, request.body.internalize())
+                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Contract not found")
+        return PutContractManagement.Response200(updated.externalize())
+    }
 
-    private fun User.isAdmin(): Boolean =
-        this
-            .authorities
-            .contains(ContractAuthority.ADMIN.toName())
+    override suspend fun postContractService(request: PostContractService.Request): PostContractService.Response<*> {
+        requireAuthority(ContractAuthority.WRITE)
+        val created =
+            contractService.create(request.body.internalize())
+                ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not create service contract")
+        return PostContractService.Response200(created.externalize())
+    }
+
+    override suspend fun putContractService(request: PutContractService.Request): PutContractService.Response<*> {
+        requireAuthority(ContractAuthority.WRITE)
+        val updated =
+            contractService.update(request.path.code, request.body.internalize())
+                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Contract not found")
+        return PutContractService.Response200(updated.externalize())
+    }
+
+    private fun requireAuthority(authority: ContractAuthority): User {
+        val auth =
+            SecurityContextHolder.getContext().authentication
+                ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        if (!auth.authorities.map { it.authority }.contains(authority.toName())) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        }
+        return userService.findByCode(auth.name)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+    }
+
+    private fun User.hasAuthority(authority: ContractAuthority): Boolean = authorities.contains(authority.toName())
+
+    private fun Contract.externalize(): ContractApi =
+        ContractApi(
+            id = id,
+            code = code,
+            from = from.toString(),
+            to = to?.toString(),
+            person = person?.externalize(),
+            type = type.externalize(),
+        )
+
+    private fun ContractInternal.externalize(): ContractInternalApi =
+        ContractInternalApi(
+            id = id,
+            code = code,
+            from = from.toString(),
+            to = to?.toString(),
+            person = person?.externalize(),
+            type = type.externalize(),
+            monthlySalary = monthlySalary,
+            hoursPerWeek = hoursPerWeek,
+            holidayHours = holidayHours,
+            hackHours = hackHours,
+            billable = billable,
+        )
+
+    private fun ContractExternal.externalize(): ContractExternalApi =
+        ContractExternalApi(
+            id = id,
+            code = code,
+            from = from.toString(),
+            to = to?.toString(),
+            person = person?.externalize(),
+            type = type.externalize(),
+            hourlyRate = hourlyRate,
+            hoursPerWeek = hoursPerWeek,
+            billable = billable,
+        )
+
+    private fun ContractManagement.externalize(): ContractManagementApi =
+        ContractManagementApi(
+            id = id,
+            code = code,
+            from = from.toString(),
+            to = to?.toString(),
+            person = person?.externalize(),
+            type = type.externalize(),
+            monthlyFee = monthlyFee,
+        )
+
+    private fun ContractService.externalize(): ContractServiceApi =
+        ContractServiceApi(
+            id = id,
+            code = code,
+            from = from.toString(),
+            to = to?.toString(),
+            person = person?.externalize(),
+            type = type.externalize(),
+            monthlyCosts = monthlyCosts,
+            description = description,
+        )
+
+    private fun ContractTypeInternal.externalize(): ContractTypeApi =
+        when (this) {
+            ContractTypeInternal.INTERNAL -> ContractTypeApi.INTERNAL
+            ContractTypeInternal.EXTERNAL -> ContractTypeApi.EXTERNAL
+            ContractTypeInternal.MANAGEMENT -> ContractTypeApi.MANAGEMENT
+            ContractTypeInternal.SERVICE -> ContractTypeApi.SERVICE
+        }
+
+    private fun PersonInternal.externalize() =
+        PersonApi(
+            id = id,
+            uuid = uuid.toString(),
+            firstname = firstname,
+            lastname = lastname,
+            email = email,
+            position = position,
+            number = number,
+            birthdate = birthdate?.toString(),
+            joinDate = joinDate?.toString(),
+            active = active,
+            lastActiveAt = lastActiveAt?.toString(),
+            reminders = reminders,
+            receiveEmail = receiveEmail,
+            shoeSize = shoeSize,
+            shirtSize = shirtSize,
+            googleDriveId = googleDriveId,
+            user = null,
+            fullName = "$firstname $lastname",
+        )
+
+    private fun ContractInternalFormApi.internalize() =
+        ContractInternalForm(
+            personId = personId?.let(UUID::fromString) ?: error("personId is required"),
+            monthlySalary = monthlySalary ?: 0.0,
+            hoursPerWeek = hoursPerWeek ?: 0,
+            from = from?.let(LocalDate::parse) ?: error("from is required"),
+            to = to?.let(LocalDate::parse),
+            holidayHours = holidayHours ?: 0,
+            hackHours = hackHours ?: 0,
+            billable = billable ?: true,
+        )
+
+    private fun ContractExternalFormApi.internalize() =
+        ContractExternalForm(
+            personId = personId?.let(UUID::fromString) ?: error("personId is required"),
+            hourlyRate = hourlyRate ?: 0.0,
+            hoursPerWeek = hoursPerWeek ?: 0,
+            from = from?.let(LocalDate::parse) ?: error("from is required"),
+            to = to?.let(LocalDate::parse),
+            billable = billable ?: true,
+        )
+
+    private fun ContractManagementFormApi.internalize() =
+        ContractManagementForm(
+            personId = personId?.let(UUID::fromString) ?: error("personId is required"),
+            monthlyFee = monthlyFee ?: 0.0,
+            from = from?.let(LocalDate::parse) ?: error("from is required"),
+            to = to?.let(LocalDate::parse),
+        )
+
+    private fun ContractServiceFormApi.internalize() =
+        ContractServiceForm(
+            monthlyCosts = monthlyCosts ?: 0.0,
+            description = description ?: "",
+            from = from?.let(LocalDate::parse) ?: error("from is required"),
+            to = to?.let(LocalDate::parse),
+        )
+
+    private fun GetContractAll.Queries.toPageable(): Pageable {
+        val sortOrder = sort?.takeIf { it.isNotBlank() }?.let { Sort.by(it) } ?: Sort.unsorted()
+        return PageRequest.of(page ?: 0, size ?: 20, sortOrder)
+    }
 }

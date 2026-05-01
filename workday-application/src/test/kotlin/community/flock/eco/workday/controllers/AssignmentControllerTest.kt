@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -55,7 +57,8 @@ class AssignmentControllerTest(
                     .content(mapper.writeValueAsString(form))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.id").exists())
             .andExpect(jsonPath("$.code").exists())
@@ -86,7 +89,8 @@ class AssignmentControllerTest(
                 get("$baseUrl/${assignment.code}")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.code").value(assignment.code))
             .andExpect(jsonPath("$.role").value(assignment.role))
@@ -125,7 +129,8 @@ class AssignmentControllerTest(
                     .content(mapper.writeValueAsString(updateForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.role").value(updateForm.role))
             .andExpect(jsonPath("$.hourlyRate").value(updateForm.hourlyRate))
@@ -152,7 +157,8 @@ class AssignmentControllerTest(
                 delete("$baseUrl/${assignment.code}")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isNoContent)
+            ).asyncDispatch()
+            .andExpect(status().isNoContent)
     }
 
     @Test
@@ -173,7 +179,8 @@ class AssignmentControllerTest(
                 delete("$baseUrl/${assignment.code}")
                     .with(user(CreateHelper.UserSecurity(regularUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isForbidden)
+            ).asyncDispatch()
+            .andExpect(status().isForbidden)
     }
 
     @Test
@@ -193,7 +200,8 @@ class AssignmentControllerTest(
                 get("$baseUrl?personId=${person.uuid}")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$[0].person.uuid").value(person.uuid.toString()))
@@ -217,7 +225,8 @@ class AssignmentControllerTest(
                 get("$baseUrl/${assignment.code}")
                     .with(user(CreateHelper.UserSecurity(readOnlyUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$.code").value(assignment.code))
             .andExpect(jsonPath("$.hourlyRate").value(0.0))
     }
@@ -240,6 +249,10 @@ class AssignmentControllerTest(
                 get("$baseUrl/${assignment.code}")
                     .with(user(CreateHelper.UserSecurity(unauthorizedUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isForbidden)
+            ).asyncDispatch()
+            .andExpect(status().isForbidden)
     }
+
+    private fun ResultActions.asyncDispatch(): ResultActions =
+        mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
 }
