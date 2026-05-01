@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -49,7 +51,8 @@ class ApiKeyAuthenticationTest : WorkdayIntegrationTest() {
             .perform(
                 get("/api/users/me")
                     .header("Authorization", "TOKEN ${generatedKey.plainKey}"),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$.name").value("Test User"))
     }
 
@@ -71,7 +74,8 @@ class ApiKeyAuthenticationTest : WorkdayIntegrationTest() {
             .perform(
                 get("/api/users/me")
                     .header("Authorization", "TOKEN ${generatedKey.plainKey}"),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
 
         // Revoke the key
         userAccountService.revokeKeyByIdForUserCode(userCode, generatedKey.id)
@@ -83,4 +87,6 @@ class ApiKeyAuthenticationTest : WorkdayIntegrationTest() {
                     .header("Authorization", "TOKEN ${generatedKey.plainKey}"),
             ).andExpect(status().is3xxRedirection)
     }
+
+    private fun ResultActions.asyncDispatch() = mvc.perform(asyncDispatch(this.andReturn()))
 }
