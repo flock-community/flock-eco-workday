@@ -204,10 +204,9 @@ test.describe('User Account API endpoints', () => {
     expect(body.key).toBeTruthy();
     expect(body.label).toBe(label);
 
-    const revokeRes = await page.request.post(
-      '/api/user-accounts/revoke-key',
-      { data: { id: parseInt(body.id, 10) } },
-    );
+    const revokeRes = await page.request.post('/api/user-accounts/revoke-key', {
+      data: { id: parseInt(body.id, 10) },
+    });
     expect(revokeRes.ok()).toBeTruthy();
   });
 });
