@@ -75,12 +75,13 @@ class UserApiController(
                 request.queries.size ?: 20,
                 request.queries.sort?.toSort() ?: Sort.unsorted(),
             )
-        val users =
+        val page =
             userRepository
                 .findAllByNameIgnoreCaseContainingOrEmailIgnoreCaseContaining(search, search, pageable)
-                .map { it.externalize() }
-                .toList()
-        return GetUserAll.Response200(users)
+        return GetUserAll.Response200(
+            body = page.map { it.externalize() }.toList(),
+            xtotal = page.totalElements.toInt(),
+        )
     }
 
     @PreAuthorize("hasAuthority('UserAuthority.READ')")

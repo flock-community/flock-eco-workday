@@ -1,5 +1,5 @@
 endpoint GetUserGroupAll GET /api/user-groups ? {search: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
-  200 -> UserGroup[]
+  200 -> UserGroup[] # { `x-total`: Integer32 }
 }
 endpoint GetUserGroupByCode GET /api/user-groups/{code: String} -> {
   200 -> UserGroup

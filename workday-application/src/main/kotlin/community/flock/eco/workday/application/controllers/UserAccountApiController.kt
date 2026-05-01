@@ -38,12 +38,11 @@ class UserAccountApiController(
                 request.queries.size ?: 20,
                 request.queries.sort?.toSort() ?: Sort.unsorted(),
             )
-        val accounts =
-            userAccountRepository
-                .findAll(pageable)
-                .map { it.externalize() }
-                .toList()
-        return GetUserAccountAll.Response200(accounts)
+        val page = userAccountRepository.findAll(pageable)
+        return GetUserAccountAll.Response200(
+            body = page.map { it.externalize() }.toList(),
+            xtotal = page.totalElements.toInt(),
+        )
     }
 
     override suspend fun putUserAccountResetPassword(

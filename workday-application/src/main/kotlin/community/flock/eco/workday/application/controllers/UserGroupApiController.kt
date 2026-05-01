@@ -34,12 +34,11 @@ class UserGroupApiController(
                 request.queries.size ?: 20,
                 request.queries.sort?.toSort() ?: Sort.unsorted(),
             )
-        val groups =
-            userGroupRepository
-                .findAllByNameIgnoreCaseContaining(search, pageable)
-                .map { it.externalize() }
-                .toList()
-        return GetUserGroupAll.Response200(groups)
+        val page = userGroupRepository.findAllByNameIgnoreCaseContaining(search, pageable)
+        return GetUserGroupAll.Response200(
+            body = page.map { it.externalize() }.toList(),
+            xtotal = page.totalElements.toInt(),
+        )
     }
 
     @PreAuthorize("hasAuthority('UserAuthority.READ')")
