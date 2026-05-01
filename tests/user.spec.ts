@@ -30,7 +30,7 @@ test.describe('User management UI', () => {
     await page.goto('/users');
     await page.waitForLoadState('networkidle');
 
-    await page.getByPlaceholder('Search').fill('tommy');
+    await page.getByLabel('search').fill('tommy');
     await page.waitForLoadState('networkidle');
 
     await expect(
