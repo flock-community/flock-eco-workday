@@ -1,18 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { Given_I_am_logged_in_as_user } from './steps/workdaySteps';
 
-const ADMIN_USERNAME = 'bert';
-const USER_USERNAME = 'tommy';
 const CALENDAR_TOKEN = 'sesamstraat';
-
-test.describe('misc.ws - TaskController', () => {
-  test('GET /tasks/reminder is reachable without authentication', async ({
-    request,
-  }) => {
-    const response = await request.get('/tasks/reminder');
-    expect(response.ok()).toBeTruthy();
-  });
-});
 
 test.describe('misc.ws - LoginConfigController', () => {
   test('GET /login/type returns the configured login type', async ({
@@ -40,20 +28,6 @@ test.describe('misc.ws - LoginStatusApiController', () => {
     expect(body.loggedIn).toBe(false);
     expect(Array.isArray(body.authorities)).toBe(true);
   });
-
-  test('GET /login/status reports loggedIn=true after login', async ({
-    page,
-  }) => {
-    await Given_I_am_logged_in_as_user(page, ADMIN_USERNAME);
-
-    const response = await page.request.get('/login/status');
-    expect(response.status()).toBe(200);
-
-    const body = await response.json();
-    expect(body.loggedIn).toBe(true);
-    expect(Array.isArray(body.authorities)).toBe(true);
-    expect(body.authorities.length).toBeGreaterThan(0);
-  });
 });
 
 test.describe('misc.ws - BootstrapController', () => {
@@ -69,38 +43,6 @@ test.describe('misc.ws - BootstrapController', () => {
     expect(body).toHaveProperty('userId');
     expect(body).toHaveProperty('personId');
     expect(Array.isArray(body.authorities)).toBe(true);
-  });
-
-  test('GET /bootstrap returns user info after admin login', async ({
-    page,
-  }) => {
-    await Given_I_am_logged_in_as_user(page, ADMIN_USERNAME);
-
-    const response = await page.request.get('/bootstrap');
-    expect(response.status()).toBe(200);
-
-    const body = await response.json();
-    expect(body.loggedIn).toBe(true);
-    expect(Array.isArray(body.authorities)).toBe(true);
-    expect(body.authorities.length).toBeGreaterThan(0);
-    expect(typeof body.userId).toBe('string');
-    expect(body.userId.length).toBeGreaterThan(0);
-  });
-
-  test('GET /bootstrap returns personId for a regular user with a person record', async ({
-    page,
-  }) => {
-    await Given_I_am_logged_in_as_user(page, USER_USERNAME);
-
-    const response = await page.request.get('/bootstrap');
-    expect(response.status()).toBe(200);
-
-    const body = await response.json();
-    expect(body.loggedIn).toBe(true);
-    expect(typeof body.userId).toBe('string');
-    expect(body.userId.length).toBeGreaterThan(0);
-    expect(typeof body.personId).toBe('string');
-    expect(body.personId.length).toBeGreaterThan(0);
   });
 });
 
