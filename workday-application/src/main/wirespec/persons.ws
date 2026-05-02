@@ -1,23 +1,23 @@
-endpoint Put_2 PUT PersonForm /api/persons/{code: String} -> {
+endpoint GetPersonAll GET /api/persons ? {page: Integer32?, size: Integer32?, sort: String?, active: Boolean?, search: String?} -> {
+  200 -> Person[] # { `x-total`: Integer32 }
+}
+endpoint GetPersonByUuid GET /api/persons/{uuid: String} -> {
   200 -> Person
 }
-endpoint FindAll_1_1 GET /api/persons ? {pageable: Pageable,active: Boolean?,search: String} -> {
-  200 -> Person[]
-}
-endpoint Post_2 POST PersonForm /api/persons -> {
+endpoint GetPersonMe GET /api/persons/me -> {
   200 -> Person
 }
-endpoint FindByUui GET /api/persons/{uuid: String} -> {
-  200 -> Person
-}
-endpoint SpecialDates GET /api/persons/specialDates ? {start: String,end: String} -> {
+endpoint GetPersonSpecialDates GET /api/persons/specialDates ? {start: String, end: String} -> {
   200 -> PersonEvent[]
 }
-endpoint FindByMe GET /api/persons/me -> {
+endpoint PostPerson POST PersonForm /api/persons -> {
   200 -> Person
 }
-endpoint Delete_3 DELETE /api/persons/{personId: String} -> {
-  200 -> Unit
+endpoint PutPerson PUT PersonForm /api/persons/{uuid: String} -> {
+  200 -> Person
+}
+endpoint DeletePerson DELETE /api/persons/{uuid: String} -> {
+  204 -> Unit
 }
 
 type PersonForm {

@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -110,7 +112,8 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                     .content(mapper.writeValueAsString(personForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.uuid").exists())
@@ -146,7 +149,8 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                     .content(mapper.writeValueAsString(personForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andReturn()
+            ).asyncDispatch()
+            .andReturn()
             .response
             .contentAsString
             .apply { person = mapper.readTree(this) }
@@ -159,7 +163,8 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                 get("$baseUrl/${person("uuid")}")
                     .with(user)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.uuid").exists())
             .andExpect(jsonPath("\$.uuid").isString)
@@ -192,7 +197,8 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                     .content(mapper.writeValueAsString(personForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andReturn()
+            ).asyncDispatch()
+            .andReturn()
             .response
             .contentAsString
             .apply { person = mapper.readTree(this) }
@@ -218,7 +224,8 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                     .content(mapper.writeValueAsString(personUpdate))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.uuid").isNotEmpty)
             .andExpect(jsonPath("\$.uuid").isString)
@@ -255,7 +262,8 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                     .content(mapper.writeValueAsString(personForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andReturn()
+            ).asyncDispatch()
+            .andReturn()
             .response
             .contentAsString
             .apply { person = mapper.readTree(this) }
@@ -267,7 +275,8 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                 get("$baseUrl/${person("uuid")}")
                     .with(user)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.uuid").exists())
             .andExpect(jsonPath("\$.uuid").isString)
@@ -281,11 +290,13 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                 delete("$baseUrl/${person("uuid")}")
                     .with(user)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isNoContent)
+            ).asyncDispatch()
+            .andExpect(status().isNoContent)
 
         // DRY-Bock
         mvc
             .perform(get("$baseUrl/${person("uuid")}").with(user).accept(APPLICATION_JSON))
+            .asyncDispatch()
             .andExpect(status().isNotFound)
         // DRY-Bock
     }
@@ -299,7 +310,8 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                 get("$baseUrl/3b7ab8e2-aeeb-4228-98d8-bd22fa141caa")
                     .with(user)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isNotFound)
+            ).asyncDispatch()
+            .andExpect(status().isNotFound)
         // DRY-Bock
     }
 
@@ -342,7 +354,8 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                 get("$baseUrl?active=true")
                     .with(user)
                     .accept("application/json"),
-            ).andExpect(status().isOk())
+            ).asyncDispatch()
+            .andExpect(status().isOk())
             .andExpect(
                 jsonPath(
                     "$.*.active",
@@ -350,4 +363,6 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                 ),
             )
     }
+
+    private fun ResultActions.asyncDispatch(): ResultActions = mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
 }

@@ -1,164 +1,215 @@
 package community.flock.eco.workday.application.controllers
 
+import community.flock.eco.workday.api.endpoint.DeletePerson
+import community.flock.eco.workday.api.endpoint.GetPersonAll
+import community.flock.eco.workday.api.endpoint.GetPersonByUuid
+import community.flock.eco.workday.api.endpoint.GetPersonMe
+import community.flock.eco.workday.api.endpoint.GetPersonSpecialDates
+import community.flock.eco.workday.api.endpoint.PostPerson
+import community.flock.eco.workday.api.endpoint.PutPerson
 import community.flock.eco.workday.application.authorities.PersonAuthority
 import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.services.PersonEvent
 import community.flock.eco.workday.application.services.PersonService
-import community.flock.eco.workday.core.utils.toResponse
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
-import org.springframework.format.annotation.DateTimeFormat
-import org.springframework.http.HttpStatus.BAD_REQUEST
-import org.springframework.http.HttpStatus.NOT_FOUND
-import org.springframework.http.HttpStatus.UNAUTHORIZED
-import org.springframework.http.ResponseEntity
+import org.springframework.data.domain.Sort
+import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.core.Authentication
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import java.security.Principal
 import java.time.LocalDate
 import java.util.UUID
+import community.flock.eco.workday.api.model.Person as PersonApi
+import community.flock.eco.workday.api.model.PersonEvent as PersonEventApi
+import community.flock.eco.workday.api.model.PersonEventEventType as PersonEventEventTypeApi
+import community.flock.eco.workday.api.model.PersonForm as PersonFormApi
 
 @RestController
-@RequestMapping("/api/persons")
 class PersonController(
     private val service: PersonService,
     private val userService: UserService,
-) {
-    @GetMapping("/me")
-    fun findByMe(authentication: Authentication): ResponseEntity<Person> =
-        service
-            .findByUserCode(authentication.name)
-            .toResponse()
-
-    @GetMapping
-    @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
-    fun findAll(
-        pageable: Pageable,
-        principal: Principal,
-        @RequestParam active: Boolean?,
-    ): ResponseEntity<List<Person>> {
-        val page =
-            active
-                ?.let { service.findAllByActive(pageable, active) }
-                ?: service.findAll(pageable)
-        return page.toResponse()
+) : GetPersonAll.Handler,
+    GetPersonByUuid.Handler,
+    GetPersonMe.Handler,
+    GetPersonSpecialDates.Handler,
+    PostPerson.Handler,
+    PutPerson.Handler,
+    DeletePerson.Handler {
+    @PreAuthorize("isAuthenticated()")
+    override suspend fun getPersonMe(request: GetPersonMe.Request): GetPersonMe.Response<*> {
+        val user = currentUser() ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        val person =
+            service.findByUserCode(user.code)
+                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No person found for current user")
+        return GetPersonMe.Response200(person.externalize())
     }
 
-    @GetMapping("/{uuid}")
-    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
-    fun findByUui(
-        @PathVariable uuid: UUID,
-        principal: Principal,
-    ): ResponseEntity<Person> =
-        principal
-            .findUser()
-            ?.let {
-                when {
-                    it.isAdmin() -> service.findByUuid(uuid)?.toResponse()
-                    else -> service.findByUserCode(it.code)?.toResponse()
-                }
-                    ?: throw ResponseStatusException(NOT_FOUND, "No Item found with this PersonUui")
-            }
-            ?: throw ResponseStatusException(UNAUTHORIZED)
-
-    @GetMapping(params = ["search"])
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
-    fun findAllByFullName(
-        pageable: Pageable,
-        @RequestParam search: String,
-    ) = service
-        .findAllByFullName(pageable, search)
-        .toResponse()
+    override suspend fun getPersonAll(request: GetPersonAll.Request): GetPersonAll.Response<*> {
+        requireAuthority(PersonAuthority.ADMIN)
+        val q = request.queries
+        val pageable = q.toPageable()
 
-    @PostMapping
+        val page: Page<Person> =
+            when {
+                q.search != null -> service.findAllByFullName(pageable, q.search)
+                q.active != null -> service.findAllByActive(pageable, q.active)
+                else -> service.findAll(pageable)
+            }
+        return GetPersonAll.Response200(
+            body = page.content.map { it.externalize() },
+            xtotal = page.totalElements.toInt(),
+        )
+    }
+
+    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
+    override suspend fun getPersonByUuid(request: GetPersonByUuid.Request): GetPersonByUuid.Response<*> {
+        val user = requireAuthority(PersonAuthority.READ)
+        val uuid = UUID.fromString(request.path.uuid)
+        val person =
+            when {
+                user.isAdmin() -> service.findByUuid(uuid)
+                else -> service.findByUserCode(user.code)
+            } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Item found with this PersonUui")
+        return GetPersonByUuid.Response200(person.externalize())
+    }
+
+    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
+    override suspend fun getPersonSpecialDates(request: GetPersonSpecialDates.Request): GetPersonSpecialDates.Response<*> {
+        requireAuthority(PersonAuthority.READ)
+        val start = LocalDate.parse(request.queries.start)
+        val end = LocalDate.parse(request.queries.end)
+        val events = service.findAllPersonEvents(start, end).map { it.externalize() }
+        return GetPersonSpecialDates.Response200(events)
+    }
+
     @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
-    fun post(
-        @RequestBody form: PersonForm,
-        principal: Principal,
-    ) = principal
-        .findUser()
-        ?.let { user ->
-            val userUui =
-                when {
-                    user.isAdmin() -> null
-                    else -> user.code
-                }
-            form
-                .copy(userCode = userUui)
-                .let { service.create(it) }
-        }
+    override suspend fun postPerson(request: PostPerson.Request): PostPerson.Response<*> {
+        val user = requireAuthority(PersonAuthority.WRITE)
+        val form = request.body.internalize()
+        val userCode = if (user.isAdmin()) form.userCode else user.code
+        val created = service.create(form.copy(userCode = userCode))
+        return PostPerson.Response200(created.externalize())
+    }
 
-        ?: throw ResponseStatusException(UNAUTHORIZED)
-
-    @PutMapping("/{code}")
     @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
-    fun put(
-        @PathVariable code: UUID,
-        @RequestBody form: PersonForm,
-        principal: Principal,
-    ) = principal
-        .findUser()
-        ?.let {
-            val userCode =
-                when {
-                    it.isAdmin() -> form.userCode
-                    else -> it.code
-                }
-            form
-                .copy(userCode = userCode)
-                .let {
-                    service.update(code, form)
-                }?.toResponse()
+    override suspend fun putPerson(request: PutPerson.Request): PutPerson.Response<*> {
+        val user = requireAuthority(PersonAuthority.WRITE)
+        val form = request.body.internalize()
+        val userCode = if (user.isAdmin()) form.userCode else user.code
+        val uuid = UUID.fromString(request.path.uuid)
+        val updated =
+            service.update(uuid, form.copy(userCode = userCode))
                 ?: throw ResponseStatusException(
-                    BAD_REQUEST,
+                    HttpStatus.BAD_REQUEST,
                     "Cannot perform PUT on given item. PersonUui cannot be found. Use POST Method",
                 )
-        }
-        ?: throw ResponseStatusException(UNAUTHORIZED)
+        return PutPerson.Response200(updated.externalize())
+    }
 
-    @DeleteMapping("/{personId}")
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
-    fun delete(
-        @PathVariable personId: UUID,
-        principal: Principal,
-    ) = principal
-        .findUser()
-        ?.let {
-            service
-                .deleteByUuid(personId)
-                .toResponse()
+    override suspend fun deletePerson(request: DeletePerson.Request): DeletePerson.Response<*> {
+        requireAuthority(PersonAuthority.ADMIN)
+        service.deleteByUuid(UUID.fromString(request.path.uuid))
+        return DeletePerson.Response204(Unit)
+    }
+
+    private fun currentUser(): User? =
+        SecurityContextHolder
+            .getContext()
+            .authentication
+            ?.name
+            ?.let(userService::findByCode)
+
+    private fun requireAuthority(authority: PersonAuthority): User {
+        val auth =
+            SecurityContextHolder.getContext().authentication
+                ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        if (!auth.authorities.map { it.authority }.contains(authority.toName())) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN)
         }
-        ?: throw ResponseStatusException(UNAUTHORIZED)
+        return userService.findByCode(auth.name)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+    }
 
-    @GetMapping("/specialDates")
-    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
-    fun specialDates(
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) start: LocalDate,
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) end: LocalDate,
-    ) = service.findAllPersonEvents(start, end)
+    private fun User.isAdmin(): Boolean = authorities.contains(PersonAuthority.ADMIN.toName())
 
-    // *-- utility functions --*
+    private fun GetPersonAll.Queries.toPageable(): Pageable {
+        val sort = sort?.takeIf { it.isNotBlank() }?.let(::parseSort) ?: Sort.unsorted()
+        return PageRequest.of(page ?: 0, size ?: 20, sort)
+    }
 
-    /**
-     * add findUser() function to Principal
-     * @return <code>User?</code> a user if found with given user code in the db
-     */
-    private fun Principal.findUser(): User? = userService.findByCode(this.name)
+    private fun parseSort(spec: String): Sort =
+        spec
+            .split(",")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .let { parts ->
+                when {
+                    parts.isEmpty() -> Sort.unsorted()
+                    parts.size == 1 -> Sort.by(parts[0])
+                    parts.last().equals("asc", ignoreCase = true) ->
+                        Sort.by(Sort.Direction.ASC, *parts.dropLast(1).toTypedArray())
+                    parts.last().equals("desc", ignoreCase = true) ->
+                        Sort.by(Sort.Direction.DESC, *parts.dropLast(1).toTypedArray())
+                    else -> Sort.by(*parts.toTypedArray())
+                }
+            }
 
-    /**
-     * Evaluate if user has admin authorities on Sickday
-     * @return <code>true</code> if user is admin or has admin authorities
-     */
-    private fun User.isAdmin(): Boolean = this.authorities.contains(PersonAuthority.ADMIN.toName())
+    private fun Person.externalize(): PersonApi =
+        PersonApi(
+            id = id,
+            uuid = uuid.toString(),
+            firstname = firstname,
+            lastname = lastname,
+            email = email,
+            position = position,
+            number = number,
+            birthdate = birthdate?.toString(),
+            joinDate = joinDate?.toString(),
+            active = active,
+            lastActiveAt = lastActiveAt?.toString(),
+            reminders = reminders,
+            receiveEmail = receiveEmail,
+            shoeSize = shoeSize,
+            shirtSize = shirtSize,
+            googleDriveId = googleDriveId,
+            user = null,
+            fullName = "$firstname $lastname",
+        )
+
+    private fun PersonEvent.externalize(): PersonEventApi =
+        PersonEventApi(
+            person = person.externalize(),
+            eventType =
+                when (eventType) {
+                    PersonEvent.EventType.BIRTHDAY -> PersonEventEventTypeApi.BIRTHDAY
+                    PersonEvent.EventType.JOIN_DAY -> PersonEventEventTypeApi.JOIN_DAY
+                },
+            eventDate = eventDate.toString(),
+        )
+
+    private fun PersonFormApi.internalize(): PersonForm =
+        PersonForm(
+            firstname = firstname ?: "",
+            lastname = lastname ?: "",
+            email = email ?: "",
+            position = position ?: "",
+            number = number,
+            birthdate = birthdate?.let(LocalDate::parse),
+            joinDate = joinDate?.let(LocalDate::parse),
+            active = active ?: true,
+            userCode = userCode,
+            reminders = reminders ?: false,
+            receiveEmail = receiveEmail ?: true,
+            shoeSize = shoeSize,
+            shirtSize = shirtSize,
+            googleDriveId = googleDriveId,
+        )
 }

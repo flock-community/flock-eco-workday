@@ -21,7 +21,6 @@ import community.flock.eco.workday.application.model.ContractExternal
 import community.flock.eco.workday.application.model.ContractInternal
 import community.flock.eco.workday.application.model.ContractManagement
 import community.flock.eco.workday.application.model.ContractService
-import community.flock.eco.workday.application.services.ContractService as ContractDomainService
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
 import org.springframework.data.domain.PageRequest
@@ -47,6 +46,7 @@ import community.flock.eco.workday.api.model.ContractType as ContractTypeApi
 import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.application.model.ContractType as ContractTypeInternal
 import community.flock.eco.workday.application.model.Person as PersonInternal
+import community.flock.eco.workday.application.services.ContractService as ContractDomainService
 
 @RestController
 class ContractController(
