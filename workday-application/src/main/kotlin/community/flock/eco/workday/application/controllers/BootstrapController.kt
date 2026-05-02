@@ -12,14 +12,20 @@ class BootstrapController(
 ) : Bootstrap.Handler {
     override suspend fun bootstrap(request: Bootstrap.Request): Bootstrap.Response<*> {
         val authentication = SecurityContextHolder.getContext().authentication
+        val loggedIn =
+            authentication != null &&
+                authentication.isAuthenticated &&
+                authentication.principal != "anonymousUser"
         return Bootstrap.Response200(
             BootstrapResponse(
-                authorities = authentication?.authorities?.map { it.authority },
-                loggedIn = authentication?.isAuthenticated ?: false,
-                userId = authentication?.name,
+                authorities = if (loggedIn) authentication.authorities.map { it.authority } else emptyList(),
+                loggedIn = loggedIn,
+                userId = if (loggedIn) authentication.name else null,
                 personId =
-                    authentication?.name?.let {
-                        personService.findByUserCode(it)?.uuid?.toString()
+                    if (loggedIn) {
+                        authentication.name?.let { personService.findByUserCode(it)?.uuid?.toString() }
+                    } else {
+                        null
                     },
             ),
         )
