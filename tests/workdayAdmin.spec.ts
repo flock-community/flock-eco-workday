@@ -26,81 +26,82 @@ const WORKDAY_TO = '22-05-2026';
 const WORKDAY_CLIENT = 'Client D';
 const WORKDAY_ROLE = 'Junior software engineer';
 
-test.describe.serial('WorkdayController /api/workdays admin flow', () => {
-  test.beforeEach(async ({ context }) => {
-    await context.clearCookies();
-  });
+test.describe
+  .serial('WorkdayController /api/workdays admin flow', () => {
+    test.beforeEach(async ({ context }) => {
+      await context.clearCookies();
+    });
 
-  test.afterEach(async ({ page, context }) => {
-    await context.clearCookies();
-    await page.evaluate(() => {
-      if (typeof window.localStorage !== 'undefined')
-        window.localStorage.clear();
-      if (typeof window.sessionStorage !== 'undefined')
-        window.sessionStorage.clear();
+    test.afterEach(async ({ page, context }) => {
+      await context.clearCookies();
+      await page.evaluate(() => {
+        if (typeof window.localStorage !== 'undefined')
+          window.localStorage.clear();
+        if (typeof window.sessionStorage !== 'undefined')
+          window.sessionStorage.clear();
+      });
+    });
+
+    test('Worker submits a workday (POST /api/workdays)', async ({ page }) => {
+      await Given_I_am_logged_in_as_user(page, 'ernie');
+
+      await page.goto('/workdays');
+      await page.waitForLoadState('networkidle');
+
+      await When_I_click_the_button(page, 'Add');
+      await expect(page.getByText('Create Workday')).toBeVisible();
+
+      await When_I_fill_in_the_date_range_from_till(
+        page,
+        WORKDAY_FROM,
+        WORKDAY_TO,
+      );
+      // Client D is the only assignment overlapping this Mon → Fri slot, but
+      // the AssignmentSelector still surfaces the dropdown — pick by name to
+      // avoid relying on auto-selection.
+      await When_I_select_the_assignment(page, WORKDAY_CLIENT);
+
+      const workPost = page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/workdays') &&
+          response.request().method() === 'POST' &&
+          response.status() < 400,
+      );
+      await When_I_click_the_button(page, 'Save');
+      await workPost;
+      await expect(page.getByText('Create Workday')).not.toBeVisible();
+      await page.waitForLoadState('networkidle');
+
+      // The list is sorted by `from` desc, so seeded Aug → Dec 2026 entries
+      // come before our 18-05-2026 booking — walk pagination to find the row.
+      const workRows = page
+        .locator('tr')
+        .filter({ hasText: WORKDAY_FROM })
+        .filter({ hasText: WORKDAY_ROLE });
+      const workRow = await findOnAnyPage(page, workRows);
+      await expect(workRow).toContainText(WORKDAY_CLIENT);
+      await expect(
+        workRow.getByRole('button', { name: 'REQUESTED' }),
+      ).toBeVisible();
+    });
+
+    test('Admin filters workdays by personId and approves (GET + PUT /api/workdays)', async ({
+      page,
+    }) => {
+      await Given_I_am_logged_in_as_user(page, 'bert');
+
+      await page.goto('/workdays');
+      await page.waitForLoadState('networkidle');
+
+      // Picking ernie triggers GET /api/workdays?personId=<ernie-uuid>.
+      await selectPersonInLayout(page, 'Ernie Muppets');
+
+      const workRows = page
+        .locator('tr')
+        .filter({ hasText: WORKDAY_FROM })
+        .filter({ hasText: WORKDAY_ROLE })
+        .filter({ has: page.getByRole('button', { name: 'REQUESTED' }) });
+      const workRow = await findOnAnyPage(page, workRows);
+      await changeStatusOnLocator(page, workRow, 'REQUESTED', 'APPROVED');
     });
   });
-
-  test('Worker submits a workday (POST /api/workdays)', async ({ page }) => {
-    await Given_I_am_logged_in_as_user(page, 'ernie');
-
-    await page.goto('/workdays');
-    await page.waitForLoadState('networkidle');
-
-    await When_I_click_the_button(page, 'Add');
-    await expect(page.getByText('Create Workday')).toBeVisible();
-
-    await When_I_fill_in_the_date_range_from_till(
-      page,
-      WORKDAY_FROM,
-      WORKDAY_TO,
-    );
-    // Client D is the only assignment overlapping this Mon → Fri slot, but
-    // the AssignmentSelector still surfaces the dropdown — pick by name to
-    // avoid relying on auto-selection.
-    await When_I_select_the_assignment(page, WORKDAY_CLIENT);
-
-    const workPost = page.waitForResponse(
-      (response) =>
-        response.url().includes('/api/workdays') &&
-        response.request().method() === 'POST' &&
-        response.status() < 400,
-    );
-    await When_I_click_the_button(page, 'Save');
-    await workPost;
-    await expect(page.getByText('Create Workday')).not.toBeVisible();
-    await page.waitForLoadState('networkidle');
-
-    // The list is sorted by `from` desc, so seeded Aug → Dec 2026 entries
-    // come before our 18-05-2026 booking — walk pagination to find the row.
-    const workRows = page
-      .locator('tr')
-      .filter({ hasText: WORKDAY_FROM })
-      .filter({ hasText: WORKDAY_ROLE });
-    const workRow = await findOnAnyPage(page, workRows);
-    await expect(workRow).toContainText(WORKDAY_CLIENT);
-    await expect(
-      workRow.getByRole('button', { name: 'REQUESTED' }),
-    ).toBeVisible();
-  });
-
-  test('Admin filters workdays by personId and approves (GET + PUT /api/workdays)', async ({
-    page,
-  }) => {
-    await Given_I_am_logged_in_as_user(page, 'bert');
-
-    await page.goto('/workdays');
-    await page.waitForLoadState('networkidle');
-
-    // Picking ernie triggers GET /api/workdays?personId=<ernie-uuid>.
-    await selectPersonInLayout(page, 'Ernie Muppets');
-
-    const workRows = page
-      .locator('tr')
-      .filter({ hasText: WORKDAY_FROM })
-      .filter({ hasText: WORKDAY_ROLE })
-      .filter({ has: page.getByRole('button', { name: 'REQUESTED' }) });
-    const workRow = await findOnAnyPage(page, workRows);
-    await changeStatusOnLocator(page, workRow, 'REQUESTED', 'APPROVED');
-  });
-});
