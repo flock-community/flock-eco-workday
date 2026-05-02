@@ -96,11 +96,13 @@ test.describe
       // Picking ernie triggers GET /api/workdays?personId=<ernie-uuid>.
       await selectPersonInLayout(page, 'Ernie Muppets');
 
+      // Filter by date + role only — including the REQUESTED status in the
+      // locator would invalidate it after the PUT lands and flips the row to
+      // APPROVED, breaking changeStatusOnLocator's post-change assertion.
       const workRows = page
         .locator('tr')
         .filter({ hasText: WORKDAY_FROM })
-        .filter({ hasText: WORKDAY_ROLE })
-        .filter({ has: page.getByRole('button', { name: 'REQUESTED' }) });
+        .filter({ hasText: WORKDAY_ROLE });
       const workRow = await findOnAnyPage(page, workRows);
       await changeStatusOnLocator(page, workRow, 'REQUESTED', 'APPROVED');
     });
