@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
@@ -62,6 +63,7 @@ class ContractController(
     PutContractManagement.Handler,
     PostContractService.Handler,
     PutContractService.Handler {
+    @PreAuthorize("hasAuthority('ContractAuthority.READ')")
     override suspend fun getContractAll(request: GetContractAll.Request): GetContractAll.Response<*> {
         val q = request.queries
         val pageable = q.toPageable()
@@ -98,6 +100,7 @@ class ContractController(
         return GetContractAll.Response200(contracts.map { it.externalize() })
     }
 
+    @PreAuthorize("hasAuthority('ContractAuthority.READ')")
     override suspend fun getContractByCode(request: GetContractByCode.Request): GetContractByCode.Response<*> {
         requireAuthority(ContractAuthority.READ)
         val contract =
@@ -106,12 +109,14 @@ class ContractController(
         return GetContractByCode.Response200(contract.externalize())
     }
 
+    @PreAuthorize("hasAuthority('ContractAuthority.ADMIN')")
     override suspend fun deleteContract(request: DeleteContract.Request): DeleteContract.Response<*> {
         requireAuthority(ContractAuthority.ADMIN)
         contractService.deleteByCode(request.path.code)
         return DeleteContract.Response204(Unit)
     }
 
+    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
     override suspend fun postContractInternal(request: PostContractInternal.Request): PostContractInternal.Response<*> {
         val user = requireAuthority(ContractAuthority.WRITE)
         val isAdmin = user.hasAuthority(ContractAuthority.ADMIN)
@@ -123,6 +128,7 @@ class ContractController(
         return PostContractInternal.Response200(created.externalize())
     }
 
+    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
     override suspend fun putContractInternal(request: PutContractInternal.Request): PutContractInternal.Response<*> {
         requireAuthority(ContractAuthority.WRITE)
         val updated =
@@ -131,6 +137,7 @@ class ContractController(
         return PutContractInternal.Response200(updated.externalize())
     }
 
+    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
     override suspend fun postContractExternal(request: PostContractExternal.Request): PostContractExternal.Response<*> {
         requireAuthority(ContractAuthority.WRITE)
         val created =
@@ -139,6 +146,7 @@ class ContractController(
         return PostContractExternal.Response200(created.externalize())
     }
 
+    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
     override suspend fun putContractExternal(request: PutContractExternal.Request): PutContractExternal.Response<*> {
         requireAuthority(ContractAuthority.WRITE)
         val updated =
@@ -147,6 +155,7 @@ class ContractController(
         return PutContractExternal.Response200(updated.externalize())
     }
 
+    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
     override suspend fun postContractManagement(request: PostContractManagement.Request): PostContractManagement.Response<*> {
         requireAuthority(ContractAuthority.WRITE)
         val created =
@@ -155,6 +164,7 @@ class ContractController(
         return PostContractManagement.Response200(created.externalize())
     }
 
+    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
     override suspend fun putContractManagement(request: PutContractManagement.Request): PutContractManagement.Response<*> {
         requireAuthority(ContractAuthority.WRITE)
         val updated =
@@ -163,6 +173,7 @@ class ContractController(
         return PutContractManagement.Response200(updated.externalize())
     }
 
+    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
     override suspend fun postContractService(request: PostContractService.Request): PostContractService.Response<*> {
         requireAuthority(ContractAuthority.WRITE)
         val created =
@@ -171,6 +182,7 @@ class ContractController(
         return PostContractService.Response200(created.externalize())
     }
 
+    @PreAuthorize("hasAuthority('ContractAuthority.WRITE')")
     override suspend fun putContractService(request: PutContractService.Request): PutContractService.Response<*> {
         requireAuthority(ContractAuthority.WRITE)
         val updated =

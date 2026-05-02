@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
@@ -41,6 +42,7 @@ class AssignmentController(
     PostAssignment.Handler,
     PutAssignment.Handler,
     DeleteAssignment.Handler {
+    @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
     override suspend fun getAssignmentAll(request: GetAssignmentAll.Request): GetAssignmentAll.Response<*> {
         val user = requireAuthority(AssignmentAuthority.READ)
         val q = request.queries
@@ -65,6 +67,7 @@ class AssignmentController(
         )
     }
 
+    @PreAuthorize("hasAuthority('AssignmentAuthority.READ')")
     override suspend fun getAssignmentByCode(request: GetAssignmentByCode.Request): GetAssignmentByCode.Response<*> {
         val user = requireAuthority(AssignmentAuthority.READ)
         val assignment =
@@ -75,6 +78,7 @@ class AssignmentController(
         return GetAssignmentByCode.Response200(visible.externalize(includeHours = false))
     }
 
+    @PreAuthorize("hasAuthority('AssignmentAuthority.WRITE')")
     override suspend fun postAssignment(request: PostAssignment.Request): PostAssignment.Response<*> {
         val user = requireAuthority(AssignmentAuthority.WRITE)
         val isAdmin = user.hasAuthority(AssignmentAuthority.ADMIN)
@@ -86,6 +90,7 @@ class AssignmentController(
         return PostAssignment.Response200(created.externalize(includeHours = false))
     }
 
+    @PreAuthorize("hasAuthority('AssignmentAuthority.WRITE')")
     override suspend fun putAssignment(request: PutAssignment.Request): PutAssignment.Response<*> {
         requireAuthority(AssignmentAuthority.WRITE)
         val updated =
@@ -94,6 +99,7 @@ class AssignmentController(
         return PutAssignment.Response200(updated.externalize(includeHours = false))
     }
 
+    @PreAuthorize("hasAuthority('AssignmentAuthority.ADMIN')")
     override suspend fun deleteAssignment(request: DeleteAssignment.Request): DeleteAssignment.Response<*> {
         requireAuthority(AssignmentAuthority.ADMIN)
         assignmentService.deleteByCode(request.path.code)
