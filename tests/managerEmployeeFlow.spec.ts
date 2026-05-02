@@ -4,26 +4,39 @@ import {
   When_I_fill_in_the_date_range_from_till,
 } from './steps/workdaySteps';
 
-// Each run inserts a uniquely identifiable assignment / sick / leave entry so
+// Each run inserts uniquely identifiable assignment / sick / leave entries so
 // we can recognise our own records even when seeded mock data fills the same
-// lists. Using a far-future year (2050) keeps the workday, sick day and leave
-// day on top of their `from desc` paginated lists, since seeded data only
-// reaches up to 2040 (leave) / 2031 (sick) / 2026 (work).
+// lists.
+//
+// Dates are kept inside the current month (today is 2026-05-02 per the
+// session). This avoids the WorkDay/SickDay/LeaveDay forms re-rendering a
+// huge `PeriodInputField` (one input per weekday between `from` and `to`)
+// while the helper sets the dates one at a time — which would freeze the
+// browser long enough to time the fill action out. The week-aligned days
+// were chosen so each booking spans a clean Mon → Fri window:
+//
+//   2026-05-04 = Monday
+//   2026-05-11 = Monday
+//   2026-05-15 = Friday
+//   2026-05-18 = Monday
+//   2026-05-25 = Monday
+//   2026-05-29 = Friday
+//
+// Seeded ernie work days for 2026 are 1st → 10th of each month, so we
+// place our work day in week 4 to avoid the 1st-of-month seeded entries.
 const RUN_ID = Date.now();
 const ASSIGNMENT_ROLE = `Workflow tester ${RUN_ID}`;
 const ASSIGNMENT_CLIENT = 'Client B';
-const ASSIGNMENT_FROM = '01-12-2050';
-const ASSIGNMENT_TO = '31-12-2050';
+const ASSIGNMENT_FROM = '04-05-2026';
+const ASSIGNMENT_TO = '31-05-2026';
 const SICK_DESCRIPTION = `Workflow flu ${RUN_ID}`;
 const LEAVE_DESCRIPTION = `Workflow holiday ${RUN_ID}`;
 
-// 2050-12-05 is a Monday, so we get a clean Mon-Fri week for work / leave and
-// a single Monday for the sick day.
-const WORKDAY_FROM = '05-12-2050';
-const WORKDAY_TO = '09-12-2050';
-const SICKDAY_DATE = '12-12-2050';
-const LEAVE_FROM = '19-12-2050';
-const LEAVE_TO = '23-12-2050';
+const WORKDAY_FROM = '25-05-2026';
+const WORKDAY_TO = '29-05-2026';
+const SICKDAY_DATE = '18-05-2026';
+const LEAVE_FROM = '11-05-2026';
+const LEAVE_TO = '15-05-2026';
 
 async function selectErnieFromPersonSelector(page: Page) {
   await page.getByRole('combobox').first().click();
@@ -42,6 +55,38 @@ async function changeStatusOnLocator(
   await page.getByRole('menuitem', { name: toStatus }).click();
   await page.waitForLoadState('networkidle');
   await expect(locator.getByRole('button', { name: toStatus })).toBeVisible();
+}
+
+// Walk the FlockPagination ("Go to next page") until `locator` resolves.
+// Both the SickDay and LeaveDay APIs sit on top of Spring's standard
+// Pageable resolver, which sets the `x-total` response header that the
+// frontend uses to compute the page count. The WorkDay API does the same
+// via its Page<T>.toResponse() helper. Seeded mock data spreads dozens of
+// entries across years for ernie, so our run-specific entry can sit
+// several pages deep.
+async function findOnAnyPage(
+  page: Page,
+  locator: Locator,
+  maxPages = 25,
+): Promise<Locator> {
+  for (let i = 0; i < maxPages; i++) {
+    if ((await locator.count()) > 0) {
+      return locator.first();
+    }
+    const nextBtn = page.getByRole('button', { name: 'Go to next page' });
+    if (
+      (await nextBtn.count()) === 0 ||
+      !(await nextBtn.isVisible()) ||
+      !(await nextBtn.isEnabled())
+    ) {
+      throw new Error(
+        `findOnAnyPage: could not find locator within ${maxPages} pages`,
+      );
+    }
+    await nextBtn.click();
+    await page.waitForLoadState('networkidle');
+  }
+  throw new Error('findOnAnyPage: exceeded the page-walk safety limit');
 }
 
 test.describe
@@ -127,9 +172,10 @@ test.describe
         WORKDAY_TO,
       );
 
-      // 2050-12 only overlaps with our new Client B assignment; the existing
-      // Client D one ends in 2026, so the AssignmentSelector auto-picks it.
-      // Click the dropdown anyway to verify the Client B option is available.
+      // The new Client B (May 2026) and the existing Client D (all of 2026)
+      // both overlap May 25 → 29, so the AssignmentSelector does not
+      // auto-pick. Open the dropdown and choose our new assignment by
+      // matching its run-tagged role.
       await page.getByLabel('Assignment').click();
       const listbox = page.getByRole('listbox', { name: 'Assignment' });
       await listbox.waitFor({ state: 'visible', timeout: 5000 });
@@ -142,13 +188,15 @@ test.describe
 
       await page.getByRole('button', { name: 'Save' }).click();
       await expect(page.getByText('Create Workday')).not.toBeVisible();
+      await page.waitForLoadState('networkidle');
 
-      const workRow = page
+      // The new work day sits on a later page of the from-desc paginated
+      // list (after seeded Aug → Dec 2026 entries), so walk pagination.
+      const workRows = page
         .locator('tr')
         .filter({ hasText: WORKDAY_FROM })
-        .first();
-      await expect(workRow).toBeVisible();
-      await expect(workRow).toContainText(ASSIGNMENT_ROLE);
+        .filter({ hasText: ASSIGNMENT_ROLE });
+      const workRow = await findOnAnyPage(page, workRows);
       await expect(workRow).toContainText(ASSIGNMENT_CLIENT);
 
       // ---- Sick day ----
@@ -168,7 +216,12 @@ test.describe
       );
       await page.getByRole('button', { name: 'Save' }).click();
       await expect(page.getByText('Create Sickday')).not.toBeVisible();
-      await expect(page.getByText(SICK_DESCRIPTION).first()).toBeVisible();
+      await page.waitForLoadState('networkidle');
+
+      const sickCards = page
+        .locator('.MuiCard-root')
+        .filter({ hasText: SICK_DESCRIPTION });
+      await findOnAnyPage(page, sickCards);
 
       // ---- Leave day (holiday) ----
       await page.goto('/leave-days');
@@ -181,7 +234,11 @@ test.describe
       await When_I_fill_in_the_date_range_from_till(page, LEAVE_FROM, LEAVE_TO);
       await page.getByRole('button', { name: 'Save' }).click();
       await page.waitForLoadState('networkidle');
-      await expect(page.getByText(LEAVE_DESCRIPTION).first()).toBeVisible();
+
+      const leaveCards = page
+        .locator('.MuiCard-root')
+        .filter({ hasText: LEAVE_DESCRIPTION });
+      await findOnAnyPage(page, leaveCards);
     });
 
     test('Bert approves the workday, sick day and leave day', async ({
@@ -194,11 +251,11 @@ test.describe
       await page.waitForLoadState('networkidle');
       await selectErnieFromPersonSelector(page);
 
-      const workRow = page
+      const workRows = page
         .locator('tr')
         .filter({ hasText: WORKDAY_FROM })
-        .filter({ hasText: ASSIGNMENT_ROLE })
-        .first();
+        .filter({ hasText: ASSIGNMENT_ROLE });
+      const workRow = await findOnAnyPage(page, workRows);
       await changeStatusOnLocator(page, workRow, 'REQUESTED', 'APPROVED');
 
       // ---- Approve sick day ----
@@ -206,10 +263,10 @@ test.describe
       await page.waitForLoadState('networkidle');
       await selectErnieFromPersonSelector(page);
 
-      const sickCard = page
+      const sickCards = page
         .locator('.MuiCard-root')
-        .filter({ hasText: SICK_DESCRIPTION })
-        .first();
+        .filter({ hasText: SICK_DESCRIPTION });
+      const sickCard = await findOnAnyPage(page, sickCards);
       await changeStatusOnLocator(page, sickCard, 'REQUESTED', 'APPROVED');
 
       // ---- Approve leave day ----
@@ -217,10 +274,10 @@ test.describe
       await page.waitForLoadState('networkidle');
       await selectErnieFromPersonSelector(page);
 
-      const leaveCard = page
+      const leaveCards = page
         .locator('.MuiCard-root')
-        .filter({ hasText: LEAVE_DESCRIPTION })
-        .first();
+        .filter({ hasText: LEAVE_DESCRIPTION });
+      const leaveCard = await findOnAnyPage(page, leaveCards);
       await changeStatusOnLocator(page, leaveCard, 'REQUESTED', 'APPROVED');
     });
 
@@ -229,10 +286,9 @@ test.describe
       await page.goto('/month');
       await page.waitForLoadState('networkidle');
 
-      // The month view only navigates one month at a time, and our bookings
-      // sit decades into the future, so we sanity-check that the chart loads
-      // for the current month (where Ernie already has seeded workdays /
-      // sick days / leave days) and that Ernie shows up among the persons.
+      // The booking dates above are all in May 2026, which is the current
+      // month per the session date — so the view opens directly on it. No
+      // chevron navigation needed.
       await expect(page.getByText(/^Month: \d{4}-\d{2}$/)).toBeVisible();
       await expect(page.getByText(/Total persons:/)).toBeVisible();
       await expect(page.getByText(/Ernie/i).first()).toBeVisible();
