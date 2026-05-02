@@ -366,6 +366,5 @@ class ContractControllerTest(
             .andExpect(status().isForbidden)
     }
 
-    private fun ResultActions.asyncDispatch(): ResultActions =
-        mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
+    private fun ResultActions.asyncDispatch(): ResultActions = mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
 }
