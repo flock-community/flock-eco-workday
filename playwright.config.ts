@@ -7,10 +7,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : 2, // Limit workers to prevent session conflicts
   reporter: process.env.CI
-    ? [
-        ['html', { outputFolder: 'playwright-report', open: 'never' }],
-        ['line'],
-      ]
+    ? [['html', { outputFolder: 'playwright-report', open: 'never' }], ['line']]
     : 'line',
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
