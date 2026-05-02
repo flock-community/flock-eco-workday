@@ -1,407 +1,266 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import { Given_I_am_logged_in_as_user } from './steps/workdaySteps';
 
-// Test configuration
 const PERSON_URL = '/person';
 const ADMIN_USERNAME = 'bert';
 
-test.describe('Person CRUD Operations', () => {
-  test.beforeEach(async ({ page }) => {
-    // Login before each test as admin (required for person operations)
+// PersonWidget renders MUI IconButtons with no aria-label, only icons.
+// MUI tags imported icons with data-testid="<IconName>", so we can find
+// the edit/delete icon buttons reliably via the SVG inside them.
+const EDIT_BUTTON = 'button:has(svg[data-testid="CreateIcon"])';
+const DELETE_BUTTON = 'button:has(svg[data-testid="DeleteRoundedIcon"])';
+
+type PersonData = {
+  firstname: string;
+  lastname: string;
+  email: string;
+  number: string;
+};
+
+function buildPersonData(suffix: string): PersonData {
+  const stamp = `${Date.now()}${Math.floor(Math.random() * 1000)}`;
+  return {
+    firstname: `E2EUser${stamp}`,
+    lastname: `${suffix}${stamp.slice(-4)}`,
+    email: `e2e.${suffix.toLowerCase()}.${stamp}@example.com`,
+    number: stamp.slice(-5),
+  };
+}
+
+async function fillPersonForm(page: Page, data: PersonData) {
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('textbox', { name: 'firstname' }).fill(data.firstname);
+  await dialog.getByRole('textbox', { name: 'lastname' }).fill(data.lastname);
+  await dialog.getByRole('textbox', { name: 'email' }).fill(data.email);
+  await dialog.getByRole('textbox', { name: 'number' }).fill(data.number);
+}
+
+async function openCreateDialog(page: Page) {
+  await page.getByRole('button', { name: 'Add' }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.getByText('Create Person')).toBeVisible();
+}
+
+async function saveDialog(page: Page) {
+  await page.getByRole('dialog').getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });
+  await page.waitForLoadState('networkidle');
+}
+
+async function searchPerson(page: Page, fullName: string) {
+  const search = page.getByPlaceholder('Search name');
+  await search.fill('');
+  await search.fill(fullName);
+  // Search has a 350ms debounce in PersonTable
+  await page.waitForLoadState('networkidle');
+  await expect(
+    page.getByRole('link', { name: fullName, exact: true }),
+  ).toBeVisible();
+}
+
+async function createPerson(page: Page, data: PersonData) {
+  await openCreateDialog(page);
+  await fillPersonForm(page, data);
+  await saveDialog(page);
+}
+
+async function openPersonDetails(page: Page, data: PersonData) {
+  const fullName = `${data.firstname} ${data.lastname}`;
+  await searchPerson(page, fullName);
+  await page.getByRole('link', { name: fullName, exact: true }).click();
+  await page.waitForURL(/.*\/person\/code\/.*/);
+  // PersonWidget shows the fullName in the CardHeader title
+  await expect(page.getByText(fullName, { exact: true }).first()).toBeVisible();
+}
+
+test.describe('Person flow', () => {
+  test.beforeEach(async ({ page, context }) => {
+    await context.clearCookies();
     await Given_I_am_logged_in_as_user(page, ADMIN_USERNAME);
-
-    // Navigate to person page
     await page.goto(PERSON_URL);
-
-    // Verify we're on the person page
     await expect(page.getByText('Persons').last()).toBeVisible();
   });
 
-  test('should create a new person successfully', async ({ page }) => {
-    // Click Add button to open person dialog
-    await page.getByRole('button', { name: 'Add' }).click();
+  test('creates a new person and shows them in the list', async ({ page }) => {
+    const data = buildPersonData('Create');
 
-    // Verify dialog is open
-    await expect(page.getByText('Create Person')).toBeVisible();
-
-    // Fill in person details with unique timestamp to avoid conflicts
-    const timestamp = Date.now();
-    const testPersonData = {
-      firstname: `TestUser${timestamp}`,
-      lastname: 'Create',
-      email: `test.create.${timestamp}@example.com`,
-      number: `${timestamp.toString().slice(-5)}`,
-    };
-
-    // Fill in the form fields using correct selectors
-    await page
-      .getByRole('textbox', { name: 'firstname' })
-      .fill(testPersonData.firstname);
-    await page
-      .getByRole('textbox', { name: 'lastname' })
-      .fill(testPersonData.lastname);
-    await page
-      .getByRole('textbox', { name: 'email' })
-      .fill(testPersonData.email);
-    await page
-      .getByRole('textbox', { name: 'number' })
-      .fill(testPersonData.number);
-
-    // Set reminders
+    await openCreateDialog(page);
+    await fillPersonForm(page, data);
     await page.getByRole('checkbox', { name: 'Reminders' }).check();
+    await saveDialog(page);
 
-    // Click Save button
-    await page.getByRole('button', { name: 'Save' }).click();
-
-    // Wait for dialog to close and verify person was created
-    await expect(page.getByText('Create Person')).not.toBeVisible();
-
-    // Search for the newly created person
-    await page
-      .getByPlaceholder('Search name')
-      .fill(`${testPersonData.firstname} ${testPersonData.lastname}`);
-
-    // Verify the person appears in the table
+    const fullName = `${data.firstname} ${data.lastname}`;
+    await searchPerson(page, fullName);
     await expect(
-      page.getByRole('link', {
-        name: `${testPersonData.firstname} ${testPersonData.lastname}`,
-      }),
+      page.getByRole('link', { name: fullName, exact: true }),
     ).toBeVisible();
-    await expect(page.getByText(testPersonData.email)).toBeVisible();
+    await expect(page.getByText(data.email)).toBeVisible();
   });
 
-  test('should view person details', async ({ page }) => {
-    // First create a person for testing
-    await page.getByRole('button', { name: 'Add' }).click();
-    await expect(page.getByText('Create Person')).toBeVisible();
+  test('shows person details after navigating from the list', async ({
+    page,
+  }) => {
+    const data = buildPersonData('View');
+    await createPerson(page, data);
+    await openPersonDetails(page, data);
 
-    const timestamp = Date.now();
-    const testPersonData = {
-      firstname: `TestUser${timestamp}`,
-      lastname: 'View',
-      email: `test.view.${timestamp}@example.com`,
-      number: `${timestamp.toString().slice(-5)}`,
-    };
-
-    await page
-      .getByRole('textbox', { name: 'firstname' })
-      .fill(testPersonData.firstname);
-    await page
-      .getByRole('textbox', { name: 'lastname' })
-      .fill(testPersonData.lastname);
-    await page
-      .getByRole('textbox', { name: 'email' })
-      .fill(testPersonData.email);
-    await page
-      .getByRole('textbox', { name: 'number' })
-      .fill(testPersonData.number);
-    await page.getByRole('checkbox', { name: 'Reminders' }).check();
-
-    await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByText('Create Person')).not.toBeVisible();
-
-    // Search for the person and click on their name to view details
-    await page
-      .getByPlaceholder('Search name')
-      .fill(`${testPersonData.firstname} ${testPersonData.lastname}`);
-    await page
-      .getByRole('link', {
-        name: `${testPersonData.firstname} ${testPersonData.lastname}`,
-      })
-      .click();
-
-    // Wait for navigation to person details page
-    await page.waitForURL(/.*\/person\/code\/.*/);
-
-    // Verify person details are displayed
+    // PersonWidget renders a details table with the firstname/lastname/email
+    // values in their own cells
     await expect(
-      page.getByText(`${testPersonData.firstname} ${testPersonData.lastname}`),
+      page.getByRole('cell', { name: data.firstname, exact: true }),
     ).toBeVisible();
-    await expect(page.getByText(testPersonData.email)).toBeVisible();
+    await expect(
+      page.getByRole('cell', { name: data.lastname, exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('cell', { name: data.email, exact: true }),
+    ).toBeVisible();
+    // New persons default to active = true
+    await expect(page.getByRole('cell', { name: 'Yes' }).first()).toBeVisible();
   });
 
-  test('should edit an existing person', async ({ page }) => {
-    // Already logged in as admin from beforeEach
+  test('edits an existing person and persists the changes', async ({
+    page,
+  }) => {
+    const original = buildPersonData('Edit');
+    await createPerson(page, original);
+    await openPersonDetails(page, original);
 
-    // First create a person for testing
-    await page.getByRole('button', { name: 'Add' }).click();
+    await page.locator(EDIT_BUTTON).first().click();
+    await expect(page.getByRole('dialog')).toBeVisible();
     await expect(page.getByText('Create Person')).toBeVisible();
 
-    const timestamp = Date.now();
-    const originalData = {
-      firstname: `TestUser${timestamp}`,
-      lastname: 'Edit',
-      email: `test.edit.${timestamp}@example.com`,
-      number: `${timestamp.toString().slice(-5)}`,
-    };
+    const updatedFirstname = `Updated${original.firstname}`;
+    const updatedEmail = `updated.${original.email}`;
+    const dialog = page.getByRole('dialog');
+    await dialog.getByRole('textbox', { name: 'firstname' }).fill(updatedFirstname);
+    await dialog.getByRole('textbox', { name: 'email' }).fill(updatedEmail);
+    await saveDialog(page);
 
-    await page
-      .getByRole('textbox', { name: 'firstname' })
-      .fill(originalData.firstname);
-    await page
-      .getByRole('textbox', { name: 'lastname' })
-      .fill(originalData.lastname);
-    await page.getByRole('textbox', { name: 'email' }).fill(originalData.email);
-    await page
-      .getByRole('textbox', { name: 'number' })
-      .fill(originalData.number);
-    await page.getByRole('checkbox', { name: 'Reminders' }).check();
-
-    await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByText('Create Person')).not.toBeVisible();
-
-    // Navigate to person details
-    await page
-      .getByPlaceholder('Search name')
-      .fill(`${originalData.firstname} ${originalData.lastname}`);
-    await page
-      .getByRole('link', {
-        name: `${originalData.firstname} ${originalData.lastname}`,
-      })
-      .click();
-    await page.waitForURL(/.*\/person\/code\/.*/);
-
-    // Wait for the page to load completely
-    await page.waitForTimeout(1000);
-
-    // Based on my interactive debugging, I know edit/delete buttons exist
-    // Let's try a different approach - look for buttons by their position/context
-    // Skip the first few buttons (Menu, Profile, etc.) and try the action buttons
-    const allMainButtons = page.locator('main button');
-    const buttonCount = await allMainButtons.count();
-
-    // The edit button should be one of the later buttons (not Menu, not Add buttons)
-    // Try clicking buttons starting from a reasonable offset
-    let editButtonFound = false;
-    for (let i = 2; i < Math.min(buttonCount, 6); i++) {
-      try {
-        await allMainButtons.nth(i).click();
-        await page.waitForTimeout(500);
-
-        // Check if edit dialog opened
-        if (await page.getByText('Create Person').isVisible()) {
-          editButtonFound = true;
-          break;
-        }
-      } catch (_e) {}
-    }
-
-    if (!editButtonFound) {
-      throw new Error(
-        'Could not find edit button that opens Create Person dialog',
-      );
-    }
-
-    // Verify edit dialog is open
-    await expect(page.getByText('Create Person')).toBeVisible();
-
-    // Update person details
-    const updatedData = {
-      firstname: `UpdatedUser${timestamp}`,
-      lastname: 'EditUpdated',
-      email: `test.edit.updated.${timestamp}@example.com`,
-    };
-
-    // Clear and fill updated values
-    await page.getByRole('textbox', { name: 'firstname' }).clear();
-    await page
-      .getByRole('textbox', { name: 'firstname' })
-      .fill(updatedData.firstname);
-    await page.getByRole('textbox', { name: 'email' }).clear();
-    await page.getByRole('textbox', { name: 'email' }).fill(updatedData.email);
-
-    // Save changes
-    await page.getByRole('button', { name: 'Save' }).click();
-
-    // Verify dialog closes and changes are reflected
-    await expect(page.getByText('Create Person')).not.toBeVisible();
-
-    // Verify updated information is displayed
+    // Details page reloads with new values in the PersonWidget
     await expect(
-      page.getByRole('cell', { name: updatedData.firstname }),
+      page.getByText(`${updatedFirstname} ${original.lastname}`).first(),
     ).toBeVisible();
-    await expect(page.getByText(updatedData.email)).toBeVisible();
+    await expect(page.getByText(updatedEmail)).toBeVisible();
+
+    // And the list reflects them too
+    await page.goto(PERSON_URL);
+    await searchPerson(page, `${updatedFirstname} ${original.lastname}`);
+    await expect(page.getByText(updatedEmail)).toBeVisible();
   });
 
-  test('should delete a person', async ({ page }) => {
-    // Already logged in as admin from beforeEach
+  test('deletes a person via the confirmation dialog', async ({ page }) => {
+    const data = buildPersonData('Delete');
+    await createPerson(page, data);
+    await openPersonDetails(page, data);
 
-    // First create a person for testing
-    await page.getByRole('button', { name: 'Add' }).click();
-    await expect(page.getByText('Create Person')).toBeVisible();
+    await page.locator(DELETE_BUTTON).first().click();
 
-    const timestamp = Date.now();
-    const testPersonData = {
-      firstname: `TestUser${timestamp}`,
-      lastname: 'Delete',
-      email: `test.delete.${timestamp}@example.com`,
-      number: `${timestamp.toString().slice(-5)}`,
-    };
-
-    await page
-      .getByRole('textbox', { name: 'firstname' })
-      .fill(testPersonData.firstname);
-    await page
-      .getByRole('textbox', { name: 'lastname' })
-      .fill(testPersonData.lastname);
-    await page
-      .getByRole('textbox', { name: 'email' })
-      .fill(testPersonData.email);
-    await page
-      .getByRole('textbox', { name: 'number' })
-      .fill(testPersonData.number);
-    await page.getByRole('checkbox', { name: 'Reminders' }).check();
-
-    await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByText('Create Person')).not.toBeVisible();
-
-    // Navigate to person details
-    await page
-      .getByPlaceholder('Search name')
-      .fill(`${testPersonData.firstname} ${testPersonData.lastname}`);
-    await page
-      .getByRole('link', {
-        name: `${testPersonData.firstname} ${testPersonData.lastname}`,
-      })
-      .click();
-    await page.waitForURL(/.*\/person\/code\/.*/);
-
-    // Wait for the page to load completely
-    await page.waitForTimeout(1000);
-
-    // Based on the working edit test, we know the edit button is found by the discovery algorithm
-    // The delete button should be the next button after the edit button
-    // Let's use a targeted approach similar to edit test but offset by 1
-    const allMainButtons = page.locator('main button');
-    const buttonCount = await allMainButtons.count();
-
-    // First find the edit button (to establish baseline)
-    let editButtonIndex = -1;
-    for (let i = 2; i < Math.min(buttonCount, 6); i++) {
-      try {
-        await allMainButtons.nth(i).click();
-        await page.waitForTimeout(500);
-
-        if (await page.getByText('Create Person').isVisible()) {
-          editButtonIndex = i;
-          // Close the edit dialog
-          await page.getByRole('button', { name: 'Cancel' }).click();
-          await page.waitForTimeout(500);
-          break;
-        }
-      } catch (_e) {}
-    }
-
-    // Now try the button right after the edit button for delete
-    let deleteButtonFound = false;
-    if (editButtonIndex >= 0 && editButtonIndex + 1 < buttonCount) {
-      try {
-        await allMainButtons.nth(editButtonIndex + 1).click();
-        await page.waitForTimeout(500);
-
-        if (await page.getByText('Surely you cant be serious?').isVisible()) {
-          deleteButtonFound = true;
-        }
-      } catch (_e) {
-        // Continue with fallback approach
-      }
-    }
-
-    // Fallback: try remaining buttons if direct approach failed
-    if (!deleteButtonFound) {
-      for (let i = Math.max(0, editButtonIndex + 2); i < buttonCount; i++) {
-        try {
-          await allMainButtons.nth(i).click();
-          await page.waitForTimeout(500);
-
-          if (await page.getByText('Surely you cant be serious?').isVisible()) {
-            deleteButtonFound = true;
-            break;
-          }
-        } catch (_e) {}
-      }
-    }
-
-    if (!deleteButtonFound) {
-      throw new Error(
-        'Could not find delete button that opens confirmation dialog',
-      );
-    }
-
-    // Verify confirmation dialog is open
-    await expect(page.getByText('Surely you cant be serious?')).toBeVisible();
+    // ConfirmDialog opens with a "Confirm" title and the deletion question
+    await expect(
+      page.getByRole('heading', { name: 'Confirm', exact: true }),
+    ).toBeVisible();
     await expect(
       page.getByText(
-        `Delete ${testPersonData.firstname} ${testPersonData.lastname}`,
+        `Surely you cant be serious? Delete ${data.firstname} ${data.lastname}`,
       ),
     ).toBeVisible();
 
-    // Confirm deletion
     await page.getByRole('button', { name: 'Confirm' }).click();
+    await page.waitForURL(`**${PERSON_URL}`);
 
-    // Verify redirect back to person list
-    await page.waitForURL(PERSON_URL);
-
-    // Search for the deleted person and verify it's not found
-    await page
-      .getByPlaceholder('Search name')
-      .fill(`${testPersonData.firstname} ${testPersonData.lastname}`);
-
-    // Wait for search to complete and verify person is not in the table
-    await page.waitForTimeout(1000);
+    const fullName = `${data.firstname} ${data.lastname}`;
+    await page.getByPlaceholder('Search name').fill(fullName);
+    await page.waitForLoadState('networkidle');
     await expect(
-      page.getByRole('link', {
-        name: `${testPersonData.firstname} ${testPersonData.lastname}`,
-      }),
-    ).not.toBeVisible();
+      page.getByRole('link', { name: fullName, exact: true }),
+    ).toHaveCount(0);
   });
-});
 
-// Cleanup test to remove test data
-test.describe('Person Test Cleanup', () => {
-  test('should clean up test data', async ({ page }) => {
-    // Login as admin and navigate to persons for cleanup
-    await Given_I_am_logged_in_as_user(page, ADMIN_USERNAME);
+  test('cancels the create dialog without persisting the person', async ({
+    page,
+  }) => {
+    const data = buildPersonData('Cancel');
+
+    await openCreateDialog(page);
+    await fillPersonForm(page, data);
+
+    await page.getByRole('dialog').getByRole('button', { name: 'Cancel' }).click();
+    await expect(page.getByRole('dialog')).toBeHidden();
+
+    const fullName = `${data.firstname} ${data.lastname}`;
+    await page.getByPlaceholder('Search name').fill(fullName);
+    await page.waitForLoadState('networkidle');
+    await expect(
+      page.getByRole('link', { name: fullName, exact: true }),
+    ).toHaveCount(0);
+  });
+
+  test('blocks submission when required fields are missing', async ({
+    page,
+  }) => {
+    await openCreateDialog(page);
+
+    const dialog = page.getByRole('dialog');
+    // Submit empty: schema marks firstname & lastname as required
+    await dialog.getByRole('button', { name: 'Save' }).click();
+
+    // Dialog stays open because validation prevents submit
+    await expect(dialog).toBeVisible();
+    await expect(page.getByText('Create Person')).toBeVisible();
+  });
+
+  test('cancels the delete confirmation and keeps the person', async ({
+    page,
+  }) => {
+    const data = buildPersonData('KeepAfterCancel');
+    await createPerson(page, data);
+    await openPersonDetails(page, data);
+
+    await page.locator(DELETE_BUTTON).first().click();
+    await expect(
+      page.getByRole('heading', { name: 'Confirm', exact: true }),
+    ).toBeVisible();
+
+    // Cancel the confirm dialog (the second Cancel button - inside ConfirmDialog)
+    await page
+      .getByRole('dialog')
+      .getByRole('button', { name: 'Cancel' })
+      .click();
+
+    // Still on the details page
+    await expect(page).toHaveURL(/.*\/person\/code\/.*/);
+    await expect(
+      page
+        .getByText(`${data.firstname} ${data.lastname}`, { exact: true })
+        .first(),
+    ).toBeVisible();
+
+    // And the person is still searchable in the list
     await page.goto(PERSON_URL);
+    await searchPerson(page, `${data.firstname} ${data.lastname}`);
+  });
 
-    // List of test emails to clean up
-    const testEmails = [
-      'john.doe@test.com',
-      'jane.smith@test.com',
-      'bob.wilson@test.com',
-      'robert.wilson@test.com',
-      'alice.johnson@test.com',
-      'test.user@test.com',
-      'john.dev@test.com',
-      'jane.design@test.com',
-      'mike.mgr@test.com',
-    ];
+  test('search filters the person list to the matching entry', async ({
+    page,
+  }) => {
+    const data = buildPersonData('Search');
+    await createPerson(page, data);
 
-    // Delete each test person if they exist
-    for (const email of testEmails) {
-      try {
-        // Search for person by email
-        await page.fill('input[placeholder="Search name"]', email);
-        await page.waitForTimeout(500);
+    const fullName = `${data.firstname} ${data.lastname}`;
+    const search = page.getByPlaceholder('Search name');
 
-        // Check if person exists
-        const personLink = page
-          .locator('a')
-          .filter({ hasText: /@test\.com/ })
-          .first();
-        if (await personLink.isVisible()) {
-          await personLink.click();
-          await page.waitForURL(/.*\/person\/code\/.*/);
+    await search.fill(data.firstname);
+    await page.waitForLoadState('networkidle');
+    await expect(
+      page.getByRole('link', { name: fullName, exact: true }),
+    ).toBeVisible();
 
-          // Delete the person
-          await page.click('button[aria-label="delete"]');
-          await page.click('button:has-text("Delete")');
-          await page.waitForURL(PERSON_URL);
-        }
-      } catch (error) {
-        // Continue with next person if this one fails
-        console.log(`Could not delete person with email ${email}:`, error);
-      }
-    }
+    await search.fill('');
+    await search.fill('definitely-not-a-real-person-xyz');
+    await page.waitForLoadState('networkidle');
+    await expect(
+      page.getByRole('link', { name: fullName, exact: true }),
+    ).toHaveCount(0);
   });
 });
