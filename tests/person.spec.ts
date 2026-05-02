@@ -133,7 +133,9 @@ test.describe('Person flow', () => {
     const updatedFirstname = `Updated${original.firstname}`;
     const updatedEmail = `updated.${original.email}`;
     const dialog = page.getByRole('dialog');
-    await dialog.getByRole('textbox', { name: 'firstname' }).fill(updatedFirstname);
+    await dialog
+      .getByRole('textbox', { name: 'firstname' })
+      .fill(updatedFirstname);
     await dialog.getByRole('textbox', { name: 'email' }).fill(updatedEmail);
     await saveDialog(page);
 
@@ -185,7 +187,10 @@ test.describe('Person flow', () => {
     await openCreateDialog(page);
     await fillPersonForm(page, data);
 
-    await page.getByRole('dialog').getByRole('button', { name: 'Cancel' }).click();
+    await page
+      .getByRole('dialog')
+      .getByRole('button', { name: 'Cancel' })
+      .click();
     await expect(page.getByRole('dialog')).toBeHidden();
 
     const fullName = `${data.firstname} ${data.lastname}`;
