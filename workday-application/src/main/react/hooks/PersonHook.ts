@@ -22,7 +22,7 @@ export function usePerson(): [Person | null, (personId: string) => void] {
   useEffect(() => {
     const listener = (it: SetStateAction<Person | null>) => setState(it);
     if (store === null && listeners.length === 0) {
-      if (status?.isLoggedIn) {
+      if (status?.loggedIn) {
         PersonClient.me().then(update);
       }
     }

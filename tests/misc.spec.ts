@@ -64,7 +64,7 @@ test.describe('misc.ws - BootstrapController', () => {
     expect(response.status()).toBe(200);
 
     const body = await response.json();
-    expect(body).toHaveProperty('isLoggedIn');
+    expect(body).toHaveProperty('loggedIn');
     expect(body).toHaveProperty('authorities');
     expect(body).toHaveProperty('userId');
     expect(body).toHaveProperty('personId');
@@ -80,7 +80,7 @@ test.describe('misc.ws - BootstrapController', () => {
     expect(response.status()).toBe(200);
 
     const body = await response.json();
-    expect(body.isLoggedIn).toBe(true);
+    expect(body.loggedIn).toBe(true);
     expect(Array.isArray(body.authorities)).toBe(true);
     expect(body.authorities.length).toBeGreaterThan(0);
     expect(typeof body.userId).toBe('string');
@@ -96,7 +96,7 @@ test.describe('misc.ws - BootstrapController', () => {
     expect(response.status()).toBe(200);
 
     const body = await response.json();
-    expect(body.isLoggedIn).toBe(true);
+    expect(body.loggedIn).toBe(true);
     expect(typeof body.userId).toBe('string');
     expect(body.userId.length).toBeGreaterThan(0);
     expect(typeof body.personId).toBe('string');

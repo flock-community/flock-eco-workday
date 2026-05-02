@@ -52,7 +52,7 @@ export const Application = () => {
                 logErrorToService(error, info);
               }}
             >
-              {status.isLoggedIn ? (
+              {status.loggedIn ? (
                 <AuthenticatedApplication />
               ) : (
                 <UnauthenticatedApplication />

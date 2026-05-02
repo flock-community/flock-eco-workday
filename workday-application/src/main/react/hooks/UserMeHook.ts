@@ -22,7 +22,7 @@ export function useUserMe(): [User, (userId: string) => void] {
 
   useEffect(() => {
     if (store === null && !loading) {
-      if (status?.isLoggedIn) {
+      if (status?.loggedIn) {
         loading = true;
         UserClient.findUsersMe().then(update);
       }
