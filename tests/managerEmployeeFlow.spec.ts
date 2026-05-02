@@ -219,7 +219,7 @@ test.describe
       await page.waitForLoadState('networkidle');
 
       const sickCards = page
-        .locator('.MuiCard-root')
+        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
         .filter({ hasText: SICK_DESCRIPTION });
       await findOnAnyPage(page, sickCards);
 
@@ -241,7 +241,7 @@ test.describe
       await page.waitForLoadState('networkidle');
 
       const leaveCards = page
-        .locator('.MuiCard-root')
+        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
         .filter({ hasText: LEAVE_DESCRIPTION });
       await findOnAnyPage(page, leaveCards);
     });
@@ -269,7 +269,7 @@ test.describe
       await selectErnieFromPersonSelector(page);
 
       const sickCards = page
-        .locator('.MuiCard-root')
+        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
         .filter({ hasText: SICK_DESCRIPTION });
       const sickCard = await findOnAnyPage(page, sickCards);
       await changeStatusOnLocator(page, sickCard, 'REQUESTED', 'APPROVED');
@@ -280,7 +280,7 @@ test.describe
       await selectErnieFromPersonSelector(page);
 
       const leaveCards = page
-        .locator('.MuiCard-root')
+        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
         .filter({ hasText: LEAVE_DESCRIPTION });
       const leaveCard = await findOnAnyPage(page, leaveCards);
       await changeStatusOnLocator(page, leaveCard, 'REQUESTED', 'APPROVED');
