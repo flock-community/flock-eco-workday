@@ -1,7 +1,7 @@
-endpoint Reminder GET /tasks/reminder -> {
+endpoint GetTaskReminder GET /tasks/reminder -> {
   200 -> Unit
 }
-endpoint GetType GET /login/type -> {
+endpoint GetLoginType GET /login/type -> {
   200 -> LoginType
 }
 endpoint LoginStatus GET /login/status -> {
@@ -10,7 +10,7 @@ endpoint LoginStatus GET /login/status -> {
 endpoint Bootstrap GET /bootstrap -> {
   200 -> BootstrapResponse
 }
-endpoint Get GET /api/ext/calendar/calendar ? {token: String} -> {
+endpoint GetCalendar GET /api/ext/calendar/calendar ? {token: String} -> {
   200 -> String
 }
 
