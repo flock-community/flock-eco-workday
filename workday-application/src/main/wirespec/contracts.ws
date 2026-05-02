@@ -1,74 +1,49 @@
-endpoint PutService PUT ContractServiceForm /api/contracts-service/{code: String} -> {
-  200 -> ContractService
-}
-endpoint PutManagement PUT ContractManagementForm /api/contracts-management/{code: String} -> {
-  200 -> ContractManagement
-}
-endpoint PutInternal PUT ContractInternalForm /api/contracts-internal/{code: String} -> {
-  200 -> ContractInternal
-}
-endpoint PutExternal PUT ContractExternalForm /api/contracts-external/{code: String} -> {
-  200 -> ContractExternal
-}
-endpoint PostService POST ContractServiceForm /api/contracts-service -> {
-  200 -> ContractService
-}
-endpoint PostManagement POST ContractManagementForm /api/contracts-management -> {
-  200 -> ContractManagement
-}
-endpoint PostInternal POST ContractInternalForm /api/contracts-internal -> {
-  200 -> ContractInternal
-}
-endpoint PostExternal POST ContractExternalForm /api/contracts-external -> {
-  200 -> ContractExternal
-}
-endpoint FindAll_1_2_1_1 GET /api/contracts ? {page: Pageable,to: String?,start: String?,end: String?,personId: String?} -> {
+endpoint GetContractAll GET /api/contracts ? {personId: String?, to: String?, start: String?, end: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
   200 -> Contract[]
 }
-endpoint FindByCode_5 GET /api/contracts/{code: String} -> {
+endpoint GetContractByCode GET /api/contracts/{code: String} -> {
   200 -> Contract
 }
-endpoint Delete_6 DELETE /api/contracts/{code: String} -> {
-  200 -> Unit
+endpoint DeleteContract DELETE /api/contracts/{code: String} -> {
+  204 -> Unit
+}
+endpoint PostContractInternal POST ContractInternalForm /api/contracts-internal -> {
+  200 -> ContractInternal
+}
+endpoint PutContractInternal PUT ContractInternalForm /api/contracts-internal/{code: String} -> {
+  200 -> ContractInternal
+}
+endpoint PostContractExternal POST ContractExternalForm /api/contracts-external -> {
+  200 -> ContractExternal
+}
+endpoint PutContractExternal PUT ContractExternalForm /api/contracts-external/{code: String} -> {
+  200 -> ContractExternal
+}
+endpoint PostContractManagement POST ContractManagementForm /api/contracts-management -> {
+  200 -> ContractManagement
+}
+endpoint PutContractManagement PUT ContractManagementForm /api/contracts-management/{code: String} -> {
+  200 -> ContractManagement
+}
+endpoint PostContractService POST ContractServiceForm /api/contracts-service -> {
+  200 -> ContractService
+}
+endpoint PutContractService PUT ContractServiceForm /api/contracts-service/{code: String} -> {
+  200 -> ContractService
 }
 
-type ContractServiceForm {
-  monthlyCosts: Number?,
-  description: String?,
-  from: String?,
-  to: String?
-}
-type ContractService {
+type Contract {
   id: Integer?,
   code: String?,
   from: String?,
   to: String?,
   person: Person?,
-  `type`: ContractServiceType?,
-  monthlyCosts: Number?,
-  description: String?
+  `type`: ContractType?
 }
-enum ContractServiceType {
+enum ContractType {
   INTERNAL, EXTERNAL, MANAGEMENT, SERVICE
 }
-type ContractManagementForm {
-  personId: String?,
-  monthlyFee: Number?,
-  from: String?,
-  to: String?
-}
-type ContractManagement {
-  id: Integer?,
-  code: String?,
-  from: String?,
-  to: String?,
-  person: Person?,
-  `type`: ContractManagementType?,
-  monthlyFee: Number?
-}
-enum ContractManagementType {
-  INTERNAL, EXTERNAL, MANAGEMENT, SERVICE
-}
+
 type ContractInternalForm {
   personId: String?,
   monthlySalary: Number?,
@@ -85,16 +60,14 @@ type ContractInternal {
   from: String?,
   to: String?,
   person: Person?,
-  `type`: ContractInternalType?,
+  `type`: ContractType?,
   monthlySalary: Number?,
   hoursPerWeek: Integer32?,
   holidayHours: Integer32?,
   hackHours: Integer32?,
   billable: Boolean?
 }
-enum ContractInternalType {
-  INTERNAL, EXTERNAL, MANAGEMENT, SERVICE
-}
+
 type ContractExternalForm {
   personId: String?,
   hourlyRate: Number?,
@@ -109,22 +82,41 @@ type ContractExternal {
   from: String?,
   to: String?,
   person: Person?,
-  `type`: ContractExternalType?,
+  `type`: ContractType?,
   hourlyRate: Number?,
   hoursPerWeek: Integer32?,
   billable: Boolean?
 }
-enum ContractExternalType {
-  INTERNAL, EXTERNAL, MANAGEMENT, SERVICE
+
+type ContractManagementForm {
+  personId: String?,
+  monthlyFee: Number?,
+  from: String?,
+  to: String?
 }
-type Contract {
+type ContractManagement {
   id: Integer?,
   code: String?,
   from: String?,
   to: String?,
   person: Person?,
-  `type`: ContractType?
+  `type`: ContractType?,
+  monthlyFee: Number?
 }
-enum ContractType {
-  INTERNAL, EXTERNAL, MANAGEMENT, SERVICE
+
+type ContractServiceForm {
+  monthlyCosts: Number?,
+  description: String?,
+  from: String?,
+  to: String?
+}
+type ContractService {
+  id: Integer?,
+  code: String?,
+  from: String?,
+  to: String?,
+  person: Person?,
+  `type`: ContractType?,
+  monthlyCosts: Number?,
+  description: String?
 }

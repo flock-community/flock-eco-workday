@@ -1,17 +1,17 @@
-endpoint FindByCode_7 GET /api/assignments/{code: String} -> {
+endpoint GetAssignmentAll GET /api/assignments ? {personId: String?, projectCode: String?, to: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
+  200 -> Assignment[]
+}
+endpoint GetAssignmentByCode GET /api/assignments/{code: String} -> {
   200 -> Assignment
 }
-endpoint Put_6 PUT AssignmentForm /api/assignments/{code: String} -> {
+endpoint PostAssignment POST AssignmentForm /api/assignments -> {
   200 -> Assignment
 }
-endpoint Delete_8 DELETE /api/assignments/{code: String} -> {
-  200 -> Unit
-}
-endpoint FindAll_2_1 GET /api/assignments ? {personId: String?,projectCode: String?,page: Pageable,to: String} -> {
-  200 -> FindAll_2_1200ResponseBody
-}
-endpoint Post_6 POST AssignmentForm /api/assignments -> {
+endpoint PutAssignment PUT AssignmentForm /api/assignments/{code: String} -> {
   200 -> Assignment
+}
+endpoint DeleteAssignment DELETE /api/assignments/{code: String} -> {
+  204 -> Unit
 }
 
 type AssignmentForm {
@@ -32,22 +32,9 @@ type Assignment {
   to: String?,
   hourlyRate: Number?,
   hoursPerWeek: Integer32?,
+  totalHours: Integer32?,
+  totalCosts: Number?,
   client: Client?,
   person: Person?,
   project: Project?
 }
-type AssignmentWithHours {
-  id: Integer?,
-  code: String?,
-  role: String?,
-  from: String?,
-  to: String?,
-  hourlyRate: Number?,
-  hoursPerWeek: Integer32?,
-  client: Client?,
-  person: Person?,
-  project: Project?,
-  totalHours: Integer32?,
-  totalCosts: Number?
-}
-type FindAll_2_1200ResponseBody = Assignment[] | AssignmentWithHours[]
