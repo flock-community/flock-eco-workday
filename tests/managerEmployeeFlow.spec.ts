@@ -233,6 +233,11 @@ test.describe
       await leaveDialog.getByLabel('Description').fill(LEAVE_DESCRIPTION);
       await When_I_fill_in_the_date_range_from_till(page, LEAVE_FROM, LEAVE_TO);
       await page.getByRole('button', { name: 'Save' }).click();
+      // The leave-day dialog header is "Leave days", which also appears as
+      // the page title — so wait for the dialog itself to disappear instead
+      // of a text match. Without this wait, the MUI Slide close transition
+      // still overlays the pagination control while findOnAnyPage runs.
+      await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });
       await page.waitForLoadState('networkidle');
 
       const leaveCards = page
