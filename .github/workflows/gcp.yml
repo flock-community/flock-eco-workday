@@ -15,8 +15,9 @@ jobs:
 
     # Add "id-token" with the intended permissions.
     permissions:
-      contents: "read"
+      contents: "write"
       id-token: "write"
+      pull-requests: "write"
 
     steps:
       - name: Checkout
@@ -116,7 +117,7 @@ jobs:
 
       - name: Upload Playwright test results
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: always()
         with:
           name: playwright-report
           path: |
@@ -124,6 +125,62 @@ jobs:
             test-results/
             backend.log
           retention-days: 30
+
+      - name: Determine Playwright Pages target directory
+        if: always() && github.actor != 'dependabot[bot]'
+        id: pages-target
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "dir=pr-${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+            echo "label=PR #${{ github.event.pull_request.number }} (${{ github.head_ref }})" >> "$GITHUB_OUTPUT"
+          else
+            echo "dir=main" >> "$GITHUB_OUTPUT"
+            echo "label=main @ ${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy Playwright report to GitHub Pages
+        if: always() && github.actor != 'dependabot[bot]' && hashFiles('playwright-report/index.html') != ''
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./playwright-report
+          destination_dir: ${{ steps.pages-target.outputs.dir }}
+          keep_files: true
+          commit_message: "Publish Playwright report for ${{ steps.pages-target.outputs.label }}"
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
+
+      - name: Comment Playwright report link on PR
+        if: always() && github.event_name == 'pull_request' && github.actor != 'dependabot[bot]' && hashFiles('playwright-report/index.html') != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const dir = `pr-${context.issue.number}`;
+            const url = `https://${context.repo.owner}.github.io/${context.repo.repo}/${dir}/`;
+            const marker = '<!-- playwright-report-link -->';
+            const body = `${marker}\n### Playwright report\n\nDashboard (with videos) for this PR: ${url}\n\nLatest run: ${context.sha.substring(0, 7)}`;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
 
       - name: Stop backend server
         if: always()
