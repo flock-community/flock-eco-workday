@@ -1,5 +1,15 @@
 package community.flock.eco.workday.application.controllers
 
+import community.flock.eco.workday.api.endpoint.HackDayReportByYear
+import community.flock.eco.workday.api.endpoint.HackdayDetailsMeYear
+import community.flock.eco.workday.api.endpoint.HolidayDetailsMeYear
+import community.flock.eco.workday.api.endpoint.HourAssignmentClientOverviewEmployee
+import community.flock.eco.workday.api.endpoint.HourClientOverviewEmployee
+import community.flock.eco.workday.api.endpoint.LeaveDayReportByYear
+import community.flock.eco.workday.api.endpoint.PersonNonProductiveHoursPerDay
+import community.flock.eco.workday.api.endpoint.RevenuePerClientByYear
+import community.flock.eco.workday.api.endpoint.TotalsPerMonthByYear
+import community.flock.eco.workday.api.endpoint.TotalsPerPersonByYear_1
 import community.flock.eco.workday.application.model.AggregationClient
 import community.flock.eco.workday.application.model.AggregationClientPersonAssignmentItem
 import community.flock.eco.workday.application.model.AggregationClientPersonAssignmentOverview
@@ -14,15 +24,11 @@ import community.flock.eco.workday.application.model.PersonHackdayDetails
 import community.flock.eco.workday.application.model.PersonHolidayDetails
 import community.flock.eco.workday.application.services.AggregationService
 import community.flock.eco.workday.application.services.PersonService
-import community.flock.eco.workday.core.utils.toResponse
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.math.BigDecimal
@@ -37,6 +43,7 @@ import community.flock.eco.workday.api.model.AggregationClientPersonOverview as 
 import community.flock.eco.workday.api.model.AggregationHackDay as AggregationHackDayApi
 import community.flock.eco.workday.api.model.AggregationIdentifier as AggregationIdentifierApi
 import community.flock.eco.workday.api.model.AggregationLeaveDay as AggregationLeaveDayApi
+import community.flock.eco.workday.api.model.AggregationMonth as AggregationMonthApi
 import community.flock.eco.workday.api.model.AggregationPerson as AggregationPersonApi
 import community.flock.eco.workday.api.model.AggregationPersonClientRevenueItem as AggregationPersonClientRevenueItemApi
 import community.flock.eco.workday.api.model.AggregationPersonClientRevenueOverview as AggregationPersonClientRevenueOverviewApi
@@ -44,23 +51,36 @@ import community.flock.eco.workday.api.model.NonProductiveHours as NonProductive
 import community.flock.eco.workday.api.model.PersonHackdayDetails as PersonHackdayDetailsApi
 import community.flock.eco.workday.api.model.PersonHolidayDetails as PersonHolidayDetailsApi
 
+interface AggregationHandler :
+    RevenuePerClientByYear.Handler,
+    TotalsPerPersonByYear_1.Handler,
+    TotalsPerMonthByYear.Handler,
+    LeaveDayReportByYear.Handler,
+    HackDayReportByYear.Handler,
+    HourClientOverviewEmployee.Handler,
+    HourAssignmentClientOverviewEmployee.Handler,
+    PersonNonProductiveHoursPerDay.Handler,
+    HolidayDetailsMeYear.Handler,
+    HackdayDetailsMeYear.Handler
+
 @RestController
-@RequestMapping("/api/aggregations")
 class AggregationController(
     private val personService: PersonService,
     private val aggregationService: AggregationService,
-) {
-    @GetMapping("/total-per-client", params = ["year"])
+) : AggregationHandler {
+    private fun authentication(): Authentication = SecurityContextHolder.getContext().authentication
+
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun revenuePerClientByYear(
-        @RequestParam year: Int,
-    ): List<AggregationClientApi> {
+    override suspend fun revenuePerClientByYear(request: RevenuePerClientByYear.Request): RevenuePerClientByYear.Response<*> {
+        val year = request.queries.year
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
-        return aggregationService.totalPerClient(from, to).map(AggregationClient::produce)
+        return RevenuePerClientByYear.Response200(
+            aggregationService.totalPerClient(from, to).map(AggregationClient::produce),
+        )
     }
 
-    @GetMapping("/total-per-person-me")
+    @GetMapping("/api/aggregations/total-per-person-me")
     @PreAuthorize("isAuthenticated()")
     fun totalsPerPersonMeByYearMonth(authentication: Authentication): Map<YearMonth, AggregationPersonApi?> {
         val now = LocalDate.now()
@@ -72,111 +92,101 @@ class AggregationController(
         }
     }
 
-    @GetMapping("/total-per-person", params = ["year"])
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun totalsPerPersonByYear(
-        @RequestParam year: Int,
-    ): List<AggregationPerson> {
+    override suspend fun totalsPerPersonByYear_1(request: TotalsPerPersonByYear_1.Request): TotalsPerPersonByYear_1.Response<*> {
+        val year = request.queries.year
+        val month = request.queries.month
+        val (from, to) =
+            when (month) {
+                null -> LocalDate.of(year, 1, 1) to LocalDate.of(year, 12, 31)
+                else -> YearMonth.of(year, month).let { it.atDay(1) to it.atEndOfMonth() }
+            }
+        return TotalsPerPersonByYear_1.Response200(
+            aggregationService.totalPerPerson(from, to).map(AggregationPerson::produce),
+        )
+    }
+
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    override suspend fun totalsPerMonthByYear(request: TotalsPerMonthByYear.Request): TotalsPerMonthByYear.Response<*> {
+        val year = request.queries.year
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
-        return aggregationService.totalPerPerson(from, to)
+        return TotalsPerMonthByYear.Response200(
+            aggregationService.totalPerMonth(from, to).map(AggregationMonth::produce),
+        )
     }
 
-    @GetMapping("/total-per-person", params = ["year", "month"])
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun totalsPerPersonByYearMonth(
-        @RequestParam year: Int,
-        @RequestParam month: Int,
-    ): List<AggregationPerson> {
-        val yearMonth = YearMonth.of(year, month)
-        val from = yearMonth.atDay(1)
-        val to = yearMonth.atEndOfMonth()
-        return aggregationService.totalPerPerson(from, to)
-    }
-
-    @GetMapping("/total-per-month", params = ["year"])
-    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun totalsPerMonthByYear(
-        @RequestParam year: Int,
-    ): List<AggregationMonth> {
-        val from = LocalDate.of(year, 1, 1)
-        val to = LocalDate.of(year, 12, 31)
-        return aggregationService.totalPerMonth(from, to)
-    }
-
-    @GetMapping("/leave-day-report", params = ["year"])
-    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun leaveDayReportByYear(
-        @RequestParam year: Int,
-    ): List<AggregationLeaveDayApi> = aggregationService.leaveDayReport(year).map { it.produce() }
-
-    @GetMapping("/hack-day-report", params = ["year"])
-    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun hackDayReportByYear(
-        @RequestParam year: Int,
-    ): List<AggregationHackDayApi> = aggregationService.hackdayReport(year).map { it.produce() }
-
-    @GetMapping("/client-hour-overview", params = ["year", "month"])
-    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun hourClientOverviewEmployee(
-        @RequestParam year: Int,
-        @RequestParam month: Int,
-    ): List<AggregationClientPersonOverviewApi> {
-        val yearMonth = YearMonth.of(year, month)
-        val from = yearMonth.atDay(1)
-        val to = yearMonth.atEndOfMonth()
-        return aggregationService.clientPersonHourOverview(from, to).map(AggregationClientPersonOverview::produce)
-    }
-
-    @GetMapping("/client-assignment-hour-overview", params = ["from", "to"])
-    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    fun hourAssignmentClientOverviewEmployee(
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate,
-    ): List<AggregationClientPersonAssignmentOverviewApi> =
-        aggregationService.clientPersonAssignmentHourOverview(from, to).map(
-            AggregationClientPersonAssignmentOverview::produce,
+    override suspend fun leaveDayReportByYear(request: LeaveDayReportByYear.Request): LeaveDayReportByYear.Response<*> =
+        LeaveDayReportByYear.Response200(
+            aggregationService.leaveDayReport(request.queries.year).map { it.produce() },
         )
 
-    @GetMapping("/person-nonproductive-hours-per-day")
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    override suspend fun hackDayReportByYear(request: HackDayReportByYear.Request): HackDayReportByYear.Response<*> =
+        HackDayReportByYear.Response200(
+            aggregationService.hackdayReport(request.queries.year).map { it.produce() },
+        )
+
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    override suspend fun hourClientOverviewEmployee(
+        request: HourClientOverviewEmployee.Request,
+    ): HourClientOverviewEmployee.Response<*> {
+        val yearMonth = YearMonth.of(request.queries.year, request.queries.month)
+        val from = yearMonth.atDay(1)
+        val to = yearMonth.atEndOfMonth()
+        return HourClientOverviewEmployee.Response200(
+            aggregationService.clientPersonHourOverview(from, to).map(AggregationClientPersonOverview::produce),
+        )
+    }
+
+    @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
+    override suspend fun hourAssignmentClientOverviewEmployee(
+        request: HourAssignmentClientOverviewEmployee.Request,
+    ): HourAssignmentClientOverviewEmployee.Response<*> {
+        val from = LocalDate.parse(request.queries.from)
+        val to = LocalDate.parse(request.queries.to)
+        return HourAssignmentClientOverviewEmployee.Response200(
+            aggregationService
+                .clientPersonAssignmentHourOverview(from, to)
+                .map(AggregationClientPersonAssignmentOverview::produce),
+        )
+    }
+
     @PreAuthorize("isAuthenticated()")
-    fun personNonProductiveHoursPerDay(
-        @RequestParam personId: String,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate,
-    ): ResponseEntity<List<NonProductiveHoursApi>> =
-        (
-            personService.findByUuid(UUID.fromString(personId))?.let { person ->
+    override suspend fun personNonProductiveHoursPerDay(
+        request: PersonNonProductiveHoursPerDay.Request,
+    ): PersonNonProductiveHoursPerDay.Response<*> {
+        val personId = UUID.fromString(request.queries.personId)
+        val from = LocalDate.parse(request.queries.from)
+        val to = LocalDate.parse(request.queries.to)
+        val body =
+            personService.findByUuid(personId)?.let { person ->
                 aggregationService
                     .personNonProductiveHoursPerDay(person, from, to)
                     .map(AggregationService.NonProductiveHours::produce)
             } ?: emptyList()
-        ).toResponse()
-
-    @GetMapping("/holiday-details-me", params = ["year"])
-    @PreAuthorize("isAuthenticated()")
-    fun holidayDetailsMeYear(
-        authentication: Authentication,
-        @RequestParam year: Int,
-    ): PersonHolidayDetailsApi {
-        val person =
-            personService.findByUserCode(authentication.name) ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
-        return aggregationService.getHolidayDetailsMe(year, person).produce()
+        return PersonNonProductiveHoursPerDay.Response200(body)
     }
 
-    @GetMapping("/hackday-details-me", params = ["year"])
     @PreAuthorize("isAuthenticated()")
-    fun hackdayDetailsMeYear(
-        authentication: Authentication,
-        @RequestParam year: Int,
-    ): PersonHackdayDetailsApi {
+    override suspend fun holidayDetailsMeYear(request: HolidayDetailsMeYear.Request): HolidayDetailsMeYear.Response<*> {
         val person =
-            personService.findByUserCode(authentication.name) ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
-        return aggregationService
-            .getHackdayDetailsMe(
-                year = year,
-                person = person,
-            ).produce()
+            personService.findByUserCode(authentication().name)
+                ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        return HolidayDetailsMeYear.Response200(
+            aggregationService.getHolidayDetailsMe(request.queries.year, person).produce(),
+        )
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    override suspend fun hackdayDetailsMeYear(request: HackdayDetailsMeYear.Request): HackdayDetailsMeYear.Response<*> {
+        val person =
+            personService.findByUserCode(authentication().name)
+                ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        return HackdayDetailsMeYear.Response200(
+            aggregationService.getHackdayDetailsMe(year = request.queries.year, person = person).produce(),
+        )
     }
 }
 
@@ -293,6 +303,26 @@ private fun AggregationClientPersonOverview.produce() =
                 )
             },
         totals = totals.map(Float::produce),
+    )
+
+private fun AggregationMonth.produce(): AggregationMonthApi =
+    AggregationMonthApi(
+        yearMonth = yearMonth,
+        countContractInternal = countContractInternal,
+        countContractManagement = countContractManagement,
+        countContractExternal = countContractExternal,
+        forecastRevenueGross = forecastRevenueGross.produce(),
+        forecastRevenueNet = forecastRevenueNet.produce(),
+        forecastHoursGross = forecastHoursGross.produce(),
+        actualRevenue = actualRevenue.produce(),
+        actualHours = actualHours.produce(),
+        actualCostContractInternal = actualCostContractInternal.produce(),
+        actualCostContractExternal = actualCostContractExternal.produce(),
+        actualCostContractManagement = actualCostContractManagement.produce(),
+        actualCostContractService = actualCostContractService.produce(),
+        actualRevenueInternal = actualRevenueInternal.produce(),
+        actualRevenueExternal = actualRevenueExternal.produce(),
+        actualRevenueManagement = actualRevenueManagement.produce(),
     )
 
 private fun BigDecimal.produce(): Double = toDouble()
