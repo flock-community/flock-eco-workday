@@ -23,7 +23,7 @@ flock-eco-workday/
 
 - **workday-core**: Provides base utilities, common domain models, security configurations, and shared client utilities. Vendored from flock-eco-core for independence.
 - **workday-user**: Handles authentication, authorization, user management, and security. Vendored from flock-eco-feature-user for independence.
-- **workday-application**: Contains all business logic for workday management including people, contracts, assignments, projects, expenses, invoices, and integrations.
+- **workday-application**: Contains all business logic for workday management including people, contracts, assignments, projects, expenses, and integrations.
 
 ## Prerequisites
 
@@ -285,7 +285,6 @@ travis encrypt-file secrets.tar --add
 The application integrates with:
 
 - **Google APIs**: Drive, Sheets (for reporting and document management)
-- **ExactOnline**: Accounting and invoicing
 - **Mailjet**: Email notifications
 
 Integration configurations are managed in `application-cloud.properties` and can be disabled with feature flags.

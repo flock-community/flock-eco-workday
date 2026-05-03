@@ -7,7 +7,6 @@ import ContractPage from '../features/contract/ContractPage';
 import { DashboardFeature } from '../features/dashboard/DashboardFeature';
 import { EventFeature } from '../features/event/EventFeature';
 import { EventRatingFeature } from '../features/event_rating/EventRatingFeature';
-import { ExactonlineFeature } from '../features/exactonline/ExactonlineFeature';
 import ExpensePage from '../features/expense/ExpensePage';
 import LeaveDayPage from '../features/holiday/LeaveDayPage';
 import { HomeFeature } from '../features/home/HomeFeature';
@@ -47,7 +46,6 @@ export const AuthenticatedApplication = () => {
         <Route path="/leave-days" exact component={LeaveDayPage} />
         <Route path="/sickdays" component={SickDayPage} />
         <Route path="/expenses" component={ExpensePage} />
-        <Route path="/exactonline" component={ExactonlineFeature} />
         <Route path="/users" exact component={UserFeature} />
         <Route path="/person" component={PersonFeature} />
         <Route path="/profile" component={ProfileFeature} />
