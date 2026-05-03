@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -57,7 +58,8 @@ class WorkDayControllerTest(
                 get("$baseUrl?personId=${person.uuid}")
                     .with(user(CreateHelper.UserSecurity(user.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
     }
 
@@ -86,7 +88,8 @@ class WorkDayControllerTest(
                 get("$baseUrl?personId=${personNotlinkedToUser.uuid}")
                     .with(user(CreateHelper.UserSecurity(user.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(content().string("[]"))
     }
@@ -118,7 +121,8 @@ class WorkDayControllerTest(
                 get("$baseUrl/${created.code}")
                     .with(user(CreateHelper.UserSecurity(user.toDomain())))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.id").exists())
             .andExpect(MockMvcResultMatchers.jsonPath("\$.code").exists())
@@ -158,7 +162,8 @@ class WorkDayControllerTest(
                     .content(mapper.writeValueAsString(updatedForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isForbidden)
+            ).asyncDispatch()
+            .andExpect(status().isForbidden)
 
         assertEquals(workDayService.findByCode(created.code)?.status, status)
     }
@@ -196,10 +201,13 @@ class WorkDayControllerTest(
                     .content(mapper.writeValueAsString(updatedCreateForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.id").exists())
             .andExpect(MockMvcResultMatchers.jsonPath("\$.code").exists())
             .andExpect(MockMvcResultMatchers.jsonPath("\$.status").value(updatedStatus.toString()))
     }
+
+    private fun ResultActions.asyncDispatch(): ResultActions = mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
 }

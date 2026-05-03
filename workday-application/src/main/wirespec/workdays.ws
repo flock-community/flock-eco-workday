@@ -1,26 +1,17 @@
-endpoint FindByCode GET /api/workdays/{code: String} -> {
-  200 -> WorkDay
-}
-endpoint Put PUT WorkDayForm /api/workdays/{code: String} -> {
-  200 -> WorkDay
-}
-endpoint Delete DELETE /api/workdays/{code: String} -> {
-  200 -> Unit
-}
-endpoint GetAll GET /api/workdays ? {personId: String,pageable: Pageable} -> {
+endpoint GetWorkDayAll GET /api/workdays ? {personId: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
   200 -> WorkDay[]
 }
-endpoint Post POST WorkDayForm /api/workdays -> {
+endpoint GetWorkDayByCode GET /api/workdays/{code: String} -> {
   200 -> WorkDay
 }
-endpoint PostSheets POST PostSheetsRequestBody /api/workdays/sheets -> {
-  200 -> String
+endpoint PostWorkDay POST WorkDayForm /api/workdays -> {
+  200 -> WorkDay
 }
-endpoint GetSheets GET /api/workdays/sheets/{file: String}/{name: String} -> {
-  200 -> String[]
+endpoint PutWorkDay PUT WorkDayForm /api/workdays/{code: String} -> {
+  200 -> WorkDay
 }
-endpoint ExportWorkday POST /export/workday/{code: String} -> {
-  200 -> ExportResponse
+endpoint DeleteWorkDay DELETE /api/workdays/{code: String} -> {
+  204 -> Unit
 }
 
 type WorkDayForm {
@@ -57,10 +48,4 @@ enum WorkDayStatus {
 type WorkDaySheet {
   name: String?,
   file: String?
-}
-type PostSheetsRequestBody {
-  file: String
-}
-type ExportResponse {
-  link: String?
 }

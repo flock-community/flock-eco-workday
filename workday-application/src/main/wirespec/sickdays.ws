@@ -1,17 +1,17 @@
-endpoint FindByCode_1 GET /api/sickdays/{code: String} -> {
-  200 -> SickDay
-}
-endpoint Put_1 PUT SickDayForm /api/sickdays/{code: String} -> {
-  200 -> SickDay
-}
-endpoint Delete_1 DELETE /api/sickdays/{code: String} -> {
-  200 -> Unit
-}
-endpoint GetAllByPersonId GET /api/sickdays ? {personId: String?,pageable: Pageable} -> {
+endpoint GetSickDayAll GET /api/sickdays ? {personId: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
   200 -> SickDay[]
 }
-endpoint Post_1 POST SickDayForm /api/sickdays -> {
+endpoint GetSickDayByCode GET /api/sickdays/{code: String} -> {
   200 -> SickDay
+}
+endpoint PostSickDay POST SickDayForm /api/sickdays -> {
+  200 -> SickDay
+}
+endpoint PutSickDay PUT SickDayForm /api/sickdays/{code: String} -> {
+  200 -> SickDay
+}
+endpoint DeleteSickDay DELETE /api/sickdays/{code: String} -> {
+  204 -> Unit
 }
 
 type SickDayForm {
@@ -36,7 +36,6 @@ type SickDay {
   days: Number[]?,
   description: String?,
   status: SickDayStatus?,
-  person: Person?,
   `type`: String
 }
 enum SickDayStatus {

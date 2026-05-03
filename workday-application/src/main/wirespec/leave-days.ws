@@ -1,17 +1,17 @@
-endpoint FindByCode_3 GET /api/leave-days/{code: String} -> {
-  200 -> LeaveDay
-}
-endpoint Put_3 PUT LeaveDayForm /api/leave-days/{code: String} -> {
-  200 -> LeaveDay
-}
-endpoint Delete_4 DELETE /api/leave-days/{code: String} -> {
-  200 -> Unit
-}
-endpoint GetAll_1 GET /api/leave-days ? {personId: String,pageable: Pageable} -> {
+endpoint GetLeaveDayAll GET /api/leave-days ? {personId: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
   200 -> LeaveDay[]
 }
-endpoint Post_3 POST LeaveDayForm /api/leave-days -> {
+endpoint GetLeaveDayByCode GET /api/leave-days/{code: String} -> {
   200 -> LeaveDay
+}
+endpoint PostLeaveDay POST LeaveDayForm /api/leave-days -> {
+  200 -> LeaveDay
+}
+endpoint PutLeaveDay PUT LeaveDayForm /api/leave-days/{code: String} -> {
+  200 -> LeaveDay
+}
+endpoint DeleteLeaveDay DELETE /api/leave-days/{code: String} -> {
+  204 -> Unit
 }
 
 type LeaveDayForm {
@@ -28,7 +28,7 @@ enum LeaveDayFormStatus {
   REQUESTED, APPROVED, REJECTED, DONE
 }
 enum LeaveDayFormType {
-  HOLIDAY, PLUSDAY, PAID_PARENTAL_LEAVE, UNPAID_PARENTAL_LEAVE
+  HOLIDAY, PLUSDAY, PAID_PARENTAL_LEAVE, UNPAID_PARENTAL_LEAVE, PAID_LEAVE
 }
 type LeaveDay {
   personId: String?,
@@ -40,8 +40,7 @@ type LeaveDay {
   days: Number[]?,
   description: String?,
   `type`: LeaveDayType?,
-  status: LeaveDayStatus?,
-  person: Person?
+  status: LeaveDayStatus?
 }
 enum LeaveDayType {
   HOLIDAY, PLUSDAY, PAID_PARENTAL_LEAVE, UNPAID_PARENTAL_LEAVE, PAID_LEAVE
