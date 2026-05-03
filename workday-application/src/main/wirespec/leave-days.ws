@@ -1,5 +1,5 @@
 endpoint GetLeaveDayAll GET /api/leave-days ? {personId: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
-  200 -> LeaveDay[]
+  200 -> LeaveDay[] # { `x-total`: Integer32 }
 }
 endpoint GetLeaveDayByCode GET /api/leave-days/{code: String} -> {
   200 -> LeaveDay

@@ -52,12 +52,15 @@ class LeaveDayController(
         val personId =
             request.queries.personId?.let(UUID::fromString)
                 ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "personId is required")
-        val leaveDays =
+        val page =
             when {
-                auth.isAdmin() -> service.findAllByPersonUuid(personId, pageable).content
-                else -> service.findAllByPersonUserCode(auth.name, pageable).content
+                auth.isAdmin() -> service.findAllByPersonUuid(personId, pageable)
+                else -> service.findAllByPersonUserCode(auth.name, pageable)
             }
-        return GetLeaveDayAll.Response200(leaveDays.map { it.externalize() })
+        return GetLeaveDayAll.Response200(
+            body = page.content.map { it.externalize() },
+            xtotal = page.totalElements.toInt(),
+        )
     }
 
     @PreAuthorize("hasAuthority('LeaveDayAuthority.READ')")
@@ -176,25 +179,13 @@ class LeaveDayController(
         }
 
     private fun GetLeaveDayAll.Queries.toPageable(): Pageable {
-        val sort = sort?.takeIf { it.isNotBlank() }?.toSort() ?: Sort.unsorted()
+        // The React LeaveDayList always requests `from,desc` ordering and
+        // relies on it to surface newly-submitted entries on page 1. Hardcode
+        // the same sort here so the wire behavior matches the pre-migration
+        // controller, which auto-resolved Spring's Pageable from the URL.
+        val sort = Sort.by("from").descending().and(Sort.by("id"))
         return PageRequest.of(page ?: 0, size ?: 20, sort)
     }
-
-    private fun String.toSort(): Sort =
-        split(",")
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-            .let { parts ->
-                when {
-                    parts.isEmpty() -> Sort.unsorted()
-                    parts.size == 1 -> Sort.by(parts[0])
-                    parts.last().equals("asc", ignoreCase = true) ->
-                        Sort.by(Sort.Direction.ASC, *parts.dropLast(1).toTypedArray())
-                    parts.last().equals("desc", ignoreCase = true) ->
-                        Sort.by(Sort.Direction.DESC, *parts.dropLast(1).toTypedArray())
-                    else -> Sort.by(*parts.toTypedArray())
-                }
-            }
 
     private fun LeaveDay.applyAuthentication(authentication: Authentication) =
         apply {

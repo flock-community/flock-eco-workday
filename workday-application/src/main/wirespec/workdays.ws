@@ -1,5 +1,5 @@
 endpoint GetWorkDayAll GET /api/workdays ? {personId: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
-  200 -> WorkDay[]
+  200 -> WorkDay[] # { `x-total`: Integer32 }
 }
 endpoint GetWorkDayByCode GET /api/workdays/{code: String} -> {
   200 -> WorkDay

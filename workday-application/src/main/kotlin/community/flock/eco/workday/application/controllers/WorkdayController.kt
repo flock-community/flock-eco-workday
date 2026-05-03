@@ -69,12 +69,15 @@ class WorkdayController(
         val personId =
             request.queries.personId?.let(UUID::fromString)
                 ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "personId is required")
-        val workDays =
+        val page =
             when {
-                auth.isAdmin() -> service.findAllByPersonUuid(personId, pageable).content
-                else -> service.findAllByPersonUserCode(auth.name, pageable).content
+                auth.isAdmin() -> service.findAllByPersonUuid(personId, pageable)
+                else -> service.findAllByPersonUserCode(auth.name, pageable)
             }
-        return GetWorkDayAll.Response200(workDays.map { it.externalize() })
+        return GetWorkDayAll.Response200(
+            body = page.content.map { it.externalize() },
+            xtotal = page.totalElements.toInt(),
+        )
     }
 
     @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")
@@ -240,26 +243,13 @@ class WorkdayController(
         }
 
     private fun GetWorkDayAll.Queries.toPageable(): Pageable {
-        val defaultSort = Sort.by("from").descending().and(Sort.by("id"))
-        val sort = sort?.takeIf { it.isNotBlank() }?.toSort() ?: defaultSort
+        // The previous WorkdayController hardcoded this sort and ignored the
+        // sort query parameter, so the React WorkDayList implicitly relied on
+        // it. Keep the same behavior to avoid surprising the frontend, which
+        // expects newest workdays first.
+        val sort = Sort.by("from").descending().and(Sort.by("id"))
         return PageRequest.of(page ?: 0, size ?: 20, sort)
     }
-
-    private fun String.toSort(): Sort =
-        split(",")
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-            .let { parts ->
-                when {
-                    parts.isEmpty() -> Sort.unsorted()
-                    parts.size == 1 -> Sort.by(parts[0])
-                    parts.last().equals("asc", ignoreCase = true) ->
-                        Sort.by(Sort.Direction.ASC, *parts.dropLast(1).toTypedArray())
-                    parts.last().equals("desc", ignoreCase = true) ->
-                        Sort.by(Sort.Direction.DESC, *parts.dropLast(1).toTypedArray())
-                    else -> Sort.by(*parts.toTypedArray())
-                }
-            }
 
     private fun getMediaType(name: String): MediaType {
         val extension = File(name).extension.lowercase()
