@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -40,7 +42,7 @@ class AggregationControllerTest(
                 get("$baseUrl/total-per-client?year=2024")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
@@ -62,7 +64,7 @@ class AggregationControllerTest(
                 get("$baseUrl/total-per-person?year=2024")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
@@ -84,7 +86,7 @@ class AggregationControllerTest(
                 get("$baseUrl/total-per-person?year=2024&month=3")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
@@ -106,7 +108,7 @@ class AggregationControllerTest(
                 get("$baseUrl/total-per-month?year=2024")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
@@ -128,7 +130,7 @@ class AggregationControllerTest(
                 get("$baseUrl/leave-day-report?year=2024")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
@@ -151,7 +153,7 @@ class AggregationControllerTest(
                 get("$baseUrl/hack-day-report?year=2024")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
@@ -174,7 +176,7 @@ class AggregationControllerTest(
                 get("$baseUrl/client-hour-overview?year=2024&month=6")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
@@ -196,7 +198,7 @@ class AggregationControllerTest(
                 get("$baseUrl/client-assignment-hour-overview?from=2024-06-01&to=2024-06-30")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
@@ -216,7 +218,7 @@ class AggregationControllerTest(
                 get("$baseUrl/person-nonproductive-hours-per-day?personId=${person.uuid}&from=2024-06-01&to=2024-06-30")
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$").isArray)
@@ -257,7 +259,7 @@ class AggregationControllerTest(
                 get("$baseUrl/holiday-details-me?year=2024")
                     .with(user(CreateHelper.UserSecurity(regularUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.name").value("Holiday Me"))
@@ -279,7 +281,7 @@ class AggregationControllerTest(
                 get("$baseUrl/hackday-details-me?year=2024")
                     .with(user(CreateHelper.UserSecurity(regularUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.name").value("Hack Me"))
@@ -295,7 +297,7 @@ class AggregationControllerTest(
                 get("$baseUrl/holiday-details-me?year=2024")
                     .with(user(CreateHelper.UserSecurity(regularUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isForbidden)
     }
 
@@ -308,7 +310,8 @@ class AggregationControllerTest(
                 get("$baseUrl/total-per-client?year=2024")
                     .with(user(CreateHelper.UserSecurity(unauthorizedUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
+            ).asyncDispatch()
             .andExpect(status().isForbidden)
     }
+    private fun ResultActions.asyncDispatch(): ResultActions = mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
 }
