@@ -21,6 +21,7 @@ import { HoursOverviewCard } from '../../components/hours-overview-card/HoursOve
 import { MissingHoursCard } from '../../components/missing-hours-card/MissingHoursCard';
 import PersonEvents from '../../components/person/PersonEvents';
 import { QuickLinks } from '../../components/quick-links/QuickLinks';
+import { TooManyHoursCard } from '../../components/too-many-hours-card/TooManyHoursCard';
 import { useLoginStatus } from '../../hooks/StatusHook';
 import { useUserMe } from '../../hooks/UserMeHook';
 import { HighlightSpan } from '../../theme/theme-light';
@@ -120,6 +121,7 @@ export function HomeFeature() {
 
           <div className={'gid-auto-fit'}>
             <MissingHoursCard totalPerPersonMe={totalPerPersonMe} />
+            <TooManyHoursCard totalPerPersonMe={totalPerPersonMe} />
             <ExpensesCard items={expenses} />
           </div>
 
