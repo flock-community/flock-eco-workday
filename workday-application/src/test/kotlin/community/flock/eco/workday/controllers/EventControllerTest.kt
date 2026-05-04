@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -101,7 +103,8 @@ class EventControllerTest : WorkdayIntegrationTest() {
                 get("$baseUrl/hack-days?year=2023")
                     .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
                     .accept(MediaType.APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(
                 content().json(
@@ -132,7 +135,8 @@ class EventControllerTest : WorkdayIntegrationTest() {
                 put("$baseUrl/${event.code}/subscribe")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .accept(MediaType.APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.persons[0].uuid").value(person.uuid.toString()))
     }
@@ -154,7 +158,8 @@ class EventControllerTest : WorkdayIntegrationTest() {
                 put("$baseUrl/${event.code}/unsubscribe")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .accept(MediaType.APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.persons.length()").value(1))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.persons[0].uuid").value(person02.uuid.toString()))
@@ -171,6 +176,9 @@ class EventControllerTest : WorkdayIntegrationTest() {
                 put("$baseUrl/${event.code}/unsubscribe")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .accept(MediaType.APPLICATION_JSON),
-            ).andExpect(status().isForbidden)
+            ).asyncDispatch()
+            .andExpect(status().isForbidden)
     }
+
+    private fun ResultActions.asyncDispatch(): ResultActions = mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
 }
