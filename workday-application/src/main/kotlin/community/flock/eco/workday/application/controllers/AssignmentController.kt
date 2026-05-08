@@ -46,24 +46,26 @@ class AssignmentController(
     override suspend fun getAssignmentAll(request: GetAssignmentAll.Request): GetAssignmentAll.Response<*> {
         val user = requireAuthority(AssignmentAuthority.READ)
         val q = request.queries
-        val page = q.toPageable()
+        val pageable = q.toPageable()
 
         val to = q.to?.let(LocalDate::parse)
         val personId = q.personId?.let(UUID::fromString)
         val isAdmin = user.hasAuthority(AssignmentAuthority.ADMIN)
 
-        val assignments: List<Assignment> =
+        val page =
             when {
-                to != null -> assignmentService.findAllByToAfterOrToNull(to, page).content
-                isAdmin && personId != null -> assignmentService.findAllByPersonUuid(personId, page).content
-                isAdmin && q.projectCode != null -> assignmentService.findByProjectCode(q.projectCode, page).content
-                else -> assignmentService.findAllByPersonUserCode(user.code, page).content
+                to != null -> assignmentService.findAllByToAfterOrToNull(to, pageable)
+                isAdmin && personId != null -> assignmentService.findAllByPersonUuid(personId, pageable)
+                isAdmin && q.projectCode != null -> assignmentService.findByProjectCode(q.projectCode, pageable)
+                else -> assignmentService.findAllByPersonUserCode(user.code, pageable)
             }
 
         return GetAssignmentAll.Response200(
-            assignments
-                .map { it.applyHourlyRate(isAdmin) }
-                .map { it.externalize(includeHours = to == null) },
+            body =
+                page.content
+                    .map { it.applyHourlyRate(isAdmin) }
+                    .map { it.externalize(includeHours = to == null) },
+            xtotal = page.totalElements.toInt(),
         )
     }
 
