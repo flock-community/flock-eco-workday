@@ -1,5 +1,5 @@
 endpoint GetAssignmentAll GET /api/assignments ? {personId: String?, projectCode: String?, to: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
-  200 -> Assignment[]
+  200 -> Assignment[] # { `x-total`: Integer32 }
 }
 endpoint GetAssignmentByCode GET /api/assignments/{code: String} -> {
   200 -> Assignment
