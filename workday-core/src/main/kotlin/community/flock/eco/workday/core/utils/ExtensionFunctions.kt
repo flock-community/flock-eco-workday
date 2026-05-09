@@ -47,3 +47,5 @@ fun <T> T?.toResponse(): ResponseEntity<T> =
     }
 
 fun <T> Optional<T>.toNullable(): T? = orElse(null)
+
+fun <T> List<T>.beginning(): T? = firstOrNull()
