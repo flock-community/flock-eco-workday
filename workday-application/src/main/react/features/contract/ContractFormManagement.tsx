@@ -28,6 +28,7 @@ export const ContractFormManagement = ({
             label="Monthly fee"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Grid>
         <Grid size={{ xs: 6 }}>

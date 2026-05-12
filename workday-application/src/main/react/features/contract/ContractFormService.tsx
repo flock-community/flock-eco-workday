@@ -27,6 +27,7 @@ export const ContractFormService = ({
             label="Monthly costs"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Grid>
         <Grid size={{ xs: 12 }}>
@@ -36,6 +37,7 @@ export const ContractFormService = ({
             label="Description"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Grid>
         <Grid size={{ xs: 6 }}>
