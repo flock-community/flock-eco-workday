@@ -138,6 +138,7 @@ export function useDayMeta(
 
         for (const leave of leaveDays) {
           if (leave.status === 'REJECTED') continue;
+          if (leave.type === 'PLUSDAY') continue;
           const dates = overlapDays(
             from,
             to,
