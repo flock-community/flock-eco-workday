@@ -1,5 +1,5 @@
 endpoint GetContractAll GET /api/contracts ? {personId: String?, to: String?, start: String?, end: String?, page: Integer32?, size: Integer32?, sort: String?} -> {
-  200 -> Contract[]
+  200 -> Contract[] # { `x-total`: Integer32 }
 }
 endpoint GetContractByCode GET /api/contracts/{code: String} -> {
   200 -> Contract
