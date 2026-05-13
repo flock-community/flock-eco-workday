@@ -73,31 +73,39 @@ class ContractController(
         val end = q.end?.let(LocalDate::parse)
         val personId = q.personId?.let(UUID::fromString)
 
-        val contracts: List<Contract> =
+        val (contracts, total) =
             when {
                 personId != null -> {
                     val user = requireAuthority(ContractAuthority.READ)
-                    if (user.hasAuthority(ContractAuthority.ADMIN)) {
-                        contractService.findAllByPersonUuid(personId, pageable).content
-                    } else {
-                        contractService.findAllByPersonUserCode(user.code, pageable).content
-                    }
+                    val page =
+                        if (user.hasAuthority(ContractAuthority.ADMIN)) {
+                            contractService.findAllByPersonUuid(personId, pageable)
+                        } else {
+                            contractService.findAllByPersonUserCode(user.code, pageable)
+                        }
+                    page.content to page.totalElements
                 }
                 to != null -> {
                     requireAuthority(ContractAuthority.ADMIN)
-                    contractService.findAllByToAfterOrToNull(to, pageable).content
+                    val page = contractService.findAllByToAfterOrToNull(to, pageable)
+                    page.content to page.totalElements
                 }
                 start != null || end != null -> {
                     requireAuthority(ContractAuthority.ADMIN)
-                    contractService.findAllByToBetween(start, end).sortedByDescending { it.to }
+                    val list = contractService.findAllByToBetween(start, end).sortedByDescending { it.to }
+                    list to list.size.toLong()
                 }
                 else -> {
                     requireAuthority(ContractAuthority.ADMIN)
-                    contractService.findAll(pageable).content.sortedBy { it.to }
+                    val page = contractService.findAll(pageable)
+                    page.content to page.totalElements
                 }
             }
 
-        return GetContractAll.Response200(contracts.map { it.externalize() })
+        return GetContractAll.Response200(
+            body = contracts.map { it.externalize() },
+            xtotal = total.toInt(),
+        )
     }
 
     @PreAuthorize("hasAuthority('ContractAuthority.READ')")
@@ -334,7 +342,24 @@ class ContractController(
         )
 
     private fun GetContractAll.Queries.toPageable(): Pageable {
-        val sortOrder = sort?.takeIf { it.isNotBlank() }?.let { Sort.by(it) } ?: Sort.unsorted()
+        val sortOrder = sort?.takeIf { it.isNotBlank() }?.let(::parseSort) ?: Sort.unsorted()
         return PageRequest.of(page ?: 0, size ?: 20, sortOrder)
     }
+
+    private fun parseSort(spec: String): Sort =
+        spec
+            .split(",")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .let { parts ->
+                when {
+                    parts.isEmpty() -> Sort.unsorted()
+                    parts.size == 1 -> Sort.by(parts[0])
+                    parts.last().equals("asc", ignoreCase = true) ->
+                        Sort.by(Sort.Direction.ASC, *parts.dropLast(1).toTypedArray())
+                    parts.last().equals("desc", ignoreCase = true) ->
+                        Sort.by(Sort.Direction.DESC, *parts.dropLast(1).toTypedArray())
+                    else -> Sort.by(*parts.toTypedArray())
+                }
+            }
 }

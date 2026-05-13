@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
@@ -344,6 +345,31 @@ class ContractControllerTest(
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$[0].person.uuid").value(person.uuid.toString()))
+    }
+
+    @Test
+    fun `paged list returns the total count in the x-total header`() {
+        val adminUser = createHelper.createUserEntity(adminAuthorities)
+        val person = createHelper.createPersonEntity()
+        repeat(3) { idx ->
+            createHelper.createContractInternal(
+                person = person,
+                from = LocalDate.of(2024, idx + 1, 1),
+                to = LocalDate.of(2024, idx + 1, 28),
+            )
+        }
+
+        // page=0, size=2: 2 items on the page, but x-total reflects the full match count
+        mvc
+            .perform(
+                get("$baseUrl?personId=${person.uuid}&page=0&size=2&sort=from,desc")
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(header().string("x-total", "3"))
     }
 
     @Test
