@@ -220,6 +220,25 @@ class ContractController(
             to = to?.toString(),
             person = person?.externalize(),
             type = type.externalize(),
+            monthlySalary = (this as? ContractInternal)?.monthlySalary,
+            hoursPerWeek =
+                when (this) {
+                    is ContractInternal -> hoursPerWeek
+                    is ContractExternal -> hoursPerWeek
+                    else -> null
+                },
+            holidayHours = (this as? ContractInternal)?.holidayHours,
+            hackHours = (this as? ContractInternal)?.hackHours,
+            hourlyRate = (this as? ContractExternal)?.hourlyRate,
+            monthlyFee = (this as? ContractManagement)?.monthlyFee,
+            monthlyCosts = (this as? ContractService)?.monthlyCosts,
+            description = (this as? ContractService)?.description,
+            billable =
+                when (this) {
+                    is ContractInternal -> billable
+                    is ContractExternal -> billable
+                    else -> null
+                },
         )
 
     private fun ContractInternal.externalize(): ContractInternalApi =
