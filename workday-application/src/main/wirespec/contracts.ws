@@ -38,7 +38,16 @@ type Contract {
   from: String?,
   to: String?,
   person: Person?,
-  `type`: ContractType?
+  `type`: ContractType?,
+  monthlySalary: Number?,
+  hoursPerWeek: Integer32?,
+  holidayHours: Integer32?,
+  hackHours: Integer32?,
+  hourlyRate: Number?,
+  monthlyFee: Number?,
+  monthlyCosts: Number?,
+  description: String?,
+  billable: Boolean?
 }
 enum ContractType {
   INTERNAL, EXTERNAL, MANAGEMENT, SERVICE
