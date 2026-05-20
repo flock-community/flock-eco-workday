@@ -17,11 +17,13 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.SimpleClientHttpRequestFactory
+import org.springframework.http.converter.HttpMessageConversionException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.filter.GenericFilterBean
 import java.time.Duration
@@ -43,7 +45,7 @@ class KratosSessionFilter(
 ) : GenericFilterBean() {
     private val log = LoggerFactory.getLogger(KratosSessionFilter::class.java)
 
-    // Bounded LRU: caps memory under a token-spray attack. Sized for typical fleet
+    // Bounded LRU (least-recently-used): caps memory under a token-spray attack. Sized for typical fleet
     // (< MAX_CACHE_SIZE concurrent active mobile sessions).
     private val tokenCache: MutableMap<String, CachedOutcome> =
         Collections.synchronizedMap(
@@ -104,30 +106,30 @@ class KratosSessionFilter(
         return fetchOutcome(token).also { remember(token, it) }
     }
 
-    private fun fetchOutcome(token: String): Outcome =
-        try {
-            restClient.get()
-                .uri("/sessions/whoami")
-                .header("X-Session-Token", token)
-                .retrieve()
-                .body(KratosSession::class.java)
-                .toOutcome()
-        } catch (ex: RestClientResponseException) {
-            when (ex.statusCode) {
-                HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN -> Outcome.Invalid
-                else -> throw KratosUnreachableException("Kratos returned ${ex.statusCode}", ex)
+    private fun fetchOutcome(token: String): Outcome {
+        val session =
+            try {
+                restClient.get()
+                    .uri("/sessions/whoami")
+                    .header("X-Session-Token", token)
+                    .retrieve()
+                    .body(KratosSession::class.java)
+            } catch (ex: RestClientResponseException) {
+                return when (ex.statusCode) {
+                    HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN -> Outcome.Invalid
+                    else -> throw KratosUnreachableException("Kratos returned ${ex.statusCode}", ex)
+                }
+            } catch (ex: RestClientException) {
+                throw KratosUnreachableException("Kratos call failed", ex)
+            } catch (ex: HttpMessageConversionException) {
+                throw KratosUnreachableException("Kratos returned an unparseable response", ex)
             }
-        } catch (ex: Exception) {
-            throw KratosUnreachableException("Kratos call failed", ex)
-        }
 
-    private fun KratosSession?.toOutcome(): Outcome {
         // Email case-normalization is owned by UserService.findByEmail (case-insensitive
-        // lookup). We pass through whatever Kratos provides, matching the legacy googleLogin
-        // path so both flows resolve consistently to the same User row.
-        val email = this?.identity?.traits?.email ?: return Outcome.Invalid
-        val user = findOrCreateUser(email, identity?.traits?.name)
-        return Outcome.Authenticated(user)
+        // lookup). Pass Kratos's email through as-given, matching the legacy googleLogin path.
+        val traits = session?.identity?.traits ?: return Outcome.Invalid
+        val email = traits.email ?: return Outcome.Invalid
+        return Outcome.Authenticated(findOrCreateUser(email, traits.name))
     }
 
     private fun remember(
