@@ -24,6 +24,9 @@ class WebSecurityConfig {
     @Autowired
     lateinit var userKeyTokenFilter: UserKeyTokenFilter
 
+    @Autowired
+    lateinit var kratosSessionFilter: KratosSessionFilter
+
     @Value("\${flock.eco.workday.login:TEST}")
     lateinit var loginType: String
 
@@ -31,6 +34,7 @@ class WebSecurityConfig {
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .addFilterBefore(userKeyTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterAfter(kratosSessionFilter, UserKeyTokenFilter::class.java)
             .headers { headers ->
                 headers.frameOptions { it.sameOrigin() }
             }.csrf { it.disable() }
