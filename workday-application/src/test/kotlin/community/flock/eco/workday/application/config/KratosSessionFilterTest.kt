@@ -32,7 +32,6 @@ import org.springframework.web.client.RestClient
 class KratosSessionFilterTest {
     private val kratosUrl = "https://auth.test.local"
     private lateinit var userService: UserService
-    private lateinit var restClientBuilder: RestClient.Builder
     private lateinit var mockServer: MockRestServiceServer
     private lateinit var filter: KratosSessionFilter
     private lateinit var chain: FilterChain
@@ -40,9 +39,9 @@ class KratosSessionFilterTest {
     @BeforeEach
     fun setUp() {
         userService = mockk()
-        restClientBuilder = RestClient.builder()
-        mockServer = MockRestServiceServer.bindTo(restClientBuilder).build()
-        filter = KratosSessionFilter(userService, restClientBuilder, kratosUrl)
+        val builder = RestClient.builder().baseUrl(kratosUrl)
+        mockServer = MockRestServiceServer.bindTo(builder).build()
+        filter = KratosSessionFilter(userService, builder.build())
         chain = mockk(relaxed = true)
         SecurityContextHolder.clearContext()
     }
@@ -96,6 +95,19 @@ class KratosSessionFilterTest {
         assertThat(SecurityContextHolder.getContext().authentication).isNull()
         assertThat(response.status).isEqualTo(HttpStatus.OK.value())
         verify { chain.doFilter(any(), any()) }
+    }
+
+    @Test
+    fun `second invalid-token request within TTL window does not hit Kratos again`() {
+        // Negative caching absorbs token-spray without delaying recovery: short TTL,
+        // but enough to avoid a Kratos call per request when an attacker sprays garbage.
+        expectWhoami("bad-token", withStatus(HttpStatus.UNAUTHORIZED))
+
+        filter.doFilter(bearer("bad-token"), MockHttpServletResponse(), chain)
+        filter.doFilter(bearer("bad-token"), MockHttpServletResponse(), chain)
+
+        assertThat(SecurityContextHolder.getContext().authentication).isNull()
+        // mockServer.verify() in @AfterEach asserts only the single expected call happened.
     }
 
     @Test
@@ -157,6 +169,22 @@ class KratosSessionFilterTest {
 
         assertThat(SecurityContextHolder.getContext().authentication?.principal).isEqualTo(user.code)
         verify(exactly = 2) { userService.findByEmail("race@flock.community") }
+    }
+
+    @Test
+    fun `mixed-case email from Kratos resolves existing user via case-insensitive lookup`() {
+        // Email normalization is delegated to UserService.findByEmail (which uses
+        // findByEmailIgnoreCase) — the filter must not double-normalize, otherwise it
+        // would diverge from the legacy googleLogin path that passes email as-given.
+        val user = userWithEmail("alice@flock.community")
+        every { userService.findByEmail("Alice@Flock.Community") } returns user
+        expectWhoami("mixed-token", withSuccess(whoamiBody("Alice@Flock.Community"), MediaType.APPLICATION_JSON))
+
+        filter.doFilter(bearer("mixed-token"), MockHttpServletResponse(), chain)
+
+        assertThat(SecurityContextHolder.getContext().authentication?.principal).isEqualTo(user.code)
+        verify(exactly = 1) { userService.findByEmail("Alice@Flock.Community") }
+        verify(exactly = 0) { userService.create(any()) }
     }
 
     @Test
