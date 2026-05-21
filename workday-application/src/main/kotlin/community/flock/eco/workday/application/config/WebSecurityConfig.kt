@@ -11,6 +11,7 @@ import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
@@ -25,7 +26,7 @@ class WebSecurityConfig {
     lateinit var userKeyTokenFilter: UserKeyTokenFilter
 
     @Autowired
-    lateinit var kratosSessionFilter: KratosSessionFilter
+    lateinit var kratosIntrospector: OpaqueTokenIntrospector
 
     @Value("\${flock.eco.workday.login:TEST}")
     lateinit var loginType: String
@@ -34,7 +35,9 @@ class WebSecurityConfig {
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .addFilterBefore(userKeyTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .addFilterAfter(kratosSessionFilter, UserKeyTokenFilter::class.java)
+            .oauth2ResourceServer { rs ->
+                rs.opaqueToken { it.introspector(kratosIntrospector) }
+            }
             .headers { headers ->
                 headers.frameOptions { it.sameOrigin() }
             }.csrf { it.disable() }

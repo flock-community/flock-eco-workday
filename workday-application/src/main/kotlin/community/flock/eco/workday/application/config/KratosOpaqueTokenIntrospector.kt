@@ -4,11 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import community.flock.eco.workday.user.forms.UserForm
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
-import jakarta.servlet.FilterChain
-import jakarta.servlet.ServletRequest
-import jakarta.servlet.ServletResponse
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -18,35 +13,43 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.http.converter.HttpMessageConversionException
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal
+import org.springframework.security.oauth2.server.resource.introspection.BadOpaqueTokenException
+import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal
+import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionException
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
-import org.springframework.web.filter.GenericFilterBean
 import java.time.Duration
 import java.util.Collections
 
 /**
- * Validates `Authorization: Bearer <kratos-session-token>` against Ory Kratos and
- * resolves the identity to a workday [User]. See `docs/adr/0001-mobile-auth-via-kratos-session-introspection.md`.
+ * Validates an opaque Kratos session token against `auth.flock.community/sessions/whoami` and
+ * resolves the identity to a workday [User]. Plugged into Spring Security via
+ * `oauth2ResourceServer().opaqueToken().introspector(...)` — see [WebSecurityConfig].
  *
- * Per-token outcomes are cached to avoid hammering Kratos. Positive outcomes live
- * [CACHE_TTL_OK]; negative outcomes live [CACHE_TTL_BAD] — short enough that a token
- * which just became valid recovers quickly, long enough to absorb a spray of garbage
- * tokens without per-request Kratos calls. Kratos remains the source of truth.
+ * Kratos's `/sessions/whoami` is *not* RFC 7662; this introspector adapts the Kratos shape to
+ * Spring Security's [OAuth2AuthenticatedPrincipal] so the standard `BearerTokenAuthenticationFilter`
+ * can drive header parsing, 401 + `WWW-Authenticate` responses, and SecurityContext population.
+ *
+ * Per-token outcomes are cached to absorb token-spray without hammering Kratos. Positive outcomes
+ * live [CACHE_TTL_OK]; negative outcomes live [CACHE_TTL_BAD] — long enough to absorb garbage
+ * sprays, short enough that a newly-valid token recovers quickly. Kratos remains source of truth.
+ *
+ * See `docs/adr/0001-mobile-auth-via-kratos-session-introspection.md`.
  */
 @Component
-class KratosSessionFilter(
+class KratosOpaqueTokenIntrospector(
     private val userService: UserService,
     @Qualifier("kratosRestClient") private val restClient: RestClient,
-) : GenericFilterBean() {
-    private val log = LoggerFactory.getLogger(KratosSessionFilter::class.java)
+) : OpaqueTokenIntrospector {
+    private val log = LoggerFactory.getLogger(KratosOpaqueTokenIntrospector::class.java)
 
-    // Bounded LRU (least-recently-used): caps memory under a token-spray attack. Sized for typical fleet
-    // (< MAX_CACHE_SIZE concurrent active mobile sessions).
+    // Bounded LRU caps memory under a token-spray attack. Sized for typical fleet (<MAX_CACHE_SIZE
+    // concurrent active mobile sessions).
     private val tokenCache: MutableMap<String, CachedOutcome> =
         Collections.synchronizedMap(
             object : LinkedHashMap<String, CachedOutcome>(64, 0.75f, true) {
@@ -54,64 +57,13 @@ class KratosSessionFilter(
             },
         )
 
-    override fun doFilter(
-        request: ServletRequest,
-        response: ServletResponse,
-        filterChain: FilterChain,
-    ) {
-        val httpRequest = request as HttpServletRequest
-        val httpResponse = response as HttpServletResponse
-        val token = httpRequest.bearerToken()
-
-        if (token == null) {
-            filterChain.doFilter(request, response)
-            return
+    override fun introspect(token: String): OAuth2AuthenticatedPrincipal {
+        val outcome = tokenCache[token]?.takeIf { it.expiresAtNanos > System.nanoTime() }?.outcome
+            ?: fetchOutcome(token).also { remember(token, it) }
+        return when (outcome) {
+            is Outcome.Authenticated -> outcome.toPrincipal()
+            Outcome.Invalid -> throw BadOpaqueTokenException("Kratos rejected session token")
         }
-
-        val outcome =
-            try {
-                resolveIdentity(token)
-            } catch (ex: KratosUnreachableException) {
-                log.warn("Kratos unreachable while validating session token", ex)
-                httpResponse.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(), "Authentication service unavailable")
-                return
-            }
-
-        when (outcome) {
-            is Outcome.Authenticated -> {
-                SecurityContextHolder.getContext().authentication = outcome.toAuthentication()
-                filterChain.doFilter(request, response)
-            }
-            Outcome.Invalid -> {
-                // Bearer was present but Kratos rejected it. Falling through would let
-                // the form-login chain 302 to /, which is wrong for API clients that
-                // explicitly attempted token auth — they want a structured response so
-                // they can clear the stored token and re-authenticate.
-                httpResponse.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid session token")
-            }
-        }
-    }
-
-    private fun HttpServletRequest.bearerToken(): String? =
-        getHeader("Authorization")
-            ?.let { BEARER_REGEX.matchEntire(it) }
-            ?.groupValues?.get(1)
-            ?.trim()
-            ?.ifBlank { null }
-
-    private fun Outcome.Authenticated.toAuthentication(): UsernamePasswordAuthenticationToken =
-        UsernamePasswordAuthenticationToken(
-            user.code,
-            null,
-            user.authorities.map { SimpleGrantedAuthority(it) },
-        )
-
-    private fun resolveIdentity(token: String): Outcome {
-        tokenCache[token]
-            ?.takeIf { it.expiresAtNanos > System.nanoTime() }
-            ?.let { return it.outcome }
-
-        return fetchOutcome(token).also { remember(token, it) }
     }
 
     private fun fetchOutcome(token: String): Outcome {
@@ -125,16 +77,21 @@ class KratosSessionFilter(
             } catch (ex: RestClientResponseException) {
                 return when (ex.statusCode) {
                     HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN -> Outcome.Invalid
-                    else -> throw KratosUnreachableException("Kratos returned ${ex.statusCode}", ex)
+                    else -> {
+                        log.warn("Kratos returned {} while validating session token", ex.statusCode)
+                        throw OAuth2IntrospectionException("Kratos returned ${ex.statusCode}", ex)
+                    }
                 }
             } catch (ex: RestClientException) {
-                throw KratosUnreachableException("Kratos call failed", ex)
+                log.warn("Kratos call failed while validating session token", ex)
+                throw OAuth2IntrospectionException("Kratos call failed", ex)
             } catch (ex: HttpMessageConversionException) {
-                throw KratosUnreachableException("Kratos returned an unparseable response", ex)
+                log.warn("Kratos returned an unparseable response", ex)
+                throw OAuth2IntrospectionException("Kratos returned an unparseable response", ex)
             }
 
-        // Email case-normalization is owned by UserService.findByEmail (case-insensitive
-        // lookup). Pass Kratos's email through as-given, matching the legacy googleLogin path.
+        // Email case-normalization is owned by UserService.findByEmail (case-insensitive lookup).
+        // Pass Kratos's email through as-given, matching the legacy googleLogin path.
         val traits = session?.identity?.traits ?: return Outcome.Invalid
         val email = traits.email ?: return Outcome.Invalid
         return Outcome.Authenticated(findOrCreateUser(email, traits.name))
@@ -152,10 +109,8 @@ class KratosSessionFilter(
         tokenCache[token] = CachedOutcome(outcome, System.nanoTime() + ttl.toNanos())
     }
 
-    /**
-     * Race-safe: on unique-email constraint violation, fall back to a read — another
-     * concurrent request created the row.
-     */
+    // Race-safe: on unique-email constraint violation, fall back to a read — another concurrent
+    // request created the row.
     private fun findOrCreateUser(
         email: String,
         name: String?,
@@ -167,6 +122,16 @@ class KratosSessionFilter(
                 userService.findByEmail(email) ?: throw ex
             }
 
+    // name = user.code so downstream `authentication.name` keeps matching personService.findByUserCode,
+    // mirroring the legacy UserKeyTokenFilter / googleLogin contract. Attributes must be non-empty
+    // per OAuth2IntrospectionAuthenticatedPrincipal's contract; "sub" suffices.
+    private fun Outcome.Authenticated.toPrincipal(): OAuth2AuthenticatedPrincipal =
+        OAuth2IntrospectionAuthenticatedPrincipal(
+            user.code,
+            mapOf("sub" to user.code),
+            user.authorities.map { SimpleGrantedAuthority(it) },
+        )
+
     private sealed interface Outcome {
         data class Authenticated(val user: User) : Outcome
 
@@ -175,10 +140,7 @@ class KratosSessionFilter(
 
     private data class CachedOutcome(val outcome: Outcome, val expiresAtNanos: Long)
 
-    private class KratosUnreachableException(message: String, cause: Throwable?) : RuntimeException(message, cause)
-
     companion object {
-        private val BEARER_REGEX = Regex("(?i)Bearer\\s+(.+)")
         private val CACHE_TTL_OK: Duration = Duration.ofSeconds(60)
         private val CACHE_TTL_BAD: Duration = Duration.ofSeconds(10)
         private const val MAX_CACHE_SIZE = 1024
@@ -186,8 +148,8 @@ class KratosSessionFilter(
 }
 
 /**
- * Dedicated [RestClient] for [KratosSessionFilter]. Explicit connect/read timeouts so a slow or
- * stalled Kratos cannot pin Tomcat threads — the filter's 503 fast-fail relies on this.
+ * Dedicated [RestClient] for [KratosOpaqueTokenIntrospector]. Explicit connect/read timeouts so a
+ * slow or stalled Kratos cannot pin Tomcat threads.
  */
 @Configuration
 class KratosRestClientConfig {
