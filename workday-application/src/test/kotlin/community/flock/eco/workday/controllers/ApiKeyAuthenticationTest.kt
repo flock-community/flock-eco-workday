@@ -58,11 +58,14 @@ class ApiKeyAuthenticationTest : WorkdayIntegrationTest() {
 
     @Test
     fun `should reject request with invalid API token`() {
+        // 401 (was 3xx before the OpaqueTokenIntrospector wiring landed): with two entry points
+        // registered, Spring's DelegatingAuthenticationEntryPoint picks the OAuth2 resource-server
+        // matcher for non-HTML requests, which is the correct REST semantic.
         mvc
             .perform(
                 get("/api/users/me")
                     .header("Authorization", "TOKEN invalid-key"),
-            ).andExpect(status().is3xxRedirection)
+            ).andExpect(status().isUnauthorized)
     }
 
     @Test
@@ -80,12 +83,12 @@ class ApiKeyAuthenticationTest : WorkdayIntegrationTest() {
         // Revoke the key
         userAccountService.revokeKeyByIdForUserCode(userCode, generatedKey.id)
 
-        // Verify the key no longer works
+        // Verify the key no longer works (401, see note above on the invalid-token test).
         mvc
             .perform(
                 get("/api/users/me")
                     .header("Authorization", "TOKEN ${generatedKey.plainKey}"),
-            ).andExpect(status().is3xxRedirection)
+            ).andExpect(status().isUnauthorized)
     }
 
     private fun ResultActions.asyncDispatch() = mvc.perform(asyncDispatch(this.andReturn()))
