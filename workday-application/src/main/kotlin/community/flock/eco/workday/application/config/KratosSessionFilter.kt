@@ -77,11 +77,19 @@ class KratosSessionFilter(
                 return
             }
 
-        if (outcome is Outcome.Authenticated) {
-            SecurityContextHolder.getContext().authentication = outcome.toAuthentication()
+        when (outcome) {
+            is Outcome.Authenticated -> {
+                SecurityContextHolder.getContext().authentication = outcome.toAuthentication()
+                filterChain.doFilter(request, response)
+            }
+            Outcome.Invalid -> {
+                // Bearer was present but Kratos rejected it. Falling through would let
+                // the form-login chain 302 to /, which is wrong for API clients that
+                // explicitly attempted token auth — they want a structured response so
+                // they can clear the stored token and re-authenticate.
+                httpResponse.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid session token")
+            }
         }
-        // Outcome.Invalid leaves SecurityContext untouched; Spring Security replies 401 on protected paths.
-        filterChain.doFilter(request, response)
     }
 
     private fun HttpServletRequest.bearerToken(): String? =

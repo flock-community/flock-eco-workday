@@ -86,15 +86,18 @@ class KratosSessionFilterTest {
     }
 
     @Test
-    fun `expired or invalid token leaves SecurityContext untouched`() {
+    fun `expired or invalid token responds 401 and does not call filter chain`() {
+        // Bearer-with-rejected-token must not fall through to the form-login chain
+        // (which would 302 to /). API clients explicitly attempted token auth and
+        // need a structured 401 to know they should clear the token and re-auth.
         expectWhoami("bad-token", withStatus(HttpStatus.UNAUTHORIZED))
 
         val response = MockHttpServletResponse()
         filter.doFilter(bearer("bad-token"), response, chain)
 
         assertThat(SecurityContextHolder.getContext().authentication).isNull()
-        assertThat(response.status).isEqualTo(HttpStatus.OK.value())
-        verify { chain.doFilter(any(), any()) }
+        assertThat(response.status).isEqualTo(HttpStatus.UNAUTHORIZED.value())
+        verify(exactly = 0) { chain.doFilter(any(), any()) }
     }
 
     @Test
