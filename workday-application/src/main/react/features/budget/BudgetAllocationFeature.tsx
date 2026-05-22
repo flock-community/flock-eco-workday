@@ -146,7 +146,7 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
             )}
             {isAdmin && (
               <Button onClick={() => setDialogOpen(true)}>
-                <AddIcon/> Add
+                <AddIcon/> Add Study Money
               </Button>
             )}
           </Stack>
@@ -177,7 +177,7 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
         )}
 
         {/* Filter chips */}
-        {!loading && allocations.length > 0 && (
+        {!loading && (
           <Stack direction="row" spacing={1} sx={{mb: 2}}>
             <Chip
               label="All"
@@ -248,7 +248,7 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
         onConfirm={handleDeleteConfirm}
       >
         <Typography>
-          Are you sure you want to delete this study money allocation?
+          Are you sure you want to delete this budget allocation?
         </Typography>
       </ConfirmDialog>
     </Card>

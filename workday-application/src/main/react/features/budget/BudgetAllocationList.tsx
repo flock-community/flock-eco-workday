@@ -85,24 +85,25 @@ export function BudgetAllocationList({
 
   return (
     <Stack spacing={2}>
+      {/* Info alert about event allocations */}
+      {allItems.some((item) => item.type === 'event') && (
+        <Alert severity="info" icon={<Info/>}>
+          Event allocations are managed from the Events page.
+          {isAdmin && (
+            <> Click the event name or{' '}
+              <OpenInNew sx={{fontSize: 14, verticalAlign: 'middle', mx: 0.5}}/>{' '}
+              icon to navigate there.
+            </>
+          )}
+        </Alert>
+      )}
+
       {/* Header */}
       <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         <Typography variant="h6">
           Budget Allocations ({allItems.length})
         </Typography>
       </Box>
-
-      {/* Info alert about event allocations */}
-      {isAdmin && allItems.some((item) => item.type === 'event') && (
-        <Alert severity="info" icon={<Info/>}>
-          Event allocations are managed from the Events page. Click the event
-          name or{' '}
-          <OpenInNew
-            sx={{fontSize: 14, verticalAlign: 'middle', mx: 0.5}}
-          />{' '}
-          icon to navigate to the event.
-        </Alert>
-      )}
 
       {/* Unified list of all allocations */}
       {allItems.length === 0 ? (
