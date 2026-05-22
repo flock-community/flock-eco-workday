@@ -2,21 +2,22 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Polish & Gap Closure
-current_phase: 999.1
+current_phase: 18.1
 current_plan: Not started
 status: planning
-last_updated: "2026-03-27T15:25:42.330Z"
+last_updated: "2026-05-22T12:53:28.091Z"
 progress:
-  total_phases: 9
+  total_phases: 11
   completed_phases: 7
-  total_plans: 12
+  total_plans: 13
   completed_plans: 10
+  percent: 64
 ---
 
 # Project State: Budget Allocations for Flock Workday
 
 **Last Updated:** 2026-03-27
-**Current Phase:** 999.1
+**Current Phase:** 18.1
 **Current Plan:** Not started
 **Status:** Ready to plan
 
@@ -33,6 +34,10 @@ Phase: 17 (event-money-summary-and-ui-polish) — COMPLETE
 Plan: 1 of 1 (all plans done)
 
 ## Accumulated Context
+
+### Roadmap Evolution
+
+- Phase 18.1 inserted after Phase 18: Close gap: ALLOC-04 — swap allocation type on event type change (URGENT)
 
 ### Key Decisions
 
