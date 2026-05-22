@@ -85,6 +85,22 @@ describe('EventBudgetSummaryBanner', () => {
 
       expect(container.textContent).toContain('3 participants');
     });
+
+    // SUMM-01: fully-allocated state must show both assigned/person AND €0 unassigned explicitly
+    it('shows €0 unassigned (fully allocated) in collapsed mode when totalAllocated equals totalBudget', () => {
+      render(
+        <EventBudgetSummaryBanner
+          totalBudget={500}
+          totalAllocated={500}
+          participantCount={1}
+          defaultHoursPerDay={8}
+          defaultBudgetType="HACK"
+        />
+      );
+      // Both the assigned-per-person figure and the explicit €0 unassigned must appear
+      expect(screen.getByText(/€0 unassigned \(fully allocated\)/)).toBeInTheDocument();
+      expect(screen.getByText(/assigned €500\/person/)).toBeInTheDocument();
+    });
   });
 
   // EVT-06: No STUDY fallback when allocation type is None
