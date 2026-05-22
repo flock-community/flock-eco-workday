@@ -11,6 +11,7 @@ import {
   diffAllocations,
   eventBudgetTypeToAllocationType,
   eventBudgetTypeToDailyType,
+  generateDefaultAllocations,
 } from './eventBudgetTransformers';
 
 // --- EVT-01 / EVT-02: periodToDailyAllocations ---
@@ -567,5 +568,131 @@ describe('eventBudgetTypeToDailyType', () => {
 
   it('maps STUDY to STUDY daily allocation type', () => {
     expect(eventBudgetTypeToDailyType('STUDY')).toBe('STUDY');
+  });
+});
+
+// --- ALLOC-01 / ALLOC-02: generateDefaultAllocations ---
+
+describe('generateDefaultAllocations', () => {
+  const persons = [
+    { uuid: 'p1', firstname: 'Alice', lastname: 'Smith' },
+    { uuid: 'p2', firstname: 'Bob', lastname: 'Jones' },
+  ];
+  const eventFrom = dayjs('2026-03-10');
+  const days = [8, 8, 8]; // 3-day event
+
+  it('HACK type sets hackPeriod with correct from/to/days and studyPeriod is null', () => {
+    const { timeParticipants } = generateDefaultAllocations(
+      ['p1'],
+      persons,
+      eventFrom,
+      days,
+      'HACK',
+      0,
+    );
+
+    expect(timeParticipants).toHaveLength(1);
+    expect(timeParticipants[0].hackPeriod).not.toBeNull();
+    expect(timeParticipants[0].hackPeriod!.from.format('YYYY-MM-DD')).toBe('2026-03-10');
+    expect(timeParticipants[0].hackPeriod!.to.format('YYYY-MM-DD')).toBe('2026-03-12'); // +2 days (length-1)
+    expect(timeParticipants[0].hackPeriod!.days).toEqual([8, 8, 8]);
+    expect(timeParticipants[0].studyPeriod).toBeNull();
+  });
+
+  it('STUDY type sets studyPeriod with correct from/to/days and hackPeriod is null', () => {
+    const { timeParticipants } = generateDefaultAllocations(
+      ['p1'],
+      persons,
+      eventFrom,
+      days,
+      'STUDY',
+      0,
+    );
+
+    expect(timeParticipants).toHaveLength(1);
+    expect(timeParticipants[0].studyPeriod).not.toBeNull();
+    expect(timeParticipants[0].studyPeriod!.from.format('YYYY-MM-DD')).toBe('2026-03-10');
+    expect(timeParticipants[0].studyPeriod!.to.format('YYYY-MM-DD')).toBe('2026-03-12');
+    expect(timeParticipants[0].studyPeriod!.days).toEqual([8, 8, 8]);
+    expect(timeParticipants[0].hackPeriod).toBeNull();
+  });
+
+  it('null type sets both hackPeriod and studyPeriod to null', () => {
+    const { timeParticipants } = generateDefaultAllocations(
+      ['p1'],
+      persons,
+      eventFrom,
+      days,
+      null,
+      0,
+    );
+
+    expect(timeParticipants).toHaveLength(1);
+    expect(timeParticipants[0].hackPeriod).toBeNull();
+    expect(timeParticipants[0].studyPeriod).toBeNull();
+  });
+
+  it('distributes 500 budget equally: 250.00 per person for 2 people', () => {
+    const { moneyParticipants } = generateDefaultAllocations(
+      ['p1', 'p2'],
+      persons,
+      eventFrom,
+      days,
+      null,
+      500,
+    );
+
+    expect(moneyParticipants).toHaveLength(2);
+    expect(moneyParticipants[0].amount).toBe(250);
+    expect(moneyParticipants[1].amount).toBe(250);
+  });
+
+  it('rounds down to cents: 100 / 3 people = 33.33 (not 33.34)', () => {
+    const threePersons = [
+      ...persons,
+      { uuid: 'p3', firstname: 'Carol', lastname: 'White' },
+    ];
+    const { moneyParticipants } = generateDefaultAllocations(
+      ['p1', 'p2', 'p3'],
+      threePersons,
+      eventFrom,
+      days,
+      null,
+      100,
+    );
+
+    expect(moneyParticipants).toHaveLength(3);
+    moneyParticipants.forEach((p) => {
+      expect(p.amount).toBe(33.33);
+    });
+  });
+
+  it('zero budget still creates money allocation entries with amount 0', () => {
+    const { moneyParticipants } = generateDefaultAllocations(
+      ['p1', 'p2'],
+      persons,
+      eventFrom,
+      days,
+      null,
+      0,
+    );
+
+    expect(moneyParticipants).toHaveLength(2);
+    expect(moneyParticipants[0].amount).toBe(0);
+    expect(moneyParticipants[1].amount).toBe(0);
+  });
+
+  it('empty personIds returns empty timeParticipants and moneyParticipants arrays', () => {
+    const { timeParticipants, moneyParticipants } = generateDefaultAllocations(
+      [],
+      persons,
+      eventFrom,
+      days,
+      'HACK',
+      500,
+    );
+
+    expect(timeParticipants).toEqual([]);
+    expect(moneyParticipants).toEqual([]);
   });
 });
