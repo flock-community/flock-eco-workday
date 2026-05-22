@@ -31,7 +31,8 @@ export interface PersonTimeAllocation {
 
 interface EventTimeAllocationSectionProps {
   eventDates: string[]; // All dates in event range (ISO strings)
-  defaultHoursPerDay: number; // Event's daily hours
+  defaultHoursPerDay: number; // Average hours/day — for display copy only
+  eventDayHours: number[]; // Actual hours per day — used for validation and seeding
   defaultBudgetType: EventBudgetType; // Event's default budget type
   participants: PersonTimeAllocation[];
   onParticipantsChange: (participants: PersonTimeAllocation[]) => void;
@@ -40,6 +41,7 @@ interface EventTimeAllocationSectionProps {
 export function EventTimeAllocationSection({
   eventDates,
   defaultHoursPerDay,
+  eventDayHours,
   defaultBudgetType,
   participants,
   onParticipantsChange,
@@ -70,7 +72,7 @@ export function EventTimeAllocationSection({
         const defaultPeriod: Period = {
           from: eventFrom,
           to: eventTo,
-          days: Array(eventDates.length).fill(defaultHoursPerDay),
+          days: [...eventDayHours],
         };
 
         return {
@@ -149,7 +151,7 @@ export function EventTimeAllocationSection({
 
     // If no custom allocation, use defaults
     if (!participant.studyPeriod && !participant.hackPeriod) {
-      total = eventDates.length * defaultHoursPerDay;
+      total = eventDayHours.reduce((s, h) => s + h, 0);
     }
 
     return total;
@@ -180,9 +182,10 @@ export function EventTimeAllocationSection({
       }
 
       // Check for hours exceeding event hours per day
-      if (totalDayHours > defaultHoursPerDay) {
+      const dayCapHours = eventDayHours[index] ?? defaultHoursPerDay;
+      if (totalDayHours > dayCapHours) {
         errors.push(
-          `${date}: Total hours (${totalDayHours}h) exceeds event hours (${defaultHoursPerDay}h)`
+          `${date}: Total hours (${totalDayHours}h) exceeds event hours (${dayCapHours}h)`
         );
       }
     });

@@ -400,6 +400,11 @@ export function EventBudgetManagementSection({
     return eventDays > 0 ? totalHours / eventDays : 8;
   }, [formValues.days, eventDays]);
 
+  // Per-day hours for validation — avoids comparing against an average
+  const eventDayHours = useMemo(() => {
+    return Array(eventDays).fill(0).map((_, i) => parseFloat(String(formValues.days?.[i] ?? 8)) || 8);
+  }, [formValues.days, eventDays]);
+
   return (
     <Accordion
       expanded={budgetExpanded}
@@ -475,6 +480,7 @@ export function EventBudgetManagementSection({
                   <EventTimeAllocationSection
                     eventDates={eventDates}
                     defaultHoursPerDay={defaultHoursPerDay}
+                    eventDayHours={eventDayHours}
                     defaultBudgetType={defaultBudgetType!}
                     participants={timeParticipants}
                     onParticipantsChange={handleTimeParticipantsChange}
