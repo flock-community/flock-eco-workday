@@ -23,5 +23,7 @@ interface UserRepository : JpaRepository<User, Long> {
 
     fun findByEmailIgnoreCase(email: String): Optional<User>
 
+    fun findByKratosIdentityId(kratosIdentityId: String): Optional<User>
+
     fun deleteByCode(code: String)
 }

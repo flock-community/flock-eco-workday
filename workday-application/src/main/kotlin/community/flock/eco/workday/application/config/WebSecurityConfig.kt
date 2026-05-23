@@ -7,10 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.core.convert.converter.Converter
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
@@ -24,6 +27,12 @@ class WebSecurityConfig {
     @Autowired
     lateinit var userKeyTokenFilter: UserKeyTokenFilter
 
+    // Optional: the converter bean only exists when spring.security.oauth2.resourceserver.jwt.issuer-uri
+    // is configured (see ConditionalOnProperty on HydraJwtAuthenticationConverter). In test profiles
+    // where the issuer is unset, this stays null and the JWT chain is skipped.
+    @Autowired(required = false)
+    var hydraJwtAuthenticationConverter: Converter<Jwt, AbstractAuthenticationToken>? = null
+
     @Value("\${flock.eco.workday.login:TEST}")
     lateinit var loginType: String
 
@@ -34,6 +43,17 @@ class WebSecurityConfig {
             .headers { headers ->
                 headers.frameOptions { it.sameOrigin() }
             }.csrf { it.disable() }
+
+        // JWT resource server for the flock-app mobile client. Issuer-uri is set in
+        // application.properties; JWKS is auto-discovered + cached. The converter
+        // resolves the JWT's `sub` (Kratos identity UUID) to a workday User.
+        hydraJwtAuthenticationConverter?.let { converter ->
+            http.oauth2ResourceServer { rs ->
+                rs.jwt { jwt -> jwt.jwtAuthenticationConverter(converter) }
+            }
+        }
+
+        http
             .cors(withDefaults())
             .authorizeHttpRequests { requests ->
                 requests

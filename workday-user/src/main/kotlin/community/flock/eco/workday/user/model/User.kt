@@ -28,6 +28,11 @@ class User(
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     val accounts: MutableSet<UserAccount> = mutableSetOf(),
     val created: LocalDateTime = LocalDateTime.now(),
+    // Kratos identity UUID — Hydra puts this in the JWT's `sub` claim. Populated on the
+    // user's first mobile sign-in; left null for users who have only ever signed in via
+    // the legacy Google web flow. Unique-but-nullable so a user has at most one identity.
+    @Column(name = "kratos_identity_id", unique = true)
+    var kratosIdentityId: String? = null,
 ) : AbstractIdEntity(id) {
     override fun toString(): String = "User(id=$id, code='$code', name='$name', email='$email')"
 }
