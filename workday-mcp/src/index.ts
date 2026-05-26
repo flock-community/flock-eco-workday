@@ -95,8 +95,11 @@ server.registerTool(
       "amount, the date (YYYY-MM-DD), a short description, and at least one receipt — either as " +
       "`filePaths` (file(s) on the machine running this server) or as `attachments` (inline base64 " +
       "content, for when the file is not on the server's filesystem, e.g. an upload inside Claude " +
-      "Chat's sandbox). Defaults to the API key owner; admins can pass a personId. Requires " +
-      "ExpenseAuthority.WRITE. The expense is submitted with status REQUESTED.",
+      "Chat's sandbox). Prefer `filePaths` when you have a path the server can read — it costs no " +
+      "extra tokens; use `attachments` (base64) only when the file is not on the server's machine. " +
+      "If you pass a path the server can't read, it returns an error telling you to resend as base64. " +
+      "Defaults to the API key owner; admins can pass a personId. Requires ExpenseAuthority.WRITE. " +
+      "The expense is submitted with status REQUESTED.",
     inputSchema: {
       amount: z.number().positive().describe("Expense amount, e.g. 44.80."),
       date: z.string().describe("Date of the expense in ISO format YYYY-MM-DD, e.g. 2026-05-20."),
@@ -158,10 +161,16 @@ server.registerTool(
         try {
           bytes = await readFile(filePath);
         } catch (cause) {
+          // A /mnt/user-data/... path is a Claude Chat sandbox upload — it lives on a different
+          // machine than this (local) server, so steer the model straight to the base64 route.
+          const hint = filePath.includes("/mnt/user-data/")
+            ? "This looks like a Claude Chat sandbox path; this server runs on a different machine and " +
+              "cannot read it. Re-send the file as base64 in `attachments` (base64-encode it in your " +
+              "sandbox; downscale large images first to stay within tool-argument limits)."
+            : "Provide a path to a file on the machine running this MCP server, or re-send the file as " +
+              "base64 in `attachments`.";
           throw new WorkdayApiError(
-            `Could not read attachment "${filePath}": ${(cause as Error).message}. Provide a path to a ` +
-              `file on the machine running this MCP server. (Images attached in Claude Code are not saved ` +
-              `to disk, so they have no readable path — use \`attachments\` with base64 instead.)`,
+            `Could not read attachment "${filePath}": ${(cause as Error).message}. ${hint}`,
           );
         }
         const name = basename(filePath);
