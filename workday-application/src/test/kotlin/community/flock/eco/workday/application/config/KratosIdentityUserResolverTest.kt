@@ -1,8 +1,11 @@
 package community.flock.eco.workday.application.config
 
-import community.flock.eco.workday.user.forms.UserForm
+import community.flock.eco.workday.user.exceptions.UserAccountExistsException
+import community.flock.eco.workday.user.forms.UserAccountOauthForm
 import community.flock.eco.workday.user.model.User
-import community.flock.eco.workday.user.services.UserService
+import community.flock.eco.workday.user.model.UserAccountOauth
+import community.flock.eco.workday.user.model.UserAccountOauthProvider
+import community.flock.eco.workday.user.services.UserAccountService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -26,83 +29,64 @@ import org.springframework.web.client.RestClient
 
 class KratosIdentityUserResolverTest {
     private val issuer = "https://auth.test.local"
-    private lateinit var userService: UserService
+    private lateinit var userAccountService: UserAccountService
     private lateinit var mockServer: MockRestServiceServer
     private lateinit var resolver: KratosIdentityUserResolver
 
     @BeforeEach
     fun setUp() {
-        userService = mockk()
+        userAccountService = mockk()
         val builder = RestClient.builder().baseUrl(issuer)
         mockServer = MockRestServiceServer.bindTo(builder).build()
-        resolver = KratosIdentityUserResolver(userService, builder.build())
+        resolver = KratosIdentityUserResolver(userAccountService, builder.build())
     }
 
     @Test
-    fun `existing user with linked kratos_identity_id resolves without hitting Hydra`() {
-        val user = userWithEmail("alice@flock.community", kratos = "sub-alice")
-        every { userService.findByKratosIdentityId("sub-alice") } returns user
+    fun `existing KRATOS account resolves by reference without hitting Hydra`() {
+        val user = userWithEmail("alice@flock.community")
+        every { userAccountService.findUserAccountOauthByReference("sub-alice") } returns oauth(user, "sub-alice")
 
         val resolved = resolver.resolve("sub-alice", "access-token-x")
 
         assertThat(resolved.code).isEqualTo(user.code)
         mockServer.verify() // no expectations set = no Hydra call expected
-        verify(exactly = 0) { userService.findByEmail(any()) }
+        verify(exactly = 0) { userAccountService.createUserAccountOauth(any()) }
     }
 
     @Test
-    fun `unlinked existing-by-email user is linked on first sighting via userinfo`() {
+    fun `first sighting fetches userinfo and creates a KRATOS account`() {
+        val formSlot = slot<UserAccountOauthForm>()
         val user = userWithEmail("bob@flock.community")
-        every { userService.findByKratosIdentityId("sub-bob") } returns null
-        every { userService.findByEmail("bob@flock.community") } returns user
-        every { userService.linkKratosIdentity(user.code, "sub-bob") } returns
-            userWithEmail("bob@flock.community", code = user.code, kratos = "sub-bob")
+        every { userAccountService.findUserAccountOauthByReference("sub-bob") } returns null
+        every { userAccountService.createUserAccountOauth(capture(formSlot)) } answers { oauth(user, "sub-bob") }
         expectUserinfo("token-bob", withSuccess(userinfoBody("bob@flock.community"), MediaType.APPLICATION_JSON))
 
         val resolved = resolver.resolve("sub-bob", "token-bob")
 
         assertThat(resolved.email).isEqualTo("bob@flock.community")
-        verify(exactly = 1) { userService.linkKratosIdentity(user.code, "sub-bob") }
+        // Stored as a KRATOS UserAccountOauth keyed on the sub — same mechanism as Google login.
+        assertThat(formSlot.captured.provider).isEqualTo(UserAccountOauthProvider.KRATOS)
+        assertThat(formSlot.captured.reference).isEqualTo("sub-bob")
+        assertThat(formSlot.captured.email).isEqualTo("bob@flock.community")
         mockServer.verify()
     }
 
     @Test
-    fun `first-time user is auto-created and linked`() {
-        val createdSlot = slot<UserForm>()
-        every { userService.findByKratosIdentityId("sub-new") } returns null
-        every { userService.findByEmail("new.user@flock.community") } returns null
-        every { userService.create(capture(createdSlot)) } answers {
-            userWithEmail(createdSlot.captured.email, name = createdSlot.captured.name)
-        }
-        every { userService.linkKratosIdentity(any(), "sub-new") } answers {
-            userWithEmail("new.user@flock.community", code = firstArg(), kratos = "sub-new")
-        }
-        expectUserinfo("token-new", withSuccess(userinfoBody("new.user@flock.community"), MediaType.APPLICATION_JSON))
-
-        resolver.resolve("sub-new", "token-new")
-
-        assertThat(createdSlot.captured.email).isEqualTo("new.user@flock.community")
-        verify(exactly = 1) { userService.create(any()) }
-        verify(exactly = 1) { userService.linkKratosIdentity(any(), "sub-new") }
-    }
-
-    @Test
-    fun `a linked user resolves via the DB on every call and never hits Hydra`() {
-        val user = userWithEmail("cached@flock.community", kratos = "sub-cached")
-        every { userService.findByKratosIdentityId("sub-cached") } returns user
+    fun `a resolved account is read by reference on every call and never hits Hydra`() {
+        val user = userWithEmail("cached@flock.community")
+        every { userAccountService.findUserAccountOauthByReference("sub-cached") } returns oauth(user, "sub-cached")
 
         repeat(2) { resolver.resolve("sub-cached", "ignored") }
 
-        // The unique kratos_identity_id column is the cache: indexed DB lookup each time,
-        // no /userinfo call.
-        verify(exactly = 2) { userService.findByKratosIdentityId("sub-cached") }
-        verify(exactly = 0) { userService.findByEmail(any()) }
+        // The KRATOS UserAccountOauth is the cache: indexed reference lookup each time, no /userinfo call.
+        verify(exactly = 2) { userAccountService.findUserAccountOauthByReference("sub-cached") }
+        verify(exactly = 0) { userAccountService.createUserAccountOauth(any()) }
         mockServer.verify()
     }
 
     @Test
     fun `Hydra rejecting the access_token at userinfo surfaces as InvalidBearerTokenException`() {
-        every { userService.findByKratosIdentityId("sub-bad") } returns null
+        every { userAccountService.findUserAccountOauthByReference("sub-bad") } returns null
         expectUserinfo("bad-token", withStatus(HttpStatus.UNAUTHORIZED))
 
         assertThatExceptionOfType(InvalidBearerTokenException::class.java)
@@ -111,7 +95,7 @@ class KratosIdentityUserResolverTest {
 
     @Test
     fun `userinfo 5xx surfaces as HydraUserinfoUnavailableException`() {
-        every { userService.findByKratosIdentityId("sub-x") } returns null
+        every { userAccountService.findUserAccountOauthByReference("sub-x") } returns null
         expectUserinfo("any-token", withServerError())
 
         assertThatExceptionOfType(HydraUserinfoUnavailableException::class.java)
@@ -119,16 +103,11 @@ class KratosIdentityUserResolverTest {
     }
 
     @Test
-    fun `name claims from userinfo become the auto-created user's name`() {
-        val createdSlot = slot<UserForm>()
-        every { userService.findByKratosIdentityId("sub-named") } returns null
-        every { userService.findByEmail("named@flock.community") } returns null
-        every { userService.create(capture(createdSlot)) } answers {
-            userWithEmail(createdSlot.captured.email, name = createdSlot.captured.name)
-        }
-        every { userService.linkKratosIdentity(any(), "sub-named") } answers {
-            userWithEmail("named@flock.community", code = firstArg(), kratos = "sub-named")
-        }
+    fun `name claims from userinfo become the created account's name`() {
+        val formSlot = slot<UserAccountOauthForm>()
+        val user = userWithEmail("named@flock.community", name = "Ada Lovelace")
+        every { userAccountService.findUserAccountOauthByReference("sub-named") } returns null
+        every { userAccountService.createUserAccountOauth(capture(formSlot)) } answers { oauth(user, "sub-named") }
         expectUserinfo(
             "token-named",
             withSuccess(
@@ -139,7 +118,20 @@ class KratosIdentityUserResolverTest {
 
         resolver.resolve("sub-named", "token-named")
 
-        assertThat(createdSlot.captured.name).isEqualTo("Ada Lovelace")
+        assertThat(formSlot.captured.name).isEqualTo("Ada Lovelace")
+    }
+
+    @Test
+    fun `a concurrent create race re-reads the account by reference instead of failing`() {
+        val user = userWithEmail("race@flock.community")
+        every { userAccountService.findUserAccountOauthByReference("sub-race") } returnsMany
+            listOf(null, oauth(user, "sub-race"))
+        every { userAccountService.createUserAccountOauth(any()) } throws UserAccountExistsException(oauth(user, "sub-race"))
+        expectUserinfo("token-race", withSuccess(userinfoBody("race@flock.community"), MediaType.APPLICATION_JSON))
+
+        val resolved = resolver.resolve("sub-race", "token-race")
+
+        assertThat(resolved.email).isEqualTo("race@flock.community")
     }
 
     private fun expectUserinfo(
@@ -155,6 +147,11 @@ class KratosIdentityUserResolverTest {
 
     private fun userinfoBody(email: String): String = """{"sub":"any","email":"$email","given_name":"X","family_name":"Y"}"""
 
+    private fun oauth(
+        user: User,
+        reference: String,
+    ): UserAccountOauth = UserAccountOauth(user = user, reference = reference, provider = UserAccountOauthProvider.KRATOS)
+
     private fun userWithEmail(
         email: String,
         name: String? = null,
@@ -162,13 +159,11 @@ class KratosIdentityUserResolverTest {
             java.util.UUID
                 .randomUUID()
                 .toString(),
-        kratos: String? = null,
     ): User =
         User(
             code = code,
             email = email,
             name = name,
             authorities = mutableSetOf(),
-            kratosIdentityId = kratos,
         )
 }

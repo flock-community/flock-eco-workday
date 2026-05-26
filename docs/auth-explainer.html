@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>flock-app → workday auth — plain-English explainer</title>
+<style>
+  :root {
+    --ink: #111827;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --bg: #ffffff;
+    --panel: #f9fafb;
+    --app: #15803d;       /* green: mobile app   */
+    --hydra: #1e40af;     /* blue:  Hydra/OAuth   */
+    --kratos: #7c3aed;    /* purple: Kratos       */
+    --backend: #b45309;   /* amber: workday       */
+    --danger: #b91c1c;
+    --accent: #0f766e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+  h1 { font-size: 30px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.02em; }
+  h2 { font-size: 21px; margin: 56px 0 16px; letter-spacing: -0.01em; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  h3 { font-size: 16px; margin: 28px 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 8px; }
+  p { margin: 12px 0; }
+  code { font: 13.5px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--panel); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line); }
+  .lede { font-size: 18px; color: #374151; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 20px 0 8px; font-size: 13.5px; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+  /* sequence diagram */
+  .seq { border: 1px solid var(--line); border-radius: 12px; padding: 8px 0 16px; margin: 20px 0; background: var(--bg); overflow: hidden; }
+  .lane { display: grid; grid-template-columns: 150px 1fr; align-items: stretch; border-top: 1px solid var(--line); }
+  .lane:first-child { border-top: none; }
+  .lane .who { padding: 14px 16px; font-weight: 600; font-size: 13.5px; display: flex; align-items: center; gap: 8px; background: var(--panel); border-right: 1px solid var(--line); }
+  .lane .what { padding: 14px 18px; font-size: 14.5px; }
+  .lane .what small { color: var(--muted); display: block; margin-top: 3px; font-size: 12.5px; }
+  .bar { width: 4px; border-radius: 2px; align-self: stretch; }
+  .num { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: 12px; font-weight: 700; align-items: center; justify-content: center; flex: none; }
+  .c-app .num { background: var(--app); } .c-app .who { color: var(--app); }
+  .c-hydra .num { background: var(--hydra); } .c-hydra .who { color: var(--hydra); }
+  .c-kratos .num { background: var(--kratos); } .c-kratos .who { color: var(--kratos); }
+  .c-backend .num { background: var(--backend); } .c-backend .who { color: var(--backend); }
+
+  /* resolver decision tree */
+  .tree { margin: 16px 0; }
+  .step { border: 1px solid var(--line); border-left: 4px solid var(--backend); border-radius: 8px; padding: 12px 16px; margin: 10px 0; background: var(--bg); }
+  .step b { color: var(--backend); }
+  .step .hit { color: var(--app); font-weight: 600; }
+  .step .arrow { color: var(--muted); }
+  .indent { margin-left: 22px; }
+
+  .callout { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 14px 18px; margin: 18px 0; }
+  .callout.warn { border-color: #fca5a5; background: #fef2f2; }
+  .callout.tip { border-color: #99f6e4; background: #f0fdfa; }
+  .callout .tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
+  .callout.warn .tag { color: var(--danger); }
+
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .file { font-family: ui-monospace, monospace; font-size: 12.5px; }
+  footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+  .pill { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: #ecfdf5; color: var(--app); border: 1px solid #a7f3d0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>How the mobile app signs in to workday</h1>
+  <p class="sub">flock-app (mobile) → Hydra (OAuth2) → flock-eco-workday backend &nbsp;·&nbsp; commit W1 &nbsp;·&nbsp; ADR&nbsp;0003</p>
+  <p class="lede">
+    The phone never gets a workday password. It gets a <b>signed token</b> from a central login server (Hydra),
+    and workday's job is to <b>trust that signature</b> and then figure out <b>which workday user</b> the token belongs to.
+    That second part — matching a stranger's token to a local account — is the only genuinely new logic here.
+  </p>
+
+  <div class="legend">
+    <span><span class="dot" style="background:var(--app)"></span> flock-app (phone)</span>
+    <span><span class="dot" style="background:var(--hydra)"></span> Hydra — OAuth2 / token issuer</span>
+    <span><span class="dot" style="background:var(--kratos)"></span> Kratos — actual login + Google</span>
+    <span><span class="dot" style="background:var(--backend)"></span> workday backend</span>
+  </div>
+
+  <h2>The whole flow, once</h2>
+  <p>A user taps "Sign in" once. Everything below happens, and from then on the phone just replays step 6 with a stored token (refreshing silently when it expires).</p>
+
+  <div class="seq">
+    <div class="lane c-app">
+      <div class="who"><span class="num">1</span> phone</div>
+      <div class="what">Generates a one-time secret (<code>code_verifier</code>) and opens the system browser at Hydra's <code>/oauth2/auth</code>.
+        <small>PKCE: only the app that started the flow can finish it. The browser's cookies never leak into the app.</small></div>
+    </div>
+    <div class="lane c-kratos">
+      <div class="who"><span class="num">2</span> Kratos</div>
+      <div class="what">Hydra hands the browser to Kratos, which shows the login page. User authenticates with Google.
+        <small>Kratos identifies the user by a stable UUID — this becomes the token's <code>sub</code> claim.</small></div>
+    </div>
+    <div class="lane c-hydra">
+      <div class="who"><span class="num">3</span> Hydra</div>
+      <div class="what">Redirects back to <code>community.flock.app://oauth/callback?code=…</code>. The OS routes that custom URL to the app.</div>
+    </div>
+    <div class="lane c-hydra">
+      <div class="who"><span class="num">4</span> Hydra</div>
+      <div class="what">App swaps the <code>code</code> + its secret at <code>/oauth2/token</code> and receives a <b>JWT access token</b> (+ refresh + id token).
+        <small>The JWT is signed by Hydra with a key anyone can verify but nobody can forge.</small></div>
+    </div>
+    <div class="lane c-app">
+      <div class="who"><span class="num">5</span> phone</div>
+      <div class="what">Stores the tokens securely (Keychain / EncryptedSharedPreferences).</div>
+    </div>
+    <div class="lane c-app">
+      <div class="who"><span class="num">6</span> phone</div>
+      <div class="what">Calls workday: <code>POST /api/expenses-cost</code> with header <code>Authorization: Bearer &lt;JWT&gt;</code>.</div>
+    </div>
+    <div class="lane c-backend">
+      <div class="who"><span class="num">7</span> workday</div>
+      <div class="what"><b>Spring verifies the JWT signature</b> against Hydra's public keys (downloaded once, cached). No call to Hydra per request.
+        <small>This is stock Spring Security — <code>oauth2ResourceServer().jwt()</code>. We wrote almost none of it.</small></div>
+    </div>
+    <div class="lane c-backend">
+      <div class="who"><span class="num">8</span> workday</div>
+      <div class="what">Our code takes over: read <code>sub</code> from the verified token, resolve it to a workday <code>User</code> (the tree below), then proceed exactly as any other logged-in user.</div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <span class="tag">Why this shape</span>
+    <p style="margin:6px 0 0">Workday doesn't store mobile passwords, doesn't talk to Google, and doesn't phone Hydra on every request — it just checks a signature. The same chain works for a future web app, so this isn't a "mobile-only" hack.</p>
+  </div>
+
+  <h2>Step 8 in detail — the one piece of custom logic</h2>
+  <p>
+    The token proves <i>"some valid Kratos identity <code>sub</code> is calling."</i> It does <b>not</b> say which workday user that is —
+    Hydra and Kratos have never heard of workday's user table. So we resolve it, cheapest path first, and persist the answer.
+  </p>
+
+  <div class="tree">
+    <div class="step">
+      <b>1 · Database</b> &nbsp;<span class="arrow">— <code>findByKratosIdentityId(sub)</code>, a unique (indexed) column.</span><br>
+      <span class="hit">Hit → done.</span> <span class="arrow">This column <b>is</b> the cache — sub-millisecond, survives restarts. No in-memory layer.</span>
+    </div>
+    <div class="step">
+      <b>2 · Ask Hydra who this is</b> &nbsp;<span class="arrow">— first time ever for this identity. <code>GET /userinfo</code> with the same token → returns <code>email</code> + name claims.</span><br>
+      <span class="arrow">Happens at most <b>once per identity, ever</b> (after which step 1 always hits). If Hydra is unreachable here → <b>503</b>, not 401.</span>
+    </div>
+    <div class="step">
+      <b>3 · Match or create by email</b>
+      <div class="indent" style="margin-top:8px">
+        <div><span class="hit">Email already exists</span> (e.g. a long-time Google-web user) <span class="arrow">→ stamp <code>kratos_identity_id = sub</code> onto that row. They're now linked.</span></div>
+        <div style="margin-top:6px"><span class="hit">No such email</span> <span class="arrow">→ create a new <code>User</code> (named from the <code>given_name</code>/<code>family_name</code> claims), then link it.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    The <code>kratos_identity_id</code> column (Liquibase migration 027, nullable + unique) is the permanent join.
+    After the first sign-in, every later request stops at step 1 — Hydra is never called again for that user.
+  </p>
+
+  <div class="callout">
+    <span class="tag">Plain-English summary</span>
+    <p style="margin:6px 0 0">
+      <b>Hydra vouches for the person; workday decides what that person is allowed to do.</b>
+      The signature check is free and standard. The "who is this locally?" lookup is the only thing we maintain, and it self-populates as people sign in for the first time — no migration script, no manual linking.
+    </p>
+  </div>
+
+  <h2>What is actually ours vs. framework</h2>
+  <table>
+    <tr><th>File</th><th>Does</th><th>Weight</th></tr>
+    <tr><td class="file">WebSecurityConfig.kt</td><td>Adds one <code>oauth2ResourceServer{ jwt{} }</code> block, guarded so test profiles skip it.</td><td>~6 lines</td></tr>
+    <tr><td class="file">HydraJwtAuthenticationConverter.kt</td><td>Verified JWT → <code>sub</code> → ask the resolver → emit the same principal every other login path emits.</td><td>thin</td></tr>
+    <tr><td class="file">KratosIdentityUserResolver.kt</td><td>The 3-step tree above + a dedicated timed HTTP client for <code>/userinfo</code>.</td><td>the bulk</td></tr>
+    <tr><td class="file">HydraAuthenticationEntryPoint.kt</td><td>Maps "Hydra unreachable" to <b>503</b>; everything else falls through to the standard 401.</td><td>~25 lines</td></tr>
+    <tr><td class="file">HydraIssuerConfigured.kt</td><td>Switches all the above off when no issuer is configured (tests).</td><td>18 lines</td></tr>
+    <tr><td class="file">User.kt / UserService / repo</td><td>New <code>kratosIdentityId</code> field, <code>findByKratosIdentityId</code>, <code>linkKratosIdentity</code>.</td><td>tiny</td></tr>
+    <tr><td class="file">migration 027</td><td>Adds the nullable unique join column.</td><td>15 lines</td></tr>
+  </table>
+
+  <h2>How it leans on Spring Security</h2>
+  <p>
+    Almost all of the bearer-token machinery is Spring's; we plug into two extension points and set one property.
+    Adding <code>spring-boot-starter-oauth2-resource-server</code> and the <code>oauth2ResourceServer { jwt {} }</code> DSL
+    turns on a fully-assembled pipeline:
+  </p>
+  <table>
+    <tr><th>Element</th><th>Who owns it</th></tr>
+    <tr><td><code>JwtDecoder</code> — OIDC discovery from <code>issuer-uri</code>, JWKS fetch + cache, RS256 signature + <code>iss</code>/<code>exp</code>/<code>nbf</code> validation</td><td><span class="pill">Spring (auto-config)</span> we wrote none of it</td></tr>
+    <tr><td><code>BearerTokenAuthenticationFilter</code> — reads <code>Authorization: Bearer …</code> off the request</td><td><span class="pill">Spring</span></td></tr>
+    <tr><td><code>JwtAuthenticationProvider</code> — runs the decoder, then hands the verified <code>Jwt</code> to our converter</td><td><span class="pill">Spring</span></td></tr>
+    <tr><td><code>Converter&lt;Jwt, AbstractAuthenticationToken&gt;</code> — the one mapping hook: <code>sub</code> → workday <code>User</code> → principal</td><td><b>ours</b> (<code>HydraJwtAuthenticationConverter</code>)</td></tr>
+    <tr><td><code>AuthenticationEntryPoint</code> — what to return when auth fails (default: 401)</td><td><b>ours</b>, only to add the 503 case; delegates to Spring's <code>BearerTokenAuthenticationEntryPoint</code> otherwise</td></tr>
+    <tr><td><code>@EnableMethodSecurity</code> + <code>@Secured</code> on controllers — authorization once authenticated</td><td><span class="pill">Spring</span> unchanged — works because we emit the same principal</td></tr>
+  </table>
+  <p>
+    Net: one <code>Converter</code> implementation, one small <code>AuthenticationEntryPoint</code>, one config property. The JWT chain is
+    added to the <i>same</i> <code>SecurityFilterChain</code> that already runs Google <code>oauth2Login</code> and the API-key filter — they
+    coexist, each recognising its own kind of credential, all funnelling to one principal shape.
+  </p>
+
+  <h2>Reusing this for the web / React frontend</h2>
+  <p>
+    A future migration of the web app off Spring's Google login onto Ory (Kratos/Hydra) can reuse the <b>valuable half</b> of this work
+    unchanged. The split is clean:
+  </p>
+  <table>
+    <tr><th>Piece</th><th>Web migration</th></tr>
+    <tr><td><code>KratosIdentityUserResolver</code> + <code>kratos_identity_id</code> column + <code>linkKratosIdentity</code></td><td><span class="pill">reuse as-is</span> Mapping a Kratos <code>sub</code> → workday <code>User</code> is identical regardless of transport. This is the asset.</td></tr>
+    <tr><td>The uniform principal contract (<code>user.code</code> as the name)</td><td><span class="pill">reuse</span> Controllers and <code>@Secured</code> don't change no matter the front door.</td></tr>
+    <tr><td><code>User</code> entity / repo / service additions (vendored module)</td><td><span class="pill">reuse</span> Shared by any path.</td></tr>
+    <tr><td><code>oauth2ResourceServer().jwt()</code> + the <code>/userinfo</code> RestClient</td><td>replace — bearer-token plumbing for a native app. A browser on the same origin uses a session, not a per-request <code>Bearer</code> header.</td></tr>
+  </table>
+  <p>The browser would authenticate one of two ways, and the resolver feeds both:</p>
+  <ol>
+    <li><b>Spring <code>oauth2Login</code> against Hydra</b> — swap the Google OIDC registration for Hydra (confidential client, server keeps the session). Spring fetches the id_token during the code exchange, so the resolver is called from the login <i>success handler</i> with claims in hand — <b>no separate <code>/userinfo</code> hop on the web path</b>.</li>
+    <li><b>Ory Oathkeeper <code>cookie_session</code></b> in front (the "ory shadow" already sketched in <code>workday-auth-flow.puml</code>) — Oathkeeper validates the Kratos cookie and forwards identity headers; workday trusts a header and calls the same resolver.</li>
+  </ol>
+  <div class="callout tip">
+    <span class="tag">Migration bridge — for free</span>
+    <p style="margin:6px 0 0">
+      The lazy link-by-email step (resolver step 3) <i>is</i> the web cutover. Today's Google-web users resolve via their Google <code>sub</code>;
+      under Kratos the <code>sub</code> becomes the Kratos identity UUID. On a user's first Ory login their existing row gets
+      <code>kratos_identity_id</code> stamped — <b>no data backfill, no manual relink</b>. One small refactor makes the sharing tidy:
+      give the resolver a second entry that takes claims (<code>email</code>, <code>sub</code>, name) directly, so the web path skips the
+      redundant <code>/userinfo</code> call the mobile path needs.
+    </p>
+  </div>
+
+  <div class="callout warn">
+    <span class="tag">Verdict</span>
+    <p style="margin:6px 0 0">
+      Not over-engineered. The core is close to the minimum the requirement allows — Spring owns the token pipeline; we own only the
+      <code>sub</code>→<code>User</code> mapping, deliberately emitting the existing principal so nothing downstream changed.
+      And that mapping is <b>partially reusable</b>: the identity-resolution + lazy-linking + join column carry straight over to a
+      web-frontend Ory migration, while only the bearer-token front door would be swapped for a session-based one.
+    </p>
+  </div>
+
+  <footer>
+    Sources: <code>flock-app/docs/mobile-mvp-plan.md</code> (W1), <code>flock-app/docs/adr/0003-mobile-auth-via-hydra-pkce.md</code>,
+    and the W1 commit in <code>flock-eco-workday</code>. Open this file in any browser — no dependencies.
+  </footer>
+
+</div>
+</body>
+</html>

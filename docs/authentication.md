@@ -50,24 +50,26 @@ app, so this isn't a mobile-only hack.
 The token proves *"some valid Kratos identity `sub` is calling."* It does **not** say
 which workday user that is — Hydra and Kratos have never heard of workday's user table.
 So we resolve it, cheapest path first, and persist the answer
-(`KratosIdentityUserResolver`):
+(`KratosIdentityUserResolver`). The Kratos identity is stored exactly like every other
+external identity: as a `UserAccountOauth` row with `provider = KRATOS` and
+`reference = sub` — the same mechanism the Google web-login already uses.
 
-1. **Database** — `findByKratosIdentityId(sub)`, a unique indexed column.
-   Hit → done. This column *is* the cache: sub-millisecond, survives restarts, no
-   in-memory layer.
+1. **Database** — `findUserAccountOauthByReference(sub)` → return its user. A single
+   indexed lookup that *is* the cache: sub-millisecond, survives restarts, no in-memory
+   layer.
 2. **Ask Hydra who this is** — only the first time ever for this identity.
    `GET /userinfo` with the same token returns `email` + name claims. Happens at most
    **once per identity, ever** (after which step 1 always hits). If Hydra is unreachable
    here → **503**, not 401.
-3. **Match or create by email**
-   - Email already exists (e.g. a long-time Google-web user) → stamp
-     `kratos_identity_id = sub` onto that row. They're now linked.
-   - No such email → create a new `User` (named from the `given_name` / `family_name`
-     claims), then link it.
+3. **Find-or-create + link** — `createUserAccountOauth(KRATOS, sub)`:
+   - User already exists by email (e.g. a long-time Google-web user) → a new KRATOS
+     `UserAccountOauth` is attached to that user. They're now reachable from mobile too.
+   - No such user → one is auto-created (named from the `given_name` / `family_name`
+     claims) — the same path as a first Google login.
 
-The `kratos_identity_id` column (Liquibase migration 027, nullable + unique) is the
-permanent join. After the first sign-in, every later request stops at step 1 — Hydra is
-never called again for that user.
+After the first sign-in, every later request stops at step 1 — Hydra is never called
+again for that user. No new column or migration is needed: `UserAccountOauth` already
+exists and `KRATOS` is already a known provider.
 
 **Hydra vouches for the person; workday decides what that person is allowed to do.** The
 "who is this locally?" lookup self-populates as people sign in for the first time — no
@@ -79,11 +81,12 @@ migration script, no manual linking.
 |---|---|---|
 | `WebSecurityConfig.kt` | Adds one `oauth2ResourceServer { jwt {} }` block, guarded so test profiles skip it. | ~6 lines |
 | `HydraJwtAuthenticationConverter.kt` | Verified JWT → `sub` → resolver → emit the same principal every other login path emits. | thin |
-| `KratosIdentityUserResolver.kt` | The 3-step resolution above + a dedicated timed HTTP client for `/userinfo`. | the bulk |
+| `KratosIdentityUserResolver.kt` | The 3-step resolution above + a dedicated timed HTTP client for `/userinfo`. Reuses `UserAccountService` for storage. | the bulk |
 | `HydraAuthenticationEntryPoint.kt` | Maps "Hydra unreachable" to **503**; everything else falls through to the standard 401. | ~25 lines |
 | `HydraIssuerConfigured.kt` | Switches all the above off when no issuer is configured (tests). | 18 lines |
-| `User.kt` / `UserService` / repo | New `kratosIdentityId` field, `findByKratosIdentityId`, `linkKratosIdentity`. | tiny |
-| migration 027 | Adds the nullable unique join column. | 15 lines |
+
+No changes to `workday-user`, no new column, no migration — the resolver stores the
+Kratos `sub` as a `UserAccountOauth(KRATOS, sub)` using the existing `UserAccountService`.
 
 ### How it leans on Spring Security
 
@@ -111,9 +114,8 @@ valuable half of this work unchanged:
 
 | Piece | Web migration |
 |---|---|
-| `KratosIdentityUserResolver` + `kratos_identity_id` column + `linkKratosIdentity` | **reuse as-is** — mapping a Kratos `sub` → workday `User` is identical regardless of transport. This is the asset. |
+| `KratosIdentityUserResolver` + the `UserAccountOauth(KRATOS, sub)` mapping | **reuse as-is** — mapping a Kratos `sub` → workday `User` is identical regardless of transport. This is the asset. |
 | The uniform principal contract (`user.code` as the name) | **reuse** — controllers and `@Secured` don't change no matter the front door. |
-| `User` entity / repo / service additions | **reuse** — shared by any path. |
 | `oauth2ResourceServer().jwt()` + the `/userinfo` RestClient | **replace** — bearer-token plumbing for a native app. A browser on the same origin uses a session, not a per-request `Bearer` header. |
 
 The browser would authenticate one of two ways, and the resolver feeds both:
@@ -125,10 +127,9 @@ The browser would authenticate one of two ways, and the resolver feeds both:
 2. **Ory Oathkeeper `cookie_session`** in front — Oathkeeper validates the Kratos cookie
    and forwards identity headers; workday trusts a header and calls the same resolver.
 
-The lazy link-by-email step (resolution step 3) *is* the web cutover: today's Google-web
-users resolve via their Google `sub`; under Kratos the `sub` becomes the Kratos identity
-UUID. On a user's first Ory login their existing row gets `kratos_identity_id` stamped —
-no data backfill, no manual relink.
+The lazy link-by-email step (resolution step 3) *is* the web cutover: a Google-web user
+signing in through Ory for the first time simply gains a `UserAccountOauth(KRATOS, sub)`
+alongside their existing `GOOGLE` one — no data backfill, no manual relink.
 
 ## See also
 

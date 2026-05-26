@@ -86,16 +86,6 @@ class UserService(
 
     fun findByEmail(email: String) = userRepository.findByEmailIgnoreCase(email).toNullable()
 
-    fun findByKratosIdentityId(kratosIdentityId: String): User? = userRepository.findByKratosIdentityId(kratosIdentityId).toNullable()
-
-    // Links an existing User to its Kratos identity. Used by the JWT resource server on
-    // the first request from a mobile-signed-in user who already exists by email (e.g. a
-    // long-time Google-web-flow user signing into the mobile app for the first time).
-    fun linkKratosIdentity(
-        code: String,
-        kratosIdentityId: String,
-    ): User? = read(code)?.also { it.kratosIdentityId = kratosIdentityId }?.let { userRepository.save(it) }
-
     private fun UserForm.toUser() =
         User(
             name = this.name,

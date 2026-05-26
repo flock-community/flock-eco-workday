@@ -15,12 +15,17 @@ Make workday an **OAuth2 resource server** that validates Hydra-issued JWTs with
 Spring Security (`oauth2ResourceServer { jwt {} }`), and resolve the token's `sub`
 (Kratos identity UUID) to a workday `User` ourselves:
 
-1. Look up by `kratos_identity_id` (unique indexed column — the cache).
+1. Look up the `UserAccountOauth` by `reference = sub` (indexed — the cache).
 2. On first sight only, `GET /userinfo` for the email + name claims.
-3. Match an existing user by email and stamp `kratos_identity_id`, or create one.
+3. `createUserAccountOauth(KRATOS, sub)` — find-or-create the user by email and attach
+   the Kratos account.
 
-The JWT chain joins the existing `SecurityFilterChain` (Google `oauth2Login`, API key)
-and emits the same principal, so authorization (`@Secured`) is unchanged.
+The Kratos identity is stored the **same way every other external identity is** — a
+`UserAccountOauth` row with `provider = KRATOS` (already a known provider) and
+`reference = sub` — exactly mirroring the Google web-login path. No new column or
+migration is added. The JWT chain joins the existing `SecurityFilterChain` (Google
+`oauth2Login`, API key) and emits the same principal, so authorization (`@Secured`) is
+unchanged.
 
 ## Alternatives considered
 
@@ -31,14 +36,18 @@ and emits the same principal, so authorization (`@Secured`) is unchanged.
   JWT signature checks need none.
 - **Pre-provisioning / backfill of identity links** — rejected: lazy link-by-email
   self-populates with no migration script.
+- **A dedicated `kratos_identity_id` column on `User`** — rejected: duplicates what
+  `UserAccountOauth` already models, leaving mobile users with no `UserAccount` row and
+  two parallel identity stores. Reusing `UserAccountOauth(KRATOS, sub)` keeps one home
+  for external identities and needs no schema change.
 
 ## Consequences
 
 - Signature verification is owned by Spring; we maintain only the `sub` → `User` mapping.
 - Hydra is called at most once per identity (first sign-in); afterwards lookups are a DB
   hit. If Hydra is unreachable during that first call, requests get **503**, not 401.
-- The resolver, `kratos_identity_id` column, and principal contract carry over to a
-  future web-frontend Ory migration; only the bearer-token front door would be swapped
-  for a session-based one.
+- The resolver, the `UserAccountOauth(KRATOS, …)` mapping, and the principal contract
+  carry over to a future web-frontend Ory migration; only the bearer-token front door
+  would be swapped for a session-based one.
 
 See [authentication.md](../authentication.md) for the full flow and file-level detail.

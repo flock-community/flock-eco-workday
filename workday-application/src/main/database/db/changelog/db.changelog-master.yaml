@@ -79,7 +79,4 @@ databaseChangeLog:
   - include:
       file: db.changelog-026-hibernate6-sequences.yaml
       relativeToChangelogFile: true
-  - include:
-      file: db.changelog-027-user-kratos-identity-id.yaml
-      relativeToChangelogFile: true
 

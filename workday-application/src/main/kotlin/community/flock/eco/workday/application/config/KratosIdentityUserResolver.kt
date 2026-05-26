@@ -1,16 +1,17 @@
 package community.flock.eco.workday.application.config
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import community.flock.eco.workday.user.forms.UserForm
+import community.flock.eco.workday.user.exceptions.UserAccountExistsException
+import community.flock.eco.workday.user.forms.UserAccountOauthForm
 import community.flock.eco.workday.user.model.User
-import community.flock.eco.workday.user.services.UserService
+import community.flock.eco.workday.user.model.UserAccountOauthProvider
+import community.flock.eco.workday.user.services.UserAccountService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Conditional
 import org.springframework.context.annotation.Configuration
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.http.converter.HttpMessageConversionException
@@ -25,18 +26,23 @@ import java.time.Duration
 /**
  * Resolves a Hydra-issued JWT (its `sub` claim and the bearer token) to a workday [User].
  *
- * Algorithm:
- *  1. DB lookup by `kratos_identity_id` → return. This column is unique (indexed), so the
- *     lookup is cheap; it doubles as the persistent cache, so no in-memory cache is needed.
- *  2. GET Hydra `/userinfo` with the inbound access_token (Bearer) → `email` + name claims.
- *  3. `userService.findByEmail(email)` →
- *      - exists: write `kratos_identity_id = sub` on the row (links the Kratos identity
- *        to the existing Google-web-flow user).
- *      - missing: create a new User with `kratos_identity_id = sub` (mirrors the
- *        existing Google-login auto-create behavior).
+ * The Kratos identity is stored the same way every other OAuth identity is: as a
+ * [UserAccountOauth] row with `provider = KRATOS` and `reference = sub`. This mirrors the
+ * Google web-login path ([UserSecurityService]), so a user has exactly one home for all
+ * their external identities and no parallel column is needed.
  *
- * Step 2+3 happen exactly once per `sub` ever: once linked, every later request resolves
- * via the indexed DB lookup in step 1 without leaving the process. JWT signature
+ * Algorithm:
+ *  1. Look up the [UserAccountOauth] by reference (`sub`) → return its user. The lookup is
+ *     a single indexed query and doubles as the persistent cache; no in-memory layer.
+ *  2. GET Hydra `/userinfo` with the inbound access_token (Bearer) → `email` + name claims.
+ *  3. `createUserAccountOauth(KRATOS, sub)` → find-or-create the user by email and attach
+ *     the Kratos account:
+ *      - user exists by email (e.g. a long-time Google-web user): the new KRATOS account is
+ *        linked to that existing user — they're now reachable from mobile too.
+ *      - no such user: a new one is auto-created (same path as Google first-login).
+ *
+ * Step 2+3 happen exactly once per `sub` ever: once the account exists, every later request
+ * resolves via the indexed lookup in step 1 without leaving the process. JWT signature
  * verification is handled by Spring's JwtDecoder upstream (Hydra JWKS, cached).
  *
  * Designed in flock-app/docs/adr/0003-mobile-auth-via-hydra-pkce.md (plan-W1).
@@ -44,7 +50,7 @@ import java.time.Duration
 @Component
 @Conditional(HydraIssuerConfigured::class)
 class KratosIdentityUserResolver(
-    private val userService: UserService,
+    private val userAccountService: UserAccountService,
     @Qualifier("hydraUserinfoRestClient") private val restClient: RestClient,
 ) {
     private val log = LoggerFactory.getLogger(KratosIdentityUserResolver::class.java)
@@ -61,14 +67,16 @@ class KratosIdentityUserResolver(
         sub: String,
         accessToken: String,
     ): User {
-        userService.findByKratosIdentityId(sub)?.let { return it }
+        findUserByReference(sub)?.let { return it }
 
         val info = fetchUserinfo(accessToken)
         val email =
             info.email
                 ?: throw InvalidBearerTokenException("Hydra /userinfo did not return an email for sub=$sub")
-        return findOrCreateAndLink(email, info.displayName(), sub)
+        return findOrCreateAccount(sub, email, info.displayName())
     }
+
+    private fun findUserByReference(sub: String): User? = userAccountService.findUserAccountOauthByReference(sub)?.user
 
     private fun fetchUserinfo(accessToken: String): HydraUserinfo =
         try {
@@ -96,23 +104,26 @@ class KratosIdentityUserResolver(
             throw HydraUserinfoUnavailableException("Hydra /userinfo returned an unparseable response", ex)
         }
 
-    private fun findOrCreateAndLink(
+    private fun findOrCreateAccount(
+        sub: String,
         email: String,
         name: String?,
-        sub: String,
-    ): User {
-        userService.findByEmail(email)?.let { existing ->
-            return userService.linkKratosIdentity(existing.code, sub) ?: existing
+    ): User =
+        try {
+            userAccountService
+                .createUserAccountOauth(
+                    UserAccountOauthForm(
+                        email = email,
+                        name = name,
+                        reference = sub,
+                        provider = UserAccountOauthProvider.KRATOS,
+                    ),
+                ).user
+        } catch (ex: UserAccountExistsException) {
+            // Concurrent first-sight race: another request created the KRATOS account.
+            // Re-read by reference rather than failing.
+            findUserByReference(sub) ?: throw ex
         }
-        return try {
-            val created = userService.create(UserForm(name = name, email = email))
-            userService.linkKratosIdentity(created.code, sub) ?: created
-        } catch (ex: DataIntegrityViolationException) {
-            // Concurrent first-sight race: another request created the row. Re-read and link.
-            userService.findByEmail(email)?.let { userService.linkKratosIdentity(it.code, sub) ?: it }
-                ?: throw ex
-        }
-    }
 }
 
 /**
