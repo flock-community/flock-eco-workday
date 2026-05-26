@@ -7,11 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.convert.converter.Converter
+import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
@@ -24,6 +29,13 @@ class WebSecurityConfig {
     @Autowired
     lateinit var userKeyTokenFilter: UserKeyTokenFilter
 
+    // Null when no issuer-uri is set (HydraIssuerConfigured), which disables the JWT chain.
+    @Autowired(required = false)
+    var hydraJwtAuthenticationConverter: Converter<Jwt, AbstractAuthenticationToken>? = null
+
+    @Autowired(required = false)
+    var hydraAuthenticationEntryPoint: AuthenticationEntryPoint? = null
+
     @Value("\${flock.eco.workday.login:TEST}")
     lateinit var loginType: String
 
@@ -34,6 +46,19 @@ class WebSecurityConfig {
             .headers { headers ->
                 headers.frameOptions { it.sameOrigin() }
             }.csrf { it.disable() }
+
+        hydraJwtAuthenticationConverter?.let { converter ->
+            http.oauth2ResourceServer { rs ->
+                rs.jwt { jwt -> jwt.jwtAuthenticationConverter(converter) }
+                hydraAuthenticationEntryPoint?.let { rs.authenticationEntryPoint(it) }
+            }
+            // Bearer failures are answered 401/503 by the resource server's own filter above.
+            // Keep the login redirect as the default entry point so unauthenticated web and
+            // API-key requests still redirect as before, rather than the resource server's 401.
+            http.exceptionHandling { it.authenticationEntryPoint(LoginUrlAuthenticationEntryPoint("/")) }
+        }
+
+        http
             .cors(withDefaults())
             .authorizeHttpRequests { requests ->
                 requests
