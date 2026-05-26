@@ -240,67 +240,33 @@ class EventService(
                 val allocType = if (isHack) BudgetAllocationType.HACK else BudgetAllocationType.STUDY
                 val typedDaily = dailyAllocations.map { it.copy(type = allocType) }
 
-                val existingTime =
-                    personAllocations.firstOrNull {
-                        it is HackTimeBudgetAllocation || it is StudyTimeBudgetAllocation
-                    }
+                val existingTimeAllocations =
+                    personAllocations.filter { it is HackTimeBudgetAllocation || it is StudyTimeBudgetAllocation }
 
-                if (existingTime != null) {
-                    // Update existing time allocation
-                    when (existingTime) {
-                        is HackTimeBudgetAllocation -> {
-                            hackTimeBudgetAllocationService.update(
-                                existingTime.id,
-                                existingTime.copy(
-                                    dailyTimeAllocations = typedDaily,
-                                    totalHours = totalHours,
-                                    date = event.from,
-                                    description = event.description,
-                                ),
-                            )
-                        }
+                existingTimeAllocations.forEach { budgetAllocationService.deleteById(it.id) }
 
-                        is StudyTimeBudgetAllocation -> {
-                            studyTimeBudgetAllocationService.update(
-                                existingTime.id,
-                                existingTime.copy(
-                                    dailyTimeAllocations = typedDaily,
-                                    totalHours = totalHours,
-                                    date = event.from,
-                                    description = event.description,
-                                ),
-                            )
-                        }
-
-                        is StudyMoneyBudgetAllocation -> {
-                            error("Cannot update money allocation for person ${appPerson.uuid}")
-                        }
-                    }
+                if (isHack) {
+                    hackTimeBudgetAllocationService.create(
+                        HackTimeBudgetAllocation(
+                            person = domainPerson,
+                            eventCode = event.code,
+                            date = event.from,
+                            description = event.description,
+                            dailyTimeAllocations = typedDaily,
+                            totalHours = totalHours,
+                        ),
+                    )
                 } else {
-                    // Create new time allocation
-                    if (isHack) {
-                        hackTimeBudgetAllocationService.create(
-                            HackTimeBudgetAllocation(
-                                person = domainPerson,
-                                eventCode = event.code,
-                                date = event.from,
-                                description = event.description,
-                                dailyTimeAllocations = typedDaily,
-                                totalHours = totalHours,
-                            ),
-                        )
-                    } else {
-                        studyTimeBudgetAllocationService.create(
-                            StudyTimeBudgetAllocation(
-                                person = domainPerson,
-                                eventCode = event.code,
-                                date = event.from,
-                                description = event.description,
-                                dailyTimeAllocations = typedDaily,
-                                totalHours = totalHours,
-                            ),
-                        )
-                    }
+                    studyTimeBudgetAllocationService.create(
+                        StudyTimeBudgetAllocation(
+                            person = domainPerson,
+                            eventCode = event.code,
+                            date = event.from,
+                            description = event.description,
+                            dailyTimeAllocations = typedDaily,
+                            totalHours = totalHours,
+                        ),
+                    )
                 }
             }
 
