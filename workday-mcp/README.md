@@ -13,9 +13,15 @@ available.
 | Tool | Description |
 | --- | --- |
 | `list_expenses` | Lists your submitted expenses. Optional `limit` (default 25). Admins can pass a `personId` to view someone else's. |
+| `submit_cost_expense` | Creates a cost expense with one or more receipt attachments. You provide the amount, date, a short description, and the receipt file path(s). Submitted with status `REQUESTED`; needs write permission. Admins can pass a `personId`. |
 
 Once it's connected, just ask Claude in plain language — for example, _"list my last 5 Workday
-expenses"_.
+expenses"_, or _"submit this receipt as an expense"_.
+
+> **Note on attachments:** `submit_cost_expense` uploads the receipt from a **file on disk** that
+> this server can read — Claude passes the file's _path_, not the image itself. In a normal Claude
+> conversation an uploaded file is available to the server at a real path; an image pasted directly
+> into the Claude Code CLI is **not** saved to disk, so submit it as a file (or give Claude a path).
 
 ## Prerequisites
 
@@ -27,6 +33,23 @@ expenses"_.
   perform, plus a personal **API key** (see step 2). The key inherits your account's permissions.
 - **An MCP-capable Claude client:** [Claude Desktop](https://claude.ai/download) (macOS/Windows) or
   [Claude Code](https://claude.com/claude-code) (the CLI, all platforms).
+
+---
+
+## Install with Claude (quickest)
+
+If you have **Claude Code**, let it do the setup for you. Open Claude Code in this `workday-mcp`
+directory and run the bundled skill:
+
+```
+/install-workday-mcp
+```
+
+(or just ask Claude, e.g. _"install the Workday MCP"_). The skill builds the server and registers it
+with the client you choose — Claude Code or Claude Desktop. You'll still **mint a Workday API key
+yourself** and paste it when prompted (see **Step 2** below for how to get one).
+
+Prefer to set it up by hand? Follow the manual steps below.
 
 ---
 
@@ -99,12 +122,13 @@ step 1 and your **API key** from step 2.
 Run this from anywhere, substituting your path and key:
 
 ```bash
-claude mcp add workday \
+claude mcp add --scope user \
   --env WORKDAY_API_KEY=your-api-key-here \
-  -- node /absolute/path/to/flock-eco-workday/workday-mcp/dist/index.js
+  workday -- node /absolute/path/to/flock-eco-workday/workday-mcp/dist/index.js
 ```
 
-Check it registered with `claude mcp list`.
+`--scope user` makes it available in all your projects (drop it, or use `--scope local`, to register
+it for just the current directory). Check it registered with `claude mcp list`.
 
 ---
 
