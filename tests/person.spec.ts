@@ -151,6 +151,32 @@ test.describe('Person flow', () => {
     await expect(page.getByText(updatedEmail)).toBeVisible();
   });
 
+  test('shows the associated user in the form when editing a person', async ({
+    page,
+  }) => {
+    // The seeded worker "Tommy Dog" is linked to the seeded "Tommy" user
+    // (see the mock LoadPersonData / Users data). Opening the edit dialog must
+    // pre-populate the user selector with that user.
+    const linked = {
+      firstname: 'Tommy',
+      lastname: 'Dog',
+      email: 'tommy@sesam.straat',
+      number: '',
+    };
+    await openPersonDetails(page, linked);
+
+    await page.locator(EDIT_BUTTON).first().click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(page.getByText('Create Person')).toBeVisible();
+
+    // The user selector renders the linked user as "<name> <<email>>". The
+    // email only appears as visible text inside the selector (the email field
+    // is an <input>, whose value getByText does not match), so this asserts
+    // the associated user is shown rather than an empty "None" selector.
+    await expect(dialog.getByText(linked.email).first()).toBeVisible();
+  });
+
   test('deletes a person via the confirmation dialog', async ({ page }) => {
     const data = buildPersonData('Delete');
     await createPerson(page, data);
