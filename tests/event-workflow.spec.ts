@@ -33,6 +33,7 @@ import {
   When_I_remove_participant_from_event,
   When_I_add_second_participant,
   Then_collapsed_banner_shows_money_summary,
+  When_I_change_event_type_to,
 } from './steps/eventSteps';
 import {
   Given_I_am_on_budget_tab_for_person,
@@ -248,5 +249,25 @@ test.describe('Event Workflow - Modify Allocations', () => {
     // Note: after Part A, Pino's share went from €500 (1 person) to €250 (2 people).
     // Removing Pino deletes their €250 allocation entirely.
     await Then_money_used_changed_by(page, 'Study Money', pinoMoneyBeforeRemoval, -250, '€5.000');
+  });
+
+  test('EVNT-07: Changing event type swaps allocation type for all participants', async ({ page }) => {
+    // Arrange: open the existing Hack Day event (created by EVNT-01)
+    await Given_I_am_on_events_page(page, 'bert');
+    await When_I_open_event_by_description(page, 'PW Test Hack Day');
+
+    // Act: change event type to Conference (maps to Study Time)
+    await When_I_change_event_type_to(page, 'Conference');
+    await When_I_submit_event_form(page);
+
+    // Assert: budget tab shows Study Time allocation, not Hack Time
+    await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
+    await Then_budget_tab_shows_event_allocation(page, 'Study Time', '8h');
+
+    // Negative assertion: no Hack Time row for this event should remain
+    const allocationArea = page.locator('.MuiPaper-root').filter({ hasText: 'Budget Allocations' });
+    await expect(
+      allocationArea.getByText(/Hack Time.*8h/),
+    ).toHaveCount(0);
   });
 });

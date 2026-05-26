@@ -67,6 +67,24 @@ export async function When_I_fill_event_form(
 }
 
 /**
+ * Change the Event type on an already-open EventDialog.
+ * Uses the same MUI Select pattern as When_I_fill_event_form (lines 61–67).
+ *
+ * @param eventTypeOption - Visible option text, e.g. "Conference"
+ */
+export async function When_I_change_event_type_to(
+  page: Page,
+  eventTypeOption: string,
+): Promise<void> {
+  const eventTypeControl = page
+    .locator('.MuiFormControl-root')
+    .filter({ hasText: 'Event type' })
+    .first();
+  await eventTypeControl.getByRole('combobox').click();
+  await page.getByRole('option', { name: eventTypeOption }).click();
+}
+
+/**
  * Add a participant to the event via the PersonSelectorField MUI Autocomplete.
  */
 export async function When_I_add_participant(
