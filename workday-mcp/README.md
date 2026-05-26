@@ -13,15 +13,17 @@ available.
 | Tool | Description |
 | --- | --- |
 | `list_expenses` | Lists your submitted expenses. Optional `limit` (default 25). Admins can pass a `personId` to view someone else's. |
-| `submit_cost_expense` | Creates a cost expense with one or more receipt attachments. You provide the amount, date, a short description, and the receipt file path(s). Submitted with status `REQUESTED`; needs write permission. Admins can pass a `personId`. |
+| `submit_cost_expense` | Creates a cost expense with one or more receipt attachments. You provide the amount, date, a short description, and the receipt(s) — as file path(s) on this machine, or as inline base64. Submitted with status `REQUESTED`; needs write permission. Admins can pass a `personId`. |
 
 Once it's connected, just ask Claude in plain language — for example, _"list my last 5 Workday
 expenses"_, or _"submit this receipt as an expense"_.
 
-> **Note on attachments:** `submit_cost_expense` uploads the receipt from a **file on disk** that
-> this server can read — Claude passes the file's _path_, not the image itself. In a normal Claude
-> conversation an uploaded file is available to the server at a real path; an image pasted directly
-> into the Claude Code CLI is **not** saved to disk, so submit it as a file (or give Claude a path).
+> **Note on attachments:** `submit_cost_expense` needs the receipt bytes, supplied one of two ways:
+> **(1)** `filePaths` — path(s) to file(s) on the machine running this server (works when the file
+> is local, e.g. the Claude Code CLI or a saved file); **(2)** `attachments` — inline **base64**
+> content, for when the file is _not_ on the server's filesystem (e.g. an upload inside Claude
+> Chat's sandbox, where Claude can base64-encode it for you). Keep base64 files small — downscale
+> large images first, as very large base64 may exceed tool-argument limits.
 
 ## Prerequisites
 

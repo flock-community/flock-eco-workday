@@ -24,9 +24,10 @@ output (`src/wirespec/`) is gitignored and bundled into `dist/` by tsup.
   the configured API key (resolved via `GET /api/persons/me`); pass `personId` to view another
   person's expenses (admin only). Optional `limit` (default 25). Needs `ExpenseAuthority.READ`.
 - `submit_cost_expense` — creates a cost expense with one or more receipt attachments. Inputs:
-  `amount`, `date` (`YYYY-MM-DD`), `description`, `filePaths` (≥1, paths on the server's
-  filesystem), optional `personId` (defaults to the key owner). Submitted with status `REQUESTED`;
-  needs `ExpenseAuthority.WRITE`. Two-step backend flow: each file is uploaded via multipart
+  `amount`, `date` (`YYYY-MM-DD`), `description`, `filePaths` (paths on the server's filesystem)
+  and/or `attachments` (inline base64 `{ filename, base64 }`) — at least one receipt required —
+  plus optional `personId` (defaults to the key owner). Submitted with status `REQUESTED`; needs
+  `ExpenseAuthority.WRITE`. Two-step backend flow: each file is uploaded via multipart
   `POST /api/expenses/files` (→ a document UUID), then `POST /api/expenses-cost` references them as
   `files: [{ name, file }]`. All files are uploaded before the expense is created, so a failed
   upload never leaves a half-created expense.
@@ -35,10 +36,12 @@ The multipart upload (`WorkdayClient.uploadExpenseFile`) **bypasses the generate
 and calls `fetch` directly: `Wirespec.RawRequest.body` is `string`-only and the shared `handle()`
 forces `Content-Type: application/json`, neither of which fits `multipart/form-data`. The JSON
 create call (`createCostExpense`) goes through the generated `CostExpenseCreate` as usual.
-Attachments must be a **file on disk the server can read** — a chat attachment's bytes can't be
-passed through an MCP tool's JSON arguments, so the tool takes a path (e.g. an
-`/mnt/user-data/uploads/...` path materialized in a normal Claude conversation). Travel expenses
-don't support files, so there is no `submit_travel_expense`.
+Attachments reach the server two ways: a **file path** the server can read (best when the file is
+local — the Claude Code CLI, or a saved file), or **inline base64** for when the file is not on the
+server's filesystem (e.g. an upload inside Claude Chat's sandbox, where Claude base64-encodes the
+file in-sandbox and passes it as a tool argument). Base64 carries exact bytes but is bounded by
+tool-argument size, so keep files small (downscale large images). Travel expenses don't support
+files, so there is no `submit_travel_expense`.
 
 ## Authentication
 

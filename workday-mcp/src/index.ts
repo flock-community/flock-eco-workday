@@ -24,6 +24,13 @@ function formatExpense(e: Expense): string {
   return parts.join("  ");
 }
 
+/** Decode base64 file content, stripping an optional `data:...;base64,` URI prefix. */
+function decodeBase64(input: string): Buffer {
+  const comma = input.startsWith("data:") ? input.indexOf(",") : -1;
+  const b64 = comma >= 0 ? input.slice(comma + 1) : input;
+  return Buffer.from(b64, "base64");
+}
+
 const server = new McpServer({
   name: "workday-mcp",
   version: "0.1.0",
@@ -85,10 +92,11 @@ server.registerTool(
     title: "Submit cost expense",
     description:
       "Create a cost expense in flock-eco-workday with one or more receipt attachments. Provide the " +
-      "amount, the date (YYYY-MM-DD), a short description, and the file path(s) of the receipt(s) on " +
-      "the filesystem of the machine running this server — each file is uploaded and attached. " +
-      "Defaults to the API key owner; admins can pass a personId. Requires ExpenseAuthority.WRITE. " +
-      "The expense is submitted with status REQUESTED.",
+      "amount, the date (YYYY-MM-DD), a short description, and at least one receipt — either as " +
+      "`filePaths` (file(s) on the machine running this server) or as `attachments` (inline base64 " +
+      "content, for when the file is not on the server's filesystem, e.g. an upload inside Claude " +
+      "Chat's sandbox). Defaults to the API key owner; admins can pass a personId. Requires " +
+      "ExpenseAuthority.WRITE. The expense is submitted with status REQUESTED.",
     inputSchema: {
       amount: z.number().positive().describe("Expense amount, e.g. 44.80."),
       date: z.string().describe("Date of the expense in ISO format YYYY-MM-DD, e.g. 2026-05-20."),
@@ -98,10 +106,27 @@ server.registerTool(
         .describe("Short description of the expense, e.g. 'DB train ticket — München HBF'."),
       filePaths: z
         .array(z.string())
-        .min(1)
+        .optional()
         .describe(
-          "Path(s) to the receipt file(s) on the machine running this server. At least one is " +
-            "required. (Images attached in Claude Code are not saved to disk and have no readable path.)",
+          "Path(s) to the receipt file(s) on the machine running this server. Use when the file is " +
+            "on the same machine as the server (e.g. Claude Code, or a local file). Provide either " +
+            "this and/or `attachments` (at least one receipt is required).",
+        ),
+      attachments: z
+        .array(
+          z.object({
+            filename: z.string().min(1).describe("File name including extension, e.g. 'receipt.jpg'."),
+            base64: z
+              .string()
+              .min(1)
+              .describe("Base64-encoded file content. A 'data:...;base64,' prefix is allowed."),
+          }),
+        )
+        .optional()
+        .describe(
+          "Inline receipt file(s) as base64. Use when the file is NOT on the server's filesystem " +
+            "(e.g. an upload inside Claude Chat's sandbox): base64-encode the file and pass it here. " +
+            "Keep files small (e.g. downscale images first) — very large base64 may exceed limits.",
         ),
       personId: z
         .string()
@@ -110,15 +135,25 @@ server.registerTool(
         .describe("Override person UUID. Defaults to the API key owner (resolved via /api/persons/me)."),
     },
   },
-  async ({ amount, date, description, filePaths, personId }) => {
+  async ({ amount, date, description, filePaths, attachments, personId }) => {
     try {
       const client = new WorkdayClient();
+
+      const pathList = filePaths ?? [];
+      const inlineList = attachments ?? [];
+      if (pathList.length + inlineList.length === 0) {
+        throw new WorkdayApiError(
+          "At least one receipt attachment is required — pass `filePaths` (a file on this server's " +
+            "machine) and/or `attachments` (base64 content).",
+        );
+      }
+
       const resolvedPersonId = personId ?? (await client.getMyPersonId());
 
       // Upload every receipt first, so a single unreadable/failed file never leaves a
       // half-created expense referencing a missing attachment.
       const files: { name: string; file: string }[] = [];
-      for (const filePath of filePaths) {
+      for (const filePath of pathList) {
         let bytes: Buffer;
         try {
           bytes = await readFile(filePath);
@@ -126,12 +161,22 @@ server.registerTool(
           throw new WorkdayApiError(
             `Could not read attachment "${filePath}": ${(cause as Error).message}. Provide a path to a ` +
               `file on the machine running this MCP server. (Images attached in Claude Code are not saved ` +
-              `to disk, so they have no readable path.)`,
+              `to disk, so they have no readable path — use \`attachments\` with base64 instead.)`,
           );
         }
         const name = basename(filePath);
         const fileId = await client.uploadExpenseFile(bytes, name);
         files.push({ name, file: fileId });
+      }
+      for (const att of inlineList) {
+        const bytes = decodeBase64(att.base64);
+        if (bytes.length === 0) {
+          throw new WorkdayApiError(
+            `Attachment "${att.filename}" decoded to 0 bytes — the base64 content is empty or invalid.`,
+          );
+        }
+        const fileId = await client.uploadExpenseFile(bytes, att.filename);
+        files.push({ name: att.filename, file: fileId });
       }
 
       const created = await client.createCostExpense({
