@@ -33,12 +33,16 @@ export function LeaveDayFeature({ person }: LeaveDayFeatureProps) {
   }
 
   function handleStatusChange(status, it) {
+    // Send only LeaveDayForm fields; wirespec 0.18 rejects unknown fields (id, code).
     LeaveDayClient.put(it.code, {
-      ...it,
-      status,
+      description: it.description,
       from: it.from.format(ISO_8601_DATE),
       to: it.to.format(ISO_8601_DATE),
+      hours: it.hours,
       days: it.days.length > 0 ? it.days : null,
+      status,
+      type: it.type,
+      personId: it.personId,
     }).then(() => setRefresh(!refresh));
   }
 

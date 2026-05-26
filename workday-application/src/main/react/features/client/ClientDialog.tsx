@@ -25,10 +25,12 @@ export function ClientDialog({ open, code, onClose }: ClientDialogProps) {
   }, [code]);
 
   const handleSubmit = (value) => {
+    // ClientForm only declares `name`; wirespec 0.18 rejects id/code.
+    const body = { name: value.name };
     if (code) {
-      ClientClient.put(code, value).then(() => onClose?.());
+      ClientClient.put(code, body).then(() => onClose?.());
     } else {
-      ClientClient.post(value).then(() => onClose?.());
+      ClientClient.post(body).then(() => onClose?.());
     }
   };
 

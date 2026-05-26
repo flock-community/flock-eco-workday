@@ -41,13 +41,15 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
   }
 
   function handleStatusChange(status, it) {
+    // Send only WorkDayForm fields; wirespec 0.18 rejects unknown fields (id, code, assignment, type).
     WorkDayClient.put(it.code, {
-      ...it,
       from: it.from.format(ISO_8601_DATE),
       to: it.to.format(ISO_8601_DATE),
+      hours: it.hours,
+      days: it.days.length > 0 ? it.days : null,
       status,
       assignmentCode: it.assignment.code,
-      days: it.days.length > 0 ? it.days : null,
+      sheets: it.sheets,
     }).then(() => setRefresh(!refresh));
   }
 

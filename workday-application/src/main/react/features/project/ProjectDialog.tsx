@@ -25,9 +25,11 @@ export default function ProjectDialog({
   const [disableDeleteReason, setDisableDeleteReason] = useState('');
 
   const handleSubmit = (project: Project) => {
+    // ProjectForm only declares `name`; wirespec 0.18 rejects id/code.
+    const body = { name: project.name };
     const persistPromise = project.code
-      ? ProjectClient.put(project.code, project)
-      : ProjectClient.post(project);
+      ? ProjectClient.put(project.code, body)
+      : ProjectClient.post(body);
 
     persistPromise.then(closeDialog);
   };
