@@ -269,6 +269,14 @@ npm run generate      # Generates TypeScript types from Wirespec
 
 The Maven build automatically generates Kotlin types during compilation.
 
+## Authentication
+
+The backend acts as an OAuth2 resource server, validating Ory Hydra-issued JWTs and
+resolving them to local users via their Kratos identity. See
+[docs/authentication.md](docs/authentication.md) for the full flow and
+[ADR 0001](docs/adr/0001-hydra-jwt-resource-server-kratos-identity-resolution.md) for the
+rationale.
+
 ## Deployment
 
 The project uses **Jib** for containerization and can be deployed to Google Cloud Platform (App Engine) or any container runtime.
