@@ -200,3 +200,38 @@ jobs:
       - name: Build and Deploy Development version
         if: github.actor != 'dependabot[bot]'
         run: ./mvnw -B package jib:build -DskipTests -Pdevelop,frontend -Dnpm.ci.skip -Dnpm.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
+
+  deploy-cloud-run:
+    name: Deploy to Cloud Run
+    needs: build-deploy
+    # Only on a merge to the default branch (main); never on PRs or dependabot.
+    # Gated by the "production" environment, which requires manual approval
+    # before this job runs (configure required reviewers under
+    # Settings > Environments > production).
+    if: github.actor != 'dependabot[bot]' && github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-24.04
+    environment:
+      name: production
+      url: https://test.workday.flock.community
+
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDED }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - name: Setup gcloud environment
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy image to Cloud Run
+        run: |
+          gcloud run deploy workday-app \
+            --project flock-community \
+            --region europe-west1 \
+            --image eu.gcr.io/flock-community/flock-eco-workday:${{ github.sha }}
