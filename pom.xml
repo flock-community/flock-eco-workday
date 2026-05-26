@@ -55,7 +55,7 @@
         <spring.cloud.gcp.version>6.5.8</spring.cloud.gcp.version>
         <springdoc.version>2.8.6</springdoc.version>
         <springmockk.version>4.0.2</springmockk.version>
-        <wirespec.version>0.18.13</wirespec.version>
+        <wirespec.version>0.17.8</wirespec.version>
     </properties>
 
     <dependencyManagement>

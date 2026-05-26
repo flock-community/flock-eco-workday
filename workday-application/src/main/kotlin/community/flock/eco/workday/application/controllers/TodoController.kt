@@ -4,6 +4,7 @@ import community.flock.eco.workday.api.endpoint.GetTodoAll
 import community.flock.eco.workday.api.model.Todo
 import community.flock.eco.workday.api.model.TodoType
 import community.flock.eco.workday.api.model.UUID
+import community.flock.eco.workday.api.model.validate
 import community.flock.eco.workday.application.authorities.LeaveDayAuthority
 import community.flock.eco.workday.application.authorities.SickdayAuthority
 import community.flock.eco.workday.application.authorities.WorkDayAuthority

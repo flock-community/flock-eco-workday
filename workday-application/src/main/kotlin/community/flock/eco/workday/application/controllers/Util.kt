@@ -1,5 +1,6 @@
 package community.flock.eco.workday.application.controllers
 
+import community.flock.eco.workday.api.model.validate
 import community.flock.eco.workday.application.model.Person
 import org.springframework.security.core.Authentication
 import java.util.UUID
