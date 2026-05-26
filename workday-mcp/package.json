@@ -1,0 +1,35 @@
+{
+  "name": "workday-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local MCP server for flock-eco-workday expenses",
+  "type": "module",
+  "bin": {
+    "workday-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "generate": "wirespec compile -i ../workday-application/src/main/wirespec -o ./src/wirespec -l TypeScript",
+    "clean": "npx --yes rimraf ./src/wirespec",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run generate && tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/index.js",
+    "prepare": "npm run generate"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@flock/wirespec": "0.17.8",
+    "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.6.0"
+  }
+}
