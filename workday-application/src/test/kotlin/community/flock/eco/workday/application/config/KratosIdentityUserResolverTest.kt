@@ -49,7 +49,7 @@ class KratosIdentityUserResolverTest {
         val resolved = resolver.resolve("sub-alice", "access-token-x")
 
         assertThat(resolved.code).isEqualTo(user.code)
-        mockServer.verify() // no expectations set = no Hydra call expected
+        mockServer.verify()
         verify(exactly = 0) { userAccountService.createUserAccountOauth(any()) }
     }
 
@@ -77,7 +77,6 @@ class KratosIdentityUserResolverTest {
 
         repeat(2) { resolver.resolve("sub-cached", "ignored") }
 
-        // The KRATOS UserAccountOauth is the cache: indexed reference lookup each time, no /userinfo call.
         verify(exactly = 2) { userAccountService.findUserAccountOauthByReference("sub-cached") }
         verify(exactly = 0) { userAccountService.createUserAccountOauth(any()) }
         mockServer.verify()

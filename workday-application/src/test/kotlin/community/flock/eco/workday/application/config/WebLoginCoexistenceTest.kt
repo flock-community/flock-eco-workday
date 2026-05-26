@@ -34,16 +34,10 @@ import org.springframework.web.servlet.function.ServerResponse
 import java.time.Instant
 
 /**
- * Proves the existing browser/session login keeps working when the Hydra JWT resource
- * server is wired into the *same* [SecurityFilterChain].
- *
- * Unlike [WorkdayIntegrationTest] (JWT chain off — empty issuer-uri), this boots with
- * `issuer-uri` set so the `oauth2ResourceServer { jwt {} }` block in [WebSecurityConfig]
- * is active; a stub [JwtDecoder] stands in for Hydra so no JWKS discovery happens.
- *
- * Shows the bearer-token filter and form-login coexist: browser navigation still redirects
- * to login, a form-login session reaches secured endpoints, a valid Bearer token resolves
- * to its user, and a bad one is rejected 401.
+ * Proves browser/session login still works when the Hydra JWT resource server shares the same
+ * [SecurityFilterChain]. Unlike [WorkdayIntegrationTest] (empty issuer-uri, JWT chain off), this
+ * boots with issuer-uri set so the resource-server block is active; a stub [JwtDecoder] stands in
+ * for Hydra so no JWKS discovery happens.
  */
 @ActiveProfiles("test")
 @AutoConfigureDataJpa
@@ -54,10 +48,9 @@ import java.time.Instant
 @SpringBootTest(
     classes = [Application::class, AppTestConfig::class],
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    // Override the empty issuer-uri from application-test.properties so the JWT beans
-    // wire and the resource-server block runs. The stub JwtDecoder below keeps it offline.
-    // Excluding SessionAutoConfiguration falls back to in-memory container sessions, since
-    // the test profile disables Liquibase and never creates the JDBC SPRING_SESSION table.
+    // issuer-uri (empty in application-test.properties) is set so the JWT beans wire and the
+    // resource-server block runs; the stub JwtDecoder keeps it offline. SessionAutoConfiguration is
+    // excluded so sessions stay in-memory — the test profile never creates the JDBC session table.
     properties = [
         "spring.security.oauth2.resourceserver.jwt.issuer-uri=https://issuer.test.local",
         "spring.autoconfigure.exclude=" +
@@ -84,8 +77,6 @@ class WebLoginCoexistenceTest {
 
     @Test
     fun `unauthenticated non-bearer XHR still redirects, not a bearer 401`() {
-        // The resource server must not hijack the entry point for non-Bearer requests:
-        // API-key clients and SPA XHRs keep the pre-PR redirect, not a 401.
         mockMvc
             .perform(get(PROBE).header("Accept", "application/json"))
             .andExpect(status().is3xxRedirection)
@@ -124,7 +115,6 @@ class WebLoginCoexistenceTest {
         mockMvc
             .perform(get(PROBE).header("Authorization", "Bearer $VALID_TOKEN"))
             .andExpect(status().isOk)
-            // Principal name is the workday user code — same contract every login path emits.
             .andExpect(content().string(account.user.code))
     }
 
@@ -137,7 +127,6 @@ class WebLoginCoexistenceTest {
 
     @TestConfiguration
     class TestBeans {
-        /** Offline stand-in for Hydra's JwtDecoder: accepts exactly one token, rejects the rest. */
         @Bean
         fun jwtDecoder(): JwtDecoder =
             JwtDecoder { token ->
@@ -152,7 +141,6 @@ class WebLoginCoexistenceTest {
                     .build()
             }
 
-        /** Minimal secured endpoint: only requires authentication, returns the principal name. */
         @Bean
         fun authProbeRoute(): RouterFunction<ServerResponse> =
             RouterFunctions.route(RequestPredicates.GET("/api/_authprobe")) { request ->

@@ -10,8 +10,7 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException
 import org.springframework.stereotype.Component
 
-// Principal name must be user.code so downstream findByUserCode(authentication.name) works
-// like every other auth path. Signature/iss/exp are already validated by the JwtDecoder.
+// Principal name is user.code so downstream findByUserCode(authentication.name) works like every other auth path.
 @Component
 @Conditional(HydraIssuerConfigured::class)
 class HydraJwtAuthenticationConverter(
