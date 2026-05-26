@@ -10,12 +10,8 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException
 import org.springframework.stereotype.Component
 
-/**
- * Hydra-issued JWT → Authentication whose principal name is the workday `user.code`, so
- * downstream `personService.findByUserCode(authentication.name)` works as with every other
- * auth path. Signature/iss/exp are already validated by Spring's JwtDecoder; we take `sub`
- * (Kratos identity UUID) and delegate the user lookup to [KratosIdentityUserResolver].
- */
+// Principal name must be user.code so downstream findByUserCode(authentication.name) works
+// like every other auth path. Signature/iss/exp are already validated by the JwtDecoder.
 @Component
 @Conditional(HydraIssuerConfigured::class)
 class HydraJwtAuthenticationConverter(

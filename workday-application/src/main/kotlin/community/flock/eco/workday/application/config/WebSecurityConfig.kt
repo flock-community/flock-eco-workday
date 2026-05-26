@@ -28,8 +28,7 @@ class WebSecurityConfig {
     @Autowired
     lateinit var userKeyTokenFilter: UserKeyTokenFilter
 
-    // Both beans are gated on HydraIssuerConfigured: null when no issuer-uri is set, which
-    // skips the JWT chain entirely (e.g. test profiles).
+    // Null when no issuer-uri is set (HydraIssuerConfigured), which disables the JWT chain.
     @Autowired(required = false)
     var hydraJwtAuthenticationConverter: Converter<Jwt, AbstractAuthenticationToken>? = null
 
@@ -47,7 +46,6 @@ class WebSecurityConfig {
                 headers.frameOptions { it.sameOrigin() }
             }.csrf { it.disable() }
 
-        // JWT resource server for the flock-app mobile client (Hydra-issued tokens).
         hydraJwtAuthenticationConverter?.let { converter ->
             http.oauth2ResourceServer { rs ->
                 rs.jwt { jwt -> jwt.jwtAuthenticationConverter(converter) }

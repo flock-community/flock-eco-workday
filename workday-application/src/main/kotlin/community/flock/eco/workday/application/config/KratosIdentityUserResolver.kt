@@ -23,16 +23,6 @@ import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import java.time.Duration
 
-/**
- * Resolves a Hydra JWT's `sub` claim to a workday [User].
- *
- * The Kratos identity is stored like any other OAuth identity: a [UserAccountOauth] with
- * `provider = KRATOS` and `reference = sub`, mirroring the Google web-login path. A known
- * `sub` resolves via the indexed reference lookup, which doubles as the persistent cache.
- * On first sight only, we fetch Hydra `/userinfo` for the email and find-or-create the
- * account: an existing user (e.g. a Google-web user) gains a linked KRATOS account, otherwise
- * a new user is created (same path as Google first-login).
- */
 @Component
 @Conditional(HydraIssuerConfigured::class)
 class KratosIdentityUserResolver(
@@ -41,16 +31,11 @@ class KratosIdentityUserResolver(
 ) {
     private val log = LoggerFactory.getLogger(KratosIdentityUserResolver::class.java)
 
-    /**
-     * Throws [InvalidBearerTokenException] when Hydra 401s or `/userinfo` returns no email
-     * (token valid but no longer authoritative), [HydraUserinfoUnavailableException] when
-     * Hydra is unreachable (→ 503).
-     */
     fun resolve(
         sub: String,
         accessToken: String,
     ): User {
-        findUserByReference(sub)?.let { return it }
+        findExistingUserBySub(sub)?.let { return it }
 
         val info = fetchUserinfo(accessToken)
         val email =
@@ -59,7 +44,7 @@ class KratosIdentityUserResolver(
         return findOrCreateAccount(sub, email, info.displayName())
     }
 
-    private fun findUserByReference(sub: String): User? = userAccountService.findUserAccountOauthByReference(sub)?.user
+    private fun findExistingUserBySub(sub: String): User? = userAccountService.findUserAccountOauthByReference(sub)?.user
 
     private fun fetchUserinfo(accessToken: String): HydraUserinfo =
         try {
@@ -103,21 +88,18 @@ class KratosIdentityUserResolver(
                     ),
                 ).user
         } catch (ex: UserAccountExistsException) {
-            // Concurrent first-sight race: another request created the account; re-read it.
-            findUserByReference(sub) ?: throw ex
+            // A concurrent request created the account first; re-read instead of failing.
+            findExistingUserBySub(sub) ?: throw ex
         }
 }
 
-/**
- * A transient Hydra failure, not a bad token. Extends [AuthenticationException] so the
- * resource-server filter routes it to [HydraAuthenticationEntryPoint] for a 503.
- */
+// Extends AuthenticationException so the resource-server filter routes it through
+// HydraAuthenticationEntryPoint (→ 503) rather than treating it as a bad token (401).
 class HydraUserinfoUnavailableException(
     message: String,
     cause: Throwable? = null,
 ) : AuthenticationException(message, cause)
 
-/** Dedicated [RestClient] with explicit timeouts so a slow Hydra cannot pin Tomcat threads. */
 @Configuration
 @Conditional(HydraIssuerConfigured::class)
 class HydraUserinfoRestClientConfig {

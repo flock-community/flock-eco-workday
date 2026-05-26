@@ -4,10 +4,8 @@ import org.springframework.context.annotation.Condition
 import org.springframework.context.annotation.ConditionContext
 import org.springframework.core.type.AnnotatedTypeMetadata
 
-/**
- * Matches when the JWT issuer-uri is set and non-blank. Unlike `@ConditionalOnProperty`,
- * a blank value (which the test profile uses to disable the JWT chain) does not match.
- */
+// Unlike @ConditionalOnProperty, a blank issuer-uri (used by the test profile to disable
+// the JWT chain) does not match.
 class HydraIssuerConfigured : Condition {
     override fun matches(
         context: ConditionContext,

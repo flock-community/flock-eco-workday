@@ -8,10 +8,6 @@ import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthen
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
 
-/**
- * A [HydraUserinfoUnavailableException] is a transient upstream failure → 503 (retry later),
- * not 401. Everything else falls through to the standard Bearer-token 401 response.
- */
 @Component
 @Conditional(HydraIssuerConfigured::class)
 class HydraAuthenticationEntryPoint : AuthenticationEntryPoint {
