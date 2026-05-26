@@ -15,6 +15,10 @@ export interface UserGroup {
 
 export interface UserAccount {
   id: string;
+  type?: string;
+  created?: string;
+  label?: string;
+  provider?: string;
 }
 
 export interface UserAccountPassword extends UserAccount {

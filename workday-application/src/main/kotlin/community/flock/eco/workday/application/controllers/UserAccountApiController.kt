@@ -1,5 +1,6 @@
 package community.flock.eco.workday.application.controllers
 
+import community.flock.eco.workday.api.endpoint.DeleteUserAccountById
 import community.flock.eco.workday.api.endpoint.GetUserAccountAll
 import community.flock.eco.workday.api.endpoint.PostUserAccountGenerateKey
 import community.flock.eco.workday.api.endpoint.PostUserAccountRevokeKey
@@ -27,7 +28,8 @@ class UserAccountApiController(
     PutUserAccountResetPassword.Handler,
     PutUserAccountNewPassword.Handler,
     PostUserAccountGenerateKey.Handler,
-    PostUserAccountRevokeKey.Handler {
+    PostUserAccountRevokeKey.Handler,
+    DeleteUserAccountById.Handler {
     private fun authenticationName(): String = SecurityContextHolder.getContext().authentication.name
 
     @PreAuthorize("hasAuthority('UserAuthority.READ')")
@@ -43,6 +45,15 @@ class UserAccountApiController(
             body = page.map { it.externalize() }.toList(),
             xtotal = page.totalElements.toInt(),
         )
+    }
+
+    @PreAuthorize("hasAuthority('UserAuthority.WRITE')")
+    override suspend fun deleteUserAccountById(request: DeleteUserAccountById.Request): DeleteUserAccountById.Response<*> {
+        val id = request.path.id.toLong()
+        if (userAccountRepository.existsById(id)) {
+            userAccountRepository.deleteById(id)
+        }
+        return DeleteUserAccountById.Response200(Unit)
     }
 
     override suspend fun putUserAccountResetPassword(

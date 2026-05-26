@@ -13,6 +13,9 @@ endpoint PostUserAccountGenerateKey POST UserKeyForm /api/user-accounts/generate
 endpoint PostUserAccountRevokeKey POST KeyRevokeForm /api/user-accounts/revoke-key -> {
   200 -> Unit
 }
+endpoint DeleteUserAccountById DELETE /api/user-accounts/{id: String} -> {
+  200 -> Unit
+}
 
 type PasswordResetForm {
   resetCode: String,
