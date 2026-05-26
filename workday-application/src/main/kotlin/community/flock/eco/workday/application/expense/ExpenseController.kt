@@ -12,7 +12,6 @@ import community.flock.eco.workday.api.model.CostExpenseFile
 import community.flock.eco.workday.api.model.Error
 import community.flock.eco.workday.api.model.ExpenseType
 import community.flock.eco.workday.api.model.TravelExpenseDetails
-import community.flock.eco.workday.api.model.validate
 import community.flock.eco.workday.application.controllers.isAssociatedWith
 import community.flock.eco.workday.application.interfaces.applyAllowedToUpdate
 import community.flock.eco.workday.application.services.DocumentStorage
