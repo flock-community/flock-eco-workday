@@ -11,16 +11,10 @@ import org.springframework.security.oauth2.server.resource.InvalidBearerTokenExc
 import org.springframework.stereotype.Component
 
 /**
- * Spring Security converter: Hydra-issued JWT → an [Authentication] whose principal name
- * is the workday `user.code` — matches the contract every other auth path on this app
- * uses ([UserKeyTokenFilter], the legacy googleLogin filter, PR #488's opaque-token
- * introspector). Downstream code keeps calling `personService.findByUserCode(authentication.name)`.
- *
- * JWT signature + iss/exp/nbf are already validated by Spring's [JwtDecoder] before we
- * get here (Hydra JWKS, cached). We extract `sub` (Kratos identity UUID) and delegate to
- * [KratosIdentityUserResolver] for the user lookup.
- *
- * See ADR 0003 (in the flock-app repo) and plan-W1 in mobile-mvp-plan.md.
+ * Hydra-issued JWT → Authentication whose principal name is the workday `user.code`, so
+ * downstream `personService.findByUserCode(authentication.name)` works as with every other
+ * auth path. Signature/iss/exp are already validated by Spring's JwtDecoder; we take `sub`
+ * (Kratos identity UUID) and delegate the user lookup to [KratosIdentityUserResolver].
  */
 @Component
 @Conditional(HydraIssuerConfigured::class)
@@ -32,7 +26,6 @@ class HydraJwtAuthenticationConverter(
             jwt.subject
                 ?: throw InvalidBearerTokenException("JWT had no sub claim")
         val user: User = userResolver.resolve(sub, jwt.tokenValue)
-        // Principal name = user.code so authentication.name flows through unchanged.
         return UsernamePasswordAuthenticationToken(
             user.code,
             null,

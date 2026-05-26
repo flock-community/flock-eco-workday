@@ -64,7 +64,6 @@ class KratosIdentityUserResolverTest {
         val resolved = resolver.resolve("sub-bob", "token-bob")
 
         assertThat(resolved.email).isEqualTo("bob@flock.community")
-        // Stored as a KRATOS UserAccountOauth keyed on the sub — same mechanism as Google login.
         assertThat(formSlot.captured.provider).isEqualTo(UserAccountOauthProvider.KRATOS)
         assertThat(formSlot.captured.reference).isEqualTo("sub-bob")
         assertThat(formSlot.captured.email).isEqualTo("bob@flock.community")

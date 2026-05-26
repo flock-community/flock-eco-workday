@@ -9,11 +9,8 @@ import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
 
 /**
- * Resource-server entry point that distinguishes "Hydra is down" from "bad token".
- *
- * A [HydraUserinfoUnavailableException] means a transient upstream failure — the right
- * answer is 503 (retry later), not 401 (re-authenticate). Everything else falls through
- * to the standard Bearer-token 401 + `WWW-Authenticate` response.
+ * A [HydraUserinfoUnavailableException] is a transient upstream failure → 503 (retry later),
+ * not 401. Everything else falls through to the standard Bearer-token 401 response.
  */
 @Component
 @Conditional(HydraIssuerConfigured::class)
@@ -36,7 +33,6 @@ class HydraAuthenticationEntryPoint : AuthenticationEntryPoint {
     }
 }
 
-/** True if [this] or any exception in its cause chain is a [T]. */
 private inline fun <reified T : Throwable> Throwable.hasCauseOfType(): Boolean {
     var current: Throwable? = this
     while (current != null) {

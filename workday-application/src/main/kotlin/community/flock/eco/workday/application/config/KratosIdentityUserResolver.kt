@@ -24,28 +24,14 @@ import org.springframework.web.client.RestClientResponseException
 import java.time.Duration
 
 /**
- * Resolves a Hydra-issued JWT (its `sub` claim and the bearer token) to a workday [User].
+ * Resolves a Hydra JWT's `sub` claim to a workday [User].
  *
- * The Kratos identity is stored the same way every other OAuth identity is: as a
- * [UserAccountOauth] row with `provider = KRATOS` and `reference = sub`. This mirrors the
- * Google web-login path ([UserSecurityService]), so a user has exactly one home for all
- * their external identities and no parallel column is needed.
- *
- * Algorithm:
- *  1. Look up the [UserAccountOauth] by reference (`sub`) → return its user. The lookup is
- *     a single indexed query and doubles as the persistent cache; no in-memory layer.
- *  2. GET Hydra `/userinfo` with the inbound access_token (Bearer) → `email` + name claims.
- *  3. `createUserAccountOauth(KRATOS, sub)` → find-or-create the user by email and attach
- *     the Kratos account:
- *      - user exists by email (e.g. a long-time Google-web user): the new KRATOS account is
- *        linked to that existing user — they're now reachable from mobile too.
- *      - no such user: a new one is auto-created (same path as Google first-login).
- *
- * Step 2+3 happen exactly once per `sub` ever: once the account exists, every later request
- * resolves via the indexed lookup in step 1 without leaving the process. JWT signature
- * verification is handled by Spring's JwtDecoder upstream (Hydra JWKS, cached).
- *
- * Designed in flock-app/docs/adr/0003-mobile-auth-via-hydra-pkce.md (plan-W1).
+ * The Kratos identity is stored like any other OAuth identity: a [UserAccountOauth] with
+ * `provider = KRATOS` and `reference = sub`, mirroring the Google web-login path. A known
+ * `sub` resolves via the indexed reference lookup, which doubles as the persistent cache.
+ * On first sight only, we fetch Hydra `/userinfo` for the email and find-or-create the
+ * account: an existing user (e.g. a Google-web user) gains a linked KRATOS account, otherwise
+ * a new user is created (same path as Google first-login).
  */
 @Component
 @Conditional(HydraIssuerConfigured::class)
@@ -56,12 +42,9 @@ class KratosIdentityUserResolver(
     private val log = LoggerFactory.getLogger(KratosIdentityUserResolver::class.java)
 
     /**
-     * Returns the workday [User] for the given JWT `sub` claim, using [accessToken] only
-     * if the resolver has to fall through to Hydra's `/userinfo` endpoint (first sight).
-     *
-     * Throws [InvalidBearerTokenException] if Hydra 401s or `/userinfo` returns no email
-     * — both indicate a token that was structurally valid but no longer authoritative.
-     * Throws [HydraUserinfoUnavailableException] if Hydra cannot be reached (→ 503).
+     * Throws [InvalidBearerTokenException] when Hydra 401s or `/userinfo` returns no email
+     * (token valid but no longer authoritative), [HydraUserinfoUnavailableException] when
+     * Hydra is unreachable (→ 503).
      */
     fun resolve(
         sub: String,
@@ -120,27 +103,21 @@ class KratosIdentityUserResolver(
                     ),
                 ).user
         } catch (ex: UserAccountExistsException) {
-            // Concurrent first-sight race: another request created the KRATOS account.
-            // Re-read by reference rather than failing.
+            // Concurrent first-sight race: another request created the account; re-read it.
             findUserByReference(sub) ?: throw ex
         }
 }
 
 /**
- * Hydra `/userinfo` was unreachable or returned an unexpected error — a transient
- * server-side failure, not a bad token. Extends [AuthenticationException] so the
- * resource-server filter routes it to [HydraAuthenticationEntryPoint], which maps it to
- * HTTP 503 (rather than the 401 a bad token gets, or the 500 a raw exception would).
+ * A transient Hydra failure, not a bad token. Extends [AuthenticationException] so the
+ * resource-server filter routes it to [HydraAuthenticationEntryPoint] for a 503.
  */
 class HydraUserinfoUnavailableException(
     message: String,
     cause: Throwable? = null,
 ) : AuthenticationException(message, cause)
 
-/**
- * Dedicated [RestClient] for the resolver. Explicit timeouts so a slow Hydra cannot pin
- * Tomcat threads — same pattern PR #488 used for the Kratos client it replaced.
- */
+/** Dedicated [RestClient] with explicit timeouts so a slow Hydra cannot pin Tomcat threads. */
 @Configuration
 @Conditional(HydraIssuerConfigured::class)
 class HydraUserinfoRestClientConfig {
@@ -167,7 +144,6 @@ internal data class HydraUserinfo(
     val given_name: String?,
     val family_name: String?,
 ) {
-    /** "Given Family" if either name claim is present, else null (User.name is nullable). */
     fun displayName(): String? =
         listOfNotNull(given_name, family_name)
             .joinToString(" ")

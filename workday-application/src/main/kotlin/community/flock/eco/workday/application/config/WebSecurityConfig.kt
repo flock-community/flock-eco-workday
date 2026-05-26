@@ -28,14 +28,11 @@ class WebSecurityConfig {
     @Autowired
     lateinit var userKeyTokenFilter: UserKeyTokenFilter
 
-    // Optional: the converter bean only exists when spring.security.oauth2.resourceserver.jwt.issuer-uri
-    // is configured (see ConditionalOnProperty on HydraJwtAuthenticationConverter). In test profiles
-    // where the issuer is unset, this stays null and the JWT chain is skipped.
+    // Both beans are gated on HydraIssuerConfigured: null when no issuer-uri is set, which
+    // skips the JWT chain entirely (e.g. test profiles).
     @Autowired(required = false)
     var hydraJwtAuthenticationConverter: Converter<Jwt, AbstractAuthenticationToken>? = null
 
-    // Optional, same condition as the converter: maps a Hydra-unavailable failure to 503
-    // instead of the default 401. Null in test profiles where the JWT chain is off.
     @Autowired(required = false)
     var hydraAuthenticationEntryPoint: AuthenticationEntryPoint? = null
 
@@ -50,9 +47,7 @@ class WebSecurityConfig {
                 headers.frameOptions { it.sameOrigin() }
             }.csrf { it.disable() }
 
-        // JWT resource server for the flock-app mobile client. Issuer-uri is set in
-        // application.properties; JWKS is auto-discovered + cached. The converter
-        // resolves the JWT's `sub` (Kratos identity UUID) to a workday User.
+        // JWT resource server for the flock-app mobile client (Hydra-issued tokens).
         hydraJwtAuthenticationConverter?.let { converter ->
             http.oauth2ResourceServer { rs ->
                 rs.jwt { jwt -> jwt.jwtAuthenticationConverter(converter) }
