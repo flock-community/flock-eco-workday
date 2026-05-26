@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
@@ -51,6 +52,10 @@ class WebSecurityConfig {
                 rs.jwt { jwt -> jwt.jwtAuthenticationConverter(converter) }
                 hydraAuthenticationEntryPoint?.let { rs.authenticationEntryPoint(it) }
             }
+            // Bearer failures are answered 401/503 by the resource server's own filter above.
+            // Keep the login redirect as the default entry point so unauthenticated web and
+            // API-key requests still redirect as before, rather than the resource server's 401.
+            http.exceptionHandling { it.authenticationEntryPoint(LoginUrlAuthenticationEntryPoint("/")) }
         }
 
         http

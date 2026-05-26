@@ -83,6 +83,15 @@ class WebLoginCoexistenceTest {
     }
 
     @Test
+    fun `unauthenticated non-bearer XHR still redirects, not a bearer 401`() {
+        // The resource server must not hijack the entry point for non-Bearer requests:
+        // API-key clients and SPA XHRs keep the pre-PR redirect, not a 401.
+        mockMvc
+            .perform(get(PROBE).header("Accept", "application/json"))
+            .andExpect(status().is3xxRedirection)
+    }
+
+    @Test
     fun `form login establishes a session that reaches a secured endpoint`() {
         val email = "form.coexist@flock.community"
 
