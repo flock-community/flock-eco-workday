@@ -1,3 +1,4 @@
+export * from './UserAccountList';
 export * from './UserClient';
 export * from './UserDialog';
 export * from './UserFeature';
