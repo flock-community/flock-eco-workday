@@ -11,7 +11,10 @@ import org.springframework.core.type.AnnotatedTypeMetadata
  * skip the Hydra-backed beans there.
  */
 class HydraIssuerConfigured : Condition {
-    override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
+    override fun matches(
+        context: ConditionContext,
+        metadata: AnnotatedTypeMetadata,
+    ): Boolean {
         val issuer = context.environment.getProperty("spring.security.oauth2.resourceserver.jwt.issuer-uri")
         return !issuer.isNullOrBlank()
     }

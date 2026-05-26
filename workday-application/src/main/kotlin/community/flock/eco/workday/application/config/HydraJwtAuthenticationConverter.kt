@@ -27,10 +27,10 @@ import org.springframework.stereotype.Component
 class HydraJwtAuthenticationConverter(
     private val userResolver: KratosIdentityUserResolver,
 ) : Converter<Jwt, AbstractAuthenticationToken> {
-
     override fun convert(jwt: Jwt): AbstractAuthenticationToken {
-        val sub = jwt.subject
-            ?: throw InvalidBearerTokenException("JWT had no sub claim")
+        val sub =
+            jwt.subject
+                ?: throw InvalidBearerTokenException("JWT had no sub claim")
         val user: User = userResolver.resolve(sub, jwt.tokenValue)
         // Principal name = user.code so authentication.name flows through unchanged.
         return UsernamePasswordAuthenticationToken(

@@ -87,16 +87,17 @@ class KratosIdentityUserResolverTest {
     }
 
     @Test
-    fun `second resolve for same sub hits the in-memory cache`() {
+    fun `a linked user resolves via the DB on every call and never hits Hydra`() {
         val user = userWithEmail("cached@flock.community", kratos = "sub-cached")
         every { userService.findByKratosIdentityId("sub-cached") } returns user
-        every { userService.findByCode(user.code) } returns user
 
         repeat(2) { resolver.resolve("sub-cached", "ignored") }
 
-        // First call: DB lookup. Second call: cache hit → findByCode only.
-        verify(exactly = 1) { userService.findByKratosIdentityId("sub-cached") }
-        verify(exactly = 1) { userService.findByCode(user.code) }
+        // The unique kratos_identity_id column is the cache: indexed DB lookup each time,
+        // no /userinfo call.
+        verify(exactly = 2) { userService.findByKratosIdentityId("sub-cached") }
+        verify(exactly = 0) { userService.findByEmail(any()) }
+        mockServer.verify()
     }
 
     @Test
@@ -118,50 +119,56 @@ class KratosIdentityUserResolverTest {
     }
 
     @Test
-    fun `cache entry pointing at a deleted user falls through to DB and re-resolves`() {
-        val user = userWithEmail("rejoin@flock.community", kratos = "sub-rejoin")
-        every { userService.findByKratosIdentityId("sub-rejoin") } returns user
-        // The cache is empty on the first resolve, so findByCode is never called there.
-        // After the cache is seeded, the user "disappears" (deleted between requests) so
-        // findByCode returns null on every subsequent call.
-        every { userService.findByCode(user.code) } returns null
+    fun `name claims from userinfo become the auto-created user's name`() {
+        val createdSlot = slot<UserForm>()
+        every { userService.findByKratosIdentityId("sub-named") } returns null
+        every { userService.findByEmail("named@flock.community") } returns null
+        every { userService.create(capture(createdSlot)) } answers {
+            userWithEmail(createdSlot.captured.email, name = createdSlot.captured.name)
+        }
+        every { userService.linkKratosIdentity(any(), "sub-named") } answers {
+            userWithEmail("named@flock.community", code = firstArg(), kratos = "sub-named")
+        }
+        expectUserinfo(
+            "token-named",
+            withSuccess(
+                """{"sub":"any","email":"named@flock.community","given_name":"Ada","family_name":"Lovelace"}""",
+                MediaType.APPLICATION_JSON,
+            ),
+        )
 
-        // First call seeds the cache via the DB lookup.
-        resolver.resolve("sub-rejoin", "ignored")
+        resolver.resolve("sub-named", "token-named")
 
-        // Second call: cache says user.code, findByCode returns null (user gone), so the
-        // resolver evicts the cache and re-runs the DB lookup, which still finds the row.
-        val again = resolver.resolve("sub-rejoin", "ignored")
-        assertThat(again.code).isEqualTo(user.code)
-
-        verify(exactly = 2) { userService.findByKratosIdentityId("sub-rejoin") }
-        verify(exactly = 1) { userService.findByCode(user.code) }
+        assertThat(createdSlot.captured.name).isEqualTo("Ada Lovelace")
     }
 
     private fun expectUserinfo(
         accessToken: String,
         responder: org.springframework.test.web.client.ResponseCreator,
     ) {
-        mockServer.expect(requestTo("$issuer/userinfo"))
+        mockServer
+            .expect(requestTo("$issuer/userinfo"))
             .andExpect(method(org.springframework.http.HttpMethod.GET))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer $accessToken"))
             .andRespond(responder)
     }
 
-    private fun userinfoBody(email: String): String =
-        """{"sub":"any","email":"$email","given_name":"X","family_name":"Y"}"""
+    private fun userinfoBody(email: String): String = """{"sub":"any","email":"$email","given_name":"X","family_name":"Y"}"""
 
     private fun userWithEmail(
         email: String,
         name: String? = null,
-        code: String = java.util.UUID.randomUUID().toString(),
+        code: String =
+            java.util.UUID
+                .randomUUID()
+                .toString(),
         kratos: String? = null,
-    ): User = User(
-        code = code,
-        email = email,
-        name = name,
-        authorities = mutableSetOf(),
-        kratosIdentityId = kratos,
-    )
-
+    ): User =
+        User(
+            code = code,
+            email = email,
+            name = name,
+            authorities = mutableSetOf(),
+            kratosIdentityId = kratos,
+        )
 }

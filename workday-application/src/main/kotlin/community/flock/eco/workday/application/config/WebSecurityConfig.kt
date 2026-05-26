@@ -7,13 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.convert.converter.Converter
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.core.convert.converter.Converter
 import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
@@ -33,6 +34,11 @@ class WebSecurityConfig {
     @Autowired(required = false)
     var hydraJwtAuthenticationConverter: Converter<Jwt, AbstractAuthenticationToken>? = null
 
+    // Optional, same condition as the converter: maps a Hydra-unavailable failure to 503
+    // instead of the default 401. Null in test profiles where the JWT chain is off.
+    @Autowired(required = false)
+    var hydraAuthenticationEntryPoint: AuthenticationEntryPoint? = null
+
     @Value("\${flock.eco.workday.login:TEST}")
     lateinit var loginType: String
 
@@ -50,6 +56,7 @@ class WebSecurityConfig {
         hydraJwtAuthenticationConverter?.let { converter ->
             http.oauth2ResourceServer { rs ->
                 rs.jwt { jwt -> jwt.jwtAuthenticationConverter(converter) }
+                hydraAuthenticationEntryPoint?.let { rs.authenticationEntryPoint(it) }
             }
         }
 
