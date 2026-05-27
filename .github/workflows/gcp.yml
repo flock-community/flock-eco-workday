@@ -19,6 +19,11 @@ jobs:
       id-token: "write"
       pull-requests: "write"
 
+    # peaceiris/actions-gh-pages has no Node 24 release yet; force it (and any
+    # other Node 20 actions) onto Node 24 to clear the deprecation warning.
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
