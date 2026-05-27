@@ -22,7 +22,8 @@ open class CleanupDbService(
                         try {
                             disableConstraints(statement)
                             truncateTables(statement, H2_SCHEMA_NAME)
-                            resetSequences(statement, H2_SCHEMA_NAME)
+                            // No sequence reset: it desyncs Hibernate 6's pooled id optimizer from
+                            // the DB (shared SessionFactory, reuseForks=true) -> transient flakes.
                         } finally {
                             enableConstraints(statement)
                         }
@@ -36,19 +37,6 @@ open class CleanupDbService(
                 throw e
             }
         }
-    }
-
-    private fun resetSequences(
-        statement: Statement,
-        schemaName: String,
-    ) {
-        getSchemaSequences(statement, schemaName)
-            .forEach({ sequenceName ->
-                executeStatement(
-                    statement,
-                    "ALTER SEQUENCE \"$sequenceName\" RESTART WITH 1",
-                )
-            })
     }
 
     private fun truncateTables(
@@ -81,14 +69,6 @@ open class CleanupDbService(
         schemaName: String,
     ): Set<String?> {
         val sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES  where TABLE_SCHEMA='$schemaName'"
-        return queryForList(statement, sql)
-    }
-
-    private fun getSchemaSequences(
-        statement: Statement,
-        schemaName: String,
-    ): Set<String?> {
-        val sql = "SELECT SEQUENCE_NAME FROM INFORMATION_SCHEMA.SEQUENCES WHERE SEQUENCE_SCHEMA='$schemaName'"
         return queryForList(statement, sql)
     }
 
