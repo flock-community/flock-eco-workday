@@ -87,10 +87,7 @@ jobs:
       - name: Start backend server in background
         run: |
           echo "Starting backend server..."
-          # Use develop profile with ci addon (Google Drive integration disabled).
-          # Run wirespec deserialization in STRICT mode so request payloads carrying
-          # fields absent from their .ws Form contract fail here, instead of being
-          # silently tolerated by the prod-default lenient serializer.
+          # Use develop profile with ci addon (Google Drive integration disabled)
           ./mvnw -B compile spring-boot:run -DskipTests -Dspring-boot.run.profiles=develop,ci -Pdevelop -Dspring-boot.run.arguments=--workday.wirespec.lenient-deserialization=false > backend.log 2>&1 &
           echo $! > backend.pid
           echo "Backend server started with PID $(cat backend.pid)"

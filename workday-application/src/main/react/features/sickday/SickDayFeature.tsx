@@ -34,7 +34,6 @@ export function SickDayFeature({ person }: SickDayFeatureProps) {
   }
 
   function handleStatusChange(status: string, it: DayProps) {
-    // Send only SickDayForm fields; wirespec 0.18 rejects unknown fields (id, code, type).
     SickDayClient.put(it.code, {
       from: it.from.format(ISO_8601_DATE),
       to: it.to.format(ISO_8601_DATE),

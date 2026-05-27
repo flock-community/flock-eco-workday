@@ -51,8 +51,6 @@ export type PersonRaw = {
   googleDriveId: string;
 };
 
-// Mirrors the wirespec PersonForm contract (workday-application/src/main/wirespec/persons.ws).
-// Keep in sync: fields absent here are rejected by the backend under strict deserialization.
 export type PersonRequest = {
   firstname?: string;
   lastname?: string;

@@ -5,8 +5,6 @@ import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { WorkDayClient } from '../../clients/WorkDayClient';
 import type { Todo, WorkDayStatus } from '../../wirespec/model';
 
-// These flows previously PUT the whole fetched entity; wirespec 0.18 rejects fields
-// absent from the *Form contracts, so send only the declared fields.
 const updateStatusWorkDay = async (id: string, status: WorkDayStatus) => {
   const res = await WorkDayClient.get(id);
   await WorkDayClient.put(id, {

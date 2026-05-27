@@ -24,8 +24,6 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
   };
 
   const handleSubmit = (values: PersonRequestRaw) => {
-    // Send only PersonForm contract fields; the form's `values` also carry entity-only
-    // fields (id, uuid, fullName, user, lastActiveAt, code) that wirespec 0.18 rejects.
     const body: PersonRequest = {
       firstname: values.firstname,
       lastname: values.lastname,
