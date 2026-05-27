@@ -1,8 +1,8 @@
 ---
 phase: 17
 slug: event-money-summary-and-ui-polish
-status: draft
-nyquist_compliant: false
+status: validated
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-03-27
 ---
@@ -38,8 +38,8 @@ created: 2026-03-27
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 17-01-01 | 01 | 1 | SUMM-01 | e2e | `npx playwright test tests/event-workflow.spec.ts` | ✅ | ⬜ pending |
-| 17-01-02 | 01 | 1 | UI-01 | e2e | `npx playwright test tests/budget-admin.spec.ts` | ✅ | ⬜ pending |
+| 17-01-01 | 01 | 1 | SUMM-01 | unit | `npm test -- --testPathPattern EventBudgetSummaryBanner` | ✅ | ✅ green |
+| 17-01-02 | 01 | 1 | UI-01 | e2e | `npx playwright test tests/budget-admin.spec.ts` | ✅ | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -61,11 +61,21 @@ Existing infrastructure covers all phase requirements. Playwright and event-work
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 30s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 30s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** approved 2026-05-22
+
+---
+
+## Validation Audit 2026-05-22
+
+| Metric | Count |
+|--------|-------|
+| Gaps found | 1 |
+| Resolved | 1 |
+| Escalated | 0 |

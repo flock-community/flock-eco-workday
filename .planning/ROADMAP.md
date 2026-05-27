@@ -8,7 +8,7 @@
 
 - ✅ **v1.0 Budget Allocations** — Phases 1-9 (shipped 2026-03-17)
 - ✅ **v1.1 E2E Tests** — Phases 10-13 (complete 2026-03-22)
-- 🔄 **v1.2 Polish & Gap Closure** — Phases 14-17 (in progress)
+- 🔄 **v1.2 Polish & Gap Closure** — Phases 14-18+ (in progress)
 
 ## Phases
 
@@ -45,6 +45,7 @@
 - [x] **Phase 15: Event Allocation Persistence** - Auto-create and sync allocations for all participants on event save without requiring manual "Customize" (completed 2026-03-25)
 - [x] **Phase 16: Budget Allocation List UX** - Show event names, make event allocations clickable for admins, add filter chips by type (completed 2026-03-27)
 - [x] **Phase 17: Event Money Summary and UI Polish** - Distinguish assigned vs unassigned money in summary; align "Add study money" with site-wide + Add pattern (completed 2026-03-27)
+- [x] **Phase 18: Event Time Allocation Validation Fix** - Fix per-day hours validation using actual day hours instead of averaged scalar, eliminating false validation errors on non-uniform schedules (completed 2026-05-22)
 
 ## Phase Details
 
@@ -156,6 +157,18 @@ Plans:
 Plans:
 - [x] 17-01-PLAN.md — Fix EventBudgetSummaryBanner fully-allocated wording; add EVNT-06 and UI-01 Playwright tests (SUMM-01, UI-01)
 
+### Phase 18: Event Time Allocation Validation Fix
+**Goal**: Event time allocation validation uses per-day actual hours instead of the averaged scalar, so non-uniform schedules (e.g. 8h + 4h) never show false validation errors
+**Depends on**: Phase 15 (event allocation data flow established)
+**Requirements**: TIME-01
+**Success Criteria** (what must be TRUE):
+  1. Opening an event with non-uniform day hours shows no false validation errors in the Time Budget Allocations section
+  2. Clicking "Customize" on a non-uniform event seeds each day's input field with the actual day hours, not the average
+**Plans**: 1 plan
+
+Plans:
+- [x] 18-01-PLAN.md — Introduce eventDayHours array; fix validation, seed, and totals to use per-day cap (TIME-01)
+
 ## Progress
 
 **Execution Order:**
@@ -180,10 +193,23 @@ v1.2 phases execute in order: 14 → 15 → 16 → 17 (16 and 17 can run in para
 | 15. Event Allocation Persistence | v1.2 | 1/1 | Complete | 2026-03-25 |
 | 16. Budget Allocation List UX | v1.2 | 0/1 | Complete    | 2026-03-27 |
 | 17. Event Money Summary and UI Polish | v1.2 | 1/1 | Complete    | 2026-03-27 |
+| 18. Event Time Allocation Validation Fix | v1.2 | 1/1 | Complete    | 2026-05-22 |
 
 ---
 
 ## Backlog
+
+### Phase 18.1: Close gap: ALLOC-04 — swap allocation type on event type change (INSERTED)
+
+**Goal:** Fix `EventService.syncBudgetAllocations` so that changing an event's `defaultTimeAllocationType` (e.g., FLOCK_HACK_DAY -> CONFERENCE) deletes all existing time allocations for affected participants and recreates them as the new concrete type, with both a Kotlin integration test and a Playwright e2e test proving the swap.
+**Requirements:** ALLOC-04
+**Depends on:** Phase 18
+**Plans:** 3 plans
+
+Plans:
+- [x] 18.1-01-PLAN.md — Replace single-match update with delete-all-then-recreate in EventService.syncBudgetAllocations (backend fix)
+- [x] 18.1-02-PLAN.md — Add EventServiceTest.kt integration test covering HACK_TIME -> STUDY_TIME swap and the D-03 dual-allocation case
+- [x] 18.1-03-PLAN.md — Add EVNT-07 Playwright e2e test verifying admin sees Study Time allocation after changing event type, plus reusable `When_I_change_event_type_to` step helper
 
 ### Phase 999.1: Make e2e tests independent with dedicated test users and suite-level cleanup (BACKLOG)
 
