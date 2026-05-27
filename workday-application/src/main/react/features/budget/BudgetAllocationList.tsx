@@ -6,7 +6,7 @@ import {
   Stack,
   Alert,
 } from '@mui/material';
-import {Info, OpenInNew} from '@mui/icons-material';
+import {AccountBalanceWallet, Info, OpenInNew} from '@mui/icons-material';
 import {EventAllocationListItem} from './EventAllocationListItem';
 import {StudyMoneyAllocationListItem} from './StudyMoneyAllocationListItem';
 import type {BudgetAllocation, BudgetAllocationType} from '../../wirespec/model';
@@ -107,14 +107,15 @@ export function BudgetAllocationList({
 
       {/* Unified list of all allocations */}
       {allItems.length === 0 ? (
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          textAlign="center"
-          sx={{py: 4}}
-        >
-          No budget allocations yet
-        </Typography>
+        <Box sx={{ textAlign: 'center', py: 6 }}>
+          <AccountBalanceWallet sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
+          <Typography variant="body1" color="text.secondary">
+            No budget allocations yet
+          </Typography>
+          <Typography variant="body2" color="text.disabled">
+            Hack and study allocations appear here once events are created
+          </Typography>
+        </Box>
       ) : (
         allItems.map((item) =>
           item.type === 'event' ? (

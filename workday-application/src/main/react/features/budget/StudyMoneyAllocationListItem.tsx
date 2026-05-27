@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Card,
+  Paper,
   Typography,
   CardHeader,
   IconButton,
@@ -33,7 +33,7 @@ export function StudyMoneyAllocationListItem({
 
   return (
     <Grid key={`workday-list-item-${allocation.id}`} size={{xs: 12}}>
-      <Card>
+      <Paper variant="outlined" sx={{borderLeft: '4px solid', borderColor: 'success.main'}}>
         <CardHeader
           title={
             <>
@@ -43,33 +43,37 @@ export function StudyMoneyAllocationListItem({
           }
           subheader={
             <Typography>
-              Date: {dayjs(allocation.date).format('DD-MM-YYYY')} | Total:{' '}
-              {'\u20AC'}
-              {amount.toLocaleString('nl-NL', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
+              {dayjs(allocation.date).format('DD-MM-YYYY')}
               {fileCount > 0 && ` | ${fileCount} file${fileCount > 1 ? 's' : ''}`}
             </Typography>
           }
           action={
-            hasWritePermission ? (
-              <Stack direction="row" spacing={0.5}>
-                {onEdit && (
-                  <IconButton size="small" onClick={onEdit} aria-label="edit">
-                    <Edit fontSize="small" />
-                  </IconButton>
-                )}
-                {onDelete && (
-                  <IconButton size="small" onClick={onDelete} aria-label="delete">
-                    <Delete fontSize="small" />
-                  </IconButton>
-                )}
-              </Stack>
-            ) : undefined
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <Typography variant="h6" fontWeight="bold">
+                {'\u20AC'}
+                {amount.toLocaleString('nl-NL', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </Typography>
+              {hasWritePermission && (
+                <>
+                  {onEdit && (
+                    <IconButton size="small" onClick={onEdit} aria-label="edit">
+                      <Edit fontSize="small" />
+                    </IconButton>
+                  )}
+                  {onDelete && (
+                    <IconButton size="small" onClick={onDelete} aria-label="delete">
+                      <Delete fontSize="small" />
+                    </IconButton>
+                  )}
+                </>
+              )}
+            </Stack>
           }
         />
-      </Card>
+      </Paper>
     </Grid>
   );
 }

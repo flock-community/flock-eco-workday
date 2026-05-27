@@ -9,6 +9,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Skeleton,
   Stack,
   Typography,
 } from '@mui/material';
@@ -221,11 +222,11 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
 
         {/* Loading state */}
         {loading && (
-          <Box sx={{textAlign: 'center', py: 4}}>
-            <Typography variant="body1" color="text.secondary">
-              Loading budget details...
-            </Typography>
-          </Box>
+          <Stack spacing={2}>
+            {[160, 120, 200].map((width) => (
+              <Skeleton key={width} variant="rectangular" height={72} sx={{ borderRadius: 1 }} />
+            ))}
+          </Stack>
         )}
       </CardContent>
 

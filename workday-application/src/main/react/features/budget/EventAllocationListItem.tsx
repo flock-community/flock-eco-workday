@@ -4,7 +4,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
-  Card,
+  Paper,
   CardHeader,
   Grid,
   Typography,
@@ -141,7 +141,7 @@ export function EventAllocationListItem({
 
   return (
     <Grid size={{xs: 12}}>
-      <Card>
+      <Paper variant="outlined" sx={{borderLeft: '4px solid', borderColor: 'primary.main'}}>
         <CardHeader
           title={
             <>
@@ -196,7 +196,7 @@ export function EventAllocationListItem({
               </ListItem>
             ))}
         </List>
-      </Card>
+      </Paper>
     </Grid>
   );
 }
