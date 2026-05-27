@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  Box,
+  Divider,
   Paper,
   Typography,
   CardHeader,
@@ -48,31 +50,30 @@ export function StudyMoneyAllocationListItem({
             </Typography>
           }
           action={
-            <Stack direction="row" spacing={0.5} alignItems="center">
-              <Typography variant="h6" fontWeight="bold">
-                {'\u20AC'}
-                {amount.toLocaleString('nl-NL', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </Typography>
-              {hasWritePermission && (
-                <>
-                  {onEdit && (
-                    <IconButton size="small" onClick={onEdit} aria-label="edit">
-                      <Edit fontSize="small" />
-                    </IconButton>
-                  )}
-                  {onDelete && (
-                    <IconButton size="small" onClick={onDelete} aria-label="delete">
-                      <Delete fontSize="small" />
-                    </IconButton>
-                  )}
-                </>
-              )}
-            </Stack>
+            hasWritePermission ? (
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                {onEdit && (
+                  <IconButton size="small" onClick={onEdit} aria-label="edit">
+                    <Edit fontSize="small" />
+                  </IconButton>
+                )}
+                {onDelete && (
+                  <IconButton size="small" onClick={onDelete} aria-label="delete">
+                    <Delete fontSize="small" />
+                  </IconButton>
+                )}
+              </Stack>
+            ) : undefined
           }
         />
+
+        <Divider />
+
+        <Box sx={{px: 1.5, py: 1}}>
+          <Typography variant="body2" color="text.secondary">
+            {'\u20AC'}{amount.toLocaleString('nl-NL', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+          </Typography>
+        </Box>
       </Paper>
     </Grid>
   );
