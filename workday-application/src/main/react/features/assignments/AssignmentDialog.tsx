@@ -9,7 +9,10 @@ import {
   DialogHeader,
 } from '@workday-core/components/dialog/DialogHeader';
 import { useEffect, useState } from 'react';
-import { AssignmentClient } from '../../clients/AssignmentClient';
+import {
+  AssignmentClient,
+  type AssignmentRequest,
+} from '../../clients/AssignmentClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { usePerson } from '../../hooks/PersonHook';
 import { isDefined } from '../../utils/validation';
@@ -40,11 +43,15 @@ export function AssignmentDialog({
   }, [code]);
 
   const handleSubmit = (it) => {
-    const body = {
-      ...it,
+    const body: AssignmentRequest = {
+      personId: person?.uuid,
+      clientCode: it.clientCode,
+      projectCode: it.projectCode,
+      hourlyRate: it.hourlyRate,
+      hoursPerWeek: it.hoursPerWeek,
+      role: it.role,
       from: it.from.format(ISO_8601_DATE),
       to: it.to?.format(ISO_8601_DATE),
-      personId: person?.uuid,
     };
     if (code) {
       AssignmentClient.put(code, body).then(() => onClose?.());

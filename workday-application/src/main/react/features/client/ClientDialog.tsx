@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import { useEffect, useState } from 'react';
-import { ClientClient } from '../../clients/ClientClient';
+import { ClientClient, type ClientRequest } from '../../clients/ClientClient';
 import { CLIENT_FORM_ID, ClientForm } from './ClientForm';
 
 type ClientDialogProps = {
@@ -24,8 +24,8 @@ export function ClientDialog({ open, code, onClose }: ClientDialogProps) {
     }
   }, [code]);
 
-  const handleSubmit = (value) => {
-    const body = { name: value.name };
+  const handleSubmit = (value: { name: string }) => {
+    const body: ClientRequest = { name: value.name };
     if (code) {
       ClientClient.put(code, body).then(() => onClose?.());
     } else {

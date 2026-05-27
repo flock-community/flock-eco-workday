@@ -1,4 +1,5 @@
 import NonInternalizingClient from '../utils/NonInternalizingClient';
+import type { ClientForm } from '../wirespec/model';
 
 export type Client = {
   id: number;
@@ -6,11 +7,8 @@ export type Client = {
   name: string;
 };
 
-export type ClientRequest = {
-  id?: number;
-  code?: string;
-  name: string;
-};
+// Request body is the generated wirespec contract; keep the alias for call sites.
+export type ClientRequest = ClientForm;
 
 const path = '/api/clients';
 
