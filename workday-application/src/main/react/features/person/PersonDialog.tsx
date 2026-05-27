@@ -19,15 +19,28 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
   };
 
   type PersonRequestRaw = PersonRequest & {
-    birthdate: Dayjs;
-    joinDate: Dayjs;
+    birthdate?: Dayjs;
+    joinDate?: Dayjs;
   };
 
   const handleSubmit = (values: PersonRequestRaw) => {
-    const body = {
-      ...values,
+    // Send only PersonForm contract fields; the form's `values` also carry entity-only
+    // fields (id, uuid, fullName, user, lastActiveAt, code) that wirespec 0.18 rejects.
+    const body: PersonRequest = {
+      firstname: values.firstname,
+      lastname: values.lastname,
+      email: values.email,
+      position: values.position,
+      number: values.number,
       birthdate: values.birthdate?.format(ISO_8601_DATE),
       joinDate: values.joinDate?.format(ISO_8601_DATE),
+      active: values.active,
+      userCode: values.userCode,
+      reminders: values.reminders,
+      receiveEmail: values.receiveEmail,
+      shoeSize: values.shoeSize,
+      shirtSize: values.shirtSize,
+      googleDriveId: values.googleDriveId,
     };
 
     if (item) {
