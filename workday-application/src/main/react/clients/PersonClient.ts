@@ -52,22 +52,20 @@ export type PersonRaw = {
 };
 
 export type PersonRequest = {
-  id?: number;
-  uuid?: string;
-  lastName: string;
-  email: string;
-  position: string;
-  number?: number;
-  birthdate: string;
-  joinDate: string;
-  active: boolean;
-  lastActiveAt?: string; // FIXME
-  reminders: boolean;
-  receiveEmail: boolean;
-  user: any; // FIXME
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  position?: string;
+  number?: string;
+  birthdate?: string;
+  joinDate?: string;
+  active?: boolean;
+  userCode?: string;
+  reminders?: boolean;
+  receiveEmail?: boolean;
   shoeSize?: string;
   shirtSize?: string;
-  googleDriveId: string;
+  googleDriveId?: string;
 };
 
 const path = '/api/persons';

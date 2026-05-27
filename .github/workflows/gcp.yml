@@ -88,7 +88,7 @@ jobs:
         run: |
           echo "Starting backend server..."
           # Use develop profile with ci addon (Google Drive integration disabled)
-          ./mvnw -B compile spring-boot:run -DskipTests -Dspring-boot.run.profiles=develop,ci -Pdevelop > backend.log 2>&1 &
+          ./mvnw -B compile spring-boot:run -DskipTests -Dspring-boot.run.profiles=develop,ci -Pdevelop -Dspring-boot.run.arguments=--workday.wirespec.lenient-deserialization=false > backend.log 2>&1 &
           echo $! > backend.pid
           echo "Backend server started with PID $(cat backend.pid)"
 
@@ -104,6 +104,17 @@ jobs:
 
       - name: Run Playwright tests
         run: npm run test:e2e
+
+      - name: Assert no strict-deserialization regressions
+        if: always()
+        run: |
+          echo "Checking backend.log for wirespec strict-deserialization errors..."
+          if grep -q "UnrecognizedPropertyException" backend.log; then
+            echo "::error::A request payload sent fields absent from its .ws Form contract. Clean the payload (send only declared fields) or update the contract."
+            grep "Unrecognized field" backend.log | sort -u
+            exit 1
+          fi
+          echo "No strict-deserialization errors found."
 
       - name: Show backend logs on failure
         if: failure()
