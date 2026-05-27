@@ -28,8 +28,8 @@ describe('EventBudgetSummaryBanner', () => {
       expect(screen.getByText(/3 participants/)).toBeInTheDocument();
       // Should show hours/day and type
       expect(screen.getByText(/8h\/day HACK/)).toBeInTheDocument();
-      // Should show per-person money
-      expect(screen.getByText(/500\/person/)).toBeInTheDocument();
+      // Should show per-person money (1200 / 3 = 400)
+      expect(screen.getByText(/400\/person/)).toBeInTheDocument();
     });
 
     it('shows budget and allocated chips in collapsed mode', () => {
@@ -136,8 +136,8 @@ describe('EventBudgetSummaryBanner', () => {
 
       // Should NOT show hours/day TYPE format
       expect(screen.queryByText(/h\/day/)).not.toBeInTheDocument();
-      // Should show per-person money
-      expect(screen.getByText(/500\/person/)).toBeInTheDocument();
+      // Should show per-person money (500 / 2 = 250)
+      expect(screen.getByText(/250\/person/)).toBeInTheDocument();
     });
 
     it('shows only time info when budget is zero but type is set', () => {

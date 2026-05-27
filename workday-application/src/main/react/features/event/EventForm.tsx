@@ -51,7 +51,7 @@ export function EventFormFields({values, setFieldValue}: EventFormFieldsProps) {
   };
 
   return (
-    <Form id={EVENT_FORM_ID}>
+    <>
       <Grid container spacing={1}>
         <Grid size={{xs: 12}}>
           <Field
@@ -121,7 +121,7 @@ export function EventFormFields({values, setFieldValue}: EventFormFieldsProps) {
           />
         </Grid>
       </Grid>
-    </Form>
+    </>
   );
 }
 
