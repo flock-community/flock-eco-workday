@@ -1,6 +1,8 @@
 import React from 'react';
 import { Alert, Box, Typography, Chip } from '@mui/material';
 import { Info, CheckCircle, Warning } from '@mui/icons-material';
+import type { EventType } from '../../clients/EventClient';
+import { EventTypeMappingToDefaultBudgetType } from '../../utils/mappings';
 
 interface EventBudgetSummaryBannerProps {
   totalBudget?: number;
@@ -12,6 +14,7 @@ interface EventBudgetSummaryBannerProps {
   defaultHoursPerDay?: number;
   defaultBudgetType?: string | null;
   hasUnsavedChanges?: boolean;
+  eventType?: EventType;
 }
 
 export function EventBudgetSummaryBanner({
@@ -23,6 +26,7 @@ export function EventBudgetSummaryBanner({
   defaultHoursPerDay,
   defaultBudgetType,
   hasUnsavedChanges,
+  eventType,
 }: EventBudgetSummaryBannerProps) {
   const hasBudget = totalBudget !== undefined && totalBudget > 0;
   const remaining = hasBudget ? totalBudget - totalAllocated : 0;
@@ -53,7 +57,8 @@ export function EventBudgetSummaryBanner({
 
     // Only show sections that have actual content
     const hasTimeSection = defaultBudgetType !== null && defaultBudgetType !== undefined;
-    const hasMoneySection = hasBudget;
+    const isMoneyEligibleType = eventType === undefined ? true : EventTypeMappingToDefaultBudgetType[eventType] !== null;
+    const hasMoneySection = hasBudget && isMoneyEligibleType;
 
     // Build summary text
     let summaryText = `${participantCount} participant${participantCount !== 1 ? 's' : ''}`;

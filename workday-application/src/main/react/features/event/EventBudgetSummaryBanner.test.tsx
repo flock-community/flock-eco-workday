@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { EventBudgetSummaryBanner } from './EventBudgetSummaryBanner';
+import { EventType } from '../../clients/EventClient';
 
 /**
  * Phase 02 - EVT-06: Progressive disclosure
@@ -190,6 +191,77 @@ describe('EventBudgetSummaryBanner', () => {
       );
 
       expect(screen.getByText('Budget fully allocated')).toBeInTheDocument();
+    });
+  });
+
+  // gap closure: eventType gates the money section in collapsed mode
+  describe('gap closure: eventType gates money section visibility', () => {
+    // Test A: GENERAL_EVENT with budget — money pills must NOT appear
+    it('Test A: GENERAL_EVENT hides money chips even when totalBudget > 0', () => {
+      render(
+        <EventBudgetSummaryBanner
+          totalBudget={1000}
+          totalAllocated={500}
+          participantCount={2}
+          defaultHoursPerDay={8}
+          defaultBudgetType={null}
+          eventType={EventType.GENERAL_EVENT}
+        />
+      );
+
+      expect(screen.queryByText(/Budget:/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Allocated:/)).not.toBeInTheDocument();
+    });
+
+    // Test B: FLOCK_COMMUNITY_DAY with budget — money pills must NOT appear
+    it('Test B: FLOCK_COMMUNITY_DAY hides money chips even when totalBudget > 0', () => {
+      render(
+        <EventBudgetSummaryBanner
+          totalBudget={1000}
+          totalAllocated={500}
+          participantCount={2}
+          defaultHoursPerDay={8}
+          defaultBudgetType={null}
+          eventType={EventType.FLOCK_COMMUNITY_DAY}
+        />
+      );
+
+      expect(screen.queryByText(/Budget:/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Allocated:/)).not.toBeInTheDocument();
+    });
+
+    // Test C: FLOCK_HACK_DAY with budget — money pills MUST appear
+    it('Test C: FLOCK_HACK_DAY shows money chips when totalBudget > 0', () => {
+      render(
+        <EventBudgetSummaryBanner
+          totalBudget={1000}
+          totalAllocated={500}
+          participantCount={2}
+          defaultHoursPerDay={8}
+          defaultBudgetType="HACK"
+          eventType={EventType.FLOCK_HACK_DAY}
+        />
+      );
+
+      expect(screen.getByText(/Budget:/)).toBeInTheDocument();
+      expect(screen.getByText(/Allocated:/)).toBeInTheDocument();
+    });
+
+    // Test D: CONFERENCE with budget — money pills MUST appear
+    it('Test D: CONFERENCE shows money chips when totalBudget > 0', () => {
+      render(
+        <EventBudgetSummaryBanner
+          totalBudget={1000}
+          totalAllocated={500}
+          participantCount={2}
+          defaultHoursPerDay={8}
+          defaultBudgetType="STUDY"
+          eventType={EventType.CONFERENCE}
+        />
+      );
+
+      expect(screen.getByText(/Budget:/)).toBeInTheDocument();
+      expect(screen.getByText(/Allocated:/)).toBeInTheDocument();
     });
   });
 });

@@ -430,6 +430,7 @@ export function EventBudgetManagementSection({
           defaultHoursPerDay={defaultHoursPerDay}
           defaultBudgetType={formValues.defaultTimeAllocationType}
           hasUnsavedChanges={isDirty}
+          eventType={formValues.type as EventType}
         />
       </AccordionSummary>
 

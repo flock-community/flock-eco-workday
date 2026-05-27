@@ -10,7 +10,8 @@ import type {
 import type { PersonTimeAllocation } from './EventTimeAllocationSection';
 import type { PersonMoneyAllocation } from './EventMoneyAllocationSection';
 import type { Period } from '../period/Period';
-import type { EventBudgetType } from '../../utils/mappings';
+import { type EventBudgetType, EventTypeMappingToDefaultBudgetType } from '../../utils/mappings';
+import type { EventType } from '../../clients/EventClient';
 
 /**
  * Convert a Period (from/to/days[]) to an array of DailyTimeAllocationItems.
@@ -321,8 +322,10 @@ export function generateDefaultAllocations(
   days: number[],
   defaultBudgetType: EventBudgetType | null,
   totalBudget: number,
+  eventType: EventType,
 ): { timeParticipants: PersonTimeAllocation[]; moneyParticipants: PersonMoneyAllocation[] } {
   const eventTo = eventFrom.add(Math.max(days.length - 1, 0), 'day');
+  const isMoneyEligible = EventTypeMappingToDefaultBudgetType[eventType] !== null;
   const perPersonAmount = personIds.length > 0
     ? Math.floor((totalBudget / personIds.length) * 100) / 100
     : 0;
@@ -341,6 +344,10 @@ export function generateDefaultAllocations(
       studyPeriod: defaultBudgetType === 'STUDY' ? period : null,
     };
   });
+
+  if (!isMoneyEligible) {
+    return { timeParticipants, moneyParticipants: [] };
+  }
 
   const moneyParticipants: PersonMoneyAllocation[] = personIds.map(personId => {
     const person = persons.find(p => p.uuid === personId);

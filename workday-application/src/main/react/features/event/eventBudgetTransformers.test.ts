@@ -3,6 +3,7 @@ import type { BudgetAllocation, DailyTimeAllocationItem } from '../../wirespec/m
 import type { Period } from '../period/Period';
 import type { PersonTimeAllocation } from './EventTimeAllocationSection';
 import type { PersonMoneyAllocation } from './EventMoneyAllocationSection';
+import { EventType } from '../../clients/EventClient';
 import {
   periodToDailyAllocations,
   dailyAllocationsToPeriod,
@@ -589,6 +590,7 @@ describe('generateDefaultAllocations', () => {
       days,
       'HACK',
       0,
+      EventType.FLOCK_HACK_DAY,
     );
 
     expect(timeParticipants).toHaveLength(1);
@@ -607,6 +609,7 @@ describe('generateDefaultAllocations', () => {
       days,
       'STUDY',
       0,
+      EventType.CONFERENCE,
     );
 
     expect(timeParticipants).toHaveLength(1);
@@ -625,6 +628,7 @@ describe('generateDefaultAllocations', () => {
       days,
       null,
       0,
+      EventType.GENERAL_EVENT,
     );
 
     expect(timeParticipants).toHaveLength(1);
@@ -640,6 +644,7 @@ describe('generateDefaultAllocations', () => {
       days,
       null,
       500,
+      EventType.CONFERENCE,
     );
 
     expect(moneyParticipants).toHaveLength(2);
@@ -659,6 +664,7 @@ describe('generateDefaultAllocations', () => {
       days,
       null,
       100,
+      EventType.CONFERENCE,
     );
 
     expect(moneyParticipants).toHaveLength(3);
@@ -675,6 +681,7 @@ describe('generateDefaultAllocations', () => {
       days,
       null,
       0,
+      EventType.CONFERENCE,
     );
 
     expect(moneyParticipants).toHaveLength(2);
@@ -690,9 +697,39 @@ describe('generateDefaultAllocations', () => {
       days,
       'HACK',
       500,
+      EventType.FLOCK_HACK_DAY,
     );
 
     expect(timeParticipants).toEqual([]);
+    expect(moneyParticipants).toEqual([]);
+  });
+
+  // gap closure: GENERAL_EVENT and FLOCK_COMMUNITY_DAY must never produce money participants
+  it('gap closure: GENERAL_EVENT produces empty moneyParticipants regardless of budget', () => {
+    const { moneyParticipants } = generateDefaultAllocations(
+      ['p1', 'p2'],
+      persons,
+      eventFrom,
+      days,
+      null,
+      500,
+      EventType.GENERAL_EVENT,
+    );
+
+    expect(moneyParticipants).toEqual([]);
+  });
+
+  it('gap closure: FLOCK_COMMUNITY_DAY produces empty moneyParticipants regardless of budget', () => {
+    const { moneyParticipants } = generateDefaultAllocations(
+      ['p1', 'p2'],
+      persons,
+      eventFrom,
+      days,
+      null,
+      500,
+      EventType.FLOCK_COMMUNITY_DAY,
+    );
+
     expect(moneyParticipants).toEqual([]);
   });
 });
