@@ -93,7 +93,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.1.0</version>
+            <version>${springdoc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -254,7 +254,7 @@
                 <configuration>
                     <skip>false</skip>
                     <from>
-                        <image>eclipse-temurin:17-jre</image>
+                        <image>eclipse-temurin:21-jre</image>
                     </from>
                     <to>
                         <image>eu.gcr.io/flock-community/flock-eco-workday</image>
