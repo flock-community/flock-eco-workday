@@ -1,6 +1,7 @@
 import { checkResponse, validateResponse } from '@workday-core';
 import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
+import type { EventForm } from '../wirespec/model';
 import type { Person, PersonLight } from './PersonClient';
 
 const path = '/api/events';
@@ -53,18 +54,8 @@ type FlockEventRaw = {
   type: EventType;
 };
 
-export type FlockEventRequest = {
-  description: string;
-  id: number;
-  code: string;
-  from: Dayjs;
-  to: Dayjs;
-  hours: number;
-  days: number[];
-  personIds: string[];
-  costs: number;
-  type: EventType;
-};
+// The type we send to the backend: the generated wirespec contract.
+export type FlockEventRequest = EventForm;
 
 export enum EventType {
   CONFERENCE = 'CONFERENCE',

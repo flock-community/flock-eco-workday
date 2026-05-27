@@ -14,6 +14,12 @@ import { ContractClient } from '../../clients/ContractClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { usePerson } from '../../hooks/PersonHook';
 import { isDefined } from '../../utils/validation';
+import type {
+  ContractExternalForm,
+  ContractInternalForm,
+  ContractManagementForm,
+  ContractServiceForm,
+} from '../../wirespec/model';
 import { ContractFormExternal } from './ContractFormExternal';
 import { ContractFormInternal } from './ContractFormInternal';
 import { ContractFormManagement } from './ContractFormManagement';
@@ -51,12 +57,58 @@ export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
   }, [code]);
 
   const handleSubmit = (it) => {
-    const body = {
-      ...it,
-      from: it.from.format(ISO_8601_DATE),
-      to: it.to?.format(ISO_8601_DATE),
-      personId: person?.uuid,
+    const from = it.from.format(ISO_8601_DATE);
+    const to = it.to?.format(ISO_8601_DATE);
+    const personId = person?.uuid;
+
+    // Each endpoint reads exactly its own Form's fields; build the body per type
+    // so contract drift (e.g. a stray personId on SERVICE) is a compile error.
+    const buildBody = ():
+      | ContractInternalForm
+      | ContractExternalForm
+      | ContractManagementForm
+      | ContractServiceForm => {
+      switch (type) {
+        case 'INTERNAL':
+          return {
+            personId,
+            monthlySalary: it.monthlySalary,
+            hoursPerWeek: it.hoursPerWeek,
+            holidayHours: it.holidayHours,
+            hackHours: it.hackHours,
+            billable: it.billable,
+            from,
+            to,
+          } satisfies ContractInternalForm;
+        case 'EXTERNAL':
+          return {
+            personId,
+            hourlyRate: it.hourlyRate,
+            hoursPerWeek: it.hoursPerWeek,
+            billable: it.billable,
+            from,
+            to,
+          } satisfies ContractExternalForm;
+        case 'MANAGEMENT':
+          return {
+            personId,
+            monthlyFee: it.monthlyFee,
+            from,
+            to,
+          } satisfies ContractManagementForm;
+        case 'SERVICE':
+          return {
+            monthlyCosts: it.monthlyCosts,
+            description: it.description,
+            from,
+            to,
+          } satisfies ContractServiceForm;
+        default:
+          throw new Error(`Unknown contract type: ${type}`);
+      }
     };
+
+    const body = buildBody();
     if (code) {
       ContractClient.put(code, type, body).then(() => onClose?.());
     } else {

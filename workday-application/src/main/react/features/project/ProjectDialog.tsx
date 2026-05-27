@@ -6,7 +6,11 @@ import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import { useEffect, useState } from 'react';
 import { AssignmentClient } from '../../clients/AssignmentClient';
-import { type Project, ProjectClient } from '../../clients/ProjectClient';
+import {
+  type Project,
+  ProjectClient,
+  type ProjectRequest,
+} from '../../clients/ProjectClient';
 import { TransitionSlider } from '../../components/transitions/Slide';
 import ProjectForm, { PROJECT_FORM_ID } from './ProjectForm';
 
@@ -25,7 +29,7 @@ export default function ProjectDialog({
   const [disableDeleteReason, setDisableDeleteReason] = useState('');
 
   const handleSubmit = (project: Project) => {
-    const body = { name: project.name };
+    const body: ProjectRequest = { name: project.name };
     const persistPromise = project.code
       ? ProjectClient.put(project.code, body)
       : ProjectClient.post(body);

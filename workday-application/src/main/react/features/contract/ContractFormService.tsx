@@ -55,14 +55,15 @@ export const ContractFormService = ({
   );
 
   const init = value && {
-    monthlyCost: value.hourlyRate,
-    role: value.role,
+    monthlyCosts: value.monthlyCosts,
+    description: value.description,
     from: value.from,
     to: value.to,
   };
 
   const schema = object({
-    monthlyCost: number().required().default(4000),
+    monthlyCosts: number().required().default(4000),
+    description: mixed().default(''),
     from: mixed().required().default(dayjs()),
     to: mixed().default(null),
   });
