@@ -369,6 +369,8 @@ class ContractControllerTest(
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[0].from").value("2024-03-01"))
+            .andExpect(jsonPath("$[1].from").value("2024-02-01"))
             .andExpect(header().string("x-total", "3"))
     }
 

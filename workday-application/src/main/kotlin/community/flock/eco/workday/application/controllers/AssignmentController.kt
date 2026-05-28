@@ -10,11 +10,11 @@ import community.flock.eco.workday.application.forms.AssignmentForm
 import community.flock.eco.workday.application.model.Assignment
 import community.flock.eco.workday.application.services.AssignmentService
 import community.flock.eco.workday.application.services.WorkDayService
+import community.flock.eco.workday.application.utils.parseSort
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
@@ -185,8 +185,6 @@ class AssignmentController(
             to = to?.let(LocalDate::parse),
         )
 
-    private fun GetAssignmentAll.Queries.toPageable(): Pageable {
-        val sort = sort?.takeIf { it.isNotBlank() }?.let { Sort.by(it) } ?: Sort.unsorted()
-        return PageRequest.of(page ?: 0, size ?: 20, sort)
-    }
+    private fun GetAssignmentAll.Queries.toPageable(): Pageable =
+        PageRequest.of(page ?: 0, size ?: 20, parseSort(sort))
 }
