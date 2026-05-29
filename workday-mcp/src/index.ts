@@ -7,6 +7,7 @@ import { basename } from "node:path";
 import { WorkdayApiError, WorkdayClient } from "./client.js";
 import type {
   Assignment,
+  Event,
   Expense,
   LeaveDay,
   LeaveDayForm,
@@ -75,6 +76,26 @@ function formatAssignment(a: Assignment): string {
   return `${client}${project}${role}  ${formatRange(a.from, a.to)}  ${a.hoursPerWeek ?? "?"}h/week  [${a.code}]`;
 }
 
+function formatEvent(e: Event, myPersonId?: string): string {
+  const attendees = e.persons?.length ?? 0;
+  const joined =
+    myPersonId && e.persons?.some((p) => p.uuid === myPersonId) ? " ✓you" : "";
+  const parts = [`${formatRange(e.from, e.to)}  ${e.type ?? "?"}`];
+  if (e.description) parts.push(`- ${e.description}`);
+  parts.push(`${attendees} attendee(s)${joined}`, `[${e.code}]`);
+  return parts.join("  ");
+}
+
+/** Whether an event's [from,to] overlaps [from,to] (ISO date strings compare lexicographically). */
+function eventOverlaps(e: Event, from?: string, to?: string): boolean {
+  const eFrom = e.from ?? e.to;
+  const eTo = e.to ?? e.from;
+  if (!eFrom || !eTo) return !from && !to; // undated event only matches an unfiltered query
+  if (from && eTo < from) return false;
+  if (to && eFrom > to) return false;
+  return true;
+}
+
 // Shared input-schema fragments, mirrored across the day tools.
 const limitSchema = z
   .number()
@@ -132,10 +153,10 @@ const server = new McpServer(
   },
   {
     instructions: [
-      "This server manages a person's expenses and their work, sick, and leave hours in Flock Workday.",
-      "All tools default to the person who owns the configured API key; an admin may pass an explicit",
-      "`personId`. Dates are ISO `YYYY-MM-DD`. New entries are always submitted with status REQUESTED;",
-      "do not promise approval.",
+      "This server manages a person's expenses, their work/sick/leave hours, and event participation",
+      "(Flock days) in Flock Workday. All tools default to the person who owns the configured API key;",
+      "an admin may pass an explicit `personId`. Dates are ISO `YYYY-MM-DD`. New entries are always",
+      "submitted with status REQUESTED; do not promise approval.",
       "",
       "Registering work hours — for a smooth experience, before calling `register_work_hours`:",
       "  1. Call `list_work_hours` to find the person's most recent entry and reuse the SAME",
@@ -145,6 +166,27 @@ const server = new McpServer(
       "  3. Propose the assignment, date range, and hours back to the user and confirm before submitting.",
       "Sick and leave hours attach directly to the person, so they need no assignment.",
       "After registering, you may call the matching list tool to show the user the saved entry.",
+      "",
+      "Filling a whole month of work hours (e.g. 'vul de uren van deze maand in, standaard 8u per dag'):",
+      "  1. Work out the calendar month and consider only working days — SKIP weekends (Sat/Sun).",
+      "  2. SKIP Dutch public holidays — do NOT register hours on them. There is no holidays API, so",
+      "     determine them yourself for that year: Nieuwjaarsdag (Jan 1), Goede Vrijdag, Eerste & Tweede",
+      "     Paasdag (Easter Sun/Mon), Koningsdag (Apr 27, or Apr 26 if the 27th is a Sunday),",
+      "     Bevrijdingsdag (May 5), Hemelvaartsdag (Ascension, Thu), Eerste & Tweede Pinksterdag",
+      "     (Whit Sun/Mon), Eerste & Tweede Kerstdag (Dec 25 & 26). Compute the moving (Easter-based)",
+      "     dates for the specific year; if unsure of a date, ask the user rather than guess.",
+      "  3. Flock days are EVENTS, not work hours. Call `list_events` for the month (filter by `from`/`to`,",
+      "     optionally `type` FLOCK_HACK_DAY / FLOCK_COMMUNITY_DAY) to find them. Do NOT book work hours",
+      "     on a Flock day. Instead, ask the user whether to register attendance for each Flock day via",
+      "     `subscribe_to_event` (only if they are not already subscribed — shown as ✓you). If a Flock",
+      "     day the user expects is missing from list_events, tell them an organizer must create it in",
+      "     the Workday app; do not invent it.",
+      "  4. Book the remaining working days at the requested default (e.g. 8h). The most reliable way is a",
+      "     single `register_work_hours` call spanning the month with a `days` array — one entry per",
+      "     calendar day from `from` to `to`, using the default hours on normal working days and 0 on",
+      "     weekends, Dutch holidays, and Flock days.",
+      "  5. ALWAYS summarise the plan — which days get hours, which are skipped (and why), and which Flock",
+      "     days you'll subscribe to — and get the user's confirmation BEFORE registering anything.",
     ].join("\n"),
   },
 );
@@ -546,6 +588,93 @@ server.registerTool(
       };
       const created = await client.createLeaveDay(form);
       return summaryWithJson(`Registered leave hours:\n• ${formatLeaveDay(created)}`, created);
+    }),
+);
+
+// ── Events (Flock days, conferences, …) ─────────────────────────────────────
+
+const EVENT_TYPES = ["FLOCK_HACK_DAY", "FLOCK_COMMUNITY_DAY", "CONFERENCE", "GENERAL_EVENT"] as const;
+
+server.registerTool(
+  "list_events",
+  {
+    title: "List events",
+    description:
+      "List events from flock-eco-workday — these include the Flock days (`FLOCK_HACK_DAY` and " +
+      "`FLOCK_COMMUNITY_DAY`), conferences, and general events. Events are company-wide (not " +
+      "per-person); each shows its date range, type, attendee count, and whether you are subscribed " +
+      "(✓you). Use this to find the Flock days in a period before filling work hours, so those days " +
+      "are booked as events instead of regular work. Optional `from`/`to` (YYYY-MM-DD) filter to events " +
+      "overlapping that range, and `type` filters by event type. Needs EventAuthority.READ.",
+    inputSchema: {
+      from: z.string().optional().describe("Only events overlapping on/after this date (YYYY-MM-DD)."),
+      to: z.string().optional().describe("Only events overlapping on/before this date (YYYY-MM-DD)."),
+      type: z.enum(EVENT_TYPES).optional().describe("Filter by event type, e.g. FLOCK_HACK_DAY."),
+      limit: z
+        .number()
+        .int()
+        .positive()
+        .max(200)
+        .optional()
+        .describe("Maximum number of (most recent) events to scan/return (default 50)."),
+    },
+  },
+  ({ from, to, type, limit }) =>
+    toolResult(async () => {
+      const client = new WorkdayClient();
+      // Marking "✓you" needs the person id; tolerate not being linked to a person.
+      const myPersonId = await client.getMyPersonId().catch(() => undefined);
+      const { items, total } = await client.listEvents(limit ?? 50);
+      const filtered = items.filter(
+        (e) => eventOverlaps(e, from, to) && (!type || e.type === type),
+      );
+      const scope = from || to || type ? ` matching the filter` : "";
+      const header =
+        `Found ${filtered.length} event(s)${scope} (scanned ${items.length} of ${total}):`;
+      const summary = [header, ...filtered.map((e) => `• ${formatEvent(e, myPersonId)}`)].join("\n");
+      return summaryWithJson(summary, filtered);
+    }),
+);
+
+server.registerTool(
+  "subscribe_to_event",
+  {
+    title: "Subscribe to event",
+    description:
+      "Subscribe yourself (the API key owner) to an event — e.g. register your attendance for a Flock " +
+      "day so it is recorded under events rather than as work hours. Pass the event `code` (from " +
+      "list_events). Returns the updated event. Needs EventAuthority.SUBSCRIBE. To create a brand-new " +
+      "event, an organizer must do that in the Workday app — this tool only joins existing events.",
+    inputSchema: {
+      code: z.string().describe("The event code to subscribe to (from list_events)."),
+    },
+  },
+  ({ code }) =>
+    toolResult(async () => {
+      const client = new WorkdayClient();
+      const myPersonId = await client.getMyPersonId().catch(() => undefined);
+      const event = await client.subscribeToEvent(code);
+      return summaryWithJson(`Subscribed to event:\n• ${formatEvent(event, myPersonId)}`, event);
+    }),
+);
+
+server.registerTool(
+  "unsubscribe_from_event",
+  {
+    title: "Unsubscribe from event",
+    description:
+      "Unsubscribe yourself (the API key owner) from an event you previously joined. Pass the event " +
+      "`code` (from list_events). Returns the updated event. Needs EventAuthority.SUBSCRIBE.",
+    inputSchema: {
+      code: z.string().describe("The event code to unsubscribe from (from list_events)."),
+    },
+  },
+  ({ code }) =>
+    toolResult(async () => {
+      const client = new WorkdayClient();
+      const myPersonId = await client.getMyPersonId().catch(() => undefined);
+      const event = await client.unsubscribeFromEvent(code);
+      return summaryWithJson(`Unsubscribed from event:\n• ${formatEvent(event, myPersonId)}`, event);
     }),
 );
 

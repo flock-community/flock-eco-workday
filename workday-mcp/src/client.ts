@@ -3,6 +3,7 @@ import type { Wirespec } from "./wirespec/Wirespec.js";
 import type {
   Assignment,
   CostExpenseInput,
+  Event,
   Expense,
   LeaveDay,
   LeaveDayForm,
@@ -263,6 +264,38 @@ export class WorkdayClient {
       sort: undefined,
     });
     return { items, total: headers["x-total"] ?? items.length };
+  }
+
+  // ── Events ───────────────────────────────────────────────────────────────
+  // /api/events is not person-scoped: it returns all events (each with its `persons`
+  // attendee list). Callers filter by date/type client-side.
+
+  /** List events (Flock days, conferences, …). `total` comes from the `x-total` header. */
+  async listEvents(size: number): Promise<{ items: Event[]; total: number }> {
+    const { body: items, headers } = await this.wire.GetEventAll({
+      page: 0,
+      size,
+      sort: undefined,
+    });
+    return { items, total: headers["x-total"] ?? items.length };
+  }
+
+  /** Subscribe the API key's person to an event (e.g. join a Flock day). */
+  async subscribeToEvent(eventCode: string): Promise<Event> {
+    const res = await this.wire.SubscribeToEvent({ eventCode });
+    if (res.status !== 200) {
+      throw new WorkdayApiError(`Unexpected response subscribing to event (HTTP ${res.status}).`, res.status);
+    }
+    return res.body;
+  }
+
+  /** Unsubscribe the API key's person from an event. */
+  async unsubscribeFromEvent(eventCode: string): Promise<Event> {
+    const res = await this.wire.UnsubscribeFromEvent({ eventCode });
+    if (res.status !== 200) {
+      throw new WorkdayApiError(`Unexpected response unsubscribing from event (HTTP ${res.status}).`, res.status);
+    }
+    return res.body;
   }
 }
 

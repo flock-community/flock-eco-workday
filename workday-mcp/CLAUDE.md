@@ -56,14 +56,37 @@ All registrations submit with status `REQUESTED`. Forms share `from`/`to` (`YYYY
 (`limitSchema`, `personIdSchema`, `dateSchema`, `hoursSchema`, `daysSchema`) and the
 `toolResult` / `summaryWithJson` helpers in `index.ts` keep the handlers uniform.
 
+### Events (Flock days)
+
+Three tools over `/api/events` (which is **not** person-scoped — it returns all events, each with a
+`persons` attendee list, so list filtering happens client-side):
+
+- `list_events` — `GetEventAll`. Optional `from`/`to` (client-side overlap filter via `eventOverlaps`,
+  ISO dates compared lexicographically) and `type` (`FLOCK_HACK_DAY` / `FLOCK_COMMUNITY_DAY` /
+  `CONFERENCE` / `GENERAL_EVENT`); marks `✓you` when the key owner is an attendee. Needs
+  `EventAuthority.READ`.
+- `subscribe_to_event` / `unsubscribe_from_event` — `SubscribeToEvent` / `UnsubscribeFromEvent`. Act on
+  the key owner's person (no personId arg). Needs `EventAuthority.SUBSCRIBE`. Creating events is an
+  organizer action (`PostEvent`, `EventAuthority.WRITE`) and is intentionally **not** wrapped — the
+  tools only join/leave existing events.
+
+These exist to support the "fill my month" flow: Flock days are events, so they're recorded via
+`subscribe_to_event` rather than booked as work hours.
+
 ### Server `instructions` (UX guidance)
 
 `index.ts` passes an `instructions` string to the `McpServer` constructor (2nd arg). The SDK returns
 it in the MCP `initialize` response and clients surface it to the model as standing guidance for the
 whole server — it is **not** a tool. It is the home for cross-tool workflow rules, notably: before
 `register_work_hours`, call `list_work_hours` to reuse the most recent `assignmentCode` (falling back
-to `list_assignments`) and confirm with the user. Per-tool `description`s carry the same hints so they
-also apply when a client ignores `instructions`. Keep prescriptive guidance here, not in code.
+to `list_assignments`) and confirm with the user. It also encodes the **"fill my month"** flow: book
+the default hours on working days while skipping weekends and **Dutch public holidays** (no holidays
+API exists, so the model computes them — including the Easter-based moving dates — for the year),
+treat **Flock days as events** (find them with `list_events`, book them via `subscribe_to_event`, never
+as work hours), and confirm the plan before registering. The reliable encoding is a single
+`register_work_hours` call spanning the month with a `days` array (default hours on working days, 0 on
+skipped days). Per-tool `description`s carry the same hints so they also apply when a client ignores
+`instructions`. Keep prescriptive guidance here, not in code.
 
 The multipart upload (`WorkdayClient.uploadExpenseFile`) **bypasses the generated Wirespec client**
 and calls `fetch` directly: `Wirespec.RawRequest.body` is `string`-only and the shared `handle()`

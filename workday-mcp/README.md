@@ -21,11 +21,20 @@ available.
 | `register_sick_hours` | Registers sick hours for a person (no assignment needed). Provide a date range, hours, and an optional description. Submitted as `REQUESTED`; needs write permission. |
 | `list_leave_hours` | Lists your registered leave hours — holiday and other leave (most recent first). Optional `limit`; admins can pass a `personId`. |
 | `register_leave_hours` | Registers leave hours for a person (no assignment needed). Provide a description, date range, and hours; `type` defaults to `HOLIDAY`. Submitted as `REQUESTED`; needs write permission. |
+| `list_events` | Lists events — Flock days (hack/community days), conferences, and general events — with their dates, type, attendee count, and whether you're subscribed. Optional `from`/`to`/`type` filters. |
+| `subscribe_to_event` | Subscribes you to an event by `code` (e.g. join a Flock day, so it's recorded under events instead of as work hours). |
+| `unsubscribe_from_event` | Unsubscribes you from an event by `code`. |
 
 Once it's connected, just ask Claude in plain language — for example, _"list my last 5 Workday
 expenses"_, _"submit this receipt as an expense"_, _"log 8 hours of work for yesterday"_, or
 _"register a sick day for today"_. When you log work hours, Claude will check your latest entry and
 suggest reusing the same assignment.
+
+You can also fill a whole month at once — e.g. _"Kun je de uren van deze maand invullen? Standaard
+8u per dag behalve op de flock dagen"_. Claude will book the default hours on working days while
+**skipping weekends and Dutch public holidays**, look up the month's **Flock days via `list_events`**
+(those are booked as events, not work hours), and ask before subscribing you to them. It always
+summarises the plan and asks for confirmation before registering anything.
 
 > **Note on attachments:** `submit_cost_expense` needs the receipt bytes, supplied one of two ways:
 > **(1)** `filePaths` — path(s) to file(s) on the machine running this server (works when the file
