@@ -21,11 +21,11 @@ import community.flock.eco.workday.application.model.ContractExternal
 import community.flock.eco.workday.application.model.ContractInternal
 import community.flock.eco.workday.application.model.ContractManagement
 import community.flock.eco.workday.application.model.ContractService
+import community.flock.eco.workday.application.utils.parseSort
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
@@ -360,25 +360,6 @@ class ContractController(
             to = to?.let(LocalDate::parse),
         )
 
-    private fun GetContractAll.Queries.toPageable(): Pageable {
-        val sortOrder = sort?.takeIf { it.isNotBlank() }?.let(::parseSort) ?: Sort.unsorted()
-        return PageRequest.of(page ?: 0, size ?: 20, sortOrder)
-    }
-
-    private fun parseSort(spec: String): Sort =
-        spec
-            .split(",")
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-            .let { parts ->
-                when {
-                    parts.isEmpty() -> Sort.unsorted()
-                    parts.size == 1 -> Sort.by(parts[0])
-                    parts.last().equals("asc", ignoreCase = true) ->
-                        Sort.by(Sort.Direction.ASC, *parts.dropLast(1).toTypedArray())
-                    parts.last().equals("desc", ignoreCase = true) ->
-                        Sort.by(Sort.Direction.DESC, *parts.dropLast(1).toTypedArray())
-                    else -> Sort.by(*parts.toTypedArray())
-                }
-            }
+    private fun GetContractAll.Queries.toPageable(): Pageable =
+        PageRequest.of(page ?: 0, size ?: 20, parseSort(sort))
 }

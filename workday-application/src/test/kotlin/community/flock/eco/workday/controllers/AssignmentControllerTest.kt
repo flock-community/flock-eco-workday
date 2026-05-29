@@ -208,6 +208,38 @@ class AssignmentControllerTest(
     }
 
     @Test
+    fun `paged list returns assignments sorted by from descending when requested`() {
+        val adminUser = createHelper.createUserEntity(adminAuthorities)
+        val client = createHelper.createClient()
+        val person = createHelper.createPersonEntity()
+        listOf(
+            LocalDate.of(2024, 1, 1),
+            LocalDate.of(2024, 3, 1),
+            LocalDate.of(2024, 2, 1),
+        ).forEach { from ->
+            createHelper.createAssignment(
+                client = client,
+                person = person,
+                from = from,
+                to = from.plusMonths(1),
+            )
+        }
+
+        mvc
+            .perform(
+                get("$baseUrl?personId=${person.uuid}&page=0&size=10&sort=from,desc")
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(jsonPath("$.length()").value(3))
+            .andExpect(jsonPath("$[0].from").value("2024-03-01"))
+            .andExpect(jsonPath("$[1].from").value("2024-02-01"))
+            .andExpect(jsonPath("$[2].from").value("2024-01-01"))
+    }
+
+    @Test
     fun `non-write user should see hourlyRate set to 0 when fetching by code`() {
         val readOnlyUser = createHelper.createUserEntity(setOf(AssignmentAuthority.READ))
         val client = createHelper.createClient()
