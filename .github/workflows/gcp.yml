@@ -208,53 +208,6 @@ jobs:
             rm backend.log
           fi
 
-      - name: Start production deployment
-        if: github.actor != 'dependabot[bot]' && github.ref_name == github.event.repository.default_branch
-        id: deployment-production
-        uses: actions/github-script@v9
-        with:
-          script: |
-            const deployment = await github.rest.repos.createDeployment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: context.sha,
-              environment: 'production',
-              required_contexts: [],
-              auto_merge: false,
-              transient_environment: false,
-              production_environment: true,
-              description: 'Deploy production image to Cloud Run',
-            });
-            await github.rest.repos.createDeploymentStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              deployment_id: deployment.data.id,
-              state: 'in_progress',
-              environment_url: 'https://workday.flock.community',
-              log_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-            });
-            core.setOutput('deployment_id', deployment.data.id);
-
-      - name: Build and Deploy
-        if: github.actor != 'dependabot[bot]' && github.ref_name == github.event.repository.default_branch
-        id: deploy-production
-        run: ./mvnw -B clean package jib:build -DskipTests -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
-
-      - name: Finish production deployment
-        if: always() && steps.deployment-production.outputs.deployment_id != ''
-        uses: actions/github-script@v9
-        with:
-          script: |
-            const state = '${{ steps.deploy-production.outcome }}' === 'success' ? 'success' : 'failure';
-            await github.rest.repos.createDeploymentStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              deployment_id: ${{ steps.deployment-production.outputs.deployment_id }},
-              state,
-              environment_url: 'https://workday.flock.community',
-              log_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-            });
-
       - name: Start develop deployment
         if: github.actor != 'dependabot[bot]'
         id: deployment-develop
@@ -285,7 +238,7 @@ jobs:
       - name: Build and Deploy Development version
         if: github.actor != 'dependabot[bot]'
         id: deploy-develop
-        run: ./mvnw -B package jib:build -DskipTests -Pdevelop,frontend -Dnpm.ci.skip -Dnpm.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
+        run: ./mvnw -B package jib:build -DskipTests -Pdevelop,frontend -Dnpm.ci.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
 
       - name: Finish develop deployment
         if: always() && steps.deployment-develop.outputs.deployment_id != ''
@@ -301,3 +254,63 @@ jobs:
               environment_url: 'https://test.workday.flock.community',
               log_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
             });
+
+  deploy-production:
+    name: Deploy to production
+    needs: build-deploy
+    if: github.actor != 'dependabot[bot]' && github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-24.04
+
+    # The production environment gates this job. Configure required reviewers
+    # under Settings > Environments > production to require manual approval
+    # before the deploy runs. GitHub tracks this as a deployment automatically.
+    environment:
+      name: production
+      url: https://workday.flock.community
+
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v3"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDED }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - name: Setup gcloud environment
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Setup docker
+        run: gcloud auth configure-docker
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Build and Deploy
+        run: ./mvnw -B clean package jib:build -DskipTests -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
