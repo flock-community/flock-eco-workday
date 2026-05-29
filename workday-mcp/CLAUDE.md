@@ -2,8 +2,8 @@
 
 A **local** [MCP](https://modelcontextprotocol.io) server (stdio) that exposes
 flock-eco-workday functionality to an MCP client such as Claude. It is a thin wrapper over the
-existing Workday REST API — it adds no business logic of its own. Tooling starts with expenses
-and grows from there (see Tools below).
+existing Workday REST API — it adds no business logic of its own. Tooling covers expenses and the
+work / sick / leave hours flows, and grows from there (see Tools below).
 
 **Topology:** the MCP client (Claude Desktop/Code) launches this server as a local
 subprocess and talks to it over stdio; the server then makes HTTPS calls to the **remote**
@@ -31,6 +31,39 @@ output (`src/wirespec/`) is gitignored and bundled into `dist/` by tsup.
   `POST /api/expenses/files` (→ a document UUID), then `POST /api/expenses-cost` references them as
   `files: [{ name, file }]`. All files are uploaded before the expense is created, so a failed
   upload never leaves a half-created expense.
+
+### Hours (work / sick / leave)
+
+Six tools, each a thin pass-through to the generated Wirespec client (`WorkdayClient.listWorkDays` /
+`createWorkDay`, and the `…SickDay` / `…LeaveDay` equivalents), plus `list_assignments`
+(`GetAssignmentAll`) so the model can discover an `assignmentCode`. All default `personId` to the key
+owner (via `getMyPersonId()`) with an optional admin override, and list tools use the `x-total` header
+for the count (same pattern as `listExpenses`). List calls pass `sort: undefined` — the controllers
+sort server-side (`from DESC, id ASC`).
+
+- `list_work_hours` / `register_work_hours` — `GET`/`POST /api/workdays`. Work hours attach to an
+  **assignment**, so `register_work_hours` requires an `assignmentCode` (not a `personId`); `sheets`
+  is left unset. Needs `WorkDayAuthority.READ` / `.WRITE`.
+- `list_assignments` — `GET /api/assignments`. Helper for finding the `assignmentCode`. Needs
+  `AssignmentAuthority.READ`.
+- `list_sick_hours` / `register_sick_hours` — `GET`/`POST /api/sickdays`. Attaches to the person
+  (optional `description`). Needs `SickdayAuthority.READ` / `.WRITE`.
+- `list_leave_hours` / `register_leave_hours` — `GET`/`POST /api/leave-days`. Attaches to the person
+  (`description`, optional `type` — defaults `HOLIDAY`). Needs `LeaveDayAuthority.READ` / `.WRITE`.
+
+All registrations submit with status `REQUESTED`. Forms share `from`/`to` (`YYYY-MM-DD`), a total
+`hours`, and an optional per-day `days` override. The shared input-schema fragments
+(`limitSchema`, `personIdSchema`, `dateSchema`, `hoursSchema`, `daysSchema`) and the
+`toolResult` / `summaryWithJson` helpers in `index.ts` keep the handlers uniform.
+
+### Server `instructions` (UX guidance)
+
+`index.ts` passes an `instructions` string to the `McpServer` constructor (2nd arg). The SDK returns
+it in the MCP `initialize` response and clients surface it to the model as standing guidance for the
+whole server — it is **not** a tool. It is the home for cross-tool workflow rules, notably: before
+`register_work_hours`, call `list_work_hours` to reuse the most recent `assignmentCode` (falling back
+to `list_assignments`) and confirm with the user. Per-tool `description`s carry the same hints so they
+also apply when a client ignores `instructions`. Keep prescriptive guidance here, not in code.
 
 The multipart upload (`WorkdayClient.uploadExpenseFile`) **bypasses the generated Wirespec client**
 and calls `fetch` directly: `Wirespec.RawRequest.body` is `string`-only and the shared `handle()`

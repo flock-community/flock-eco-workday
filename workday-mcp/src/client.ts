@@ -1,6 +1,16 @@
 import { client } from "./wirespec/client.js";
 import type { Wirespec } from "./wirespec/Wirespec.js";
-import type { CostExpenseInput, Expense } from "./wirespec/model/index.js";
+import type {
+  Assignment,
+  CostExpenseInput,
+  Expense,
+  LeaveDay,
+  LeaveDayForm,
+  SickDay,
+  SickDayForm,
+  WorkDay,
+  WorkDayForm,
+} from "./wirespec/model/index.js";
 import { serialization } from "./wirespec-serialization.js";
 
 // Public Ory Oathkeeper gateway that transparently proxies to the Spring backend and
@@ -171,6 +181,89 @@ export class WorkdayClient {
     }
     return res.body;
   }
+
+  // ── Work hours ───────────────────────────────────────────────────────────
+  // The list endpoints sort server-side, so `sort` is left undefined (every key
+  // must still be present — the generated params type them as `T | undefined`).
+
+  /** List a person's work-hour entries. `total` comes from the `x-total` header. */
+  async listWorkDays(personId: string, size: number): Promise<{ items: WorkDay[]; total: number }> {
+    const { body: items, headers } = await this.wire.GetWorkDayAll({
+      personId,
+      page: 0,
+      size,
+      sort: undefined,
+    });
+    return { items, total: headers["x-total"] ?? items.length };
+  }
+
+  /** Register work hours against an assignment. */
+  async createWorkDay(form: WorkDayForm): Promise<WorkDay> {
+    const res = await this.wire.PostWorkDay({ body: form });
+    if (res.status !== 200) {
+      throw new WorkdayApiError(`Unexpected response creating work day (HTTP ${res.status}).`, res.status);
+    }
+    return res.body;
+  }
+
+  // ── Sick hours ───────────────────────────────────────────────────────────
+
+  /** List a person's sick-hour entries. */
+  async listSickDays(personId: string, size: number): Promise<{ items: SickDay[]; total: number }> {
+    const { body: items, headers } = await this.wire.GetSickDayAll({
+      personId,
+      page: 0,
+      size,
+      sort: undefined,
+    });
+    return { items, total: headers["x-total"] ?? items.length };
+  }
+
+  /** Register sick hours for a person. */
+  async createSickDay(form: SickDayForm): Promise<SickDay> {
+    const res = await this.wire.PostSickDay({ body: form });
+    if (res.status !== 200) {
+      throw new WorkdayApiError(`Unexpected response creating sick day (HTTP ${res.status}).`, res.status);
+    }
+    return res.body;
+  }
+
+  // ── Leave hours ──────────────────────────────────────────────────────────
+
+  /** List a person's leave-hour entries. */
+  async listLeaveDays(personId: string, size: number): Promise<{ items: LeaveDay[]; total: number }> {
+    const { body: items, headers } = await this.wire.GetLeaveDayAll({
+      personId,
+      page: 0,
+      size,
+      sort: undefined,
+    });
+    return { items, total: headers["x-total"] ?? items.length };
+  }
+
+  /** Register leave hours for a person. */
+  async createLeaveDay(form: LeaveDayForm): Promise<LeaveDay> {
+    const res = await this.wire.PostLeaveDay({ body: form });
+    if (res.status !== 200) {
+      throw new WorkdayApiError(`Unexpected response creating leave day (HTTP ${res.status}).`, res.status);
+    }
+    return res.body;
+  }
+
+  // ── Assignments ──────────────────────────────────────────────────────────
+
+  /** List a person's assignments — used to find an `assignmentCode` for work hours. */
+  async listAssignments(personId: string, size: number): Promise<{ items: Assignment[]; total: number }> {
+    const { body: items, headers } = await this.wire.GetAssignmentAll({
+      personId,
+      projectCode: undefined,
+      to: undefined,
+      page: 0,
+      size,
+      sort: undefined,
+    });
+    return { items, total: headers["x-total"] ?? items.length };
+  }
 }
 
 function describeStatus(status: number, path: string): string {
@@ -178,7 +271,7 @@ function describeStatus(status: number, path: string): string {
     case 401:
       return "Unauthorized (401): the API key is missing or invalid.";
     case 403:
-      return "Forbidden (403): the API key's user lacks the required authority (listing expenses needs ExpenseAuthority.READ; creating expenses and uploading files need ExpenseAuthority.WRITE).";
+      return "Forbidden (403): the API key's user lacks the authority required for this operation (read operations need the matching *Authority.READ — e.g. WorkDayAuthority.READ; create operations need *Authority.WRITE).";
     case 404:
       return `Not found (404) for ${path}.`;
     default:
