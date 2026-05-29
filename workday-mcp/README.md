@@ -14,9 +14,18 @@ available.
 | --- | --- |
 | `list_expenses` | Lists your submitted expenses. Optional `limit` (default 25). Admins can pass a `personId` to view someone else's. |
 | `submit_cost_expense` | Creates a cost expense with one or more receipt attachments. You provide the amount, date, a short description, and the receipt(s) — as file path(s) on this machine, or as inline base64. Submitted with status `REQUESTED`; needs write permission. Admins can pass a `personId`. |
+| `list_work_hours` | Lists your registered work hours (most recent first), including the assignment each was logged against. Optional `limit`; admins can pass a `personId`. |
+| `register_work_hours` | Registers work hours against an assignment (`assignmentCode` required). Provide a date range and hours. Claude will normally reuse the assignment from your most recent entry — see `list_work_hours` / `list_assignments`. Submitted as `REQUESTED`; needs write permission. |
+| `list_assignments` | Lists your assignments, so you (and Claude) can find the `assignmentCode` to log work hours against. Optional `limit`; admins can pass a `personId`. |
+| `list_sick_hours` | Lists your registered sick hours (most recent first). Optional `limit`; admins can pass a `personId`. |
+| `register_sick_hours` | Registers sick hours for a person (no assignment needed). Provide a date range, hours, and an optional description. Submitted as `REQUESTED`; needs write permission. |
+| `list_leave_hours` | Lists your registered leave hours — holiday and other leave (most recent first). Optional `limit`; admins can pass a `personId`. |
+| `register_leave_hours` | Registers leave hours for a person (no assignment needed). Provide a description, date range, and hours; `type` defaults to `HOLIDAY`. Submitted as `REQUESTED`; needs write permission. |
 
 Once it's connected, just ask Claude in plain language — for example, _"list my last 5 Workday
-expenses"_, or _"submit this receipt as an expense"_.
+expenses"_, _"submit this receipt as an expense"_, _"log 8 hours of work for yesterday"_, or
+_"register a sick day for today"_. When you log work hours, Claude will check your latest entry and
+suggest reusing the same assignment.
 
 > **Note on attachments:** `submit_cost_expense` needs the receipt bytes, supplied one of two ways:
 > **(1)** `filePaths` — path(s) to file(s) on the machine running this server (works when the file
