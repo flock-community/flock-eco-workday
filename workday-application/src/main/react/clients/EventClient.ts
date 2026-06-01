@@ -138,15 +138,20 @@ const deleteRatings = (eventCode, personId) => {
     .then((res) => res?.body);
 };
 
-const getHackDays = (year: number): Promise<FlockEvent[]> => {
+const getEventsByYear = (year: number): Promise<FlockEvent[]> => {
   const opts = {
     method: 'GET',
   };
-  return fetch(`${path}/hack-days?year=${year}`, opts)
+  return fetch(`${path}/year?year=${year}`, opts)
     .then((it) => validateResponse<FlockEventRawProjection[]>(it))
     .then((it) => checkResponse(it))
     .then((res) => res?.body.map(internalize));
 };
+
+const getHackDays = (year: number): Promise<FlockEvent[]> =>
+  getEventsByYear(year).then((events) =>
+    events.filter((event) => event.type === EventType.FLOCK_HACK_DAY),
+  );
 
 const subscribeToEvent = (event: FlockEvent) => {
   const opts = {
@@ -180,6 +185,7 @@ export const EventClient = {
   getRatings,
   postRatings,
   deleteRatings,
+  getEventsByYear,
   getHackDays,
   subscribeToEvent,
   unsubscribeFromEvent,

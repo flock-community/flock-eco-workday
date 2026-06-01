@@ -13,7 +13,7 @@ endpoint PutEvent PUT EventForm /api/events/{code: String} -> {
 endpoint DeleteEvent DELETE /api/events/{code: String} -> {
   204 -> Unit
 }
-endpoint GetEventHackDays GET /api/events/hack-days ? {year: Integer32} -> {
+endpoint GetEventsByYear GET /api/events/year ? {year: Integer32} -> {
   200 -> EventProjection[]
 }
 endpoint SubscribeToEvent PUT /api/events/{eventCode: String}/subscribe -> {

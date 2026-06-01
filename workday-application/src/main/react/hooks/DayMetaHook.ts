@@ -1,6 +1,10 @@
 import dayjs, { type Dayjs } from 'dayjs';
 import { useEffect, useState } from 'react';
-import { EventClient, type FlockEvent } from '../clients/EventClient';
+import {
+  EventClient,
+  EventType,
+  type FlockEvent,
+} from '../clients/EventClient';
 import { LeaveDayClient } from '../clients/LeaveDayClient';
 import { stringifyDate } from '../utils/stringifyDate';
 
@@ -14,6 +18,7 @@ export type LeaveDayType =
 
 export type DayMeta = {
   hackday?: { description: string };
+  generalEvent?: { description: string };
   leave?: {
     type: LeaveDayType;
     status: LeaveDayStatus;
@@ -103,8 +108,8 @@ export function useDayMeta(
 
     let cancelled = false;
 
-    const hackdaysPromise = Promise.all(
-      yearsInRange(from, to).map((year) => EventClient.getHackDays(year)),
+    const eventsPromise = Promise.all(
+      yearsInRange(from, to).map((year) => EventClient.getEventsByYear(year)),
     ).then((pages) =>
       pages
         .flat()
@@ -118,26 +123,34 @@ export function useDayMeta(
       { personId },
     ).then((res) => res.list as unknown as LeaveDayLite[]);
 
-    Promise.all([hackdaysPromise, leavePromise])
-      .then(([hackdays, leaveDays]) => {
+    Promise.all([eventsPromise, leavePromise])
+      .then(([events, leaveDays]) => {
         if (cancelled) return;
 
         const next = new Map<string, DayMeta>();
 
-        for (const event of hackdays) {
+        for (const event of events) {
           const dates = overlapDays(from, to, event.from, event.to);
           for (const date of dates) {
             const key = stringifyDate(date);
             const existing = next.get(key) ?? {};
-            next.set(key, {
-              ...existing,
-              hackday: { description: event.description },
-            });
+            if (event.type === EventType.FLOCK_HACK_DAY) {
+              next.set(key, {
+                ...existing,
+                hackday: { description: event.description },
+              });
+            } else if (event.type === EventType.GENERAL_EVENT) {
+              next.set(key, {
+                ...existing,
+                generalEvent: { description: event.description },
+              });
+            }
           }
         }
 
         for (const leave of leaveDays) {
           if (leave.status === 'REJECTED') continue;
+          if (leave.type === 'PLUSDAY') continue;
           const dates = overlapDays(
             from,
             to,

@@ -93,14 +93,17 @@ class EventControllerTest : WorkdayIntegrationTest() {
     ).run { eventService.create(this) }
 
     @Test
-    fun `should get hack-day events`() {
-        val event = createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3), type = EventType.FLOCK_HACK_DAY)
+    fun `should get all events of a year regardless of type`() {
+        val hackDay = createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3), type = EventType.FLOCK_HACK_DAY)
         createEvent(LocalDate.of(2024, 4, 2), LocalDate.of(2024, 4, 3), type = EventType.FLOCK_HACK_DAY)
-        createEvent(LocalDate.of(2023, 6, 2), LocalDate.of(2023, 6, 3), type = EventType.FLOCK_COMMUNITY_DAY)
+        val communityDay =
+            createEvent(LocalDate.of(2023, 6, 2), LocalDate.of(2023, 6, 3), type = EventType.FLOCK_COMMUNITY_DAY)
+        val generalEvent =
+            createEvent(LocalDate.of(2023, 12, 31), LocalDate.of(2023, 12, 31), type = EventType.GENERAL_EVENT)
 
         mvc
             .perform(
-                get("$baseUrl/hack-days?year=2023")
+                get("$baseUrl/year?year=2023")
                     .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
@@ -112,11 +115,22 @@ class EventControllerTest : WorkdayIntegrationTest() {
                     """
                     [
                       {
-                        "description": "Henk",
-                        "code": "${event.code}",
+                        "type": "FLOCK_HACK_DAY",
+                        "code": "${hackDay.code}",
                         "from": "2023-02-02",
-                        "to": "2023-02-03",
-                        "persons": []
+                        "to": "2023-02-03"
+                      },
+                      {
+                        "type": "FLOCK_COMMUNITY_DAY",
+                        "code": "${communityDay.code}",
+                        "from": "2023-06-02",
+                        "to": "2023-06-03"
+                      },
+                      {
+                        "type": "GENERAL_EVENT",
+                        "code": "${generalEvent.code}",
+                        "from": "2023-12-31",
+                        "to": "2023-12-31"
                       }
                     ]
                     """.trimIndent(),
