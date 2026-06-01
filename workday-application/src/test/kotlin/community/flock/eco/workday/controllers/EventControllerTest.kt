@@ -99,7 +99,7 @@ class EventControllerTest : WorkdayIntegrationTest() {
         val communityDay =
             createEvent(LocalDate.of(2023, 6, 2), LocalDate.of(2023, 6, 3), type = EventType.FLOCK_COMMUNITY_DAY)
         val generalEvent =
-            createEvent(LocalDate.of(2023, 12, 31), LocalDate.of(2023, 12, 31), type = EventType.GENERAL_EVENT)
+            createEvent(LocalDate.of(2023, 12, 30), LocalDate.of(2023, 12, 31), type = EventType.GENERAL_EVENT)
 
         mvc
             .perform(
@@ -129,7 +129,7 @@ class EventControllerTest : WorkdayIntegrationTest() {
                       {
                         "type": "GENERAL_EVENT",
                         "code": "${generalEvent.code}",
-                        "from": "2023-12-31",
+                        "from": "2023-12-30",
                         "to": "2023-12-31"
                       }
                     ]
