@@ -4,8 +4,8 @@ import community.flock.eco.workday.api.endpoint.DeleteEvent
 import community.flock.eco.workday.api.endpoint.DeleteEventRating
 import community.flock.eco.workday.api.endpoint.GetEventAll
 import community.flock.eco.workday.api.endpoint.GetEventByCode
-import community.flock.eco.workday.api.endpoint.GetEventHackDays
 import community.flock.eco.workday.api.endpoint.GetEventRatings
+import community.flock.eco.workday.api.endpoint.GetEventsByYear
 import community.flock.eco.workday.api.endpoint.PostEvent
 import community.flock.eco.workday.api.endpoint.PostEventRating
 import community.flock.eco.workday.api.endpoint.PutEvent
@@ -55,7 +55,7 @@ class EventController(
     PostEvent.Handler,
     PutEvent.Handler,
     DeleteEvent.Handler,
-    GetEventHackDays.Handler,
+    GetEventsByYear.Handler,
     SubscribeToEvent.Handler,
     UnsubscribeFromEvent.Handler,
     GetEventRatings.Handler,
@@ -80,14 +80,14 @@ class EventController(
     }
 
     @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
-    override suspend fun getEventHackDays(request: GetEventHackDays.Request): GetEventHackDays.Response<*> {
+    override suspend fun getEventsByYear(request: GetEventsByYear.Request): GetEventsByYear.Response<*> {
         val year = request.queries.year ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "year is required")
         val projections =
             eventService
-                .findAllHackDaysOf(year)
+                .findAllEventsOf(year)
                 .sortedBy { it.getFrom() }
                 .map { it.externalize() }
-        return GetEventHackDays.Response200(projections)
+        return GetEventsByYear.Response200(projections)
     }
 
     override suspend fun getEventByCode(request: GetEventByCode.Request): GetEventByCode.Response<*> {

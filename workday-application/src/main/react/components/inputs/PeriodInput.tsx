@@ -27,7 +27,8 @@ const LEAVE_BG = 'rgba(126, 87, 194, 0.18)';
 
 const backgroundFor = (meta: DayMeta | undefined): string | undefined => {
   if (!meta) return undefined;
-  if (meta.hackday) return HACKDAY_BG;
+  // General events share the hackday colour (green) by request.
+  if (meta.hackday || meta.generalEvent) return HACKDAY_BG;
   if (meta.leave) return LEAVE_BG;
   return undefined;
 };
@@ -36,6 +37,7 @@ const tooltipFor = (meta: DayMeta | undefined): string | undefined => {
   if (!meta) return undefined;
   const parts: string[] = [];
   if (meta.hackday) parts.push(`Hackday: ${meta.hackday.description}`);
+  if (meta.generalEvent) parts.push(`Event: ${meta.generalEvent.description}`);
   if (meta.leave) {
     const label = meta.leave.description ?? meta.leave.type;
     const statusLabel = meta.leave.status === 'REQUESTED' ? ' (requested)' : '';

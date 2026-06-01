@@ -3,7 +3,6 @@ package community.flock.eco.workday.application.services
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.interfaces.validate
 import community.flock.eco.workday.application.model.Event
-import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.EventProjection
 import community.flock.eco.workday.application.repository.EventRatingRepository
@@ -35,9 +34,8 @@ class EventService(
 
     fun findByCode(code: String) = eventRepository.findByCode(code).toNullable()
 
-    fun findAllHackDaysOf(year: Int): Iterable<EventProjection> =
-        eventRepository.findAllByTypeIsAndFromBetween(
-            type = EventType.FLOCK_HACK_DAY,
+    fun findAllEventsOf(year: Int): Iterable<EventProjection> =
+        eventRepository.findAllByFromBetween(
             from = LocalDate.of(year, 1, 1),
             to = LocalDate.of(year, 12, 31),
         )
