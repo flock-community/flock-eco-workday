@@ -314,3 +314,10 @@ jobs:
 
       - name: Build and Deploy
         run: ./mvnw -B clean package jib:build -DskipTests -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
+
+      - name: Deploy image to Cloud Run (production)
+        run: |
+          gcloud run deploy workday-app \
+            --image eu.gcr.io/flock-community/flock-eco-workday:${{ github.sha }} \
+            --region europe-west1 \
+            --project flock-community
