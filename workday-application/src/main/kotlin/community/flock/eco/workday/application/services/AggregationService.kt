@@ -122,43 +122,60 @@ class AggregationService(
         val all = dataService.findAllData(from, to)
         return all
             .allPersons()
-            .map { person ->
-                AggregationLeaveDay(
-                    name = person.getFullName(),
-                    contractHours =
-                        all.contract
-                            .filterIsInstance<ContractInternal>()
-                            .filter { it.person == person }
-                            .map { it.totalLeaveDayHoursInPeriod(period) }
-                            .sum(),
-                    plusHours =
-                        all.leaveDay
-                            .filter { it.type == LeaveDayType.PLUSDAY }
-                            .filter { it.person == person }
-                            .totalHoursInPeriod(from, to),
-                    holidayHours =
-                        all.leaveDay
-                            .filter { it.type == LeaveDayType.HOLIDAY }
-                            .filter { it.person == person }
-                            .totalHoursInPeriod(from, to),
-                    paidParentalLeaveHours =
-                        all.leaveDay
-                            .filter { it.person == person }
-                            .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
-                            .totalHoursInPeriod(from, to),
-                    unpaidParentalLeaveHours =
-                        all.leaveDay
-                            .filter { it.person == person }
-                            .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
-                            .totalHoursInPeriod(from, to),
-                    paidLeaveHours =
-                        all.leaveDay
-                            .filter { it.person == person }
-                            .filter { it.type == LeaveDayType.PAID_LEAVE }
-                            .totalHoursInPeriod(from, to),
-                )
-            }
+            .map { person -> personLeaveDay(person, all, period, from, to) }
     }
+
+    fun leaveDayReportMe(
+        year: Int,
+        person: Person,
+    ): AggregationLeaveDay {
+        val from = YearMonth.of(year, 1).atDay(1)
+        val to = YearMonth.of(year, 12).atEndOfMonth()
+        val period = FromToPeriod(from, to)
+        val data = dataService.findAllData(from, to, person.uuid)
+        return personLeaveDay(person, data, period, from, to)
+    }
+
+    private fun personLeaveDay(
+        person: Person,
+        data: Data,
+        period: FromToPeriod,
+        from: LocalDate,
+        to: LocalDate,
+    ) = AggregationLeaveDay(
+        name = person.getFullName(),
+        contractHours =
+            data.contract
+                .filterIsInstance<ContractInternal>()
+                .filter { it.person == person }
+                .map { it.totalLeaveDayHoursInPeriod(period) }
+                .sum(),
+        plusHours =
+            data.leaveDay
+                .filter { it.type == LeaveDayType.PLUSDAY }
+                .filter { it.person == person }
+                .totalHoursInPeriod(from, to),
+        holidayHours =
+            data.leaveDay
+                .filter { it.type == LeaveDayType.HOLIDAY }
+                .filter { it.person == person }
+                .totalHoursInPeriod(from, to),
+        paidParentalLeaveHours =
+            data.leaveDay
+                .filter { it.person == person }
+                .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
+                .totalHoursInPeriod(from, to),
+        unpaidParentalLeaveHours =
+            data.leaveDay
+                .filter { it.person == person }
+                .filter { it.type == LeaveDayType.UNPAID_PARENTAL_LEAVE }
+                .totalHoursInPeriod(from, to),
+        paidLeaveHours =
+            data.leaveDay
+                .filter { it.person == person }
+                .filter { it.type == LeaveDayType.PAID_LEAVE }
+                .totalHoursInPeriod(from, to),
+    )
 
     fun hackdayReport(year: Int): List<AggregationHackDay> {
         val from = YearMonth.of(year, 1).atDay(1)

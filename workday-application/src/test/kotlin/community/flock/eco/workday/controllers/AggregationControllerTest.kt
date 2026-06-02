@@ -289,6 +289,41 @@ class AggregationControllerTest(
     }
 
     @Test
+    fun `should return leave-day report me by year`() {
+        val regularUser = createHelper.createUserEntity(emptySet())
+        val person = createHelper.createPersonEntity("Leave", "Me", regularUser.code)
+        createHelper.createContractInternal(
+            person = person,
+            from = LocalDate.of(2024, 1, 1),
+            to = LocalDate.of(2024, 12, 31),
+        )
+
+        mvc
+            .perform(
+                get("$baseUrl/leave-day-report-me?year=2024")
+                    .with(user(CreateHelper.UserSecurity(regularUser.toDomain())))
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(jsonPath("$.name").value("Leave Me"))
+            .andExpect(jsonPath("$.contractHours").exists())
+    }
+
+    @Test
+    fun `leave-day-report-me should return forbidden when user has no linked person`() {
+        val regularUser = createHelper.createUserEntity(emptySet())
+
+        mvc
+            .perform(
+                get("$baseUrl/leave-day-report-me?year=2024")
+                    .with(user(CreateHelper.UserSecurity(regularUser.toDomain())))
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
     fun `holiday-details-me should return forbidden when user has no linked person`() {
         val regularUser = createHelper.createUserEntity(emptySet())
 
