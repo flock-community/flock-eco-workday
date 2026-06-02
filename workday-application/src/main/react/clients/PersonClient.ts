@@ -1,3 +1,4 @@
+import type { User } from '@workday-user/user/response/user';
 import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
 import { ISO_8601_DATE } from './util/DateFormats';
@@ -13,7 +14,7 @@ export type Person = {
   birthdate: Dayjs | null;
   joinDate: Dayjs | null;
   position: string;
-  user: string;
+  user: User | null;
   active: boolean;
   lastActiveAt: Date;
   shoeSize?: string;
@@ -41,7 +42,7 @@ export type PersonRaw = {
   birthdate: string;
   joinDate: string;
   position: string;
-  user: string;
+  user: User | null;
   active: boolean;
   lastActiveAt: string;
   shoeSize?: string;

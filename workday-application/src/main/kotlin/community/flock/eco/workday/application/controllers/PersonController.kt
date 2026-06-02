@@ -29,6 +29,7 @@ import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.api.model.PersonEvent as PersonEventApi
 import community.flock.eco.workday.api.model.PersonEventEventType as PersonEventEventTypeApi
 import community.flock.eco.workday.api.model.PersonForm as PersonFormApi
+import community.flock.eco.workday.api.model.User as UserApi
 
 @RestController
 class PersonController(
@@ -180,8 +181,18 @@ class PersonController(
             shoeSize = shoeSize,
             shirtSize = shirtSize,
             googleDriveId = googleDriveId,
-            user = null,
+            user = user?.externalize(),
             fullName = "$firstname $lastname",
+        )
+
+    private fun User.externalize(): UserApi =
+        UserApi(
+            id = code,
+            name = name,
+            email = email,
+            authorities = authorities.toList(),
+            accounts = null,
+            created = created.toString(),
         )
 
     private fun PersonEvent.externalize(): PersonEventApi =
