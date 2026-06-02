@@ -6,6 +6,7 @@ import community.flock.eco.workday.api.endpoint.HolidayDetailsMeYear
 import community.flock.eco.workday.api.endpoint.HourAssignmentClientOverviewEmployee
 import community.flock.eco.workday.api.endpoint.HourClientOverviewEmployee
 import community.flock.eco.workday.api.endpoint.LeaveDayReportByYear
+import community.flock.eco.workday.api.endpoint.LeaveDayReportMeByYear
 import community.flock.eco.workday.api.endpoint.PersonNonProductiveHoursPerDay
 import community.flock.eco.workday.api.endpoint.RevenuePerClientByYear
 import community.flock.eco.workday.api.endpoint.TotalsPerMonthByYear
@@ -56,6 +57,7 @@ interface AggregationHandler :
     TotalsPerPersonByYear_1.Handler,
     TotalsPerMonthByYear.Handler,
     LeaveDayReportByYear.Handler,
+    LeaveDayReportMeByYear.Handler,
     HackDayReportByYear.Handler,
     HourClientOverviewEmployee.Handler,
     HourAssignmentClientOverviewEmployee.Handler,
@@ -121,6 +123,16 @@ class AggregationController(
         LeaveDayReportByYear.Response200(
             aggregationService.leaveDayReport(request.queries.year).map { it.produce() },
         )
+
+    @PreAuthorize("isAuthenticated()")
+    override suspend fun leaveDayReportMeByYear(request: LeaveDayReportMeByYear.Request): LeaveDayReportMeByYear.Response<*> {
+        val person =
+            personService.findByUserCode(authentication().name)
+                ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        return LeaveDayReportMeByYear.Response200(
+            aggregationService.leaveDayReportMe(request.queries.year, person).produce(),
+        )
+    }
 
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
     override suspend fun hackDayReportByYear(request: HackDayReportByYear.Request): HackDayReportByYear.Response<*> =
