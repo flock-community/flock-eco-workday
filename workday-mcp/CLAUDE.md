@@ -92,10 +92,12 @@ The multipart upload (`WorkdayClient.uploadExpenseFile`) **bypasses the generate
 and calls `fetch` directly: `Wirespec.RawRequest.body` is `string`-only and the shared `handle()`
 forces `Content-Type: application/json`, neither of which fits `multipart/form-data`. The JSON
 create call (`createCostExpense`) goes through the generated `CostExpenseCreate` as usual.
-Attachments reach the server two ways: a **file path** the server can read (best when the file is
-local — the Claude Code CLI, or a saved file), or **inline base64** for when the file is not on the
-server's filesystem (e.g. an upload inside Claude Chat's sandbox, where Claude base64-encodes the
-file in-sandbox and passes it as a tool argument). Base64 carries exact bytes but is bounded by
+Attachments reach the server two ways: a **file path** on the user's local machine (Claude Desktop
+attachments, Claude Code references, or any saved file — the server runs there and reads them
+itself), or **inline base64** for files that live in Claude's own sandbox (`/mnt/user-data/uploads/...`)
+and so aren't reachable from the user's machine. The tool description explicitly tells Claude not
+to try to open local paths from its own sandbox — Claude Desktop in particular tends to do that
+otherwise — just pass the path; the server reads it. Base64 carries exact bytes but is bounded by
 tool-argument size, so keep files small (downscale large images). Travel expenses don't support
 files, so there is no `submit_travel_expense`.
 

@@ -36,12 +36,14 @@ You can also fill a whole month at once — e.g. _"Kun je de uren van deze maand
 (those are booked as events, not work hours), and ask before subscribing you to them. It always
 summarises the plan and asks for confirmation before registering anything.
 
-> **Note on attachments:** `submit_cost_expense` needs the receipt bytes, supplied one of two ways:
-> **(1)** `filePaths` — path(s) to file(s) on the machine running this server (works when the file
-> is local, e.g. the Claude Code CLI or a saved file); **(2)** `attachments` — inline **base64**
-> content, for when the file is _not_ on the server's filesystem (e.g. an upload inside Claude
-> Chat's sandbox, where Claude can base64-encode it for you). Keep base64 files small — downscale
-> large images first, as very large base64 may exceed tool-argument limits.
+> **Note on attachments:** `submit_cost_expense` needs the receipt bytes, supplied one of two ways.
+> **(1) `filePaths`** — path(s) to file(s) on the **machine running this server** (your own
+> machine, e.g. your Mac). This covers Claude Desktop attachments, Claude Code references, and any
+> local file. The server reads them itself — Claude should pass the path as-is, _without_ first
+> trying to open it from its own sandbox (which can't see your filesystem). **(2) `attachments`** —
+> inline **base64**, for files that live in Claude's own sandbox (paths like
+> `/mnt/user-data/uploads/...`) and so aren't reachable from your machine. Keep base64 small —
+> downscale large images first, as very large base64 may exceed tool-argument limits.
 
 ## Prerequisites
 

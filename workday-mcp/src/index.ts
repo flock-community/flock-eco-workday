@@ -246,15 +246,19 @@ server.registerTool(
   {
     title: "Submit cost expense",
     description:
-      "Create a cost expense in flock-eco-workday with one or more receipt attachments. Provide the " +
-      "amount, the date (YYYY-MM-DD), a short description, and at least one receipt — either as " +
-      "`filePaths` (file(s) on the machine running this server) or as `attachments` (inline base64 " +
-      "content, for when the file is not on the server's filesystem, e.g. an upload inside Claude " +
-      "Chat's sandbox). Prefer `filePaths` when you have a path the server can read — it costs no " +
-      "extra tokens; use `attachments` (base64) only when the file is not on the server's machine. " +
-      "If you pass a path the server can't read, it returns an error telling you to resend as base64. " +
-      "Defaults to the API key owner; admins can pass a personId. Requires ExpenseAuthority.WRITE. " +
-      "The expense is submitted with status REQUESTED.",
+      "Create a cost expense in flock-eco-workday with one or more receipt attachments. Provide " +
+      "the amount, the date (YYYY-MM-DD), a short description, and at least one receipt. " +
+      "IMPORTANT: this server runs locally on the user's own machine (NOT in your sandbox). It can " +
+      "read any file on the user's local filesystem — including Claude Desktop attachments and " +
+      "anything the user references by path — so just pass the path as `filePaths`; do NOT try to " +
+      "open, read, or verify the file yourself first (your sandbox cannot see the user's " +
+      "filesystem; this server can). Files that live in YOUR sandbox (paths like " +
+      "`/mnt/user-data/uploads/...`) are on a different machine and the server cannot read them — " +
+      "for those use `attachments` (inline base64, encoded in your sandbox; downscale large images " +
+      "first). Prefer `filePaths` over `attachments` whenever the file is on the user's machine — " +
+      "it costs no extra tokens. If a path can't be read the server returns an error telling you " +
+      "to resend as base64. Defaults to the API key owner; admins can pass a personId. Requires " +
+      "ExpenseAuthority.WRITE. The expense is submitted with status REQUESTED.",
     inputSchema: {
       amount: z.number().positive().describe("Expense amount, e.g. 44.80."),
       date: z.string().describe("Date of the expense in ISO format YYYY-MM-DD, e.g. 2026-05-20."),
@@ -266,9 +270,11 @@ server.registerTool(
         .array(z.string())
         .optional()
         .describe(
-          "Path(s) to the receipt file(s) on the machine running this server. Use when the file is " +
-            "on the same machine as the server (e.g. Claude Code, or a local file). Provide either " +
-            "this and/or `attachments` (at least one receipt is required).",
+          "Path(s) to the receipt file(s) on the user's local machine (where this server runs — " +
+            "NOT your sandbox). Use this for Claude Desktop attachments, Claude Code references, " +
+            "and any other local file. Pass the path as-is; the server reads the file — do NOT try " +
+            "to open or read it yourself (your sandbox cannot see the user's filesystem). Provide " +
+            "either this and/or `attachments` (at least one receipt is required).",
         ),
       attachments: z
         .array(
@@ -282,9 +288,10 @@ server.registerTool(
         )
         .optional()
         .describe(
-          "Inline receipt file(s) as base64. Use when the file is NOT on the server's filesystem " +
-            "(e.g. an upload inside Claude Chat's sandbox): base64-encode the file and pass it here. " +
-            "Keep files small (e.g. downscale images first) — very large base64 may exceed limits.",
+          "Inline receipt file(s) as base64. Use when the file lives in YOUR sandbox and is not " +
+            "on the user's machine (e.g. a `/mnt/user-data/uploads/...` upload): base64-encode the " +
+            "file in your sandbox and pass it here. Keep files small (downscale images first) — " +
+            "very large base64 may exceed tool-argument limits.",
         ),
       personId: z
         .string()
