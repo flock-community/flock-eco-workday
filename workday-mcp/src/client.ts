@@ -141,13 +141,13 @@ export class WorkdayClient {
   }
 
   /**
-   * Upload a single receipt file to the expense document store, returning its UUID.
-   * Bypasses the generated Wirespec client: RawRequest.body is string-only and `handle()`
-   * forces application/json — neither works for multipart. Content-Type is left unset so
-   * fetch adds the multipart boundary itself.
+   * Upload a single file (multipart "file" part) to a document-store endpoint, returning the
+   * stored document's UUID. Bypasses the generated Wirespec client: RawRequest.body is
+   * string-only and `handle()` forces application/json — neither works for multipart.
+   * Content-Type is left unset so fetch adds the multipart boundary itself.
    */
-  async uploadExpenseFile(bytes: Uint8Array, filename: string): Promise<string> {
-    const url = new URL(`${this.baseUrl}/api/expenses/files`);
+  private async uploadFile(apiPath: string, bytes: Uint8Array, filename: string): Promise<string> {
+    const url = new URL(`${this.baseUrl}${apiPath}`);
     const form = new FormData();
     // A Uint8Array/Buffer is a valid Blob part at runtime; the cast bridges the stricter DOM
     // BlobPart type (which excludes SharedArrayBuffer-backed views).
@@ -169,6 +169,16 @@ export class WorkdayClient {
       // not JSON — fall through to the raw value
     }
     return raw;
+  }
+
+  /** Upload a single receipt file to the expense document store, returning its UUID. */
+  async uploadExpenseFile(bytes: Uint8Array, filename: string): Promise<string> {
+    return this.uploadFile("/api/expenses/files", bytes, filename);
+  }
+
+  /** Upload a single work-day sheet (e.g. a screenshot of the client's hours system). */
+  async uploadWorkDaySheet(bytes: Uint8Array, filename: string): Promise<string> {
+    return this.uploadFile("/api/workdays/sheets", bytes, filename);
   }
 
   /** Create a cost expense referencing any already-uploaded files. */

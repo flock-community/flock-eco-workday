@@ -15,7 +15,7 @@ available.
 | `list_expenses` | Lists your submitted expenses. Optional `limit` (default 25). Admins can pass a `personId` to view someone else's. |
 | `submit_cost_expense` | Creates a cost expense with one or more receipt attachments. You provide the amount, date, a short description, and the receipt(s) — as file path(s) on this machine, or as inline base64. Submitted with status `REQUESTED`; needs write permission. Admins can pass a `personId`. |
 | `list_work_hours` | Lists your registered work hours (most recent first), including the assignment each was logged against. Optional `limit`; admins can pass a `personId`. |
-| `register_work_hours` | Registers work hours against an assignment (`assignmentCode` required). Provide a date range and hours. Claude will normally reuse the assignment from your most recent entry — see `list_work_hours` / `list_assignments`. Submitted as `REQUESTED`; needs write permission. |
+| `register_work_hours` | Registers work hours against an assignment (`assignmentCode` required). Provide a date range and hours, and optionally screenshot(s) of your client's hours-registration system. Claude will normally reuse the assignment from your most recent entry — see `list_work_hours` / `list_assignments`. Submitted as `REQUESTED`; needs write permission. |
 | `list_assignments` | Lists your assignments, so you (and Claude) can find the `assignmentCode` to log work hours against. Optional `limit`; admins can pass a `personId`. |
 | `list_sick_hours` | Lists your registered sick hours (most recent first). Optional `limit`; admins can pass a `personId`. |
 | `register_sick_hours` | Registers sick hours for a person (no assignment needed). Provide a date range, hours, and an optional description. Submitted as `REQUESTED`; needs write permission. |
@@ -36,14 +36,17 @@ You can also fill a whole month at once — e.g. _"Kun je de uren van deze maand
 (those are booked as events, not work hours), and ask before subscribing you to them. It always
 summarises the plan and asks for confirmation before registering anything.
 
-> **Note on attachments:** `submit_cost_expense` needs the receipt bytes, supplied one of two ways.
-> **(1) `filePaths`** — path(s) to file(s) on the **machine running this server** (your own
-> machine, e.g. your Mac). This covers Claude Desktop attachments, Claude Code references, and any
-> local file. The server reads them itself — Claude should pass the path as-is, _without_ first
-> trying to open it from its own sandbox (which can't see your filesystem). **(2) `attachments`** —
-> inline **base64**, for files that live in Claude's own sandbox (paths like
-> `/mnt/user-data/uploads/...`) and so aren't reachable from your machine. Keep base64 small —
+> **Note on attachments:** Both `submit_cost_expense` (receipts) and `register_work_hours`
+> (screenshots of your client's hours-registration system) accept attachments the same way, in one
+> of two forms. **(1) `filePaths`** — path(s) to file(s) on the **machine running this server**
+> (your own machine, e.g. your Mac). This covers Claude Desktop attachments, Claude Code
+> references, and any local file. The server reads them itself — Claude should pass the path
+> as-is, _without_ first trying to open it from its own sandbox (which can't see your filesystem).
+> **(2) `attachments`** — inline **base64**, for files that live in Claude's own sandbox (paths
+> like `/mnt/user-data/uploads/...`) and so aren't reachable from your machine. Keep base64 small —
 > downscale large images first, as very large base64 may exceed tool-argument limits.
+> `submit_cost_expense` requires at least one attachment; on `register_work_hours` they're optional
+> but typically expected.
 
 ## Prerequisites
 

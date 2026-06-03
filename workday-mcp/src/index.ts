@@ -41,6 +41,51 @@ function decodeBase64(input: string): Buffer {
   return Buffer.from(b64, "base64");
 }
 
+/**
+ * Read `filePaths` from disk and decode `attachments` base64, uploading each via `uploader` and
+ * returning `[{ name, file: UUID }, ...]` entries suitable for the backend's `files` / `sheets`
+ * arrays. Throws a WorkdayApiError with a sandbox-aware hint if a path can't be read.
+ */
+async function uploadFileInputs(
+  uploader: (bytes: Uint8Array, filename: string) => Promise<string>,
+  filePaths: string[] | undefined,
+  attachments: { filename: string; base64: string }[] | undefined,
+): Promise<{ name: string; file: string }[]> {
+  const out: { name: string; file: string }[] = [];
+  for (const filePath of filePaths ?? []) {
+    let bytes: Buffer;
+    try {
+      bytes = await readFile(filePath);
+    } catch (cause) {
+      // A /mnt/user-data/... path is a Claude Chat sandbox upload — it lives on a different
+      // machine than this (local) server, so steer the model straight to the base64 route.
+      const hint = filePath.includes("/mnt/user-data/")
+        ? "This looks like a Claude Chat sandbox path; this server runs on a different machine and " +
+          "cannot read it. Re-send the file as base64 in `attachments` (base64-encode it in your " +
+          "sandbox; downscale large images first to stay within tool-argument limits)."
+        : "Provide a path to a file on the machine running this MCP server, or re-send the file as " +
+          "base64 in `attachments`.";
+      throw new WorkdayApiError(
+        `Could not read attachment "${filePath}": ${(cause as Error).message}. ${hint}`,
+      );
+    }
+    const name = basename(filePath);
+    const fileId = await uploader(bytes, name);
+    out.push({ name, file: fileId });
+  }
+  for (const att of attachments ?? []) {
+    const bytes = decodeBase64(att.base64);
+    if (bytes.length === 0) {
+      throw new WorkdayApiError(
+        `Attachment "${att.filename}" decoded to 0 bytes — the base64 content is empty or invalid.`,
+      );
+    }
+    const fileId = await uploader(bytes, att.filename);
+    out.push({ name: att.filename, file: fileId });
+  }
+  return out;
+}
+
 /** Render a "from → to" date range, collapsing a single-day range to one date. */
 function formatRange(from?: string, to?: string): string {
   if (from && to) return from === to ? from : `${from} → ${to}`;
@@ -164,6 +209,10 @@ const server = new McpServer(
       "  2. If there is no prior entry (or the user wants a different one), call `list_assignments`",
       "     and pick an active assignment, asking the user which one if there is more than one.",
       "  3. Propose the assignment, date range, and hours back to the user and confirm before submitting.",
+      "  4. Most users attach a screenshot of the client's hours-registration system. If none has been",
+      "     provided, ASK the user whether they have one and (if yes) include it via `filePaths` (a path",
+      "     on the user's machine — preferred) or `attachments` (inline base64). Same path/sandbox rules",
+      "     as `submit_cost_expense`.",
       "Sick and leave hours attach directly to the person, so they need no assignment.",
       "After registering, you may call the matching list tool to show the user the saved entry.",
       "",
@@ -304,9 +353,7 @@ server.registerTool(
     try {
       const client = new WorkdayClient();
 
-      const pathList = filePaths ?? [];
-      const inlineList = attachments ?? [];
-      if (pathList.length + inlineList.length === 0) {
+      if ((filePaths?.length ?? 0) + (attachments?.length ?? 0) === 0) {
         throw new WorkdayApiError(
           "At least one receipt attachment is required — pass `filePaths` (a file on this server's " +
             "machine) and/or `attachments` (base64 content).",
@@ -317,38 +364,11 @@ server.registerTool(
 
       // Upload every receipt first, so a single unreadable/failed file never leaves a
       // half-created expense referencing a missing attachment.
-      const files: { name: string; file: string }[] = [];
-      for (const filePath of pathList) {
-        let bytes: Buffer;
-        try {
-          bytes = await readFile(filePath);
-        } catch (cause) {
-          // A /mnt/user-data/... path is a Claude Chat sandbox upload — it lives on a different
-          // machine than this (local) server, so steer the model straight to the base64 route.
-          const hint = filePath.includes("/mnt/user-data/")
-            ? "This looks like a Claude Chat sandbox path; this server runs on a different machine and " +
-              "cannot read it. Re-send the file as base64 in `attachments` (base64-encode it in your " +
-              "sandbox; downscale large images first to stay within tool-argument limits)."
-            : "Provide a path to a file on the machine running this MCP server, or re-send the file as " +
-              "base64 in `attachments`.";
-          throw new WorkdayApiError(
-            `Could not read attachment "${filePath}": ${(cause as Error).message}. ${hint}`,
-          );
-        }
-        const name = basename(filePath);
-        const fileId = await client.uploadExpenseFile(bytes, name);
-        files.push({ name, file: fileId });
-      }
-      for (const att of inlineList) {
-        const bytes = decodeBase64(att.base64);
-        if (bytes.length === 0) {
-          throw new WorkdayApiError(
-            `Attachment "${att.filename}" decoded to 0 bytes — the base64 content is empty or invalid.`,
-          );
-        }
-        const fileId = await client.uploadExpenseFile(bytes, att.filename);
-        files.push({ name: att.filename, file: fileId });
-      }
+      const files = await uploadFileInputs(
+        (b, n) => client.uploadExpenseFile(b, n),
+        filePaths,
+        attachments,
+      );
 
       const created = await client.createCostExpense({
         personId: resolvedPersonId,
@@ -414,9 +434,13 @@ server.registerTool(
       "assignment, so an `assignmentCode` is required. Before calling this, prefer calling " +
       "`list_work_hours` first and reuse the assignmentCode of the most recent entry (confirm with the " +
       "user); if there is none, use `list_assignments` to find one. Provide `from`/`to` (YYYY-MM-DD; " +
-      "use the same date for a single day) and total `hours`, or pass `days` for per-day hours. Defaults " +
-      "to the API key owner; admins can pass a personId. Submitted with status REQUESTED. Needs " +
-      "WorkDayAuthority.WRITE.",
+      "use the same date for a single day) and total `hours`, or pass `days` for per-day hours. " +
+      "Optionally attach screenshot(s) of the client's hours-registration system via `filePaths` " +
+      "(local files on the user's machine — preferred) or `attachments` (inline base64, e.g. for " +
+      "files in YOUR sandbox); same path/sandbox rules as `submit_cost_expense`. Most users attach " +
+      "a screenshot, so if none has been provided ASK the user whether they have one before " +
+      "submitting. Defaults to the API key owner; admins can pass a personId. Submitted with status " +
+      "REQUESTED. Needs WorkDayAuthority.WRITE.",
     inputSchema: {
       assignmentCode: z
         .string()
@@ -425,15 +449,50 @@ server.registerTool(
       to: dateSchema("end"),
       hours: hoursSchema,
       days: daysSchema,
+      filePaths: z
+        .array(z.string())
+        .optional()
+        .describe(
+          "Path(s) to screenshot(s)/sheet(s) on the user's local machine (where this server runs — " +
+            "NOT your sandbox). Use this for Claude Desktop attachments, Claude Code references, " +
+            "and any other local file. Pass the path as-is; the server reads the file — do NOT try " +
+            "to open or read it yourself (your sandbox cannot see the user's filesystem).",
+        ),
+      attachments: z
+        .array(
+          z.object({
+            filename: z
+              .string()
+              .min(1)
+              .describe("File name including extension, e.g. 'screenshot.png'."),
+            base64: z
+              .string()
+              .min(1)
+              .describe("Base64-encoded file content. A 'data:...;base64,' prefix is allowed."),
+          }),
+        )
+        .optional()
+        .describe(
+          "Inline screenshot(s)/sheet(s) as base64. Use when the file lives in YOUR sandbox and is " +
+            "not on the user's machine (e.g. a `/mnt/user-data/uploads/...` upload): base64-encode " +
+            "the file in your sandbox and pass it here. Keep files small (downscale images first) — " +
+            "very large base64 may exceed tool-argument limits.",
+        ),
       personId: personIdSchema,
     },
   },
-  ({ assignmentCode, from, to, hours, days, personId }) =>
+  ({ assignmentCode, from, to, hours, days, filePaths, attachments, personId }) =>
     toolResult(async () => {
       const client = new WorkdayClient();
       // personId is resolved for parity with the other tools / admin overrides, even though the
       // backend derives ownership from the assignment.
       if (!personId) await client.getMyPersonId();
+      // Upload any sheets first; if a path/base64 fails we never partially create a work-hour entry.
+      const sheets = await uploadFileInputs(
+        (b, n) => client.uploadWorkDaySheet(b, n),
+        filePaths,
+        attachments,
+      );
       const form: WorkDayForm = {
         from,
         to,
@@ -441,7 +500,7 @@ server.registerTool(
         days,
         status: "REQUESTED",
         assignmentCode,
-        sheets: undefined,
+        sheets: sheets.length > 0 ? sheets : undefined,
       };
       const created = await client.createWorkDay(form);
       return summaryWithJson(`Registered work hours:\n• ${formatWorkDay(created)}`, created);

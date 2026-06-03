@@ -42,8 +42,10 @@ for the count (same pattern as `listExpenses`). List calls pass `sort: undefined
 sort server-side (`from DESC, id ASC`).
 
 - `list_work_hours` / `register_work_hours` — `GET`/`POST /api/workdays`. Work hours attach to an
-  **assignment**, so `register_work_hours` requires an `assignmentCode` (not a `personId`); `sheets`
-  is left unset. Needs `WorkDayAuthority.READ` / `.WRITE`.
+  **assignment**, so `register_work_hours` requires an `assignmentCode` (not a `personId`).
+  Optional screenshot(s) of the client's hours-registration system are accepted via `filePaths` /
+  `attachments` — same mechanism as cost-expense receipts (see the attachments paragraph below).
+  Needs `WorkDayAuthority.READ` / `.WRITE`.
 - `list_assignments` — `GET /api/assignments`. Helper for finding the `assignmentCode`. Needs
   `AssignmentAuthority.READ`.
 - `list_sick_hours` / `register_sick_hours` — `GET`/`POST /api/sickdays`. Attaches to the person
@@ -88,18 +90,24 @@ as work hours), and confirm the plan before registering. The reliable encoding i
 skipped days). Per-tool `description`s carry the same hints so they also apply when a client ignores
 `instructions`. Keep prescriptive guidance here, not in code.
 
-The multipart upload (`WorkdayClient.uploadExpenseFile`) **bypasses the generated Wirespec client**
-and calls `fetch` directly: `Wirespec.RawRequest.body` is `string`-only and the shared `handle()`
-forces `Content-Type: application/json`, neither of which fits `multipart/form-data`. The JSON
-create call (`createCostExpense`) goes through the generated `CostExpenseCreate` as usual.
-Attachments reach the server two ways: a **file path** on the user's local machine (Claude Desktop
-attachments, Claude Code references, or any saved file — the server runs there and reads them
-itself), or **inline base64** for files that live in Claude's own sandbox (`/mnt/user-data/uploads/...`)
-and so aren't reachable from the user's machine. The tool description explicitly tells Claude not
-to try to open local paths from its own sandbox — Claude Desktop in particular tends to do that
-otherwise — just pass the path; the server reads it. Base64 carries exact bytes but is bounded by
-tool-argument size, so keep files small (downscale large images). Travel expenses don't support
-files, so there is no `submit_travel_expense`.
+The multipart uploads (`WorkdayClient.uploadExpenseFile` and `uploadWorkDaySheet`, both delegating
+to a shared private `uploadFile`) **bypass the generated Wirespec client** and call `fetch`
+directly: `Wirespec.RawRequest.body` is `string`-only and the shared `handle()` forces
+`Content-Type: application/json`, neither of which fits `multipart/form-data`. The JSON create
+calls (`createCostExpense`, `createWorkDay`) go through the generated Wirespec endpoints as usual.
+For `submit_cost_expense`, files are POSTed to `/api/expenses/files` (→ UUID) and referenced via
+`files: [{name, file}]`; for `register_work_hours`, screenshots are POSTed to
+`/api/workdays/sheets` (→ UUID) and referenced via `sheets: [{name, file}]`. The two tools share
+the same `filePaths` / `attachments` schema and a module-level `uploadFileInputs` helper, which
+decodes base64 (stripping any `data:...;base64,` prefix) and gives a sandbox-aware error if a path
+can't be read. Attachments reach the server two ways: a **file path** on the user's local machine
+(Claude Desktop attachments, Claude Code references, or any saved file — the server runs there and
+reads them itself), or **inline base64** for files that live in Claude's own sandbox
+(`/mnt/user-data/uploads/...`) and so aren't reachable from the user's machine. The tool
+descriptions explicitly tell Claude not to try to open local paths from its own sandbox — Claude
+Desktop in particular tends to do that otherwise — just pass the path; the server reads it. Base64
+carries exact bytes but is bounded by tool-argument size, so keep files small (downscale large
+images). Travel expenses don't support files, so there is no `submit_travel_expense`.
 
 ## Authentication
 
