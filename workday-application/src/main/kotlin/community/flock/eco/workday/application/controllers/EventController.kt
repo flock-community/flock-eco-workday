@@ -65,7 +65,9 @@ class EventController(
         SecurityContextHolder.getContext().authentication
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
 
-    @PreAuthorize("hasAuthority('EventAuthority.READ')")
+    // SUBSCRIBE-only workers (the default employee authority set) may list events too:
+    // redact() below strips everything a non-attendee may not see.
+    @PreAuthorize("hasAnyAuthority('EventAuthority.READ', 'EventAuthority.SUBSCRIBE')")
     override suspend fun getEventAll(request: GetEventAll.Request): GetEventAll.Response<*> {
         val auth = authentication()
         val page = eventService.findAll(request.queries.toPageable())

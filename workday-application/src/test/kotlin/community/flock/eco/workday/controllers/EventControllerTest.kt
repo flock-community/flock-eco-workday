@@ -180,6 +180,25 @@ class EventControllerTest : WorkdayIntegrationTest() {
     }
 
     @Test
+    fun `Worker with only SUBSCRIBE authority can list events, redacted when not attending`() {
+        createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3))
+        val user = createUser(setOf("EventAuthority.SUBSCRIBE"))
+
+        mvc
+            .perform(
+                get(baseUrl)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].description").value("N/A - Henk"))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].persons.length()").value(0))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].costs").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].days").doesNotExist())
+    }
+
+    @Test
     fun `User needs the right EventAuthority`() {
         val event = createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3))
         val user = createUser(setOf("EventAuthority.READ", "EventAuthority.WRITE", "EventAuthority.ADMIN"))
