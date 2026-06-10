@@ -5,6 +5,7 @@ import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import TodoIcon from '@mui/icons-material/AssignmentTurnedIn';
 import ClientIcon from '@mui/icons-material/Business';
 import EventIcon from '@mui/icons-material/CalendarToday';
+import GameIcon from '@mui/icons-material/Casino';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ContractIcon from '@mui/icons-material/Description';
 import HealingIcon from '@mui/icons-material/Healing';
@@ -140,6 +141,11 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
       icon: UserIcon,
       url: '/person',
       authority: 'PersonAuthority.READ',
+    },
+    {
+      name: 'Congkak',
+      icon: GameIcon,
+      url: '/congkak',
     },
     {
       name: 'Reports',

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import AssignmentPage from '../features/assignments/AssignmentPage';
 import { ClientFeature } from '../features/client/ClientFeature';
+import { CongkakFeature } from '../features/congkak/CongkakFeature';
 import ContractPage from '../features/contract/ContractPage';
 import { DashboardFeature } from '../features/dashboard/DashboardFeature';
 import { EventFeature } from '../features/event/EventFeature';
@@ -38,6 +39,7 @@ export const AuthenticatedApplication = () => {
         <Route path="/dashboard" exact component={DashboardFeature} />
         <Route path="/month" exact component={MonthFeature} />
         <Route path="/todo" exact component={TodoFeature} />
+        <Route path="/congkak" exact component={CongkakFeature} />
         <Route path="/clients" exact component={ClientFeature} />
         <Route path="/contracts" exact component={ContractPage} />
         <Route path="/projects" exact component={ProjectFeature} />
