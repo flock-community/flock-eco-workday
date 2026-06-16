@@ -11,6 +11,7 @@ module.exports = {
     '/node_modules/',
     '/tests/', // Ignore Playwright tests
     '/dist/',
+    '/.claude/', // Ignore Claude worktree copies of the repo
   ],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
