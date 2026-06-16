@@ -93,7 +93,9 @@ export const ContractFormInternal = ({
   const schema = object({
     monthlySalary: number().required().default(4000),
     hoursPerWeek: number().required().default(40),
-    from: mixed().required().default(dayjs()),
+    from: mixed()
+      .required()
+      .default(() => dayjs()),
     to: mixed().default(null),
     billable: boolean().default(true),
     holidayHours: number().required().default(192),

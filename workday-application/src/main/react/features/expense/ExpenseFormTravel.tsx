@@ -17,7 +17,9 @@ export type ExpenseTravelForm = {
 
 export const schema = Yup.object({
   description: Yup.string().required().default(''),
-  date: Yup.mixed().required().default(dayjs()),
+  date: Yup.mixed()
+    .required()
+    .default(() => dayjs()),
   distance: Yup.number().required().default(0),
   allowance: Yup.number().required().default(0),
 });
