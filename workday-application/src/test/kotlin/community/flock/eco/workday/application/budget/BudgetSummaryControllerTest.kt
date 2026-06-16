@@ -55,7 +55,6 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
         val personEntity = createHelper.createPersonEntity("summary", "test", user.code)
         val person = personEntity.toDomain()
 
-        // Create contract with hackHours=100, studyHours=80, studyMoney=2500
         createHelper.createContractInternal(
             person = personEntity,
             from = LocalDate.of(2026, 1, 1),
@@ -65,7 +64,6 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             studyMoney = BigDecimal("2500.00"),
         )
 
-        // Create hack time allocation: 8 hours used
         hackTimeBudgetAllocationService.create(
             HackTimeBudgetAllocation(
                 person = person,
@@ -80,7 +78,6 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             ),
         )
 
-        // Create study time allocation: 4 hours used
         studyTimeBudgetAllocationService.create(
             StudyTimeBudgetAllocation(
                 person = person,
@@ -95,7 +92,6 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             ),
         )
 
-        // Create study money allocation: 500.00 used
         studyMoneyBudgetAllocationService.create(
             StudyMoneyBudgetAllocation(
                 person = person,
@@ -164,7 +160,6 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             studyMoney = BigDecimal("1000.00"),
         )
 
-        // Non-admin does not need personId param - auto-scoped
         mvc
             .perform(
                 MockMvcRequestBuilders
@@ -194,7 +189,6 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             studyMoney = BigDecimal.ZERO,
         )
 
-        // Admin queries other person's summary
         mvc
             .perform(
                 MockMvcRequestBuilders

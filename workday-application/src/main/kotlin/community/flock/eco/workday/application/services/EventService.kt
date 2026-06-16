@@ -167,7 +167,6 @@ class EventService(
 
     @Transactional
     fun deleteByCode(code: String) {
-        // Delete budget allocations linked to this event
         budgetAllocationService
             .findAllByEventCode(code)
             .forEach { budgetAllocationService.deleteById(it.id) }
@@ -208,7 +207,6 @@ class EventService(
         val existingAllocations = budgetAllocationService.findAllByEventCode(event.code)
         val currentPersonUuids = event.persons.map { it.uuid }.toSet()
 
-        // Delete allocations for persons no longer in the event
         existingAllocations
             .filter { it.person.uuid !in currentPersonUuids }
             .forEach { budgetAllocationService.deleteById(it.id) }
@@ -226,7 +224,6 @@ class EventService(
             val domainPerson = appPerson.toDomain()
             val personAllocations = existingByPerson[appPerson.uuid] ?: emptyList()
 
-            // --- Time allocations ---
             if (event.defaultTimeAllocationType != null) {
                 val isHack = event.defaultTimeAllocationType in listOf("HACK", "HACK_TIME")
                 val allocType = if (isHack) BudgetAllocationType.HACK else BudgetAllocationType.STUDY
@@ -298,7 +295,6 @@ class EventService(
                 }
             }
 
-            // --- Money allocation ---
             val share = moneyShares[appPerson.uuid] ?: BigDecimal.ZERO
             val existingMoney = personAllocations.firstOrNull { it is StudyMoneyBudgetAllocation }
             if (share > BigDecimal.ZERO) {
@@ -323,12 +319,10 @@ class EventService(
                     )
                 }
             } else if (existingMoney != null) {
-                // Budget removed — delete money allocation
                 budgetAllocationService.deleteById(existingMoney.id)
             }
         }
 
-        // Return the final state of allocations for this event
         return budgetAllocationService.findAllByEventCode(event.code).map { alloc ->
             when (alloc) {
                 is HackTimeBudgetAllocation -> alloc.produce()

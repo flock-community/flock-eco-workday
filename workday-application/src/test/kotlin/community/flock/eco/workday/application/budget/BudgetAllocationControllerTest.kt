@@ -337,7 +337,6 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
         val adminPerson = createHelper.createPerson("admin", "person", adminUser.code)
         val regularPerson = createHelper.createPerson("regular", "person", regularUser.code)
 
-        // Create allocation for admin person
         hackTimeBudgetAllocationService.create(
             HackTimeBudgetAllocation(
                 person = adminPerson,
@@ -352,7 +351,6 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
             ),
         )
 
-        // Create allocation for regular person
         hackTimeBudgetAllocationService.create(
             HackTimeBudgetAllocation(
                 person = regularPerson,
@@ -367,7 +365,6 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
             ),
         )
 
-        // Regular user should only see their own allocation
         mvc
             .perform(
                 MockMvcRequestBuilders
