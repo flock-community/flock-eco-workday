@@ -138,7 +138,7 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
   return (
     <Formik
       initialValues={{
-        ...PERSON_FORM_SCHEMA.cast(),
+        ...PERSON_FORM_SCHEMA.getDefault(),
         active: true,
         ...item,
         userCode: item?.user?.id,

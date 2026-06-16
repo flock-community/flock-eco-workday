@@ -60,7 +60,7 @@ export const ContractFormManagement = ({
 
   return (
     <Formik
-      initialValues={{ ...schema.cast(), ...init }}
+      initialValues={{ ...schema.getDefault(), ...init }}
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize

@@ -35,7 +35,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
           });
         });
       } else {
-        setState(schema.cast());
+        setState(schema.getDefault());
       }
     } else {
       setState(undefined);
