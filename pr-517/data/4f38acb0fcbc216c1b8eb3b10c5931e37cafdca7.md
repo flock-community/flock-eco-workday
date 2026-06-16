@@ -1,0 +1,241 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: managerEmployeeFlow.spec.ts >> Manager-Employee Workflow: Bert manages, Ernie books >> Bert (manager) creates an assignment for Ernie
+- Location: tests/managerEmployeeFlow.spec.ts:108:5
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByText('Create / Edit an assignment')
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for getByText('Create / Edit an assignment')
+
+```
+
+```yaml
+- main:
+  - alert:
+    - paragraph: "Something went wrong:"
+    - text: value.isValid is not a function
+    - button "Try again"
+```
+
+# Test source
+
+```ts
+  16  | // were chosen so each booking spans a clean Mon → Fri window:
+  17  | //
+  18  | //   2026-05-04 = Monday
+  19  | //   2026-05-11 = Monday
+  20  | //   2026-05-15 = Friday
+  21  | //   2026-05-18 = Monday
+  22  | //   2026-05-25 = Monday
+  23  | //   2026-05-29 = Friday
+  24  | //
+  25  | // Seeded ernie work days for 2026 are 1st → 10th of each month, so we
+  26  | // place our work day in week 4 to avoid the 1st-of-month seeded entries.
+  27  | const RUN_ID = Date.now();
+  28  | const ASSIGNMENT_ROLE = `Workflow tester ${RUN_ID}`;
+  29  | const ASSIGNMENT_CLIENT = 'Client B';
+  30  | const ASSIGNMENT_FROM = '04-05-2026';
+  31  | const ASSIGNMENT_TO = '31-05-2026';
+  32  | const SICK_DESCRIPTION = `Workflow flu ${RUN_ID}`;
+  33  | const LEAVE_DESCRIPTION = `Workflow holiday ${RUN_ID}`;
+  34  | 
+  35  | const WORKDAY_FROM = '25-05-2026';
+  36  | const WORKDAY_TO = '29-05-2026';
+  37  | const SICKDAY_DATE = '18-05-2026';
+  38  | const LEAVE_FROM = '11-05-2026';
+  39  | const LEAVE_TO = '15-05-2026';
+  40  | 
+  41  | async function selectErnieFromPersonSelector(page: Page) {
+  42  |   await page.getByRole('combobox').first().click();
+  43  |   await page.getByRole('option', { name: 'Ernie Muppets' }).click();
+  44  |   await page.waitForLoadState('networkidle');
+  45  | }
+  46  | 
+  47  | async function changeStatusOnLocator(
+  48  |   page: Page,
+  49  |   locator: Locator,
+  50  |   fromStatus: string,
+  51  |   toStatus: string,
+  52  | ) {
+  53  |   await expect(locator).toBeVisible();
+  54  |   await locator.getByRole('button', { name: fromStatus }).click();
+  55  |   await page.getByRole('menuitem', { name: toStatus }).click();
+  56  |   await page.waitForLoadState('networkidle');
+  57  |   await expect(locator.getByRole('button', { name: toStatus })).toBeVisible();
+  58  | }
+  59  | 
+  60  | // Walk the FlockPagination ("Go to next page") until `locator` resolves.
+  61  | // Both the SickDay and LeaveDay APIs sit on top of Spring's standard
+  62  | // Pageable resolver, which sets the `x-total` response header that the
+  63  | // frontend uses to compute the page count. The WorkDay API does the same
+  64  | // via its Page<T>.toResponse() helper. Seeded mock data spreads dozens of
+  65  | // entries across years for ernie, so our run-specific entry can sit
+  66  | // several pages deep.
+  67  | async function findOnAnyPage(
+  68  |   page: Page,
+  69  |   locator: Locator,
+  70  |   maxPages = 25,
+  71  | ): Promise<Locator> {
+  72  |   for (let i = 0; i < maxPages; i++) {
+  73  |     if ((await locator.count()) > 0) {
+  74  |       return locator.first();
+  75  |     }
+  76  |     const nextBtn = page.getByRole('button', { name: 'Go to next page' });
+  77  |     if (
+  78  |       (await nextBtn.count()) === 0 ||
+  79  |       !(await nextBtn.isVisible()) ||
+  80  |       !(await nextBtn.isEnabled())
+  81  |     ) {
+  82  |       throw new Error(
+  83  |         `findOnAnyPage: could not find locator within ${maxPages} pages`,
+  84  |       );
+  85  |     }
+  86  |     await nextBtn.click();
+  87  |     await page.waitForLoadState('networkidle');
+  88  |   }
+  89  |   throw new Error('findOnAnyPage: exceeded the page-walk safety limit');
+  90  | }
+  91  | 
+  92  | test.describe
+  93  |   .serial('Manager-Employee Workflow: Bert manages, Ernie books', () => {
+  94  |     test.beforeEach(async ({ context }) => {
+  95  |       await context.clearCookies();
+  96  |     });
+  97  | 
+  98  |     test.afterEach(async ({ page, context }) => {
+  99  |       await context.clearCookies();
+  100 |       await page.evaluate(() => {
+  101 |         if (typeof window.localStorage !== 'undefined')
+  102 |           window.localStorage.clear();
+  103 |         if (typeof window.sessionStorage !== 'undefined')
+  104 |           window.sessionStorage.clear();
+  105 |       });
+  106 |     });
+  107 | 
+  108 |     test('Bert (manager) creates an assignment for Ernie', async ({ page }) => {
+  109 |       await Given_I_am_logged_in_as_user(page, 'bert');
+  110 |       await page.goto('/assignments');
+  111 |       await page.waitForLoadState('networkidle');
+  112 | 
+  113 |       await selectErnieFromPersonSelector(page);
+  114 | 
+  115 |       await page.getByRole('button', { name: 'Add' }).click();
+> 116 |       await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
+      |                                                                   ^ Error: expect(locator).toBeVisible() failed
+  117 | 
+  118 |       await page.getByLabel('Hourly rate').clear();
+  119 |       await page.getByLabel('Hourly rate').fill('95');
+  120 |       await page.getByLabel('Hours per week').clear();
+  121 |       await page.getByLabel('Hours per week').fill('40');
+  122 |       await page.getByLabel('Role').fill(ASSIGNMENT_ROLE);
+  123 | 
+  124 |       const startDate = page.getByLabel('Start date');
+  125 |       await startDate.click();
+  126 |       await startDate.fill(ASSIGNMENT_FROM);
+  127 |       await startDate.press('Tab');
+  128 |       await page.waitForTimeout(200);
+  129 | 
+  130 |       const endDate = page.getByLabel('End date');
+  131 |       await endDate.click();
+  132 |       await endDate.fill(ASSIGNMENT_TO);
+  133 |       await endDate.press('Tab');
+  134 |       await page.waitForTimeout(200);
+  135 | 
+  136 |       const clientSelect = page
+  137 |         .getByRole('dialog')
+  138 |         .getByRole('combobox')
+  139 |         .first();
+  140 |       await clientSelect.click();
+  141 |       await page.getByRole('option', { name: ASSIGNMENT_CLIENT }).click();
+  142 | 
+  143 |       await page.getByRole('button', { name: 'Save' }).click();
+  144 |       // The dialog only closes after the POST resolves, so dialog teardown
+  145 |       // is itself proof that the assignment was persisted. We do not assert
+  146 |       // on the rendered list here: the assignment controller does not set
+  147 |       // an `x-total` header, so the AssignmentList shows count=0 and never
+  148 |       // exposes a "Go to next page" button — and Ernie's seven seeded
+  149 |       // assignments push our new Client B card onto a later page. The
+  150 |       // follow-up test exercises the assignment by booking against it,
+  151 |       // which would fail outright if creation had not succeeded.
+  152 |       await expect(
+  153 |         page.getByText('Create / Edit an assignment'),
+  154 |       ).not.toBeVisible();
+  155 |       await page.waitForLoadState('networkidle');
+  156 |     });
+  157 | 
+  158 |     test('Ernie books work hours, sick hours and a leave day', async ({
+  159 |       page,
+  160 |     }) => {
+  161 |       await Given_I_am_logged_in_as_user(page, 'ernie');
+  162 | 
+  163 |       // ---- Work hours ----
+  164 |       await page.goto('/workdays');
+  165 |       await page.waitForLoadState('networkidle');
+  166 |       await page.getByRole('button', { name: 'Add' }).click();
+  167 |       await expect(page.getByText('Create Workday')).toBeVisible();
+  168 | 
+  169 |       await When_I_fill_in_the_date_range_from_till(
+  170 |         page,
+  171 |         WORKDAY_FROM,
+  172 |         WORKDAY_TO,
+  173 |       );
+  174 | 
+  175 |       // The new Client B (May 2026) and the existing Client D (all of 2026)
+  176 |       // both overlap May 25 → 29, so the AssignmentSelector does not
+  177 |       // auto-pick. Open the dropdown and choose our new assignment by
+  178 |       // matching its run-tagged role.
+  179 |       await page.getByLabel('Assignment').click();
+  180 |       const listbox = page.getByRole('listbox', { name: 'Assignment' });
+  181 |       await listbox.waitFor({ state: 'visible', timeout: 5000 });
+  182 |       await page
+  183 |         .getByRole('option', {
+  184 |           name: new RegExp(`${ASSIGNMENT_CLIENT}.*${ASSIGNMENT_ROLE}`),
+  185 |         })
+  186 |         .first()
+  187 |         .click();
+  188 | 
+  189 |       await page.getByRole('button', { name: 'Save' }).click();
+  190 |       await expect(page.getByText('Create Workday')).not.toBeVisible();
+  191 |       await page.waitForLoadState('networkidle');
+  192 | 
+  193 |       // The new work day sits on a later page of the from-desc paginated
+  194 |       // list (after seeded Aug → Dec 2026 entries), so walk pagination.
+  195 |       const workRows = page
+  196 |         .locator('tr')
+  197 |         .filter({ hasText: WORKDAY_FROM })
+  198 |         .filter({ hasText: ASSIGNMENT_ROLE });
+  199 |       const workRow = await findOnAnyPage(page, workRows);
+  200 |       await expect(workRow).toContainText(ASSIGNMENT_CLIENT);
+  201 | 
+  202 |       // ---- Sick day ----
+  203 |       await page.goto('/sickdays');
+  204 |       await page.waitForLoadState('networkidle');
+  205 |       await page.getByRole('button', { name: 'Add' }).click();
+  206 |       await expect(page.getByText('Create Sickday')).toBeVisible();
+  207 | 
+  208 |       await page
+  209 |         .getByRole('dialog')
+  210 |         .getByLabel('Description')
+  211 |         .fill(SICK_DESCRIPTION);
+  212 |       await When_I_fill_in_the_date_range_from_till(
+  213 |         page,
+  214 |         SICKDAY_DATE,
+  215 |         SICKDAY_DATE,
+  216 |       );
+```
