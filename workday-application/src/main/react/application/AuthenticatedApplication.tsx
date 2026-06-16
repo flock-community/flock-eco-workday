@@ -1,27 +1,28 @@
-import { UserFeature } from '@workday-user';
-import { useState } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import {UserFeature} from '@workday-user';
+import {useState} from 'react';
+import {Redirect, Route, Switch} from 'react-router-dom';
 import AssignmentPage from '../features/assignments/AssignmentPage';
-import { ClientFeature } from '../features/client/ClientFeature';
+import {BudgetAllocationPage} from '../features/budget';
+import {ClientFeature} from '../features/client/ClientFeature';
 import ContractPage from '../features/contract/ContractPage';
 import { DashboardFeature } from '../features/dashboard/DashboardFeature';
 import { EventFeature } from '../features/event/EventFeature';
 import { EventRatingFeature } from '../features/event_rating/EventRatingFeature';
 import ExpensePage from '../features/expense/ExpensePage';
 import LeaveDayPage from '../features/holiday/LeaveDayPage';
-import { HomeFeature } from '../features/home/HomeFeature';
-import { MonthFeature } from '../features/month/MonthFeature';
-import { PersonFeature } from '../features/person/PersonFeature';
-import { ProfileFeature } from '../features/profile/ProfileFeature';
-import { ProjectFeature } from '../features/project/ProjectFeature';
+import {HomeFeature} from '../features/home/HomeFeature';
+import {MonthFeature} from '../features/month/MonthFeature';
+import {PersonFeature} from '../features/person/PersonFeature';
+import {ProfileFeature} from '../features/profile/ProfileFeature';
+import {ProjectFeature} from '../features/project/ProjectFeature';
 import AssignmentReport from '../features/report/Assignment/AssignmentReport';
 import AssignmentOverview from '../features/report/AssignmentOverview/AssignmentOverview';
 import ContractOverview from '../features/report/ContractOverview/ContractOverview';
 import SickDayPage from '../features/sickday/SickDayPage';
-import { TodoFeature } from '../features/todo/TodoFeature';
+import {TodoFeature} from '../features/todo/TodoFeature';
 import WorkDayPage from '../features/workday/WorkDayPage';
-import { ApplicationDrawer } from './ApplicationDrawer';
-import { ApplicationLayout } from './ApplicationLayout';
+import {ApplicationDrawer} from './ApplicationDrawer';
+import {ApplicationLayout} from './ApplicationLayout';
 
 export const AuthenticatedApplication = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -32,7 +33,7 @@ export const AuthenticatedApplication = () => {
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
       />
-      <ApplicationLayout onDrawer={() => setOpenDrawer(true)} />
+      <ApplicationLayout onDrawer={() => setOpenDrawer(true)}/>
       <Switch>
         <Route path="/" exact component={HomeFeature} />
         <Route path="/dashboard" exact component={DashboardFeature} />
@@ -57,7 +58,9 @@ export const AuthenticatedApplication = () => {
           path="/reports/assignment-overview"
           component={AssignmentOverview}
         />
-        <Redirect to="/" />
+        <Route path="/budget-allocations" exact component={BudgetAllocationPage}/>
+
+        <Redirect to="/"/>
       </Switch>
     </>
   );

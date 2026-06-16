@@ -3,6 +3,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
 import type { EventForm } from '../wirespec/model';
 import type { Person, PersonLight } from './PersonClient';
+import type { BudgetAllocation } from '../wirespec/model';
 
 const path = '/api/events';
 
@@ -27,8 +28,10 @@ export type FullFlockEvent = {
   hours: number;
   days: number[];
   persons: Person[];
-  costs: number;
+  budget: number;
   type: EventType;
+  defaultTimeAllocationType?: string | null;
+  budgetAllocations?: BudgetAllocation[];
 };
 
 type FlockEventRawProjection = {
@@ -50,8 +53,10 @@ type FlockEventRaw = {
   hours: number;
   days: number[];
   persons: Person[];
-  costs: number;
+  budget: number;
   type: EventType;
+  defaultTimeAllocationType?: string | null;
+  budgetAllocations?: BudgetAllocation[];
 };
 
 // The type we send to the backend: the generated wirespec contract.
@@ -84,13 +89,15 @@ const internalizeFull = (it: FlockEventRaw): FullFlockEvent => ({
   type: it.type,
   id: it.id,
   days: it.days,
-  costs: it.costs,
+  budget: it.budget,
+  defaultTimeAllocationType: it.defaultTimeAllocationType,
+  budgetAllocations: it.budgetAllocations,
 });
 
 export const EVENT_PAGE_SIZE: number = 10;
 
 const internalizingClient = InternalizingClient<
-  FlockEventRequest,
+FlockEventRequest,
   FlockEventRaw,
   FullFlockEvent
 >(path, internalizeFull);

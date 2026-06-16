@@ -14,6 +14,7 @@ export const PersonSelectorField = ({
       form: { touched, errors, setFieldValue, setFieldTouched },
     }) => (
       <PersonSelector
+        label={"Person"}
         value={value}
         onBlur={() => setFieldTouched(name, true)}
         onChange={(userCode) => setFieldValue(name, userCode)}

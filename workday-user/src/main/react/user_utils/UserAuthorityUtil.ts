@@ -11,21 +11,22 @@ class UserAuthorityUtil extends React.Component<
   UserAuthorityUtilProps,
   UserAuthorityUtilState
 > {
-  static authorities = null;
+  static authorities: string[] | null = null;
 
-  static setAuthorities(authorities) {
+  static setAuthorities(authorities: string[]) {
     UserAuthorityUtil.authorities = authorities;
   }
 
-  static hasAuthority(authority) {
+  static hasAuthority(authority: string): boolean | undefined {
     if (!UserAuthorityUtil.authorities) {
-      return null;
+      return undefined;
     }
 
-    return authority
-      .split(',')
-      .map((it) => UserAuthorityUtil.authorities.includes(it))
-      .reduce((acc, cur) => (acc ? acc : cur), false);
+    return UserAuthorityUtil.authorities.includes(authority);
+    // return authority
+    //   .split(',')
+    //   .map((it) => UserAuthorityUtil.authorities.includes(it))
+    //   .reduce((acc: boolean, cur: boolean) => (acc ? acc : cur), false);
   }
 
   render() {

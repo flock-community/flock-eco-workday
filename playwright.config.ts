@@ -9,6 +9,7 @@ export default defineConfig({
   reporter: process.env.CI
     ? [['html', { outputFolder: 'playwright-report', open: 'never' }], ['line']]
     : 'line',
+  timeout: 120000, // 2 min per test — backend syncBudgetAllocations can be slow
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',

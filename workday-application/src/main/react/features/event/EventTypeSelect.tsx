@@ -1,6 +1,7 @@
-import { MenuItem, Select } from '@mui/material';
+import {InputLabel, MenuItem, Select} from '@mui/material';
 import { EventType } from '../../clients/EventClient';
 import { EventTypeMapping } from '../../utils/mappings';
+import FormControl from "@mui/material/FormControl";
 
 export function EventTypeSelect({ onChange, value }) {
   const renderSelectOption = (item: EventType) => {
@@ -17,11 +18,15 @@ export function EventTypeSelect({ onChange, value }) {
   };
 
   return (
+    <FormControl fullWidth>
+      <InputLabel id="event-select-label">Event type</InputLabel>
     <Select
       fullWidth
-      value={value}
+      value={value || ''}
+      labelId="event-select-label"
       onChange={handleOnChange}
       label="Event type"
+      displayEmpty
     >
       {[
         EventType.GENERAL_EVENT,
@@ -30,5 +35,6 @@ export function EventTypeSelect({ onChange, value }) {
         EventType.CONFERENCE,
       ].map((eventType) => renderSelectOption(eventType))}
     </Select>
+    </FormControl>
   );
 }

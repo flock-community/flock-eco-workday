@@ -17,6 +17,7 @@ export type PeriodInputProps = {
   period: Period;
   onChange: (day: Dayjs, hours: number) => void;
   dayMeta?: Map<string, DayMeta>;
+  readonly?: boolean;
 };
 
 // Background-only fill — green for hackdays, purple for leave (no
@@ -46,7 +47,7 @@ const tooltipFor = (meta: DayMeta | undefined): string | undefined => {
   return parts.length > 0 ? parts.join(' · ') : undefined;
 };
 
-export function PeriodInput({ period, onChange, dayMeta }: PeriodInputProps) {
+export function PeriodInput({ period, onChange, dayMeta, readonly = false }: PeriodInputProps) {
   const grid = calcGrid(period);
 
   const totalHoursForPeriod = period.days?.reduce(
@@ -102,12 +103,14 @@ export function PeriodInput({ period, onChange, dayMeta }: PeriodInputProps) {
                   size="small"
                   label={day.disabled ? '-' : day.date.format('DD MMM')}
                   value={day.value}
-                  disabled={day.disabled}
-                  onChange={(ev) =>
-                    onChange(day.date, parseFloat(ev.target.value || '0'))
-                  }
+                  disabled={day.disabled || readonly}
+                  onChange={(ev) => {
+                    const val = parseFloat(ev.target.value || '0');
+                    onChange(day.date, Math.max(0, val));
+                  }}
                   type="number"
                   sx={sx}
+                  slotProps={{ htmlInput: { min: 0, step: 0.5 } }}
                 />
               );
               return (

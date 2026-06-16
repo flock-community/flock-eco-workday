@@ -2,7 +2,7 @@ import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
-const backendUrl = process.env.VITE_BACKEND_URL || 'http://localhost:8080';
+const backendUrl = process.env.VITE_BACKEND_URL || 'http://127.0.0.1:8080';
 
 export default defineConfig({
   plugins: [
@@ -45,37 +45,37 @@ export default defineConfig({
       '/api': {
         target: backendUrl,
         changeOrigin: false,
-        cookieDomainRewrite: 'localhost',
+        cookieDomainRewrite: '127.0.0.1',
       },
       '/login': {
         target: backendUrl,
         changeOrigin: false,
-        cookieDomainRewrite: 'localhost',
+        cookieDomainRewrite: '127.0.0.1',
       },
       '/logout': {
         target: backendUrl,
         changeOrigin: false,
-        cookieDomainRewrite: 'localhost',
+        cookieDomainRewrite: '127.0.0.1',
       },
       '/bootstrap': {
         target: backendUrl,
         changeOrigin: false,
-        cookieDomainRewrite: 'localhost',
+        cookieDomainRewrite: '127.0.0.1',
       },
       '/tasks': {
         target: backendUrl,
         changeOrigin: false,
-        cookieDomainRewrite: 'localhost',
+        cookieDomainRewrite: '127.0.0.1',
       },
       '/export': {
         target: backendUrl,
         changeOrigin: false,
-        cookieDomainRewrite: 'localhost',
+        cookieDomainRewrite: '127.0.0.1',
       },
       '/oauth2': {
         target: backendUrl,
         changeOrigin: false,
-        cookieDomainRewrite: 'localhost',
+        cookieDomainRewrite: '127.0.0.1',
       },
     },
   },
