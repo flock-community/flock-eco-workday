@@ -1,72 +1,10 @@
 import dayjs from 'dayjs';
 import type { BudgetAllocation, DailyTimeAllocationItem } from '../../wirespec/model';
-import type { Period } from '../period/Period';
-import type { PersonTimeAllocation } from './EventTimeAllocationSection';
-import type { PersonMoneyAllocation } from './EventMoneyAllocationSection';
 import {
-  periodToDailyAllocations,
   dailyAllocationsToPeriod,
   apiAllocationsToTimeParticipants,
   apiAllocationsToMoneyParticipants,
-  eventBudgetTypeToAllocationType,
-  eventBudgetTypeToDailyType,
 } from './eventBudgetTransformers';
-
-// --- EVT-01 / EVT-02: periodToDailyAllocations ---
-
-describe('periodToDailyAllocations', () => {
-  it('converts a period with days array to daily allocation items', () => {
-    const period: Period = {
-      from: dayjs('2026-03-10'),
-      to: dayjs('2026-03-12'),
-      days: [8, 4, 6],
-    };
-
-    const result = periodToDailyAllocations(period, 'HACK');
-
-    expect(result).toEqual([
-      { date: '2026-03-10', hours: 8, type: 'HACK' },
-      { date: '2026-03-11', hours: 4, type: 'HACK' },
-      { date: '2026-03-12', hours: 6, type: 'HACK' },
-    ]);
-  });
-
-  it('filters out entries where hours are zero', () => {
-    const period: Period = {
-      from: dayjs('2026-03-10'),
-      to: dayjs('2026-03-12'),
-      days: [8, 0, 6],
-    };
-
-    const result = periodToDailyAllocations(period, 'STUDY');
-
-    expect(result).toEqual([
-      { date: '2026-03-10', hours: 8, type: 'STUDY' },
-      { date: '2026-03-12', hours: 6, type: 'STUDY' },
-    ]);
-  });
-
-  it('returns empty array when days is undefined', () => {
-    const period: Period = {
-      from: dayjs('2026-03-10'),
-      to: dayjs('2026-03-12'),
-    };
-
-    expect(periodToDailyAllocations(period, 'HACK')).toEqual([]);
-  });
-
-  it('returns empty array when days is empty', () => {
-    const period: Period = {
-      from: dayjs('2026-03-10'),
-      to: dayjs('2026-03-12'),
-      days: [],
-    };
-
-    expect(periodToDailyAllocations(period, 'HACK')).toEqual([]);
-  });
-});
-
-// --- EVT-02: dailyAllocationsToPeriod ---
 
 describe('dailyAllocationsToPeriod', () => {
   it('converts daily allocation items back to a period with correct days array', () => {
@@ -98,9 +36,9 @@ describe('dailyAllocationsToPeriod', () => {
 
   it('ignores allocations outside the event date range', () => {
     const dailyAllocations: DailyTimeAllocationItem[] = [
-      { date: '2026-03-09', hours: 8, type: 'HACK' }, // before event
-      { date: '2026-03-10', hours: 4, type: 'HACK' }, // in range
-      { date: '2026-03-14', hours: 2, type: 'HACK' }, // after event
+      { date: '2026-03-09', hours: 8, type: 'HACK' },
+      { date: '2026-03-10', hours: 4, type: 'HACK' },
+      { date: '2026-03-14', hours: 2, type: 'HACK' },
     ];
     const eventFrom = dayjs('2026-03-10');
     const eventTo = dayjs('2026-03-12');
@@ -110,8 +48,6 @@ describe('dailyAllocationsToPeriod', () => {
     expect(result.days).toEqual([4, 0, 0]);
   });
 });
-
-// --- EVT-02: apiAllocationsToTimeParticipants ---
 
 describe('apiAllocationsToTimeParticipants', () => {
   const persons = [
@@ -158,7 +94,6 @@ describe('apiAllocationsToTimeParticipants', () => {
 
     const result = apiAllocationsToTimeParticipants(allocations, persons, eventFrom, eventTo);
 
-    // Only p1 has time allocations, p2 should be excluded
     expect(result).toHaveLength(1);
     expect(result[0].personId).toBe('p1');
     expect(result[0].personName).toBe('Alice Smith');
@@ -214,8 +149,6 @@ describe('apiAllocationsToTimeParticipants', () => {
     expect(result).toHaveLength(0);
   });
 });
-
-// --- EVT-03: apiAllocationsToMoneyParticipants ---
 
 describe('apiAllocationsToMoneyParticipants', () => {
   const persons = [
@@ -290,28 +223,5 @@ describe('apiAllocationsToMoneyParticipants', () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].amount).toBe(0);
-  });
-});
-// --- EVT-04: eventBudgetTypeToAllocationType ---
-
-describe('eventBudgetTypeToAllocationType', () => {
-  it('maps HACK to HACK_TIME', () => {
-    expect(eventBudgetTypeToAllocationType('HACK')).toBe('HACK_TIME');
-  });
-
-  it('maps STUDY to STUDY_TIME', () => {
-    expect(eventBudgetTypeToAllocationType('STUDY')).toBe('STUDY_TIME');
-  });
-});
-
-// --- EVT-04: eventBudgetTypeToDailyType ---
-
-describe('eventBudgetTypeToDailyType', () => {
-  it('maps HACK to HACK daily allocation type', () => {
-    expect(eventBudgetTypeToDailyType('HACK')).toBe('HACK');
-  });
-
-  it('maps STUDY to STUDY daily allocation type', () => {
-    expect(eventBudgetTypeToDailyType('STUDY')).toBe('STUDY');
   });
 });

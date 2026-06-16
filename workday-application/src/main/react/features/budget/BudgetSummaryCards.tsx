@@ -27,7 +27,6 @@ export function BudgetSummaryCards({summary}: BudgetSummaryCardsProps) {
           title="Hack Hours"
           budgetItem={summary.hackHours}
           unit="h"
-          color="primary"
         />
       </Grid>
       <Grid size={{xs: 12, md: 4}}>
@@ -35,7 +34,6 @@ export function BudgetSummaryCards({summary}: BudgetSummaryCardsProps) {
           title="Study Hours"
           budgetItem={summary.studyHours}
           unit="h"
-          color="secondary"
         />
       </Grid>
       <Grid size={{xs: 12, md: 4}}>
@@ -43,7 +41,6 @@ export function BudgetSummaryCards({summary}: BudgetSummaryCardsProps) {
           title="Study Money"
           budgetItem={summary.studyMoney}
           unit="€"
-          color="success"
         />
       </Grid>
     </Grid>

@@ -127,10 +127,8 @@ export function EventAllocationListItem({
 }: EventAllocationListItemProps) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
-  // Derive event name from first allocation description
   const eventName = allocations[0]?.description ?? eventCode;
 
-  // Derive date range from allocations
   const allDates = allocations
     .map((a) => a.date)
     .filter(Boolean)

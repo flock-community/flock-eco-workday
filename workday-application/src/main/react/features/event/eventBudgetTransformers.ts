@@ -1,33 +1,8 @@
 import dayjs, { type Dayjs } from 'dayjs';
-import type {
-  BudgetAllocation,
-  DailyTimeAllocationItem,
-  DailyAllocationType,
-} from '../../wirespec/model';
+import type { BudgetAllocation, DailyTimeAllocationItem } from '../../wirespec/model';
 import type { PersonTimeAllocation } from './EventTimeAllocationSection';
 import type { PersonMoneyAllocation } from './EventMoneyAllocationSection';
 import type { Period } from '../period/Period';
-import type { EventBudgetType } from '../../utils/mappings';
-
-/**
- * Convert a Period (from/to/days[]) to an array of DailyTimeAllocationItems.
- * days[] is positional: index 0 = period.from, index 1 = period.from + 1 day, etc.
- * Entries with hours <= 0 are filtered out.
- */
-export function periodToDailyAllocations(
-  period: Period,
-  type: DailyAllocationType,
-): DailyTimeAllocationItem[] {
-  if (!period.days || period.days.length === 0) return [];
-
-  return period.days
-    .map((hours, i) => ({
-      date: period.from.add(i, 'day').format('YYYY-MM-DD'),
-      hours,
-      type,
-    }))
-    .filter((item) => item.hours > 0);
-}
 
 /**
  * Convert an array of DailyTimeAllocationItems back to a Period.
@@ -65,7 +40,6 @@ export function apiAllocationsToTimeParticipants(
     (a) => a.type === 'HACK_TIME' || a.type === 'STUDY_TIME',
   );
 
-  // Group by personId
   const byPerson = new Map<string, BudgetAllocation[]>();
   for (const alloc of timeAllocations) {
     const existing = byPerson.get(alloc.personId) || [];
@@ -74,10 +48,7 @@ export function apiAllocationsToTimeParticipants(
   }
 
   return persons
-    .filter((person) => {
-      // Only include persons that have time allocations
-      return byPerson.has(person.uuid);
-    })
+    .filter((person) => byPerson.has(person.uuid))
     .map((person) => {
       const personAllocations = byPerson.get(person.uuid) || [];
       const hackAlloc = personAllocations.find((a) => a.type === 'HACK_TIME');
@@ -125,22 +96,4 @@ export function apiAllocationsToMoneyParticipants(
         amount: alloc?.studyMoneyDetails?.amount ?? 0,
       };
     });
-}
-
-/**
- * Map EventBudgetType ('HACK'/'STUDY') to BudgetAllocationType ('HACK_TIME'/'STUDY_TIME').
- */
-export function eventBudgetTypeToAllocationType(
-  budgetType: EventBudgetType,
-): 'HACK_TIME' | 'STUDY_TIME' {
-  return budgetType === 'HACK' ? 'HACK_TIME' : 'STUDY_TIME';
-}
-
-/**
- * Map EventBudgetType to DailyAllocationType (values match directly).
- */
-export function eventBudgetTypeToDailyType(
-  budgetType: EventBudgetType,
-): DailyAllocationType {
-  return budgetType as DailyAllocationType;
 }

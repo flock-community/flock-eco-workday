@@ -101,23 +101,18 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
     loadData();
   }, [loadData]);
 
-  const refresh = useCallback(() => {
-    loadData();
-  }, [loadData]);
-
   const handleDeleteConfirm = async () => {
     if (!deleteTarget?.id) return;
     try {
       await BudgetAllocationClient.deleteById(deleteTarget.id);
       setDeleteTarget(null);
-      refresh();
+      loadData();
     } catch (err) {
       console.error('Failed to delete allocation:', err);
       setDeleteTarget(null);
     }
   };
 
-  // Generate year options (current year and previous 2 years)
   const currentYear = new Date().getFullYear();
   const yearOptions = [currentYear, currentYear - 1, currentYear - 2];
 
@@ -128,7 +123,6 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
         action={
           <Stack direction="row" spacing={2} alignItems="center">
             {isAdmin && (
-              // Year selector
               <FormControl size="small" sx={{minWidth: 100}}>
                 <InputLabel>Year</InputLabel>
                 <Select
@@ -153,10 +147,8 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
         }
       />
       <CardContent>
-        {/* Budget summary cards */}
         {!loading && <BudgetSummaryCards summary={summary}/>}
 
-        {/* Event filter banner */}
         {!loading && eventCodeFilter && (
           <Box sx={{
             mb: 2,
@@ -176,7 +168,6 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
           </Box>
         )}
 
-        {/* Filter chips */}
         {!loading && allocations.length > 0 && (
           <Stack direction="row" spacing={1} sx={{mb: 2}}>
             <Chip
@@ -206,7 +197,6 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
           </Stack>
         )}
 
-        {/* Allocation details */}
         {!loading && (
           <BudgetAllocationList
             allocations={allocations}
@@ -219,7 +209,6 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
           />
         )}
 
-        {/* Loading state */}
         {loading && (
           <Box sx={{textAlign: 'center', py: 4}}>
             <Typography variant="body1" color="text.secondary">
@@ -229,19 +218,17 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
         )}
       </CardContent>
 
-      {/* Create/Edit StudyMoney dialog */}
       <StudyMoneyAllocationDialog
         open={dialogOpen || !!editTarget}
         onClose={() => {
           setDialogOpen(false);
           setEditTarget(null);
         }}
-        onSaved={refresh}
+        onSaved={loadData}
         person={isAdmin ? person : undefined}
         editAllocation={editTarget ?? undefined}
       />
 
-      {/* Delete confirmation dialog */}
       <ConfirmDialog
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}

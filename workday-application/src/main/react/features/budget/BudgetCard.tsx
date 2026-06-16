@@ -13,7 +13,6 @@ interface BudgetCardProps {
   title: string;
   budgetItem: BudgetItem;
   unit: string;
-  color?: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
 }
 
 function getStatusColor(percentage: number, isOverBudget: boolean) {
@@ -62,7 +61,6 @@ export function BudgetCard({
         </Typography>
 
         <Stack spacing={2}>
-          {/* Hero: Available amount */}
           <Box>
             <Typography
               variant="h4"
@@ -77,7 +75,6 @@ export function BudgetCard({
             </Typography>
           </Box>
 
-          {/* Secondary: Budget / Used */}
           <Box
             display="flex"
             justifyContent="space-between"
@@ -94,7 +91,6 @@ export function BudgetCard({
             </Typography>
           </Box>
 
-          {/* Progress bar */}
           <Box>
             <LinearProgress
               variant="determinate"

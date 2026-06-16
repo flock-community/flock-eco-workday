@@ -48,16 +48,13 @@ export function EventTimeAllocationSection({
 }: EventTimeAllocationSectionProps) {
   const [showAll, setShowAll] = useState(false);
 
-  // Convert event dates to Period bounds
   const eventFrom = dayjs(eventDates[0]);
   const eventTo = dayjs(eventDates[eventDates.length - 1]);
 
-  // Check if a participant has any custom allocations (exceptions)
   const hasExceptions = (participant: PersonTimeAllocation): boolean => {
     return participant.studyPeriod !== null || participant.hackPeriod !== null;
   };
 
-  // Get participants with exceptions
   const participantsWithExceptions = participants.filter(hasExceptions);
   const participantsWithDefaults = participants.filter((p) => !hasExceptions(p));
 
@@ -68,7 +65,6 @@ export function EventTimeAllocationSection({
   const handleAddCustomAllocation = (personId: string) => {
     const updated = participants.map((p) => {
       if (p.personId === personId) {
-        // Initialize with default hours based on defaultBudgetType
         const defaultPeriod: Period = {
           from: eventFrom,
           to: eventTo,
@@ -111,7 +107,6 @@ export function EventTimeAllocationSection({
         const periodKey = type === 'study' ? 'studyPeriod' : 'hackPeriod';
         const currentPeriod = p[periodKey];
 
-        // Initialize period if it doesn't exist
         if (!currentPeriod) {
           const basePeriod: Period = {
             from: eventFrom,
@@ -139,17 +134,14 @@ export function EventTimeAllocationSection({
   const getTotalHours = (participant: PersonTimeAllocation): number => {
     let total = 0;
 
-    // Add study hours
     if (participant.studyPeriod?.days) {
       total += participant.studyPeriod.days.reduce((sum, hours) => sum + hours, 0);
     }
 
-    // Add hack hours
     if (participant.hackPeriod?.days) {
       total += participant.hackPeriod.days.reduce((sum, hours) => sum + hours, 0);
     }
 
-    // If no custom allocation, use defaults
     if (!participant.studyPeriod && !participant.hackPeriod) {
       total = eventDayHours.reduce((s, h) => s + h, 0);
     }
@@ -157,31 +149,26 @@ export function EventTimeAllocationSection({
     return total;
   };
 
-  // Validation: check for day overlap and hours exceeding event hours
   const getValidationErrors = (participant: PersonTimeAllocation): string[] => {
     const errors: string[] = [];
 
     const studyDays = participant.studyPeriod?.days || [];
     const hackDays = participant.hackPeriod?.days || [];
 
-    // Check each day
     eventDates.forEach((_, index) => {
       const studyHours = studyDays[index] || 0;
       const hackHours = hackDays[index] || 0;
       const totalDayHours = studyHours + hackHours;
       const date = eventFrom.add(index, 'days').format('DD MMM YYYY');
 
-      // Check for negative hours
       if (studyHours < 0 || hackHours < 0) {
         errors.push(`${date}: Hours cannot be negative`);
       }
 
-      // Check for overlap (both types on same day)
       if (studyHours > 0 && hackHours > 0) {
         errors.push(`${date}: Cannot have both study and hack hours on the same day`);
       }
 
-      // Check for hours exceeding event hours per day
       const dayCapHours = eventDayHours[index] ?? defaultHoursPerDay;
       if (totalDayHours > dayCapHours) {
         errors.push(
@@ -194,7 +181,7 @@ export function EventTimeAllocationSection({
   };
 
   return (
-    < >
+    <>
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
           <Schedule color="primary" />
@@ -209,7 +196,6 @@ export function EventTimeAllocationSection({
         </Typography>
       </Box>
 
-      {/* Info: Default allocation */}
       <Alert severity="info" icon={<Info />} sx={{ mb: 3 }}>
         <Typography variant="body2">
           <strong>Default:</strong> {defaultHoursPerDay}h/day ({defaultBudgetType}) for{' '}
@@ -217,7 +203,6 @@ export function EventTimeAllocationSection({
         </Typography>
       </Alert>
 
-      {/* Toggle to show all */}
       {participantsWithDefaults.length > 0 && (
         <Box sx={{ mb: 2 }}>
           <Button
@@ -232,7 +217,6 @@ export function EventTimeAllocationSection({
         </Box>
       )}
 
-      {/* Participants List */}
       {displayedParticipants.length === 0 && !showAll && (
         <Box sx={{ textAlign: 'center', py: 3, color: 'text.secondary' }}>
           <Typography variant="body2">
@@ -313,7 +297,6 @@ function ParticipantTimeRow({
         bgcolor: hasExceptions ? 'action.hover' : 'background.paper',
       }}
     >
-      {/* Header */}
       <Box
         sx={{
           display: 'flex',
@@ -356,7 +339,6 @@ function ParticipantTimeRow({
         </Box>
       </Box>
 
-      {/* Validation Errors */}
       {validationErrors.length > 0 && (
         <Alert severity="error" sx={{ mb: 2 }}>
           <Typography variant="body2" fontWeight="medium" gutterBottom>
@@ -370,10 +352,8 @@ function ParticipantTimeRow({
         </Alert>
       )}
 
-      {/* Period Inputs */}
       {hasExceptions && (
         <Stack spacing={3}>
-            {/* Study Time Period */}
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <Typography variant="subtitle2" fontWeight="medium">
@@ -396,7 +376,6 @@ function ParticipantTimeRow({
               </Box>
             </Box>
 
-            {/* Hack Time Period */}
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <Typography variant="subtitle2" fontWeight="medium">
@@ -419,7 +398,6 @@ function ParticipantTimeRow({
               </Box>
             </Box>
 
-            {/* Info Alert */}
             <Alert severity="info" icon={<Info />}>
               <Typography variant="caption">
                 Each day can only have hours in either Study Time OR Hack Time, not both.

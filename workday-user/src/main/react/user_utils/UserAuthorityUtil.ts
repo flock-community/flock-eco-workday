@@ -23,10 +23,6 @@ class UserAuthorityUtil extends React.Component<
     }
 
     return UserAuthorityUtil.authorities.includes(authority);
-    // return authority
-    //   .split(',')
-    //   .map((it) => UserAuthorityUtil.authorities.includes(it))
-    //   .reduce((acc: boolean, cur: boolean) => (acc ? acc : cur), false);
   }
 
   render() {

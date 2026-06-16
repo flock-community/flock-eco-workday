@@ -31,17 +31,14 @@ export function BudgetAllocationList({
                                        typeFilter = null,
                                        eventCodeFilter = null,
                                      }: BudgetAllocationListProps) {
-  // Apply type filter
   let filteredAllocations = typeFilter
     ? allocations.filter(a => a.type === typeFilter)
     : allocations;
 
-  // Apply event code filter
   if (eventCodeFilter) {
     filteredAllocations = filteredAllocations.filter(a => a.eventCode === eventCodeFilter);
   }
 
-  // Group event-linked allocations by eventCode
   const eventAllocations: Record<string, {
     eventCode: string;
     allocations: BudgetAllocation[];
@@ -64,7 +61,6 @@ export function BudgetAllocationList({
     }
   });
 
-  // Combine and sort all items by date (most recent first)
   const allItems: Array<
     | { type: 'event'; data: typeof eventAllocations[string] }
     | { type: 'freeform'; data: BudgetAllocation }
@@ -85,14 +81,12 @@ export function BudgetAllocationList({
 
   return (
     <Stack spacing={2}>
-      {/* Header */}
       <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         <Typography variant="h6">
           Budget Allocations ({allItems.length})
         </Typography>
       </Box>
 
-      {/* Info alert about event allocations */}
       {isAdmin && allItems.some((item) => item.type === 'event') && (
         <Alert severity="info" icon={<Info/>}>
           Event allocations are managed from the Events page. Click the event
@@ -104,7 +98,6 @@ export function BudgetAllocationList({
         </Alert>
       )}
 
-      {/* Unified list of all allocations */}
       {allItems.length === 0 ? (
         <Typography
           variant="body2"

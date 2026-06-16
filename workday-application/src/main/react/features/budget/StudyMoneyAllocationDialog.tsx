@@ -65,7 +65,6 @@ export function StudyMoneyAllocationDialog({
     setError(null);
 
     try {
-      // Upload files first
       const fileResults: BudgetAllocationFile[] = [...uploadedFiles];
       for (const file of files) {
         const result = await BudgetAllocationClient.uploadFile(file);
@@ -77,7 +76,7 @@ export function StudyMoneyAllocationDialog({
         eventCode: undefined,
         date,
         description: description || undefined,
-        amount: typeof amount === 'number' ? amount : 0,
+        amount,
         files: fileResults,
       };
 
@@ -123,7 +122,6 @@ export function StudyMoneyAllocationDialog({
             </Typography>
           )}
 
-          {/* Description */}
           <TextField
             label="Description"
             value={description}
@@ -134,7 +132,6 @@ export function StudyMoneyAllocationDialog({
             placeholder="e.g., Online course: Advanced TypeScript Patterns"
           />
 
-          {/* Amount */}
           <TextField
             label="Amount (EUR)"
             type="number"
@@ -147,7 +144,6 @@ export function StudyMoneyAllocationDialog({
             inputProps={{min: 0, step: 1}}
           />
 
-          {/* Date */}
           <TextField
             label="Date"
             type="date"
@@ -158,7 +154,6 @@ export function StudyMoneyAllocationDialog({
             InputLabelProps={{shrink: true}}
           />
 
-          {/* File upload */}
           <Box>
             <Button
               variant="outlined"

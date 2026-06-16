@@ -31,7 +31,6 @@ export function EventMoneyAllocationSection({
   participants,
   onParticipantsChange,
 }: EventMoneyAllocationSectionProps) {
-  // Calculate totals
   const totalAllocated = participants.reduce(
     (sum, p) => sum + p.amount,
     0
@@ -40,7 +39,6 @@ export function EventMoneyAllocationSection({
   const isOverAllocated = totalAllocated > totalBudget;
   const isFullyAllocated = remaining === 0;
 
-  // Quick actions
   const handleDistributeEqually = () => {
     const amountPerPerson = Math.floor((totalBudget / participants.length) * 100) / 100;
     const updated = participants.map((p) => ({
@@ -48,7 +46,6 @@ export function EventMoneyAllocationSection({
       amount: amountPerPerson,
     }));
     onParticipantsChange(updated);
-    console.log('Distributed money equally:', amountPerPerson, 'per person');
   };
 
   const handleClear = () => {
@@ -57,7 +54,6 @@ export function EventMoneyAllocationSection({
       amount: 0,
     }));
     onParticipantsChange(updated);
-    console.log('Cleared all money allocations');
   };
 
   const handleParticipantAmountChange = (index: number, value: string) => {
@@ -80,7 +76,6 @@ export function EventMoneyAllocationSection({
         </Typography>
       </Box>
 
-      {/* Quick Actions */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" gutterBottom>
           Quick Actions
@@ -132,7 +127,6 @@ export function EventMoneyAllocationSection({
 
       <Divider sx={{ mb: 3 }} />
 
-      {/* Participant Allocations */}
       <Box>
         <Typography variant="subtitle2" gutterBottom>
           Participant Allocations
