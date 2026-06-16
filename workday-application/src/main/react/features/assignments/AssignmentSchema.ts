@@ -10,7 +10,7 @@ const schema = {
   from: mixed()
     .required()
     .default(() => dayjs()),
-  to: mixed().default(null),
+  to: mixed().nullable().default(null),
   clientCode: mixed().required(),
 };
 

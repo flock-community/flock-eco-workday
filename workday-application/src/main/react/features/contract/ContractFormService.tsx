@@ -67,7 +67,7 @@ export const ContractFormService = ({
     from: mixed()
       .required()
       .default(() => dayjs()),
-    to: mixed().default(null),
+    to: mixed().nullable().default(null),
   });
 
   return (

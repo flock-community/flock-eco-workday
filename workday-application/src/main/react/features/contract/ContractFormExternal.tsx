@@ -67,7 +67,7 @@ export const ContractFormExternal = ({
     from: mixed()
       .required()
       .default(() => dayjs()),
-    to: mixed().default(null),
+    to: mixed().nullable().default(null),
     billable: boolean().default(true),
   });
 

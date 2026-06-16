@@ -96,7 +96,7 @@ export const ContractFormInternal = ({
     from: mixed()
       .required()
       .default(() => dayjs()),
-    to: mixed().default(null),
+    to: mixed().nullable().default(null),
     billable: boolean().default(true),
     holidayHours: number().required().default(192),
     hackHours: number().required().default(160),
