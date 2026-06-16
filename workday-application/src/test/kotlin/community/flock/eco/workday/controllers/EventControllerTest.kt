@@ -8,6 +8,10 @@ import community.flock.eco.workday.application.repository.EventRepository
 import community.flock.eco.workday.application.services.EventRatingService
 import community.flock.eco.workday.application.services.EventService
 import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.domain.budget.BudgetAllocationService
+import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocation
+import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocation
+import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocation
 import community.flock.eco.workday.user.forms.UserAccountPasswordForm
 import community.flock.eco.workday.user.services.UserAccountService
 import community.flock.eco.workday.user.services.UserSecurityService
@@ -24,8 +28,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class EventControllerTest : WorkdayIntegrationTest() {
     private val baseUrl: String = "/api/events"
@@ -53,6 +60,9 @@ class EventControllerTest : WorkdayIntegrationTest() {
 
     @Autowired
     private lateinit var personService: PersonService
+
+    @Autowired
+    private lateinit var budgetAllocationService: BudgetAllocationService
 
     fun createUser(authorities: Set<String>) =
         UserAccountPasswordForm(
@@ -87,7 +97,7 @@ class EventControllerTest : WorkdayIntegrationTest() {
         to = to,
         hours = 16.0,
         days = mutableListOf(8.0, 8.0),
-        costs = 200.0,
+        budget = 200.0,
         personIds = ids,
         type = type,
     ).run { eventService.create(this) }
@@ -180,6 +190,82 @@ class EventControllerTest : WorkdayIntegrationTest() {
     }
 
     @Test
+    fun `switching an event's time allocation type replaces the allocation subtype`() {
+        val user = createUser(adminAuthorities)
+        val person = createPerson(user.account.user.code)
+        val form =
+            EventForm(
+                description = "Type switch",
+                from = LocalDate.of(2024, 2, 5),
+                to = LocalDate.of(2024, 2, 6),
+                hours = 16.0,
+                days = mutableListOf(8.0, 8.0),
+                budget = 0.0,
+                personIds = listOf(person.uuid),
+                type = EventType.FLOCK_HACK_DAY,
+                defaultTimeAllocationType = "HACK",
+            )
+        val event = eventService.create(form)
+
+        val afterCreate = budgetAllocationService.findAllByEventCode(event.code)
+        assertTrue(afterCreate.any { it is HackTimeBudgetAllocation }, "hack time allocation expected on create")
+        assertTrue(afterCreate.none { it is StudyTimeBudgetAllocation })
+
+        eventService.update(event.code, form.copy(defaultTimeAllocationType = "STUDY"))
+
+        val afterSwitch = budgetAllocationService.findAllByEventCode(event.code)
+        assertTrue(afterSwitch.any { it is StudyTimeBudgetAllocation }, "study time allocation expected after switch")
+        assertTrue(afterSwitch.none { it is HackTimeBudgetAllocation }, "stale hack time allocation should be removed")
+    }
+
+    @Test
+    fun `event money budget is split across participants without dropping the rounding remainder`() {
+        val person1 = createStandalonePerson("split1@flock", "Split1")
+        val person2 = createStandalonePerson("split2@flock", "Split2")
+        val person3 = createStandalonePerson("split3@flock", "Split3")
+        val form =
+            EventForm(
+                description = "Budget split",
+                from = LocalDate.of(2024, 3, 4),
+                to = LocalDate.of(2024, 3, 4),
+                hours = 8.0,
+                days = mutableListOf(8.0),
+                budget = 100.0,
+                personIds = listOf(person1.uuid, person2.uuid, person3.uuid),
+                type = EventType.GENERAL_EVENT,
+            )
+        val event = eventService.create(form)
+
+        val amounts =
+            budgetAllocationService
+                .findAllByEventCode(event.code)
+                .filterIsInstance<StudyMoneyBudgetAllocation>()
+                .map { it.amount }
+
+        assertEquals(3, amounts.size)
+        assertEquals(
+            BigDecimal("100.00"),
+            amounts.fold(BigDecimal.ZERO) { acc, amount -> acc + amount },
+            "shares must add up to the full budget",
+        )
+        assertEquals(1, amounts.count { it.compareTo(BigDecimal("33.34")) == 0 }, "one participant absorbs the extra cent")
+        assertEquals(2, amounts.count { it.compareTo(BigDecimal("33.33")) == 0 })
+    }
+
+    private fun createStandalonePerson(
+        email: String,
+        firstname: String,
+    ) = PersonForm(
+        email = email,
+        firstname = firstname,
+        lastname = "Flock",
+        position = "Software engineer",
+        userCode = null,
+        number = null,
+        active = true,
+    ).run { personService.create(this) } ?: error("Cannot create person")
+
+    @Test
     fun `Worker with only SUBSCRIBE authority can list events, redacted when not attending`() {
         createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3))
         val user = createUser(setOf("EventAuthority.SUBSCRIBE"))
@@ -194,7 +280,7 @@ class EventControllerTest : WorkdayIntegrationTest() {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$[0].description").value("N/A - Henk"))
             .andExpect(MockMvcResultMatchers.jsonPath("\$[0].persons.length()").value(0))
-            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].costs").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].budget").value(0.0))
             .andExpect(MockMvcResultMatchers.jsonPath("\$[0].days").doesNotExist())
     }
 

@@ -30,6 +30,7 @@ import community.flock.eco.workday.user.services.UserService
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -128,6 +129,8 @@ class CreateHelper(
         billable: Boolean = true,
         holidayHours: Int = 192,
         hackHours: Int = 160,
+        studyHours: Int = 0,
+        studyMoney: BigDecimal = BigDecimal.ZERO,
     ) = ContractInternalForm(
         personId = person.uuid,
         monthlySalary = monthlySalary,
@@ -137,6 +140,8 @@ class CreateHelper(
         billable = billable,
         holidayHours = holidayHours,
         hackHours = hackHours,
+        studyHours = studyHours,
+        studyMoney = studyMoney,
     ).run {
         contractService.create(this)
     } ?: error("Cannot create internal contract")
@@ -232,7 +237,7 @@ class CreateHelper(
         hours = hours ?: ((ChronoUnit.DAYS.between(from, to) + 1) * 8.0),
         days = days?.toMutableList() ?: (0L..ChronoUnit.DAYS.between(from, to)).map { 8.0 }.toMutableList(),
         personIds = persons,
-        costs = 538.38,
+        budget = 538.38,
         type = EventType.GENERAL_EVENT,
     ).run {
         eventService.create(this)

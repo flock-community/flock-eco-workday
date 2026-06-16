@@ -61,7 +61,9 @@ type ContractInternalForm {
   to: String?,
   holidayHours: Integer32?,
   hackHours: Integer32?,
-  billable: Boolean?
+  billable: Boolean?,
+  studyHours: Integer32?,
+  studyMoney: Number?
 }
 type ContractInternal {
   id: Integer?,
@@ -74,7 +76,9 @@ type ContractInternal {
   hoursPerWeek: Integer32?,
   holidayHours: Integer32?,
   hackHours: Integer32?,
-  billable: Boolean?
+  billable: Boolean?,
+  studyHours: Integer32?,
+  studyMoney: Number?
 }
 
 type ContractExternalForm {

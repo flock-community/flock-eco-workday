@@ -5,6 +5,7 @@ import community.flock.eco.workday.application.authorities.EventAuthority
 import community.flock.eco.workday.application.authorities.LeaveDayAuthority
 import community.flock.eco.workday.application.authorities.SickdayAuthority
 import community.flock.eco.workday.application.authorities.WorkDayAuthority
+import community.flock.eco.workday.application.budget.BudgetAllocationAuthority
 import community.flock.eco.workday.application.expense.ExpenseAuthority
 import community.flock.eco.workday.core.authorities.Authority
 import community.flock.eco.workday.user.forms.UserAccountPasswordForm
@@ -39,6 +40,7 @@ class LoadUserData(
             ExpenseAuthority.WRITE,
             AssignmentAuthority.READ,
             EventAuthority.SUBSCRIBE,
+            BudgetAllocationAuthority.READ,
         )
 
     private val allAuthorities = userAuthorityService.allAuthorities()

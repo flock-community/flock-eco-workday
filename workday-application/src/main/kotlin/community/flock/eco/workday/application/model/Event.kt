@@ -1,8 +1,10 @@
 package community.flock.eco.workday.application.model
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import community.flock.eco.workday.application.interfaces.Daily
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.core.model.AbstractCodeEntity
+import jakarta.persistence.Column
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
@@ -10,6 +12,7 @@ import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.ManyToMany
+import jakarta.persistence.Transient
 import org.hibernate.annotations.BatchSize
 import java.time.LocalDate
 import java.util.UUID
@@ -23,13 +26,19 @@ class Event(
     override val from: LocalDate = LocalDate.now(),
     override val to: LocalDate = LocalDate.now(),
     override val hours: Double,
-    val costs: Double,
+    @Column(name = "costs")
+    val budget: Double,
     @Enumerated(EnumType.STRING)
     val type: EventType,
     @ElementCollection(fetch = FetchType.EAGER)
     override val days: MutableList<Double>? = null,
+    val defaultTimeAllocationType: String? = null,
     @ManyToMany(fetch = FetchType.EAGER)
     @BatchSize(size = 50)
     val persons: MutableList<Person>,
 ) : AbstractCodeEntity(id, code),
-    Daily
+    Daily {
+    @Transient
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    var budgetAllocations: List<Any>? = null
+}
