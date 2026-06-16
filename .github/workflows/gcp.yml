@@ -155,6 +155,12 @@ jobs:
 
       - name: Deploy Playwright report to GitHub Pages
         if: always() && github.actor != 'dependabot[bot]' && hashFiles('playwright-report/index.html') != ''
+        # Publishing the report is best-effort: concurrent runs push to gh-pages
+        # and peaceiris rejects a non-fast-forward, but that must not fail the
+        # build or block the deploy. (peaceiris@v4 has no `force` input — the only
+        # force option is `force_orphan`, which would wipe the other runs' reports
+        # kept via keep_files, so tolerate the race instead.)
+        continue-on-error: true
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -162,7 +168,6 @@ jobs:
           publish_dir: ./playwright-report
           destination_dir: ${{ steps.pages-target.outputs.dir }}
           keep_files: true
-          force: true
           commit_message: "Publish Playwright report for ${{ steps.pages-target.outputs.label }}"
           user_name: "github-actions[bot]"
           user_email: "github-actions[bot]@users.noreply.github.com"
