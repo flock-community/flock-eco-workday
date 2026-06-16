@@ -10,15 +10,22 @@ export async function findOnAnyPage(
   maxPages = 25,
 ): Promise<Locator> {
   for (let i = 0; i < maxPages; i++) {
+    const nextBtn = page.getByRole('button', { name: 'Go to next page' });
+    // The list renders asynchronously after navigation; networkidle fires when
+    // the fetch settles, not when React has painted the rows (and the list shows
+    // its empty state meanwhile). Wait for the page to settle — the target row
+    // or the pagination control on screen — so a point-in-time count() below
+    // can't race the load and report a false "not found".
+    await expect
+      .poll(
+        async () => (await locator.count()) > 0 || (await nextBtn.count()) > 0,
+        { timeout: 15000 },
+      )
+      .toBe(true);
     if ((await locator.count()) > 0) {
       return locator.first();
     }
-    const nextBtn = page.getByRole('button', { name: 'Go to next page' });
-    if (
-      (await nextBtn.count()) === 0 ||
-      !(await nextBtn.isVisible()) ||
-      !(await nextBtn.isEnabled())
-    ) {
+    if (!(await nextBtn.isVisible()) || !(await nextBtn.isEnabled())) {
       throw new Error(
         `findOnAnyPage: could not find locator within ${maxPages} pages`,
       );
