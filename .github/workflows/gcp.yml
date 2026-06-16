@@ -162,6 +162,7 @@ jobs:
           publish_dir: ./playwright-report
           destination_dir: ${{ steps.pages-target.outputs.dir }}
           keep_files: true
+          force: true
           commit_message: "Publish Playwright report for ${{ steps.pages-target.outputs.label }}"
           user_name: "github-actions[bot]"
           user_email: "github-actions[bot]@users.noreply.github.com"
