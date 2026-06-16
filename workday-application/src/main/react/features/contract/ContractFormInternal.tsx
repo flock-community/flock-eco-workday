@@ -26,6 +26,7 @@ export const ContractFormInternal = ({
             label="Monthly salary"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Grid>
         <Grid size={{ xs: 12 }}>
@@ -35,6 +36,7 @@ export const ContractFormInternal = ({
             label="Hours per week"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Grid>
         <Grid size={{ xs: 6 }}>
@@ -61,6 +63,7 @@ export const ContractFormInternal = ({
             type="number"
             label="Holiday hours"
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Grid>
         <Grid size={{ xs: 12 }}>
@@ -70,6 +73,7 @@ export const ContractFormInternal = ({
             label="Hack hours"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Grid>
       </Grid>
@@ -98,7 +102,7 @@ export const ContractFormInternal = ({
 
   return (
     <Formik
-      initialValues={{ ...schema.cast(), ...init }}
+      initialValues={{ ...schema.getDefault(), ...init }}
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize

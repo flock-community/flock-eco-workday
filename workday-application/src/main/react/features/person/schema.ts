@@ -19,11 +19,9 @@ const PERSON_SCHEMA = object(_defaultObject)
   })
   .from('userCode', 'user', false);
 
-const PERSON_FORM_SCHEMA = object(_defaultObject)
-  .shape({
-    userCode: string().transform((value) => (value === null ? '' : value)),
-  })
-  .from('user', 'userCode', false);
+const PERSON_FORM_SCHEMA = object(_defaultObject).shape({
+  userCode: string().transform((value) => (value === null ? '' : value)),
+});
 
 const toPerson = async (personForm) => {
   const isPersonForm = await PERSON_FORM_SCHEMA.isValid(personForm);

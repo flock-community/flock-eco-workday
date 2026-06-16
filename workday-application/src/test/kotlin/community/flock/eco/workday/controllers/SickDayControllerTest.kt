@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -50,7 +52,8 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
                 get(baseUrl)
                     .with(user(CreateHelper.UserSecurity(admin)))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
     }
 
@@ -65,7 +68,8 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
                 get("$baseUrl?code=${person.uuid}")
                     .with(user(CreateHelper.UserSecurity(admin)))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
     }
 
@@ -98,7 +102,8 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
                 get("$baseUrl/${created.code}")
                     .with(user(CreateHelper.UserSecurity(user)))
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
@@ -138,7 +143,8 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
                     .content(mapper.writeValueAsString(createForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
@@ -183,7 +189,8 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
                     .content(mapper.writeValueAsString(updatedCreateForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
@@ -228,7 +235,8 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
                     .content(mapper.writeValueAsString(updatedCreateForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isForbidden)
+            ).asyncDispatch()
+            .andExpect(status().isForbidden)
 
         assertEquals(sickDayService.findByCode(created.code)?.status, status)
     }
@@ -267,7 +275,8 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
                     .content(mapper.writeValueAsString(updatedCreateForm))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.code").exists())
@@ -304,8 +313,11 @@ class SickDayControllerTest : WorkdayIntegrationTest() {
                     .with(user(CreateHelper.UserSecurity(admin)))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
-            ).andExpect(status().isNoContent)
+            ).asyncDispatch()
+            .andExpect(status().isNoContent)
 
         assertNull(sickDayService.findByCode(created.code))
     }
+
+    private fun ResultActions.asyncDispatch(): ResultActions = mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
 }

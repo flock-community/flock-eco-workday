@@ -99,7 +99,7 @@ class KCalendarTest {
             """
             BEGIN:VCALENDAR
             VERSION:2.0
-            PRODID:-//Michael Angstadt//biweekly 0.6.7//EN
+            PRODID:-//Michael Angstadt//biweekly 0.6.8//EN
             NAME:Flock. Holidays
             BEGIN:VTIMEZONE
             TZID:Europe/Amsterdam

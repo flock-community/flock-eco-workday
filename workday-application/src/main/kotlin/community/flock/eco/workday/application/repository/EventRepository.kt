@@ -22,8 +22,7 @@ interface EventRepository : JpaRepository<Event, Long> {
         type = EntityGraph.EntityGraphType.FETCH,
         attributePaths = ["persons"],
     )
-    fun findAllByTypeIsAndFromBetween(
-        type: EventType,
+    fun findAllByFromBetween(
         from: LocalDate,
         to: LocalDate,
     ): Iterable<EventProjection>

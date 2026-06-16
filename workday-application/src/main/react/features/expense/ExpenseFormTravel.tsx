@@ -18,8 +18,8 @@ export type ExpenseTravelForm = {
 export const schema = Yup.object({
   description: Yup.string().required().default(''),
   date: Yup.mixed().required().default(dayjs()),
-  distance: Yup.number().required().default(''),
-  allowance: Yup.number().required().default(''),
+  distance: Yup.number().required().default(0),
+  allowance: Yup.number().required().default(0),
 });
 
 type ExpenseFormTravelProps = {
@@ -72,7 +72,7 @@ export const ExpenseFormTravel = ({
   return (
     <Formik
       initialValues={{
-        ...schema.cast(),
+        ...schema.getDefault(),
         ...initialState,
       }}
       onSubmit={onSubmit}

@@ -35,10 +35,13 @@ export function SickDayFeature({ person }: SickDayFeatureProps) {
 
   function handleStatusChange(status: string, it: DayProps) {
     SickDayClient.put(it.code, {
-      ...it,
-      status,
       from: it.from.format(ISO_8601_DATE),
       to: it.to.format(ISO_8601_DATE),
+      hours: it.hours,
+      days: it.days,
+      status,
+      description: it.description,
+      personId: it.personId,
     }).then(() => setRefresh(!refresh));
   }
 

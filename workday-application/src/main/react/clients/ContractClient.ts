@@ -1,5 +1,11 @@
 import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
+import type {
+  ContractExternalForm,
+  ContractInternalForm,
+  ContractManagementForm,
+  ContractServiceForm,
+} from '../wirespec/model';
 import type { Person } from './PersonClient';
 import { ISO_8601_DATE } from './util/DateFormats';
 
@@ -29,10 +35,12 @@ export type ContractRaw = {
   type: 'INTERNAL' | 'EXTERNAL' | 'MANAGEMENT' | 'SERVICE';
 };
 
-export type ContractRequest = {
-  from: string;
-  to?: string;
-};
+// The four contract endpoints each take their own generated Form contract.
+export type ContractRequest =
+  | ContractInternalForm
+  | ContractExternalForm
+  | ContractManagementForm
+  | ContractServiceForm;
 
 const internalize = (it) => ({
   ...it,

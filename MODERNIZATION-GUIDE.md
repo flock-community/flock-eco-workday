@@ -331,7 +331,6 @@ const PersonModule = React.lazy(() => import('./person/PersonModule'))
 - Create/edit expense
 - Create/edit person
 - Assignment management
-- Invoice generation
 
 **Estimated Time**: 1-2 weeks
 

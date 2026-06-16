@@ -28,6 +28,7 @@ export const ContractFormManagement = ({
             label="Monthly fee"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Grid>
         <Grid size={{ xs: 6 }}>
@@ -59,7 +60,7 @@ export const ContractFormManagement = ({
 
   return (
     <Formik
-      initialValues={{ ...schema.cast(), ...init }}
+      initialValues={{ ...schema.getDefault(), ...init }}
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize

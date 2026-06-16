@@ -5,7 +5,6 @@ import community.flock.eco.workday.application.config.GoogleDriveConfiguration
 import community.flock.eco.workday.application.config.MailjetClientConfig
 import community.flock.eco.workday.application.config.cloud.StubCloudConfiguration
 import community.flock.eco.workday.application.config.properties.PropertyConfig
-import community.flock.eco.workday.application.exactonline.ExactonlineConfiguration
 import community.flock.eco.workday.application.expense.ExpenseConfiguration
 import community.flock.eco.workday.user.UserConfiguration
 import community.flock.wirespec.integration.spring.kotlin.configuration.EnableWirespecController
@@ -25,7 +24,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 //    WirespecSerializationConfiguration::class,
     UserConfiguration::class,
     ExpenseConfiguration::class,
-    ExactonlineConfiguration::class,
     ApplicationConstants::class,
     ApplicationEventPublisherConfiguration::class,
     PropertyConfig::class,

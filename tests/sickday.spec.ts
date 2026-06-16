@@ -1,129 +1,99 @@
 import { expect, test } from '@playwright/test';
-import { Given_I_am_logged_in_as_user } from './steps/workdaySteps';
+import {
+  changeStatusOnLocator,
+  findOnAnyPage,
+  selectPersonInLayout,
+} from './steps/dayListSteps';
+import {
+  Given_I_am_logged_in_as_user,
+  When_I_click_the_button,
+  When_I_fill_in_the_date_range_from_till,
+} from './steps/workdaySteps';
 
-const SICKDAY_URL = '/sickdays';
-const ADMIN_USERNAME = 'bert';
-const TEST_PERSON = 'Ieniemienie Mouse';
+// SickdayController exposes /api/sickdays and is exercised here via the
+// SickDayPage UI. Today's session date is 2026-05-02 and the booking dates
+// are kept within May 2026 (a clean Mon → Fri week) so the PeriodInputField
+// only renders five inputs while the helper sets the date range.
+const RUN_ID = Date.now();
+const SICK_DESCRIPTION = `Sickday spec ${RUN_ID}`;
+const SICKDAY_FROM = '11-05-2026';
+const SICKDAY_TO = '15-05-2026';
 
-test.describe('Sick Day CRUD Operations', () => {
-  test.beforeEach(async ({ page }) => {
-    await Given_I_am_logged_in_as_user(page, ADMIN_USERNAME);
-    await page.goto(SICKDAY_URL);
-    await page.waitForLoadState('networkidle');
+test.describe
+  .serial('SickdayController /api/sickdays', () => {
+    test.beforeEach(async ({ context }) => {
+      await context.clearCookies();
+    });
+
+    test.afterEach(async ({ page, context }) => {
+      await context.clearCookies();
+      await page.evaluate(() => {
+        if (typeof window.localStorage !== 'undefined')
+          window.localStorage.clear();
+        if (typeof window.sessionStorage !== 'undefined')
+          window.sessionStorage.clear();
+      });
+    });
+
+    test('Worker submits a sick day (POST /api/sickdays)', async ({ page }) => {
+      await Given_I_am_logged_in_as_user(page, 'ernie');
+
+      await page.goto('/sickdays');
+      await page.waitForLoadState('networkidle');
+
+      // The dialog only opens after the SickDayClient.get bootstrap completes,
+      // so wait for the form field that signals the dialog body is ready.
+      await When_I_click_the_button(page, 'Add');
+      const dialog = page.getByRole('dialog');
+      await expect(dialog.getByLabel('Description')).toBeVisible();
+
+      await dialog.getByLabel('Description').fill(SICK_DESCRIPTION);
+      await When_I_fill_in_the_date_range_from_till(
+        page,
+        SICKDAY_FROM,
+        SICKDAY_TO,
+      );
+
+      // The POST is what closes the dialog, so disappearance is the success
+      // signal. Without this wait, the next assertion races the MUI Slide
+      // transition that still overlays the listing.
+      const sickPost = page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/sickdays') &&
+          response.request().method() === 'POST' &&
+          response.status() < 400,
+      );
+      await When_I_click_the_button(page, 'Save');
+      await sickPost;
+      await expect(dialog).toBeHidden({ timeout: 10000 });
+      await page.waitForLoadState('networkidle');
+
+      // The new sick day appears in the from-desc paginated list. Walk pages
+      // because seeded ernie sick days populate earlier pages.
+      const sickCards = page
+        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .filter({ hasText: SICK_DESCRIPTION });
+      const sickCard = await findOnAnyPage(page, sickCards);
+      await expect(
+        sickCard.getByRole('button', { name: 'REQUESTED' }),
+      ).toBeVisible();
+    });
+
+    test('Admin filters sick days by personId and approves (GET + PUT /api/sickdays)', async ({
+      page,
+    }) => {
+      await Given_I_am_logged_in_as_user(page, 'bert');
+
+      await page.goto('/sickdays');
+      await page.waitForLoadState('networkidle');
+
+      // Picking ernie triggers GET /api/sickdays?personId=<ernie-uuid>.
+      await selectPersonInLayout(page, 'Ernie Muppets');
+
+      const sickCards = page
+        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .filter({ hasText: SICK_DESCRIPTION });
+      const sickCard = await findOnAnyPage(page, sickCards);
+      await changeStatusOnLocator(page, sickCard, 'REQUESTED', 'APPROVED');
+    });
   });
-
-  async function selectPerson(page, personName: string) {
-    const personSelect = page.getByRole('combobox');
-    await personSelect.click();
-    await page.getByRole('option', { name: personName }).click();
-    await page.waitForLoadState('networkidle');
-  }
-
-  test('should create a new sick day', async ({ page }) => {
-    await selectPerson(page, TEST_PERSON);
-
-    const timestamp = Date.now();
-    const description = `TestSickDay-${timestamp}`;
-
-    await page.getByRole('button', { name: 'Add' }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-
-    await page.getByLabel('Description').fill(description);
-
-    const fromDate = page.getByLabel('From', { exact: true });
-    await fromDate.click();
-    await fromDate.fill('01-08-2040');
-    await fromDate.press('Tab');
-    await page.waitForTimeout(200);
-
-    const toDate = page.getByLabel('To', { exact: true });
-    await toDate.click();
-    await toDate.fill('03-08-2040');
-    await toDate.press('Tab');
-    await page.waitForTimeout(200);
-
-    await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByRole('dialog')).not.toBeVisible();
-
-    await expect(page.getByText(description).first()).toBeVisible({ timeout: 30000 });
-  });
-
-  test('should update an existing sick day', async ({ page }) => {
-    await selectPerson(page, TEST_PERSON);
-
-    const timestamp = Date.now();
-    const description = `EditSickDay-${timestamp}`;
-    const updatedDescription = `UpdatedSickDay-${timestamp}`;
-
-    await page.getByRole('button', { name: 'Add' }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await page.getByLabel('Description').fill(description);
-
-    const fromDate = page.getByLabel('From', { exact: true });
-    await fromDate.click();
-    await fromDate.fill('05-08-2040');
-    await fromDate.press('Tab');
-    await page.waitForTimeout(200);
-
-    const toDate = page.getByLabel('To', { exact: true });
-    await toDate.click();
-    await toDate.fill('07-08-2040');
-    await toDate.press('Tab');
-    await page.waitForTimeout(200);
-
-    await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(page.getByText(description).first()).toBeVisible({ timeout: 30000 });
-
-    await page.getByText(description).first().click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-
-    await page.getByLabel('Description').clear();
-    await page.getByLabel('Description').fill(updatedDescription);
-
-    await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByRole('dialog')).not.toBeVisible();
-
-    await expect(page.getByText(updatedDescription).first()).toBeVisible({ timeout: 30000 });
-  });
-
-  test('should delete a sick day', async ({ page }) => {
-    await selectPerson(page, TEST_PERSON);
-
-    const timestamp = Date.now();
-    const description = `DeleteSickDay-${timestamp}`;
-
-    await page.getByRole('button', { name: 'Add' }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await page.getByLabel('Description').fill(description);
-
-    const fromDate = page.getByLabel('From', { exact: true });
-    await fromDate.click();
-    await fromDate.fill('10-08-2040');
-    await fromDate.press('Tab');
-    await page.waitForTimeout(200);
-
-    const toDate = page.getByLabel('To', { exact: true });
-    await toDate.click();
-    await toDate.fill('12-08-2040');
-    await toDate.press('Tab');
-    await page.waitForTimeout(200);
-
-    await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(page.getByText(description).first()).toBeVisible({ timeout: 30000 });
-
-    await page.getByText(description).first().click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-
-    await page.getByRole('button', { name: 'Delete' }).click();
-
-    await expect(
-      page.getByText('Are you sure you want to remove this Sick day?'),
-    ).toBeVisible();
-    await page.getByRole('button', { name: 'Confirm' }).click();
-
-    await page.waitForLoadState('networkidle');
-    await expect(page.getByText(description)).not.toBeVisible();
-  });
-});

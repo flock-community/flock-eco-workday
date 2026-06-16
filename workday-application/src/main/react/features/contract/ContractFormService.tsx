@@ -27,6 +27,7 @@ export const ContractFormService = ({
             label="Monthly costs"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Grid>
         <Grid size={{ xs: 12 }}>
@@ -36,6 +37,7 @@ export const ContractFormService = ({
             label="Description"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Grid>
         <Grid size={{ xs: 6 }}>
@@ -53,21 +55,22 @@ export const ContractFormService = ({
   );
 
   const init = value && {
-    monthlyCost: value.hourlyRate,
-    role: value.role,
+    monthlyCosts: value.monthlyCosts,
+    description: value.description,
     from: value.from,
     to: value.to,
   };
 
   const schema = object({
-    monthlyCost: number().required().default(4000),
+    monthlyCosts: number().required().default(4000),
+    description: mixed().default(''),
     from: mixed().required().default(dayjs()),
     to: mixed().default(null),
   });
 
   return (
     <Formik
-      initialValues={{ ...schema.cast(), ...init }}
+      initialValues={{ ...schema.getDefault(), ...init }}
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize

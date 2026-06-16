@@ -1,4 +1,4 @@
-endpoint TotalsPerPersonByYear_1 GET /api/aggregations/total-per-person ? {year: Integer32,month: Integer32} -> {
+endpoint TotalsPerPersonByYear_1 GET /api/aggregations/total-per-person ? {year: Integer32, month: Integer32?} -> {
   200 -> AggregationPerson[]
 }
 endpoint TotalsPerPersonMeByYearMonth GET /api/aggregations/total-per-person-me -> {

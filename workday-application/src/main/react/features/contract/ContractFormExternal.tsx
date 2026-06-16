@@ -26,6 +26,7 @@ export const ContractFormExternal = ({
             label="Hourly rate"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Grid>
         <Grid size={{ xs: 12 }}>
@@ -35,6 +36,7 @@ export const ContractFormExternal = ({
             label="Hours per week"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Grid>
         <Grid size={{ xs: 6 }}>
@@ -69,7 +71,7 @@ export const ContractFormExternal = ({
 
   return (
     <Formik
-      initialValues={{ ...schema.default(), ...value }}
+      initialValues={{ ...schema.getDefault(), ...value }}
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize

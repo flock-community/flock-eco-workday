@@ -1,11 +1,6 @@
 package community.flock.eco.workday.user
 
-import community.flock.eco.workday.user.controllers.UserAccountController
-import community.flock.eco.workday.user.controllers.UserAuthorityController
-import community.flock.eco.workday.user.controllers.UserController
 import community.flock.eco.workday.user.controllers.UserControllerAdvice
-import community.flock.eco.workday.user.controllers.UserGroupController
-import community.flock.eco.workday.user.controllers.UserStatusController
 import community.flock.eco.workday.user.filters.UserKeyTokenFilter
 import community.flock.eco.workday.user.services.UserAccountService
 import community.flock.eco.workday.user.services.UserAuthorityService
@@ -27,12 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 @EnableConfigurationProperties(UserProperties::class)
 @Import(
     UserControllerAdvice::class,
-    UserController::class,
-    UserGroupController::class,
     UserGroupService::class,
-    UserAuthorityController::class,
-    UserAccountController::class,
-    UserStatusController::class,
     UserService::class,
     UserAccountService::class,
     UserAuthorityService::class,

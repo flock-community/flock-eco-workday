@@ -9,7 +9,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import dayjs, { type Dayjs } from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   type Assignment,
   AssignmentClient,
@@ -40,6 +40,7 @@ export function AssignmentSelector({
 }: AssignmentSelectorProps) {
   const [items, setItems] = useState<Assignment[]>();
   const [state, setState] = useState(value);
+  const autoSelectedRef = useRef(false);
 
   useEffect(() => {
     if (!personId) return;
@@ -53,13 +54,28 @@ export function AssignmentSelector({
     setState(value);
   }, [value]);
 
-  const assignmentInPeriod = (assignment: Assignment) => {
-    return (
-      assignment.code === value ||
-      (assignment.from.isSameOrBefore(from) &&
-        (!assignment.to || assignment.to.isSameOrAfter(to, 'day')))
-    );
-  };
+  const isActiveInPeriod = useCallback(
+    (assignment: Assignment) =>
+      assignment.from.isSameOrBefore(from) &&
+      (!assignment.to || assignment.to.isSameOrAfter(to, 'day')),
+    [from, to],
+  );
+
+  const assignmentInPeriod = (assignment: Assignment) =>
+    assignment.code === value || isActiveInPeriod(assignment);
+
+  useEffect(() => {
+    if (!items || autoSelectedRef.current) return;
+    if (value) {
+      autoSelectedRef.current = true;
+      return;
+    }
+    const activeInPeriod = items.filter(isActiveInPeriod);
+    if (activeInPeriod.length === 1) {
+      autoSelectedRef.current = true;
+      onChange?.(activeInPeriod[0].code);
+    }
+  }, [items, value, onChange, isActiveInPeriod]);
 
   function handleChange(event) {
     const selected = event.target.value;

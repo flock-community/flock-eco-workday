@@ -13,6 +13,7 @@ import { DatePickerField } from '../../components/fields/DatePickerField';
 import { DropzoneAreaField } from '../../components/fields/DropzoneAreaField';
 import { PeriodInputField } from '../../components/fields/PeriodInputField';
 import { StatusSelect } from '../../components/status/StatusSelect';
+import { useDayMeta } from '../../hooks/DayMetaHook';
 import { usePerson } from '../../hooks/PersonHook';
 import { type DatePreset, datePresets } from '../../utils/DatePreset';
 import { isDefined } from '../../utils/validation';
@@ -28,10 +29,10 @@ export const schema = Yup.object().shape({
     .required('Assignment is required')
     .nullable()
     .default(''),
-  from: Yup.date().required('From date is required').default(now),
-  to: Yup.date().required('To date is required').default(now),
+  from: Yup.mixed<dayjs.Dayjs>().required('From date is required').default(now),
+  to: Yup.mixed<dayjs.Dayjs>().required('To date is required').default(now),
   days: Yup.array().default([8]).nullable(),
-  hours: Yup.number().default('0'),
+  hours: Yup.number().default(0),
   sheets: Yup.array().default([]),
 });
 
@@ -39,6 +40,19 @@ type WorkDayFormProps = {
   value: any;
   onSubmit?: (data: any) => Promise<void> | void;
 };
+
+function WorkDayPeriodField({
+  from,
+  to,
+  personId,
+}: {
+  from: dayjs.Dayjs;
+  to: dayjs.Dayjs;
+  personId: string | undefined;
+}) {
+  const dayMeta = useDayMeta(personId, from, to);
+  return <PeriodInputField name="days" from={from} to={to} dayMeta={dayMeta} />;
+}
 
 export function WorkDayForm({ value, onSubmit }: WorkDayFormProps) {
   const [person] = usePerson();
@@ -123,7 +137,11 @@ export function WorkDayForm({ value, onSubmit }: WorkDayFormProps) {
             component={TextField}
           />
         ) : (
-          <PeriodInputField name="days" from={values.from} to={values.to} />
+          <WorkDayPeriodField
+            from={values.from}
+            to={values.to}
+            personId={person?.uuid}
+          />
         )}
       </Grid>
     </>
@@ -174,7 +192,7 @@ export function WorkDayForm({ value, onSubmit }: WorkDayFormProps) {
   return value ? (
     <Formik
       enableReinitialize
-      initialValues={mutatePeriod(value) || schema.default()}
+      initialValues={mutatePeriod(value) || schema.getDefault()}
       onSubmit={handleSubmit}
       validationSchema={schema}
     >

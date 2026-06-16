@@ -1,3 +1,3 @@
-endpoint FindMeUserAuthority GET /api/authorities -> {
+endpoint GetAuthorityAll GET /api/authorities -> {
   200 -> String[]
 }

@@ -1,9 +1,22 @@
 import { Card, CardContent, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import type { Dayjs } from 'dayjs';
 // types
 import type { DayProps } from '../types';
 import { StatusMenu } from './status/StatusMenu';
+
+function countWeekdays(from: Dayjs, to: Dayjs): number {
+  let count = 0;
+  let cursor = from.startOf('day');
+  const end = to.startOf('day');
+  while (!cursor.isAfter(end)) {
+    const day = cursor.day();
+    if (day !== 0 && day !== 6) count++;
+    cursor = cursor.add(1, 'day');
+  }
+  return count;
+}
 
 const PREFIX = 'DayListItem';
 
@@ -49,7 +62,7 @@ export function DayListItem({
           {value.to.format('DD-MM-YYYY')}
         </Typography>
         <Typography>
-          Aantal dagen: {value.to.diff(value.from, 'days') + 1}
+          Aantal dagen: {countWeekdays(value.from, value.to)}
         </Typography>
         <Typography>Aantal uren: {value.hours}</Typography>
         <div className={classes.status}>

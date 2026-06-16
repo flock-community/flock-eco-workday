@@ -1,6 +1,7 @@
 import { checkResponse, validateResponse } from '@workday-core';
 import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
+import type { EventForm } from '../wirespec/model';
 import type { Person, PersonLight } from './PersonClient';
 
 const path = '/api/events';
@@ -53,18 +54,8 @@ type FlockEventRaw = {
   type: EventType;
 };
 
-export type FlockEventRequest = {
-  description: string;
-  id: number;
-  code: string;
-  from: Dayjs;
-  to: Dayjs;
-  hours: number;
-  days: number[];
-  personIds: string[];
-  costs: number;
-  type: EventType;
-};
+// The type we send to the backend: the generated wirespec contract.
+export type FlockEventRequest = EventForm;
 
 export enum EventType {
   CONFERENCE = 'CONFERENCE',
@@ -147,15 +138,20 @@ const deleteRatings = (eventCode, personId) => {
     .then((res) => res?.body);
 };
 
-const getHackDays = (year: number): Promise<FlockEvent[]> => {
+const getEventsByYear = (year: number): Promise<FlockEvent[]> => {
   const opts = {
     method: 'GET',
   };
-  return fetch(`${path}/hack-days?year=${year}`, opts)
+  return fetch(`${path}/year?year=${year}`, opts)
     .then((it) => validateResponse<FlockEventRawProjection[]>(it))
     .then((it) => checkResponse(it))
     .then((res) => res?.body.map(internalize));
 };
+
+const getHackDays = (year: number): Promise<FlockEvent[]> =>
+  getEventsByYear(year).then((events) =>
+    events.filter((event) => event.type === EventType.FLOCK_HACK_DAY),
+  );
 
 const subscribeToEvent = (event: FlockEvent) => {
   const opts = {
@@ -189,6 +185,7 @@ export const EventClient = {
   getRatings,
   postRatings,
   deleteRatings,
+  getEventsByYear,
   getHackDays,
   subscribeToEvent,
   unsubscribeFromEvent,

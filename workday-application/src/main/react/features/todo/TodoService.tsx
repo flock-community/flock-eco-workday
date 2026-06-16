@@ -8,32 +8,40 @@ import type { Todo, WorkDayStatus } from '../../wirespec/model';
 const updateStatusWorkDay = async (id: string, status: WorkDayStatus) => {
   const res = await WorkDayClient.get(id);
   await WorkDayClient.put(id, {
-    ...res,
-    assignmentCode: res.assignment.code,
-    status,
     from: res.from.format(ISO_8601_DATE),
     to: res.to.format(ISO_8601_DATE),
+    hours: res.hours,
+    days: res.days,
+    status,
+    assignmentCode: res.assignment.code,
+    sheets: res.sheets,
   });
 };
 
 const updateStatusSickDay = async (id: string, status: WorkDayStatus) => {
   const res = await SickDayClient.get(id);
   await SickDayClient.put(id, {
-    ...res,
-    status,
     from: res.from.format(ISO_8601_DATE),
     to: res.to.format(ISO_8601_DATE),
+    hours: res.hours,
+    days: res.days,
+    status,
+    description: res.description,
+    personId: res.personId,
   });
 };
 
 const updateStatusLeaveDay = async (id: string, status: WorkDayStatus) => {
   const res = await LeaveDayClient.get(id);
   await LeaveDayClient.put(id, {
-    ...res,
-    status,
+    description: res.description,
     from: res.from.format(ISO_8601_DATE),
     to: res.to.format(ISO_8601_DATE),
+    hours: res.hours,
     days: res.type === 'HOLIDAY' ? res.days : undefined,
+    status,
+    type: res.type,
+    personId: res.personId,
   });
 };
 
