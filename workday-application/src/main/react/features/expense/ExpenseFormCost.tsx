@@ -62,7 +62,7 @@ export const ExpenseFormCost = ({ value, onSubmit }: ExpenseFormCostProps) => {
   return (
     <Formik
       initialValues={{
-        ...schema.cast(),
+        ...schema.getDefault(),
         ...value,
       }}
       onSubmit={onSubmit}

@@ -71,7 +71,7 @@ export const ContractFormExternal = ({
 
   return (
     <Formik
-      initialValues={{ ...schema.default(), ...value }}
+      initialValues={{ ...schema.getDefault(), ...value }}
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize

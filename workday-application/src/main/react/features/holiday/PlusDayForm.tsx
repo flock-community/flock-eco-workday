@@ -15,8 +15,8 @@ const now = dayjs();
 export const schemaPlusDayForm = Yup.object().shape({
   description: Yup.string().required('Description is required').default(''),
   status: Yup.string().required('Status is required').default('REQUESTED'),
-  from: Yup.date().required('From date is required').default(now),
-  to: Yup.date().required('To date is required').default(now),
+  from: Yup.mixed<dayjs.Dayjs>().required('From date is required').default(now),
+  to: Yup.mixed<dayjs.Dayjs>().required('To date is required').default(now),
   hours: Yup.string().required('Hours are required').default(''),
 });
 
