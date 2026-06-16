@@ -16,8 +16,8 @@ const now = dayjs();
 export const schemaHoliDayForm = Yup.object().shape({
   description: Yup.string().required('Field required').default(''),
   status: Yup.string().required('Field required').default('REQUESTED'),
-  from: Yup.date().required('From date is required').default(now),
-  to: Yup.date().required('To date is required').default(now),
+  from: Yup.mixed<dayjs.Dayjs>().required('From date is required').default(now),
+  to: Yup.mixed<dayjs.Dayjs>().required('To date is required').default(now),
   days: Yup.array().default([8]).nullable(),
 });
 

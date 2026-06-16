@@ -17,8 +17,8 @@ const now = dayjs();
 
 const schema = Yup.object().shape({
   description: Yup.string().required('Description is required').default(''),
-  from: Yup.date().required('From date is required').default(now),
-  to: Yup.date().required('To date is required').default(now),
+  from: Yup.mixed<dayjs.Dayjs>().required('From date is required').default(now),
+  to: Yup.mixed<dayjs.Dayjs>().required('To date is required').default(now),
   days: Yup.array().default([8]).nullable(),
   personIds: Yup.array().default([]),
   costs: Yup.number().required().min(0).default(0),
@@ -105,7 +105,7 @@ export function EventForm({ value, onSubmit }: EventFormProps) {
     });
   };
 
-  const init = { ...schema.default(), ...mutatePeriod(value) };
+  const init = { ...schema.getDefault(), ...mutatePeriod(value) };
   return (
     value && (
       <Formik

@@ -46,7 +46,7 @@ export function ClientForm({ code, value, onSubmit }: ClientFormProps) {
 
   return (
     <Formik
-      initialValues={{ ...schema.cast(), ...state }}
+      initialValues={{ ...schema.getDefault(), ...state }}
       onSubmit={handleSubmit}
       validationSchema={schema}
       enableReinitialize
