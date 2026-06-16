@@ -49,9 +49,10 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       to: it.to.format(ISO_8601_DATE),
       hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
       days: it.days,
-      costs: it.costs,
+      budget: it.budget,
       personIds: it.personIds,
       type: it.type,
+      defaultTimeAllocationType: undefined,
     };
     const persist = code ? EventClient.put(code, body) : EventClient.post(body);
     persist.then((res) => {

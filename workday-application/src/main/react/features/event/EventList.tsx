@@ -85,7 +85,7 @@ export const EventList = ({
             <Typography>Aantal uren: {item.hours}</Typography>
             <Typography>
               Totale kosten:{' '}
-              {item.costs.toLocaleString('nl-NL', {
+              {item.budget.toLocaleString('nl-NL', {
                 style: 'currency',
                 currency: 'EUR',
               })}

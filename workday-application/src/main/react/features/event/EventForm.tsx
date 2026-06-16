@@ -21,7 +21,7 @@ const schema = Yup.object().shape({
   to: Yup.date().required('To date is required').default(now),
   days: Yup.array().default([8]).nullable(),
   personIds: Yup.array().default([]),
-  costs: Yup.number().required().min(0).default(0),
+  budget: Yup.number().required().min(0).default(0),
   type: Yup.string().required('Field required').default('GENERAL_EVENT'),
 });
 
@@ -57,9 +57,9 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
         </Grid>
         <Grid size={{ xs: 12 }}>
           <Field
-            name="costs"
+            name="budget"
             type="number"
-            label="Costs"
+            label="Budget"
             fullWidth
             component={TextField}
           />
@@ -100,7 +100,7 @@ export function EventForm({ value, onSubmit }: EventFormProps) {
       from: data.from,
       to: data.to,
       days: data.days,
-      costs: data.costs,
+      budget: data.budget,
       type: data.type,
     });
   };

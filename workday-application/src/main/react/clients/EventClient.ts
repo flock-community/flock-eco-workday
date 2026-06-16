@@ -27,7 +27,7 @@ export type FullFlockEvent = {
   hours: number;
   days: number[];
   persons: Person[];
-  costs: number;
+  budget: number;
   type: EventType;
 };
 
@@ -50,7 +50,7 @@ type FlockEventRaw = {
   hours: number;
   days: number[];
   persons: Person[];
-  costs: number;
+  budget: number;
   type: EventType;
 };
 
@@ -84,7 +84,7 @@ const internalizeFull = (it: FlockEventRaw): FullFlockEvent => ({
   type: it.type,
   id: it.id,
   days: it.days,
-  costs: it.costs,
+  budget: it.budget,
 });
 
 export const EVENT_PAGE_SIZE: number = 10;
