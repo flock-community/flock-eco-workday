@@ -54,7 +54,7 @@ export const ContractFormManagement = ({
 
   const schema = object({
     monthlyFee: number().required().default(4000),
-    from: mixed().required().default(dayjs()),
+    from: mixed().required().default(() => dayjs()),
     to: mixed().default(null),
   });
 

@@ -13,12 +13,10 @@ import { EventTypeSelect } from './EventTypeSelect';
 
 export const EVENT_FORM_ID = 'event-form';
 
-const now = dayjs();
-
 const schema = Yup.object().shape({
   description: Yup.string().required('Description is required').default(''),
-  from: Yup.mixed<dayjs.Dayjs>().required('From date is required').default(now),
-  to: Yup.mixed<dayjs.Dayjs>().required('To date is required').default(now),
+  from: Yup.mixed<dayjs.Dayjs>().required('From date is required').default(() => dayjs()),
+  to: Yup.mixed<dayjs.Dayjs>().required('To date is required').default(() => dayjs()),
   days: Yup.array().default([8]).nullable(),
   personIds: Yup.array().default([]),
   costs: Yup.number().required().min(0).default(0),

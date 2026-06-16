@@ -7,7 +7,7 @@ const schema = {
   hourlyRate: number().required().default(80),
   hoursPerWeek: number().required().default(36),
   role: string().default(''),
-  from: mixed().required().default(dayjs()),
+  from: mixed().required().default(() => dayjs()),
   to: mixed().default(null),
   clientCode: mixed().required(),
 };

@@ -64,7 +64,7 @@ export const ContractFormExternal = ({
   const schema = object({
     hourlyRate: number().required().default(80),
     hoursPerWeek: number().required().default(40),
-    from: mixed().required().default(dayjs()),
+    from: mixed().required().default(() => dayjs()),
     to: mixed().default(null),
     billable: boolean().default(true),
   });

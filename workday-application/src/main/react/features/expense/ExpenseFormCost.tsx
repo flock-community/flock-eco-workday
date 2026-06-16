@@ -20,7 +20,7 @@ export type ExpenseCostForm = {
 const schema = Yup.object({
   description: Yup.string().required().default(''),
   amount: Yup.number().required().default(0),
-  date: Yup.mixed().required().default(dayjs()),
+  date: Yup.mixed().required().default(() => dayjs()),
   files: Yup.array().default([]),
 });
 
