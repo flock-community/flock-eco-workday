@@ -2,9 +2,6 @@
 import { type Page, expect } from '@playwright/test';
 import { Given_I_am_logged_in_as_user } from './workdaySteps';
 
-/**
- * Navigate to the budget allocations page as an admin user and select the given person.
- */
 export async function Given_I_am_on_budget_tab_for_person(
   page: Page,
   adminUser: string,
@@ -56,9 +53,6 @@ export async function Then_summary_card_shows(
   }
 }
 
-/**
- * Click the "Add Study Money" button and wait for the dialog to open.
- */
 export async function When_I_click_add_study_money(page: Page) {
   await page.getByRole('button', { name: 'Add' }).click();
   await expect(
@@ -161,10 +155,8 @@ export async function Then_money_used_changed_by(
     .getByRole('heading', { name: cardTitle, level: 6, exact: true })
     .locator('xpath=ancestor::*[contains(@class,"MuiCard-root")][1]');
 
-  // Verify budget line is unchanged
   await expect(cardContent.getByText('Budget:')).toContainText(expectedBudget);
 
-  // Read new used value and verify delta
   const usedText = await cardContent.getByText('Used:').textContent();
   const newUsedStr = usedText?.replace(/^Used:\s*/, '').trim() ?? '';
   const oldUsed = parseEuroValue(baselineUsed);
@@ -178,15 +170,11 @@ export async function Then_money_used_changed_by(
     );
   }
 
-  // Verify available = budget - used
   const budgetVal = parseEuroValue(expectedBudget);
   const expectedAvailable = formatEuro(budgetVal - newUsed);
   await expect(cardContent.getByRole('heading', { level: 4 })).toContainText(expectedAvailable);
 }
 
-/**
- * Assert that the Budget Allocations list does NOT contain a card with the given description.
- */
 export async function Then_allocation_list_does_not_contain(
   page: Page,
   description: string,

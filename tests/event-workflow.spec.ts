@@ -56,7 +56,6 @@ async function cleanupTestEvents(browser: import('@playwright/test').Browser) {
   const page = await context.newPage();
   page.setDefaultTimeout(15000);
   try {
-    // Login via the UI
     await page.goto('/auth', { timeout: 10000 });
     await page.getByLabel('Username').fill('bert@sesam.straat');
     await page.getByLabel('Password').fill('bert');
@@ -102,7 +101,7 @@ test.describe('Event Workflow - Create and Budget Verification', () => {
   });
 
   test('EVNT-01: Create event and capture budget baseline', async ({ page }) => {
-    // First, capture Pino's budget baseline BEFORE creating the event
+    // Baseline must be captured BEFORE creating the event (used by EVNT-04).
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
     pinoMoneyBaseline = await readCardUsedValue(page, 'Study Money');
 
@@ -123,7 +122,6 @@ test.describe('Event Workflow - Create and Budget Verification', () => {
   });
 
   test('EVNT-04: Event allocations reflected in participant budget summaries', async ({ page }) => {
-    // Navigate to Pino's budget tab and verify auto-created allocations
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
 
     // Hack hours: baseline=16h + 8h auto-created = 24h used, available=136h (deterministic)
@@ -132,24 +130,21 @@ test.describe('Event Workflow - Create and Budget Verification', () => {
     // Study hours unchanged (baseline: 0h used)
     await Then_summary_card_shows(page, 'Study Hours', '200h', '200h', '0h');
 
-    // Study money: verify used increased by €500 (event budget / 1 participant)
+    // Study money: used increased by €500 (event budget / 1 participant)
     await Then_money_used_changed_by(page, 'Study Money', pinoMoneyBaseline, 500, '€5.000');
 
-    // Verify event allocation appears in the allocation list
     await Then_budget_tab_shows_event_allocation(page, 'Hack Time', '8h');
 
-    // Verify the info alert about event allocations
     await expect(
       page.getByText('Event allocations are managed from the Events page'),
     ).toBeVisible();
   });
 
   test('EVNT-05: defaultTimeAllocationType persists after reopen', async ({ page }) => {
-    // Reopen the event and verify defaultTimeAllocationType is persisted
     await Given_I_am_on_events_page(page, 'bert');
     await When_I_open_event_by_description(page, 'PW Test Hack Day');
 
-    // The Default Time Allocation Type dropdown should show "Hack Time" (persisted by backend)
+    // Dropdown should show "Hack Time" (persisted by backend).
     const control = page
       .locator('.MuiFormControl-root')
       .filter({ hasText: 'Default Time Allocation Type' })
@@ -158,7 +153,7 @@ test.describe('Event Workflow - Create and Budget Verification', () => {
   });
 
   test('EVNT-06: Collapsed budget banner shows assigned and unassigned amounts', async ({ page }) => {
-    // Open the event created by EVNT-01 — banner shows event budget summary in AccordionSummary
+    // Opens the event created by EVNT-01.
     await Given_I_am_on_events_page(page, 'bert');
     await When_I_open_event_by_description(page, 'PW Test Hack Day');
 
@@ -199,48 +194,40 @@ test.describe('Event Workflow - Modify Allocations', () => {
   });
 
   test('EVNT-03: Add and remove participants from event allocations', async ({ page }) => {
-    // --- Part A: Add Ieniemienie as a second participant ---
-
-    // Capture Ieniemienie's money baseline before adding to event
+    // Baseline captured before adding Ieniemienie.
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Ieniemienie');
     const ieniemoneyBaseline = await readCardUsedValue(page, 'Study Money');
 
     await Given_I_am_on_events_page(page, 'bert');
     await When_I_open_event_by_description(page, 'PW Test Hack Day');
 
-    // Add Ieniemienie to the event via the Person multi-select
     await When_I_add_second_participant(page, 'Ieniemienie Mouse');
 
     // Save — backend auto-creates allocations for Ieniemienie
     await When_I_submit_event_form(page);
 
-    // Verify Ieniemienie's budget
     // Hack hours: baseline=40h + 8h = 48h used, avail=112h (deterministic)
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Ieniemienie');
     await Then_summary_card_shows(page, 'Hack Hours', '112h', '160h', '48h');
 
-    // Study money: verify used increased by €250 (500/2 participants)
+    // Study money: used increased by €250 (500/2 participants)
     await Then_money_used_changed_by(page, 'Study Money', ieniemoneyBaseline, 250, '€5.000');
 
-    // Verify the event allocation appears in the list
     await Then_budget_tab_shows_event_allocation(page, 'Hack Time', '8h');
 
-    // --- Part B: Remove Pino from the event ---
-
-    // Capture Pino's money baseline before removal
+    // Baseline captured before removing Pino.
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
     const pinoMoneyBeforeRemoval = await readCardUsedValue(page, 'Study Money');
 
     await Given_I_am_on_events_page(page, 'bert');
     await When_I_open_event_by_description(page, 'PW Test Hack Day');
 
-    // Remove Pino from the Person multi-select
     await When_I_remove_participant_from_event(page, 'Pino Woodpecker');
 
     // Save — backend deletes Pino's allocations (cascade)
     await When_I_submit_event_form(page);
 
-    // Verify Pino's hack hours reverted to baseline (deterministic)
+    // Pino's hack hours revert to baseline (deterministic).
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
     await Then_summary_card_shows(page, 'Hack Hours', '144h', '160h', '16h');
 

@@ -65,10 +65,8 @@ export function EventBudgetManagementSection({
   // Track whether initial API data has been applied (only once per dialog open)
   const initialLoadedRef = useRef(false);
 
-  // Top-level accordion state: collapsed by default
   const [budgetExpanded, setBudgetExpanded] = useState(false);
 
-  // Separate state for money and time allocations
   const [moneyParticipants, setMoneyParticipants] = useState<PersonMoneyAllocation[]>([]);
   const [timeParticipants, setTimeParticipants] = useState<PersonTimeAllocation[]>([]);
   // Refs to always have latest values for synchronous parent notification
@@ -89,7 +87,6 @@ export function EventBudgetManagementSection({
     : null;
   const participantIds = formValues.personIds;
 
-  // Determine section visibility
   const showTimeSection = defaultBudgetType !== null;
   const showMoneySection = formValues.type === EventType.FLOCK_HACK_DAY || formValues.type === EventType.CONFERENCE;
 
@@ -134,10 +131,9 @@ export function EventBudgetManagementSection({
         }).filter(Boolean) as PersonMoneyAllocation[];
       }
 
-      // Get current participants as a map
       const currentMap = new Map(prev.map(p => [p.personId, p]));
 
-      // Calculate default share for NEW participants only
+      // Default share is computed for NEW participants only.
       const existingTotal = participantIds
         .filter(id => currentMap.has(id))
         .reduce((sum, id) => sum + currentMap.get(id)!.amount, 0);
@@ -168,7 +164,6 @@ export function EventBudgetManagementSection({
       return result;
     });
 
-    // Update time participants separately
     setTimeParticipants(prev => {
       // On first render with empty prev, use initial data from API if available
       if (prev.length === 0 && initialTimeParticipants && initialTimeParticipants.length > 0) {
@@ -224,7 +219,7 @@ export function EventBudgetManagementSection({
       });
       return newSet;
     });
-  }, [participantIds, persons, totalBudget]); // React to participant and budget changes
+  }, [participantIds, persons, totalBudget]);
 
   // React to defaultTimeAllocationType changes: update untouched time allocations
   useEffect(() => {
@@ -234,12 +229,11 @@ export function EventBudgetManagementSection({
     // This forces them to use the new defaultTimeAllocationType
     const updated = timeParticipants.map(p => {
       if (dirtyTime.has(p.personId)) return p; // Preserve manual edits
-      // Clear custom periods to use new defaults
       return { ...p, studyPeriod: null, hackPeriod: null };
     });
 
     setTimeParticipants(updated);
-  }, [defaultBudgetType]); // React to allocation type changes
+  }, [defaultBudgetType]);
 
   // Compute summary values for collapsed view (MUST be before useEffect that uses isDirty)
   const totalMoneyAllocated = useMemo(
@@ -261,7 +255,6 @@ export function EventBudgetManagementSection({
     [dirtyMoney, dirtyTime]
   );
 
-  // Notify parent of budget state changes
   useEffect(() => {
     onBudgetStateChange?.({
       moneyParticipants,
@@ -271,7 +264,6 @@ export function EventBudgetManagementSection({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [moneyParticipants, timeParticipants, isDirty]);
 
-  // Helper: Generate time allocation summary
   const getTimeSummary = (): string => {
     if (!defaultBudgetType) return 'No allocations';
 
@@ -284,14 +276,12 @@ export function EventBudgetManagementSection({
 
     const parts: string[] = [];
 
-    // Default count
     if (participantsWithDefaults.length > 0) {
       parts.push(
         `${participantsWithDefaults.length} using defaults (${defaultHoursPerDay}h/day ${defaultBudgetType})`
       );
     }
 
-    // Exceptions count
     if (participantsWithExceptions.length > 0) {
       parts.push(`${participantsWithExceptions.length} custom allocation${participantsWithExceptions.length !== 1 ? 's' : ''}`);
     }
@@ -299,18 +289,15 @@ export function EventBudgetManagementSection({
     return parts.join(', ') || 'No allocations';
   };
 
-  // Helper: Generate money allocation summary
   const getMoneySummary = (): string => {
     const parts: string[] = [];
 
-    // Check if equal share
     const participantAmounts = moneyParticipants.map((p) => p.amount);
     const uniqueAmounts = [...new Set(participantAmounts)].filter((a) => a > 0);
     const isEqualShare =
       uniqueAmounts.length === 1 &&
       participantAmounts.every((a) => a === uniqueAmounts[0]);
 
-    // Participants
     if (isEqualShare && uniqueAmounts.length > 0) {
       parts.push(
         `€${uniqueAmounts[0].toLocaleString('nl-NL')}/person (${moneyParticipants.length})`
@@ -336,9 +323,7 @@ export function EventBudgetManagementSection({
     return parts.join('; ') || 'No allocations';
   };
 
-  // Handle money participant changes with dirty tracking
   const handleMoneyParticipantsChange = (updated: PersonMoneyAllocation[]) => {
-    // Mark changed participants as dirty
     let newDirty = false;
     updated.forEach(updatedP => {
       const original = moneyParticipants.find(p => p.personId === updatedP.personId);
@@ -357,9 +342,7 @@ export function EventBudgetManagementSection({
     });
   };
 
-  // Handle time participant changes with dirty tracking
   const handleTimeParticipantsChange = (updated: PersonTimeAllocation[]) => {
-    // Mark changed participants as dirty
     let newDirty = false;
     updated.forEach(updatedP => {
       const original = timeParticipants.find(p => p.personId === updatedP.personId);
@@ -385,7 +368,6 @@ export function EventBudgetManagementSection({
     });
   };
 
-  // Generate event dates from formValues
   const eventDays = formValues.to.diff(formValues.from, 'days') + 1;
   const eventDates: string[] = useMemo(() => {
     const dates: string[] = [];
@@ -395,7 +377,6 @@ export function EventBudgetManagementSection({
     return dates;
   }, [formValues.from, formValues.to, eventDays]);
 
-  // Calculate default hours per day from formValues.days
   const defaultHoursPerDay = useMemo(() => {
     if (!formValues.days || formValues.days.length === 0) return 8;
     const totalHours = formValues.days.reduce((acc, cur) => acc + parseFloat(String(cur || 0)), 0);

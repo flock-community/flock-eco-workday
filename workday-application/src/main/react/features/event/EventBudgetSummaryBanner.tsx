@@ -7,7 +7,6 @@ interface EventBudgetSummaryBannerProps {
   totalAllocated: number;
   totalTime?: number;
   currency?: string;
-  // New props for collapsed summary view
   participantCount?: number;
   defaultHoursPerDay?: number;
   defaultBudgetType?: string | null;
@@ -46,7 +45,6 @@ export function EventBudgetSummaryBanner({
     return <Info />;
   };
 
-  // Collapsed summary view for AccordionSummary
   if (isCollapsedMode) {
     const assignedPerPerson = participantCount > 0 ? totalAllocated / participantCount : 0;
     const unassigned = hasBudget ? totalBudget! - totalAllocated : 0;
@@ -55,7 +53,6 @@ export function EventBudgetSummaryBanner({
     const hasTimeSection = defaultBudgetType !== null && defaultBudgetType !== undefined;
     const hasMoneySection = hasBudget;
 
-    // Build summary text
     let summaryText = `${participantCount} participant${participantCount !== 1 ? 's' : ''}`;
 
     if (hasTimeSection) {

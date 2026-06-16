@@ -6,7 +6,6 @@ import weekOfYearPlugin from 'dayjs/plugin/weekOfYear';
 import type { Period } from '../../features/period/Period';
 import type { DayMeta } from '../../hooks/DayMetaHook';
 
-// utils
 import { calcGrid } from '../../utils/calcGrid';
 
 dayjs.extend(weekOfYearPlugin);
@@ -58,7 +57,6 @@ export function PeriodInput({ period, onChange, dayMeta, readonly = false }: Per
   return (
     <>
       <Grid container spacing={2} alignItems="center">
-        {/* The header of the table with the days as caption */}
         <Grid size={{ xs: 2 }}>
           <Typography>Week</Typography>
         </Grid>
@@ -71,7 +69,6 @@ export function PeriodInput({ period, onChange, dayMeta, readonly = false }: Per
           <Typography align="right">Total</Typography>
         </Grid>
       </Grid>
-      {/* End header */}
 
       {grid.map((week) => {
         return (
@@ -132,7 +129,6 @@ export function PeriodInput({ period, onChange, dayMeta, readonly = false }: Per
         );
       })}
 
-      {/* Bottom */}
       <Box mt={2}>
         <Grid container spacing={1} alignItems="center">
           <Grid size={{ xs: 10 }}>
@@ -143,7 +139,6 @@ export function PeriodInput({ period, onChange, dayMeta, readonly = false }: Per
           </Grid>
         </Grid>
       </Box>
-      {/* Endbottom */}
     </>
   );
 }

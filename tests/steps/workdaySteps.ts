@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 export async function Given_I_am_logged_in_as_user(page, username: string) {
   await page.goto('/auth');
   await page.waitForLoadState('networkidle');
-  // Capitalize first letter for welcome message format
   const capitalizedUsername =
     username.charAt(0).toUpperCase() + username.slice(1);
   const welcomeHeading = page.getByRole('heading', {
@@ -56,15 +55,12 @@ export async function selectDateInPicker(
   // Format the date as DD-MM-YYYY (the format the application uses)
   const dateString = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
 
-  // Find the date input field and fill it directly
   const dateInput = page.getByLabel(dateLabel, { exact: true });
   await dateInput.click();
   await dateInput.fill(dateString);
 
-  // Press Enter or Tab to confirm the date
   await dateInput.press('Tab');
 
-  // Wait a moment for the date to be processed
   await page.waitForTimeout(200);
 }
 
@@ -109,10 +105,8 @@ export async function When_I_add_a_file(page, filename: string) {
 
   await fileInput.setInputFiles(`tests/files/${filename}`);
 
-  // Wait for the upload to complete
   await uploadPromise;
 
-  // Wait a moment for the UI to update
   await page.waitForTimeout(500);
 }
 
@@ -187,14 +181,12 @@ export async function When_I_select_the_assignment(
   page,
   assignmentText: string,
 ) {
-  // Click the assignment field to open the autocomplete
   await page.getByLabel('Assignment').click();
 
-  // Wait for the listbox to appear - MUI v5 renders it outside the dialog
+  // MUI v5 renders the listbox outside the dialog.
   const listbox = page.getByRole('listbox', { name: 'Assignment' });
   await listbox.waitFor({ state: 'visible', timeout: 5000 });
 
-  // Click the matching option
   await page
     .getByRole('option', { name: new RegExp(assignmentText, 'i') })
     .click();

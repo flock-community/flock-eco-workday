@@ -2,9 +2,6 @@
 import { type Page, expect } from '@playwright/test';
 import { Given_I_am_logged_in_as_user, selectDateInPicker } from './workdaySteps';
 
-/**
- * Navigate to the events page as an admin user.
- */
 export async function Given_I_am_on_events_page(
   page: Page,
   adminUser: string,
@@ -16,9 +13,6 @@ export async function Given_I_am_on_events_page(
   ).toBeVisible();
 }
 
-/**
- * Click the "Add" button to open the EventDialog for creating a new event.
- */
 export async function When_I_click_add_event(page: Page) {
   await page.getByRole('button', { name: 'Add' }).click();
   await expect(page.locator('form#event-form').first()).toBeVisible();
@@ -40,24 +34,20 @@ export async function When_I_fill_event_form(
     hoursPerDay?: string;
   },
 ) {
-  // Fill Description
   await page.getByLabel('Description').fill(options.description);
 
-  // Fill Budget (clear first)
   const budgetField = page.getByLabel('Budget');
   await budgetField.clear();
   await budgetField.fill(options.budget);
 
-  // Set dates using selectDateInPicker (DD-MM-YYYY format, handles MUI DatePicker properly).
+  // selectDateInPicker uses DD-MM-YYYY (the MUI DatePicker format).
   // Dates must be set BEFORE event type (event type triggers PeriodInputField which
   // calls .startOf() on from/to dates).
-  // Parse YYYY-MM-DD input format to day/month/year components.
   const [fromYear, fromMonth, fromDay] = options.from.split('-').map(Number);
   const [toYear, toMonth, toDay] = options.to.split('-').map(Number);
   await selectDateInPicker(page, 'From', fromDay, fromMonth, fromYear);
   await selectDateInPicker(page, 'To', toDay, toMonth, toYear);
 
-  // Select Event type via MUI Select (after dates are set)
   const eventTypeControl = page
     .locator('.MuiFormControl-root')
     .filter({ hasText: 'Event type' })
@@ -66,9 +56,6 @@ export async function When_I_fill_event_form(
   await page.getByRole('option', { name: options.eventType }).click();
 }
 
-/**
- * Add a participant to the event via the PersonSelectorField MUI Autocomplete.
- */
 export async function When_I_add_participant(
   page: Page,
   personName: string,
@@ -82,7 +69,6 @@ export async function When_I_add_participant(
   await page
     .getByRole('option', { name: new RegExp(personName, 'i') })
     .click();
-  // Close the dropdown
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
 }
@@ -108,7 +94,6 @@ export async function When_I_open_event_by_description(
 ) {
   const heading = page.locator('h6').filter({ hasText: description }).first();
 
-  // Wait for the heading to appear; if it doesn't, reload the events page and retry
   const visible = await heading
     .waitFor({ state: 'visible', timeout: 5000 })
     .then(() => true)
@@ -151,8 +136,6 @@ export async function When_I_set_default_time_allocation_type(
  * showing participant count and allocation info.
  */
 export async function When_I_expand_budget_accordion(page: Page) {
-  // The budget accordion is inside the EventDialog, after the form.
-  // Its AccordionSummary contains the EventBudgetSummaryBanner with "participant" text.
   const budgetAccordion = page
     .locator('.MuiAccordion-root')
     .filter({ hasText: 'participant' })
@@ -161,7 +144,6 @@ export async function When_I_expand_budget_accordion(page: Page) {
     .locator('.MuiAccordionSummary-root')
     .first()
     .click();
-  // Wait for accordion details to be visible
   await expect(
     budgetAccordion.locator('.MuiAccordionDetails-root').first(),
   ).toBeVisible({ timeout: 5000 });
@@ -194,7 +176,6 @@ export async function When_I_customize_participant_allocation(
   page: Page,
   personName: string,
 ) {
-  // Find the participant row containing the person name and click its Customize button
   const participantRow = page
     .locator('div')
     .filter({ hasText: new RegExp(personName) })
@@ -221,7 +202,6 @@ export async function When_I_customize_participant_allocation(
 export async function When_I_save_event(page: Page) {
   await page.getByRole('button', { name: 'Save' }).click();
 
-  // Handle close-warning ConfirmDialog if it appears
   const closeWarning = page.getByText('You have unsaved budget changes');
   if (await closeWarning.isVisible({ timeout: 1000 }).catch(() => false)) {
     await page.getByRole('button', { name: 'Confirm' }).click();
@@ -232,14 +212,10 @@ export async function When_I_save_event(page: Page) {
   await page.waitForLoadState('networkidle');
 }
 
-/**
- * Assert that an event with the given description exists in the EventList.
- */
 export async function Then_event_list_contains(
   page: Page,
   description: string,
 ) {
-  // Check for the event description h6 heading in the EventList
   await expect(
     page.locator('h6').filter({ hasText: description }).first(),
   ).toBeVisible();
@@ -280,7 +256,6 @@ export async function When_I_customize_participant_hours(
   dayIndex: number,
   hours: string,
 ) {
-  // Find the participant's customized Box (has personName + "Remove Custom" button)
   const participantBox = page
     .locator('div')
     .filter({ hasText: new RegExp(`^.*${personName}.*$`) })
@@ -296,7 +271,6 @@ export async function When_I_customize_participant_hours(
   const periodSection = heading.locator('..').locator('..');
 
   // The PeriodInput renders TextField type="number" for each day.
-  // Find enabled number inputs in the period section.
   const numberInputs = periodSection.locator('input[type="number"]:not([disabled])');
   const targetInput = numberInputs.nth(dayIndex);
   await targetInput.scrollIntoViewIfNeeded();
@@ -315,17 +289,14 @@ export async function When_I_remove_participant_from_event(
   page: Page,
   personName: string,
 ) {
-  // Open the Person multi-select dropdown
   const personControl = page
     .locator('.MuiFormControl-root')
     .filter({ hasText: 'Person' })
     .first();
   await personControl.getByRole('combobox').click();
-  // Click the already-selected MenuItem to deselect it
   await page
     .getByRole('option', { name: new RegExp(personName, 'i') })
     .click();
-  // Close the dropdown by pressing Escape
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
 }
@@ -340,18 +311,15 @@ export async function When_I_add_second_participant(
   page: Page,
   personName: string,
 ) {
-  // Open the Person multi-select dropdown
   const personControl = page
     .locator('.MuiFormControl-root')
     .filter({ hasText: 'Person' })
     .first();
   await personControl.getByRole('combobox').click();
   await page.waitForTimeout(300);
-  // Click the MenuItem to select the additional person
   await page
     .getByRole('option', { name: new RegExp(personName, 'i') })
     .click();
-  // Close the dropdown
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
 }
@@ -370,8 +338,7 @@ export async function Then_collapsed_banner_shows_money_summary(
   assignedPerPersonText: string,
   unassignedText: string,
 ): Promise<void> {
-  // The banner is inside .MuiAccordion-root > .MuiAccordionSummary-root
-  // It renders as a Typography body2 element containing the summary text.
+  // The banner renders as a Typography body2 (<p>) inside the AccordionSummary.
   const accordionSummary = page
     .locator('.MuiAccordion-root')
     .filter({ hasText: 'participant' })

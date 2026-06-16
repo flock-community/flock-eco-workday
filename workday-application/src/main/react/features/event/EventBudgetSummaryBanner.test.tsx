@@ -23,9 +23,7 @@ describe('EventBudgetSummaryBanner', () => {
         />
       );
 
-      // Should show participant count
       expect(screen.getByText(/3 participants/)).toBeInTheDocument();
-      // Should show hours/day and type
       expect(screen.getByText(/8h\/day HACK/)).toBeInTheDocument();
       // Per-person = allocated / participants = 1200 / 3 = 400
       expect(screen.getByText(/400\/person/)).toBeInTheDocument();
@@ -59,9 +57,7 @@ describe('EventBudgetSummaryBanner', () => {
         />
       );
 
-      // The 8px dot indicator should be present
       const dot = container.querySelector('[class*="MuiBox-root"]');
-      // There should be a small dot element rendered
       const allBoxes = container.querySelectorAll('div');
       const dotElement = Array.from(allBoxes).find(el => {
         const style = window.getComputedStyle(el);
@@ -100,9 +96,7 @@ describe('EventBudgetSummaryBanner', () => {
         />
       );
 
-      // Should NOT contain STUDY anywhere
       expect(screen.queryByText(/STUDY/)).not.toBeInTheDocument();
-      // Should show "no budget allocations" message
       expect(screen.getByText(/no budget allocations/i)).toBeInTheDocument();
     });
 
@@ -117,7 +111,6 @@ describe('EventBudgetSummaryBanner', () => {
         />
       );
 
-      // Should NOT show hours/day TYPE format
       expect(screen.queryByText(/h\/day/)).not.toBeInTheDocument();
       // Per-person = allocated / participants = 500 / 2 = 250 (250 assigned, 500 unassigned)
       expect(screen.getByText(/250\/person/)).toBeInTheDocument();
@@ -134,9 +127,8 @@ describe('EventBudgetSummaryBanner', () => {
         />
       );
 
-      // Should show time info
       expect(screen.getByText(/8h\/day HACK/)).toBeInTheDocument();
-      // Should NOT show per-person money (no budget)
+      // No per-person money line when there is no budget.
       expect(screen.queryByText(/\/person/)).not.toBeInTheDocument();
     });
   });
