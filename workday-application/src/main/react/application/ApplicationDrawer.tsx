@@ -39,8 +39,14 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
     alignItems: 'baseline',
     gap: '0.3rem',
     padding: theme.spacing(2.5, 2.5, 2),
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? theme.palette.background.paper
+        : theme.palette.primary.main,
+    color:
+      theme.palette.mode === 'dark'
+        ? theme.palette.text.primary
+        : theme.palette.primary.contrastText,
   },
   [`& .${classes.list}`]: {
     width: DRAWER_WIDTH,
@@ -208,6 +214,8 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
             fontSize: '1.25rem',
             fontWeight: 800,
             letterSpacing: '-0.01em',
+            color: (t) =>
+              t.palette.mode === 'dark' ? 'primary.main' : 'inherit',
           }}
         >
           Flock.

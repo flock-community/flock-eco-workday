@@ -39,9 +39,17 @@ export function createAppTheme(mode: ColorMode): Theme {
         defaultProps: { elevation: 0, color: 'primary' },
         styleOverrides: {
           root: {
-            backgroundColor: palette.primary.main,
-            color: palette.primary.contrastText,
-            borderBottom: `1px solid ${alpha(palette.primary.contrastText, 0.14)}`,
+            backgroundColor:
+              mode === 'dark' ? palette.background.paper : palette.primary.main,
+            color:
+              mode === 'dark'
+                ? palette.text.primary
+                : palette.primary.contrastText,
+            borderBottom: `1px solid ${
+              mode === 'dark'
+                ? palette.divider
+                : alpha(palette.primary.contrastText, 0.14)
+            }`,
             boxShadow: shadows[2],
           },
         },
@@ -124,8 +132,13 @@ export function createAppTheme(mode: ColorMode): Theme {
       MuiDialogTitle: {
         styleOverrides: {
           root: {
-            backgroundColor: palette.primary.main,
-            color: palette.primary.contrastText,
+            backgroundColor:
+              mode === 'dark'
+                ? alpha(palette.primary.main, 0.14)
+                : palette.primary.main,
+            color: palette.text.primary,
+            borderBottom:
+              mode === 'dark' ? `1px solid ${palette.divider}` : 'none',
             fontWeight: 700,
             fontSize: '1.15rem',
             padding: '16px 24px',

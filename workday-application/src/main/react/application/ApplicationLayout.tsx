@@ -99,7 +99,14 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
               letterSpacing: '-0.01em',
             }}
           >
-            <Box component="span" sx={{ fontWeight: 800 }}>
+            <Box
+              component="span"
+              sx={{
+                fontWeight: 800,
+                color: (t) =>
+                  t.palette.mode === 'dark' ? 'primary.main' : 'inherit',
+              }}
+            >
               Flock.
             </Box>{' '}
             <Box component="span" sx={{ fontWeight: 400, opacity: 0.85 }}>
