@@ -71,13 +71,13 @@ export const darkPalette: PaletteOptions = {
   },
   ...semantic,
   done: '#6fa8d6',
-  background: { default: '#17160f', paper: '#211f16' },
+  background: { default: '#23211a', paper: '#2c2a21' },
   text: {
-    primary: '#f5f2e6',
-    secondary: '#b4ae99',
-    disabled: 'rgba(245, 242, 230, 0.38)',
+    primary: '#f1ece0',
+    secondary: '#b8b2a0',
+    disabled: 'rgba(241, 236, 224, 0.38)',
   },
-  divider: 'rgba(245, 242, 230, 0.12)',
+  divider: 'rgba(241, 236, 224, 0.12)',
   action: {
     hover: 'rgba(245, 242, 230, 0.06)',
     selected: 'rgba(252, 222, 0, 0.20)',

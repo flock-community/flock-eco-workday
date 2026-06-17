@@ -32,6 +32,12 @@ export function createAppTheme(mode: ColorMode): Theme {
               scrollBehavior: 'auto !important',
             },
           },
+          '.recharts-text': { fill: palette.text.secondary },
+          '.recharts-legend-item-text': {
+            color: `${palette.text.primary} !important`,
+          },
+          '.recharts-cartesian-grid line, .recharts-cartesian-axis-line, .recharts-cartesian-axis-tick-line':
+            { stroke: palette.divider },
         },
       },
 
