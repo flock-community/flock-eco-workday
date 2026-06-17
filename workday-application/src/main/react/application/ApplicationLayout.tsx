@@ -74,7 +74,7 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
   return (
     <Root>
       <AppBar position="static">
-        <Toolbar >
+        <Toolbar>
           <IconButton
             className={classes.menuButton}
             color="inherit"

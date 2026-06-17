@@ -1,11 +1,11 @@
 // Event workflow BDD step helpers. Run against a freshly started dev server (-Pdevelop).
-import { type Page, expect } from '@playwright/test';
-import { Given_I_am_logged_in_as_user, selectDateInPicker } from './workdaySteps';
+import { expect, type Page } from '@playwright/test';
+import {
+  Given_I_am_logged_in_as_user,
+  selectDateInPicker,
+} from './workdaySteps';
 
-export async function Given_I_am_on_events_page(
-  page: Page,
-  adminUser: string,
-) {
+export async function Given_I_am_on_events_page(page: Page, adminUser: string) {
   await Given_I_am_logged_in_as_user(page, adminUser);
   await page.goto('/event');
   await expect(
@@ -56,19 +56,14 @@ export async function When_I_fill_event_form(
   await page.getByRole('option', { name: options.eventType }).click();
 }
 
-export async function When_I_add_participant(
-  page: Page,
-  personName: string,
-) {
+export async function When_I_add_participant(page: Page, personName: string) {
   // PersonSelectorField is an MUI multi-Select, not Autocomplete
   const personControl = page
     .locator('.MuiFormControl-root')
     .filter({ hasText: 'Person' })
     .first();
   await personControl.getByRole('combobox').click();
-  await page
-    .getByRole('option', { name: new RegExp(personName, 'i') })
-    .click();
+  await page.getByRole('option', { name: new RegExp(personName, 'i') }).click();
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
 }
@@ -127,7 +122,9 @@ export async function When_I_set_default_time_allocation_type(
     .filter({ hasText: 'Default Time Allocation Type' })
     .first();
   await control.getByRole('combobox').click();
-  await page.getByRole('option', { name: new RegExp(allocationType, 'i') }).click();
+  await page
+    .getByRole('option', { name: new RegExp(allocationType, 'i') })
+    .click();
 }
 
 /**
@@ -140,10 +137,7 @@ export async function When_I_expand_budget_accordion(page: Page) {
     .locator('.MuiAccordion-root')
     .filter({ hasText: 'participant' })
     .first();
-  await budgetAccordion
-    .locator('.MuiAccordionSummary-root')
-    .first()
-    .click();
+  await budgetAccordion.locator('.MuiAccordionSummary-root').first().click();
   await expect(
     budgetAccordion.locator('.MuiAccordionDetails-root').first(),
   ).toBeVisible({ timeout: 5000 });
@@ -163,9 +157,7 @@ export async function When_I_expand_time_accordion(page: Page) {
  * Click the "Show all participants" toggle button to reveal participants using defaults.
  */
 export async function When_I_click_show_all_participants(page: Page) {
-  await page
-    .getByRole('button', { name: /Show all participants/i })
-    .click();
+  await page.getByRole('button', { name: /Show all participants/i }).click();
 }
 
 /**
@@ -208,7 +200,9 @@ export async function When_I_save_event(page: Page) {
   }
 
   // Wait for the event dialog to close — onComplete fires only after all allocation saves complete
-  await expect(page.locator('.MuiDialog-root form#event-form').first()).not.toBeVisible({ timeout: 15000 });
+  await expect(
+    page.locator('.MuiDialog-root form#event-form').first(),
+  ).not.toBeVisible({ timeout: 15000 });
   await page.waitForLoadState('networkidle');
 }
 
@@ -271,7 +265,9 @@ export async function When_I_customize_participant_hours(
   const periodSection = heading.locator('..').locator('..');
 
   // The PeriodInput renders TextField type="number" for each day.
-  const numberInputs = periodSection.locator('input[type="number"]:not([disabled])');
+  const numberInputs = periodSection.locator(
+    'input[type="number"]:not([disabled])',
+  );
   const targetInput = numberInputs.nth(dayIndex);
   await targetInput.scrollIntoViewIfNeeded();
   await targetInput.clear();
@@ -294,9 +290,7 @@ export async function When_I_remove_participant_from_event(
     .filter({ hasText: 'Person' })
     .first();
   await personControl.getByRole('combobox').click();
-  await page
-    .getByRole('option', { name: new RegExp(personName, 'i') })
-    .click();
+  await page.getByRole('option', { name: new RegExp(personName, 'i') }).click();
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
 }
@@ -317,9 +311,7 @@ export async function When_I_add_second_participant(
     .first();
   await personControl.getByRole('combobox').click();
   await page.waitForTimeout(300);
-  await page
-    .getByRole('option', { name: new RegExp(personName, 'i') })
-    .click();
+  await page.getByRole('option', { name: new RegExp(personName, 'i') }).click();
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
 }
@@ -345,6 +337,11 @@ export async function Then_collapsed_banner_shows_money_summary(
     .first()
     .locator('.MuiAccordionSummary-root')
     .first();
-  await expect(accordionSummary.locator('p')).toContainText(assignedPerPersonText, { timeout: 5000 });
-  await expect(accordionSummary.locator('p')).toContainText(unassignedText, { timeout: 5000 });
+  await expect(accordionSummary.locator('p')).toContainText(
+    assignedPerPersonText,
+    { timeout: 5000 },
+  );
+  await expect(accordionSummary.locator('p')).toContainText(unassignedText, {
+    timeout: 5000,
+  });
 }

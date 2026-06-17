@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
   Card,
@@ -12,24 +12,29 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import {useHistory, useLocation} from 'react-router-dom';
-import {BudgetSummaryCards} from './BudgetSummaryCards';
-import {BudgetAllocationList} from './BudgetAllocationList';
-import {BudgetAllocationClient} from '../../clients/BudgetAllocationClient';
-import {useUserMe} from '../../hooks/UserMeHook';
-import {StudyMoneyAllocationDialog} from './StudyMoneyAllocationDialog';
-import {ConfirmDialog} from '@workday-core/components/ConfirmDialog';
-import type {BudgetAllocation, BudgetAllocationType, BudgetSummaryResponse} from '../../wirespec/model';
 import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
-import PersonLayout from "../../components/layouts/PersonLayout";
-import type {Person} from "../../clients/PersonClient";
-
+import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { BudgetAllocationClient } from '../../clients/BudgetAllocationClient';
+import type { Person } from '../../clients/PersonClient';
+import PersonLayout from '../../components/layouts/PersonLayout';
+import { useUserMe } from '../../hooks/UserMeHook';
+import type {
+  BudgetAllocation,
+  BudgetAllocationType,
+  BudgetSummaryResponse,
+} from '../../wirespec/model';
+import { BudgetAllocationList } from './BudgetAllocationList';
+import { BudgetSummaryCards } from './BudgetSummaryCards';
+import { StudyMoneyAllocationDialog } from './StudyMoneyAllocationDialog';
 
 export function BudgetAllocationPage() {
   return (
     <PersonLayout requireAuthority={'BudgetAllocationAuthority.ADMIN'}>
-      {(person: Person, isAdmin: boolean) => <BudgetAllocationFeature isAdmin={isAdmin} person={person}/>}
+      {(person: Person, isAdmin: boolean) => (
+        <BudgetAllocationFeature isAdmin={isAdmin} person={person} />
+      )}
     </PersonLayout>
   );
 }
@@ -44,20 +49,26 @@ function useQueryParams() {
   const history = useHistory();
   const params = new URLSearchParams(location.search);
 
-  const setParams = useCallback((updates: Record<string, string | null>) => {
-    const newParams = new URLSearchParams(location.search);
-    for (const [key, value] of Object.entries(updates)) {
-      if (value === null) newParams.delete(key);
-      else newParams.set(key, value);
-    }
-    history.replace({...location, search: newParams.toString()});
-  }, [history, location]);
+  const setParams = useCallback(
+    (updates: Record<string, string | null>) => {
+      const newParams = new URLSearchParams(location.search);
+      for (const [key, value] of Object.entries(updates)) {
+        if (value === null) newParams.delete(key);
+        else newParams.set(key, value);
+      }
+      history.replace({ ...location, search: newParams.toString() });
+    },
+    [history, location],
+  );
 
-  return {params, setParams};
+  return { params, setParams };
 }
 
-function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps) {
-  const {params, setParams} = useQueryParams();
+function BudgetAllocationFeature({
+  person,
+  isAdmin,
+}: BudgetAllocationFeatureProps) {
+  const { params, setParams } = useQueryParams();
   const urlYear = params.get('year');
   const urlEventCode = params.get('eventCode');
 
@@ -65,23 +76,32 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
     const parsed = urlYear ? parseInt(urlYear, 10) : NaN;
     return isNaN(parsed) ? new Date().getFullYear() : parsed;
   });
-  const [eventCodeFilter, setEventCodeFilter] = useState<string | null>(urlEventCode);
+  const [eventCodeFilter, setEventCodeFilter] = useState<string | null>(
+    urlEventCode,
+  );
   const [summary, setSummary] = useState<BudgetSummaryResponse | null>(null);
   const [allocations, setAllocations] = useState<BudgetAllocation[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<BudgetAllocation | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<BudgetAllocation | null>(
+    null,
+  );
   const [editTarget, setEditTarget] = useState<BudgetAllocation | null>(null);
-  const [typeFilter, setTypeFilter] = useState<BudgetAllocationType | null>(null);
+  const [typeFilter, setTypeFilter] = useState<BudgetAllocationType | null>(
+    null,
+  );
 
-  const setYear = useCallback((newYear: number) => {
-    setYearState(newYear);
-    setParams({year: String(newYear)});
-  }, [setParams]);
+  const setYear = useCallback(
+    (newYear: number) => {
+      setYearState(newYear);
+      setParams({ year: String(newYear) });
+    },
+    [setParams],
+  );
 
   const clearEventCodeFilter = useCallback(() => {
     setEventCodeFilter(null);
-    setParams({eventCode: null});
+    setParams({ eventCode: null });
   }, [setParams]);
 
   const loadData = useCallback(() => {
@@ -123,7 +143,7 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
         action={
           <Stack direction="row" spacing={2} alignItems="center">
             {isAdmin && (
-              <FormControl size="small" sx={{minWidth: 100}}>
+              <FormControl size="small" sx={{ minWidth: 100 }}>
                 <InputLabel>Year</InputLabel>
                 <Select
                   value={year}
@@ -140,36 +160,43 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
             )}
             {isAdmin && (
               <Button onClick={() => setDialogOpen(true)}>
-                <AddIcon/> Add
+                <AddIcon /> Add
               </Button>
             )}
           </Stack>
         }
       />
       <CardContent>
-        {!loading && <BudgetSummaryCards summary={summary}/>}
+        {!loading && <BudgetSummaryCards summary={summary} />}
 
         {!loading && eventCodeFilter && (
-          <Box sx={{
-            mb: 2,
-            p: 1.5,
-            bgcolor: 'info.main',
-            color: 'info.contrastText',
-            borderRadius: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}>
+          <Box
+            sx={{
+              mb: 2,
+              p: 1.5,
+              bgcolor: 'info.main',
+              color: 'info.contrastText',
+              borderRadius: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
             <Typography variant="body2">
               Filtered by event: <strong>{eventCodeFilter}</strong>
             </Typography>
-            <Chip label="Clear filter" size="small" onDelete={clearEventCodeFilter} onClick={clearEventCodeFilter}
-                  sx={{bgcolor: 'background.paper'}}/>
+            <Chip
+              label="Clear filter"
+              size="small"
+              onDelete={clearEventCodeFilter}
+              onClick={clearEventCodeFilter}
+              sx={{ bgcolor: 'background.paper' }}
+            />
           </Box>
         )}
 
         {!loading && allocations.length > 0 && (
-          <Stack direction="row" spacing={1} sx={{mb: 2}}>
+          <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
             <Chip
               label="All"
               variant={typeFilter === null ? 'filled' : 'outlined'}
@@ -180,19 +207,37 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
               label="Hack Hours"
               variant={typeFilter === 'HACK_TIME' ? 'filled' : 'outlined'}
               color={typeFilter === 'HACK_TIME' ? 'primary' : 'default'}
-              onClick={() => setTypeFilter(typeFilter === 'HACK_TIME' ? null : 'HACK_TIME' as BudgetAllocationType)}
+              onClick={() =>
+                setTypeFilter(
+                  typeFilter === 'HACK_TIME'
+                    ? null
+                    : ('HACK_TIME' as BudgetAllocationType),
+                )
+              }
             />
             <Chip
               label="Study Hours"
               variant={typeFilter === 'STUDY_TIME' ? 'filled' : 'outlined'}
               color={typeFilter === 'STUDY_TIME' ? 'primary' : 'default'}
-              onClick={() => setTypeFilter(typeFilter === 'STUDY_TIME' ? null : 'STUDY_TIME' as BudgetAllocationType)}
+              onClick={() =>
+                setTypeFilter(
+                  typeFilter === 'STUDY_TIME'
+                    ? null
+                    : ('STUDY_TIME' as BudgetAllocationType),
+                )
+              }
             />
             <Chip
               label="Study Money"
               variant={typeFilter === 'STUDY_MONEY' ? 'filled' : 'outlined'}
               color={typeFilter === 'STUDY_MONEY' ? 'primary' : 'default'}
-              onClick={() => setTypeFilter(typeFilter === 'STUDY_MONEY' ? null : 'STUDY_MONEY' as BudgetAllocationType)}
+              onClick={() =>
+                setTypeFilter(
+                  typeFilter === 'STUDY_MONEY'
+                    ? null
+                    : ('STUDY_MONEY' as BudgetAllocationType),
+                )
+              }
             />
           </Stack>
         )}
@@ -210,7 +255,7 @@ function BudgetAllocationFeature({person, isAdmin}: BudgetAllocationFeatureProps
         )}
 
         {loading && (
-          <Box sx={{textAlign: 'center', py: 4}}>
+          <Box sx={{ textAlign: 'center', py: 4 }}>
             <Typography variant="body1" color="text.secondary">
               Loading budget details...
             </Typography>

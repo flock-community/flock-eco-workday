@@ -1,5 +1,5 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import { EventBudgetSummaryBanner } from './EventBudgetSummaryBanner';
 
@@ -20,7 +20,7 @@ describe('EventBudgetSummaryBanner', () => {
           participantCount={3}
           defaultHoursPerDay={8}
           defaultBudgetType="HACK"
-        />
+        />,
       );
 
       expect(screen.getByText(/3 participants/)).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe('EventBudgetSummaryBanner', () => {
           participantCount={3}
           defaultHoursPerDay={8}
           defaultBudgetType="HACK"
-        />
+        />,
       );
 
       expect(screen.getByText(/Budget:/)).toBeInTheDocument();
@@ -54,14 +54,16 @@ describe('EventBudgetSummaryBanner', () => {
           defaultHoursPerDay={8}
           defaultBudgetType="HACK"
           hasUnsavedChanges={true}
-        />
+        />,
       );
 
       const dot = container.querySelector('[class*="MuiBox-root"]');
       const allBoxes = container.querySelectorAll('div');
-      const dotElement = Array.from(allBoxes).find(el => {
+      const dotElement = Array.from(allBoxes).find((el) => {
         const style = window.getComputedStyle(el);
-        return el.style.width === '8px' || el.getAttribute('style')?.includes('8');
+        return (
+          el.style.width === '8px' || el.getAttribute('style')?.includes('8')
+        );
       });
       // At minimum, the component should render without crashing with hasUnsavedChanges=true
       expect(container.textContent).toContain('3 participants');
@@ -76,7 +78,7 @@ describe('EventBudgetSummaryBanner', () => {
           defaultHoursPerDay={8}
           defaultBudgetType="HACK"
           hasUnsavedChanges={false}
-        />
+        />,
       );
 
       expect(container.textContent).toContain('3 participants');
@@ -93,7 +95,7 @@ describe('EventBudgetSummaryBanner', () => {
           participantCount={3}
           defaultHoursPerDay={8}
           defaultBudgetType={null}
-        />
+        />,
       );
 
       expect(screen.queryByText(/STUDY/)).not.toBeInTheDocument();
@@ -108,7 +110,7 @@ describe('EventBudgetSummaryBanner', () => {
           participantCount={2}
           defaultHoursPerDay={8}
           defaultBudgetType={null}
-        />
+        />,
       );
 
       expect(screen.queryByText(/h\/day/)).not.toBeInTheDocument();
@@ -124,7 +126,7 @@ describe('EventBudgetSummaryBanner', () => {
           participantCount={3}
           defaultHoursPerDay={8}
           defaultBudgetType="HACK"
-        />
+        />,
       );
 
       expect(screen.getByText(/8h\/day HACK/)).toBeInTheDocument();
@@ -137,10 +139,7 @@ describe('EventBudgetSummaryBanner', () => {
   describe('expanded detail view (non-collapsed mode)', () => {
     it('renders Alert-based detail view when participantCount is not provided', () => {
       render(
-        <EventBudgetSummaryBanner
-          totalBudget={1000}
-          totalAllocated={800}
-        />
+        <EventBudgetSummaryBanner totalBudget={1000} totalAllocated={800} />,
       );
 
       expect(screen.getByText('Budget Summary')).toBeInTheDocument();
@@ -148,10 +147,7 @@ describe('EventBudgetSummaryBanner', () => {
 
     it('shows over-budget warning when allocated exceeds budget', () => {
       render(
-        <EventBudgetSummaryBanner
-          totalBudget={1000}
-          totalAllocated={1500}
-        />
+        <EventBudgetSummaryBanner totalBudget={1000} totalAllocated={1500} />,
       );
 
       expect(screen.getByText(/exceeds the total budget/)).toBeInTheDocument();
@@ -159,10 +155,7 @@ describe('EventBudgetSummaryBanner', () => {
 
     it('shows fully allocated message when exact match', () => {
       render(
-        <EventBudgetSummaryBanner
-          totalBudget={1000}
-          totalAllocated={1000}
-        />
+        <EventBudgetSummaryBanner totalBudget={1000} totalAllocated={1000} />,
       );
 
       expect(screen.getByText('Budget fully allocated')).toBeInTheDocument();

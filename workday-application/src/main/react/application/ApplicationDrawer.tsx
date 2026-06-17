@@ -1,3 +1,4 @@
+import BudgetIcon from '@mui/icons-material/AccountBalanceWallet';
 import ProjectIcon from '@mui/icons-material/AccountTree';
 import ReportIcon from '@mui/icons-material/Assessment';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -10,7 +11,6 @@ import ContractIcon from '@mui/icons-material/Description';
 import HealingIcon from '@mui/icons-material/Healing';
 import HomeIcon from '@mui/icons-material/Home';
 import ExpensesIcon from '@mui/icons-material/Money';
-import BudgetIcon from '@mui/icons-material/AccountBalanceWallet';
 import UserIcon from '@mui/icons-material/Person';
 import MonthIcon from '@mui/icons-material/Schedule';
 import HolidayIcon from '@mui/icons-material/WbSunny';

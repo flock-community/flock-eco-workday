@@ -20,26 +20,26 @@
 //   - Removed participants get their allocations deleted
 //   - defaultTimeAllocationType is persisted on the Event entity
 
-import { test, expect } from '@playwright/test';
-import {
-  Given_I_am_on_events_page,
-  When_I_click_add_event,
-  When_I_fill_event_form,
-  When_I_add_participant,
-  When_I_submit_event_form,
-  When_I_open_event_by_description,
-  Then_event_list_contains,
-  Then_budget_tab_shows_event_allocation,
-  When_I_remove_participant_from_event,
-  When_I_add_second_participant,
-  Then_collapsed_banner_shows_money_summary,
-} from './steps/eventSteps';
+import { expect, test } from '@playwright/test';
 import {
   Given_I_am_on_budget_tab_for_person,
-  Then_summary_card_shows,
   readCardUsedValue,
   Then_money_used_changed_by,
+  Then_summary_card_shows,
 } from './steps/budgetSteps';
+import {
+  Given_I_am_on_events_page,
+  Then_budget_tab_shows_event_allocation,
+  Then_collapsed_banner_shows_money_summary,
+  Then_event_list_contains,
+  When_I_add_participant,
+  When_I_add_second_participant,
+  When_I_click_add_event,
+  When_I_fill_event_form,
+  When_I_open_event_by_description,
+  When_I_remove_participant_from_event,
+  When_I_submit_event_form,
+} from './steps/eventSteps';
 
 const currentYear = new Date().getFullYear();
 
@@ -64,7 +64,9 @@ async function cleanupTestEvents(browser: import('@playwright/test').Browser) {
 
     // Use page.evaluate to call APIs with the authenticated session
     await page.evaluate(async () => {
-      const eventsRes = await fetch('/api/events?page=0&size=100&sort=from,desc');
+      const eventsRes = await fetch(
+        '/api/events?page=0&size=100&sort=from,desc',
+      );
       if (!eventsRes.ok) return;
       const eventsData = await eventsRes.json();
       const events = eventsData.content || eventsData;
@@ -100,7 +102,9 @@ test.describe('Event Workflow - Create and Budget Verification', () => {
     });
   });
 
-  test('EVNT-01: Create event and capture budget baseline', async ({ page }) => {
+  test('EVNT-01: Create event and capture budget baseline', async ({
+    page,
+  }) => {
     // Baseline must be captured BEFORE creating the event (used by EVNT-04).
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
     pinoMoneyBaseline = await readCardUsedValue(page, 'Study Money');
@@ -121,7 +125,9 @@ test.describe('Event Workflow - Create and Budget Verification', () => {
     await Then_event_list_contains(page, 'PW Test Hack Day');
   });
 
-  test('EVNT-04: Event allocations reflected in participant budget summaries', async ({ page }) => {
+  test('EVNT-04: Event allocations reflected in participant budget summaries', async ({
+    page,
+  }) => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
 
     // Hack hours: baseline=16h + 8h auto-created = 24h used, available=136h (deterministic)
@@ -131,7 +137,13 @@ test.describe('Event Workflow - Create and Budget Verification', () => {
     await Then_summary_card_shows(page, 'Study Hours', '200h', '200h', '0h');
 
     // Study money: used increased by €500 (event budget / 1 participant)
-    await Then_money_used_changed_by(page, 'Study Money', pinoMoneyBaseline, 500, '€5.000');
+    await Then_money_used_changed_by(
+      page,
+      'Study Money',
+      pinoMoneyBaseline,
+      500,
+      '€5.000',
+    );
 
     await Then_budget_tab_shows_event_allocation(page, 'Hack Time', '8h');
 
@@ -140,7 +152,9 @@ test.describe('Event Workflow - Create and Budget Verification', () => {
     ).toBeVisible();
   });
 
-  test('EVNT-05: defaultTimeAllocationType persists after reopen', async ({ page }) => {
+  test('EVNT-05: defaultTimeAllocationType persists after reopen', async ({
+    page,
+  }) => {
     await Given_I_am_on_events_page(page, 'bert');
     await When_I_open_event_by_description(page, 'PW Test Hack Day');
 
@@ -152,7 +166,9 @@ test.describe('Event Workflow - Create and Budget Verification', () => {
     await expect(control.getByRole('combobox')).toContainText(/Hack Time/i);
   });
 
-  test('EVNT-06: Collapsed budget banner shows assigned and unassigned amounts', async ({ page }) => {
+  test('EVNT-06: Collapsed budget banner shows assigned and unassigned amounts', async ({
+    page,
+  }) => {
     // Opens the event created by EVNT-01.
     await Given_I_am_on_events_page(page, 'bert');
     await When_I_open_event_by_description(page, 'PW Test Hack Day');
@@ -188,12 +204,17 @@ test.describe('Event Workflow - Modify Allocations', () => {
   // SKIPPED: Backend recalculates default allocations on every save — custom per-person
   // hour overrides are NOT persisted. The EventBudgetManagementSection is read-only.
   // Re-enable when per-person override persistence is implemented.
-  test.fixme('EVNT-02: Modify event allocation hours per day', async ({ page }) => {
-    await Given_I_am_on_events_page(page, 'bert');
-    await When_I_open_event_by_description(page, 'PW Test Hack Day');
-  });
+  test.fixme(
+    'EVNT-02: Modify event allocation hours per day',
+    async ({ page }) => {
+      await Given_I_am_on_events_page(page, 'bert');
+      await When_I_open_event_by_description(page, 'PW Test Hack Day');
+    },
+  );
 
-  test('EVNT-03: Add and remove participants from event allocations', async ({ page }) => {
+  test('EVNT-03: Add and remove participants from event allocations', async ({
+    page,
+  }) => {
     // Baseline captured before adding Ieniemienie.
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Ieniemienie');
     const ieniemoneyBaseline = await readCardUsedValue(page, 'Study Money');
@@ -211,7 +232,13 @@ test.describe('Event Workflow - Modify Allocations', () => {
     await Then_summary_card_shows(page, 'Hack Hours', '112h', '160h', '48h');
 
     // Study money: used increased by €250 (500/2 participants)
-    await Then_money_used_changed_by(page, 'Study Money', ieniemoneyBaseline, 250, '€5.000');
+    await Then_money_used_changed_by(
+      page,
+      'Study Money',
+      ieniemoneyBaseline,
+      250,
+      '€5.000',
+    );
 
     await Then_budget_tab_shows_event_allocation(page, 'Hack Time', '8h');
 
@@ -234,6 +261,12 @@ test.describe('Event Workflow - Modify Allocations', () => {
     // Study money: verify used decreased by €250 (Pino's share removed)
     // Note: after Part A, Pino's share went from €500 (1 person) to €250 (2 people).
     // Removing Pino deletes their €250 allocation entirely.
-    await Then_money_used_changed_by(page, 'Study Money', pinoMoneyBeforeRemoval, -250, '€5.000');
+    await Then_money_used_changed_by(
+      page,
+      'Study Money',
+      pinoMoneyBeforeRemoval,
+      -250,
+      '€5.000',
+    );
   });
 });

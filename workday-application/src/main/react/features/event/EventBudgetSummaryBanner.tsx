@@ -1,6 +1,6 @@
+import { CheckCircle, Info, Warning } from '@mui/icons-material';
+import { Alert, Box, Chip, Typography } from '@mui/material';
 import React from 'react';
-import { Alert, Box, Typography, Chip } from '@mui/material';
-import { Info, CheckCircle, Warning } from '@mui/icons-material';
 
 interface EventBudgetSummaryBannerProps {
   totalBudget?: number;
@@ -46,11 +46,13 @@ export function EventBudgetSummaryBanner({
   };
 
   if (isCollapsedMode) {
-    const assignedPerPerson = participantCount > 0 ? totalAllocated / participantCount : 0;
+    const assignedPerPerson =
+      participantCount > 0 ? totalAllocated / participantCount : 0;
     const unassigned = hasBudget ? totalBudget! - totalAllocated : 0;
 
     // Only show sections that have actual content
-    const hasTimeSection = defaultBudgetType !== null && defaultBudgetType !== undefined;
+    const hasTimeSection =
+      defaultBudgetType !== null && defaultBudgetType !== undefined;
     const hasMoneySection = hasBudget;
 
     let summaryText = `${participantCount} participant${participantCount !== 1 ? 's' : ''}`;
@@ -75,7 +77,16 @@ export function EventBudgetSummaryBanner({
     }
 
     return (
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap', width: '100%', pr: 1 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          flexWrap: 'wrap',
+          width: '100%',
+          pr: 1,
+        }}
+      >
         {hasUnsavedChanges && (
           <Box
             sx={{

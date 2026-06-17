@@ -1,19 +1,9 @@
-import React from 'react';
-import {
-  Card,
-  Typography,
-  CardHeader,
-  IconButton,
-  Stack,
-} from '@mui/material';
-import {
-  Description,
-  Edit,
-  Delete,
-} from '@mui/icons-material';
-import type {BudgetAllocation} from '../../wirespec/model';
+import { Delete, Description, Edit } from '@mui/icons-material';
+import { Card, CardHeader, IconButton, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import dayjs from 'dayjs';
+import React from 'react';
+import type { BudgetAllocation } from '../../wirespec/model';
 
 interface StudyMoneyAllocationListItemProps {
   allocation: BudgetAllocation;
@@ -32,12 +22,12 @@ export function StudyMoneyAllocationListItem({
   const fileCount = allocation.studyMoneyDetails?.files?.length ?? 0;
 
   return (
-    <Grid key={`workday-list-item-${allocation.id}`} size={{xs: 12}}>
+    <Grid key={`workday-list-item-${allocation.id}`} size={{ xs: 12 }}>
       <Card>
         <CardHeader
           title={
             <>
-              <Description color="action" sx={{mt: 0.5, mr: 2}} />
+              <Description color="action" sx={{ mt: 0.5, mr: 2 }} />
               {allocation.description ? allocation.description : 'Study Money'}
             </>
           }
@@ -49,7 +39,8 @@ export function StudyMoneyAllocationListItem({
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
-              {fileCount > 0 && ` | ${fileCount} file${fileCount > 1 ? 's' : ''}`}
+              {fileCount > 0 &&
+                ` | ${fileCount} file${fileCount > 1 ? 's' : ''}`}
             </Typography>
           }
           action={
@@ -61,7 +52,11 @@ export function StudyMoneyAllocationListItem({
                   </IconButton>
                 )}
                 {onDelete && (
-                  <IconButton size="small" onClick={onDelete} aria-label="delete">
+                  <IconButton
+                    size="small"
+                    onClick={onDelete}
+                    aria-label="delete"
+                  >
                     <Delete fontSize="small" />
                   </IconButton>
                 )}

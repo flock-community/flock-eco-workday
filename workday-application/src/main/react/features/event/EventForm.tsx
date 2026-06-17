@@ -1,17 +1,20 @@
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import dayjs from 'dayjs';
-import {Field, Form, Formik, type FormikProps} from 'formik';
-import {TextField} from 'formik-mui';
-import {useState} from 'react';
+import { Field, Form, Formik, type FormikProps } from 'formik';
+import { TextField } from 'formik-mui';
+import { useState } from 'react';
 import * as Yup from 'yup';
-import {DatePickerField} from '../../components/fields/DatePickerField';
-import {PeriodInputField} from '../../components/fields/PeriodInputField';
-import {PersonSelectorField} from '../../components/fields/PersonSelectorField';
-import {EventTypeMappingToBillable, EventTypeMappingToDefaultBudgetType} from '../../utils/mappings';
-import {mutatePeriod} from '../period/Period';
-import {EventTypeSelect} from './EventTypeSelect';
-import {FormControl, InputLabel, MenuItem, Select} from '@mui/material';
-import {EventBudgetType} from '../../utils/mappings';
+import { DatePickerField } from '../../components/fields/DatePickerField';
+import { PeriodInputField } from '../../components/fields/PeriodInputField';
+import { PersonSelectorField } from '../../components/fields/PersonSelectorField';
+import {
+  EventBudgetType,
+  EventTypeMappingToBillable,
+  EventTypeMappingToDefaultBudgetType,
+} from '../../utils/mappings';
+import { mutatePeriod } from '../period/Period';
+import { EventTypeSelect } from './EventTypeSelect';
 
 export const EVENT_FORM_ID = 'event-form';
 
@@ -40,7 +43,10 @@ type EventFormFieldsProps = {
   setFieldValue: FormikProps<any>['setFieldValue'];
 };
 
-export function EventFormFields({values, setFieldValue}: EventFormFieldsProps) {
+export function EventFormFields({
+  values,
+  setFieldValue,
+}: EventFormFieldsProps) {
   const [resetHours, setResetHours] = useState<boolean>(false);
 
   const handleEventTypeChange = (newValue: string) => {
@@ -55,7 +61,7 @@ export function EventFormFields({values, setFieldValue}: EventFormFieldsProps) {
   return (
     <Form id={EVENT_FORM_ID}>
       <Grid container spacing={1}>
-        <Grid size={{xs: 12}}>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="description"
             type="text"
@@ -64,7 +70,7 @@ export function EventFormFields({values, setFieldValue}: EventFormFieldsProps) {
             component={TextField}
           />
         </Grid>
-        <Grid size={{xs: 12}}>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="budget"
             type="number"
@@ -73,16 +79,16 @@ export function EventFormFields({values, setFieldValue}: EventFormFieldsProps) {
             component={TextField}
           />
         </Grid>
-        <Grid size={{xs: 12}}>
-          <PersonSelectorField name="personIds" multiple fullWidth/>
+        <Grid size={{ xs: 12 }}>
+          <PersonSelectorField name="personIds" multiple fullWidth />
         </Grid>
-        <Grid size={{xs: 12}} style={{marginTop: '1rem'}}>
+        <Grid size={{ xs: 12 }} style={{ marginTop: '1rem' }}>
           <EventTypeSelect
             value={values.type}
             onChange={handleEventTypeChange}
           />
         </Grid>
-        <Grid size={{xs: 12}}>
+        <Grid size={{ xs: 12 }}>
           <FormControl fullWidth>
             <InputLabel shrink id="default-time-allocation-type-label">
               Default Time Allocation Type
@@ -91,7 +97,10 @@ export function EventFormFields({values, setFieldValue}: EventFormFieldsProps) {
               labelId="default-time-allocation-type-label"
               value={values.defaultTimeAllocationType || ''}
               onChange={(e) =>
-                setFieldValue('defaultTimeAllocationType', e.target.value || null)
+                setFieldValue(
+                  'defaultTimeAllocationType',
+                  e.target.value || null,
+                )
               }
               label="Default Time Allocation Type"
               displayEmpty={true}
@@ -108,13 +117,13 @@ export function EventFormFields({values, setFieldValue}: EventFormFieldsProps) {
             </Select>
           </FormControl>
         </Grid>
-        <Grid size={{xs: 6}}>
-          <DatePickerField name="from" label="From" maxDate={values.to}/>
+        <Grid size={{ xs: 6 }}>
+          <DatePickerField name="from" label="From" maxDate={values.to} />
         </Grid>
-        <Grid size={{xs: 6}}>
-          <DatePickerField name="to" label="To" minDate={values.from}/>
+        <Grid size={{ xs: 6 }}>
+          <DatePickerField name="to" label="To" minDate={values.from} />
         </Grid>
-        <Grid size={{xs: 12}}>
+        <Grid size={{ xs: 12 }}>
           <PeriodInputField
             name="days"
             from={values.from}
@@ -127,7 +136,7 @@ export function EventFormFields({values, setFieldValue}: EventFormFieldsProps) {
   );
 }
 
-export function EventForm({value, onSubmit}: EventFormProps) {
+export function EventForm({ value, onSubmit }: EventFormProps) {
   const handleSubmit = (data: any) => {
     onSubmit?.({
       description: data.description,
@@ -141,7 +150,7 @@ export function EventForm({value, onSubmit}: EventFormProps) {
     });
   };
 
-  const init = {...eventFormSchema.getDefault(), ...mutatePeriod(value)};
+  const init = { ...eventFormSchema.getDefault(), ...mutatePeriod(value) };
   return (
     value && (
       <Formik
@@ -150,8 +159,8 @@ export function EventForm({value, onSubmit}: EventFormProps) {
         onSubmit={handleSubmit}
         validationSchema={eventFormSchema}
       >
-        {({values, setFieldValue}) => (
-          <EventFormFields values={values} setFieldValue={setFieldValue}/>
+        {({ values, setFieldValue }) => (
+          <EventFormFields values={values} setFieldValue={setFieldValue} />
         )}
       </Formik>
     )

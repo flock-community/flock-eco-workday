@@ -1,5 +1,5 @@
 // Budget allocation BDD step helpers. Run against a freshly started dev server (-Pdevelop).
-import { type Page, expect } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { Given_I_am_logged_in_as_user } from './workdaySteps';
 
 export async function Given_I_am_on_budget_tab_for_person(
@@ -12,10 +12,15 @@ export async function Given_I_am_on_budget_tab_for_person(
   await page.waitForLoadState('networkidle');
   // Open the Person MUI Select dropdown — the combobox has no accessible name,
   // so locate via the FormControl container that has the "Person" label text.
-  const personControl = page.locator('.MuiFormControl-root').filter({ hasText: 'Person' }).first();
+  const personControl = page
+    .locator('.MuiFormControl-root')
+    .filter({ hasText: 'Person' })
+    .first();
   await personControl.getByRole('combobox').click();
   // Wait for MUI dropdown animation to settle before clicking option
-  const option = page.getByRole('option', { name: new RegExp(personName, 'i') });
+  const option = page.getByRole('option', {
+    name: new RegExp(personName, 'i'),
+  });
   await expect(option).toBeVisible();
   await option.click();
   await page.waitForLoadState('networkidle');
@@ -55,9 +60,7 @@ export async function Then_summary_card_shows(
 
 export async function When_I_click_add_study_money(page: Page) {
   await page.getByRole('button', { name: 'Add' }).click();
-  await expect(
-    page.getByText('Add Study Money Allocation'),
-  ).toBeVisible();
+  await expect(page.getByText('Add Study Money Allocation')).toBeVisible();
 }
 
 /**
@@ -81,9 +84,7 @@ export async function When_I_fill_study_money_form(
  */
 export async function When_I_click_create_button(page: Page) {
   await page.getByRole('button', { name: 'Create' }).click();
-  await expect(
-    page.getByText('Add Study Money Allocation'),
-  ).not.toBeVisible();
+  await expect(page.getByText('Add Study Money Allocation')).not.toBeVisible();
   await page.waitForLoadState('networkidle');
 }
 
@@ -114,11 +115,16 @@ export async function readCardUsedValue(
   page: Page,
   cardTitle: string,
 ): Promise<string> {
-  const heading = page.getByRole('heading', { name: cardTitle, level: 6, exact: true });
+  const heading = page.getByRole('heading', {
+    name: cardTitle,
+    level: 6,
+    exact: true,
+  });
   await expect(heading).toBeVisible({ timeout: 10000 });
 
-  const cardContent = heading
-    .locator('xpath=ancestor::*[contains(@class,"MuiCard-root")][1]');
+  const cardContent = heading.locator(
+    'xpath=ancestor::*[contains(@class,"MuiCard-root")][1]',
+  );
   const usedText = await cardContent.getByText('Used:').textContent();
   return usedText?.replace(/^Used:\s*/, '').trim() ?? '';
 }
@@ -128,7 +134,9 @@ export async function readCardUsedValue(
  * "€3.182" → 3182, "€350" → 350, "€0" → 0
  */
 function parseEuroValue(formatted: string): number {
-  return Number(formatted.replace('€', '').replace(/\./g, '').replace(',', '.').trim());
+  return Number(
+    formatted.replace('€', '').replace(/\./g, '').replace(',', '.').trim(),
+  );
 }
 
 /**
@@ -166,13 +174,15 @@ export async function Then_money_used_changed_by(
   if (actualDelta !== expectedDelta) {
     throw new Error(
       `Expected ${cardTitle} used to change by ${expectedDelta} (from ${baselineUsed}), ` +
-      `but changed by ${actualDelta} (to ${newUsedStr})`,
+        `but changed by ${actualDelta} (to ${newUsedStr})`,
     );
   }
 
   const budgetVal = parseEuroValue(expectedBudget);
   const expectedAvailable = formatEuro(budgetVal - newUsed);
-  await expect(cardContent.getByRole('heading', { level: 4 })).toContainText(expectedAvailable);
+  await expect(cardContent.getByRole('heading', { level: 4 })).toContainText(
+    expectedAvailable,
+  );
 }
 
 export async function Then_allocation_list_does_not_contain(
@@ -191,9 +201,18 @@ export async function Then_allocation_list_does_not_contain(
  * Finds the allocation card with the given description and clicks its edit button.
  * The edit button renders as <IconButton aria-label="edit"> when onEdit is wired.
  */
-export async function When_I_edit_allocation(page: Page, description: string): Promise<void> {
-  const paper = page.locator('.MuiPaper-root').filter({ hasText: 'Budget Allocations' }).first();
-  const card = paper.locator('.MuiCard-root').filter({ hasText: description }).first();
+export async function When_I_edit_allocation(
+  page: Page,
+  description: string,
+): Promise<void> {
+  const paper = page
+    .locator('.MuiPaper-root')
+    .filter({ hasText: 'Budget Allocations' })
+    .first();
+  const card = paper
+    .locator('.MuiCard-root')
+    .filter({ hasText: description })
+    .first();
   await card.getByRole('button', { name: 'edit' }).click();
   await expect(page.getByText('Edit Study Money Allocation')).toBeVisible();
 }
@@ -202,7 +221,10 @@ export async function When_I_edit_allocation(page: Page, description: string): P
  * Clears the Amount (EUR) field in the open study money dialog and types a new value.
  * Call after When_I_edit_allocation (dialog must already be open).
  */
-export async function When_I_update_study_money_amount(page: Page, newAmount: string): Promise<void> {
+export async function When_I_update_study_money_amount(
+  page: Page,
+  newAmount: string,
+): Promise<void> {
   const amountField = page.getByLabel('Amount (EUR)');
   await amountField.clear();
   await amountField.fill(newAmount);
@@ -234,9 +256,7 @@ export async function When_I_delete_allocation(
     .filter({ hasText: description })
     .first();
   await card.getByRole('button', { name: 'delete' }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Confirm' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Confirm' })).toBeVisible();
   await page.getByRole('button', { name: 'Confirm' }).click();
   await page.waitForLoadState('networkidle');
 }

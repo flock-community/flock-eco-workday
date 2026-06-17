@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
 import {
+  Add,
+  ExpandLess,
+  ExpandMore,
+  Info,
+  Schedule,
+} from '@mui/icons-material';
+import {
+  Alert,
   Box,
-  Typography,
+  Button,
+  Chip,
+  Collapse,
+  IconButton,
   Paper,
   Stack,
-  Alert,
-  Chip,
-  IconButton,
-  Collapse,
-  Button,
+  Typography,
 } from '@mui/material';
-import {
-  Schedule,
-  ExpandMore,
-  ExpandLess,
-  Info,
-  Add,
-} from '@mui/icons-material';
 import dayjs, { type Dayjs } from 'dayjs';
-import type { EventBudgetType } from '../../utils/mappings';
+import React, { useState } from 'react';
 import { PeriodInput } from '../../components/inputs/PeriodInput';
+import type { EventBudgetType } from '../../utils/mappings';
 import { editDay, initDays, type Period } from '../period/Period';
 
 export interface PersonTimeAllocation {
@@ -56,7 +56,9 @@ export function EventTimeAllocationSection({
   };
 
   const participantsWithExceptions = participants.filter(hasExceptions);
-  const participantsWithDefaults = participants.filter((p) => !hasExceptions(p));
+  const participantsWithDefaults = participants.filter(
+    (p) => !hasExceptions(p),
+  );
 
   const displayedParticipants = showAll
     ? participants
@@ -100,7 +102,7 @@ export function EventTimeAllocationSection({
     personId: string,
     type: 'study' | 'hack',
     date: Dayjs,
-    hours: number
+    hours: number,
   ) => {
     const updated = participants.map((p) => {
       if (p.personId === personId) {
@@ -135,11 +137,17 @@ export function EventTimeAllocationSection({
     let total = 0;
 
     if (participant.studyPeriod?.days) {
-      total += participant.studyPeriod.days.reduce((sum, hours) => sum + hours, 0);
+      total += participant.studyPeriod.days.reduce(
+        (sum, hours) => sum + hours,
+        0,
+      );
     }
 
     if (participant.hackPeriod?.days) {
-      total += participant.hackPeriod.days.reduce((sum, hours) => sum + hours, 0);
+      total += participant.hackPeriod.days.reduce(
+        (sum, hours) => sum + hours,
+        0,
+      );
     }
 
     if (!participant.studyPeriod && !participant.hackPeriod) {
@@ -166,13 +174,15 @@ export function EventTimeAllocationSection({
       }
 
       if (studyHours > 0 && hackHours > 0) {
-        errors.push(`${date}: Cannot have both study and hack hours on the same day`);
+        errors.push(
+          `${date}: Cannot have both study and hack hours on the same day`,
+        );
       }
 
       const dayCapHours = eventDayHours[index] ?? defaultHoursPerDay;
       if (totalDayHours > dayCapHours) {
         errors.push(
-          `${date}: Total hours (${totalDayHours}h) exceeds event hours (${dayCapHours}h)`
+          `${date}: Total hours (${totalDayHours}h) exceeds event hours (${dayCapHours}h)`,
         );
       }
     });
@@ -191,15 +201,17 @@ export function EventTimeAllocationSection({
           By default, all participants attend for the full event duration (
           {eventDates.length} day{eventDates.length > 1 ? 's' : ''},{' '}
           {defaultHoursPerDay}h/day) with {defaultBudgetType.toLowerCase()} time
-          budget. Add exceptions for partial attendance or custom budget types. Time allocations are individual
-          and don't sum.
+          budget. Add exceptions for partial attendance or custom budget types.
+          Time allocations are individual and don't sum.
         </Typography>
       </Box>
 
       <Alert severity="info" icon={<Info />} sx={{ mb: 3 }}>
         <Typography variant="body2">
-          <strong>Default:</strong> {defaultHoursPerDay}h/day ({defaultBudgetType}) for{' '}
-          {eventDates.length} day{eventDates.length > 1 ? 's' : ''} - applies to all participants unless customized
+          <strong>Default:</strong> {defaultHoursPerDay}h/day (
+          {defaultBudgetType}) for {eventDates.length} day
+          {eventDates.length > 1 ? 's' : ''} - applies to all participants
+          unless customized
         </Typography>
       </Alert>
 
@@ -238,8 +250,12 @@ export function EventTimeAllocationSection({
             eventDates={eventDates}
             totalHours={getTotalHours(participant)}
             validationErrors={getValidationErrors(participant)}
-            onAddCustomAllocation={() => handleAddCustomAllocation(participant.personId)}
-            onRemoveCustomAllocation={() => handleRemoveCustomAllocation(participant.personId)}
+            onAddCustomAllocation={() =>
+              handleAddCustomAllocation(participant.personId)
+            }
+            onRemoveCustomAllocation={() =>
+              handleRemoveCustomAllocation(participant.personId)
+            }
             onPeriodChange={(type, date, hours) =>
               handlePeriodChange(participant.personId, type, date, hours)
             }
@@ -273,11 +289,13 @@ function ParticipantTimeRow({
   onRemoveCustomAllocation,
   onPeriodChange,
 }: ParticipantTimeRowProps) {
-  const hasExceptions = participant.studyPeriod !== null || participant.hackPeriod !== null;
+  const hasExceptions =
+    participant.studyPeriod !== null || participant.hackPeriod !== null;
 
   // Create empty period for display when no custom allocation exists
   const getOrCreatePeriod = (type: 'study' | 'hack'): Period => {
-    const existing = type === 'study' ? participant.studyPeriod : participant.hackPeriod;
+    const existing =
+      type === 'study' ? participant.studyPeriod : participant.hackPeriod;
     if (existing) return existing;
 
     return {
@@ -332,7 +350,11 @@ function ParticipantTimeRow({
             </>
           )}
           {!hasExceptions && (
-            <Button size="small" startIcon={<Add />} onClick={onAddCustomAllocation}>
+            <Button
+              size="small"
+              startIcon={<Add />}
+              onClick={onAddCustomAllocation}
+            >
               Customize
             </Button>
           )}
@@ -354,58 +376,58 @@ function ParticipantTimeRow({
 
       {hasExceptions && (
         <Stack spacing={3}>
-            <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                <Typography variant="subtitle2" fontWeight="medium">
-                  Study Time
-                </Typography>
-                {participant.studyPeriod && (
-                  <Chip
-                    label={`${participant.studyPeriod.days?.reduce((sum, h) => sum + h, 0) || 0}h`}
-                    size="small"
-                    color="primary"
-                  />
-                )}
-              </Box>
-              <Box sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 1 }}>
-                <PeriodInput
-                  period={getOrCreatePeriod('study')}
-                  onChange={(date, hours) => onPeriodChange('study', date, hours)}
-                  readonly={false}
-                />
-              </Box>
-            </Box>
-
-            <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                <Typography variant="subtitle2" fontWeight="medium">
-                  Hack Time
-                </Typography>
-                {participant.hackPeriod && (
-                  <Chip
-                    label={`${participant.hackPeriod.days?.reduce((sum, h) => sum + h, 0) || 0}h`}
-                    size="small"
-                    color="secondary"
-                  />
-                )}
-              </Box>
-              <Box sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 1 }}>
-                <PeriodInput
-                  period={getOrCreatePeriod('hack')}
-                  onChange={(date, hours) => onPeriodChange('hack', date, hours)}
-                  readonly={false}
-                />
-              </Box>
-            </Box>
-
-            <Alert severity="info" icon={<Info />}>
-              <Typography variant="caption">
-                Each day can only have hours in either Study Time OR Hack Time, not both.
-                Only fill in hours for the event dates ({eventFrom.format('DD MMM')} -{' '}
-                {eventTo.format('DD MMM')}).
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <Typography variant="subtitle2" fontWeight="medium">
+                Study Time
               </Typography>
-            </Alert>
-          </Stack>
+              {participant.studyPeriod && (
+                <Chip
+                  label={`${participant.studyPeriod.days?.reduce((sum, h) => sum + h, 0) || 0}h`}
+                  size="small"
+                  color="primary"
+                />
+              )}
+            </Box>
+            <Box sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 1 }}>
+              <PeriodInput
+                period={getOrCreatePeriod('study')}
+                onChange={(date, hours) => onPeriodChange('study', date, hours)}
+                readonly={false}
+              />
+            </Box>
+          </Box>
+
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <Typography variant="subtitle2" fontWeight="medium">
+                Hack Time
+              </Typography>
+              {participant.hackPeriod && (
+                <Chip
+                  label={`${participant.hackPeriod.days?.reduce((sum, h) => sum + h, 0) || 0}h`}
+                  size="small"
+                  color="secondary"
+                />
+              )}
+            </Box>
+            <Box sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 1 }}>
+              <PeriodInput
+                period={getOrCreatePeriod('hack')}
+                onChange={(date, hours) => onPeriodChange('hack', date, hours)}
+                readonly={false}
+              />
+            </Box>
+          </Box>
+
+          <Alert severity="info" icon={<Info />}>
+            <Typography variant="caption">
+              Each day can only have hours in either Study Time OR Hack Time,
+              not both. Only fill in hours for the event dates (
+              {eventFrom.format('DD MMM')} - {eventTo.format('DD MMM')}).
+            </Typography>
+          </Alert>
+        </Stack>
       )}
     </Box>
   );

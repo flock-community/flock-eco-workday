@@ -1,18 +1,14 @@
-import React from 'react';
+import { Calculate, Clear, Euro } from '@mui/icons-material';
 import {
   Box,
-  Typography,
-  TextField,
   Button,
-  Stack,
-  Divider,
   Chip,
+  Divider,
+  Stack,
+  TextField,
+  Typography,
 } from '@mui/material';
-import {
-  Euro,
-  Calculate,
-  Clear,
-} from '@mui/icons-material';
+import React from 'react';
 
 export interface PersonMoneyAllocation {
   personId: string;
@@ -31,16 +27,14 @@ export function EventMoneyAllocationSection({
   participants,
   onParticipantsChange,
 }: EventMoneyAllocationSectionProps) {
-  const totalAllocated = participants.reduce(
-    (sum, p) => sum + p.amount,
-    0
-  );
+  const totalAllocated = participants.reduce((sum, p) => sum + p.amount, 0);
   const remaining = totalBudget - totalAllocated;
   const isOverAllocated = totalAllocated > totalBudget;
   const isFullyAllocated = remaining === 0;
 
   const handleDistributeEqually = () => {
-    const amountPerPerson = Math.floor((totalBudget / participants.length) * 100) / 100;
+    const amountPerPerson =
+      Math.floor((totalBudget / participants.length) * 100) / 100;
     const updated = participants.map((p) => ({
       ...p,
       amount: amountPerPerson,
@@ -101,7 +95,9 @@ export function EventMoneyAllocationSection({
         </Stack>
       </Box>
 
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+      <Box
+        sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}
+      >
         <Chip
           label={`Total Budget: €${totalBudget.toLocaleString('nl-NL')}`}
           size="small"
@@ -116,11 +112,7 @@ export function EventMoneyAllocationSection({
           label={`Remaining: €${Math.abs(remaining).toLocaleString('nl-NL')}${isOverAllocated ? ' over' : ''}`}
           size="small"
           color={
-            isOverAllocated
-              ? 'error'
-              : isFullyAllocated
-                ? 'success'
-                : 'default'
+            isOverAllocated ? 'error' : isFullyAllocated ? 'success' : 'default'
           }
         />
       </Box>
@@ -145,7 +137,10 @@ export function EventMoneyAllocationSection({
                 borderRadius: 1,
               }}
             >
-              <Typography variant="body1" sx={{ flex: 1, fontWeight: 'medium' }}>
+              <Typography
+                variant="body1"
+                sx={{ flex: 1, fontWeight: 'medium' }}
+              >
                 {participant.personName}
               </Typography>
               <TextField

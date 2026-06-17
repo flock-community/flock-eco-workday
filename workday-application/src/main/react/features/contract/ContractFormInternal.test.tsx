@@ -20,11 +20,15 @@ describe('ContractFormInternal - CTR-01: study budget fields (structural)', () =
   });
 
   it('studyHours field uses number type', () => {
-    expect(source).toMatch(/studyHours[\s\S]{0,200}type\s*[=:]\s*["']number["']/);
+    expect(source).toMatch(
+      /studyHours[\s\S]{0,200}type\s*[=:]\s*["']number["']/,
+    );
   });
 
   it('studyMoney field uses number type', () => {
-    expect(source).toMatch(/studyMoney[\s\S]{0,200}type\s*[=:]\s*["']number["']/);
+    expect(source).toMatch(
+      /studyMoney[\s\S]{0,200}type\s*[=:]\s*["']number["']/,
+    );
   });
 
   it('initializes studyHours with default value 0 in schema or init', () => {

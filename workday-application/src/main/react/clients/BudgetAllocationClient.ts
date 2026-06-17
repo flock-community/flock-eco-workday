@@ -2,18 +2,23 @@ import type {
   BudgetAllocation,
   BudgetSummaryResponse,
   HackTimeAllocationInput,
-  StudyTimeAllocationInput,
   StudyMoneyAllocationInput,
+  StudyTimeAllocationInput,
 } from '../wirespec/model';
-import {Person} from "./PersonClient";
+import type { Person } from './PersonClient';
 
 const basePath = '/api/budget-allocations';
 const summaryPath = '/api/budget-summary';
 
-const buildQueryString = (params: Record<string, string | number | undefined>): string => {
+const buildQueryString = (
+  params: Record<string, string | number | undefined>,
+): string => {
   const entries = Object.entries(params).filter(([, v]) => v !== undefined);
   if (entries.length === 0) return '';
-  return '?' + entries.map(([k, v]) => `${k}=${encodeURIComponent(String(v))}`).join('&');
+  return (
+    '?' +
+    entries.map(([k, v]) => `${k}=${encodeURIComponent(String(v))}`).join('&')
+  );
 };
 
 const findAll = async (
@@ -23,7 +28,8 @@ const findAll = async (
 ): Promise<BudgetAllocation[]> => {
   const query = buildQueryString({ personId: personId?.uuid, year, eventCode });
   const res = await fetch(`${basePath}${query}`);
-  if (!res.ok) throw new Error(`Failed to fetch budget allocations: ${res.status}`);
+  if (!res.ok)
+    throw new Error(`Failed to fetch budget allocations: ${res.status}`);
   return res.json();
 };
 
@@ -45,7 +51,8 @@ const createStudyMoney = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
-  if (!res.ok) throw new Error(`Failed to create study money allocation: ${res.status}`);
+  if (!res.ok)
+    throw new Error(`Failed to create study money allocation: ${res.status}`);
   return res.json();
 };
 
@@ -57,7 +64,8 @@ const createHackTime = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
-  if (!res.ok) throw new Error(`Failed to create hack time allocation: ${res.status}`);
+  if (!res.ok)
+    throw new Error(`Failed to create hack time allocation: ${res.status}`);
   return res.json();
 };
 
@@ -70,7 +78,8 @@ const updateHackTime = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
-  if (!res.ok) throw new Error(`Failed to update hack time allocation: ${res.status}`);
+  if (!res.ok)
+    throw new Error(`Failed to update hack time allocation: ${res.status}`);
   return res.json();
 };
 
@@ -82,7 +91,8 @@ const createStudyTime = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
-  if (!res.ok) throw new Error(`Failed to create study time allocation: ${res.status}`);
+  if (!res.ok)
+    throw new Error(`Failed to create study time allocation: ${res.status}`);
   return res.json();
 };
 
@@ -95,7 +105,8 @@ const updateStudyTime = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
-  if (!res.ok) throw new Error(`Failed to update study time allocation: ${res.status}`);
+  if (!res.ok)
+    throw new Error(`Failed to update study time allocation: ${res.status}`);
   return res.json();
 };
 
@@ -108,7 +119,8 @@ const updateStudyMoney = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
-  if (!res.ok) throw new Error(`Failed to update study money allocation: ${res.status}`);
+  if (!res.ok)
+    throw new Error(`Failed to update study money allocation: ${res.status}`);
   return res.json();
 };
 
@@ -116,10 +128,13 @@ const deleteById = async (id: string): Promise<void> => {
   const res = await fetch(`${basePath}/${id}`, {
     method: 'DELETE',
   });
-  if (!res.ok) throw new Error(`Failed to delete budget allocation: ${res.status}`);
+  if (!res.ok)
+    throw new Error(`Failed to delete budget allocation: ${res.status}`);
 };
 
-const uploadFile = async (file: File): Promise<{ id: string; name: string }> => {
+const uploadFile = async (
+  file: File,
+): Promise<{ id: string; name: string }> => {
   const formData = new FormData();
   formData.append('file', file);
   const res = await fetch('/api/budget-allocations/files', {

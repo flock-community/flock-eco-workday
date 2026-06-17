@@ -1,15 +1,12 @@
+import { Info, OpenInNew } from '@mui/icons-material';
+import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
 import React from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  Stack,
-  Alert,
-} from '@mui/material';
-import {Info, OpenInNew} from '@mui/icons-material';
-import {EventAllocationListItem} from './EventAllocationListItem';
-import {StudyMoneyAllocationListItem} from './StudyMoneyAllocationListItem';
-import type {BudgetAllocation, BudgetAllocationType} from '../../wirespec/model';
+import type {
+  BudgetAllocation,
+  BudgetAllocationType,
+} from '../../wirespec/model';
+import { EventAllocationListItem } from './EventAllocationListItem';
+import { StudyMoneyAllocationListItem } from './StudyMoneyAllocationListItem';
 
 interface BudgetAllocationListProps {
   allocations: BudgetAllocation[];
@@ -23,26 +20,31 @@ interface BudgetAllocationListProps {
 }
 
 export function BudgetAllocationList({
-                                       allocations,
-                                       hasWritePermission = false,
-                                       onDelete,
-                                       onEdit,
-                                       isAdmin,
-                                       typeFilter = null,
-                                       eventCodeFilter = null,
-                                     }: BudgetAllocationListProps) {
+  allocations,
+  hasWritePermission = false,
+  onDelete,
+  onEdit,
+  isAdmin,
+  typeFilter = null,
+  eventCodeFilter = null,
+}: BudgetAllocationListProps) {
   let filteredAllocations = typeFilter
-    ? allocations.filter(a => a.type === typeFilter)
+    ? allocations.filter((a) => a.type === typeFilter)
     : allocations;
 
   if (eventCodeFilter) {
-    filteredAllocations = filteredAllocations.filter(a => a.eventCode === eventCodeFilter);
+    filteredAllocations = filteredAllocations.filter(
+      (a) => a.eventCode === eventCodeFilter,
+    );
   }
 
-  const eventAllocations: Record<string, {
-    eventCode: string;
-    allocations: BudgetAllocation[];
-  }> = {};
+  const eventAllocations: Record<
+    string,
+    {
+      eventCode: string;
+      allocations: BudgetAllocation[];
+    }
+  > = {};
 
   const freeFormAllocations: BudgetAllocation[] = [];
 
@@ -62,7 +64,7 @@ export function BudgetAllocationList({
   });
 
   const allItems: Array<
-    | { type: 'event'; data: typeof eventAllocations[string] }
+    | { type: 'event'; data: (typeof eventAllocations)[string] }
     | { type: 'freeform'; data: BudgetAllocation }
   > = [
     ...Object.values(eventAllocations).map((event) => ({
@@ -74,26 +76,32 @@ export function BudgetAllocationList({
       data: allocation,
     })),
   ].sort((a, b) => {
-    const dateA = a.type === 'event' ? a.data.allocations[0]?.date : a.data.date;
-    const dateB = b.type === 'event' ? b.data.allocations[0]?.date : b.data.date;
+    const dateA =
+      a.type === 'event' ? a.data.allocations[0]?.date : a.data.date;
+    const dateB =
+      b.type === 'event' ? b.data.allocations[0]?.date : b.data.date;
     return new Date(dateB).getTime() - new Date(dateA).getTime();
   });
 
   return (
     <Stack spacing={2}>
-      <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <Typography variant="h6">
           Budget Allocations ({allItems.length})
         </Typography>
       </Box>
 
       {isAdmin && allItems.some((item) => item.type === 'event') && (
-        <Alert severity="info" icon={<Info/>}>
+        <Alert severity="info" icon={<Info />}>
           Event allocations are managed from the Events page. Click the event
           name or{' '}
-          <OpenInNew
-            sx={{fontSize: 14, verticalAlign: 'middle', mx: 0.5}}
-          />{' '}
+          <OpenInNew sx={{ fontSize: 14, verticalAlign: 'middle', mx: 0.5 }} />{' '}
           icon to navigate to the event.
         </Alert>
       )}
@@ -103,7 +111,7 @@ export function BudgetAllocationList({
           variant="body2"
           color="text.secondary"
           textAlign="center"
-          sx={{py: 4}}
+          sx={{ py: 4 }}
         >
           No budget allocations yet
         </Typography>
@@ -121,8 +129,16 @@ export function BudgetAllocationList({
               key={item.data.id ?? item.data.date}
               allocation={item.data}
               hasWritePermission={hasWritePermission}
-              onEdit={hasWritePermission && onEdit ? () => onEdit(item.data) : undefined}
-              onDelete={hasWritePermission && onDelete ? () => onDelete(item.data) : undefined}
+              onEdit={
+                hasWritePermission && onEdit
+                  ? () => onEdit(item.data)
+                  : undefined
+              }
+              onDelete={
+                hasWritePermission && onDelete
+                  ? () => onDelete(item.data)
+                  : undefined
+              }
             />
           ),
         )

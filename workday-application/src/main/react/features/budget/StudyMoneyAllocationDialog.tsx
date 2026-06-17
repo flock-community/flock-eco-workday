@@ -1,4 +1,4 @@
-import {UploadFile} from '@mui/icons-material';
+import { UploadFile } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -13,31 +13,37 @@ import {
   Typography,
 } from '@mui/material';
 import type React from 'react';
-import {useEffect, useState} from 'react';
-import {BudgetAllocationClient} from '../../clients/BudgetAllocationClient';
-import type {Person} from "../../clients/PersonClient";
-import type {BudgetAllocation, BudgetAllocationFile, StudyMoneyAllocationInput} from '../../wirespec/model';
+import { useEffect, useState } from 'react';
+import { BudgetAllocationClient } from '../../clients/BudgetAllocationClient';
+import type { Person } from '../../clients/PersonClient';
+import type {
+  BudgetAllocation,
+  BudgetAllocationFile,
+  StudyMoneyAllocationInput,
+} from '../../wirespec/model';
 
 interface StudyMoneyAllocationDialogProps {
   open: boolean;
   onClose: () => void;
   onSaved: () => void;
   person?: Person;
-  editAllocation?: BudgetAllocation;  // when present: edit mode
+  editAllocation?: BudgetAllocation; // when present: edit mode
 }
 
 export function StudyMoneyAllocationDialog({
-                                             open,
-                                             onClose,
-                                             onSaved,
-                                             person,
-                                             editAllocation,
-                                           }: StudyMoneyAllocationDialogProps) {
+  open,
+  onClose,
+  onSaved,
+  person,
+  editAllocation,
+}: StudyMoneyAllocationDialogProps) {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState<number | ''>('');
   const [date, setDate] = useState('');
   const [files, setFiles] = useState<File[]>([]);
-  const [uploadedFiles, setUploadedFiles] = useState<BudgetAllocationFile[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<BudgetAllocationFile[]>(
+    [],
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -68,7 +74,7 @@ export function StudyMoneyAllocationDialog({
       const fileResults: BudgetAllocationFile[] = [...uploadedFiles];
       for (const file of files) {
         const result = await BudgetAllocationClient.uploadFile(file);
-        fileResults.push({name: result.name, file: result.id});
+        fileResults.push({ name: result.name, file: result.id });
       }
 
       const input: StudyMoneyAllocationInput = {
@@ -89,7 +95,9 @@ export function StudyMoneyAllocationDialog({
       onClose();
     } catch (err) {
       console.error('Failed to save allocation:', err);
-      setError(err instanceof Error ? err.message : 'Failed to save allocation');
+      setError(
+        err instanceof Error ? err.message : 'Failed to save allocation',
+      );
     } finally {
       setSaving(false);
     }
@@ -106,16 +114,17 @@ export function StudyMoneyAllocationDialog({
     setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const isValid =
-    typeof amount === 'number' &&
-    amount > 0 &&
-    date !== '';
+  const isValid = typeof amount === 'number' && amount > 0 && date !== '';
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{editAllocation ? 'Edit Study Money Allocation' : 'Add Study Money Allocation'}</DialogTitle>
+      <DialogTitle>
+        {editAllocation
+          ? 'Edit Study Money Allocation'
+          : 'Add Study Money Allocation'}
+      </DialogTitle>
       <DialogContent>
-        <Box sx={{display: 'flex', flexDirection: 'column', gap: 2, pt: 1}}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
           {error && (
             <Typography color="error" variant="body2">
               {error}
@@ -141,7 +150,7 @@ export function StudyMoneyAllocationDialog({
             }
             fullWidth
             required
-            inputProps={{min: 0, step: 1}}
+            inputProps={{ min: 0, step: 1 }}
           />
 
           <TextField
@@ -151,14 +160,14 @@ export function StudyMoneyAllocationDialog({
             onChange={(e) => setDate(e.target.value)}
             fullWidth
             required
-            InputLabelProps={{shrink: true}}
+            InputLabelProps={{ shrink: true }}
           />
 
           <Box>
             <Button
               variant="outlined"
               component="label"
-              startIcon={<UploadFile/>}
+              startIcon={<UploadFile />}
               fullWidth
             >
               Upload Receipt/Invoice
@@ -171,32 +180,45 @@ export function StudyMoneyAllocationDialog({
               />
             </Button>
             {files.length > 0 && (
-              <Stack direction="row" spacing={1} sx={{mt: 1}} flexWrap="wrap">
+              <Stack direction="row" spacing={1} sx={{ mt: 1 }} flexWrap="wrap">
                 {files.map((file, index) => (
                   <Chip
-                    key={file.name+file.size+file.lastModified}
+                    key={file.name + file.size + file.lastModified}
                     label={file.name}
                     onDelete={() => handleRemoveFile(index)}
                     size="small"
-                    sx={{mb: 1}}
+                    sx={{ mb: 1 }}
                   />
                 ))}
               </Stack>
             )}
-            <Typography variant="caption" color="text.secondary" display="block" sx={{mt: 0.5}}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              sx={{ mt: 0.5 }}
+            >
               Optional: Upload receipts or invoices (PDF, JPG, PNG)
             </Typography>
           </Box>
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={saving}>Cancel</Button>
+        <Button onClick={onClose} disabled={saving}>
+          Cancel
+        </Button>
         <Button
           onClick={handleSave}
           variant="contained"
           disabled={!isValid || saving}
         >
-          {saving ? <CircularProgress size={24}/> : (editAllocation ? 'Save' : 'Create')}
+          {saving ? (
+            <CircularProgress size={24} />
+          ) : editAllocation ? (
+            'Save'
+          ) : (
+            'Create'
+          )}
         </Button>
       </DialogActions>
     </Dialog>

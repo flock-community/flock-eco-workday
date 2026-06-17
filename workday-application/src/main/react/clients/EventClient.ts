@@ -1,9 +1,8 @@
 import { checkResponse, validateResponse } from '@workday-core';
 import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
-import type { EventForm } from '../wirespec/model';
+import type { BudgetAllocation, EventForm } from '../wirespec/model';
 import type { Person, PersonLight } from './PersonClient';
-import type { BudgetAllocation } from '../wirespec/model';
 
 const path = '/api/events';
 
@@ -97,7 +96,7 @@ const internalizeFull = (it: FlockEventRaw): FullFlockEvent => ({
 export const EVENT_PAGE_SIZE: number = 10;
 
 const internalizingClient = InternalizingClient<
-FlockEventRequest,
+  FlockEventRequest,
   FlockEventRaw,
   FullFlockEvent
 >(path, internalizeFull);

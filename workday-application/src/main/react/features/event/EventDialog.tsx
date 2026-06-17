@@ -6,19 +6,26 @@ import Typography from '@mui/material/Typography';
 import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
-import { useEffect, useMemo, useState } from 'react';
-import { Formik, Form } from 'formik';
 import dayjs from 'dayjs';
-import { EventClient, type FlockEventRequest, type FullFlockEvent } from '../../clients/EventClient';
+import { Form, Formik } from 'formik';
+import { useEffect, useMemo, useState } from 'react';
 import { BudgetAllocationClient } from '../../clients/BudgetAllocationClient';
+import {
+  EventClient,
+  type FlockEventRequest,
+  type FullFlockEvent,
+} from '../../clients/EventClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { TransitionSlider } from '../../components/transitions/Slide';
 import { mutatePeriod } from '../period/Period';
-import { EVENT_FORM_ID, EventFormFields, eventFormSchema } from './EventForm';
 import { EventBudgetManagementSection } from './EventBudgetManagementDialog';
-import { apiAllocationsToTimeParticipants, apiAllocationsToMoneyParticipants } from './eventBudgetTransformers';
-import type { PersonTimeAllocation } from './EventTimeAllocationSection';
+import { EVENT_FORM_ID, EventFormFields, eventFormSchema } from './EventForm';
 import type { PersonMoneyAllocation } from './EventMoneyAllocationSection';
+import type { PersonTimeAllocation } from './EventTimeAllocationSection';
+import {
+  apiAllocationsToMoneyParticipants,
+  apiAllocationsToTimeParticipants,
+} from './eventBudgetTransformers';
 
 type EventDialogProps = {
   open: boolean;
@@ -31,8 +38,12 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const [moneyBudgetExpanded, setMoneyBudgetExpanded] = useState(false);
   const [timeBudgetExpanded, setTimeBudgetExpanded] = useState(false);
   const [eventData, setEventData] = useState<FullFlockEvent | null>(null);
-  const [initialTimeParticipants, setInitialTimeParticipants] = useState<PersonTimeAllocation[] | undefined>(undefined);
-  const [initialMoneyParticipants, setInitialMoneyParticipants] = useState<PersonMoneyAllocation[] | undefined>(undefined);
+  const [initialTimeParticipants, setInitialTimeParticipants] = useState<
+    PersonTimeAllocation[] | undefined
+  >(undefined);
+  const [initialMoneyParticipants, setInitialMoneyParticipants] = useState<
+    PersonMoneyAllocation[] | undefined
+  >(undefined);
 
   // Raw form state: dates are Dayjs here and serialized on submit.
   const [state, setState] = useState<any>(undefined);
@@ -56,14 +67,22 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
 
           // Allocations are no longer inline on the event response; fetch them
           // from the dedicated budget-allocations endpoint, scoped to this event.
-          BudgetAllocationClient.findAll(undefined, undefined, code).then((allocations) => {
-            const timeParts = apiAllocationsToTimeParticipants(
-              allocations, res.persons, dayjs(res.from), dayjs(res.to),
-            );
-            const moneyParts = apiAllocationsToMoneyParticipants(allocations, res.persons);
-            setInitialTimeParticipants(timeParts);
-            setInitialMoneyParticipants(moneyParts);
-          });
+          BudgetAllocationClient.findAll(undefined, undefined, code).then(
+            (allocations) => {
+              const timeParts = apiAllocationsToTimeParticipants(
+                allocations,
+                res.persons,
+                dayjs(res.from),
+                dayjs(res.to),
+              );
+              const moneyParts = apiAllocationsToMoneyParticipants(
+                allocations,
+                res.persons,
+              );
+              setInitialTimeParticipants(timeParts);
+              setInitialMoneyParticipants(moneyParts);
+            },
+          );
         });
       } else {
         setState(eventFormSchema.getDefault());
@@ -118,7 +137,10 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   };
 
   const initialValues = useMemo(
-    () => state ? { ...eventFormSchema.getDefault(), ...mutatePeriod(state) } : eventFormSchema.getDefault(),
+    () =>
+      state
+        ? { ...eventFormSchema.getDefault(), ...mutatePeriod(state) }
+        : eventFormSchema.getDefault(),
     [state],
   );
 
@@ -149,7 +171,10 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
                 <Grid container spacing={1}>
                   <Grid size={{ xs: 12 }}>
                     <Form id={EVENT_FORM_ID}>
-                      <EventFormFields values={formik.values} setFieldValue={formik.setFieldValue} />
+                      <EventFormFields
+                        values={formik.values}
+                        setFieldValue={formik.setFieldValue}
+                      />
                     </Form>
                   </Grid>
                   {code && eventData && (

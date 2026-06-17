@@ -46,7 +46,12 @@ const tooltipFor = (meta: DayMeta | undefined): string | undefined => {
   return parts.length > 0 ? parts.join(' · ') : undefined;
 };
 
-export function PeriodInput({ period, onChange, dayMeta, readonly = false }: PeriodInputProps) {
+export function PeriodInput({
+  period,
+  onChange,
+  dayMeta,
+  readonly = false,
+}: PeriodInputProps) {
   const grid = calcGrid(period);
 
   const totalHoursForPeriod = period.days?.reduce(

@@ -1,9 +1,12 @@
 import dayjs from 'dayjs';
-import type { BudgetAllocation, DailyTimeAllocationItem } from '../../wirespec/model';
+import type {
+  BudgetAllocation,
+  DailyTimeAllocationItem,
+} from '../../wirespec/model';
 import {
-  dailyAllocationsToPeriod,
-  apiAllocationsToTimeParticipants,
   apiAllocationsToMoneyParticipants,
+  apiAllocationsToTimeParticipants,
+  dailyAllocationsToPeriod,
 } from './eventBudgetTransformers';
 
 describe('dailyAllocationsToPeriod', () => {
@@ -15,7 +18,11 @@ describe('dailyAllocationsToPeriod', () => {
     const eventFrom = dayjs('2026-03-10');
     const eventTo = dayjs('2026-03-12');
 
-    const result = dailyAllocationsToPeriod(dailyAllocations, eventFrom, eventTo);
+    const result = dailyAllocationsToPeriod(
+      dailyAllocations,
+      eventFrom,
+      eventTo,
+    );
 
     expect(result.from.format('YYYY-MM-DD')).toBe('2026-03-10');
     expect(result.to.format('YYYY-MM-DD')).toBe('2026-03-12');
@@ -29,7 +36,11 @@ describe('dailyAllocationsToPeriod', () => {
     const eventFrom = dayjs('2026-03-10');
     const eventTo = dayjs('2026-03-13');
 
-    const result = dailyAllocationsToPeriod(dailyAllocations, eventFrom, eventTo);
+    const result = dailyAllocationsToPeriod(
+      dailyAllocations,
+      eventFrom,
+      eventTo,
+    );
 
     expect(result.days).toEqual([0, 6, 0, 0]);
   });
@@ -43,7 +54,11 @@ describe('dailyAllocationsToPeriod', () => {
     const eventFrom = dayjs('2026-03-10');
     const eventTo = dayjs('2026-03-12');
 
-    const result = dailyAllocationsToPeriod(dailyAllocations, eventFrom, eventTo);
+    const result = dailyAllocationsToPeriod(
+      dailyAllocations,
+      eventFrom,
+      eventTo,
+    );
 
     expect(result.days).toEqual([4, 0, 0]);
   });
@@ -92,7 +107,12 @@ describe('apiAllocationsToTimeParticipants', () => {
       },
     ];
 
-    const result = apiAllocationsToTimeParticipants(allocations, persons, eventFrom, eventTo);
+    const result = apiAllocationsToTimeParticipants(
+      allocations,
+      persons,
+      eventFrom,
+      eventTo,
+    );
 
     expect(result).toHaveLength(1);
     expect(result[0].personId).toBe('p1');
@@ -121,7 +141,12 @@ describe('apiAllocationsToTimeParticipants', () => {
       },
     ];
 
-    const result = apiAllocationsToTimeParticipants(allocations, persons, eventFrom, eventTo);
+    const result = apiAllocationsToTimeParticipants(
+      allocations,
+      persons,
+      eventFrom,
+      eventTo,
+    );
 
     expect(result).toHaveLength(1);
     expect(result[0].personId).toBe('p2');
@@ -144,7 +169,12 @@ describe('apiAllocationsToTimeParticipants', () => {
       },
     ];
 
-    const result = apiAllocationsToTimeParticipants(allocations, persons, eventFrom, eventTo);
+    const result = apiAllocationsToTimeParticipants(
+      allocations,
+      persons,
+      eventFrom,
+      eventTo,
+    );
 
     expect(result).toHaveLength(0);
   });

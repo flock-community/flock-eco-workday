@@ -9,7 +9,6 @@ import { ExpenseList } from './ExpenseList';
 
 type ExpenseFeatureProps = {
   person: Person;
-
 };
 
 export function ExpenseFeature({ person }: ExpenseFeatureProps) {

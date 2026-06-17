@@ -1,5 +1,8 @@
-import { EventTypeMappingToDefaultBudgetType, EventBudgetType } from '../../utils/mappings';
 import { EventType } from '../../clients/EventClient';
+import {
+  EventBudgetType,
+  EventTypeMappingToDefaultBudgetType,
+} from '../../utils/mappings';
 
 /**
  * Phase 02 - EVT-05: Event form fields are single source of truth for budget sections
@@ -9,19 +12,27 @@ import { EventType } from '../../clients/EventClient';
 
 describe('EVT-05: Event type drives default budget allocation type', () => {
   it('GENERAL_EVENT maps to null budget type (no allocations)', () => {
-    expect(EventTypeMappingToDefaultBudgetType[EventType.GENERAL_EVENT]).toBeNull();
+    expect(
+      EventTypeMappingToDefaultBudgetType[EventType.GENERAL_EVENT],
+    ).toBeNull();
   });
 
   it('FLOCK_HACK_DAY maps to HACK budget type', () => {
-    expect(EventTypeMappingToDefaultBudgetType[EventType.FLOCK_HACK_DAY]).toBe(EventBudgetType.HACK);
+    expect(EventTypeMappingToDefaultBudgetType[EventType.FLOCK_HACK_DAY]).toBe(
+      EventBudgetType.HACK,
+    );
   });
 
   it('FLOCK_COMMUNITY_DAY maps to null budget type (no allocations)', () => {
-    expect(EventTypeMappingToDefaultBudgetType[EventType.FLOCK_COMMUNITY_DAY]).toBeNull();
+    expect(
+      EventTypeMappingToDefaultBudgetType[EventType.FLOCK_COMMUNITY_DAY],
+    ).toBeNull();
   });
 
   it('CONFERENCE maps to STUDY budget type', () => {
-    expect(EventTypeMappingToDefaultBudgetType[EventType.CONFERENCE]).toBe(EventBudgetType.STUDY);
+    expect(EventTypeMappingToDefaultBudgetType[EventType.CONFERENCE]).toBe(
+      EventBudgetType.STUDY,
+    );
   });
 
   it('all EventType values have a mapping defined', () => {
@@ -35,7 +46,10 @@ describe('EVT-05: Section visibility rules driven by event type', () => {
   // Mirrors EventBudgetManagementDialog.tsx logic:
   // showTimeSection = defaultBudgetType !== null
   // showMoneySection = type === FLOCK_HACK_DAY || type === CONFERENCE
-  const MONEY_TYPES: string[] = [EventType.FLOCK_HACK_DAY, EventType.CONFERENCE];
+  const MONEY_TYPES: string[] = [
+    EventType.FLOCK_HACK_DAY,
+    EventType.CONFERENCE,
+  ];
 
   const getVisibility = (type: EventType) => {
     const budgetType = EventTypeMappingToDefaultBudgetType[type];
@@ -64,7 +78,9 @@ describe('EVT-05: Section visibility rules driven by event type', () => {
   });
 
   it('FLOCK_COMMUNITY_DAY shows neither time nor money sections', () => {
-    const { showTime, showMoney } = getVisibility(EventType.FLOCK_COMMUNITY_DAY);
+    const { showTime, showMoney } = getVisibility(
+      EventType.FLOCK_COMMUNITY_DAY,
+    );
     expect(showTime).toBe(false);
     expect(showMoney).toBe(false);
   });

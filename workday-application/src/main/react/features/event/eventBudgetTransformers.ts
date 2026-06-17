@@ -1,8 +1,11 @@
 import dayjs, { type Dayjs } from 'dayjs';
-import type { BudgetAllocation, DailyTimeAllocationItem } from '../../wirespec/model';
-import type { PersonTimeAllocation } from './EventTimeAllocationSection';
-import type { PersonMoneyAllocation } from './EventMoneyAllocationSection';
+import type {
+  BudgetAllocation,
+  DailyTimeAllocationItem,
+} from '../../wirespec/model';
 import type { Period } from '../period/Period';
+import type { PersonMoneyAllocation } from './EventMoneyAllocationSection';
+import type { PersonTimeAllocation } from './EventTimeAllocationSection';
 
 /**
  * Convert an array of DailyTimeAllocationItems back to a Period.
@@ -55,11 +58,19 @@ export function apiAllocationsToTimeParticipants(
       const studyAlloc = personAllocations.find((a) => a.type === 'STUDY_TIME');
 
       const hackPeriod = hackAlloc?.hackTimeDetails
-        ? dailyAllocationsToPeriod(hackAlloc.hackTimeDetails.dailyAllocations, eventFrom, eventTo)
+        ? dailyAllocationsToPeriod(
+            hackAlloc.hackTimeDetails.dailyAllocations,
+            eventFrom,
+            eventTo,
+          )
         : null;
 
       const studyPeriod = studyAlloc?.studyTimeDetails
-        ? dailyAllocationsToPeriod(studyAlloc.studyTimeDetails.dailyAllocations, eventFrom, eventTo)
+        ? dailyAllocationsToPeriod(
+            studyAlloc.studyTimeDetails.dailyAllocations,
+            eventFrom,
+            eventTo,
+          )
         : null;
 
       return {

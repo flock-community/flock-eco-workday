@@ -1,4 +1,10 @@
-import React, {useState} from 'react';
+import {
+  AccessTime,
+  Euro,
+  Event,
+  ExpandMore,
+  OpenInNew,
+} from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
@@ -9,19 +15,14 @@ import {
   Grid,
   Typography,
 } from '@mui/material';
-import {
-  AccessTime,
-  Euro,
-  Event,
-  ExpandMore,
-  OpenInNew,
-} from '@mui/icons-material';
-import type {BudgetAllocation} from '../../wirespec/model';
-import dayjs from 'dayjs';
+import Link from '@mui/material/Link';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import Link from '@mui/material/Link';
-import {PeriodInput} from '../../components/inputs/PeriodInput';
+import dayjs from 'dayjs';
+import type React from 'react';
+import { useState } from 'react';
+import { PeriodInput } from '../../components/inputs/PeriodInput';
+import type { BudgetAllocation } from '../../wirespec/model';
 
 interface EventAllocationListItemProps {
   eventCode: string;
@@ -54,13 +55,15 @@ const findDays = (allocation: BudgetAllocation): number[] => {
   return daysArray;
 };
 
-const getDateRange = (allocation: BudgetAllocation): {from: dayjs.Dayjs; to: dayjs.Dayjs} => {
+const getDateRange = (
+  allocation: BudgetAllocation,
+): { from: dayjs.Dayjs; to: dayjs.Dayjs } => {
   const dailyAllocations =
     allocation.hackTimeDetails?.dailyAllocations ??
     allocation.studyTimeDetails?.dailyAllocations ??
     [];
   if (dailyAllocations.length === 0) {
-    return {from: dayjs(allocation.date), to: dayjs(allocation.date)};
+    return { from: dayjs(allocation.date), to: dayjs(allocation.date) };
   }
   const dates = dailyAllocations.map((d) => dayjs(d.date));
   return {
@@ -80,24 +83,24 @@ const getAccordion = (
   allocation: BudgetAllocation,
 ) => {
   const id = allocation.id ?? allocation.date;
-  const {from, to} = getDateRange(allocation);
+  const { from, to } = getDateRange(allocation);
 
   return (
     <Accordion
       expanded={expanded[id] ?? false}
       onChange={(_, isExpanded) =>
-        setExpanded((old) => ({...old, [id]: isExpanded}))
+        setExpanded((old) => ({ ...old, [id]: isExpanded }))
       }
-      sx={{br: 0, m: 0}}
+      sx={{ br: 0, m: 0 }}
     >
       <AccordionSummary
         expandIcon={<ExpandMore />}
         sx={{
           bgcolor: 'action.hover',
-          '&:hover': {bgcolor: 'action.selected'},
+          '&:hover': { bgcolor: 'action.selected' },
         }}
       >
-        <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <AccessTime fontSize="small" color="action" />
           <Typography variant="subtitle1" fontWeight="medium">
             {allocation.type === 'STUDY_TIME' ? 'Study Time' : 'Hack Time'}:{' '}
@@ -138,16 +141,24 @@ export function EventAllocationListItem({
   const isSingleDay = dateFrom === dateTo;
 
   return (
-    <Grid size={{xs: 12}}>
+    <Grid size={{ xs: 12 }}>
       <Card>
         <CardHeader
           title={
             <>
-              <Event sx={{mt: 0.5, mr: 2}} />
+              <Event sx={{ mt: 0.5, mr: 2 }} />
               {isAdmin ? (
-                <Link href={`/event?code=${eventCode}`} underline="hover" sx={{display: 'inline-flex', alignItems: 'center', gap: 0.5}}>
+                <Link
+                  href={`/event?code=${eventCode}`}
+                  underline="hover"
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                  }}
+                >
                   {eventName}
-                  <OpenInNew sx={{fontSize: 16}} />
+                  <OpenInNew sx={{ fontSize: 16 }} />
                 </Link>
               ) : (
                 eventName
@@ -167,26 +178,40 @@ export function EventAllocationListItem({
         <List>
           {allocations
             .toSorted((a, b) => {
-              const typeOrder: Record<string, number> = {HACK_TIME: 0, STUDY_TIME: 1, STUDY_MONEY: 2};
+              const typeOrder: Record<string, number> = {
+                HACK_TIME: 0,
+                STUDY_TIME: 1,
+                STUDY_MONEY: 2,
+              };
               return (typeOrder[a.type] ?? 99) - (typeOrder[b.type] ?? 99);
             })
             .map((allocation) => (
-              <ListItem key={allocation.id ?? `${allocation.type}-${allocation.date}`}>
-                <Grid container spacing={1} size={{xs: 12}}>
-                  {(allocation.type === 'STUDY_TIME' || allocation.type === 'HACK_TIME') &&
+              <ListItem
+                key={allocation.id ?? `${allocation.type}-${allocation.date}`}
+              >
+                <Grid container spacing={1} size={{ xs: 12 }}>
+                  {(allocation.type === 'STUDY_TIME' ||
+                    allocation.type === 'HACK_TIME') &&
                     getAccordion(expanded, setExpanded, allocation)}
                   {allocation.type === 'STUDY_MONEY' && (
                     <Grid>
-                      <Grid size={{xs: 12}} sx={{pl:1,
-                      }}>
-
-                      <Box sx={{m: 1, display: 'flex', alignItems: 'center', gap: 1}}>
-                        <Euro fontSize="small" color="action" />
-                        <Typography variant="subtitle1" fontWeight="medium">
-                          Study Money:{'  '}€{''}
-                          {(allocation.studyMoneyDetails?.amount ?? 0).toLocaleString('nl-NL')}
-                        </Typography>
-                      </Box>
+                      <Grid size={{ xs: 12 }} sx={{ pl: 1 }}>
+                        <Box
+                          sx={{
+                            m: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                          }}
+                        >
+                          <Euro fontSize="small" color="action" />
+                          <Typography variant="subtitle1" fontWeight="medium">
+                            Study Money:{'  '}€{''}
+                            {(
+                              allocation.studyMoneyDetails?.amount ?? 0
+                            ).toLocaleString('nl-NL')}
+                          </Typography>
+                        </Box>
                       </Grid>
                     </Grid>
                   )}

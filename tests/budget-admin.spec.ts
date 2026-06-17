@@ -16,21 +16,21 @@
 //   (e.g., 2500 -> "€2.500", 350 -> "€350", 0 -> "€0")
 //   StudyMoneyAllocationListItem renders amounts with 2 decimal places
 //   (e.g., 350 -> "€350,00")
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import {
   Given_I_am_on_budget_tab_for_person,
+  readCardUsedValue,
+  Then_allocation_list_contains,
+  Then_allocation_list_does_not_contain,
+  Then_money_used_changed_by,
   Then_summary_card_shows,
   When_I_click_add_study_money,
-  When_I_fill_study_money_form,
   When_I_click_create_button,
-  Then_allocation_list_contains,
-  When_I_delete_allocation,
-  Then_allocation_list_does_not_contain,
-  When_I_edit_allocation,
-  When_I_update_study_money_amount,
   When_I_click_save_button,
-  readCardUsedValue,
-  Then_money_used_changed_by,
+  When_I_delete_allocation,
+  When_I_edit_allocation,
+  When_I_fill_study_money_form,
+  When_I_update_study_money_amount,
 } from './steps/budgetSteps';
 
 test.describe('Budget Admin - View and Create', () => {
@@ -59,7 +59,9 @@ test.describe('Budget Admin - View and Create', () => {
     await Then_summary_card_shows(page, 'Study Money', null, '€5.000', null);
   });
 
-  test('BMGT-02: Create standalone study money allocation', async ({ page }) => {
+  test('BMGT-02: Create standalone study money allocation', async ({
+    page,
+  }) => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
 
     const baselineUsed = await readCardUsedValue(page, 'Study Money');
@@ -76,9 +78,19 @@ test.describe('Budget Admin - View and Create', () => {
 
     await When_I_click_create_button(page);
 
-    await Then_allocation_list_contains(page, 'Playwright test course', '350,00');
+    await Then_allocation_list_contains(
+      page,
+      'Playwright test course',
+      '350,00',
+    );
 
-    await Then_money_used_changed_by(page, 'Study Money', baselineUsed, 350, '€5.000');
+    await Then_money_used_changed_by(
+      page,
+      'Study Money',
+      baselineUsed,
+      350,
+      '€5.000',
+    );
   });
 });
 
@@ -109,7 +121,11 @@ test.describe('Budget Admin - Edit and Delete', () => {
     const baselineUsed = await readCardUsedValue(page, 'Study Money');
 
     // Allocation created by BMGT-02 (amount=350) must be present before editing.
-    await Then_allocation_list_contains(page, 'Playwright test course', '350,00');
+    await Then_allocation_list_contains(
+      page,
+      'Playwright test course',
+      '350,00',
+    );
 
     await When_I_edit_allocation(page, 'Playwright test course');
 
@@ -117,38 +133,42 @@ test.describe('Budget Admin - Edit and Delete', () => {
 
     await When_I_click_save_button(page);
 
-    await Then_allocation_list_contains(page, 'Playwright test course', '500,00');
+    await Then_allocation_list_contains(
+      page,
+      'Playwright test course',
+      '500,00',
+    );
 
     // used increases by €150 (500-350)
-    await Then_money_used_changed_by(page, 'Study Money', baselineUsed, 150, '€5.000');
+    await Then_money_used_changed_by(
+      page,
+      'Study Money',
+      baselineUsed,
+      150,
+      '€5.000',
+    );
   });
 
   // BMGT-04: Edit study time allocation
   // Pino has no standalone study time allocations in dev data.
   // Study time allocations are created via events and are event-linked;
   // event allocations have no edit/delete buttons by design.
-  test.fixme(
-    'BMGT-04: Edit study time allocation',
-    async ({ page }) => {
-      // Skipped: No standalone study time allocations exist for pino in dev data.
-      // Study time for pino comes only from event-linked allocations (e.g., "Hack Day - March"),
-      // which are managed from the Events page and do not expose edit buttons.
-      await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
-    },
-  );
+  test.fixme('BMGT-04: Edit study time allocation', async ({ page }) => {
+    // Skipped: No standalone study time allocations exist for pino in dev data.
+    // Study time for pino comes only from event-linked allocations (e.g., "Hack Day - March"),
+    // which are managed from the Events page and do not expose edit buttons.
+    await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
+  });
 
   // BMGT-05: Edit hack time allocation
   // Pino's hack time is event-linked ("Hack Day - March").
   // Event allocations are managed from the Events page and do not expose edit buttons.
-  test.fixme(
-    'BMGT-05: Edit hack time allocation',
-    async ({ page }) => {
-      // Skipped: Pino's hack time allocation is event-linked (eventCode set).
-      // Event allocations are grouped under EventAllocationListItem which has no edit/delete buttons.
-      // To edit event-linked allocations, navigate to the Events page.
-      await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
-    },
-  );
+  test.fixme('BMGT-05: Edit hack time allocation', async ({ page }) => {
+    // Skipped: Pino's hack time allocation is event-linked (eventCode set).
+    // Event allocations are grouped under EventAllocationListItem which has no edit/delete buttons.
+    // To edit event-linked allocations, navigate to the Events page.
+    await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
+  });
 
   // BMGT-06: Delete study money allocation
   // onDelete IS wired in BudgetAllocationFeature, so the delete flow is fully functional.
@@ -159,14 +179,24 @@ test.describe('Budget Admin - Edit and Delete', () => {
     const baselineUsed = await readCardUsedValue(page, 'Study Money');
 
     // After BMGT-03 edit the amount is 500 (was 350 from BMGT-02).
-    await Then_allocation_list_contains(page, 'Playwright test course', '500,00');
+    await Then_allocation_list_contains(
+      page,
+      'Playwright test course',
+      '500,00',
+    );
 
     await When_I_delete_allocation(page, 'Playwright test course');
 
     await Then_allocation_list_does_not_contain(page, 'Playwright test course');
 
     // used decreases by €500 (the deleted allocation's amount)
-    await Then_money_used_changed_by(page, 'Study Money', baselineUsed, -500, '€5.000');
+    await Then_money_used_changed_by(
+      page,
+      'Study Money',
+      baselineUsed,
+      -500,
+      '€5.000',
+    );
   });
 });
 
@@ -190,26 +220,37 @@ test.describe('Budget Admin - List UX', () => {
   // EventAllocationListItem derives eventName from allocations[0].description.
   // The test verifies the card header contains text that looks like a name
   // (has spaces or mixed case) rather than an all-caps/underscore code.
-  test('LIST-01: Event allocation card shows event name not raw event code', async ({ page }) => {
+  test('LIST-01: Event allocation card shows event name not raw event code', async ({
+    page,
+  }) => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
 
     await expect(page.getByText('Budget Allocations')).toBeVisible();
 
     // Pino has event-linked hack time allocations from dev data; the event name
     // comes from allocations[0].description.
-    const allocationSection = page.locator('.MuiPaper-root').filter({ hasText: 'Budget Allocations' });
+    const allocationSection = page
+      .locator('.MuiPaper-root')
+      .filter({ hasText: 'Budget Allocations' });
     await expect(allocationSection).toBeVisible();
 
     // Event cards render an Event icon, so filter on EventIcon.
-    const eventCards = allocationSection.locator('.MuiCard-root').filter({ has: page.locator('svg[data-testid="EventIcon"]') });
+    const eventCards = allocationSection
+      .locator('.MuiCard-root')
+      .filter({ has: page.locator('svg[data-testid="EventIcon"]') });
     await expect(eventCards.first()).toBeVisible({ timeout: 10000 });
 
-    const headerText = await eventCards.first().locator('.MuiCardHeader-title').textContent();
+    const headerText = await eventCards
+      .first()
+      .locator('.MuiCardHeader-title')
+      .textContent();
     const cleanedHeader = (headerText ?? '').replace(/\s+/g, ' ').trim();
 
     // A raw event code looks like "HACKDAY_2026_03" — all-uppercase with underscores/hyphens, no spaces.
     // A human-readable name contains spaces or mixed case.
-    const looksLikeRawCode = /^[A-Z0-9_\-]+$/.test(cleanedHeader.replace(/\s/g, ''));
+    const looksLikeRawCode = /^[A-Z0-9_-]+$/.test(
+      cleanedHeader.replace(/\s/g, ''),
+    );
     if (looksLikeRawCode && !cleanedHeader.includes(' ')) {
       throw new Error(
         `LIST-01 FAILED: Event allocation header shows raw code "${cleanedHeader}" instead of a human-readable event name`,
@@ -222,15 +263,21 @@ test.describe('Budget Admin - List UX', () => {
   // LIST-02: Admin clicking the event allocation link navigates to /event?code={eventCode}.
   // EventAllocationListItem renders <Link href={`/event?code=${eventCode}`}> for isAdmin=true.
   // The test clicks the link and verifies the URL contains /event?code=.
-  test('LIST-02: Admin clicking event allocation link navigates to /event?code=', async ({ page }) => {
+  test('LIST-02: Admin clicking event allocation link navigates to /event?code=', async ({
+    page,
+  }) => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
 
     await expect(page.getByText('Budget Allocations')).toBeVisible();
 
-    const allocationSection = page.locator('.MuiPaper-root').filter({ hasText: 'Budget Allocations' });
+    const allocationSection = page
+      .locator('.MuiPaper-root')
+      .filter({ hasText: 'Budget Allocations' });
 
     // For admin users EventAllocationListItem renders a MUI Link with href="/event?code=...".
-    const eventLink = allocationSection.locator('a[href*="/event?code="]').first();
+    const eventLink = allocationSection
+      .locator('a[href*="/event?code="]')
+      .first();
     await expect(eventLink).toBeVisible({ timeout: 10000 });
 
     const href = await eventLink.getAttribute('href');
@@ -246,7 +293,9 @@ test.describe('Budget Admin - List UX', () => {
   // LIST-03: Four filter chips (All / Hack Hours / Study Hours / Study Money) are present
   // and toggling them filters the allocation list.
   // Chips are rendered in BudgetAllocationFeature only when allocations.length > 0.
-  test('LIST-03: Filter chips are present and toggle the allocation list', async ({ page }) => {
+  test('LIST-03: Filter chips are present and toggle the allocation list', async ({
+    page,
+  }) => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
 
     await expect(page.getByText('Budget Allocations')).toBeVisible();
@@ -261,7 +310,9 @@ test.describe('Budget Admin - List UX', () => {
     await expect(studyHoursChip).toBeVisible();
     await expect(studyMoneyChip).toBeVisible();
 
-    const allocationSection = page.locator('.MuiPaper-root').filter({ hasText: 'Budget Allocations' });
+    const allocationSection = page
+      .locator('.MuiPaper-root')
+      .filter({ hasText: 'Budget Allocations' });
     const allItemsBefore = allocationSection.locator('.MuiCard-root');
     const totalCount = await allItemsBefore.count();
     expect(totalCount).toBeGreaterThan(0);

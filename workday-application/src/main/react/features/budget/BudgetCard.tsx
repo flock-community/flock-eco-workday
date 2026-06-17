@@ -1,13 +1,13 @@
-import React from 'react';
 import {
+  Box,
   Card,
   CardContent,
-  Typography,
-  Box,
   LinearProgress,
   Stack,
+  Typography,
 } from '@mui/material';
-import type {BudgetItem} from '../../wirespec/model';
+import React from 'react';
+import type { BudgetItem } from '../../wirespec/model';
 
 interface BudgetCardProps {
   title: string;
@@ -32,7 +32,7 @@ export function BudgetCard({
   budgetItem,
   unit,
 }: Readonly<BudgetCardProps>) {
-  const {budget, used, available} = budgetItem;
+  const { budget, used, available } = budgetItem;
   const percentage = budget > 0 ? (used / budget) * 100 : 100;
   const isOverBudget = available < 0;
   const statusColor = getStatusColor(percentage, isOverBudget);
@@ -66,7 +66,7 @@ export function BudgetCard({
               variant="h4"
               fontWeight="bold"
               color={isOverBudget ? 'error.main' : 'success.main'}
-              sx={{lineHeight: 1.2}}
+              sx={{ lineHeight: 1.2 }}
             >
               {formatValue(available)}
             </Typography>
@@ -108,7 +108,7 @@ export function BudgetCard({
             <Typography
               variant="caption"
               color={isOverBudget ? 'error' : 'text.secondary'}
-              sx={{mt: 0.5, display: 'block', textAlign: 'right'}}
+              sx={{ mt: 0.5, display: 'block', textAlign: 'right' }}
             >
               {percentage.toFixed(0)}% used
               {isOverBudget && ' (over budget!)'}
