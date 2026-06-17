@@ -12,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { useChartColors } from '../../theme/chartColors';
 
 type HoursOverviewCardProps = {
   totalPerPersonMe: any;
@@ -20,6 +21,7 @@ type HoursOverviewCardProps = {
 export function HoursOverviewCard({
   totalPerPersonMe,
 }: HoursOverviewCardProps) {
+  const colors = useChartColors();
   const data = useMemo(() => {
     if (!totalPerPersonMe) return [];
 
@@ -85,49 +87,49 @@ export function HoursOverviewCard({
               stackId="days"
               dataKey="workDays"
               name="worked hours"
-              fill="#1de8b5"
+              fill={colors.worked}
             />
             <Bar
               stackId="days"
               dataKey="leaveDayUsed"
               name="leave hours"
-              fill="#42a5f5"
+              fill={colors.leave}
             />
             <Bar
               stackId="days"
               dataKey="paidLeaveHours"
               name="paid leave"
-              fill="#AB47BC"
+              fill={colors.paidLeave}
             />
             <Bar
               stackId="days"
               dataKey="paidParentalLeaveUsed"
               name="paid parental leave"
-              fill="#FFB6C1"
+              fill={colors.paidParentalLeave}
             />
             <Bar
               stackId="days"
               dataKey="unpaidParentalLeaveUsed"
               name="unpaid parental leave"
-              fill="#87CEFA"
+              fill={colors.unpaidParentalLeave}
             />
             <Bar
               stackId="days"
               dataKey="sickDays"
               name="sick hours"
-              fill="#ef5350"
+              fill={colors.sick}
             />
             <Bar
               stackId="days"
               dataKey="event"
               name="event hours"
-              fill="#fed766"
+              fill={colors.event}
             />
             <Bar
               stackId="days"
               dataKey="missing"
               name="missing hours"
-              fill="#9e9e9e"
+              fill={colors.missing}
             />
           </BarChart>
         </ResponsiveContainer>
