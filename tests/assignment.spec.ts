@@ -68,9 +68,7 @@ test.describe('Assignment CRUD Operations', () => {
     ).not.toBeVisible();
 
     await expect(
-      page
-        .getByRole('heading', { name: `Client B - ${roleName}` })
-        .first(),
+      page.getByRole('heading', { name: `Client B - ${roleName}` }).first(),
     ).toBeVisible({ timeout: 30000 });
     await expect(page.getByText('Hourly rate: 120').first()).toBeVisible();
     await expect(page.getByText('Hours per week: 40').first()).toBeVisible();
@@ -131,9 +129,7 @@ test.describe('Assignment CRUD Operations', () => {
     ).not.toBeVisible();
 
     await expect(
-      page
-        .getByRole('heading', { name: `Client A - ${updatedRole}` })
-        .first(),
+      page.getByRole('heading', { name: `Client A - ${updatedRole}` }).first(),
     ).toBeVisible({ timeout: 30000 });
     await expect(page.getByText('Hourly rate: 110').first()).toBeVisible();
   });
@@ -169,9 +165,7 @@ test.describe('Assignment CRUD Operations', () => {
     ).not.toBeVisible();
 
     await expect(
-      page
-        .getByRole('heading', { name: `Client D - ${roleName}` })
-        .first(),
+      page.getByRole('heading', { name: `Client D - ${roleName}` }).first(),
     ).toBeVisible({ timeout: 30000 });
 
     await page

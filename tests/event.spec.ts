@@ -43,7 +43,9 @@ test.describe('Event CRUD Operations', () => {
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
 
-    await expect(page.getByText(description).first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText(description).first()).toBeVisible({
+      timeout: 30000,
+    });
   });
 
   test('should update an existing event', async ({ page }) => {
@@ -72,7 +74,9 @@ test.describe('Event CRUD Operations', () => {
 
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(page.getByText(description).first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText(description).first()).toBeVisible({
+      timeout: 30000,
+    });
 
     await page.getByText(description).first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
@@ -83,7 +87,9 @@ test.describe('Event CRUD Operations', () => {
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
 
-    await expect(page.getByText(updatedDescription).first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText(updatedDescription).first()).toBeVisible({
+      timeout: 30000,
+    });
   });
 
   test('should delete an event', async ({ page }) => {
@@ -111,7 +117,9 @@ test.describe('Event CRUD Operations', () => {
 
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(page.getByText(description).first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText(description).first()).toBeVisible({
+      timeout: 30000,
+    });
 
     await page.getByText(description).first().click();
     await expect(page.getByRole('dialog')).toBeVisible();

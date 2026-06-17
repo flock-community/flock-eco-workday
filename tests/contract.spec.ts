@@ -49,7 +49,9 @@ test.describe('Contract CRUD Operations', () => {
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
 
-    await expect(page.getByText('Monthly salary: 5000').first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText('Monthly salary: 5000').first()).toBeVisible({
+      timeout: 30000,
+    });
   });
 
   test('should update an existing contract', async ({ page }) => {
@@ -72,7 +74,9 @@ test.describe('Contract CRUD Operations', () => {
 
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(page.getByText('Monthly salary: 4500').first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText('Monthly salary: 4500').first()).toBeVisible({
+      timeout: 30000,
+    });
 
     await page.getByText('Monthly salary: 4500').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
@@ -83,7 +87,9 @@ test.describe('Contract CRUD Operations', () => {
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
 
-    await expect(page.getByText('Monthly salary: 6000').first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText('Monthly salary: 6000').first()).toBeVisible({
+      timeout: 30000,
+    });
   });
 
   test('should delete a contract', async ({ page }) => {
@@ -106,7 +112,9 @@ test.describe('Contract CRUD Operations', () => {
 
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(page.getByText('Monthly salary: 3500').first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText('Monthly salary: 3500').first()).toBeVisible({
+      timeout: 30000,
+    });
 
     await page.getByText('Monthly salary: 3500').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();

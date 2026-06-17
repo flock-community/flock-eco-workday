@@ -86,6 +86,8 @@ test.describe('Client CRUD Operations', () => {
 
     // Verify gone
     await page.waitForLoadState('networkidle');
-    await expect(page.getByRole('heading', { name: clientName })).not.toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: clientName }),
+    ).not.toBeVisible();
   });
 });
