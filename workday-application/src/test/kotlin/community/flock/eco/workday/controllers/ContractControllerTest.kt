@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class ContractControllerTest(
@@ -74,6 +75,50 @@ class ContractControllerTest(
             .andExpect(jsonPath("$.from").value(form.from.toString()))
             .andExpect(jsonPath("$.to").value(form.to.toString()))
             .andExpect(jsonPath("$.person.uuid").value(person.uuid.toString()))
+    }
+
+    @Test
+    fun `GET should return the study budget of an internal contract`() {
+        val adminUser = createHelper.createUserEntity(adminAuthorities)
+        val person = createHelper.createPersonEntity()
+
+        val form =
+            ContractInternalForm(
+                personId = person.uuid,
+                monthlySalary = 5000.0,
+                hoursPerWeek = 40,
+                from = LocalDate.of(2024, 1, 1),
+                to = LocalDate.of(2024, 12, 31),
+                holidayHours = 192,
+                hackHours = 160,
+                billable = true,
+                studyHours = 180,
+                studyMoney = BigDecimal("3200.00"),
+            )
+
+        val created =
+            mvc
+                .perform(
+                    post("/api/contracts-internal")
+                        .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                        .content(mapper.writeValueAsString(form))
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON),
+                ).asyncDispatch()
+                .andExpect(status().isOk)
+                .andReturn()
+        val code = mapper.readTree(created.response.contentAsString)["code"].asText()
+
+        mvc
+            .perform(
+                get("$baseUrl/$code")
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(jsonPath("$.studyHours").value(180))
+            .andExpect(jsonPath("$.studyMoney").value(3200.0))
     }
 
     @Test
