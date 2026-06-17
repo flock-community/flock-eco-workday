@@ -42,10 +42,8 @@ const Root = styled('div')(({ theme }) => ({
   },
 
   [`& .${classes.buttonDone}`]: {
-    // @ts-expect-error
     backgroundColor: theme.palette.done,
     '&:disabled': {
-      // @ts-expect-error
       backgroundColor: theme.palette.done,
     },
   },

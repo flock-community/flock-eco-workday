@@ -1,4 +1,4 @@
-import { Box, ThemeProvider } from '@mui/material';
+import { Box } from '@mui/material';
 import { StyledEngineProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -10,7 +10,7 @@ import { ErrorStack } from '../components/error/ErrorBarStack';
 import { LoginFeature } from '../features/login/LoginFeature';
 import { useError } from '../hooks/ErrorHook';
 import { useLoginStatus } from '../hooks/StatusHook';
-import { getTheme } from '../theme/theme';
+import { ColorModeProvider } from '../theme/ColorMode';
 import 'dayjs/locale/nl';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -19,8 +19,6 @@ const AuthenticatedApplication = React.lazy(() =>
     default: module.AuthenticatedApplication,
   })),
 );
-
-const theme = getTheme('light');
 
 export const Application = () => {
   const status = useLoginStatus();
@@ -42,7 +40,7 @@ export const Application = () => {
     <Router>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl">
         <StyledEngineProvider injectFirst>
-          <ThemeProvider theme={theme}>
+          <ColorModeProvider>
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
               onReset={() => {
@@ -59,7 +57,7 @@ export const Application = () => {
               )}
               <ErrorStack ErrorList={errors} />
             </ErrorBoundary>
-          </ThemeProvider>
+          </ColorModeProvider>
         </StyledEngineProvider>
       </LocalizationProvider>
     </Router>
