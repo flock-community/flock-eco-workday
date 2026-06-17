@@ -18,7 +18,6 @@ class WebMvcConfig : WebMvcConfigurer {
             .setCacheControl(CacheControl.empty().mustRevalidate())
             .setEtagGenerator { resource ->
                 etagCache.computeIfAbsent(resource.file.path) {
-                    println("Computing cache for ${resource.file.path}. etag: ${resource.contentAsByteArray.contentHashCode()}")
                     resource.contentAsByteArray.contentHashCode().toString()
                 }
             }.resourceChain(true)
