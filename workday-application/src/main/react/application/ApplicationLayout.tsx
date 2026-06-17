@@ -1,6 +1,6 @@
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from '@mui/material';
+import { Box, Link } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
@@ -15,6 +15,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 // Hooks
 import { useSession } from '../hooks/SessionHook';
+import { ColorModeToggle } from '../theme/ColorModeToggle';
 
 const PREFIX = 'ApplicationLayout';
 
@@ -85,15 +86,35 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
             <MenuIcon />
           </IconButton>
           <Link
-            variant="h6"
             color="inherit"
             className={classes.grow}
             underline="none"
             component={RouterLink}
             to="/"
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'baseline',
+              gap: '0.3rem',
+              fontSize: '1.2rem',
+              letterSpacing: '-0.01em',
+            }}
           >
-            Flock. Workday
+            <Box
+              component="span"
+              sx={{
+                fontWeight: 800,
+                color: (t) =>
+                  t.palette.mode === 'dark' ? 'primary.main' : 'inherit',
+              }}
+            >
+              Flock.
+            </Box>{' '}
+            <Box component="span" sx={{ fontWeight: 400, opacity: 0.85 }}>
+              Workday
+            </Box>
           </Link>
+
+          <ColorModeToggle edge={false} sx={{ mr: 0.5 }} />
 
           <div>
             <IconButton

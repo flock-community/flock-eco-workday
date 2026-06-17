@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: db.changelog-028-contract-internal-training-budget
-      author: claude-opus-4.6
+      author: rkorver
       changes:
         - addColumn:
             tableName: contract_internal

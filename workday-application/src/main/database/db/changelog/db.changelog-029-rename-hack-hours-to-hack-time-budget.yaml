@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: db.changelog-030-rename-hack-hours-to-hack-time-budget
-      author: claude-opus-4.8
+      id: db.changelog-029-rename-hack-hours-to-hack-time-budget
+      author: rkorver
       changes:
         - renameColumn:
             tableName: contract_internal

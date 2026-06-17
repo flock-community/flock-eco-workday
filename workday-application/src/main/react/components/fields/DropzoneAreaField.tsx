@@ -105,9 +105,9 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
     const progressStyle = {
       height: 250,
       border: 'dashed',
-      borderColor: '#C8C8C8',
+      borderColor: 'rgba(128, 128, 128, 0.4)',
       borderWidth: 3,
-      backgroundColor: '#F0F0F0',
+      backgroundColor: 'rgba(128, 128, 128, 0.08)',
     };
     const renderProgress = () => (
       <Grid container alignItems="center" style={progressStyle}>

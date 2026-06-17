@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: db.changelog-029-event-default-time-allocation-type
+      id: db.changelog-030-event-default-time-allocation-type
       author: claude-opus-4.6
       changes:
         - addColumn:

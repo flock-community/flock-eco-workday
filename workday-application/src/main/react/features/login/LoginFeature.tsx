@@ -1,9 +1,10 @@
 import { Box, Card, CardContent, CardHeader, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { useLoginType } from '../../hooks/LoginTypeHook';
+import { ColorModeToggle } from '../../theme/ColorModeToggle';
 
 const PREFIX = 'LoginFeature';
 
@@ -22,9 +23,13 @@ const classes = {
 
 const StyledBox = styled(Box)(({ theme }) => ({
   [`&.${classes.root}`]: {
+    position: 'relative',
     width: '100%',
     minHeight: '100vh',
-    backgroundImage: `linear-gradient(to bottom, white, ${theme.palette.primary.main})`,
+    backgroundImage: `linear-gradient(180deg, ${theme.palette.background.default} 0%, ${theme.palette.background.default} 38%, ${alpha(
+      theme.palette.primary.main,
+      theme.palette.mode === 'dark' ? 0.26 : 0.55,
+    )} 100%)`,
   },
 
   [`& .${classes.background}`]: {
@@ -78,6 +83,10 @@ const StyledBox = styled(Box)(({ theme }) => ({
     maxWidth: '600px',
   },
 
+  [`& .${classes.logo} img`]: {
+    filter: theme.palette.mode === 'dark' ? 'brightness(0) invert(1)' : 'none',
+  },
+
   [`& .${classes.flock}`]: {
     fontFamily: 'monospace',
     marginTop: '1rem',
@@ -101,6 +110,7 @@ export function LoginFeature() {
 
   return (
     <StyledBox className={classes.root}>
+      <ColorModeToggle sx={{ position: 'absolute', top: 16, right: 16 }} />
       <Box className={classes.background}>
         <Box className={classes.loginContent}>
           <Box className={classes.logo}>

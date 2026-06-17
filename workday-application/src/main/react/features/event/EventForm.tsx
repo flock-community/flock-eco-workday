@@ -59,80 +59,72 @@ export function EventFormFields({
   };
 
   return (
-    <Form id={EVENT_FORM_ID}>
-      <Grid container spacing={1}>
-        <Grid size={{ xs: 12 }}>
-          <Field
-            name="description"
-            type="text"
-            label="Description"
-            fullWidth
-            component={TextField}
-          />
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <Field
-            name="budget"
-            type="number"
-            label="Budget"
-            fullWidth
-            component={TextField}
-          />
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <PersonSelectorField name="personIds" multiple fullWidth />
-        </Grid>
-        <Grid size={{ xs: 12 }} style={{ marginTop: '1rem' }}>
-          <EventTypeSelect
-            value={values.type}
-            onChange={handleEventTypeChange}
-          />
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <FormControl fullWidth>
-            <InputLabel shrink id="default-time-allocation-type-label">
-              Default Time Allocation Type
-            </InputLabel>
-            <Select
-              labelId="default-time-allocation-type-label"
-              value={values.defaultTimeAllocationType || ''}
-              onChange={(e) =>
-                setFieldValue(
-                  'defaultTimeAllocationType',
-                  e.target.value || null,
-                )
-              }
-              label="Default Time Allocation Type"
-              displayEmpty={true}
-            >
-              <MenuItem value="">
-                <em>None (no time tracking)</em>
-              </MenuItem>
-              <MenuItem value={EventBudgetType.TRAINING}>
-                Training Time (deducts from training hours budget)
-              </MenuItem>
-              <MenuItem value={EventBudgetType.HACK}>
-                Hack Time (deducts from hack hours budget)
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid size={{ xs: 6 }}>
-          <DatePickerField name="from" label="From" maxDate={values.to} />
-        </Grid>
-        <Grid size={{ xs: 6 }}>
-          <DatePickerField name="to" label="To" minDate={values.from} />
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <PeriodInputField
-            name="days"
-            from={values.from}
-            to={values.to}
-            reset={resetHours}
-          />
-        </Grid>
+    <Grid container spacing={1}>
+      <Grid size={{ xs: 12 }}>
+        <Field
+          name="description"
+          type="text"
+          label="Description"
+          fullWidth
+          component={TextField}
+        />
       </Grid>
-    </Form>
+      <Grid size={{ xs: 12 }}>
+        <Field
+          name="budget"
+          type="number"
+          label="Budget"
+          fullWidth
+          component={TextField}
+        />
+      </Grid>
+      <Grid size={{ xs: 12 }}>
+        <PersonSelectorField name="personIds" multiple fullWidth />
+      </Grid>
+      <Grid size={{ xs: 12 }} style={{ marginTop: '1rem' }}>
+        <EventTypeSelect value={values.type} onChange={handleEventTypeChange} />
+      </Grid>
+      <Grid size={{ xs: 12 }}>
+        <FormControl fullWidth>
+          <InputLabel shrink id="default-time-allocation-type-label">
+            Default Time Allocation Type
+          </InputLabel>
+          <Select
+            labelId="default-time-allocation-type-label"
+            value={values.defaultTimeAllocationType || ''}
+            onChange={(e) =>
+              setFieldValue('defaultTimeAllocationType', e.target.value || null)
+            }
+            label="Default Time Allocation Type"
+            displayEmpty={true}
+          >
+            <MenuItem value="">
+              <em>None (no time tracking)</em>
+            </MenuItem>
+            <MenuItem value={EventBudgetType.TRAINING}>
+              Training Time (deducts from training hours budget)
+            </MenuItem>
+            <MenuItem value={EventBudgetType.HACK}>
+              Hack Time (deducts from hack hours budget)
+            </MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
+      <Grid size={{ xs: 6 }}>
+        <DatePickerField name="from" label="From" maxDate={values.to} />
+      </Grid>
+      <Grid size={{ xs: 6 }}>
+        <DatePickerField name="to" label="To" minDate={values.from} />
+      </Grid>
+      <Grid size={{ xs: 12 }}>
+        <PeriodInputField
+          name="days"
+          from={values.from}
+          to={values.to}
+          reset={resetHours}
+        />
+      </Grid>
+    </Grid>
   );
 }
 
@@ -160,7 +152,9 @@ export function EventForm({ value, onSubmit }: EventFormProps) {
         validationSchema={eventFormSchema}
       >
         {({ values, setFieldValue }) => (
-          <EventFormFields values={values} setFieldValue={setFieldValue} />
+          <Form id={EVENT_FORM_ID}>
+            <EventFormFields values={values} setFieldValue={setFieldValue} />
+          </Form>
         )}
       </Formik>
     )

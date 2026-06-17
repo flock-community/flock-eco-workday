@@ -45,13 +45,15 @@ const Root = styled('div')(() => ({
   },
 
   [`& .${classes.hoursLeft}`]: {
-    fontSize: 'clamp(6rem, 25cqw, 11rem)',
+    fontSize: 'clamp(2.5rem, 12cqw, 4.5rem)',
+    fontWeight: 700,
+    lineHeight: 1.1,
     position: 'relative',
     textAlign: 'center',
     zIndex: 2,
-    marginInline: '2.5rem',
+    marginInline: '1.25rem',
     '@container (max-width: 500px)': {
-      fontSize: 'clamp(6rem, 40cqw, 9rem)',
+      fontSize: 'clamp(2.5rem, 16cqw, 3.5rem)',
     },
   },
 }));
@@ -85,7 +87,7 @@ export function HackdayCard({ refreshKey }: HackdayCardProps) {
 
   return (
     <Root>
-      <Card variant="outlined" style={{ borderRadius: 0 }}>
+      <Card variant="outlined">
         <CardHeader
           title="Hack days"
           action={

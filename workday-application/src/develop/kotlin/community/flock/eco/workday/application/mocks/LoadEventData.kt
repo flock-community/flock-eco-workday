@@ -103,6 +103,11 @@ class LoadEventData(
     private fun hackDays(loadPersonData: LoadPersonData): List<EventForm> {
         val hackDays = mutableListOf<EventForm>()
         repeat(20) { i ->
+            // Half attendance keeps a realistic hack-budget remainder, not exactly zero.
+            val attendees =
+                loadPersonData.data
+                    .filterIndexed { personIdx, _ -> (i + personIdx) % 2 == 0 }
+                    .map { it.uuid }
             hackDays.add(
                 EventForm(
                     description = "Flock. Hack Day",
@@ -110,7 +115,7 @@ class LoadEventData(
                     to = LocalDate.of(now.year, i % 12 + 1, (i % 2 + 1) * 14),
                     days = mutableListOf(8.0),
                     hours = 8.0,
-                    personIds = loadPersonData.data.map { it.uuid },
+                    personIds = attendees,
                     budget = 750.0,
                     type = EventType.FLOCK_HACK_DAY,
                 ),

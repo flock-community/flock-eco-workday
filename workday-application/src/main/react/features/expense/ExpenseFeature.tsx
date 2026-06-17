@@ -46,8 +46,8 @@ export function ExpenseFeature({ person }: ExpenseFeatureProps) {
         <CardHeader
           title="Expenses"
           action={
-            <Button onClick={handleClickAdd}>
-              <AddIcon /> Add
+            <Button onClick={handleClickAdd} startIcon={<AddIcon />}>
+              Add
             </Button>
           }
         />

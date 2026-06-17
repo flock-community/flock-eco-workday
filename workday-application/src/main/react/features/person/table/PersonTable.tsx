@@ -45,7 +45,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   },
 
   [`& .${classes.link}`]: {
-    color: 'black',
+    color: theme.palette.text.primary,
     textDecoration: 'none',
   },
 }));

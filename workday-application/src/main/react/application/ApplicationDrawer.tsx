@@ -16,9 +16,11 @@ import MonthIcon from '@mui/icons-material/Schedule';
 import HolidayIcon from '@mui/icons-material/WbSunny';
 import WorkdayIcon from '@mui/icons-material/Work';
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { useUserMe } from '../hooks/UserMeHook';
 import ApplicationMenuItem from './ApplicationMenuItem';
 
@@ -30,17 +32,31 @@ const classes = {
   fullList: `${PREFIX}FullList`,
 };
 
-const StyledDrawer = styled(Drawer)({
+const DRAWER_WIDTH = 264;
+
+const StyledDrawer = styled(Drawer)(({ theme }) => ({
   [`& .${classes.head}`]: {
-    height: 60,
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: '0.3rem',
+    padding: theme.spacing(2.5, 2.5, 2),
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? theme.palette.background.paper
+        : theme.palette.primary.main,
+    color:
+      theme.palette.mode === 'dark'
+        ? theme.palette.text.primary
+        : theme.palette.primary.contrastText,
   },
   [`& .${classes.list}`]: {
-    width: 250,
+    width: DRAWER_WIDTH,
+    paddingBlock: theme.spacing(1),
   },
   [`& .${classes.fullList}`]: {
     width: 'auto',
   },
-});
+}));
 
 type ApplicationDrawerProps = {
   open: boolean;
@@ -198,7 +214,27 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
 
   return (
     <StyledDrawer open={open} onClose={handleClose}>
-      <div className={classes.head} />
+      <Box className={classes.head}>
+        <Typography
+          component="span"
+          sx={{
+            fontSize: '1.25rem',
+            fontWeight: 800,
+            letterSpacing: '-0.01em',
+            color: (t) =>
+              t.palette.mode === 'dark' ? 'primary.main' : 'inherit',
+          }}
+        >
+          Flock.
+        </Typography>
+        <Typography
+          component="span"
+          sx={{ fontSize: '1.25rem', fontWeight: 400, opacity: 0.85 }}
+        >
+          Workday
+        </Typography>
+      </Box>
+      <Divider />
       {sideList()}
     </StyledDrawer>
   );

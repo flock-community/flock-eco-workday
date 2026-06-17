@@ -157,7 +157,7 @@ export function ProfileFeature() {
             </Table>
           </TableContainer>
 
-          <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+          <Box sx={{ mt: 2, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
             <Typography variant="body2" color="textSecondary">
               Use your API key by including it in the Authorization header:
             </Typography>
@@ -224,7 +224,7 @@ export function ProfileFeature() {
               alignItems: 'center',
               gap: 1,
               p: 1.5,
-              bgcolor: 'grey.100',
+              bgcolor: 'action.selected',
               borderRadius: 1,
               fontFamily: 'monospace',
               wordBreak: 'break-all',
