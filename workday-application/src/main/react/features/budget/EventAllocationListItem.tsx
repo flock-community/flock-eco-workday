@@ -103,8 +103,10 @@ const getAccordion = (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <AccessTime fontSize="small" color="action" />
           <Typography variant="subtitle1" fontWeight="medium">
-            {allocation.type === 'TRAINING_TIME' ? 'Training Time' : 'Hack Time'}:{' '}
-            {getTotalHours(allocation)}h
+            {allocation.type === 'TRAINING_TIME'
+              ? 'Training Time'
+              : 'Hack Time'}
+            : {getTotalHours(allocation)}h
           </Typography>
         </Box>
       </AccordionSummary>

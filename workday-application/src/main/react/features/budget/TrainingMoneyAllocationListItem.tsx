@@ -28,7 +28,9 @@ export function TrainingMoneyAllocationListItem({
           title={
             <>
               <Description color="action" sx={{ mt: 0.5, mr: 2 }} />
-              {allocation.description ? allocation.description : 'Training Money'}
+              {allocation.description
+                ? allocation.description
+                : 'Training Money'}
             </>
           }
           subheader={

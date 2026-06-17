@@ -302,8 +302,12 @@ test.describe('Budget Admin - List UX', () => {
 
     const allChip = page.getByRole('button', { name: 'All' }).first();
     const hackChip = page.getByRole('button', { name: 'Hack Hours' });
-    const trainingHoursChip = page.getByRole('button', { name: 'Training Hours' });
-    const trainingMoneyChip = page.getByRole('button', { name: 'Training Money' });
+    const trainingHoursChip = page.getByRole('button', {
+      name: 'Training Hours',
+    });
+    const trainingMoneyChip = page.getByRole('button', {
+      name: 'Training Money',
+    });
 
     await expect(allChip).toBeVisible({ timeout: 10000 });
     await expect(hackChip).toBeVisible();

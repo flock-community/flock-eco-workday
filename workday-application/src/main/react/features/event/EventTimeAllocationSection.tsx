@@ -52,7 +52,9 @@ export function EventTimeAllocationSection({
   const eventTo = dayjs(eventDates[eventDates.length - 1]);
 
   const hasExceptions = (participant: PersonTimeAllocation): boolean => {
-    return participant.trainingPeriod !== null || participant.hackPeriod !== null;
+    return (
+      participant.trainingPeriod !== null || participant.hackPeriod !== null
+    );
   };
 
   const participantsWithExceptions = participants.filter(hasExceptions);
@@ -75,7 +77,8 @@ export function EventTimeAllocationSection({
 
         return {
           ...p,
-          trainingPeriod: defaultBudgetType === 'TRAINING' ? defaultPeriod : null,
+          trainingPeriod:
+            defaultBudgetType === 'TRAINING' ? defaultPeriod : null,
           hackPeriod: defaultBudgetType === 'HACK' ? defaultPeriod : null,
         };
       }
@@ -275,7 +278,11 @@ interface ParticipantTimeRowProps {
   validationErrors: string[];
   onAddCustomAllocation: () => void;
   onRemoveCustomAllocation: () => void;
-  onPeriodChange: (type: 'training' | 'hack', date: Dayjs, hours: number) => void;
+  onPeriodChange: (
+    type: 'training' | 'hack',
+    date: Dayjs,
+    hours: number,
+  ) => void;
 }
 
 function ParticipantTimeRow({
@@ -392,7 +399,9 @@ function ParticipantTimeRow({
             <Box sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 1 }}>
               <PeriodInput
                 period={getOrCreatePeriod('training')}
-                onChange={(date, hours) => onPeriodChange('training', date, hours)}
+                onChange={(date, hours) =>
+                  onPeriodChange('training', date, hours)
+                }
                 readonly={false}
               />
             </Box>

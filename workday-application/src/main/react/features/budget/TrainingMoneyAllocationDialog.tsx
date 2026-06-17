@@ -87,7 +87,10 @@ export function TrainingMoneyAllocationDialog({
       };
 
       if (editAllocation?.id) {
-        await BudgetAllocationClient.updateTrainingMoney(editAllocation.id, input);
+        await BudgetAllocationClient.updateTrainingMoney(
+          editAllocation.id,
+          input,
+        );
       } else {
         await BudgetAllocationClient.createTrainingMoney(input);
       }

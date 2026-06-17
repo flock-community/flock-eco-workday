@@ -277,7 +277,8 @@ export function EventBudgetManagementSection({
   const totalTimeAllocated = useMemo(
     () =>
       timeParticipants.reduce((sum, p) => {
-        const training = p.trainingPeriod?.days?.reduce((s, h) => s + h, 0) || 0;
+        const training =
+          p.trainingPeriod?.days?.reduce((s, h) => s + h, 0) || 0;
         const hack = p.hackPeriod?.days?.reduce((s, h) => s + h, 0) || 0;
         return sum + training + hack;
       }, 0),

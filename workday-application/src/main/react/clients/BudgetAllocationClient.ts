@@ -52,7 +52,9 @@ const createTrainingMoney = async (
     body: JSON.stringify(input),
   });
   if (!res.ok)
-    throw new Error(`Failed to create training money allocation: ${res.status}`);
+    throw new Error(
+      `Failed to create training money allocation: ${res.status}`,
+    );
   return res.json();
 };
 
@@ -120,7 +122,9 @@ const updateTrainingMoney = async (
     body: JSON.stringify(input),
   });
   if (!res.ok)
-    throw new Error(`Failed to update training money allocation: ${res.status}`);
+    throw new Error(
+      `Failed to update training money allocation: ${res.status}`,
+    );
   return res.json();
 };
 

@@ -84,7 +84,9 @@ export async function When_I_fill_training_money_form(
  */
 export async function When_I_click_create_button(page: Page) {
   await page.getByRole('button', { name: 'Create' }).click();
-  await expect(page.getByText('Add Training Money Allocation')).not.toBeVisible();
+  await expect(
+    page.getByText('Add Training Money Allocation'),
+  ).not.toBeVisible();
   await page.waitForLoadState('networkidle');
 }
 
@@ -236,7 +238,9 @@ export async function When_I_update_training_money_amount(
  */
 export async function When_I_click_save_button(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Save' }).click();
-  await expect(page.getByText('Edit Training Money Allocation')).not.toBeVisible();
+  await expect(
+    page.getByText('Edit Training Money Allocation'),
+  ).not.toBeVisible();
   await page.waitForLoadState('networkidle');
 }
 

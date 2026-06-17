@@ -55,7 +55,9 @@ export function apiAllocationsToTimeParticipants(
     .map((person) => {
       const personAllocations = byPerson.get(person.uuid) || [];
       const hackAlloc = personAllocations.find((a) => a.type === 'HACK_TIME');
-      const trainingAlloc = personAllocations.find((a) => a.type === 'TRAINING_TIME');
+      const trainingAlloc = personAllocations.find(
+        (a) => a.type === 'TRAINING_TIME',
+      );
 
       const hackPeriod = hackAlloc?.hackTimeDetails
         ? dailyAllocationsToPeriod(
@@ -90,7 +92,9 @@ export function apiAllocationsToMoneyParticipants(
   allocations: BudgetAllocation[],
   persons: Array<{ uuid: string; firstname: string; lastname: string }>,
 ): PersonMoneyAllocation[] {
-  const moneyAllocations = allocations.filter((a) => a.type === 'TRAINING_MONEY');
+  const moneyAllocations = allocations.filter(
+    (a) => a.type === 'TRAINING_MONEY',
+  );
 
   const byPerson = new Map<string, BudgetAllocation>();
   for (const alloc of moneyAllocations) {

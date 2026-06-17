@@ -101,7 +101,9 @@ describe('apiAllocationsToTimeParticipants', () => {
         hackTimeDetails: undefined,
         trainingTimeDetails: {
           totalHours: 4,
-          dailyAllocations: [{ date: '2026-03-12', hours: 4, type: 'TRAINING' }],
+          dailyAllocations: [
+            { date: '2026-03-12', hours: 4, type: 'TRAINING' },
+          ],
         },
         trainingMoneyDetails: undefined,
       },

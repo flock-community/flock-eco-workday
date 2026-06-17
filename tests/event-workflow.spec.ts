@@ -244,7 +244,10 @@ test.describe('Event Workflow - Modify Allocations', () => {
 
     // Baseline captured before removing Pino.
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
-    const pinoMoneyBeforeRemoval = await readCardUsedValue(page, 'Training Money');
+    const pinoMoneyBeforeRemoval = await readCardUsedValue(
+      page,
+      'Training Money',
+    );
 
     await Given_I_am_on_events_page(page, 'bert');
     await When_I_open_event_by_description(page, 'PW Test Hack Day');
