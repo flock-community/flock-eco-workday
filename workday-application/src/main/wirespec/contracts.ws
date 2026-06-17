@@ -47,7 +47,9 @@ type Contract {
   monthlyFee: Number?,
   monthlyCosts: Number?,
   description: String?,
-  billable: Boolean?
+  billable: Boolean?,
+  studyHours: Integer32?,
+  studyMoney: Number?
 }
 enum ContractType {
   INTERNAL, EXTERNAL, MANAGEMENT, SERVICE

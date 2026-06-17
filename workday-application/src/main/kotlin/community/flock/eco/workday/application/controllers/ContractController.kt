@@ -240,6 +240,8 @@ class ContractController(
                     is ContractExternal -> billable
                     else -> null
                 },
+            studyHours = (this as? ContractInternal)?.studyHours,
+            studyMoney = (this as? ContractInternal)?.studyMoney?.toDouble(),
         )
 
     private fun ContractInternal.externalize(): ContractInternalApi =
