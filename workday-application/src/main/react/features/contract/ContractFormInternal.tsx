@@ -113,8 +113,10 @@ export const ContractFormInternal = ({
   const schema = object({
     monthlySalary: number().required().default(4000),
     hoursPerWeek: number().required().default(40),
-    from: mixed().required().default(dayjs()),
-    to: mixed().default(null),
+    from: mixed()
+      .required()
+      .default(() => dayjs()),
+    to: mixed().nullable().default(null),
     billable: boolean().default(true),
     holidayHours: number().required().default(192),
     hackHours: number().required().default(160),
@@ -124,7 +126,7 @@ export const ContractFormInternal = ({
 
   return (
     <Formik
-      initialValues={{ ...schema.cast(), ...init }}
+      initialValues={{ ...schema.getDefault(), ...init }}
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize
