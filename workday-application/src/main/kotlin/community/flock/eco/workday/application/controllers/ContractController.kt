@@ -47,6 +47,7 @@ import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.application.model.ContractType as ContractTypeInternal
 import community.flock.eco.workday.application.model.Person as PersonInternal
 import community.flock.eco.workday.application.services.ContractService as ContractDomainService
+import java.math.BigDecimal
 
 @RestController
 class ContractController(
@@ -254,6 +255,8 @@ class ContractController(
             holidayHours = holidayHours,
             hackHours = hackHours,
             billable = billable,
+            studyHours = studyHours,
+            studyMoney = studyMoney.toDouble(),
         )
 
     private fun ContractExternal.externalize(): ContractExternalApi =
@@ -332,6 +335,8 @@ class ContractController(
             holidayHours = holidayHours ?: 0,
             hackHours = hackHours ?: 0,
             billable = billable ?: true,
+            studyHours = studyHours ?: 0,
+            studyMoney = studyMoney?.toBigDecimal() ?: BigDecimal.ZERO,
         )
 
     private fun ContractExternalFormApi.internalize() =

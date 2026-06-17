@@ -77,6 +77,8 @@ export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
             holidayHours: it.holidayHours,
             hackHours: it.hackHours,
             billable: it.billable,
+            studyHours: it.studyHours,
+            studyMoney: it.studyMoney,
             from,
             to,
           } satisfies ContractInternalForm;
