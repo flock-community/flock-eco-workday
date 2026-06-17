@@ -44,7 +44,6 @@ class LoadBudgetAllocationData(
 
             // --- Person A (ieniemienie): Full coverage, all 3 types, 2 years ---
 
-            // Prior year HackTime: 3 event-linked allocations (~128 hours total = 80% of 160 budget)
             createHackTimeAllocation(
                 person = personA,
                 eventCode = hackDayEvents.getOrNull(0)?.code,
@@ -70,7 +69,6 @@ class LoadBudgetAllocationData(
                 dayCount = 5,
             )
 
-            // Prior year StudyTime: 1 event-linked allocation (~80 hours)
             createStudyTimeAllocation(
                 person = personA,
                 eventCode = conferenceEvents.getOrNull(0)?.code,
@@ -87,7 +85,6 @@ class LoadBudgetAllocationData(
                 amount = BigDecimal("1200.00"),
             )
 
-            // Prior year StudyMoney: 3 standalone allocations (~5200 of 5000 budget)
             createStudyMoneyAllocation(
                 person = personA,
                 eventCode = null,
@@ -103,7 +100,6 @@ class LoadBudgetAllocationData(
                 amount = BigDecimal("1500.00"),
             )
 
-            // Current year HackTime: 1 event-linked allocation (~40 hours)
             createHackTimeAllocation(
                 person = personA,
                 eventCode = hackDayEvents.getOrNull(3)?.code,
@@ -113,7 +109,6 @@ class LoadBudgetAllocationData(
                 dayCount = 5,
             )
 
-            // Current year StudyMoney: workshop registration fee
             createStudyMoneyAllocation(
                 person = personA,
                 eventCode = null,
@@ -122,7 +117,6 @@ class LoadBudgetAllocationData(
                 amount = BigDecimal("750.00"),
             )
 
-            // Current year StudyMoney: 1 standalone allocation (~500)
             createStudyMoneyAllocation(
                 person = personA,
                 eventCode = null,
@@ -133,7 +127,6 @@ class LoadBudgetAllocationData(
 
             // --- Person B (pino): Partial, HackTime only, event-linked ---
 
-            // Current year: 1 HackTime allocation linked to hack day event (~16 hours)
             createHackTimeAllocation(
                 person = personB,
                 eventCode = hackDayEvents.getOrNull(4)?.code,
@@ -145,7 +138,6 @@ class LoadBudgetAllocationData(
 
             // --- Person C (bert): Standalone StudyMoney only ---
 
-            // Current year: 1 StudyMoney standalone allocation (~750)
             createStudyMoneyAllocation(
                 person = personC,
                 eventCode = null,

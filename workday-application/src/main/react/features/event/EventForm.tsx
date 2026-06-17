@@ -15,12 +15,14 @@ import {EventBudgetType} from '../../utils/mappings';
 
 export const EVENT_FORM_ID = 'event-form';
 
-const now = dayjs();
-
 export const eventFormSchema = Yup.object().shape({
   description: Yup.string().required('Description is required').default(''),
-  from: Yup.date().required('From date is required').default(now),
-  to: Yup.date().required('To date is required').default(now),
+  from: Yup.mixed<dayjs.Dayjs>()
+    .required('From date is required')
+    .default(() => dayjs()),
+  to: Yup.mixed<dayjs.Dayjs>()
+    .required('To date is required')
+    .default(() => dayjs()),
   days: Yup.array().default([8]).nullable(),
   personIds: Yup.array().default([]),
   budget: Yup.number().required().min(0).default(0),
@@ -139,7 +141,7 @@ export function EventForm({value, onSubmit}: EventFormProps) {
     });
   };
 
-  const init = {...eventFormSchema.default(), ...mutatePeriod(value)};
+  const init = {...eventFormSchema.getDefault(), ...mutatePeriod(value)};
   return (
     value && (
       <Formik

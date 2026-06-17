@@ -122,7 +122,15 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
   return (
     <>
       <Formik
-        initialValues={{ ...ASSIGNMENT_FORM_SCHEMA.cast(), ...init }}
+        // Form fields hold Dayjs dates that convert to the wire AssignmentRequest
+        // (string dates) at the submit boundary. yup 1.x types getDefault() (cast()
+        // was untyped before), so assert the in-form shape here.
+        initialValues={
+          {
+            ...ASSIGNMENT_FORM_SCHEMA.getDefault(),
+            ...init,
+          } as unknown as AssignmentRequest
+        }
         onSubmit={onSubmit}
         validationSchema={ASSIGNMENT_FORM_SCHEMA}
         enableReinitialize

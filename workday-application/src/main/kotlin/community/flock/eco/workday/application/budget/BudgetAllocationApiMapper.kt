@@ -110,8 +110,6 @@ class BudgetAllocationApiMapper(
         )
 }
 
-// Domain-to-API produce extension functions
-
 internal fun HackTimeBudgetAllocation.produce(): BudgetAllocationApi =
     BudgetAllocationApi(
         id = id.toString(),

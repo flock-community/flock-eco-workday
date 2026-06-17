@@ -66,7 +66,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
           });
         });
       } else {
-        setState(eventFormSchema.cast());
+        setState(eventFormSchema.getDefault());
         setEventData(null);
       }
     } else {
@@ -118,7 +118,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   };
 
   const initialValues = useMemo(
-    () => state ? { ...eventFormSchema.default(), ...mutatePeriod(state) } : eventFormSchema.default(),
+    () => state ? { ...eventFormSchema.getDefault(), ...mutatePeriod(state) } : eventFormSchema.getDefault(),
     [state],
   );
 
