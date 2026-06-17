@@ -1,0 +1,161 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: workday.spec.ts >> Workday scenarios >> Submitting an expense
+- Location: tests/workday.spec.ts:62:3
+
+# Error details
+
+```
+Error: expect(locator).toContainText(expected) failed
+
+Locator: locator('.MuiCard-root').filter({ hasText: 'Expenses' }).first().locator('.MuiCard-root').first()
+Expected substring: "Date: 10-06-2028"
+Received string:    "Some reason10-06-2028·€ 16,50REQUESTEDreceipt.jpg"
+Timeout: 5000ms
+
+Call log:
+  - Expect "toContainText" with timeout 5000ms
+  - waiting for locator('.MuiCard-root').filter({ hasText: 'Expenses' }).first().locator('.MuiCard-root').first()
+    14 × locator resolved to <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 MuiCard-root css-d1hsin-MuiPaper-root-MuiCard-root">…</div>
+       - unexpected value "Some reason10-06-2028·€ 16,50REQUESTEDreceipt.jpg"
+
+```
+
+```yaml
+- text: Some reason 10-06-2028 € 16,50
+- button "REQUESTED" [disabled]
+- list:
+  - link "receipt.jpg":
+    - /url: /api/expenses/files/cf78a737-c85a-4b5f-a943-60114a7b0ae3/receipt.jpg
+```
+
+# Test source
+
+```ts
+  76  |   );
+  77  |   const to = dayjs(
+  78  |     `${tillYear}-${tillMonth.toString().padStart(2, '0')}-${tillDay.toString().padStart(2, '0')}`,
+  79  |   );
+  80  |   const today = dayjs();
+  81  |   if (to.isAfter(today, 'month')) {
+  82  |     await selectDateInPicker(page, 'To', tillDay, tillMonth, tillYear);
+  83  |   }
+  84  |   if (from.isBefore(today, 'month')) {
+  85  |     await selectDateInPicker(page, 'From', fromDay, fromMonth, fromYear);
+  86  |   }
+  87  |   if (!to.isAfter(today, 'month')) {
+  88  |     await selectDateInPicker(page, 'To', tillDay, tillMonth, tillYear);
+  89  |   }
+  90  |   if (!from.isBefore(today, 'month')) {
+  91  |     await selectDateInPicker(page, 'From', fromDay, fromMonth, fromYear);
+  92  |   }
+  93  | }
+  94  | 
+  95  | export async function When_I_add_a_file(page, filename: string) {
+  96  |   const fileInput = await page.locator('input[type="file"]');
+  97  | 
+  98  |   // Listen for the upload request before setting the file
+  99  |   const uploadPromise = page.waitForResponse(
+  100 |     (response) =>
+  101 |       response.url().includes('/api/expenses/files') &&
+  102 |       response.status() === 200,
+  103 |     { timeout: 10000 },
+  104 |   );
+  105 | 
+  106 |   await fileInput.setInputFiles(`tests/files/${filename}`);
+  107 | 
+  108 |   await uploadPromise;
+  109 | 
+  110 |   await page.waitForTimeout(500);
+  111 | }
+  112 | 
+  113 | export async function Then_I_see_the_new_work_days_for_the_month_with_hours(
+  114 |   page,
+  115 |   _month: string,
+  116 |   _year: string,
+  117 |   totalHours: string,
+  118 | ) {
+  119 |   await page.waitForLoadState('networkidle');
+  120 |   const firstRow = page.locator('table tbody tr').first();
+  121 |   const hoursElement = firstRow.locator('td').nth(5);
+  122 |   await expect(hoursElement).toHaveText(totalHours);
+  123 | }
+  124 | 
+  125 | export async function Then_the_timesheet_was_uploaded_to_backend(page) {
+  126 |   const request = await page.waitForRequest(
+  127 |     (request) =>
+  128 |       request.url().includes('/api/workdays') && request.method() === 'POST',
+  129 |   );
+  130 |   expect(request.method()).toBe('POST');
+  131 | }
+  132 | 
+  133 | export async function When_I_go_to_my_expenses(page) {
+  134 |   await page.goto('/expenses');
+  135 | }
+  136 | 
+  137 | export async function Then_I_do_not_see_any_expenses(page) {
+  138 |   const noExpensesMessage = await page.getByText('No expenses');
+  139 |   await expect(noExpensesMessage).toBeVisible();
+  140 | }
+  141 | 
+  142 | export async function Then_I_am_on_the_create_expense_page(page) {
+  143 |   const createExpenseText = await page.getByText('Create expense');
+  144 |   await expect(createExpenseText).toBeVisible();
+  145 | }
+  146 | 
+  147 | export async function When_I_fill_in_the_expense_details(
+  148 |   page: Page,
+  149 |   date: string,
+  150 |   amount: string,
+  151 |   description: string,
+  152 | ) {
+  153 |   const [day, month, year] = date.split('-').map(Number);
+  154 |   await selectDateInPicker(page, 'Date', day, month, year);
+  155 |   await page.fill('input[type="number"]', amount);
+  156 |   await page.fill('input[type="text"]', description);
+  157 | }
+  158 | 
+  159 | export async function Then_I_see_the_expense_as(
+  160 |   page,
+  161 |   status: string,
+  162 |   reason: string,
+  163 |   date: string,
+  164 |   total: string,
+  165 | ) {
+  166 |   const containerCard = page
+  167 |     .locator('.MuiCard-root')
+  168 |     .filter({ hasText: 'Expenses' })
+  169 |     .first();
+  170 |   const expenseCard = containerCard.locator('.MuiCard-root').first();
+  171 |   const statusButton = expenseCard.getByText(status.toUpperCase(), {
+  172 |     exact: true,
+  173 |   });
+  174 |   await expect(statusButton).toBeVisible();
+  175 |   await expect(expenseCard).toContainText(reason);
+> 176 |   await expect(expenseCard).toContainText(date);
+      |                             ^ Error: expect(locator).toContainText(expected) failed
+  177 |   await expect(expenseCard).toContainText(total);
+  178 | }
+  179 | 
+  180 | export async function When_I_select_the_assignment(
+  181 |   page,
+  182 |   assignmentText: string,
+  183 | ) {
+  184 |   await page.getByLabel('Assignment').click();
+  185 | 
+  186 |   // MUI v5 renders the listbox outside the dialog.
+  187 |   const listbox = page.getByRole('listbox', { name: 'Assignment' });
+  188 |   await listbox.waitFor({ state: 'visible', timeout: 5000 });
+  189 | 
+  190 |   await page
+  191 |     .getByRole('option', { name: new RegExp(assignmentText, 'i') })
+  192 |     .click();
+  193 | }
+  194 | 
+```
