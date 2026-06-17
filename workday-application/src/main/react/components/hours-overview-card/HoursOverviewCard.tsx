@@ -30,17 +30,19 @@ export function HoursOverviewCard({
       .filter((it) => it !== null)
       .filter((it) => it.assignment > 0)
       .map((it) => {
+        const num = (v: unknown) =>
+          typeof v === 'number' && !Number.isNaN(v) ? v : 0;
         const submitted =
-          it.workDays +
-          it.leaveDayUsed +
-          it.paidLeaveHours +
-          it.sickDays +
-          it.event +
-          it.paidParentalLeaveUsed +
-          it.unpaidParentalLeaveUsed;
-        const missing = Math.max(0, it.total - submitted);
+          num(it.workDays) +
+          num(it.leaveDayUsed) +
+          num(it.paidLeaveHours) +
+          num(it.sickDays) +
+          num(it.event) +
+          num(it.paidParentalLeaveUsed) +
+          num(it.unpaidParentalLeaveUsed);
+        const missing = Math.max(0, num(it.total) - submitted);
         const denom = submitted + missing || 1;
-        const pct = (v: number) => (v / denom) * 100;
+        const pct = (v: unknown) => (num(v) / denom) * 100;
         const row: Record<string, unknown> = {
           ...it,
           workDaysPct: pct(it.workDays),
