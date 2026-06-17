@@ -21,16 +21,18 @@ import { mutatePeriod } from '../period/Period';
 
 export const WORKDAY_FORM_ID = 'work-day-form';
 
-const now = dayjs();
-
 export const schema = Yup.object().shape({
   status: Yup.string().required('Field required').default('REQUESTED'),
   assignmentCode: Yup.string()
     .required('Assignment is required')
     .nullable()
     .default(''),
-  from: Yup.mixed<dayjs.Dayjs>().required('From date is required').default(now),
-  to: Yup.mixed<dayjs.Dayjs>().required('To date is required').default(now),
+  from: Yup.mixed<dayjs.Dayjs>()
+    .required('From date is required')
+    .default(() => dayjs()),
+  to: Yup.mixed<dayjs.Dayjs>()
+    .required('To date is required')
+    .default(() => dayjs()),
   days: Yup.array().default([8]).nullable(),
   hours: Yup.number().default(0),
   sheets: Yup.array().default([]),
