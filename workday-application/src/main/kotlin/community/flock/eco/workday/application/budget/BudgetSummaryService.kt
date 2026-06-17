@@ -24,21 +24,17 @@ class BudgetSummaryService(
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
 
-        // Find active internal contracts for person in the given year
         val internalContracts =
             contractService
                 .findAllActiveByPerson(from, to, personUuid)
                 .filterIsInstance<ContractInternal>()
 
-        // Sum budget from all active internal contracts
         val totalHackHours = internalContracts.sumOf { it.hackHours }.toDouble()
         val totalStudyHours = internalContracts.sumOf { it.studyHours }.toDouble()
         val totalStudyMoney = internalContracts.sumOf { it.studyMoney.toDouble() }
 
-        // Get allocations for the person in the given year
         val allocations = budgetAllocationService.findAllByPersonUuid(personUuid, year)
 
-        // Sum used amounts from allocations
         val usedHackHours =
             allocations
                 .filterIsInstance<HackTimeBudgetAllocation>()

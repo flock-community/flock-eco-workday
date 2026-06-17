@@ -30,7 +30,6 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
 
     @Test
     fun testStudyHoursPersistsAsInt() {
-        // Create a person + contract with studyHours = 120
         val person = createHelper.createPersonEntity()
         val contract =
             ContractInternalForm(
@@ -46,18 +45,15 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
                 studyMoney = BigDecimal.ZERO,
             ).let { contractService.create(it) }
 
-        // Force flush and clear persistence context
         entityManager.flush()
         entityManager.clear()
 
-        // Retrieve and verify studyHours == 120
         val retrieved = contractService.findByCode(contract!!.code)
         assertEquals(120, (retrieved as ContractInternal).studyHours, "studyHours should persist as Int value 120")
     }
 
     @Test
     fun testStudyMoneyPersistsAsBigDecimal() {
-        // Create contract with studyMoney = BigDecimal("2500.50")
         val person = createHelper.createPersonEntity()
         val contract =
             ContractInternalForm(
@@ -73,11 +69,9 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
                 studyMoney = BigDecimal("2500.50"),
             ).let { contractService.create(it) }
 
-        // Force flush and clear persistence context
         entityManager.flush()
         entityManager.clear()
 
-        // Retrieve and verify studyMoney value with BigDecimal precision
         val retrieved = contractService.findByCode(contract!!.code)
         assertEquals(
             0,
@@ -88,7 +82,6 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
 
     @Test
     fun testDefaultValuesForExistingContracts() {
-        // Create contract without specifying studyHours/studyMoney (use defaults)
         val person = createHelper.createPersonEntity()
         val contract =
             createHelper.createContractInternal(
@@ -97,11 +90,9 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
                 to = null,
             )
 
-        // Force flush and clear persistence context
         entityManager.flush()
         entityManager.clear()
 
-        // Retrieve and verify defaults
         val retrieved = contractService.findByCode(contract.code)
         assertEquals(0, (retrieved as ContractInternal).studyHours, "Default studyHours should be 0")
         assertEquals(
@@ -113,7 +104,6 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
 
     @Test
     fun testStudyMoneyColumnName() {
-        // Use JDBC to verify column is named study_money_budget (not study_money)
         // H2 stores identifiers in lowercase by default
         dataSource.connection.use { conn ->
             val rs = conn.metaData.getColumns(null, null, "contract_internal", "study_money_budget")

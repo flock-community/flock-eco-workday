@@ -14,7 +14,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class BudgetAllocationTest {
-    // Helper: create a minimal Person for testing
     private fun testPerson() =
         Person(
             internalId = 1L,

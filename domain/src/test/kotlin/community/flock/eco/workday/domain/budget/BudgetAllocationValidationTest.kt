@@ -13,10 +13,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-/**
- * Nyquist validation tests for Phase 03 (domain-layer) requirements DOM-01 and DOM-02.
- * These tests fill coverage gaps not addressed by the original BudgetAllocationTest.
- */
 class BudgetAllocationValidationTest {
     private fun testPerson() =
         Person(
@@ -39,7 +35,6 @@ class BudgetAllocationValidationTest {
             user = null,
         )
 
-    // DOM-01-G1: New entities default id to 0 for JOINED inheritance compatibility
     @Test
     fun `new budget allocations default id to zero for JOINED inheritance`() {
         val person = testPerson()
@@ -71,7 +66,6 @@ class BudgetAllocationValidationTest {
         assertEquals(0L, studyMoneyAlloc.id)
     }
 
-    // DOM-01-G2: BigDecimal monetary precision is preserved (no floating-point loss)
     @Test
     fun `study money amount uses BigDecimal precision without floating point loss`() {
         val person = testPerson()
@@ -85,11 +79,9 @@ class BudgetAllocationValidationTest {
             )
 
         assertEquals(BigDecimal("0.30"), allocation.amount)
-        // Confirm it does NOT equal the floating-point imprecise value
         assertTrue(allocation.amount.toDouble() == 0.3)
     }
 
-    // DOM-01-G3: Persistence port contracts are correctly shaped
     @Test
     fun `polymorphic persistence port supports findAllByPersonUuid with year filter`() {
         val person = testPerson()
@@ -125,7 +117,6 @@ class BudgetAllocationValidationTest {
         assertTrue(results2025.isEmpty())
     }
 
-    // DOM-02-G1: Update event publishing verified for type-specific service
     @Test
     fun `hack time service update publishes UpdateBudgetAllocationEvent`() {
         val person = testPerson()
@@ -165,7 +156,6 @@ class BudgetAllocationValidationTest {
         assertEquals(updated, (publishedEvent as UpdateBudgetAllocationEvent).entity)
     }
 
-    // DOM-02-G1b: Update returning null does NOT publish event
     @Test
     fun `hack time service update returns null and skips event when entity not found`() {
         var publishedEvent: Event? = null
@@ -201,7 +191,6 @@ class BudgetAllocationValidationTest {
         assertNull(publishedEvent)
     }
 
-    // DOM-02-G2: BudgetAllocationService query delegation
     @Test
     fun `budget allocation service delegates findAllByPersonUuid to persistence port`() {
         val person = testPerson()
@@ -246,7 +235,6 @@ class BudgetAllocationValidationTest {
         assertEquals(8.0, (results[0] as StudyTimeBudgetAllocation).totalHours)
     }
 
-    // DOM-02-G2b: BudgetAllocationService delegates findAllByEventCode
     @Test
     fun `budget allocation service delegates findAllByEventCode to persistence port`() {
         val person = testPerson()
