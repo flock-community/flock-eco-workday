@@ -1,0 +1,182 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-030-budget-allocations-0
+      author: rkorver
+      comment: Sequence for TimeAllocation entity (Hibernate 6 entity sequence)
+      changes:
+        - createSequence:
+            sequenceName: time_allocation_seq
+            startValue: 1
+            incrementBy: 50
+  - changeSet:
+      id: db.changelog-030-budget-allocations-1
+      author: rkorver
+      comment: Sequence for MoneyAllocation entity (Hibernate 6 entity sequence)
+      changes:
+        - createSequence:
+            sequenceName: money_allocation_seq
+            startValue: 1
+            incrementBy: 50
+  - changeSet:
+      id: db.changelog-030-budget-allocations-2
+      author: rkorver
+      comment: Time allocation aggregate; total hours derived from typed daily rows
+      changes:
+        - createTable:
+            tableName: time_allocation
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: time_allocationPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    unique: true
+                  name: code
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: person_id
+                  type: BIGINT
+              - column:
+                  name: event_code
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: date
+                  type: DATE
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+  - changeSet:
+      id: db.changelog-030-budget-allocations-3
+      author: rkorver
+      comment: Typed daily hours per time allocation; several rows per date allowed (no unique on allocation+date)
+      changes:
+        - createTable:
+            tableName: time_allocation_days
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: time_allocation_id
+                  type: BIGINT
+              - column:
+                  name: date
+                  type: DATE
+              - column:
+                  name: hours
+                  type: DOUBLE
+              - column:
+                  name: type
+                  type: VARCHAR(255)
+  - changeSet:
+      id: db.changelog-030-budget-allocations-4
+      author: rkorver
+      comment: Money allocation aggregate (study/training money draws)
+      changes:
+        - createTable:
+            tableName: money_allocation
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: money_allocationPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    unique: true
+                  name: code
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: person_id
+                  type: BIGINT
+              - column:
+                  name: event_code
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: date
+                  type: DATE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: amount
+                  type: DECIMAL(19, 2)
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+  - changeSet:
+      id: db.changelog-030-budget-allocations-5
+      author: rkorver
+      comment: Receipt files attached to a money allocation
+      changes:
+        - createTable:
+            tableName: money_allocation_files
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: money_allocation_id
+                  type: BIGINT
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: file
+                  type: UUID
+  - changeSet:
+      id: db.changelog-030-budget-allocations-6
+      author: rkorver
+      comment: Foreign keys; allocations cascade-delete with their person and parent aggregate
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: person_id
+            baseTableName: time_allocation
+            constraintName: FK_time_allocation_person
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: person
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: time_allocation_id
+            baseTableName: time_allocation_days
+            constraintName: FK_time_allocation_days_time_allocation
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: time_allocation
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: person_id
+            baseTableName: money_allocation
+            constraintName: FK_money_allocation_person
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: person
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: money_allocation_id
+            baseTableName: money_allocation_files
+            constraintName: FK_money_allocation_files_money_allocation
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: money_allocation
+            validate: true

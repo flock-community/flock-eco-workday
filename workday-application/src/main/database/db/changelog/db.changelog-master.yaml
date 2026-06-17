@@ -85,4 +85,10 @@ databaseChangeLog:
   - include:
       file: db.changelog-029-rename-hack-hours-to-hack-time-budget.yaml
       relativeToChangelogFile: true
+  - include:
+      file: db.changelog-030-budget-allocations.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-031-event-default-time-allocation-type.yaml
+      relativeToChangelogFile: true
 

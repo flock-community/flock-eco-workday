@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-031-event-default-time-allocation-type
+      author: rkorver
+      changes:
+        - addColumn:
+            tableName: event
+            columns:
+              - column:
+                  name: default_time_allocation_type
+                  type: VARCHAR(255)
