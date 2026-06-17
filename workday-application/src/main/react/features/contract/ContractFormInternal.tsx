@@ -62,6 +62,7 @@ export const ContractFormInternal = ({
             name="holidayHours"
             type="number"
             label="Holiday hours"
+            fullWidth
             component={TextField}
             slotProps={{ inputLabel: { shrink: true } }}
           />
@@ -83,6 +84,8 @@ export const ContractFormInternal = ({
             label="Study hours"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
+            helperText="Per calendar year, based on contract hours"
           />
         </Grid>
         <Grid size={{ xs: 12 }}>
@@ -92,6 +95,8 @@ export const ContractFormInternal = ({
             label="Study money"
             fullWidth
             component={TextField}
+            slotProps={{ inputLabel: { shrink: true } }}
+            helperText="Per calendar year, based on contract hours"
           />
         </Grid>
       </Grid>
