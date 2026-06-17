@@ -127,8 +127,26 @@ export async function readCardUsedValue(
   const cardContent = heading.locator(
     'xpath=ancestor::*[contains(@class,"MuiCard-root")][1]',
   );
-  const usedText = await cardContent.getByText('Used:').textContent();
-  return usedText?.replace(/^Used:\s*/, '').trim() ?? '';
+  const readUsed = async () =>
+    (await cardContent.getByText('Used:').textContent())
+      ?.replace(/^Used:\s*/, '')
+      .trim() ?? '';
+
+  return readUntilSettled(readUsed, () => page.waitForTimeout(300));
+}
+
+async function readUntilSettled(
+  read: () => Promise<string>,
+  delay: () => Promise<void>,
+): Promise<string> {
+  let previous = await read();
+  for (let i = 0; i < 10; i++) {
+    await delay();
+    const current = await read();
+    if (current !== '' && current === previous) return current;
+    previous = current;
+  }
+  return previous;
 }
 
 /**

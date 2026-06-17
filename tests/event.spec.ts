@@ -25,8 +25,8 @@ test.describe('Event CRUD Operations', () => {
 
     await page.getByLabel('Description').fill(description);
 
-    await page.getByLabel('Costs').clear();
-    await page.getByLabel('Costs').fill('100');
+    await page.getByLabel('Budget').clear();
+    await page.getByLabel('Budget').fill('100');
 
     const fromDate = page.getByLabel('From', { exact: true });
     await fromDate.click();
@@ -57,8 +57,8 @@ test.describe('Event CRUD Operations', () => {
     await expect(page.getByRole('dialog')).toBeVisible();
 
     await page.getByLabel('Description').fill(description);
-    await page.getByLabel('Costs').clear();
-    await page.getByLabel('Costs').fill('50');
+    await page.getByLabel('Budget').clear();
+    await page.getByLabel('Budget').fill('50');
 
     const fromDate = page.getByLabel('From', { exact: true });
     await fromDate.click();
@@ -100,8 +100,8 @@ test.describe('Event CRUD Operations', () => {
     await expect(page.getByRole('dialog')).toBeVisible();
 
     await page.getByLabel('Description').fill(description);
-    await page.getByLabel('Costs').clear();
-    await page.getByLabel('Costs').fill('75');
+    await page.getByLabel('Budget').clear();
+    await page.getByLabel('Budget').fill('75');
 
     const fromDate = page.getByLabel('From', { exact: true });
     await fromDate.click();
