@@ -85,7 +85,7 @@ export function TotalPerMonthChart({ year }: TotalPerMonthChartProps) {
         <Legend />
 
         <Bar stackId="revenue" dataKey="actualRevenue" fill="#1de8b5" />
-        <Bar stackId="revenue" dataKey="loss" fill="red" />
+        <Bar stackId="revenue" dataKey="loss" fill="#ef5350" />
 
         <Bar
           stackId="cost"
@@ -137,7 +137,7 @@ export function TotalPerMonthChart({ year }: TotalPerMonthChartProps) {
           dataKey="actualCostContractService"
           fill="#3f51b5"
         />
-        <Bar stackId="cost" dataKey="profit" fill="lightgreen" />
+        <Bar stackId="cost" dataKey="profit" fill="#66bb6a" />
       </BarChart>
     </ResponsiveContainer>
   );

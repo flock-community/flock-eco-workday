@@ -38,6 +38,15 @@ export function createAppTheme(mode: ColorMode): Theme {
           },
           '.recharts-cartesian-grid line, .recharts-cartesian-axis-line, .recharts-cartesian-axis-tick-line':
             { stroke: palette.divider },
+          '.recharts-default-tooltip': {
+            backgroundColor: `${palette.background.paper} !important`,
+            border: `1px solid ${palette.divider} !important`,
+            borderRadius: 8,
+            boxShadow: shadows[6],
+          },
+          '.recharts-default-tooltip .recharts-tooltip-label': {
+            color: palette.text.primary,
+          },
         },
       },
 

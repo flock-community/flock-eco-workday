@@ -2,7 +2,7 @@ import { FormGroup } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 import type { FlockEvent } from '../../clients/EventClient';
 import { DMY_DATE } from '../../clients/util/DateFormats';
@@ -15,9 +15,9 @@ const classes = {
   active: `${PREFIX}Active`,
 };
 
-const StyledListItem = styled(ListItem)(() => ({
-  [`& .${classes.active}`]: {
-    backgroundColor: 'rgba(252, 222, 0, .1);',
+const StyledListItem = styled(ListItem)(({ theme }) => ({
+  [`&.${classes.active}`]: {
+    backgroundColor: alpha(theme.palette.primary.main, 0.14),
   },
 }));
 
