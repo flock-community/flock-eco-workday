@@ -6,8 +6,8 @@ import community.flock.eco.workday.application.model.ContractInternal
 import community.flock.eco.workday.application.services.ContractService
 import community.flock.eco.workday.domain.budget.BudgetAllocationService
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocation
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.util.UUID
@@ -29,9 +29,9 @@ class BudgetSummaryService(
                 .findAllActiveByPerson(from, to, personUuid)
                 .filterIsInstance<ContractInternal>()
 
-        val totalHackHours = internalContracts.sumOf { it.hackHours }.toDouble()
-        val totalStudyHours = internalContracts.sumOf { it.studyHours }.toDouble()
-        val totalStudyMoney = internalContracts.sumOf { it.studyMoney.toDouble() }
+        val totalHackHours = internalContracts.sumOf { it.hackTimeBudget }.toDouble()
+        val totalTrainingHours = internalContracts.sumOf { it.trainingTimeBudget }.toDouble()
+        val totalTrainingMoney = internalContracts.sumOf { it.trainingMoneyBudget.toDouble() }
 
         val allocations = budgetAllocationService.findAllByPersonUuid(personUuid, year)
 
@@ -40,34 +40,34 @@ class BudgetSummaryService(
                 .filterIsInstance<HackTimeBudgetAllocation>()
                 .sumOf { it.totalHours }
 
-        val usedStudyHours =
+        val usedTrainingHours =
             allocations
-                .filterIsInstance<StudyTimeBudgetAllocation>()
+                .filterIsInstance<TrainingTimeBudgetAllocation>()
                 .sumOf { it.totalHours }
 
-        val usedStudyMoney =
+        val usedTrainingMoney =
             allocations
-                .filterIsInstance<StudyMoneyBudgetAllocation>()
+                .filterIsInstance<TrainingMoneyBudgetAllocation>()
                 .sumOf { it.amount.toDouble() }
 
         return BudgetSummaryResponse(
-            hackHours =
+            hackTimeBudget =
                 BudgetItem(
                     budget = totalHackHours,
                     used = usedHackHours,
                     available = totalHackHours - usedHackHours,
                 ),
-            studyHours =
+            trainingTimeBudget =
                 BudgetItem(
-                    budget = totalStudyHours,
-                    used = usedStudyHours,
-                    available = totalStudyHours - usedStudyHours,
+                    budget = totalTrainingHours,
+                    used = usedTrainingHours,
+                    available = totalTrainingHours - usedTrainingHours,
                 ),
-            studyMoney =
+            trainingMoneyBudget =
                 BudgetItem(
-                    budget = totalStudyMoney,
-                    used = usedStudyMoney,
-                    available = totalStudyMoney - usedStudyMoney,
+                    budget = totalTrainingMoney,
+                    used = usedTrainingMoney,
+                    available = totalTrainingMoney - usedTrainingMoney,
                 ),
         )
     }

@@ -24,11 +24,11 @@ class ContractInternal(
     override val monthlySalary: Double,
     override val hoursPerWeek: Int,
     val holidayHours: Int,
-    val hackHours: Int,
+    val hackTimeBudget: Int,
     val billable: Boolean = true,
-    val studyHours: Int = 0,
-    @Column(name = "study_money_budget")
-    val studyMoney: BigDecimal = BigDecimal.ZERO,
+    val trainingTimeBudget: Int = 0,
+    @Column(name = "training_money_budget")
+    val trainingMoneyBudget: BigDecimal = BigDecimal.ZERO,
 ) : Contract(id, code, from, to, person, ContractType.INTERNAL),
     Monthly {
     init {
@@ -63,14 +63,14 @@ class ContractInternal(
     fun totalHackDayHoursInPeriod(period: Period): BigDecimal =
         this
             .toDateRangeInPeriod(period)
-            .sumOf { this.hackHours }
+            .sumOf { this.hackTimeBudget }
             .toBigDecimal()
             .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
 
-    fun totalStudyDayHoursInPeriod(period: Period): BigDecimal =
+    fun totalTrainingDayHoursInPeriod(period: Period): BigDecimal =
         this
             .toDateRangeInPeriod(period)
-            .sumOf { this.studyHours }
+            .sumOf { this.trainingTimeBudget }
             .toBigDecimal()
             .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
 }

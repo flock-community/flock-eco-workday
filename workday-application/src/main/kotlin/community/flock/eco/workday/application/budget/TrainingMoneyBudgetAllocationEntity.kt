@@ -13,8 +13,8 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Entity
-@Table(name = "study_money_budget_allocation")
-class StudyMoneyBudgetAllocationEntity(
+@Table(name = "training_money_budget_allocation")
+class TrainingMoneyBudgetAllocationEntity(
     id: Long = 0,
     code: String = UUID.randomUUID().toString(),
     person: Person?,
@@ -24,8 +24,8 @@ class StudyMoneyBudgetAllocationEntity(
     val amount: BigDecimal,
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
-        name = "study_money_budget_allocation_files",
-        joinColumns = [JoinColumn(name = "study_money_budget_allocation_id")],
+        name = "training_money_budget_allocation_files",
+        joinColumns = [JoinColumn(name = "training_money_budget_allocation_id")],
     )
     val files: MutableList<Document> = mutableListOf(),
 ) : BudgetAllocationEntity(id, code, person, eventCode, date, description)

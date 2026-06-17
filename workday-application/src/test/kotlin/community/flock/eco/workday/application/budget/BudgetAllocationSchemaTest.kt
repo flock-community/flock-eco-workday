@@ -38,8 +38,8 @@ class BudgetAllocationSchemaTest : WorkdayIntegrationTest() {
         dataSource.connection.use { conn ->
             for (table in listOf(
                 "hack_time_budget_allocation",
-                "study_time_budget_allocation",
-                "study_money_budget_allocation",
+                "training_time_budget_allocation",
+                "training_money_budget_allocation",
             )) {
                 val rs = conn.metaData.getTables(null, null, table, null)
                 assertTrue(rs.next(), "$table table should exist")
@@ -52,8 +52,8 @@ class BudgetAllocationSchemaTest : WorkdayIntegrationTest() {
         dataSource.connection.use { conn ->
             for (table in listOf(
                 "hack_time_budget_allocation_daily_time_allocations",
-                "study_time_budget_allocation_daily_time_allocations",
-                "study_money_budget_allocation_files",
+                "training_time_budget_allocation_daily_time_allocations",
+                "training_money_budget_allocation_files",
             )) {
                 val rs = conn.metaData.getTables(null, null, table, null)
                 assertTrue(rs.next(), "$table table should exist")
@@ -62,9 +62,9 @@ class BudgetAllocationSchemaTest : WorkdayIntegrationTest() {
     }
 
     @Test
-    fun `test study money amount is decimal`() {
+    fun `test training money amount is decimal`() {
         dataSource.connection.use { conn ->
-            val rs = conn.metaData.getColumns(null, null, "study_money_budget_allocation", "amount")
+            val rs = conn.metaData.getColumns(null, null, "training_money_budget_allocation", "amount")
             assertTrue(rs.next(), "amount column should exist")
             // DECIMAL type in H2 - verify it's a numeric type, not DOUBLE
             val typeName = rs.getString("TYPE_NAME")

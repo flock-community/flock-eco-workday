@@ -10,8 +10,8 @@ import community.flock.eco.workday.application.services.EventService
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.domain.budget.BudgetAllocationService
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocation
 import community.flock.eco.workday.user.forms.UserAccountPasswordForm
 import community.flock.eco.workday.user.services.UserAccountService
 import community.flock.eco.workday.user.services.UserSecurityService
@@ -209,12 +209,12 @@ class EventControllerTest : WorkdayIntegrationTest() {
 
         val afterCreate = budgetAllocationService.findAllByEventCode(event.code)
         assertTrue(afterCreate.any { it is HackTimeBudgetAllocation }, "hack time allocation expected on create")
-        assertTrue(afterCreate.none { it is StudyTimeBudgetAllocation })
+        assertTrue(afterCreate.none { it is TrainingTimeBudgetAllocation })
 
-        eventService.update(event.code, form.copy(defaultTimeAllocationType = "STUDY"))
+        eventService.update(event.code, form.copy(defaultTimeAllocationType = "TRAINING"))
 
         val afterSwitch = budgetAllocationService.findAllByEventCode(event.code)
-        assertTrue(afterSwitch.any { it is StudyTimeBudgetAllocation }, "study time allocation expected after switch")
+        assertTrue(afterSwitch.any { it is TrainingTimeBudgetAllocation }, "training time allocation expected after switch")
         assertTrue(afterSwitch.none { it is HackTimeBudgetAllocation }, "stale hack time allocation should be removed")
     }
 
@@ -239,7 +239,7 @@ class EventControllerTest : WorkdayIntegrationTest() {
         val amounts =
             budgetAllocationService
                 .findAllByEventCode(event.code)
-                .filterIsInstance<StudyMoneyBudgetAllocation>()
+                .filterIsInstance<TrainingMoneyBudgetAllocation>()
                 .map { it.amount }
 
         assertEquals(3, amounts.size)

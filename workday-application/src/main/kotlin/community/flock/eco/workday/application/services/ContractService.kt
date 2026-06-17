@@ -179,9 +179,9 @@ class ContractService(
             monthlySalary = monthlySalary,
             hoursPerWeek = hoursPerWeek,
             holidayHours = holidayHours,
-            hackHours = hackHours,
-            studyHours = studyHours,
-            studyMoney = studyMoney,
+            hackTimeBudget = hackTimeBudget,
+            trainingTimeBudget = trainingTimeBudget,
+            trainingMoneyBudget = trainingMoneyBudget,
             person =
                 it?.person
                     ?: personId.let { personRepository.findByUuid(it).toNullable() }

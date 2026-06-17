@@ -12,8 +12,8 @@ data class ContractInternalForm(
     override val from: LocalDate,
     override val to: LocalDate?,
     val holidayHours: Int,
-    val hackHours: Int,
+    val hackTimeBudget: Int,
     val billable: Boolean,
-    val studyHours: Int = 0,
-    val studyMoney: BigDecimal = BigDecimal.ZERO,
+    val trainingTimeBudget: Int = 0,
+    val trainingMoneyBudget: BigDecimal = BigDecimal.ZERO,
 ) : Period

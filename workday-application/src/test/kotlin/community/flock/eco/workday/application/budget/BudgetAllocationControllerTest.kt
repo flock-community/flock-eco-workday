@@ -5,16 +5,16 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.api.model.DailyAllocationType
 import community.flock.eco.workday.api.model.DailyTimeAllocationItem
 import community.flock.eco.workday.api.model.HackTimeAllocationInput
-import community.flock.eco.workday.api.model.StudyMoneyAllocationInput
+import community.flock.eco.workday.api.model.TrainingMoneyAllocationInput
 import community.flock.eco.workday.domain.budget.BudgetAllocationService
 import community.flock.eco.workday.domain.budget.BudgetAllocationType
 import community.flock.eco.workday.domain.budget.DailyTimeAllocation
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocation
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocationService
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocationService
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocationService
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocationService
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocationService
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.wirespec.integration.jackson.kotlin.WirespecModuleKotlin
 import org.junit.jupiter.api.Test
@@ -46,10 +46,10 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
     private lateinit var hackTimeBudgetAllocationService: HackTimeBudgetAllocationService
 
     @Autowired
-    private lateinit var studyMoneyBudgetAllocationService: StudyMoneyBudgetAllocationService
+    private lateinit var trainingMoneyBudgetAllocationService: TrainingMoneyBudgetAllocationService
 
     @Autowired
-    private lateinit var studyTimeBudgetAllocationService: StudyTimeBudgetAllocationService
+    private lateinit var trainingTimeBudgetAllocationService: TrainingTimeBudgetAllocationService
 
     private val baseUrl = "/api/budget-allocations"
 
@@ -95,19 +95,19 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
     }
 
     @Test
-    fun `admin can GET study-time allocations by personId and year`() {
+    fun `admin can GET training-time allocations by personId and year`() {
         val user = createHelper.createUser(adminAuthorities)
-        val person = createHelper.createPerson("study", "time", user.code)
+        val person = createHelper.createPerson("training", "time", user.code)
 
-        studyTimeBudgetAllocationService.create(
-            StudyTimeBudgetAllocation(
+        trainingTimeBudgetAllocationService.create(
+            TrainingTimeBudgetAllocation(
                 person = person,
                 eventCode = null,
                 date = LocalDate.of(2026, 3, 1),
-                description = "Study course",
+                description = "Training course",
                 dailyTimeAllocations =
                     listOf(
-                        DailyTimeAllocation(LocalDate.of(2026, 3, 1), 4.0, BudgetAllocationType.STUDY),
+                        DailyTimeAllocation(LocalDate.of(2026, 3, 1), 4.0, BudgetAllocationType.TRAINING),
                     ),
                 totalHours = 4.0,
             ),
@@ -121,10 +121,10 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].type").value("STUDY_TIME"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].type").value("TRAINING_TIME"))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].personId").value(person.uuid.toString()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].studyTimeDetails.totalHours").value(4.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].studyTimeDetails.dailyAllocations[0].hours").value(4.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].trainingTimeDetails.totalHours").value(4.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].trainingTimeDetails.dailyAllocations[0].hours").value(4.0))
     }
 
     @Test
@@ -143,19 +143,19 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
                 totalHours = 8.0,
             ),
         )
-        studyTimeBudgetAllocationService.create(
-            StudyTimeBudgetAllocation(
+        trainingTimeBudgetAllocationService.create(
+            TrainingTimeBudgetAllocation(
                 person = person,
                 eventCode = null,
                 date = LocalDate.of(2026, 2, 1),
-                description = "Study day",
+                description = "Training day",
                 dailyTimeAllocations =
-                    listOf(DailyTimeAllocation(LocalDate.of(2026, 2, 1), 4.0, BudgetAllocationType.STUDY)),
+                    listOf(DailyTimeAllocation(LocalDate.of(2026, 2, 1), 4.0, BudgetAllocationType.TRAINING)),
                 totalHours = 4.0,
             ),
         )
-        studyMoneyBudgetAllocationService.create(
-            StudyMoneyBudgetAllocation(
+        trainingMoneyBudgetAllocationService.create(
+            TrainingMoneyBudgetAllocation(
                 person = person,
                 eventCode = null,
                 date = LocalDate.of(2026, 3, 1),
@@ -243,17 +243,17 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
     }
 
     @Test
-    fun `admin can POST study-money allocation and receive response`() {
+    fun `admin can POST training-money allocation and receive response`() {
         val mapper = objectMapper.copy().registerModule(WirespecModuleKotlin())
         val user = createHelper.createUser(adminAuthorities)
         val person = createHelper.createPerson("diana", "budget", user.code)
 
         val input =
-            StudyMoneyAllocationInput(
+            TrainingMoneyAllocationInput(
                 personId = UUIDApi(person.uuid.toString()),
                 eventCode = null,
                 date = "2026-03-01",
-                description = "Study budget",
+                description = "Training budget",
                 amount = 250.50,
                 files = emptyList(),
             )
@@ -261,7 +261,7 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
         mvc
             .perform(
                 MockMvcRequestBuilders
-                    .post("$baseUrl/study-money")
+                    .post("$baseUrl/training-money")
                     .with(SecurityMockMvcRequestPostProcessors.user(CreateHelper.UserSecurity(user)))
                     .content(mapper.writeValueAsString(input))
                     .contentType(MediaType.APPLICATION_JSON)
@@ -269,8 +269,8 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
             ).asyncDispatch()
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.type").value("STUDY_MONEY"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoneyDetails.amount").value(250.5))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.type").value("TRAINING_MONEY"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingMoneyDetails.amount").value(250.5))
     }
 
     @Test
@@ -279,8 +279,8 @@ class BudgetAllocationControllerTest : WorkdayIntegrationTest() {
         val person = createHelper.createPerson("eve", "budget", user.code)
 
         val allocation =
-            studyMoneyBudgetAllocationService.create(
-                StudyMoneyBudgetAllocation(
+            trainingMoneyBudgetAllocationService.create(
+                TrainingMoneyBudgetAllocation(
                     person = person,
                     eventCode = null,
                     date = LocalDate.of(2026, 3, 1),
