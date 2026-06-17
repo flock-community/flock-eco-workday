@@ -33,7 +33,11 @@ export function SickdayPerPersonChart({ year }: SickdayPerPersonChartProps) {
 
   return (
     <ResponsiveContainer height={height}>
-      <BarChart data={state} layout="vertical">
+      <BarChart
+        data={state}
+        layout="vertical"
+        margin={{ top: 8, right: 28, bottom: 0, left: 8 }}
+      >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis type="number" dataKey="sickDays" />
         <YAxis type="category" dataKey="name" width={150} />

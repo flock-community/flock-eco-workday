@@ -74,7 +74,11 @@ export function HoursOverviewCard({
       <CardHeader title={'Hours overview'} />
       <CardContent>
         <ResponsiveContainer width="100%" height={height}>
-          <BarChart data={data} layout="vertical">
+          <BarChart
+            data={data}
+            layout="vertical"
+            margin={{ top: 8, right: 28, bottom: 0, left: 8 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis type="number" />
             <YAxis type="category" dataKey="label" width={100} />
