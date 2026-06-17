@@ -21,9 +21,14 @@ const classes = {
 const Root = styled('div')(({ theme }) => ({
   [`& .${classes.buttonRequested}`]: {
     backgroundColor: 'unset',
-    '&:disabled': {
+    color: theme.palette.text.primary,
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    '&.Mui-disabled': {
       backgroundColor: 'unset',
-      outline: '1px solid',
+      color: theme.palette.text.secondary,
+      outline: `1px solid ${theme.palette.divider}`,
     },
   },
 
