@@ -7,7 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import type { OverridableComponent } from '@mui/material/OverridableComponent';
 import { styled } from '@mui/material/styles';
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 const PREFIX = 'ApplicationMenuItem';
 
@@ -39,12 +39,20 @@ type ApplicationMenuItemProps = {
   handleClose: () => void;
 };
 
+function isActive(pathname: string, url: string) {
+  if (url === '/') return pathname === '/';
+  return pathname === url || pathname.startsWith(`${url}/`);
+}
+
 export default function ApplicationMenuItem({
   item,
   handleClose,
 }: ApplicationMenuItemProps) {
   const history = useHistory();
-  const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+  const hasChildActive =
+    'items' in item && item.items.some((sub) => isActive(pathname, sub.url));
+  const [open, setOpen] = useState(hasChildActive);
 
   const handleClickItem = (item: Item) => () => {
     handleClose();
@@ -56,10 +64,22 @@ export default function ApplicationMenuItem({
   const handleFolderExpanded = (node: HTMLElement) => node.scrollIntoView();
 
   if (!('items' in item)) {
+    const active = isActive(pathname, item.url);
     return (
-      <ListItemButton key={item.name} onClick={handleClickItem(item)}>
-        <ListItemIcon>{React.createElement(item.icon)}</ListItemIcon>
-        <ListItemText primary={item.name} />
+      <ListItemButton
+        key={item.name}
+        selected={active}
+        onClick={handleClickItem(item)}
+      >
+        <ListItemIcon sx={active ? { color: 'text.primary' } : undefined}>
+          {React.createElement(item.icon)}
+        </ListItemIcon>
+        <ListItemText
+          primary={item.name}
+          slotProps={{
+            primary: { sx: { fontWeight: active ? 700 : 500 } },
+          }}
+        />
       </ListItemButton>
     );
   }

@@ -14,6 +14,7 @@ import {
   AggregationClient,
   type AggregationLeaveDay,
 } from '../../clients/AggregationClient';
+import { useChartColors } from '../../theme/chartColors';
 
 type LeaveDaysPerPersonChartProps = {
   year?: number;
@@ -22,6 +23,7 @@ type LeaveDaysPerPersonChartProps = {
 export function LeaveDaysPerPersonChart({
   year,
 }: LeaveDaysPerPersonChartProps) {
+  const colors = useChartColors();
   const [state, setState] = useState<AggregationLeaveDay[] | null>(null);
 
   useEffect(() => {
@@ -54,7 +56,11 @@ export function LeaveDaysPerPersonChart({
 
   return (
     <ResponsiveContainer height={height}>
-      <BarChart data={state} layout="vertical">
+      <BarChart
+        data={state}
+        layout="vertical"
+        margin={{ top: 8, right: 28, bottom: 0, left: 8 }}
+      >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis type="number" />
         <YAxis type="category" dataKey="name" width={150} />
@@ -70,38 +76,43 @@ export function LeaveDaysPerPersonChart({
           stackId="available"
           dataKey="contractHours"
           name="contract"
-          fill="#9e9e9e"
+          fill={colors.contract}
         />
         <Bar
           stackId="available"
           dataKey="plusHours"
           name="plus"
-          fill="#6c6c6c"
+          fill={colors.plus}
         />
-        <Bar stackId="used" dataKey="holidayHours" name="used" fill="#42a5f5" />
+        <Bar
+          stackId="used"
+          dataKey="holidayHours"
+          name="used"
+          fill={colors.leave}
+        />
         <Bar
           stackId="padiPL"
           dataKey="paidParentalLeaveHours"
           name="paid parental leave"
-          fill="#ffb6c1"
+          fill={colors.paidParentalLeave}
         />
         <Bar
           stackId="unPaidPL"
           dataKey="unpaidParentalLeaveHours"
           name="unpaid parental leave"
-          fill="#87cefa"
+          fill={colors.unpaidParentalLeave}
         />
         <Bar
           stackId="paidLeave"
           dataKey="paidLeaveHours"
           name="paid leave"
-          fill="#90ee90"
+          fill={colors.paidLeave}
         />
         <Bar
           stackId="used"
           dataKey="availableHours"
           name="available"
-          fill="#d2d2d2"
+          fill={colors.available}
         />
       </BarChart>
     </ResponsiveContainer>

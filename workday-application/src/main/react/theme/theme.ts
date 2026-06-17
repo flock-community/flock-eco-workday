@@ -1,9 +1,5 @@
-import { themeLight } from './theme-light';
+import { type ColorMode, createAppTheme } from './createAppTheme';
 
-export function getTheme(theme) {
-  if (theme) {
-    return themeLight;
-  }
-  // default
-  return themeLight;
+export function getTheme(mode?: ColorMode) {
+  return createAppTheme(mode === 'dark' ? 'dark' : 'light');
 }

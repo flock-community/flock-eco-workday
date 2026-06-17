@@ -1,5 +1,6 @@
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import MoneyIcon from '@mui/icons-material/Money';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import { Box, Card, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -7,7 +8,6 @@ import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { styled } from '@mui/material/styles';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useState } from 'react';
@@ -16,19 +16,6 @@ import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { StatusMenu } from '../../components/status/StatusMenu';
 import type { DayListProps } from '../../types';
 import type { Expense, ExpenseStatus } from '../../wirespec/model';
-
-const PREFIX = 'ExpenseList';
-
-const classes = {
-  list: `${PREFIX}List`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({
-  [`& .${classes.list}`]: (loading) => ({
-    opacity: loading ? 0.5 : 1,
-  }),
-});
 
 export function ExpenseList({
   personId,
@@ -81,10 +68,31 @@ export function ExpenseList({
         ? item?.costDetails?.amount
         : item?.travelDetails?.distance * item?.travelDetails?.allowance;
 
+    const formattedAmount = totalAmount?.toLocaleString('nl-NL', {
+      style: 'currency',
+      currency: 'EUR',
+    });
+
     return (
       <Grid key={`workday-list-item-${item.id}`} size={{ xs: 12 }}>
-        <Card onClick={handleClickRow(item)}>
+        <Card
+          onClick={handleClickRow(item)}
+          sx={{
+            cursor: 'pointer',
+            transition:
+              'transform 160ms ease, box-shadow 200ms ease, border-color 160ms ease',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: 4,
+              borderColor: 'text.disabled',
+            },
+          }}
+        >
           <CardHeader
+            slotProps={{
+              title: { component: 'div' },
+              subheader: { component: 'div' },
+            }}
             action={
               <StatusMenu
                 onChange={handleStatusChange(item)}
@@ -93,23 +101,26 @@ export function ExpenseList({
               />
             }
             title={
-              <>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 {item.expenseType === 'TRAVEL' ? (
-                  <DriveEtaIcon sx={{ verticalAlign: 'middle' }} />
+                  <DriveEtaIcon fontSize="small" color="action" />
                 ) : (
-                  <MoneyIcon sx={{ verticalAlign: 'middle' }} />
+                  <MoneyIcon fontSize="small" color="action" />
                 )}
-                {item.description ? item.description : 'empty'}
-              </>
+                <span>{item.description ? item.description : 'Untitled'}</span>
+              </Box>
             }
             subheader={
-              <Typography>
-                Date: {dayjs(item.date).format('DD-MM-YYYY')} | Total:{' '}
-                {totalAmount?.toLocaleString('nl-NL', {
-                  style: 'currency',
-                  currency: 'EUR',
-                })}
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <span>{dayjs(item.date).format('DD-MM-YYYY')}</span>
+                <span aria-hidden>&middot;</span>
+                <Box
+                  component="span"
+                  sx={{ fontWeight: 600, color: 'text.primary' }}
+                >
+                  {formattedAmount}
+                </Box>
+              </Box>
             }
           />
           <List>
@@ -134,21 +145,37 @@ export function ExpenseList({
   if (items.length === 0 && !loading) {
     return (
       <Card>
-        <CardContent>
-          <Typography>No expenses</Typography>
+        <CardContent
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            gap: 1,
+            py: 6,
+          }}
+        >
+          <ReceiptLongIcon
+            sx={{ fontSize: 40, color: 'text.disabled' }}
+            aria-hidden
+          />
+          <Typography variant="h6">No expenses</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Expenses you add will show up here.
+          </Typography>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Root>
-      <Grid
-        container
-        spacing={1}
-        className={classes.list}
-        style={{ opacity: loading ? 0.5 : 1 }}
-      >
+    <Box
+      sx={{
+        opacity: loading ? 0.5 : 1,
+        transition: 'opacity 160ms ease',
+      }}
+    >
+      <Grid container spacing={1}>
         {items.map(renderItem)}
       </Grid>
       <Box mt={2}>
@@ -159,6 +186,6 @@ export function ExpenseList({
           changePageCb={setPage}
         />
       </Box>
-    </Root>
+    </Box>
   );
 }

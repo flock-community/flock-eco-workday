@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import { useMemo } from 'react';
@@ -13,6 +14,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { useChartColors } from '../../theme/chartColors';
 
 type HoursOverviewCardProps = {
   totalPerPersonMe: any;
@@ -23,6 +25,8 @@ const PCT_SUFFIX = 'Pct';
 export function HoursOverviewCard({
   totalPerPersonMe,
 }: HoursOverviewCardProps) {
+  const colors = useChartColors();
+  const referenceColor = useTheme().palette.text.secondary;
   const data = useMemo(() => {
     if (!totalPerPersonMe) return [];
 
@@ -106,7 +110,11 @@ export function HoursOverviewCard({
       <CardHeader title={'Hours overview'} />
       <CardContent>
         <ResponsiveContainer width="100%" height={height}>
-          <BarChart data={data} layout="vertical">
+          <BarChart
+            data={data}
+            layout="vertical"
+            margin={{ top: 8, right: 28, bottom: 0, left: 8 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               type="number"
@@ -133,61 +141,61 @@ export function HoursOverviewCard({
               stackId="days"
               dataKey="workDaysPct"
               name="worked hours"
-              fill="#1de8b5"
+              fill={colors.worked}
             />
             <Bar
               stackId="days"
               dataKey="leaveDayUsedPct"
               name="leave hours"
-              fill="#42a5f5"
+              fill={colors.leave}
             />
             <Bar
               stackId="days"
               dataKey="paidLeaveHoursPct"
               name="paid leave"
-              fill="#AB47BC"
+              fill={colors.paidLeave}
             />
             <Bar
               stackId="days"
               dataKey="paidParentalLeaveUsedPct"
               name="paid parental leave"
-              fill="#FFB6C1"
+              fill={colors.paidParentalLeave}
             />
             <Bar
               stackId="days"
               dataKey="unpaidParentalLeaveUsedPct"
               name="unpaid parental leave"
-              fill="#87CEFA"
+              fill={colors.unpaidParentalLeave}
             />
             <Bar
               stackId="days"
               dataKey="sickDaysPct"
               name="sick hours"
-              fill="#ef5350"
+              fill={colors.sick}
             />
             <Bar
               stackId="days"
               dataKey="eventPct"
               name="event hours"
-              fill="#fed766"
+              fill={colors.event}
             />
             {hasMissing && (
               <Bar
                 stackId="days"
                 dataKey="missingPct"
                 name="missing hours"
-                fill="#9e9e9e"
+                fill={colors.missing}
               />
             )}
             {hasOverBudget && (
               <ReferenceLine
                 x={100}
-                stroke="#616161"
+                stroke={referenceColor}
                 strokeDasharray="4 4"
                 label={{
                   value: 'budget',
                   position: 'top',
-                  fill: '#616161',
+                  fill: referenceColor,
                   fontSize: 12,
                 }}
               />

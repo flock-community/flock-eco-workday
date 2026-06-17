@@ -44,8 +44,8 @@ export function DropzoneArea({
         {...getRootProps()}
         sx={{
           border: '3px dashed',
-          borderColor: isDragActive ? 'primary.main' : '#C8C8C8',
-          backgroundColor: isDragActive ? 'action.hover' : '#F0F0F0',
+          borderColor: isDragActive ? 'primary.main' : 'divider',
+          backgroundColor: isDragActive ? 'action.selected' : 'action.hover',
           padding: 3,
           textAlign: 'center',
           cursor: 'pointer',
