@@ -32,11 +32,15 @@ describe('ContractFormInternal - CTR-01: training budget fields (structural)', (
   });
 
   it('initializes trainingTimeBudget with default value 0 in schema or init', () => {
-    expect(source).toMatch(/trainingTimeBudget[\s\S]{0,100}(default\(0\)|:\s*0)/);
+    expect(source).toMatch(
+      /trainingTimeBudget[\s\S]{0,100}(default\(0\)|:\s*0)/,
+    );
   });
 
   it('initializes trainingMoneyBudget with default value 0 in schema or init', () => {
-    expect(source).toMatch(/trainingMoneyBudget[\s\S]{0,100}(default\(0\)|:\s*0)/);
+    expect(source).toMatch(
+      /trainingMoneyBudget[\s\S]{0,100}(default\(0\)|:\s*0)/,
+    );
   });
 
   it('has trainingTimeBudget and trainingMoneyBudget fields alongside existing hackTimeBudget', () => {
