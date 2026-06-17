@@ -26,7 +26,7 @@ class LoadAssignmentData(
                 "client_a",
                 "DevOps engineer",
                 90.0,
-                now.minusMonths(3),
+                now.minusMonths(12),
                 projectName = "Project A1",
             )
             create(

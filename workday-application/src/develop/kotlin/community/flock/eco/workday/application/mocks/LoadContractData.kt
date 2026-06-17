@@ -24,7 +24,7 @@ class LoadContractData(
 
     init {
         loadData.load {
-            create("tommy@sesam.straat", ContractType.EXTERNAL, now.minusMonths(2))
+            create("tommy@sesam.straat", ContractType.EXTERNAL, now.minusMonths(12))
             create(
                 email = "ieniemienie@sesam.straat",
                 type = ContractType.INTERNAL,
