@@ -21,7 +21,11 @@
       "@workday-core": ["workday-core/src/main/react"],
       "@workday-core/*": ["workday-core/src/main/react/*"],
       "@workday-user": ["workday-user/src/main/react"],
-      "@workday-user/*": ["workday-user/src/main/react/*"]
+      "@workday-user/*": ["workday-user/src/main/react/*"],
+      "@flock/wirespec/fetch": ["node_modules/@flock/wirespec/wirespec-fetch"],
+      "@flock/wirespec/serialization": [
+        "node_modules/@flock/wirespec/wirespec-serialization"
+      ]
     }
   },
   "include": [

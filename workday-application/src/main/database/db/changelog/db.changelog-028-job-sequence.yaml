@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-028-job-sequence
+      author: claude
+      comment: Add missing job_seq sequence for Hibernate 6 entity ID generation
+      changes:
+        - createSequence:
+            sequenceName: job_seq
+            startValue: 1
+            incrementBy: 50
