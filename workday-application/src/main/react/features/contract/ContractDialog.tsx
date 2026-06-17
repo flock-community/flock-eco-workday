@@ -75,8 +75,10 @@ export function ContractDialog({ open, code, onClose }: ContractDialogProps) {
             monthlySalary: it.monthlySalary,
             hoursPerWeek: it.hoursPerWeek,
             holidayHours: it.holidayHours,
-            hackHours: it.hackHours,
+            hackTimeBudget: it.hackTimeBudget,
             billable: it.billable,
+            trainingTimeBudget: it.trainingTimeBudget,
+            trainingMoneyBudget: it.trainingMoneyBudget,
             from,
             to,
           } satisfies ContractInternalForm;

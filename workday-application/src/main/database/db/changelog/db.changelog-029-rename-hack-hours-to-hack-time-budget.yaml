@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-029-rename-hack-hours-to-hack-time-budget
+      author: rkorver
+      changes:
+        - renameColumn:
+            tableName: contract_internal
+            oldColumnName: hack_hours
+            newColumnName: hack_time_budget
+            columnDataType: integer

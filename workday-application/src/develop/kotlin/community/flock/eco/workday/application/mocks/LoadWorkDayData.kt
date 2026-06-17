@@ -15,6 +15,7 @@ class LoadWorkDayData(
     private val loadData: LoadData,
     private val workDayService: WorkDayService,
     loadAssignmentData: LoadAssignmentData,
+    usersWithDefinedHours: UsersWithDefinedHours,
 ) {
     val now: LocalDate = LocalDate.now()
     val data: MutableSet<WorkDay> = mutableSetOf()
@@ -36,6 +37,7 @@ class LoadWorkDayData(
             val now = LocalDate.now()
             loadAssignmentData.data
                 .filter { it.to.let { date -> date == null || date > now } }
+                .filter { it.person !in usersWithDefinedHours.persons }
                 .map { assignment ->
                     (1..12)
                         .map {

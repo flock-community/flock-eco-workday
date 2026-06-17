@@ -68,6 +68,7 @@ export function MonthFeature() {
         it.total -
           (it.workDays +
             it.leaveDayUsed +
+            it.paidLeaveHours +
             it.sickDays +
             it.event +
             it.paidParentalLeaveUsed +

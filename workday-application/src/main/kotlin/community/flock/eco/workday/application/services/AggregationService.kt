@@ -274,6 +274,10 @@ class AggregationService(
                     .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                     .sum()
                     .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
+            paidLeaveHours =
+                allData.leaveDay
+                    .filter { it.type == LeaveDayType.PAID_LEAVE }
+                    .totalHoursInPeriod(from, to),
             paidParentalLeaveUsed =
                 allData.leaveDay
                     .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
@@ -339,6 +343,11 @@ class AggregationService(
                             .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                             .sum()
                             .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
+                    paidLeaveHours =
+                        all.leaveDay
+                            .filter { it.type == LeaveDayType.PAID_LEAVE }
+                            .filter { it.person == person }
+                            .totalHoursInPeriod(from, to),
                     paidParentalLeaveUsed =
                         all.leaveDay
                             .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
