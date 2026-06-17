@@ -48,6 +48,7 @@ interface EventBudgetManagementSectionProps {
   initialTimeParticipants?: PersonTimeAllocation[];
   initialMoneyParticipants?: PersonMoneyAllocation[];
   readOnly?: boolean;
+  moneyReadOnly?: boolean;
 }
 
 export function EventBudgetManagementSection({
@@ -61,9 +62,11 @@ export function EventBudgetManagementSection({
   initialTimeParticipants,
   initialMoneyParticipants,
   readOnly = false,
+  moneyReadOnly = false,
 }: EventBudgetManagementSectionProps) {
   // Track whether initial API data has been applied (only once per dialog open)
   const initialLoadedRef = useRef(false);
+  const initialTimeLoadedRef = useRef(false);
 
   const [budgetExpanded, setBudgetExpanded] = useState(false);
 
@@ -96,10 +99,11 @@ export function EventBudgetManagementSection({
     formValues.type === EventType.FLOCK_HACK_DAY ||
     formValues.type === EventType.CONFERENCE;
 
-  // Reset initialLoadedRef when participants go to 0 (dialog reopened)
+  // Reset initial-load guards when participants go to 0 (dialog reopened)
   useEffect(() => {
     if (participantIds.length === 0) {
       initialLoadedRef.current = false;
+      initialTimeLoadedRef.current = false;
     }
   }, [participantIds.length]);
 
@@ -107,6 +111,14 @@ export function EventBudgetManagementSection({
   // Money: new participants get equal share of remaining budget, existing keep their amounts
   // Admin adjusts manually — "allocated vs total" indicator shows the gap
   useEffect(() => {
+    // Decide outside the state updater (StrictMode double-invokes updaters): apply the
+    // API-loaded time allocations once, whenever they arrive, regardless of mount timing.
+    const applyInitialTime =
+      !initialTimeLoadedRef.current &&
+      !!initialTimeParticipants &&
+      initialTimeParticipants.length > 0;
+    if (applyInitialTime) initialTimeLoadedRef.current = true;
+
     setMoneyParticipants((prev) => {
       const participantCount = participantIds.length;
       if (participantCount === 0) return [];
@@ -188,12 +200,7 @@ export function EventBudgetManagementSection({
     });
 
     setTimeParticipants((prev) => {
-      // On first render with empty prev, use initial data from API if available
-      if (
-        prev.length === 0 &&
-        initialTimeParticipants &&
-        initialTimeParticipants.length > 0
-      ) {
+      if (applyInitialTime && initialTimeParticipants) {
         const initialMap = new Map(
           initialTimeParticipants.map((p) => [p.personId, p]),
         );
@@ -252,14 +259,16 @@ export function EventBudgetManagementSection({
       });
       return newSet;
     });
-  }, [participantIds, persons, totalBudget]);
+  }, [participantIds, persons, totalBudget, initialTimeParticipants]);
 
-  // React to defaultTimeAllocationType changes: update untouched time allocations
+  // Revert untouched participants to the default only on an actual type flip — NOT on the
+  // initial mount, where doing so would wipe the per-person overrides just loaded from the API.
+  const prevDefaultBudgetTypeRef = useRef(defaultBudgetType);
   useEffect(() => {
+    if (prevDefaultBudgetTypeRef.current === defaultBudgetType) return;
+    prevDefaultBudgetTypeRef.current = defaultBudgetType;
     if (timeParticipants.length === 0) return;
 
-    // For participants not manually edited, clear their custom periods (revert to defaults)
-    // This forces them to use the new defaultTimeAllocationType
     const updated = timeParticipants.map((p) => {
       if (dirtyTime.has(p.personId)) return p; // Preserve manual edits
       return { ...p, trainingPeriod: null, hackPeriod: null };
@@ -606,6 +615,7 @@ export function EventBudgetManagementSection({
                       totalBudget={totalBudget}
                       participants={moneyParticipants}
                       onParticipantsChange={handleMoneyParticipantsChange}
+                      readOnly={moneyReadOnly}
                     />
                   </AccordionDetails>
                 </Accordion>

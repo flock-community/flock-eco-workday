@@ -2,11 +2,15 @@ import dayjs from 'dayjs';
 import type {
   BudgetAllocation,
   DailyTimeAllocationItem,
+  HackTimeAllocationInput,
 } from '../../wirespec/model';
+import type { PersonTimeAllocation } from './EventTimeAllocationSection';
 import {
   apiAllocationsToMoneyParticipants,
   apiAllocationsToTimeParticipants,
   dailyAllocationsToPeriod,
+  diffTimeOverrides,
+  periodToDailyAllocations,
 } from './eventBudgetTransformers';
 
 describe('dailyAllocationsToPeriod', () => {
@@ -255,5 +259,157 @@ describe('apiAllocationsToMoneyParticipants', () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].amount).toBe(0);
+  });
+});
+
+describe('periodToDailyAllocations', () => {
+  it('maps positional days to dates and drops zero-hour days', () => {
+    const period = {
+      from: dayjs('2026-03-10'),
+      to: dayjs('2026-03-12'),
+      days: [8, 0, 4],
+    };
+
+    expect(periodToDailyAllocations(period, 'HACK')).toEqual([
+      { date: '2026-03-10', hours: 8, type: 'HACK' },
+      { date: '2026-03-12', hours: 4, type: 'HACK' },
+    ]);
+  });
+
+  it('returns an empty array when the period has no days', () => {
+    const period = {
+      from: dayjs('2026-03-10'),
+      to: dayjs('2026-03-10'),
+      days: [],
+    };
+    expect(periodToDailyAllocations(period, 'TRAINING')).toEqual([]);
+  });
+});
+
+describe('diffTimeOverrides', () => {
+  const eventFrom = dayjs('2026-03-10');
+  const eventDefaultDays = [8, 8]; // 2-day event, 8h/day
+  const defaultBudgetType = 'HACK' as const;
+
+  const defaultHackDaily: DailyTimeAllocationItem[] = [
+    { date: '2026-03-10', hours: 8, type: 'HACK' },
+    { date: '2026-03-11', hours: 8, type: 'HACK' },
+  ];
+
+  const fullDay = (days: number[]) => ({
+    from: eventFrom,
+    to: eventFrom.add(days.length - 1, 'day'),
+    days,
+  });
+
+  const hackAllocation = (
+    id: string,
+    personId: string,
+    daily: DailyTimeAllocationItem[],
+  ): BudgetAllocation => ({
+    id,
+    personId,
+    eventCode: 'EVT1',
+    date: '2026-03-10',
+    description: undefined,
+    type: 'HACK_TIME',
+    hackTimeDetails: {
+      totalHours: daily.reduce((sum, d) => sum + d.hours, 0),
+      dailyAllocations: daily,
+    },
+    trainingTimeDetails: undefined,
+    trainingMoneyDetails: undefined,
+  });
+
+  const run = (
+    fresh: BudgetAllocation[],
+    participants: PersonTimeAllocation[],
+  ) =>
+    diffTimeOverrides(
+      fresh,
+      participants,
+      eventDefaultDays,
+      defaultBudgetType,
+      'EVT1',
+      eventFrom,
+    );
+
+  it('leaves a participant on the default untouched', () => {
+    const diff = run(
+      [hackAllocation('a1', 'p1', defaultHackDaily)],
+      [
+        {
+          personId: 'p1',
+          personName: 'Alice Smith',
+          hackPeriod: fullDay([8, 8]),
+          trainingPeriod: null,
+        },
+      ],
+    );
+
+    expect(diff.toCreate).toHaveLength(0);
+    expect(diff.toUpdate).toHaveLength(0);
+    expect(diff.toDelete).toHaveLength(0);
+  });
+
+  it('updates the fresh row when a participant deviates from the default', () => {
+    const { toCreate, toUpdate, toDelete } = run(
+      [hackAllocation('a1', 'p1', defaultHackDaily)],
+      [
+        {
+          personId: 'p1',
+          personName: 'Alice Smith',
+          hackPeriod: fullDay([8, 4]),
+          trainingPeriod: null,
+        },
+      ],
+    );
+
+    expect(toCreate).toHaveLength(0);
+    expect(toDelete).toHaveLength(0);
+    expect(toUpdate).toHaveLength(1);
+    expect(toUpdate[0].type).toBe('hack');
+    expect(toUpdate[0].id).toBe('a1');
+    const input = toUpdate[0].input as HackTimeAllocationInput;
+    expect(input.dailyAllocations).toEqual([
+      { date: '2026-03-10', hours: 8, type: 'HACK' },
+      { date: '2026-03-11', hours: 4, type: 'HACK' },
+    ]);
+  });
+
+  it('creates an override when no fresh row exists for the deviation', () => {
+    const diff = run(
+      [],
+      [
+        {
+          personId: 'p1',
+          personName: 'Alice Smith',
+          hackPeriod: fullDay([8, 4]),
+          trainingPeriod: null,
+        },
+      ],
+    );
+
+    expect(diff.toUpdate).toHaveLength(0);
+    expect(diff.toCreate).toHaveLength(1);
+    expect(diff.toCreate[0].type).toBe('hack');
+  });
+
+  it('switches type: deletes the default-type row and creates the other type', () => {
+    const diff = run(
+      [hackAllocation('a1', 'p1', defaultHackDaily)],
+      [
+        {
+          personId: 'p1',
+          personName: 'Alice Smith',
+          hackPeriod: null,
+          trainingPeriod: fullDay([8, 8]),
+        },
+      ],
+    );
+
+    expect(diff.toDelete).toEqual(['a1']);
+    expect(diff.toCreate).toHaveLength(1);
+    expect(diff.toCreate[0].type).toBe('training');
   });
 });

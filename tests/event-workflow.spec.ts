@@ -32,12 +32,18 @@ import {
   Then_budget_tab_shows_event_allocation,
   Then_collapsed_banner_shows_money_summary,
   Then_event_list_contains,
+  Then_participant_hours_equals,
   When_I_add_participant,
   When_I_add_second_participant,
   When_I_click_add_event,
+  When_I_customize_participant_hours,
+  When_I_ensure_participant_customized,
+  When_I_expand_budget_accordion,
+  When_I_expand_time_accordion,
   When_I_fill_event_form,
   When_I_open_event_by_description,
   When_I_remove_participant_from_event,
+  When_I_save_event,
   When_I_submit_event_form,
 } from './steps/eventSteps';
 
@@ -200,17 +206,25 @@ test.describe('Event Workflow - Modify Allocations', () => {
     });
   });
 
-  // EVNT-02: Modify event allocation hours per day
-  // SKIPPED: Backend recalculates default allocations on every save — custom per-person
-  // hour overrides are NOT persisted. The EventBudgetManagementSection is read-only.
-  // Re-enable when per-person override persistence is implemented.
-  test.fixme(
-    'EVNT-02: Modify event allocation hours per day',
-    async ({ page }) => {
-      await Given_I_am_on_events_page(page, 'bert');
-      await When_I_open_event_by_description(page, 'PW Test Hack Day');
-    },
-  );
+  // Override must survive the backend's re-sync to defaults on save (money stays backend-managed).
+  test('EVNT-02: Per-person hour overrides persist across reopen', async ({
+    page,
+  }) => {
+    await Given_I_am_on_events_page(page, 'bert');
+    await When_I_open_event_by_description(page, 'PW Test Hack Day');
+
+    await When_I_expand_budget_accordion(page);
+    await When_I_expand_time_accordion(page);
+    await When_I_ensure_participant_customized(page, 'Pino');
+    await When_I_customize_participant_hours(page, 'Pino', 'Hack Time', 0, '4');
+
+    await When_I_save_event(page);
+
+    await When_I_open_event_by_description(page, 'PW Test Hack Day');
+    await When_I_expand_budget_accordion(page);
+    await When_I_expand_time_accordion(page);
+    await Then_participant_hours_equals(page, 'Pino', 'Hack Time', 0, '4');
+  });
 
   test('EVNT-03: Add and remove participants from event allocations', async ({
     page,

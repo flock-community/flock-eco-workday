@@ -274,6 +274,52 @@ export async function When_I_customize_participant_hours(
   await targetInput.fill(hours);
 }
 
+// Skips Customize when the row already shows "Remove Custom" (loaded with allocations).
+export async function When_I_ensure_participant_customized(
+  page: Page,
+  personName: string,
+) {
+  const showAll = page.getByRole('button', {
+    name: /Show all participants/i,
+  });
+  if (await showAll.isVisible().catch(() => false)) {
+    await showAll.click();
+  }
+
+  const customizeButton = page
+    .locator('div')
+    .filter({ hasText: new RegExp(personName) })
+    .filter({ has: page.getByRole('button', { name: 'Customize' }) })
+    .first()
+    .getByRole('button', { name: 'Customize' });
+
+  if (await customizeButton.isVisible().catch(() => false)) {
+    await When_I_customize_participant_allocation(page, personName);
+  }
+}
+
+export async function Then_participant_hours_equals(
+  page: Page,
+  personName: string,
+  periodType: 'Training Time' | 'Hack Time',
+  dayIndex: number,
+  hours: string,
+) {
+  const participantBox = page
+    .locator('div')
+    .filter({ hasText: new RegExp(`^.*${personName}.*$`) })
+    .filter({ has: page.getByRole('button', { name: 'Remove Custom' }) })
+    .first();
+  await participantBox.scrollIntoViewIfNeeded();
+
+  const heading = participantBox.getByText(periodType, { exact: true }).first();
+  const periodSection = heading.locator('..').locator('..');
+  const numberInputs = periodSection.locator(
+    'input[type="number"]:not([disabled])',
+  );
+  await expect(numberInputs.nth(dayIndex)).toHaveValue(hours);
+}
+
 /**
  * Remove a participant from the event by deselecting them in the Person MUI multi-Select.
  * The PersonSelector uses a standard MUI Select (not Autocomplete), so toggling

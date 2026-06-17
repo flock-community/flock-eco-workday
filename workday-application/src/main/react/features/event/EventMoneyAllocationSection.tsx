@@ -20,12 +20,14 @@ interface EventMoneyAllocationSectionProps {
   totalBudget: number; // Event costs (total budget)
   participants: PersonMoneyAllocation[];
   onParticipantsChange: (participants: PersonMoneyAllocation[]) => void;
+  readOnly?: boolean;
 }
 
 export function EventMoneyAllocationSection({
   totalBudget,
   participants,
   onParticipantsChange,
+  readOnly = false,
 }: EventMoneyAllocationSectionProps) {
   const totalAllocated = participants.reduce((sum, p) => sum + p.amount, 0);
   const remaining = totalBudget - totalAllocated;
@@ -65,35 +67,38 @@ export function EventMoneyAllocationSection({
           <Typography variant="h6">Money Allocation</Typography>
         </Box>
         <Typography variant="body2" color="text.secondary">
-          Allocate event budget across participants. Total must sum to event
-          budget (€{totalBudget.toLocaleString('nl-NL')}).
+          {readOnly
+            ? `Split evenly across participants on save (€${totalBudget.toLocaleString('nl-NL')} total).`
+            : `Allocate event budget across participants. Total must sum to event budget (€${totalBudget.toLocaleString('nl-NL')}).`}
         </Typography>
       </Box>
 
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" gutterBottom>
-          Quick Actions
-        </Typography>
-        <Stack direction="row" spacing={1} flexWrap="wrap">
-          <Button
-            size="small"
-            variant="outlined"
-            startIcon={<Calculate />}
-            onClick={handleDistributeEqually}
-          >
-            Distribute Equally
-          </Button>
-          <Button
-            size="small"
-            variant="outlined"
-            color="error"
-            startIcon={<Clear />}
-            onClick={handleClear}
-          >
-            Clear All
-          </Button>
-        </Stack>
-      </Box>
+      {!readOnly && (
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            Quick Actions
+          </Typography>
+          <Stack direction="row" spacing={1} flexWrap="wrap">
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<Calculate />}
+              onClick={handleDistributeEqually}
+            >
+              Distribute Equally
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              color="error"
+              startIcon={<Clear />}
+              onClick={handleClear}
+            >
+              Clear All
+            </Button>
+          </Stack>
+        </Box>
+      )}
 
       <Box
         sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}
@@ -153,6 +158,7 @@ export function EventMoneyAllocationSection({
                 size="small"
                 sx={{ width: 150 }}
                 inputProps={{ min: 0, step: 1 }}
+                disabled={readOnly}
               />
             </Box>
           ))}

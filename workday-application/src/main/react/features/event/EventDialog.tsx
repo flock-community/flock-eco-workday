@@ -17,6 +17,8 @@ import {
 } from '../../clients/EventClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { TransitionSlider } from '../../components/transitions/Slide';
+import type { EventBudgetType } from '../../utils/mappings';
+import type { BudgetAllocation } from '../../wirespec/model';
 import { mutatePeriod } from '../period/Period';
 import { EventBudgetManagementSection } from './EventBudgetManagementDialog';
 import { EVENT_FORM_ID, EventFormFields, eventFormSchema } from './EventForm';
@@ -25,6 +27,8 @@ import type { PersonTimeAllocation } from './EventTimeAllocationSection';
 import {
   apiAllocationsToMoneyParticipants,
   apiAllocationsToTimeParticipants,
+  diffTimeOverrides,
+  type TimeAllocationMutation,
 } from './eventBudgetTransformers';
 
 type EventDialogProps = {
@@ -32,6 +36,22 @@ type EventDialogProps = {
   code?: string;
   onComplete?: (item?: any) => void;
 };
+
+function createTimeAllocation(
+  m: TimeAllocationMutation,
+): Promise<BudgetAllocation> {
+  return m.type === 'hack'
+    ? BudgetAllocationClient.createHackTime(m.input)
+    : BudgetAllocationClient.createTrainingTime(m.input);
+}
+
+function updateTimeAllocation(
+  m: TimeAllocationMutation & { id: string },
+): Promise<BudgetAllocation> {
+  return m.type === 'hack'
+    ? BudgetAllocationClient.updateHackTime(m.id, m.input)
+    : BudgetAllocationClient.updateTrainingTime(m.id, m.input);
+}
 
 export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
@@ -44,6 +64,12 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const [initialMoneyParticipants, setInitialMoneyParticipants] = useState<
     PersonMoneyAllocation[] | undefined
   >(undefined);
+
+  const [budgetState, setBudgetState] = useState<{
+    timeParticipants: PersonTimeAllocation[];
+  }>({ timeParticipants: [] });
+  const [budgetsDirty, setBudgetsDirty] = useState(false);
+  const [showCloseWarning, setShowCloseWarning] = useState(false);
 
   // Raw form state: dates are Dayjs here and serialized on submit.
   const [state, setState] = useState<any>(undefined);
@@ -93,6 +119,8 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       setEventData(null);
       setInitialTimeParticipants(undefined);
       setInitialMoneyParticipants(undefined);
+      setBudgetState({ timeParticipants: [] });
+      setBudgetsDirty(false);
     }
   }, [open, code]);
 
@@ -116,8 +144,55 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     };
     const persist = code ? EventClient.put(code, body) : EventClient.post(body);
     persist.then((res) => {
-      onComplete?.(res);
+      const showTime = !!it.defaultTimeAllocationType;
+      if (!code || !showTime) {
+        setBudgetsDirty(false);
+        onComplete?.(res);
+        return;
+      }
+      const eventCode = res.code ?? code;
+      const eventFrom = dayjs(it.from);
+      const eventDefaultDays = (it.days ?? []).map(
+        (d) => parseFloat(String(d ?? 0)) || 0,
+      );
+      const defaultBudgetType = it.defaultTimeAllocationType as EventBudgetType;
+
+      // Re-read post-save so overrides re-apply onto the backend's fresh rows (reusing ids).
+      BudgetAllocationClient.findAll(undefined, undefined, eventCode)
+        .then((fresh) =>
+          diffTimeOverrides(
+            fresh,
+            budgetState.timeParticipants,
+            eventDefaultDays,
+            defaultBudgetType,
+            eventCode,
+            eventFrom,
+          ),
+        )
+        .then(({ toCreate, toUpdate, toDelete }) =>
+          Promise.all([
+            ...toDelete.map((id) => BudgetAllocationClient.deleteById(id)),
+            ...toCreate.map(createTimeAllocation),
+            ...toUpdate.map(updateTimeAllocation),
+          ]),
+        )
+        .catch((err) => {
+          console.error('Failed to save time allocation overrides:', err);
+        })
+        .finally(() => {
+          setBudgetsDirty(false);
+          onComplete?.(res);
+        });
     });
+  };
+
+  const handleBudgetStateChange = (next: {
+    moneyParticipants: PersonMoneyAllocation[];
+    timeParticipants: PersonTimeAllocation[];
+    dirty: boolean;
+  }) => {
+    setBudgetState({ timeParticipants: next.timeParticipants });
+    setBudgetsDirty(next.dirty);
   };
 
   const handleDelete = () => {
@@ -133,6 +208,15 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     setOpenDelete(false);
   };
   const handleClose = () => {
+    if (budgetsDirty) {
+      setShowCloseWarning(true);
+    } else {
+      onComplete?.();
+    }
+  };
+  const handleConfirmClose = () => {
+    setBudgetsDirty(false);
+    setShowCloseWarning(false);
     onComplete?.();
   };
 
@@ -186,9 +270,10 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
                         setTimeExpanded={setTimeBudgetExpanded}
                         moneyExpanded={moneyBudgetExpanded}
                         setMoneyExpanded={setMoneyBudgetExpanded}
+                        onBudgetStateChange={handleBudgetStateChange}
                         initialTimeParticipants={initialTimeParticipants}
                         initialMoneyParticipants={initialMoneyParticipants}
-                        readOnly
+                        moneyReadOnly
                       />
                     </Grid>
                   )}
@@ -222,6 +307,13 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         onConfirm={handleDelete}
       >
         <Typography>Are you sure you want to remove this event?</Typography>
+      </ConfirmDialog>
+      <ConfirmDialog
+        open={showCloseWarning}
+        onClose={() => setShowCloseWarning(false)}
+        onConfirm={handleConfirmClose}
+      >
+        <Typography>You have unsaved budget changes. Close anyway?</Typography>
       </ConfirmDialog>
     </>
   );
