@@ -45,6 +45,7 @@ services:
     environment:
       - BASE_URL=http://frontend:3000
       - SKIP_WEB_SERVER=true
+      - CI=true
     command: sh -c "npm ci && npx playwright test"
     depends_on:
       frontend:
