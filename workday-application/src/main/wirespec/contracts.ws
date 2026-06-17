@@ -42,12 +42,14 @@ type Contract {
   monthlySalary: Number?,
   hoursPerWeek: Integer32?,
   holidayHours: Integer32?,
-  hackHours: Integer32?,
+  hackTimeBudget: Integer32?,
   hourlyRate: Number?,
   monthlyFee: Number?,
   monthlyCosts: Number?,
   description: String?,
-  billable: Boolean?
+  billable: Boolean?,
+  trainingTimeBudget: Integer32?,
+  trainingMoneyBudget: Number?
 }
 enum ContractType {
   INTERNAL, EXTERNAL, MANAGEMENT, SERVICE
@@ -60,8 +62,10 @@ type ContractInternalForm {
   from: String?,
   to: String?,
   holidayHours: Integer32?,
-  hackHours: Integer32?,
-  billable: Boolean?
+  hackTimeBudget: Integer32?,
+  billable: Boolean?,
+  trainingTimeBudget: Integer32?,
+  trainingMoneyBudget: Number?
 }
 type ContractInternal {
   id: Integer?,
@@ -73,8 +77,10 @@ type ContractInternal {
   monthlySalary: Number?,
   hoursPerWeek: Integer32?,
   holidayHours: Integer32?,
-  hackHours: Integer32?,
-  billable: Boolean?
+  hackTimeBudget: Integer32?,
+  billable: Boolean?,
+  trainingTimeBudget: Integer32?,
+  trainingMoneyBudget: Number?
 }
 
 type ContractExternalForm {
