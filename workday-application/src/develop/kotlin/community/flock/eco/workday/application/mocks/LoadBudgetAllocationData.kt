@@ -136,7 +136,33 @@ class LoadBudgetAllocationData(
                 dayCount = 2,
             )
 
-            // --- Person C (bert): Standalone TrainingMoney only ---
+            // --- Person C (bert, ADMIN): full coverage across all 3 budget types (primary demo user) ---
+
+            createHackTimeAllocation(
+                person = personC,
+                eventCode = hackDayEvents.getOrNull(5)?.code,
+                date = LocalDate.of(currentYear, 2, 14),
+                description = "Hack Day - February",
+                totalHours = 40.0,
+                dayCount = 5,
+            )
+            createHackTimeAllocation(
+                person = personC,
+                eventCode = hackDayEvents.getOrNull(6)?.code,
+                date = LocalDate.of(currentYear, 5, 14),
+                description = "Hack Day - May",
+                totalHours = 24.0,
+                dayCount = 3,
+            )
+
+            createTrainingTimeAllocation(
+                person = personC,
+                eventCode = conferenceEvents.getOrNull(0)?.code,
+                date = LocalDate.of(currentYear, 4, 10),
+                description = "KotlinConf",
+                totalHours = 40.0,
+                dayCount = 5,
+            )
 
             createTrainingMoneyAllocation(
                 person = personC,
@@ -144,6 +170,20 @@ class LoadBudgetAllocationData(
                 date = LocalDate.of(currentYear, 1, 15),
                 description = "UX design workshop",
                 amount = BigDecimal("750.00"),
+            )
+            createTrainingMoneyAllocation(
+                person = personC,
+                eventCode = null,
+                date = LocalDate.of(currentYear, 3, 1),
+                description = "O'Reilly learning subscription",
+                amount = BigDecimal("499.00"),
+            )
+            createTrainingMoneyAllocation(
+                person = personC,
+                eventCode = null,
+                date = LocalDate.of(currentYear, 5, 20),
+                description = "Cloud certification exam",
+                amount = BigDecimal("1200.00"),
             )
         }
     }
