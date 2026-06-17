@@ -110,7 +110,7 @@ class JobController(
     private fun getMediaType(name: String): MediaType {
         val extension = File(name).extension.lowercase()
         val mime = MimeMappings.DEFAULT[extension]
-        return MediaType.parseMediaType(mime)
+        return mime?.let { MediaType.parseMediaType(it) } ?: MediaType.APPLICATION_OCTET_STREAM
     }
 }
 

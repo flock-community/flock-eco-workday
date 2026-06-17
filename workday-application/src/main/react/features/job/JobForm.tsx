@@ -120,7 +120,7 @@ export function JobForm({ value, onSubmit }: JobFormProps) {
 
   return (
     <Formik
-      initialValues={{ ...JOB_FORM_SCHEMA.cast(), ...init }}
+      initialValues={{ ...JOB_FORM_SCHEMA.getDefault(), ...init }}
       onSubmit={handleSubmit}
       validationSchema={JOB_FORM_SCHEMA}
       enableReinitialize

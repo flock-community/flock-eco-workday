@@ -60,6 +60,7 @@ class JobService(
     private fun JobForm.internalize(it: Job? = null) =
         Job(
             id = it?.id ?: 0,
+            code = it?.code ?: UUID.randomUUID().toString(),
             title = this.title,
             description = this.description,
             hourlyRate = this.hourlyRate,
