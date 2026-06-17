@@ -2,6 +2,8 @@ import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
+const backendUrl = process.env.VITE_BACKEND_URL || 'http://localhost:8080';
+
 export default defineConfig({
   plugins: [
     react({
@@ -38,39 +40,40 @@ export default defineConfig({
   server: {
     port: 3000,
     host: 'localhost',
+    allowedHosts: ['frontend'],
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: backendUrl,
         changeOrigin: false,
         cookieDomainRewrite: 'localhost',
       },
       '/login': {
-        target: 'http://localhost:8080',
+        target: backendUrl,
         changeOrigin: false,
         cookieDomainRewrite: 'localhost',
       },
       '/logout': {
-        target: 'http://localhost:8080',
+        target: backendUrl,
         changeOrigin: false,
         cookieDomainRewrite: 'localhost',
       },
       '/bootstrap': {
-        target: 'http://localhost:8080',
+        target: backendUrl,
         changeOrigin: false,
         cookieDomainRewrite: 'localhost',
       },
       '/tasks': {
-        target: 'http://localhost:8080',
+        target: backendUrl,
         changeOrigin: false,
         cookieDomainRewrite: 'localhost',
       },
       '/export': {
-        target: 'http://localhost:8080',
+        target: backendUrl,
         changeOrigin: false,
         cookieDomainRewrite: 'localhost',
       },
       '/oauth2': {
-        target: 'http://localhost:8080',
+        target: backendUrl,
         changeOrigin: false,
         cookieDomainRewrite: 'localhost',
       },

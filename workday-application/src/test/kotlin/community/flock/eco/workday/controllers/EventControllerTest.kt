@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -91,17 +93,21 @@ class EventControllerTest : WorkdayIntegrationTest() {
     ).run { eventService.create(this) }
 
     @Test
-    fun `should get hack-day events`() {
-        val event = createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3), type = EventType.FLOCK_HACK_DAY)
+    fun `should get all events of a year regardless of type`() {
+        val hackDay = createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3), type = EventType.FLOCK_HACK_DAY)
         createEvent(LocalDate.of(2024, 4, 2), LocalDate.of(2024, 4, 3), type = EventType.FLOCK_HACK_DAY)
-        createEvent(LocalDate.of(2023, 6, 2), LocalDate.of(2023, 6, 3), type = EventType.FLOCK_COMMUNITY_DAY)
+        val communityDay =
+            createEvent(LocalDate.of(2023, 6, 2), LocalDate.of(2023, 6, 3), type = EventType.FLOCK_COMMUNITY_DAY)
+        val generalEvent =
+            createEvent(LocalDate.of(2023, 12, 30), LocalDate.of(2023, 12, 31), type = EventType.GENERAL_EVENT)
 
         mvc
             .perform(
-                get("$baseUrl/hack-days?year=2023")
+                get("$baseUrl/year?year=2023")
                     .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
                     .accept(MediaType.APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(
                 content().json(
@@ -109,11 +115,22 @@ class EventControllerTest : WorkdayIntegrationTest() {
                     """
                     [
                       {
-                        "description": "Henk",
-                        "code": "${event.code}",
+                        "type": "FLOCK_HACK_DAY",
+                        "code": "${hackDay.code}",
                         "from": "2023-02-02",
-                        "to": "2023-02-03",
-                        "persons": []
+                        "to": "2023-02-03"
+                      },
+                      {
+                        "type": "FLOCK_COMMUNITY_DAY",
+                        "code": "${communityDay.code}",
+                        "from": "2023-06-02",
+                        "to": "2023-06-03"
+                      },
+                      {
+                        "type": "GENERAL_EVENT",
+                        "code": "${generalEvent.code}",
+                        "from": "2023-12-30",
+                        "to": "2023-12-31"
                       }
                     ]
                     """.trimIndent(),
@@ -132,7 +149,8 @@ class EventControllerTest : WorkdayIntegrationTest() {
                 put("$baseUrl/${event.code}/subscribe")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .accept(MediaType.APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.persons[0].uuid").value(person.uuid.toString()))
     }
@@ -154,10 +172,30 @@ class EventControllerTest : WorkdayIntegrationTest() {
                 put("$baseUrl/${event.code}/unsubscribe")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .accept(MediaType.APPLICATION_JSON),
-            ).andExpect(status().isOk)
+            ).asyncDispatch()
+            .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.persons.length()").value(1))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.persons[0].uuid").value(person02.uuid.toString()))
+    }
+
+    @Test
+    fun `Worker with only SUBSCRIBE authority can list events, redacted when not attending`() {
+        createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3))
+        val user = createUser(setOf("EventAuthority.SUBSCRIBE"))
+
+        mvc
+            .perform(
+                get(baseUrl)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].description").value("N/A - Henk"))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].persons.length()").value(0))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].costs").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$[0].days").doesNotExist())
     }
 
     @Test
@@ -171,6 +209,9 @@ class EventControllerTest : WorkdayIntegrationTest() {
                 put("$baseUrl/${event.code}/unsubscribe")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .accept(MediaType.APPLICATION_JSON),
-            ).andExpect(status().isForbidden)
+            ).asyncDispatch()
+            .andExpect(status().isForbidden)
     }
+
+    private fun ResultActions.asyncDispatch(): ResultActions = mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
 }

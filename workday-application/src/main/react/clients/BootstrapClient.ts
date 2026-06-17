@@ -4,7 +4,7 @@ const path = '/bootstrap';
 
 export type BootstrapData = {
   authorities: string[];
-  isLoggedIn: boolean;
+  loggedIn: boolean;
   userId?: string;
   personId?: string;
 };

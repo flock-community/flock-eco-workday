@@ -2,11 +2,11 @@ import { expect, type Page } from '@playwright/test';
 import dayjs from 'dayjs';
 
 export async function Given_I_am_logged_in_as_user(page, username: string) {
-  await page.goto('http://localhost:3000/auth');
+  await page.goto('/auth');
   await page.getByLabel('Username').fill(`${username}@sesam.straat`);
   await page.getByLabel('Password').fill(username);
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await page.waitForURL('http://localhost:3000/**');
+  await page.waitForURL('**/*');
   // Capitalize first letter for welcome message format
   const capitalizedUsername =
     username.charAt(0).toUpperCase() + username.slice(1);
@@ -18,7 +18,7 @@ export async function Given_I_am_logged_in_as_user(page, username: string) {
 }
 
 export async function When_I_go_to_my_work_days(page) {
-  await page.goto('http://localhost:3000/workdays');
+  await page.goto('/workdays');
 }
 
 export async function Then_I_see_a_list_of_the_hours_I_have_submitted_as_for(
@@ -129,7 +129,7 @@ export async function Then_the_timesheet_was_uploaded_to_backend(page) {
 }
 
 export async function When_I_go_to_my_expenses(page) {
-  await page.goto('http://localhost:3000/expenses');
+  await page.goto('/expenses');
 }
 
 export async function Then_I_do_not_see_any_expenses(page) {

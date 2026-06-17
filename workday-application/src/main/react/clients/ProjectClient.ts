@@ -1,4 +1,5 @@
 import NonInternalizingClient from '../utils/NonInternalizingClient';
+import type { ProjectForm } from '../wirespec/model';
 
 export type Project = {
   id: number;
@@ -6,11 +7,8 @@ export type Project = {
   name: string;
 };
 
-export type ProjectRequest = {
-  id?: number;
-  code?: string;
-  name: string;
-};
+// Request body is the generated wirespec contract; keep the alias for call sites.
+export type ProjectRequest = ProjectForm;
 
 const path = '/api/projects';
 

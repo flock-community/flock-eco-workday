@@ -6,8 +6,9 @@ import DialogActions from '@mui/material/DialogActions';
 import Typography from '@mui/material/Typography';
 import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { DialogBody, DialogHeader } from '@workday-core/components/dialog';
-import type { User } from '@workday-user/user/response/user';
+import type { User, UserAccount } from '@workday-user/user/response/user';
 import { useEffect, useState } from 'react';
+import { UserAccountList } from './UserAccountList';
 import UserClient from './UserClient';
 import { USER_FORM_ID, UserForm } from './UserForm';
 
@@ -28,15 +29,21 @@ export function UserDialog({
 
   const [message, setMessage] = useState<string>(null);
   const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const [deleteAccount, setDeleteAccount] = useState<UserAccount>(null);
   const [authorities, setAuthorities] = useState<string[]>(null);
 
+  const loadUser = (userId: string) => {
+    UserClient.findUserByid(userId)
+      .then((res) => setState(res))
+      .catch((err) => {
+        setMessage(err.message);
+      });
+  };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: loadUser is stable; only id should retrigger the fetch
   useEffect(() => {
     if (id !== null) {
-      UserClient.findUserByid(id)
-        .then((res) => setState(res))
-        .catch((err) => {
-          setMessage(err.message);
-        });
+      loadUser(id);
     } else {
       setState(null);
     }
@@ -67,6 +74,17 @@ export function UserDialog({
 
   const handleCloseDelete = () => {
     setOpenDelete(false);
+  };
+
+  const handleDeleteAccount = () => {
+    UserClient.deleteUserAccount(deleteAccount.id)
+      .then(() => {
+        setDeleteAccount(null);
+        loadUser(state.id);
+      })
+      .catch((err) => {
+        setMessage(err.message);
+      });
   };
 
   const handleMessageClose = () => {
@@ -116,6 +134,12 @@ export function UserDialog({
             authorities={authorities}
             onSummit={handleSubmit}
           />
+          {state?.id && (
+            <UserAccountList
+              accounts={state.accounts}
+              onDelete={setDeleteAccount}
+            />
+          )}
         </DialogBody>
         <DialogActions>
           {enablePassword && state && state.id && (
@@ -139,6 +163,15 @@ export function UserDialog({
       >
         <Typography>
           Are you sure you want to delete user: {state?.name}?
+        </Typography>
+      </ConfirmDialog>
+      <ConfirmDialog
+        open={deleteAccount != null}
+        onClose={() => setDeleteAccount(null)}
+        onConfirm={handleDeleteAccount}
+      >
+        <Typography>
+          Are you sure you want to delete this account for {state?.name}?
         </Typography>
       </ConfirmDialog>
       <Snackbar

@@ -22,7 +22,8 @@ type EventDialogProps = {
 export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
 
-  const [state, setState] = useState<FlockEventRequest | undefined>(undefined);
+  // Raw form state: dates are Dayjs here and serialized on submit.
+  const [state, setState] = useState<any>(undefined);
 
   useEffect(() => {
     if (open) {
@@ -34,7 +35,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
           });
         });
       } else {
-        setState(schema.cast());
+        setState(schema.getDefault());
       }
     } else {
       setState(undefined);
@@ -42,25 +43,20 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   }, [open, code]);
 
   const handleSubmit = (it) => {
-    if (code) {
-      EventClient.put(code, {
-        ...it,
-        from: it.from.format(ISO_8601_DATE),
-        to: it.to.format(ISO_8601_DATE),
-        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
-      }).then((res) => {
-        onComplete?.(res);
-      });
-    } else {
-      EventClient.post({
-        ...it,
-        from: it.from.format(ISO_8601_DATE),
-        to: it.to.format(ISO_8601_DATE),
-        hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
-      }).then((res) => {
-        onComplete?.(res);
-      });
-    }
+    const body: FlockEventRequest = {
+      description: it.description,
+      from: it.from.format(ISO_8601_DATE),
+      to: it.to.format(ISO_8601_DATE),
+      hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
+      days: it.days,
+      costs: it.costs,
+      personIds: it.personIds,
+      type: it.type,
+    };
+    const persist = code ? EventClient.put(code, body) : EventClient.post(body);
+    persist.then((res) => {
+      onComplete?.(res);
+    });
   };
 
   const handleDelete = () => {

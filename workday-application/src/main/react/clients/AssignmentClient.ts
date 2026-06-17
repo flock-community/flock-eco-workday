@@ -1,5 +1,6 @@
 import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
+import type { AssignmentForm } from '../wirespec/model';
 import type { Client } from './ClientClient';
 import type { Person } from './PersonClient';
 import type { Project } from './ProjectClient';
@@ -43,18 +44,8 @@ type AssignmentRaw = {
   project?: Project;
 };
 
-// The type we send to the backend
-export type AssignmentRequest = {
-  role?: string;
-  from: string;
-  to?: string;
-  hourlyRate: number;
-  hoursPerWeek: number;
-
-  clientCode: string;
-  personId: string;
-  projectCode?: string;
-};
+// The type we send to the backend: the generated wirespec contract.
+export type AssignmentRequest = AssignmentForm;
 
 const path = '/api/assignments';
 

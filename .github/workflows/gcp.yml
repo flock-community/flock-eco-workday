@@ -15,24 +15,29 @@ jobs:
 
     # Add "id-token" with the intended permissions.
     permissions:
-      contents: "read"
+      contents: "write"
       id-token: "write"
+      pull-requests: "write"
+      deployments: "write"
+
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - id: "auth"
         name: "Authenticate to Google Cloud"
         if: github.actor != 'dependabot[bot]'
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDED }}
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
       - name: Setup gcloud environment
         if: github.actor != 'dependabot[bot]'
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Google cloud info
         if: github.actor != 'dependabot[bot]'
@@ -42,22 +47,22 @@ jobs:
         if: github.actor != 'dependabot[bot]'
         run: gcloud auth configure-docker
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: "temurin"
-          java-version: "17"
+          java-version: "21"
 
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 22
           cache: "npm"
 
       - run: npm ci
@@ -72,7 +77,7 @@ jobs:
 
       - name: Cache Playwright browsers
         id: playwright-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -87,7 +92,7 @@ jobs:
         run: |
           echo "Starting backend server..."
           # Use develop profile with ci addon (Google Drive integration disabled)
-          ./mvnw -B compile spring-boot:run -DskipTests -Dspring-boot.run.profiles=develop,ci -Pdevelop > backend.log 2>&1 &
+          ./mvnw -B compile spring-boot:run -DskipTests -Dspring-boot.run.profiles=develop,ci -Pdevelop -Dspring-boot.run.arguments=--workday.wirespec.lenient-deserialization=false > backend.log 2>&1 &
           echo $! > backend.pid
           echo "Backend server started with PID $(cat backend.pid)"
 
@@ -104,6 +109,17 @@ jobs:
       - name: Run Playwright tests
         run: npm run test:e2e
 
+      - name: Assert no strict-deserialization regressions
+        if: always()
+        run: |
+          echo "Checking backend.log for wirespec strict-deserialization errors..."
+          if grep -q "UnrecognizedPropertyException" backend.log; then
+            echo "::error::A request payload sent fields absent from its .ws Form contract. Clean the payload (send only declared fields) or update the contract."
+            grep "Unrecognized field" backend.log | sort -u
+            exit 1
+          fi
+          echo "No strict-deserialization errors found."
+
       - name: Show backend logs on failure
         if: failure()
         run: |
@@ -115,8 +131,8 @@ jobs:
           fi
 
       - name: Upload Playwright test results
-        uses: actions/upload-artifact@v4
-        if: failure()
+        uses: actions/upload-artifact@v7
+        if: always()
         with:
           name: playwright-report
           path: |
@@ -124,6 +140,66 @@ jobs:
             test-results/
             backend.log
           retention-days: 30
+
+      - name: Determine Playwright Pages target directory
+        if: always() && github.actor != 'dependabot[bot]'
+        id: pages-target
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "dir=pr-${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+            echo "label=PR #${{ github.event.pull_request.number }} (${{ github.head_ref }})" >> "$GITHUB_OUTPUT"
+          else
+            echo "dir=main" >> "$GITHUB_OUTPUT"
+            echo "label=main @ ${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy Playwright report to GitHub Pages
+        if: always() && github.actor != 'dependabot[bot]' && hashFiles('playwright-report/index.html') != ''
+        # Best-effort: concurrent runs race on gh-pages and peaceiris rejects the
+        # non-fast-forward. v4 has no `force` (only `force_orphan`, which wipes the
+        # keep_files reports), so tolerate the race rather than fail the deploy.
+        continue-on-error: true
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./playwright-report
+          destination_dir: ${{ steps.pages-target.outputs.dir }}
+          keep_files: true
+          commit_message: "Publish Playwright report for ${{ steps.pages-target.outputs.label }}"
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
+
+      - name: Comment Playwright report link on PR
+        if: always() && github.event_name == 'pull_request' && github.actor != 'dependabot[bot]' && hashFiles('playwright-report/index.html') != ''
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const dir = `pr-${context.issue.number}`;
+            const url = `https://${context.repo.owner}.github.io/${context.repo.repo}/${dir}/`;
+            const marker = '<!-- playwright-report-link -->';
+            const body = `${marker}\n### Playwright report\n\nDashboard (with videos) for this PR: ${url}\n\nLatest run: ${context.sha.substring(0, 7)}`;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
 
       - name: Stop backend server
         if: always()
@@ -136,10 +212,116 @@ jobs:
             rm backend.log
           fi
 
-      - name: Build and Deploy
-        if: github.actor != 'dependabot[bot]' && github.ref_name == github.event.repository.default_branch
-        run: ./mvnw -B clean package jib:build -DskipTests -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
+      - name: Start develop deployment
+        if: github.actor != 'dependabot[bot]'
+        id: deployment-develop
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              environment: 'develop',
+              required_contexts: [],
+              auto_merge: false,
+              transient_environment: false,
+              production_environment: false,
+              description: 'Deploy develop image to Cloud Run',
+            });
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.data.id,
+              state: 'in_progress',
+              environment_url: 'https://test.workday.flock.community',
+              log_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            });
+            core.setOutput('deployment_id', deployment.data.id);
 
       - name: Build and Deploy Development version
         if: github.actor != 'dependabot[bot]'
-        run: ./mvnw -B package jib:build -DskipTests -Pdevelop,frontend -Dnpm.ci.skip -Dnpm.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
+        id: deploy-develop
+        run: ./mvnw -B package jib:build -DskipTests -Pdevelop,frontend -Dnpm.ci.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
+
+      - name: Finish develop deployment
+        if: always() && steps.deployment-develop.outputs.deployment_id != ''
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const state = '${{ steps.deploy-develop.outcome }}' === 'success' ? 'success' : 'failure';
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: ${{ steps.deployment-develop.outputs.deployment_id }},
+              state,
+              environment_url: 'https://test.workday.flock.community',
+              log_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            });
+
+  deploy-production:
+    name: Deploy to production
+    needs: build-deploy
+    if: github.actor != 'dependabot[bot]' && github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-24.04
+
+    # The production environment gates this job. Configure required reviewers
+    # under Settings > Environments > production to require manual approval
+    # before the deploy runs. GitHub tracks this as a deployment automatically.
+    environment:
+      name: production
+      url: https://workday.flock.community
+
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v3"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDED }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - name: Setup gcloud environment
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Setup docker
+        run: gcloud auth configure-docker
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Build and Deploy
+        run: ./mvnw -B clean package jib:build -DskipTests -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
+
+      - name: Deploy image to Cloud Run (production)
+        run: |
+          gcloud run deploy workday-app \
+            --image eu.gcr.io/flock-community/flock-eco-workday:${{ github.sha }} \
+            --region europe-west1 \
+            --project flock-community

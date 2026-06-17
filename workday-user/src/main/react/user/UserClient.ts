@@ -89,6 +89,18 @@ export function deleteUser(id) {
   return fetch(`/api/users/${id}`, opts).then((res) => internalize<User>(res));
 }
 
+export function deleteUserAccount(id) {
+  const opts = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+  };
+  return fetch(`/api/user-accounts/${id}`, opts).then((res) =>
+    internalize<void>(res),
+  );
+}
+
 export function resetUserPassword(id) {
   const opts = {
     method: 'PUT',
@@ -107,5 +119,6 @@ export default {
   createUser,
   updateUser,
   deleteUser,
+  deleteUserAccount,
   resetUserPassword,
 };

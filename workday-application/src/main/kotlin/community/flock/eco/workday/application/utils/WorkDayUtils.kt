@@ -11,6 +11,7 @@ data class WorkWeekDay(
 
 fun WorkDay.toWorkWeeks(): Map<Int, List<WorkWeekDay>> {
     val workWeeks = mutableMapOf<Int, MutableList<WorkWeekDay>>()
+    val days = days
     if (days != null) {
         var currentDay = from
         var index = 0

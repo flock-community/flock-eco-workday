@@ -1,49 +1,56 @@
-version: "3.9"
 services:
-  workday:
-    image: eu.gcr.io/flock-community/flock-eco-workday-develop:latest
-    deploy:
-      mode: replicated
-      replicas: 3
-    #    ports:
-    #      - "8080"
-    environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/application_default_credentials.json
+  backend:
+    image: maven:3-eclipse-temurin-17
+    working_dir: /app
     volumes:
-      - $HOME/.config/gcloud/application_default_credentials.json:/tmp/keys/application_default_credentials.json:ro
-    labels:
-      - "traefik.http.services.workday.loadbalancer.server.port=8080"
-      - "traefik.enable=true"
-      - "traefik.http.routers.workday-workday.rule=Host(`localhost`)"
-      - "traefik.http.routers.workday-workday.entrypoints=web"
-
-  postgresql:
-    image: postgres:11.18-alpine
+      - .:/app
+      - maven-repo:/root/.m2
     ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_PASSWORD: postgres
-    command: postgres -c max_connections=50
+      - "8080:8080"
+    command: ./mvnw spring-boot:run -pl workday-application -am -Pdevelop -Dspring-boot.run.profiles=develop
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 180s
 
-  whoami:
-    image: "traefik/whoami"
-    container_name: "simple-service"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
-      - "traefik.http.routers.whoami.entrypoints=web"
-
-  reverse-proxy:
-    image: traefik
-    command:
-      # Enables the web UI and tells Traefik to listen to docker
-      - "--api.insecure=true"
-      - --providers.docker
-      - --tracing.instana.logLevel="DEBUG"
-      - --accesslog
-      - "--entrypoints.web.address=:80"
-    ports:
-      - "80:80" # The HTTP port
-      - "8080:8080" # The Web UI (enabled by --api)
+  frontend:
+    image: node:18
+    working_dir: /app
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro # So that Traefik can listen to the Docker events
+      - .:/app
+      - frontend-node-modules:/app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_BACKEND_URL=http://backend:8080
+    command: sh -c "npm ci && npx vite --host 0.0.0.0"
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000', r => r.statusCode === 200 ? process.exit(0) : process.exit(1)).on('error', () => process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 120s
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.57.0-noble
+    working_dir: /app
+    volumes:
+      - .:/app
+      - playwright-node-modules:/app/node_modules
+    environment:
+      - BASE_URL=http://frontend:3000
+      - SKIP_WEB_SERVER=true
+    command: sh -c "npm ci && npx playwright test"
+    depends_on:
+      frontend:
+        condition: service_healthy
+
+volumes:
+  maven-repo:
+  frontend-node-modules:
+  playwright-node-modules:

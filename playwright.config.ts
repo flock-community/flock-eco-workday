@@ -6,12 +6,15 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : 2, // Limit workers to prevent session conflicts
-  reporter: 'line',
+  reporter: process.env.CI
+    ? [['html', { outputFolder: 'playwright-report', open: 'never' }], ['line']]
+    : 'line',
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     headless: true,
     screenshot: 'only-on-failure',
+    video: 'on',
     // Ensure test isolation
     storageState: undefined, // Don't persist storage state between tests
   },
@@ -27,9 +30,12 @@ export default defineConfig({
     },
   ],
   // Run your local dev server before starting the tests.
-  webServer: {
-    command: 'npm run start',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-  },
+  // Skip when running in Docker where frontend is a separate service.
+  webServer: process.env.SKIP_WEB_SERVER
+    ? undefined
+    : {
+        command: 'npm run start',
+        url: 'http://localhost:3000',
+        reuseExistingServer: !process.env.CI,
+      },
 });

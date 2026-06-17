@@ -1,4 +1,3 @@
-import ExactonlineIcon from '@mui/icons-material/AccountBalance';
 import ProjectIcon from '@mui/icons-material/AccountTree';
 import ReportIcon from '@mui/icons-material/Assessment';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -130,12 +129,6 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
       icon: ExpensesIcon,
       url: '/expenses',
       authority: 'ExpenseAuthority.READ',
-    },
-    {
-      name: 'Exact online',
-      icon: ExactonlineIcon,
-      url: '/exactonline',
-      authority: 'ExactonlineAuthority.READ',
     },
     {
       name: 'Events',
