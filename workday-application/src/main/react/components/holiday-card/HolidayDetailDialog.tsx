@@ -57,7 +57,7 @@ export function HolidayDetailDialog({
       <DialogHeader
         onClose={handleClose}
         icon={<HolidayIcon />}
-        headline={'Holiday hours details'}
+        headline={'Leave day hours details'}
       />
       <DialogBody>
         {state?.plusHours > 0 && (
