@@ -7,6 +7,7 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -41,10 +42,12 @@ export function HoursOverviewCard({
           num(it.paidParentalLeaveUsed) +
           num(it.unpaidParentalLeaveUsed);
         const missing = Math.max(0, num(it.total) - submitted);
-        const denom = submitted + missing || 1;
+        const budget = num(it.total);
+        const denom = (budget > 0 ? budget : submitted) || 1;
         const pct = (v: unknown) => (num(v) / denom) * 100;
         const row: Record<string, unknown> = {
           ...it,
+          submittedPct: pct(submitted),
           workDaysPct: pct(it.workDays),
           leaveDayUsedPct: pct(it.leaveDayUsed),
           paidLeaveHoursPct: pct(it.paidLeaveHours),
@@ -76,6 +79,12 @@ export function HoursOverviewCard({
   }, [totalPerPersonMe]);
 
   const hasMissing = data.some((it) => ((it.missing as number) ?? 0) > 0);
+  const maxPct = data.reduce(
+    (acc, it) => Math.max(acc, (it.submittedPct as number) ?? 0),
+    100,
+  );
+  const hasOverBudget = maxPct > 100.5;
+  const axisMax = hasOverBudget ? Math.ceil(maxPct / 25) * 25 : 100;
 
   if (!totalPerPersonMe) return <AlignedLoader />;
 
@@ -101,7 +110,7 @@ export function HoursOverviewCard({
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               type="number"
-              domain={[0, 100]}
+              domain={[0, axisMax]}
               tickFormatter={(t) => `${Math.round(t)}%`}
             />
             <YAxis type="category" dataKey="label" width={100} />
@@ -168,6 +177,19 @@ export function HoursOverviewCard({
                 dataKey="missingPct"
                 name="missing hours"
                 fill="#9e9e9e"
+              />
+            )}
+            {hasOverBudget && (
+              <ReferenceLine
+                x={100}
+                stroke="#616161"
+                strokeDasharray="4 4"
+                label={{
+                  value: 'budget',
+                  position: 'top',
+                  fill: '#616161',
+                  fontSize: 12,
+                }}
               />
             )}
           </BarChart>

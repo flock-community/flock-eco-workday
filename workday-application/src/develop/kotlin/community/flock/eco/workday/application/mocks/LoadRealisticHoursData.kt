@@ -29,6 +29,9 @@ import java.util.UUID
  * - **Events** — provided by `LoadEventData` (king's day, community days,
  *   hack days every ~2 weeks); subtracted from the worked-hour fill so the
  *   user isn't double-booked.
+ * - **Overtime** — the 5th month logs 10h on each worked day instead of 8,
+ *   pushing that month past the contract budget so the Hours overview chart
+ *   demonstrates an over-budget bar (worked + leave > 100%).
  *
  * The randomized seeders ([LoadLeaveDayData], [LoadSickdaysData],
  * [LoadWorkDayData]) skip these users entirely so this class is the sole
@@ -72,7 +75,8 @@ class LoadRealisticHoursData(
                     claimedDays += paintPaidLeave(workingDays, claimedDays, person)
                     if (idx == 1) claimedDays += paintSickDay(workingDays, claimedDays, person)
                     if (idx == 2) claimedDays += paintHoliday(workingDays, claimedDays, person)
-                    paintWorkedHours(workingDays - claimedDays, assignment.code)
+                    val hoursPerDay = if (idx == 4) 10.0 else 8.0
+                    paintWorkedHours(workingDays - claimedDays, assignment.code, hoursPerDay)
                 }
             }
         }
@@ -151,18 +155,18 @@ class LoadRealisticHoursData(
         return block.toSet()
     }
 
-    private fun paintWorkedHours(days: List<LocalDate>, assignmentCode: String) {
+    private fun paintWorkedHours(days: List<LocalDate>, assignmentCode: String, hoursPerDay: Double = 8.0) {
         if (days.isEmpty()) return
         workDayService.create(
             WorkDayForm(
                 from = days.first(),
                 to = days.last(),
-                hours = days.size * 8.0,
+                hours = days.size * hoursPerDay,
                 days =
                     days
                         .first()
                         .daysTo(days.last())
-                        .map { if (it in days) 8.0 else 0.0 }
+                        .map { if (it in days) hoursPerDay else 0.0 }
                         .toMutableList(),
                 assignmentCode = assignmentCode,
                 sheets =
