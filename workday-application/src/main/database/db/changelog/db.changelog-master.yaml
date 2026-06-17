@@ -80,6 +80,9 @@ databaseChangeLog:
       file: db.changelog-026-hibernate6-sequences.yaml
       relativeToChangelogFile: true
   - include:
-      file: db.changelog-028-contract-internal-study-budget.yaml
+      file: db.changelog-028-contract-internal-training-budget.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-029-rename-hack-hours-to-hack-time-budget.yaml
       relativeToChangelogFile: true
 

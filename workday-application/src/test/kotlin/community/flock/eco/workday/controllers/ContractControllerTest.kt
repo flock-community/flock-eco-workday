@@ -51,7 +51,7 @@ class ContractControllerTest(
                 from = LocalDate.of(2024, 1, 1),
                 to = LocalDate.of(2024, 12, 31),
                 holidayHours = 192,
-                hackHours = 160,
+                hackTimeBudget = 160,
                 billable = true,
             )
 
@@ -70,7 +70,7 @@ class ContractControllerTest(
             .andExpect(jsonPath("$.monthlySalary").value(form.monthlySalary))
             .andExpect(jsonPath("$.hoursPerWeek").value(form.hoursPerWeek))
             .andExpect(jsonPath("$.holidayHours").value(form.holidayHours))
-            .andExpect(jsonPath("$.hackHours").value(form.hackHours))
+            .andExpect(jsonPath("$.hackTimeBudget").value(form.hackTimeBudget))
             .andExpect(jsonPath("$.billable").value(form.billable))
             .andExpect(jsonPath("$.from").value(form.from.toString()))
             .andExpect(jsonPath("$.to").value(form.to.toString()))
@@ -78,7 +78,7 @@ class ContractControllerTest(
     }
 
     @Test
-    fun `GET should return the study budget of an internal contract`() {
+    fun `GET should return the training budget of an internal contract`() {
         val adminUser = createHelper.createUserEntity(adminAuthorities)
         val person = createHelper.createPersonEntity()
 
@@ -90,10 +90,10 @@ class ContractControllerTest(
                 from = LocalDate.of(2024, 1, 1),
                 to = LocalDate.of(2024, 12, 31),
                 holidayHours = 192,
-                hackHours = 160,
+                hackTimeBudget = 160,
                 billable = true,
-                studyHours = 180,
-                studyMoney = BigDecimal("3200.00"),
+                trainingTimeBudget = 180,
+                trainingMoneyBudget = BigDecimal("3200.00"),
             )
 
         val created =
@@ -117,8 +117,8 @@ class ContractControllerTest(
             ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
-            .andExpect(jsonPath("$.studyHours").value(180))
-            .andExpect(jsonPath("$.studyMoney").value(3200.0))
+            .andExpect(jsonPath("$.trainingTimeBudget").value(180))
+            .andExpect(jsonPath("$.trainingMoneyBudget").value(3200.0))
     }
 
     @Test
@@ -259,7 +259,7 @@ class ContractControllerTest(
                 from = LocalDate.of(2024, 1, 1),
                 to = LocalDate.of(2025, 12, 31),
                 holidayHours = 200,
-                hackHours = 100,
+                hackTimeBudget = 100,
                 billable = false,
             )
 
@@ -276,7 +276,7 @@ class ContractControllerTest(
             .andExpect(jsonPath("$.monthlySalary").value(updateForm.monthlySalary))
             .andExpect(jsonPath("$.hoursPerWeek").value(updateForm.hoursPerWeek))
             .andExpect(jsonPath("$.holidayHours").value(updateForm.holidayHours))
-            .andExpect(jsonPath("$.hackHours").value(updateForm.hackHours))
+            .andExpect(jsonPath("$.hackTimeBudget").value(updateForm.hackTimeBudget))
             .andExpect(jsonPath("$.billable").value(updateForm.billable))
             .andExpect(jsonPath("$.to").value(updateForm.to.toString()))
     }

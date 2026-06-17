@@ -69,9 +69,9 @@ export const ContractFormInternal = ({
         </Grid>
         <Grid size={{ xs: 12 }}>
           <Field
-            name="hackHours"
+            name="hackTimeBudget"
             type="number"
-            label="Hack hours"
+            label="Hack time"
             fullWidth
             component={TextField}
             slotProps={{ inputLabel: { shrink: true } }}
@@ -79,9 +79,9 @@ export const ContractFormInternal = ({
         </Grid>
         <Grid size={{ xs: 12 }}>
           <Field
-            name="studyHours"
+            name="trainingTimeBudget"
             type="number"
-            label="Study hours"
+            label="Training time"
             fullWidth
             component={TextField}
             slotProps={{ inputLabel: { shrink: true } }}
@@ -90,9 +90,9 @@ export const ContractFormInternal = ({
         </Grid>
         <Grid size={{ xs: 12 }}>
           <Field
-            name="studyMoney"
+            name="trainingMoneyBudget"
             type="number"
-            label="Study money"
+            label="Training budget"
             fullWidth
             component={TextField}
             slotProps={{ inputLabel: { shrink: true } }}
@@ -110,9 +110,9 @@ export const ContractFormInternal = ({
     to: value.to,
     billable: value.billable,
     holidayHours: value.holidayHours,
-    hackHours: value.hackHours,
-    studyHours: value.studyHours,
-    studyMoney: value.studyMoney,
+    hackTimeBudget: value.hackTimeBudget,
+    trainingTimeBudget: value.trainingTimeBudget,
+    trainingMoneyBudget: value.trainingMoneyBudget,
   };
 
   const schema = object({
@@ -124,9 +124,9 @@ export const ContractFormInternal = ({
     to: mixed().nullable().default(null),
     billable: boolean().default(true),
     holidayHours: number().required().default(192),
-    hackHours: number().required().default(160),
-    studyHours: number().required().default(0),
-    studyMoney: number().required().default(0),
+    hackTimeBudget: number().required().default(160),
+    trainingTimeBudget: number().required().default(0),
+    trainingMoneyBudget: number().required().default(0),
   });
 
   return (

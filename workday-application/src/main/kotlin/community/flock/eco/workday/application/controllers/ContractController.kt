@@ -229,7 +229,7 @@ class ContractController(
                     else -> null
                 },
             holidayHours = (this as? ContractInternal)?.holidayHours,
-            hackHours = (this as? ContractInternal)?.hackHours,
+            hackTimeBudget = (this as? ContractInternal)?.hackTimeBudget,
             hourlyRate = (this as? ContractExternal)?.hourlyRate,
             monthlyFee = (this as? ContractManagement)?.monthlyFee,
             monthlyCosts = (this as? ContractService)?.monthlyCosts,
@@ -240,8 +240,8 @@ class ContractController(
                     is ContractExternal -> billable
                     else -> null
                 },
-            studyHours = (this as? ContractInternal)?.studyHours,
-            studyMoney = (this as? ContractInternal)?.studyMoney?.toDouble(),
+            trainingTimeBudget = (this as? ContractInternal)?.trainingTimeBudget,
+            trainingMoneyBudget = (this as? ContractInternal)?.trainingMoneyBudget?.toDouble(),
         )
 
     private fun ContractInternal.externalize(): ContractInternalApi =
@@ -255,10 +255,10 @@ class ContractController(
             monthlySalary = monthlySalary,
             hoursPerWeek = hoursPerWeek,
             holidayHours = holidayHours,
-            hackHours = hackHours,
+            hackTimeBudget = hackTimeBudget,
             billable = billable,
-            studyHours = studyHours,
-            studyMoney = studyMoney.toDouble(),
+            trainingTimeBudget = trainingTimeBudget,
+            trainingMoneyBudget = trainingMoneyBudget.toDouble(),
         )
 
     private fun ContractExternal.externalize(): ContractExternalApi =
@@ -335,10 +335,10 @@ class ContractController(
             from = from?.let(LocalDate::parse) ?: error("from is required"),
             to = to?.let(LocalDate::parse),
             holidayHours = holidayHours ?: 0,
-            hackHours = hackHours ?: 0,
+            hackTimeBudget = hackTimeBudget ?: 0,
             billable = billable ?: true,
-            studyHours = studyHours ?: 0,
-            studyMoney = studyMoney?.toBigDecimal() ?: BigDecimal.ZERO,
+            trainingTimeBudget = trainingTimeBudget ?: 0,
+            trainingMoneyBudget = trainingMoneyBudget?.toBigDecimal() ?: BigDecimal.ZERO,
         )
 
     private fun ContractExternalFormApi.internalize() =
