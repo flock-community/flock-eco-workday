@@ -80,7 +80,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
           });
         });
       } else {
-        setState(schema.cast());
+        setState(schema.getDefault());
       }
     } else {
       setState(null);
