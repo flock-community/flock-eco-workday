@@ -205,7 +205,7 @@ export function EventBudgetManagementSection({
             return {
               personId: person.uuid,
               personName: `${person.firstname} ${person.lastname}`,
-              studyPeriod: null,
+              trainingPeriod: null,
               hackPeriod: null,
             };
           })
@@ -228,7 +228,7 @@ export function EventBudgetManagementSection({
           return {
             personId: person.uuid,
             personName: `${person.firstname} ${person.lastname}`,
-            studyPeriod: null,
+            trainingPeriod: null,
             hackPeriod: null,
           };
         })
@@ -262,7 +262,7 @@ export function EventBudgetManagementSection({
     // This forces them to use the new defaultTimeAllocationType
     const updated = timeParticipants.map((p) => {
       if (dirtyTime.has(p.personId)) return p; // Preserve manual edits
-      return { ...p, studyPeriod: null, hackPeriod: null };
+      return { ...p, trainingPeriod: null, hackPeriod: null };
     });
 
     setTimeParticipants(updated);
@@ -277,9 +277,9 @@ export function EventBudgetManagementSection({
   const totalTimeAllocated = useMemo(
     () =>
       timeParticipants.reduce((sum, p) => {
-        const study = p.studyPeriod?.days?.reduce((s, h) => s + h, 0) || 0;
+        const training = p.trainingPeriod?.days?.reduce((s, h) => s + h, 0) || 0;
         const hack = p.hackPeriod?.days?.reduce((s, h) => s + h, 0) || 0;
-        return sum + study + hack;
+        return sum + training + hack;
       }, 0),
     [timeParticipants],
   );
@@ -302,10 +302,10 @@ export function EventBudgetManagementSection({
     if (!defaultBudgetType) return 'No allocations';
 
     const participantsWithExceptions = timeParticipants.filter(
-      (p) => p.studyPeriod !== null || p.hackPeriod !== null,
+      (p) => p.trainingPeriod !== null || p.hackPeriod !== null,
     );
     const participantsWithDefaults = timeParticipants.filter(
-      (p) => p.studyPeriod === null && p.hackPeriod === null,
+      (p) => p.trainingPeriod === null && p.hackPeriod === null,
     );
 
     const parts: string[] = [];
@@ -385,14 +385,14 @@ export function EventBudgetManagementSection({
       );
       if (original) {
         const hadCustom =
-          original.studyPeriod !== null || original.hackPeriod !== null;
+          original.trainingPeriod !== null || original.hackPeriod !== null;
         const hasCustom =
-          updatedP.studyPeriod !== null || updatedP.hackPeriod !== null;
+          updatedP.trainingPeriod !== null || updatedP.hackPeriod !== null;
         if (
           hadCustom !== hasCustom ||
           (hasCustom &&
-            (JSON.stringify(original.studyPeriod) !==
-              JSON.stringify(updatedP.studyPeriod) ||
+            (JSON.stringify(original.trainingPeriod) !==
+              JSON.stringify(updatedP.trainingPeriod) ||
               JSON.stringify(original.hackPeriod) !==
                 JSON.stringify(updatedP.hackPeriod)))
         ) {

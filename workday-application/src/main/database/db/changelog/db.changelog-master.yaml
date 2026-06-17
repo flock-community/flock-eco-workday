@@ -83,9 +83,12 @@ databaseChangeLog:
       file: db.changelog-027-budget-allocations.yaml
       relativeToChangelogFile: true
   - include:
-      file: db.changelog-028-contract-internal-study-budget.yaml
+      file: db.changelog-028-contract-internal-training-budget.yaml
       relativeToChangelogFile: true
   - include:
       file: db.changelog-029-event-default-time-allocation-type.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-030-rename-hack-hours-to-hack-time-budget.yaml
       relativeToChangelogFile: true
 

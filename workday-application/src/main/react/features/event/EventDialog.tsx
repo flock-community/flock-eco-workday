@@ -59,8 +59,8 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
             defaultTimeAllocationType:
               res.defaultTimeAllocationType === 'HACK_TIME'
                 ? 'HACK'
-                : res.defaultTimeAllocationType === 'STUDY_TIME'
-                  ? 'STUDY'
+                : res.defaultTimeAllocationType === 'TRAINING_TIME'
+                  ? 'TRAINING'
                   : (res.defaultTimeAllocationType ?? null),
           });
           setEventData(res);
@@ -110,8 +110,8 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       defaultTimeAllocationType:
         it.defaultTimeAllocationType === 'HACK'
           ? 'HACK_TIME'
-          : it.defaultTimeAllocationType === 'STUDY'
-            ? 'STUDY_TIME'
+          : it.defaultTimeAllocationType === 'TRAINING'
+            ? 'TRAINING_TIME'
             : (it.defaultTimeAllocationType ?? null),
     };
     const persist = code ? EventClient.put(code, body) : EventClient.post(body);

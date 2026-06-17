@@ -50,7 +50,7 @@ class ContractControllerTest(
                 from = LocalDate.of(2024, 1, 1),
                 to = LocalDate.of(2024, 12, 31),
                 holidayHours = 192,
-                hackHours = 160,
+                hackTimeBudget = 160,
                 billable = true,
             )
 
@@ -69,7 +69,7 @@ class ContractControllerTest(
             .andExpect(jsonPath("$.monthlySalary").value(form.monthlySalary))
             .andExpect(jsonPath("$.hoursPerWeek").value(form.hoursPerWeek))
             .andExpect(jsonPath("$.holidayHours").value(form.holidayHours))
-            .andExpect(jsonPath("$.hackHours").value(form.hackHours))
+            .andExpect(jsonPath("$.hackTimeBudget").value(form.hackTimeBudget))
             .andExpect(jsonPath("$.billable").value(form.billable))
             .andExpect(jsonPath("$.from").value(form.from.toString()))
             .andExpect(jsonPath("$.to").value(form.to.toString()))
@@ -214,7 +214,7 @@ class ContractControllerTest(
                 from = LocalDate.of(2024, 1, 1),
                 to = LocalDate.of(2025, 12, 31),
                 holidayHours = 200,
-                hackHours = 100,
+                hackTimeBudget = 100,
                 billable = false,
             )
 
@@ -231,7 +231,7 @@ class ContractControllerTest(
             .andExpect(jsonPath("$.monthlySalary").value(updateForm.monthlySalary))
             .andExpect(jsonPath("$.hoursPerWeek").value(updateForm.hoursPerWeek))
             .andExpect(jsonPath("$.holidayHours").value(updateForm.holidayHours))
-            .andExpect(jsonPath("$.hackHours").value(updateForm.hackHours))
+            .andExpect(jsonPath("$.hackTimeBudget").value(updateForm.hackTimeBudget))
             .andExpect(jsonPath("$.billable").value(updateForm.billable))
             .andExpect(jsonPath("$.to").value(updateForm.to.toString()))
     }

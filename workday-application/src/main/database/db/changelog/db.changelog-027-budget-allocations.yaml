@@ -70,7 +70,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     primaryKey: true
-                    primaryKeyName: study_time_budget_allocationPK
+                    primaryKeyName: training_time_budget_allocationPK
                   name: id
                   type: BIGINT
               - column:
@@ -78,7 +78,7 @@ databaseChangeLog:
                     nullable: false
                   name: total_hours
                   type: DOUBLE
-            tableName: study_time_budget_allocation
+            tableName: training_time_budget_allocation
   - changeSet:
       id: db.changelog-027-budget-allocations-4
       author: claude-opus-4.6
@@ -89,7 +89,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     primaryKey: true
-                    primaryKeyName: study_money_budget_allocationPK
+                    primaryKeyName: training_money_budget_allocationPK
                   name: id
                   type: BIGINT
               - column:
@@ -97,7 +97,7 @@ databaseChangeLog:
                     nullable: false
                   name: amount
                   type: DECIMAL(19, 2)
-            tableName: study_money_budget_allocation
+            tableName: training_money_budget_allocation
   - changeSet:
       id: db.changelog-027-budget-allocations-5
       author: claude-opus-4.6
@@ -128,7 +128,7 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                  name: study_time_budget_allocation_id
+                  name: training_time_budget_allocation_id
                   type: BIGINT
               - column:
                   name: date
@@ -139,7 +139,7 @@ databaseChangeLog:
               - column:
                   name: type
                   type: VARCHAR(255)
-            tableName: study_time_budget_allocation_daily_time_allocations
+            tableName: training_time_budget_allocation_daily_time_allocations
   - changeSet:
       id: db.changelog-027-budget-allocations-7
       author: claude-opus-4.6
@@ -149,7 +149,7 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                  name: study_money_budget_allocation_id
+                  name: training_money_budget_allocation_id
                   type: BIGINT
               - column:
                   name: name
@@ -157,7 +157,7 @@ databaseChangeLog:
               - column:
                   name: file
                   type: UUID
-            tableName: study_money_budget_allocation_files
+            tableName: training_money_budget_allocation_files
   - changeSet:
       id: db.changelog-027-budget-allocations-8
       author: claude-opus-4.6
@@ -184,8 +184,8 @@ databaseChangeLog:
             validate: true
         - addForeignKeyConstraint:
             baseColumnNames: id
-            baseTableName: study_time_budget_allocation
-            constraintName: FK_study_time_budget_allocation_budget_allocation
+            baseTableName: training_time_budget_allocation
+            constraintName: FK_training_time_budget_allocation_budget_allocation
             deferrable: false
             initiallyDeferred: false
             onDelete: CASCADE
@@ -194,8 +194,8 @@ databaseChangeLog:
             validate: true
         - addForeignKeyConstraint:
             baseColumnNames: id
-            baseTableName: study_money_budget_allocation
-            constraintName: FK_study_money_budget_allocation_budget_allocation
+            baseTableName: training_money_budget_allocation
+            constraintName: FK_training_money_budget_allocation_budget_allocation
             deferrable: false
             initiallyDeferred: false
             onDelete: CASCADE
@@ -213,22 +213,22 @@ databaseChangeLog:
             referencedTableName: hack_time_budget_allocation
             validate: true
         - addForeignKeyConstraint:
-            baseColumnNames: study_time_budget_allocation_id
-            baseTableName: study_time_budget_allocation_daily_time_allocations
-            constraintName: FK_study_time_daily_allocations_study_time_budget_allocation
+            baseColumnNames: training_time_budget_allocation_id
+            baseTableName: training_time_budget_allocation_daily_time_allocations
+            constraintName: FK_training_time_daily_allocations_training_time_budget_allocation
             deferrable: false
             initiallyDeferred: false
             onDelete: CASCADE
             referencedColumnNames: id
-            referencedTableName: study_time_budget_allocation
+            referencedTableName: training_time_budget_allocation
             validate: true
         - addForeignKeyConstraint:
-            baseColumnNames: study_money_budget_allocation_id
-            baseTableName: study_money_budget_allocation_files
-            constraintName: FK_study_money_files_study_money_budget_allocation
+            baseColumnNames: training_money_budget_allocation_id
+            baseTableName: training_money_budget_allocation_files
+            constraintName: FK_training_money_files_training_money_budget_allocation
             deferrable: false
             initiallyDeferred: false
             onDelete: CASCADE
             referencedColumnNames: id
-            referencedTableName: study_money_budget_allocation
+            referencedTableName: training_money_budget_allocation
             validate: true

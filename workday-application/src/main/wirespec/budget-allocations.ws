@@ -3,9 +3,9 @@ endpoint BudgetSummary GET /api/budget-summary ? { personId: String?, year: Inte
 }
 
 type BudgetSummaryResponse {
-  hackHours: BudgetItem,
-  studyHours: BudgetItem,
-  studyMoney: BudgetItem
+  hackTimeBudget: BudgetItem,
+  trainingTimeBudget: BudgetItem,
+  trainingMoneyBudget: BudgetItem
 }
 
 type BudgetItem {
@@ -29,19 +29,19 @@ endpoint HackTimeAllocationUpdate PUT HackTimeAllocationInput /api/budget-alloca
   200 -> BudgetAllocation
   500 -> Error
 }
-endpoint StudyTimeAllocationCreate POST StudyTimeAllocationInput /api/budget-allocations/study-time -> {
+endpoint TrainingTimeAllocationCreate POST TrainingTimeAllocationInput /api/budget-allocations/training-time -> {
   200 -> BudgetAllocation
   500 -> Error
 }
-endpoint StudyTimeAllocationUpdate PUT StudyTimeAllocationInput /api/budget-allocations/study-time/{id: String} -> {
+endpoint TrainingTimeAllocationUpdate PUT TrainingTimeAllocationInput /api/budget-allocations/training-time/{id: String} -> {
   200 -> BudgetAllocation
   500 -> Error
 }
-endpoint StudyMoneyAllocationCreate POST StudyMoneyAllocationInput /api/budget-allocations/study-money -> {
+endpoint TrainingMoneyAllocationCreate POST TrainingMoneyAllocationInput /api/budget-allocations/training-money -> {
   200 -> BudgetAllocation
   500 -> Error
 }
-endpoint StudyMoneyAllocationUpdate PUT StudyMoneyAllocationInput /api/budget-allocations/study-money/{id: String} -> {
+endpoint TrainingMoneyAllocationUpdate PUT TrainingMoneyAllocationInput /api/budget-allocations/training-money/{id: String} -> {
   200 -> BudgetAllocation
   500 -> Error
 }
@@ -54,21 +54,21 @@ type BudgetAllocation {
   description: String?,
   `type`: BudgetAllocationType,
   hackTimeDetails: HackTimeDetails?,
-  studyTimeDetails: StudyTimeDetails?,
-  studyMoneyDetails: StudyMoneyDetails?
+  trainingTimeDetails: TrainingTimeDetails?,
+  trainingMoneyDetails: TrainingMoneyDetails?
 }
 enum BudgetAllocationType {
-  HACK_TIME, STUDY_TIME, STUDY_MONEY
+  HACK_TIME, TRAINING_TIME, TRAINING_MONEY
 }
 type HackTimeDetails {
   totalHours: Number,
   dailyAllocations: DailyTimeAllocationItem[]
 }
-type StudyTimeDetails {
+type TrainingTimeDetails {
   totalHours: Number,
   dailyAllocations: DailyTimeAllocationItem[]
 }
-type StudyMoneyDetails {
+type TrainingMoneyDetails {
   amount: Number,
   files: BudgetAllocationFile[]
 }
@@ -78,7 +78,7 @@ type DailyTimeAllocationItem {
   `type`: DailyAllocationType
 }
 enum DailyAllocationType {
-  STUDY, HACK
+  TRAINING, HACK
 }
 type BudgetAllocationFile {
   name: String,
@@ -91,14 +91,14 @@ type HackTimeAllocationInput {
   description: String?,
   dailyAllocations: DailyTimeAllocationItem[]
 }
-type StudyTimeAllocationInput {
+type TrainingTimeAllocationInput {
   personId: UUID,
   eventCode: String?,
   date: String,
   description: String?,
   dailyAllocations: DailyTimeAllocationItem[]
 }
-type StudyMoneyAllocationInput {
+type TrainingMoneyAllocationInput {
   personId: UUID,
   eventCode: String?,
   date: String,

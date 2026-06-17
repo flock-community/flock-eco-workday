@@ -31,7 +31,7 @@ export function dailyAllocationsToPeriod(
 
 /**
  * Convert API BudgetAllocation[] to PersonTimeAllocation[] for the UI.
- * Groups HACK_TIME and STUDY_TIME allocations by person, converting daily allocations to Periods.
+ * Groups HACK_TIME and TRAINING_TIME allocations by person, converting daily allocations to Periods.
  */
 export function apiAllocationsToTimeParticipants(
   allocations: BudgetAllocation[],
@@ -40,7 +40,7 @@ export function apiAllocationsToTimeParticipants(
   eventTo: Dayjs,
 ): PersonTimeAllocation[] {
   const timeAllocations = allocations.filter(
-    (a) => a.type === 'HACK_TIME' || a.type === 'STUDY_TIME',
+    (a) => a.type === 'HACK_TIME' || a.type === 'TRAINING_TIME',
   );
 
   const byPerson = new Map<string, BudgetAllocation[]>();
@@ -55,7 +55,7 @@ export function apiAllocationsToTimeParticipants(
     .map((person) => {
       const personAllocations = byPerson.get(person.uuid) || [];
       const hackAlloc = personAllocations.find((a) => a.type === 'HACK_TIME');
-      const studyAlloc = personAllocations.find((a) => a.type === 'STUDY_TIME');
+      const trainingAlloc = personAllocations.find((a) => a.type === 'TRAINING_TIME');
 
       const hackPeriod = hackAlloc?.hackTimeDetails
         ? dailyAllocationsToPeriod(
@@ -65,9 +65,9 @@ export function apiAllocationsToTimeParticipants(
           )
         : null;
 
-      const studyPeriod = studyAlloc?.studyTimeDetails
+      const trainingPeriod = trainingAlloc?.trainingTimeDetails
         ? dailyAllocationsToPeriod(
-            studyAlloc.studyTimeDetails.dailyAllocations,
+            trainingAlloc.trainingTimeDetails.dailyAllocations,
             eventFrom,
             eventTo,
           )
@@ -77,20 +77,20 @@ export function apiAllocationsToTimeParticipants(
         personId: person.uuid,
         personName: `${person.firstname} ${person.lastname}`,
         hackPeriod,
-        studyPeriod,
+        trainingPeriod,
       };
     });
 }
 
 /**
  * Convert API BudgetAllocation[] to PersonMoneyAllocation[] for the UI.
- * Filters to STUDY_MONEY type and maps to person + amount.
+ * Filters to TRAINING_MONEY type and maps to person + amount.
  */
 export function apiAllocationsToMoneyParticipants(
   allocations: BudgetAllocation[],
   persons: Array<{ uuid: string; firstname: string; lastname: string }>,
 ): PersonMoneyAllocation[] {
-  const moneyAllocations = allocations.filter((a) => a.type === 'STUDY_MONEY');
+  const moneyAllocations = allocations.filter((a) => a.type === 'TRAINING_MONEY');
 
   const byPerson = new Map<string, BudgetAllocation>();
   for (const alloc of moneyAllocations) {
@@ -104,7 +104,7 @@ export function apiAllocationsToMoneyParticipants(
       return {
         personId: person.uuid,
         personName: `${person.firstname} ${person.lastname}`,
-        amount: alloc?.studyMoneyDetails?.amount ?? 0,
+        amount: alloc?.trainingMoneyDetails?.amount ?? 0,
       };
     });
 }

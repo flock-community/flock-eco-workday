@@ -2,8 +2,8 @@ import type {
   BudgetAllocation,
   BudgetSummaryResponse,
   HackTimeAllocationInput,
-  StudyMoneyAllocationInput,
-  StudyTimeAllocationInput,
+  TrainingMoneyAllocationInput,
+  TrainingTimeAllocationInput,
 } from '../wirespec/model';
 import type { Person } from './PersonClient';
 
@@ -43,16 +43,16 @@ const getSummary = async (
   return res.json();
 };
 
-const createStudyMoney = async (
-  input: StudyMoneyAllocationInput,
+const createTrainingMoney = async (
+  input: TrainingMoneyAllocationInput,
 ): Promise<BudgetAllocation> => {
-  const res = await fetch(`${basePath}/study-money`, {
+  const res = await fetch(`${basePath}/training-money`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
   if (!res.ok)
-    throw new Error(`Failed to create study money allocation: ${res.status}`);
+    throw new Error(`Failed to create training money allocation: ${res.status}`);
   return res.json();
 };
 
@@ -83,44 +83,44 @@ const updateHackTime = async (
   return res.json();
 };
 
-const createStudyTime = async (
-  input: StudyTimeAllocationInput,
+const createTrainingTime = async (
+  input: TrainingTimeAllocationInput,
 ): Promise<BudgetAllocation> => {
-  const res = await fetch(`${basePath}/study-time`, {
+  const res = await fetch(`${basePath}/training-time`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
   if (!res.ok)
-    throw new Error(`Failed to create study time allocation: ${res.status}`);
+    throw new Error(`Failed to create training time allocation: ${res.status}`);
   return res.json();
 };
 
-const updateStudyTime = async (
+const updateTrainingTime = async (
   id: string,
-  input: StudyTimeAllocationInput,
+  input: TrainingTimeAllocationInput,
 ): Promise<BudgetAllocation> => {
-  const res = await fetch(`${basePath}/study-time/${id}`, {
+  const res = await fetch(`${basePath}/training-time/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
   if (!res.ok)
-    throw new Error(`Failed to update study time allocation: ${res.status}`);
+    throw new Error(`Failed to update training time allocation: ${res.status}`);
   return res.json();
 };
 
-const updateStudyMoney = async (
+const updateTrainingMoney = async (
   id: string,
-  input: StudyMoneyAllocationInput,
+  input: TrainingMoneyAllocationInput,
 ): Promise<BudgetAllocation> => {
-  const res = await fetch(`${basePath}/study-money/${id}`, {
+  const res = await fetch(`${basePath}/training-money/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
   if (!res.ok)
-    throw new Error(`Failed to update study money allocation: ${res.status}`);
+    throw new Error(`Failed to update training money allocation: ${res.status}`);
   return res.json();
 };
 
@@ -154,10 +154,10 @@ export const BudgetAllocationClient = {
   getSummary,
   createHackTime,
   updateHackTime,
-  createStudyTime,
-  updateStudyTime,
-  createStudyMoney,
-  updateStudyMoney,
+  createTrainingTime,
+  updateTrainingTime,
+  createTrainingMoney,
+  updateTrainingMoney,
   deleteById,
   uploadFile,
   downloadFile,

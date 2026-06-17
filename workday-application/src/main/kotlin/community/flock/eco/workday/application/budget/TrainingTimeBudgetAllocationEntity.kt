@@ -11,8 +11,8 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Entity
-@Table(name = "study_time_budget_allocation")
-class StudyTimeBudgetAllocationEntity(
+@Table(name = "training_time_budget_allocation")
+class TrainingTimeBudgetAllocationEntity(
     id: Long = 0,
     code: String = UUID.randomUUID().toString(),
     person: Person?,
@@ -21,8 +21,8 @@ class StudyTimeBudgetAllocationEntity(
     description: String? = null,
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
-        name = "study_time_budget_allocation_daily_time_allocations",
-        joinColumns = [JoinColumn(name = "study_time_budget_allocation_id")],
+        name = "training_time_budget_allocation_daily_time_allocations",
+        joinColumns = [JoinColumn(name = "training_time_budget_allocation_id")],
     )
     val dailyTimeAllocations: MutableList<DailyTimeAllocationEmbeddable> = mutableListOf(),
     val totalHours: Double,

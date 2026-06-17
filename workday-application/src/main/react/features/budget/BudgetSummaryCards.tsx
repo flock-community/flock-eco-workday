@@ -29,21 +29,21 @@ export function BudgetSummaryCards({ summary }: BudgetSummaryCardsProps) {
       <Grid size={{ xs: 12, md: 4 }}>
         <BudgetCard
           title="Hack Hours"
-          budgetItem={summary.hackHours}
+          budgetItem={summary.hackTimeBudget}
           unit="h"
         />
       </Grid>
       <Grid size={{ xs: 12, md: 4 }}>
         <BudgetCard
-          title="Study Hours"
-          budgetItem={summary.studyHours}
+          title="Training Hours"
+          budgetItem={summary.trainingTimeBudget}
           unit="h"
         />
       </Grid>
       <Grid size={{ xs: 12, md: 4 }}>
         <BudgetCard
-          title="Study Money"
-          budgetItem={summary.studyMoney}
+          title="Training Money"
+          budgetItem={summary.trainingMoneyBudget}
           unit="€"
         />
       </Grid>

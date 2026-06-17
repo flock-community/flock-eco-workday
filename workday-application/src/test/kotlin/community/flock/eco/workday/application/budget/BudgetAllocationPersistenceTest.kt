@@ -4,8 +4,8 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.domain.budget.BudgetAllocationType
 import community.flock.eco.workday.domain.budget.DailyTimeAllocation
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocation
 import community.flock.eco.workday.domain.common.Document
 import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test
@@ -30,10 +30,10 @@ class BudgetAllocationPersistenceTest : WorkdayIntegrationTest() {
     lateinit var hackTimeAdapter: HackTimeBudgetAllocationPersistenceAdapter
 
     @Autowired
-    lateinit var studyTimeAdapter: StudyTimeBudgetAllocationPersistenceAdapter
+    lateinit var trainingTimeAdapter: TrainingTimeBudgetAllocationPersistenceAdapter
 
     @Autowired
-    lateinit var studyMoneyAdapter: StudyMoneyBudgetAllocationPersistenceAdapter
+    lateinit var trainingMoneyAdapter: TrainingMoneyBudgetAllocationPersistenceAdapter
 
     @Autowired
     lateinit var budgetAllocationRepository: BudgetAllocationRepository
@@ -72,17 +72,17 @@ class BudgetAllocationPersistenceTest : WorkdayIntegrationTest() {
 
     @Test
     @Transactional
-    fun `test create and retrieve study time allocation`() {
+    fun `test create and retrieve training time allocation`() {
         val person = createTestPerson()
-        studyTimeAdapter.create(
-            StudyTimeBudgetAllocation(
+        trainingTimeAdapter.create(
+            TrainingTimeBudgetAllocation(
                 person = person,
                 eventCode = null,
                 date = LocalDate.of(2026, 3, 1),
                 description = "Kotlin course",
                 dailyTimeAllocations =
                     listOf(
-                        DailyTimeAllocation(LocalDate.of(2026, 3, 1), 4.0, BudgetAllocationType.STUDY),
+                        DailyTimeAllocation(LocalDate.of(2026, 3, 1), 4.0, BudgetAllocationType.TRAINING),
                     ),
                 totalHours = 4.0,
             ),
@@ -91,18 +91,18 @@ class BudgetAllocationPersistenceTest : WorkdayIntegrationTest() {
         val results = budgetAllocationAdapter.findAllByPersonUuid(person.uuid, 2026)
         assertEquals(1, results.size)
         val retrieved = results.first()
-        assertIs<StudyTimeBudgetAllocation>(retrieved)
+        assertIs<TrainingTimeBudgetAllocation>(retrieved)
         assertEquals(4.0, retrieved.totalHours)
         assertEquals(1, retrieved.dailyTimeAllocations.size)
-        assertEquals(BudgetAllocationType.STUDY, retrieved.dailyTimeAllocations[0].type)
+        assertEquals(BudgetAllocationType.TRAINING, retrieved.dailyTimeAllocations[0].type)
     }
 
     @Test
     @Transactional
-    fun `test create and retrieve study money allocation`() {
+    fun `test create and retrieve training money allocation`() {
         val person = createTestPerson()
-        studyMoneyAdapter.create(
-            StudyMoneyBudgetAllocation(
+        trainingMoneyAdapter.create(
+            TrainingMoneyBudgetAllocation(
                 person = person,
                 eventCode = null,
                 date = LocalDate.of(2026, 2, 1),
@@ -118,7 +118,7 @@ class BudgetAllocationPersistenceTest : WorkdayIntegrationTest() {
         val results = budgetAllocationAdapter.findAllByPersonUuid(person.uuid, 2026)
         assertEquals(1, results.size)
         val retrieved = results.first()
-        assertIs<StudyMoneyBudgetAllocation>(retrieved)
+        assertIs<TrainingMoneyBudgetAllocation>(retrieved)
         assertEquals(0, BigDecimal("2500.50").compareTo(retrieved.amount))
         assertEquals(1, retrieved.files.size)
         assertEquals("receipt.pdf", retrieved.files[0].name)
@@ -139,18 +139,18 @@ class BudgetAllocationPersistenceTest : WorkdayIntegrationTest() {
                 totalHours = 8.0,
             ),
         )
-        studyTimeAdapter.create(
-            StudyTimeBudgetAllocation(
+        trainingTimeAdapter.create(
+            TrainingTimeBudgetAllocation(
                 person = person,
                 eventCode = null,
                 date = LocalDate.of(2026, 3, 1),
                 dailyTimeAllocations =
-                    listOf(DailyTimeAllocation(LocalDate.of(2026, 3, 1), 4.0, BudgetAllocationType.STUDY)),
+                    listOf(DailyTimeAllocation(LocalDate.of(2026, 3, 1), 4.0, BudgetAllocationType.TRAINING)),
                 totalHours = 4.0,
             ),
         )
-        studyMoneyAdapter.create(
-            StudyMoneyBudgetAllocation(
+        trainingMoneyAdapter.create(
+            TrainingMoneyBudgetAllocation(
                 person = person,
                 date = LocalDate.of(2026, 6, 1),
                 amount = BigDecimal("1000.00"),
@@ -160,8 +160,8 @@ class BudgetAllocationPersistenceTest : WorkdayIntegrationTest() {
         val results = budgetAllocationAdapter.findAllByPersonUuid(person.uuid, 2026)
         assertEquals(3, results.size)
         assertTrue(results.any { it is HackTimeBudgetAllocation })
-        assertTrue(results.any { it is StudyTimeBudgetAllocation })
-        assertTrue(results.any { it is StudyMoneyBudgetAllocation })
+        assertTrue(results.any { it is TrainingTimeBudgetAllocation })
+        assertTrue(results.any { it is TrainingMoneyBudgetAllocation })
     }
 
     @Test
@@ -180,13 +180,13 @@ class BudgetAllocationPersistenceTest : WorkdayIntegrationTest() {
                 totalHours = 8.0,
             ),
         )
-        studyTimeAdapter.create(
-            StudyTimeBudgetAllocation(
+        trainingTimeAdapter.create(
+            TrainingTimeBudgetAllocation(
                 person = person,
                 eventCode = eventCode,
                 date = LocalDate.of(2026, 1, 15),
                 dailyTimeAllocations =
-                    listOf(DailyTimeAllocation(LocalDate.of(2026, 1, 15), 4.0, BudgetAllocationType.STUDY)),
+                    listOf(DailyTimeAllocation(LocalDate.of(2026, 1, 15), 4.0, BudgetAllocationType.TRAINING)),
                 totalHours = 4.0,
             ),
         )

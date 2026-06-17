@@ -46,33 +46,33 @@ class BudgetAllocationValidationTest {
                 dailyTimeAllocations = emptyList(),
                 totalHours = 0.0,
             )
-        val studyTimeAlloc =
-            StudyTimeBudgetAllocation(
+        val trainingTimeAlloc =
+            TrainingTimeBudgetAllocation(
                 person = person,
-                eventCode = "STUDY-2026",
+                eventCode = "TRAINING-2026",
                 date = LocalDate.of(2026, 3, 1),
                 dailyTimeAllocations = emptyList(),
                 totalHours = 0.0,
             )
-        val studyMoneyAlloc =
-            StudyMoneyBudgetAllocation(
+        val trainingMoneyAlloc =
+            TrainingMoneyBudgetAllocation(
                 person = person,
                 date = LocalDate.of(2026, 3, 1),
                 amount = BigDecimal("50.00"),
             )
 
         assertEquals(0L, hackAlloc.id)
-        assertEquals(0L, studyTimeAlloc.id)
-        assertEquals(0L, studyMoneyAlloc.id)
+        assertEquals(0L, trainingTimeAlloc.id)
+        assertEquals(0L, trainingMoneyAlloc.id)
     }
 
     @Test
-    fun `study money amount uses BigDecimal precision without floating point loss`() {
+    fun `training money amount uses BigDecimal precision without floating point loss`() {
         val person = testPerson()
         // 0.1 + 0.2 in Double = 0.30000000000000004, but BigDecimal preserves exactness
         val amount = BigDecimal("0.10") + BigDecimal("0.20")
         val allocation =
-            StudyMoneyBudgetAllocation(
+            TrainingMoneyBudgetAllocation(
                 person = person,
                 date = LocalDate.of(2026, 3, 1),
                 amount = amount,
@@ -196,17 +196,17 @@ class BudgetAllocationValidationTest {
         val person = testPerson()
         val personUuid = person.uuid
         val alloc =
-            StudyTimeBudgetAllocation(
+            TrainingTimeBudgetAllocation(
                 id = 1L,
                 person = person,
-                eventCode = "STUDY-2026",
+                eventCode = "TRAINING-2026",
                 date = LocalDate.of(2026, 6, 15),
                 dailyTimeAllocations =
                     listOf(
                         DailyTimeAllocation(
                             date = LocalDate.of(2026, 6, 15),
                             hours = 8.0,
-                            type = BudgetAllocationType.STUDY,
+                            type = BudgetAllocationType.TRAINING,
                         ),
                     ),
                 totalHours = 8.0,
@@ -231,8 +231,8 @@ class BudgetAllocationValidationTest {
         val results = service.findAllByPersonUuid(personUuid, 2026)
 
         assertEquals(1, results.size)
-        assertIs<StudyTimeBudgetAllocation>(results[0])
-        assertEquals(8.0, (results[0] as StudyTimeBudgetAllocation).totalHours)
+        assertIs<TrainingTimeBudgetAllocation>(results[0])
+        assertEquals(8.0, (results[0] as TrainingTimeBudgetAllocation).totalHours)
     }
 
     @Test

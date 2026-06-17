@@ -29,9 +29,9 @@ describe('EVT-05: Event type drives default budget allocation type', () => {
     ).toBeNull();
   });
 
-  it('CONFERENCE maps to STUDY budget type', () => {
+  it('CONFERENCE maps to TRAINING budget type', () => {
     expect(EventTypeMappingToDefaultBudgetType[EventType.CONFERENCE]).toBe(
-      EventBudgetType.STUDY,
+      EventBudgetType.TRAINING,
     );
   });
 

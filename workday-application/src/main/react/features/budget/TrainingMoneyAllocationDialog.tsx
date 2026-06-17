@@ -19,10 +19,10 @@ import type { Person } from '../../clients/PersonClient';
 import type {
   BudgetAllocation,
   BudgetAllocationFile,
-  StudyMoneyAllocationInput,
+  TrainingMoneyAllocationInput,
 } from '../../wirespec/model';
 
-interface StudyMoneyAllocationDialogProps {
+interface TrainingMoneyAllocationDialogProps {
   open: boolean;
   onClose: () => void;
   onSaved: () => void;
@@ -30,13 +30,13 @@ interface StudyMoneyAllocationDialogProps {
   editAllocation?: BudgetAllocation; // when present: edit mode
 }
 
-export function StudyMoneyAllocationDialog({
+export function TrainingMoneyAllocationDialog({
   open,
   onClose,
   onSaved,
   person,
   editAllocation,
-}: StudyMoneyAllocationDialogProps) {
+}: TrainingMoneyAllocationDialogProps) {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState<number | ''>('');
   const [date, setDate] = useState('');
@@ -51,7 +51,7 @@ export function StudyMoneyAllocationDialog({
     if (open) {
       if (editAllocation) {
         setDescription(editAllocation.description ?? '');
-        setAmount(editAllocation.studyMoneyDetails?.amount ?? '');
+        setAmount(editAllocation.trainingMoneyDetails?.amount ?? '');
         setDate(editAllocation.date ?? new Date().toISOString().split('T')[0]);
       } else {
         setDescription('');
@@ -77,7 +77,7 @@ export function StudyMoneyAllocationDialog({
         fileResults.push({ name: result.name, file: result.id });
       }
 
-      const input: StudyMoneyAllocationInput = {
+      const input: TrainingMoneyAllocationInput = {
         personId: editAllocation?.personId ?? person?.uuid?.toString() ?? '',
         eventCode: undefined,
         date,
@@ -87,9 +87,9 @@ export function StudyMoneyAllocationDialog({
       };
 
       if (editAllocation?.id) {
-        await BudgetAllocationClient.updateStudyMoney(editAllocation.id, input);
+        await BudgetAllocationClient.updateTrainingMoney(editAllocation.id, input);
       } else {
-        await BudgetAllocationClient.createStudyMoney(input);
+        await BudgetAllocationClient.createTrainingMoney(input);
       }
       onSaved();
       onClose();
@@ -120,8 +120,8 @@ export function StudyMoneyAllocationDialog({
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
         {editAllocation
-          ? 'Edit Study Money Allocation'
-          : 'Add Study Money Allocation'}
+          ? 'Edit Training Money Allocation'
+          : 'Add Training Money Allocation'}
       </DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>

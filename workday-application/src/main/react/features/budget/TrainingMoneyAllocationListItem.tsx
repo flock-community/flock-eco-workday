@@ -5,21 +5,21 @@ import dayjs from 'dayjs';
 import React from 'react';
 import type { BudgetAllocation } from '../../wirespec/model';
 
-interface StudyMoneyAllocationListItemProps {
+interface TrainingMoneyAllocationListItemProps {
   allocation: BudgetAllocation;
   hasWritePermission?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
-export function StudyMoneyAllocationListItem({
+export function TrainingMoneyAllocationListItem({
   allocation,
   hasWritePermission = false,
   onEdit,
   onDelete,
-}: StudyMoneyAllocationListItemProps) {
-  const amount = allocation.studyMoneyDetails?.amount ?? 0;
-  const fileCount = allocation.studyMoneyDetails?.files?.length ?? 0;
+}: TrainingMoneyAllocationListItemProps) {
+  const amount = allocation.trainingMoneyDetails?.amount ?? 0;
+  const fileCount = allocation.trainingMoneyDetails?.files?.length ?? 0;
 
   return (
     <Grid key={`workday-list-item-${allocation.id}`} size={{ xs: 12 }}>
@@ -28,7 +28,7 @@ export function StudyMoneyAllocationListItem({
           title={
             <>
               <Description color="action" sx={{ mt: 0.5, mr: 2 }} />
-              {allocation.description ? allocation.description : 'Study Money'}
+              {allocation.description ? allocation.description : 'Training Money'}
             </>
           }
           subheader={

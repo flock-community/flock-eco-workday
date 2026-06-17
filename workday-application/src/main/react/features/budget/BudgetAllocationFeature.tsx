@@ -27,7 +27,7 @@ import type {
 } from '../../wirespec/model';
 import { BudgetAllocationList } from './BudgetAllocationList';
 import { BudgetSummaryCards } from './BudgetSummaryCards';
-import { StudyMoneyAllocationDialog } from './StudyMoneyAllocationDialog';
+import { TrainingMoneyAllocationDialog } from './TrainingMoneyAllocationDialog';
 
 export function BudgetAllocationPage() {
   return (
@@ -216,26 +216,26 @@ function BudgetAllocationFeature({
               }
             />
             <Chip
-              label="Study Hours"
-              variant={typeFilter === 'STUDY_TIME' ? 'filled' : 'outlined'}
-              color={typeFilter === 'STUDY_TIME' ? 'primary' : 'default'}
+              label="Training Hours"
+              variant={typeFilter === 'TRAINING_TIME' ? 'filled' : 'outlined'}
+              color={typeFilter === 'TRAINING_TIME' ? 'primary' : 'default'}
               onClick={() =>
                 setTypeFilter(
-                  typeFilter === 'STUDY_TIME'
+                  typeFilter === 'TRAINING_TIME'
                     ? null
-                    : ('STUDY_TIME' as BudgetAllocationType),
+                    : ('TRAINING_TIME' as BudgetAllocationType),
                 )
               }
             />
             <Chip
-              label="Study Money"
-              variant={typeFilter === 'STUDY_MONEY' ? 'filled' : 'outlined'}
-              color={typeFilter === 'STUDY_MONEY' ? 'primary' : 'default'}
+              label="Training Money"
+              variant={typeFilter === 'TRAINING_MONEY' ? 'filled' : 'outlined'}
+              color={typeFilter === 'TRAINING_MONEY' ? 'primary' : 'default'}
               onClick={() =>
                 setTypeFilter(
-                  typeFilter === 'STUDY_MONEY'
+                  typeFilter === 'TRAINING_MONEY'
                     ? null
-                    : ('STUDY_MONEY' as BudgetAllocationType),
+                    : ('TRAINING_MONEY' as BudgetAllocationType),
                 )
               }
             />
@@ -263,7 +263,7 @@ function BudgetAllocationFeature({
         )}
       </CardContent>
 
-      <StudyMoneyAllocationDialog
+      <TrainingMoneyAllocationDialog
         open={dialogOpen || !!editTarget}
         onClose={() => {
           setDialogOpen(false);
@@ -280,7 +280,7 @@ function BudgetAllocationFeature({
         onConfirm={handleDeleteConfirm}
       >
         <Typography>
-          Are you sure you want to delete this study money allocation?
+          Are you sure you want to delete this training money allocation?
         </Typography>
       </ConfirmDialog>
     </Card>

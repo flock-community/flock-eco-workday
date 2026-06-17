@@ -223,7 +223,7 @@ class EventController(
     private fun String.toAllocationTypeApi(): DefaultTimeAllocationTypeApi? =
         when (this) {
             "HACK", "HACK_TIME" -> DefaultTimeAllocationTypeApi.HACK_TIME
-            "STUDY", "STUDY_TIME" -> DefaultTimeAllocationTypeApi.STUDY_TIME
+            "TRAINING", "TRAINING_TIME" -> DefaultTimeAllocationTypeApi.TRAINING_TIME
             else -> null
         }
 

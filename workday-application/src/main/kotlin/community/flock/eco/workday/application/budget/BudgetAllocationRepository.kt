@@ -25,7 +25,7 @@ interface BudgetAllocationRepository : JpaRepository<BudgetAllocationEntity, Lon
 interface HackTimeBudgetAllocationRepository : CrudRepository<HackTimeBudgetAllocationEntity, Long>
 
 @Repository
-interface StudyTimeBudgetAllocationRepository : CrudRepository<StudyTimeBudgetAllocationEntity, Long>
+interface TrainingTimeBudgetAllocationRepository : CrudRepository<TrainingTimeBudgetAllocationEntity, Long>
 
 @Repository
-interface StudyMoneyBudgetAllocationRepository : CrudRepository<StudyMoneyBudgetAllocationEntity, Long>
+interface TrainingMoneyBudgetAllocationRepository : CrudRepository<TrainingMoneyBudgetAllocationEntity, Long>

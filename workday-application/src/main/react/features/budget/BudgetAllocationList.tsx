@@ -6,7 +6,7 @@ import type {
   BudgetAllocationType,
 } from '../../wirespec/model';
 import { EventAllocationListItem } from './EventAllocationListItem';
-import { StudyMoneyAllocationListItem } from './StudyMoneyAllocationListItem';
+import { TrainingMoneyAllocationListItem } from './TrainingMoneyAllocationListItem';
 
 interface BudgetAllocationListProps {
   allocations: BudgetAllocation[];
@@ -125,7 +125,7 @@ export function BudgetAllocationList({
               isAdmin={isAdmin}
             />
           ) : (
-            <StudyMoneyAllocationListItem
+            <TrainingMoneyAllocationListItem
               key={item.data.id ?? item.data.date}
               allocation={item.data}
               hasWritePermission={hasWritePermission}

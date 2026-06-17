@@ -6,14 +6,14 @@ import community.flock.eco.workday.domain.budget.BudgetAllocation
 import community.flock.eco.workday.domain.budget.DailyTimeAllocation
 import community.flock.eco.workday.application.model.Person as PersonEntity
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocation as HackTimeDomain
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocation as StudyMoneyDomain
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocation as StudyTimeDomain
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocation as TrainingMoneyDomain
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocation as TrainingTimeDomain
 
 fun BudgetAllocationEntity.toBudgetAllocationDomain(): BudgetAllocation =
     when (this) {
         is HackTimeBudgetAllocationEntity -> toDomain()
-        is StudyTimeBudgetAllocationEntity -> toDomain()
-        is StudyMoneyBudgetAllocationEntity -> toDomain()
+        is TrainingTimeBudgetAllocationEntity -> toDomain()
+        is TrainingMoneyBudgetAllocationEntity -> toDomain()
         else -> error("Unsupported budget allocation type")
     }
 
@@ -39,8 +39,8 @@ fun HackTimeDomain.toEntity(personReference: PersonEntity) =
         totalHours = totalHours,
     )
 
-fun StudyTimeBudgetAllocationEntity.toDomain() =
-    StudyTimeDomain(
+fun TrainingTimeBudgetAllocationEntity.toDomain() =
+    TrainingTimeDomain(
         id = id,
         person = person!!.toDomain(),
         eventCode = eventCode,
@@ -50,8 +50,8 @@ fun StudyTimeBudgetAllocationEntity.toDomain() =
         totalHours = totalHours,
     )
 
-fun StudyTimeDomain.toEntity(personReference: PersonEntity) =
-    StudyTimeBudgetAllocationEntity(
+fun TrainingTimeDomain.toEntity(personReference: PersonEntity) =
+    TrainingTimeBudgetAllocationEntity(
         id = id,
         person = personReference,
         eventCode = eventCode,
@@ -61,8 +61,8 @@ fun StudyTimeDomain.toEntity(personReference: PersonEntity) =
         totalHours = totalHours,
     )
 
-fun StudyMoneyBudgetAllocationEntity.toDomain() =
-    StudyMoneyDomain(
+fun TrainingMoneyBudgetAllocationEntity.toDomain() =
+    TrainingMoneyDomain(
         id = id,
         person = person!!.toDomain(),
         eventCode = eventCode,
@@ -72,8 +72,8 @@ fun StudyMoneyBudgetAllocationEntity.toDomain() =
         files = files.map { it.toDomain() },
     )
 
-fun StudyMoneyDomain.toEntity(personReference: PersonEntity) =
-    StudyMoneyBudgetAllocationEntity(
+fun TrainingMoneyDomain.toEntity(personReference: PersonEntity) =
+    TrainingMoneyBudgetAllocationEntity(
         id = id,
         person = personReference,
         eventCode = eventCode,

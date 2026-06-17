@@ -5,10 +5,10 @@ import community.flock.eco.workday.api.endpoint.BudgetAllocationDeleteById
 import community.flock.eco.workday.api.endpoint.BudgetSummary
 import community.flock.eco.workday.api.endpoint.HackTimeAllocationCreate
 import community.flock.eco.workday.api.endpoint.HackTimeAllocationUpdate
-import community.flock.eco.workday.api.endpoint.StudyMoneyAllocationCreate
-import community.flock.eco.workday.api.endpoint.StudyMoneyAllocationUpdate
-import community.flock.eco.workday.api.endpoint.StudyTimeAllocationCreate
-import community.flock.eco.workday.api.endpoint.StudyTimeAllocationUpdate
+import community.flock.eco.workday.api.endpoint.TrainingMoneyAllocationCreate
+import community.flock.eco.workday.api.endpoint.TrainingMoneyAllocationUpdate
+import community.flock.eco.workday.api.endpoint.TrainingTimeAllocationCreate
+import community.flock.eco.workday.api.endpoint.TrainingTimeAllocationUpdate
 import community.flock.eco.workday.api.model.Error
 import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.services.DocumentStorage
@@ -17,10 +17,10 @@ import community.flock.eco.workday.core.utils.toResponse
 import community.flock.eco.workday.domain.budget.BudgetAllocationService
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocation
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocationService
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocationService
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocationService
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocationService
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocationService
 import org.springframework.boot.web.server.MimeMappings
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -45,18 +45,18 @@ interface BudgetAllocationHandler :
     BudgetSummary.Handler,
     HackTimeAllocationCreate.Handler,
     HackTimeAllocationUpdate.Handler,
-    StudyTimeAllocationCreate.Handler,
-    StudyTimeAllocationUpdate.Handler,
-    StudyMoneyAllocationCreate.Handler,
-    StudyMoneyAllocationUpdate.Handler
+    TrainingTimeAllocationCreate.Handler,
+    TrainingTimeAllocationUpdate.Handler,
+    TrainingMoneyAllocationCreate.Handler,
+    TrainingMoneyAllocationUpdate.Handler
 
 @RestController
 class BudgetAllocationController(
     private val documentService: DocumentStorage,
     private val budgetAllocationService: BudgetAllocationService,
     private val hackTimeBudgetAllocationService: HackTimeBudgetAllocationService,
-    private val studyTimeBudgetAllocationService: StudyTimeBudgetAllocationService,
-    private val studyMoneyBudgetAllocationService: StudyMoneyBudgetAllocationService,
+    private val trainingTimeBudgetAllocationService: TrainingTimeBudgetAllocationService,
+    private val trainingMoneyBudgetAllocationService: TrainingMoneyBudgetAllocationService,
     private val budgetAllocationMapper: BudgetAllocationApiMapper,
     private val budgetSummaryService: BudgetSummaryService,
     private val personService: PersonService,
@@ -125,8 +125,8 @@ class BudgetAllocationController(
             allocations.map {
                 when (it) {
                     is HackTimeBudgetAllocation -> it.produce()
-                    is StudyTimeBudgetAllocation -> it.produce()
-                    is StudyMoneyBudgetAllocation -> it.produce()
+                    is TrainingTimeBudgetAllocation -> it.produce()
+                    is TrainingMoneyBudgetAllocation -> it.produce()
                 }
             },
         )
@@ -161,44 +161,44 @@ class BudgetAllocationController(
             ?: HackTimeAllocationUpdate.Response500(Error("Cannot update hack time allocation"))
     }
 
-    override suspend fun studyTimeAllocationCreate(request: StudyTimeAllocationCreate.Request): StudyTimeAllocationCreate.Response<*> {
+    override suspend fun trainingTimeAllocationCreate(request: TrainingTimeAllocationCreate.Request): TrainingTimeAllocationCreate.Response<*> {
         requireWrite()
         return budgetAllocationMapper
-            .consumeStudyTime(request.body)
-            .let { studyTimeBudgetAllocationService.create(it) }
+            .consumeTrainingTime(request.body)
+            .let { trainingTimeBudgetAllocationService.create(it) }
             .produce()
-            .let { StudyTimeAllocationCreate.Response200(it) }
+            .let { TrainingTimeAllocationCreate.Response200(it) }
     }
 
-    override suspend fun studyTimeAllocationUpdate(request: StudyTimeAllocationUpdate.Request): StudyTimeAllocationUpdate.Response<*> {
+    override suspend fun trainingTimeAllocationUpdate(request: TrainingTimeAllocationUpdate.Request): TrainingTimeAllocationUpdate.Response<*> {
         requireWrite()
         val id = request.path.id.toLong()
         return budgetAllocationMapper
-            .consumeStudyTime(request.body, id)
-            .let { studyTimeBudgetAllocationService.update(id, it) }
+            .consumeTrainingTime(request.body, id)
+            .let { trainingTimeBudgetAllocationService.update(id, it) }
             ?.produce()
-            ?.let { StudyTimeAllocationUpdate.Response200(it) }
-            ?: StudyTimeAllocationUpdate.Response500(Error("Cannot update study time allocation"))
+            ?.let { TrainingTimeAllocationUpdate.Response200(it) }
+            ?: TrainingTimeAllocationUpdate.Response500(Error("Cannot update training time allocation"))
     }
 
-    override suspend fun studyMoneyAllocationCreate(request: StudyMoneyAllocationCreate.Request): StudyMoneyAllocationCreate.Response<*> {
+    override suspend fun trainingMoneyAllocationCreate(request: TrainingMoneyAllocationCreate.Request): TrainingMoneyAllocationCreate.Response<*> {
         requireWrite()
         return budgetAllocationMapper
-            .consumeStudyMoney(request.body)
-            .let { studyMoneyBudgetAllocationService.create(it) }
+            .consumeTrainingMoney(request.body)
+            .let { trainingMoneyBudgetAllocationService.create(it) }
             .produce()
-            .let { StudyMoneyAllocationCreate.Response200(it) }
+            .let { TrainingMoneyAllocationCreate.Response200(it) }
     }
 
-    override suspend fun studyMoneyAllocationUpdate(request: StudyMoneyAllocationUpdate.Request): StudyMoneyAllocationUpdate.Response<*> {
+    override suspend fun trainingMoneyAllocationUpdate(request: TrainingMoneyAllocationUpdate.Request): TrainingMoneyAllocationUpdate.Response<*> {
         requireWrite()
         val id = request.path.id.toLong()
         return budgetAllocationMapper
-            .consumeStudyMoney(request.body, id)
-            .let { studyMoneyBudgetAllocationService.update(id, it) }
+            .consumeTrainingMoney(request.body, id)
+            .let { trainingMoneyBudgetAllocationService.update(id, it) }
             ?.produce()
-            ?.let { StudyMoneyAllocationUpdate.Response200(it) }
-            ?: StudyMoneyAllocationUpdate.Response500(Error("Cannot update study money allocation"))
+            ?.let { TrainingMoneyAllocationUpdate.Response200(it) }
+            ?: TrainingMoneyAllocationUpdate.Response500(Error("Cannot update training money allocation"))
     }
 
     @GetMapping("/api/budget-allocations/files/{file}/{name}")

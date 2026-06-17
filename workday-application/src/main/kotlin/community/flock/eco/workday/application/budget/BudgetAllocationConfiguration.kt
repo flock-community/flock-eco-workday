@@ -2,8 +2,8 @@ package community.flock.eco.workday.application.budget
 
 import community.flock.eco.workday.domain.budget.BudgetAllocationService
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocationService
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocationService
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocationService
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocationService
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocationService
 import community.flock.eco.workday.domain.common.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -29,20 +29,20 @@ class BudgetAllocationConfiguration {
     )
 
     @Bean
-    fun studyTimeBudgetAllocationService(
-        studyTimeBudgetAllocationPersistenceAdapter: StudyTimeBudgetAllocationPersistenceAdapter,
+    fun trainingTimeBudgetAllocationService(
+        trainingTimeBudgetAllocationPersistenceAdapter: TrainingTimeBudgetAllocationPersistenceAdapter,
         applicationEventPublisher: ApplicationEventPublisher,
-    ) = StudyTimeBudgetAllocationService(
-        repository = studyTimeBudgetAllocationPersistenceAdapter,
+    ) = TrainingTimeBudgetAllocationService(
+        repository = trainingTimeBudgetAllocationPersistenceAdapter,
         applicationEventPublisher = applicationEventPublisher,
     )
 
     @Bean
-    fun studyMoneyBudgetAllocationService(
-        studyMoneyBudgetAllocationPersistenceAdapter: StudyMoneyBudgetAllocationPersistenceAdapter,
+    fun trainingMoneyBudgetAllocationService(
+        trainingMoneyBudgetAllocationPersistenceAdapter: TrainingMoneyBudgetAllocationPersistenceAdapter,
         applicationEventPublisher: ApplicationEventPublisher,
-    ) = StudyMoneyBudgetAllocationService(
-        repository = studyMoneyBudgetAllocationPersistenceAdapter,
+    ) = TrainingMoneyBudgetAllocationService(
+        repository = trainingMoneyBudgetAllocationPersistenceAdapter,
         applicationEventPublisher = applicationEventPublisher,
     )
 }

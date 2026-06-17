@@ -46,7 +46,7 @@ type Event {
   persons: Person[]?
 }
 enum DefaultTimeAllocationType {
-  HACK_TIME, STUDY_TIME
+  HACK_TIME, TRAINING_TIME
 }
 enum EventType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT

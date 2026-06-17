@@ -4,10 +4,10 @@ import community.flock.eco.workday.application.budget.BudgetAllocationEntity
 import community.flock.eco.workday.application.budget.DailyTimeAllocationEmbeddable
 import community.flock.eco.workday.application.budget.HackTimeBudgetAllocationEntity
 import community.flock.eco.workday.application.budget.HackTimeBudgetAllocationRepository
-import community.flock.eco.workday.application.budget.StudyMoneyBudgetAllocationEntity
-import community.flock.eco.workday.application.budget.StudyMoneyBudgetAllocationRepository
-import community.flock.eco.workday.application.budget.StudyTimeBudgetAllocationEntity
-import community.flock.eco.workday.application.budget.StudyTimeBudgetAllocationRepository
+import community.flock.eco.workday.application.budget.TrainingMoneyBudgetAllocationEntity
+import community.flock.eco.workday.application.budget.TrainingMoneyBudgetAllocationRepository
+import community.flock.eco.workday.application.budget.TrainingTimeBudgetAllocationEntity
+import community.flock.eco.workday.application.budget.TrainingTimeBudgetAllocationRepository
 import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.domain.budget.BudgetAllocationType
@@ -23,8 +23,8 @@ class LoadBudgetAllocationData(
     private val loadEventData: LoadEventData,
     private val loadContractData: LoadContractData,
     private val hackTimeRepo: HackTimeBudgetAllocationRepository,
-    private val studyTimeRepo: StudyTimeBudgetAllocationRepository,
-    private val studyMoneyRepo: StudyMoneyBudgetAllocationRepository,
+    private val trainingTimeRepo: TrainingTimeBudgetAllocationRepository,
+    private val trainingMoneyRepo: TrainingMoneyBudgetAllocationRepository,
     loadData: LoadData,
 ) {
     val data: MutableList<BudgetAllocationEntity> = mutableListOf()
@@ -69,7 +69,7 @@ class LoadBudgetAllocationData(
                 dayCount = 5,
             )
 
-            createStudyTimeAllocation(
+            createTrainingTimeAllocation(
                 person = personA,
                 eventCode = conferenceEvents.getOrNull(0)?.code,
                 date = LocalDate.of(priorYear, 4, 10),
@@ -77,7 +77,7 @@ class LoadBudgetAllocationData(
                 totalHours = 80.0,
                 dayCount = 10,
             )
-            createStudyMoneyAllocation(
+            createTrainingMoneyAllocation(
                 person = personA,
                 eventCode = null,
                 date = LocalDate.of(priorYear, 10, 5),
@@ -85,14 +85,14 @@ class LoadBudgetAllocationData(
                 amount = BigDecimal("1200.00"),
             )
 
-            createStudyMoneyAllocation(
+            createTrainingMoneyAllocation(
                 person = personA,
                 eventCode = null,
                 date = LocalDate.of(priorYear, 3, 15),
                 description = "Kotlin Conference registration",
                 amount = BigDecimal("2500.00"),
             )
-            createStudyMoneyAllocation(
+            createTrainingMoneyAllocation(
                 person = personA,
                 eventCode = null,
                 date = LocalDate.of(priorYear, 8, 1),
@@ -109,7 +109,7 @@ class LoadBudgetAllocationData(
                 dayCount = 5,
             )
 
-            createStudyMoneyAllocation(
+            createTrainingMoneyAllocation(
                 person = personA,
                 eventCode = null,
                 date = LocalDate.of(currentYear, 1, 20),
@@ -117,7 +117,7 @@ class LoadBudgetAllocationData(
                 amount = BigDecimal("750.00"),
             )
 
-            createStudyMoneyAllocation(
+            createTrainingMoneyAllocation(
                 person = personA,
                 eventCode = null,
                 date = LocalDate.of(currentYear, 2, 1),
@@ -136,9 +136,9 @@ class LoadBudgetAllocationData(
                 dayCount = 2,
             )
 
-            // --- Person C (bert): Standalone StudyMoney only ---
+            // --- Person C (bert): Standalone TrainingMoney only ---
 
-            createStudyMoneyAllocation(
+            createTrainingMoneyAllocation(
                 person = personC,
                 eventCode = null,
                 date = LocalDate.of(currentYear, 1, 15),
@@ -180,7 +180,7 @@ class LoadBudgetAllocationData(
             ).also { data.add(it) }
     }
 
-    private fun createStudyTimeAllocation(
+    private fun createTrainingTimeAllocation(
         person: Person,
         eventCode: String?,
         date: LocalDate,
@@ -195,13 +195,13 @@ class LoadBudgetAllocationData(
                     DailyTimeAllocationEmbeddable(
                         date = date.plusDays(dayOffset.toLong()),
                         hours = hoursPerDay,
-                        type = BudgetAllocationType.STUDY,
+                        type = BudgetAllocationType.TRAINING,
                     )
                 }.toMutableList()
 
-        studyTimeRepo
+        trainingTimeRepo
             .save(
-                StudyTimeBudgetAllocationEntity(
+                TrainingTimeBudgetAllocationEntity(
                     person = person,
                     eventCode = eventCode,
                     date = date,
@@ -212,16 +212,16 @@ class LoadBudgetAllocationData(
             ).also { data.add(it) }
     }
 
-    private fun createStudyMoneyAllocation(
+    private fun createTrainingMoneyAllocation(
         person: Person,
         eventCode: String?,
         date: LocalDate,
         description: String,
         amount: BigDecimal,
     ) {
-        studyMoneyRepo
+        trainingMoneyRepo
             .save(
-                StudyMoneyBudgetAllocationEntity(
+                TrainingMoneyBudgetAllocationEntity(
                     person = person,
                     eventCode = eventCode,
                     date = date,

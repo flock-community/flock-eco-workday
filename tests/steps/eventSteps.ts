@@ -239,14 +239,14 @@ export async function Then_budget_tab_shows_event_allocation(
  * The participant must already have a customized allocation (not "Using defaults").
  *
  * @param personName - Display name of the participant (e.g., "Pino")
- * @param periodType - "Study Time" or "Hack Time"
+ * @param periodType - "Training Time" or "Hack Time"
  * @param dayIndex - Zero-based index of the day input within that period section
  * @param hours - New hours value to enter
  */
 export async function When_I_customize_participant_hours(
   page: Page,
   personName: string,
-  periodType: 'Study Time' | 'Hack Time',
+  periodType: 'Training Time' | 'Hack Time',
   dayIndex: number,
   hours: string,
 ) {

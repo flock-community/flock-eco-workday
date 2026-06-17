@@ -3,16 +3,16 @@
 // Admin user: bert. Target participants: pino@sesam.straat, ieniemienie@sesam.straat.
 //
 // Dev data baselines (current year, from develop seed data + event sync):
-//   Pino contract: hackHours=160, studyHours=200, studyMoney=EUR5000
-//     Hours are deterministic: hackUsed=16h, studyUsed=0h
-//     Study money "used" fluctuates (~€3.182 ± €50)
-//   Ieniemienie: hackHours=160, studyHours=200, studyMoney=EUR5000
-//     Hours are deterministic: hackUsed=40h, studyUsed=32h
-//     Study money "used" fluctuates (~€625 ± €50)
+//   Pino contract: hackTimeBudget=160, trainingTimeBudget=200, trainingMoneyBudget=EUR5000
+//     Hours are deterministic: hackUsed=16h, trainingUsed=0h
+//     Training money "used" fluctuates (~€3.182 ± €50)
+//   Ieniemienie: hackTimeBudget=160, trainingTimeBudget=200, trainingMoneyBudget=EUR5000
+//     Hours are deterministic: hackUsed=40h, trainingUsed=32h
+//     Training money "used" fluctuates (~€625 ± €50)
 //
 // Assertion strategy:
 //   - Hours: exact assertions (deterministic)
-//   - Study money: delta-based assertions (read baseline, verify relative change)
+//   - Training money: delta-based assertions (read baseline, verify relative change)
 //
 // Backend behavior: EventService.create/update atomically syncs budget allocations.
 // When an event is saved with participants + defaultTimeAllocationType:
@@ -107,7 +107,7 @@ test.describe('Event Workflow - Create and Budget Verification', () => {
   }) => {
     // Baseline must be captured BEFORE creating the event (used by EVNT-04).
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
-    pinoMoneyBaseline = await readCardUsedValue(page, 'Study Money');
+    pinoMoneyBaseline = await readCardUsedValue(page, 'Training Money');
 
     // Single-step create: backend auto-creates allocations atomically on event save.
     // EventForm auto-sets defaultTimeAllocationType=HACK_TIME when event type is Flock. Hack Day.
@@ -133,13 +133,13 @@ test.describe('Event Workflow - Create and Budget Verification', () => {
     // Hack hours: baseline=16h + 8h auto-created = 24h used, available=136h (deterministic)
     await Then_summary_card_shows(page, 'Hack Hours', '136h', '160h', '24h');
 
-    // Study hours unchanged (baseline: 0h used)
-    await Then_summary_card_shows(page, 'Study Hours', '200h', '200h', '0h');
+    // Training hours unchanged (baseline: 0h used)
+    await Then_summary_card_shows(page, 'Training Hours', '200h', '200h', '0h');
 
-    // Study money: used increased by €500 (event budget / 1 participant)
+    // Training money: used increased by €500 (event budget / 1 participant)
     await Then_money_used_changed_by(
       page,
-      'Study Money',
+      'Training Money',
       pinoMoneyBaseline,
       500,
       '€5.000',
@@ -217,7 +217,7 @@ test.describe('Event Workflow - Modify Allocations', () => {
   }) => {
     // Baseline captured before adding Ieniemienie.
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Ieniemienie');
-    const ieniemoneyBaseline = await readCardUsedValue(page, 'Study Money');
+    const ieniemoneyBaseline = await readCardUsedValue(page, 'Training Money');
 
     await Given_I_am_on_events_page(page, 'bert');
     await When_I_open_event_by_description(page, 'PW Test Hack Day');
@@ -231,10 +231,10 @@ test.describe('Event Workflow - Modify Allocations', () => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Ieniemienie');
     await Then_summary_card_shows(page, 'Hack Hours', '112h', '160h', '48h');
 
-    // Study money: used increased by €250 (500/2 participants)
+    // Training money: used increased by €250 (500/2 participants)
     await Then_money_used_changed_by(
       page,
-      'Study Money',
+      'Training Money',
       ieniemoneyBaseline,
       250,
       '€5.000',
@@ -244,7 +244,7 @@ test.describe('Event Workflow - Modify Allocations', () => {
 
     // Baseline captured before removing Pino.
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
-    const pinoMoneyBeforeRemoval = await readCardUsedValue(page, 'Study Money');
+    const pinoMoneyBeforeRemoval = await readCardUsedValue(page, 'Training Money');
 
     await Given_I_am_on_events_page(page, 'bert');
     await When_I_open_event_by_description(page, 'PW Test Hack Day');
@@ -258,12 +258,12 @@ test.describe('Event Workflow - Modify Allocations', () => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
     await Then_summary_card_shows(page, 'Hack Hours', '144h', '160h', '16h');
 
-    // Study money: verify used decreased by €250 (Pino's share removed)
+    // Training money: verify used decreased by €250 (Pino's share removed)
     // Note: after Part A, Pino's share went from €500 (1 person) to €250 (2 people).
     // Removing Pino deletes their €250 allocation entirely.
     await Then_money_used_changed_by(
       page,
-      'Study Money',
+      'Training Money',
       pinoMoneyBeforeRemoval,
       -250,
       '€5.000',

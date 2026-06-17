@@ -30,16 +30,16 @@ class LoadContractData(
                 type = ContractType.INTERNAL,
                 from = now.minusMonths(8),
                 to = now.plusMonths(8),
-                studyHours = 200,
-                studyMoney = BigDecimal("5000.00"),
+                trainingTimeBudget = 200,
+                trainingMoneyBudget = BigDecimal("5000.00"),
             )
             create(
                 email = "pino@sesam.straat",
                 type = ContractType.INTERNAL,
                 from = now.minusMonths(12),
                 to = now.plusMonths(4),
-                studyHours = 200,
-                studyMoney = BigDecimal("5000.00"),
+                trainingTimeBudget = 200,
+                trainingMoneyBudget = BigDecimal("5000.00"),
             )
             create("bert@sesam.straat", ContractType.EXTERNAL, now.minusWeeks(50), now.plusWeeks(2))
             create("ernie@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2020, 10, 27), LocalDate.of(2021, 10, 26))
@@ -57,8 +57,8 @@ class LoadContractData(
         type: ContractType,
         from: LocalDate,
         to: LocalDate? = null,
-        studyHours: Int = 0,
-        studyMoney: BigDecimal = BigDecimal.ZERO,
+        trainingTimeBudget: Int = 0,
+        trainingMoneyBudget: BigDecimal = BigDecimal.ZERO,
     ) = when (type) {
         ContractType.INTERNAL -> {
             ContractInternal(
@@ -66,9 +66,9 @@ class LoadContractData(
                 hoursPerWeek = 32,
                 monthlySalary = 6000.0,
                 holidayHours = 192,
-                hackHours = 160,
-                studyHours = studyHours,
-                studyMoney = studyMoney,
+                hackTimeBudget = 160,
+                trainingTimeBudget = trainingTimeBudget,
+                trainingMoneyBudget = trainingMoneyBudget,
                 from = from,
                 to = to,
             )

@@ -16,10 +16,10 @@ import community.flock.eco.workday.domain.budget.BudgetAllocationType
 import community.flock.eco.workday.domain.budget.DailyTimeAllocation
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocation
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocationService
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocationService
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocationService
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocationService
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocationService
 import jakarta.persistence.EntityManager
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -39,8 +39,8 @@ class EventService(
     private val entityManager: EntityManager,
     private val budgetAllocationService: BudgetAllocationService,
     private val hackTimeBudgetAllocationService: HackTimeBudgetAllocationService,
-    private val studyTimeBudgetAllocationService: StudyTimeBudgetAllocationService,
-    private val studyMoneyBudgetAllocationService: StudyMoneyBudgetAllocationService,
+    private val trainingTimeBudgetAllocationService: TrainingTimeBudgetAllocationService,
+    private val trainingMoneyBudgetAllocationService: TrainingMoneyBudgetAllocationService,
 ) {
     fun findAll(): Iterable<Event> = eventRepository.findAll()
 
@@ -226,12 +226,12 @@ class EventService(
 
             if (event.defaultTimeAllocationType != null) {
                 val isHack = event.defaultTimeAllocationType in listOf("HACK", "HACK_TIME")
-                val allocType = if (isHack) BudgetAllocationType.HACK else BudgetAllocationType.STUDY
+                val allocType = if (isHack) BudgetAllocationType.HACK else BudgetAllocationType.TRAINING
                 val typedDaily = dailyAllocations.map { it.copy(type = allocType) }
 
                 val existingTimeAllocations =
                     personAllocations.filter {
-                        it is HackTimeBudgetAllocation || it is StudyTimeBudgetAllocation
+                        it is HackTimeBudgetAllocation || it is TrainingTimeBudgetAllocation
                     }
                 val matchingTime =
                     existingTimeAllocations.firstOrNull {
@@ -239,7 +239,7 @@ class EventService(
                     }
 
                 // Drop stale time allocations of the other subtype (e.g. after a
-                // HACK <-> STUDY switch) so the persisted row reflects the event's
+                // HACK <-> TRAINING switch) so the persisted row reflects the event's
                 // current type instead of keeping the old sealed subtype.
                 existingTimeAllocations
                     .filter { it.id != matchingTime?.id }
@@ -257,8 +257,8 @@ class EventService(
                             ),
                         )
 
-                    is StudyTimeBudgetAllocation ->
-                        studyTimeBudgetAllocationService.update(
+                    is TrainingTimeBudgetAllocation ->
+                        trainingTimeBudgetAllocationService.update(
                             matchingTime.id,
                             matchingTime.copy(
                                 dailyTimeAllocations = typedDaily,
@@ -281,8 +281,8 @@ class EventService(
                                 ),
                             )
                         } else {
-                            studyTimeBudgetAllocationService.create(
-                                StudyTimeBudgetAllocation(
+                            trainingTimeBudgetAllocationService.create(
+                                TrainingTimeBudgetAllocation(
                                     person = domainPerson,
                                     eventCode = event.code,
                                     date = event.from,
@@ -296,10 +296,10 @@ class EventService(
             }
 
             val share = moneyShares[appPerson.uuid] ?: BigDecimal.ZERO
-            val existingMoney = personAllocations.firstOrNull { it is StudyMoneyBudgetAllocation }
+            val existingMoney = personAllocations.firstOrNull { it is TrainingMoneyBudgetAllocation }
             if (share > BigDecimal.ZERO) {
-                if (existingMoney is StudyMoneyBudgetAllocation) {
-                    studyMoneyBudgetAllocationService.update(
+                if (existingMoney is TrainingMoneyBudgetAllocation) {
+                    trainingMoneyBudgetAllocationService.update(
                         existingMoney.id,
                         existingMoney.copy(
                             amount = share,
@@ -308,8 +308,8 @@ class EventService(
                         ),
                     )
                 } else {
-                    studyMoneyBudgetAllocationService.create(
-                        StudyMoneyBudgetAllocation(
+                    trainingMoneyBudgetAllocationService.create(
+                        TrainingMoneyBudgetAllocation(
                             person = domainPerson,
                             eventCode = event.code,
                             date = event.from,
@@ -326,8 +326,8 @@ class EventService(
         return budgetAllocationService.findAllByEventCode(event.code).map { alloc ->
             when (alloc) {
                 is HackTimeBudgetAllocation -> alloc.produce()
-                is StudyTimeBudgetAllocation -> alloc.produce()
-                is StudyMoneyBudgetAllocation -> alloc.produce()
+                is TrainingTimeBudgetAllocation -> alloc.produce()
+                is TrainingMoneyBudgetAllocation -> alloc.produce()
                 else -> alloc
             }
         }

@@ -3,10 +3,10 @@ import { EventType } from '../clients/EventClient';
 /**
  * Budget allocation type for event forms.
  * These are UI-level constants used in event defaultTimeAllocationType field.
- * Not to be confused with wirespec BudgetAllocationType (HACK_TIME/STUDY_TIME/STUDY_MONEY).
+ * Not to be confused with wirespec BudgetAllocationType (HACK_TIME/TRAINING_TIME/TRAINING_MONEY).
  */
 export const EventBudgetType = {
-  STUDY: 'STUDY',
+  TRAINING: 'TRAINING',
   HACK: 'HACK',
 } as const;
 export type EventBudgetType =
@@ -33,5 +33,5 @@ export const EventTypeMappingToDefaultBudgetType: Record<
   [EventType.GENERAL_EVENT]: null,
   [EventType.FLOCK_HACK_DAY]: EventBudgetType.HACK,
   [EventType.FLOCK_COMMUNITY_DAY]: null,
-  [EventType.CONFERENCE]: EventBudgetType.STUDY,
+  [EventType.CONFERENCE]: EventBudgetType.TRAINING,
 };

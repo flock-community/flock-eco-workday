@@ -29,7 +29,7 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
     lateinit var contractService: ContractService
 
     @Test
-    fun testStudyHoursPersistsAsInt() {
+    fun testTrainingHoursPersistsAsInt() {
         val person = createHelper.createPersonEntity()
         val contract =
             ContractInternalForm(
@@ -39,21 +39,21 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
                 from = LocalDate.now(),
                 to = null,
                 holidayHours = 192,
-                hackHours = 160,
+                hackTimeBudget = 160,
                 billable = true,
-                studyHours = 120,
-                studyMoney = BigDecimal.ZERO,
+                trainingTimeBudget = 120,
+                trainingMoneyBudget = BigDecimal.ZERO,
             ).let { contractService.create(it) }
 
         entityManager.flush()
         entityManager.clear()
 
         val retrieved = contractService.findByCode(contract!!.code)
-        assertEquals(120, (retrieved as ContractInternal).studyHours, "studyHours should persist as Int value 120")
+        assertEquals(120, (retrieved as ContractInternal).trainingTimeBudget, "trainingTimeBudget should persist as Int value 120")
     }
 
     @Test
-    fun testStudyMoneyPersistsAsBigDecimal() {
+    fun testTrainingMoneyPersistsAsBigDecimal() {
         val person = createHelper.createPersonEntity()
         val contract =
             ContractInternalForm(
@@ -63,10 +63,10 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
                 from = LocalDate.now(),
                 to = null,
                 holidayHours = 192,
-                hackHours = 160,
+                hackTimeBudget = 160,
                 billable = true,
-                studyHours = 0,
-                studyMoney = BigDecimal("2500.50"),
+                trainingTimeBudget = 0,
+                trainingMoneyBudget = BigDecimal("2500.50"),
             ).let { contractService.create(it) }
 
         entityManager.flush()
@@ -75,8 +75,8 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
         val retrieved = contractService.findByCode(contract!!.code)
         assertEquals(
             0,
-            BigDecimal("2500.50").compareTo((retrieved as ContractInternal).studyMoney),
-            "studyMoney should persist as BigDecimal with value 2500.50",
+            BigDecimal("2500.50").compareTo((retrieved as ContractInternal).trainingMoneyBudget),
+            "trainingMoneyBudget should persist as BigDecimal with value 2500.50",
         )
     }
 
@@ -94,20 +94,20 @@ class ContractInternalPersistenceTest : WorkdayIntegrationTest() {
         entityManager.clear()
 
         val retrieved = contractService.findByCode(contract.code)
-        assertEquals(0, (retrieved as ContractInternal).studyHours, "Default studyHours should be 0")
+        assertEquals(0, (retrieved as ContractInternal).trainingTimeBudget, "Default trainingTimeBudget should be 0")
         assertEquals(
             0,
-            BigDecimal.ZERO.compareTo(retrieved.studyMoney),
-            "Default studyMoney should be BigDecimal.ZERO",
+            BigDecimal.ZERO.compareTo(retrieved.trainingMoneyBudget),
+            "Default trainingMoneyBudget should be BigDecimal.ZERO",
         )
     }
 
     @Test
-    fun testStudyMoneyColumnName() {
+    fun testTrainingMoneyColumnName() {
         // H2 stores identifiers in lowercase by default
         dataSource.connection.use { conn ->
-            val rs = conn.metaData.getColumns(null, null, "contract_internal", "study_money_budget")
-            assertTrue(rs.next(), "Column study_money_budget should exist in contract_internal table")
+            val rs = conn.metaData.getColumns(null, null, "contract_internal", "training_money_budget")
+            assertTrue(rs.next(), "Column training_money_budget should exist in contract_internal table")
         }
     }
 }

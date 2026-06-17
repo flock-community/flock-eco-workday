@@ -31,7 +31,7 @@ describe('dailyAllocationsToPeriod', () => {
 
   it('initializes missing days to zero', () => {
     const dailyAllocations: DailyTimeAllocationItem[] = [
-      { date: '2026-03-11', hours: 6, type: 'STUDY' },
+      { date: '2026-03-11', hours: 6, type: 'TRAINING' },
     ];
     const eventFrom = dayjs('2026-03-10');
     const eventTo = dayjs('2026-03-13');
@@ -72,7 +72,7 @@ describe('apiAllocationsToTimeParticipants', () => {
   const eventFrom = dayjs('2026-03-10');
   const eventTo = dayjs('2026-03-12');
 
-  it('groups hack and study time allocations by person', () => {
+  it('groups hack and training time allocations by person', () => {
     const allocations: BudgetAllocation[] = [
       {
         id: 'a1',
@@ -88,8 +88,8 @@ describe('apiAllocationsToTimeParticipants', () => {
             { date: '2026-03-11', hours: 8, type: 'HACK' },
           ],
         },
-        studyTimeDetails: undefined,
-        studyMoneyDetails: undefined,
+        trainingTimeDetails: undefined,
+        trainingMoneyDetails: undefined,
       },
       {
         id: 'a2',
@@ -97,13 +97,13 @@ describe('apiAllocationsToTimeParticipants', () => {
         eventCode: 'EVT1',
         date: '2026-03-10',
         description: undefined,
-        type: 'STUDY_TIME',
+        type: 'TRAINING_TIME',
         hackTimeDetails: undefined,
-        studyTimeDetails: {
+        trainingTimeDetails: {
           totalHours: 4,
-          dailyAllocations: [{ date: '2026-03-12', hours: 4, type: 'STUDY' }],
+          dailyAllocations: [{ date: '2026-03-12', hours: 4, type: 'TRAINING' }],
         },
-        studyMoneyDetails: undefined,
+        trainingMoneyDetails: undefined,
       },
     ];
 
@@ -119,8 +119,8 @@ describe('apiAllocationsToTimeParticipants', () => {
     expect(result[0].personName).toBe('Alice Smith');
     expect(result[0].hackPeriod).not.toBeNull();
     expect(result[0].hackPeriod!.days).toEqual([8, 8, 0]);
-    expect(result[0].studyPeriod).not.toBeNull();
-    expect(result[0].studyPeriod!.days).toEqual([0, 0, 4]);
+    expect(result[0].trainingPeriod).not.toBeNull();
+    expect(result[0].trainingPeriod!.days).toEqual([0, 0, 4]);
   });
 
   it('returns null periods for allocation types a person does not have', () => {
@@ -136,8 +136,8 @@ describe('apiAllocationsToTimeParticipants', () => {
           totalHours: 8,
           dailyAllocations: [{ date: '2026-03-10', hours: 8, type: 'HACK' }],
         },
-        studyTimeDetails: undefined,
-        studyMoneyDetails: undefined,
+        trainingTimeDetails: undefined,
+        trainingMoneyDetails: undefined,
       },
     ];
 
@@ -151,7 +151,7 @@ describe('apiAllocationsToTimeParticipants', () => {
     expect(result).toHaveLength(1);
     expect(result[0].personId).toBe('p2');
     expect(result[0].hackPeriod).not.toBeNull();
-    expect(result[0].studyPeriod).toBeNull();
+    expect(result[0].trainingPeriod).toBeNull();
   });
 
   it('excludes money allocations from time participants', () => {
@@ -162,10 +162,10 @@ describe('apiAllocationsToTimeParticipants', () => {
         eventCode: 'EVT1',
         date: '2026-03-10',
         description: undefined,
-        type: 'STUDY_MONEY',
+        type: 'TRAINING_MONEY',
         hackTimeDetails: undefined,
-        studyTimeDetails: undefined,
-        studyMoneyDetails: { amount: 500, files: [] },
+        trainingTimeDetails: undefined,
+        trainingMoneyDetails: { amount: 500, files: [] },
       },
     ];
 
@@ -194,10 +194,10 @@ describe('apiAllocationsToMoneyParticipants', () => {
         eventCode: 'EVT1',
         date: '2026-03-10',
         description: undefined,
-        type: 'STUDY_MONEY',
+        type: 'TRAINING_MONEY',
         hackTimeDetails: undefined,
-        studyTimeDetails: undefined,
-        studyMoneyDetails: { amount: 500, files: [] },
+        trainingTimeDetails: undefined,
+        trainingMoneyDetails: { amount: 500, files: [] },
       },
     ];
 
@@ -224,8 +224,8 @@ describe('apiAllocationsToMoneyParticipants', () => {
           totalHours: 8,
           dailyAllocations: [{ date: '2026-03-10', hours: 8, type: 'HACK' }],
         },
-        studyTimeDetails: undefined,
-        studyMoneyDetails: undefined,
+        trainingTimeDetails: undefined,
+        trainingMoneyDetails: undefined,
       },
     ];
 
@@ -234,7 +234,7 @@ describe('apiAllocationsToMoneyParticipants', () => {
     expect(result).toHaveLength(0);
   });
 
-  it('defaults amount to 0 when studyMoneyDetails is undefined', () => {
+  it('defaults amount to 0 when trainingMoneyDetails is undefined', () => {
     const allocations: BudgetAllocation[] = [
       {
         id: 'a1',
@@ -242,10 +242,10 @@ describe('apiAllocationsToMoneyParticipants', () => {
         eventCode: 'EVT1',
         date: '2026-03-10',
         description: undefined,
-        type: 'STUDY_MONEY',
+        type: 'TRAINING_MONEY',
         hackTimeDetails: undefined,
-        studyTimeDetails: undefined,
-        studyMoneyDetails: undefined,
+        trainingTimeDetails: undefined,
+        trainingMoneyDetails: undefined,
       },
     ];
 

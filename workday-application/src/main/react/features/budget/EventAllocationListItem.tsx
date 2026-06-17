@@ -31,12 +31,12 @@ interface EventAllocationListItemProps {
 }
 
 /**
- * Given a time allocation (HACK_TIME or STUDY_TIME), returns an array of daily hours.
+ * Given a time allocation (HACK_TIME or TRAINING_TIME), returns an array of daily hours.
  */
 const findDays = (allocation: BudgetAllocation): number[] => {
   const dailyAllocations =
     allocation.hackTimeDetails?.dailyAllocations ??
-    allocation.studyTimeDetails?.dailyAllocations ??
+    allocation.trainingTimeDetails?.dailyAllocations ??
     [];
 
   if (dailyAllocations.length === 0) return [];
@@ -60,7 +60,7 @@ const getDateRange = (
 ): { from: dayjs.Dayjs; to: dayjs.Dayjs } => {
   const dailyAllocations =
     allocation.hackTimeDetails?.dailyAllocations ??
-    allocation.studyTimeDetails?.dailyAllocations ??
+    allocation.trainingTimeDetails?.dailyAllocations ??
     [];
   if (dailyAllocations.length === 0) {
     return { from: dayjs(allocation.date), to: dayjs(allocation.date) };
@@ -74,7 +74,7 @@ const getDateRange = (
 
 const getTotalHours = (allocation: BudgetAllocation): number =>
   allocation.hackTimeDetails?.totalHours ??
-  allocation.studyTimeDetails?.totalHours ??
+  allocation.trainingTimeDetails?.totalHours ??
   0;
 
 const getAccordion = (
@@ -103,7 +103,7 @@ const getAccordion = (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <AccessTime fontSize="small" color="action" />
           <Typography variant="subtitle1" fontWeight="medium">
-            {allocation.type === 'STUDY_TIME' ? 'Study Time' : 'Hack Time'}:{' '}
+            {allocation.type === 'TRAINING_TIME' ? 'Training Time' : 'Hack Time'}:{' '}
             {getTotalHours(allocation)}h
           </Typography>
         </Box>
@@ -180,8 +180,8 @@ export function EventAllocationListItem({
             .toSorted((a, b) => {
               const typeOrder: Record<string, number> = {
                 HACK_TIME: 0,
-                STUDY_TIME: 1,
-                STUDY_MONEY: 2,
+                TRAINING_TIME: 1,
+                TRAINING_MONEY: 2,
               };
               return (typeOrder[a.type] ?? 99) - (typeOrder[b.type] ?? 99);
             })
@@ -190,10 +190,10 @@ export function EventAllocationListItem({
                 key={allocation.id ?? `${allocation.type}-${allocation.date}`}
               >
                 <Grid container spacing={1} size={{ xs: 12 }}>
-                  {(allocation.type === 'STUDY_TIME' ||
+                  {(allocation.type === 'TRAINING_TIME' ||
                     allocation.type === 'HACK_TIME') &&
                     getAccordion(expanded, setExpanded, allocation)}
-                  {allocation.type === 'STUDY_MONEY' && (
+                  {allocation.type === 'TRAINING_MONEY' && (
                     <Grid>
                       <Grid size={{ xs: 12 }} sx={{ pl: 1 }}>
                         <Box
@@ -206,9 +206,9 @@ export function EventAllocationListItem({
                         >
                           <Euro fontSize="small" color="action" />
                           <Typography variant="subtitle1" fontWeight="medium">
-                            Study Money:{'  '}€{''}
+                            Training Money:{'  '}€{''}
                             {(
-                              allocation.studyMoneyDetails?.amount ?? 0
+                              allocation.trainingMoneyDetails?.amount ?? 0
                             ).toLocaleString('nl-NL')}
                           </Typography>
                         </Box>

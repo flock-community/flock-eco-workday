@@ -7,10 +7,10 @@ import community.flock.eco.workday.domain.budget.BudgetAllocationType
 import community.flock.eco.workday.domain.budget.DailyTimeAllocation
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocation
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocationService
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocationService
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocationService
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocationService
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocationService
 import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,10 +37,10 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
     private lateinit var hackTimeBudgetAllocationService: HackTimeBudgetAllocationService
 
     @Autowired
-    private lateinit var studyTimeBudgetAllocationService: StudyTimeBudgetAllocationService
+    private lateinit var trainingTimeBudgetAllocationService: TrainingTimeBudgetAllocationService
 
     @Autowired
-    private lateinit var studyMoneyBudgetAllocationService: StudyMoneyBudgetAllocationService
+    private lateinit var trainingMoneyBudgetAllocationService: TrainingMoneyBudgetAllocationService
 
     private val baseUrl = "/api/budget-summary"
 
@@ -59,9 +59,9 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             person = personEntity,
             from = LocalDate.of(2026, 1, 1),
             to = LocalDate.of(2026, 12, 31),
-            hackHours = 100,
-            studyHours = 80,
-            studyMoney = BigDecimal("2500.00"),
+            hackTimeBudget = 100,
+            trainingTimeBudget = 80,
+            trainingMoneyBudget = BigDecimal("2500.00"),
         )
 
         hackTimeBudgetAllocationService.create(
@@ -78,22 +78,22 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             ),
         )
 
-        studyTimeBudgetAllocationService.create(
-            StudyTimeBudgetAllocation(
+        trainingTimeBudgetAllocationService.create(
+            TrainingTimeBudgetAllocation(
                 person = person,
                 eventCode = null,
                 date = LocalDate.of(2026, 3, 2),
-                description = "Study day",
+                description = "Training day",
                 dailyTimeAllocations =
                     listOf(
-                        DailyTimeAllocation(LocalDate.of(2026, 3, 2), 4.0, BudgetAllocationType.STUDY),
+                        DailyTimeAllocation(LocalDate.of(2026, 3, 2), 4.0, BudgetAllocationType.TRAINING),
                     ),
                 totalHours = 4.0,
             ),
         )
 
-        studyMoneyBudgetAllocationService.create(
-            StudyMoneyBudgetAllocation(
+        trainingMoneyBudgetAllocationService.create(
+            TrainingMoneyBudgetAllocation(
                 person = person,
                 eventCode = null,
                 date = LocalDate.of(2026, 3, 3),
@@ -110,15 +110,15 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.budget").value(100.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.used").value(8.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.available").value(92.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.budget").value(80.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.used").value(4.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.available").value(76.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.budget").value(2500.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.used").value(500.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.available").value(2000.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.budget").value(100.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.used").value(8.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.available").value(92.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingTimeBudget.budget").value(80.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingTimeBudget.used").value(4.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingTimeBudget.available").value(76.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingMoneyBudget.budget").value(2500.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingMoneyBudget.used").value(500.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingMoneyBudget.available").value(2000.0))
     }
 
     @Test
@@ -134,15 +134,15 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.budget").value(0.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.used").value(0.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.available").value(0.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.budget").value(0.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.used").value(0.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.available").value(0.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.budget").value(0.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.used").value(0.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.available").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.budget").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.used").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.available").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingTimeBudget.budget").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingTimeBudget.used").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingTimeBudget.available").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingMoneyBudget.budget").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingMoneyBudget.used").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingMoneyBudget.available").value(0.0))
     }
 
     @Test
@@ -155,9 +155,9 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             person = personEntity,
             from = LocalDate.of(2026, 1, 1),
             to = LocalDate.of(2026, 12, 31),
-            hackHours = 50,
-            studyHours = 40,
-            studyMoney = BigDecimal("1000.00"),
+            hackTimeBudget = 50,
+            trainingTimeBudget = 40,
+            trainingMoneyBudget = BigDecimal("1000.00"),
         )
 
         mvc
@@ -168,9 +168,9 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.budget").value(50.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.budget").value(40.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.budget").value(1000.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.budget").value(50.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingTimeBudget.budget").value(40.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingMoneyBudget.budget").value(1000.0))
     }
 
     @Test
@@ -184,9 +184,9 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             person = otherPersonEntity,
             from = LocalDate.of(2026, 1, 1),
             to = LocalDate.of(2026, 12, 31),
-            hackHours = 200,
-            studyHours = 0,
-            studyMoney = BigDecimal.ZERO,
+            hackTimeBudget = 200,
+            trainingTimeBudget = 0,
+            trainingMoneyBudget = BigDecimal.ZERO,
         )
 
         mvc
@@ -197,7 +197,7 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.budget").value(200.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.budget").value(200.0))
     }
 
     @Test
@@ -210,9 +210,9 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             person = personEntity,
             from = LocalDate.of(2026, 1, 1),
             to = LocalDate.of(2026, 12, 31),
-            hackHours = 100,
-            studyHours = 0,
-            studyMoney = BigDecimal.ZERO,
+            hackTimeBudget = 100,
+            trainingTimeBudget = 0,
+            trainingMoneyBudget = BigDecimal.ZERO,
         )
 
         hackTimeBudgetAllocationService.create(
@@ -251,15 +251,15 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.budget").value(100.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.used").value(20.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.available").value(80.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.used").value(0.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.used").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.budget").value(100.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.used").value(20.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.available").value(80.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingTimeBudget.used").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingMoneyBudget.used").value(0.0))
     }
 
     @Test
-    fun `study time allocation does not affect hack hours or study money for CALC-02`() {
+    fun `training time allocation does not affect hack hours or training money for CALC-02`() {
         val user = createHelper.createUser(adminAuthorities)
         val personEntity = createHelper.createPersonEntity("calc02", "typeindep", user.code)
         val person = personEntity.toDomain()
@@ -268,20 +268,20 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             person = personEntity,
             from = LocalDate.of(2026, 1, 1),
             to = LocalDate.of(2026, 12, 31),
-            hackHours = 100,
-            studyHours = 80,
-            studyMoney = BigDecimal("2500.00"),
+            hackTimeBudget = 100,
+            trainingTimeBudget = 80,
+            trainingMoneyBudget = BigDecimal("2500.00"),
         )
 
-        studyTimeBudgetAllocationService.create(
-            StudyTimeBudgetAllocation(
+        trainingTimeBudgetAllocationService.create(
+            TrainingTimeBudgetAllocation(
                 person = person,
                 eventCode = null,
                 date = LocalDate.of(2026, 5, 1),
-                description = "Study course",
+                description = "Training course",
                 dailyTimeAllocations =
                     listOf(
-                        DailyTimeAllocation(LocalDate.of(2026, 5, 1), 40.0, BudgetAllocationType.STUDY),
+                        DailyTimeAllocation(LocalDate.of(2026, 5, 1), 40.0, BudgetAllocationType.TRAINING),
                     ),
                 totalHours = 40.0,
             ),
@@ -295,12 +295,12 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.used").value(40.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyHours.available").value(40.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.used").value(0.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.available").value(100.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.used").value(0.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.studyMoney.available").value(2500.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingTimeBudget.used").value(40.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingTimeBudget.available").value(40.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.used").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.available").value(100.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingMoneyBudget.used").value(0.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.trainingMoneyBudget.available").value(2500.0))
     }
 
     @Test
@@ -313,9 +313,9 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
             person = personEntity,
             from = LocalDate.of(2025, 1, 1),
             to = LocalDate.of(2026, 12, 31),
-            hackHours = 100,
-            studyHours = 0,
-            studyMoney = BigDecimal.ZERO,
+            hackTimeBudget = 100,
+            trainingTimeBudget = 0,
+            trainingMoneyBudget = BigDecimal.ZERO,
         )
 
         hackTimeBudgetAllocationService.create(
@@ -354,9 +354,9 @@ class BudgetSummaryControllerTest : WorkdayIntegrationTest() {
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.budget").value(100.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.used").value(20.0))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hackHours.available").value(80.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.budget").value(100.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.used").value(20.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hackTimeBudget.available").value(80.0))
     }
 
     private fun ResultActions.asyncDispatch() =

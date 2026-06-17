@@ -108,8 +108,8 @@ export function EventFormFields({
               <MenuItem value="">
                 <em>None (no time tracking)</em>
               </MenuItem>
-              <MenuItem value={EventBudgetType.STUDY}>
-                Study Time (deducts from study hours budget)
+              <MenuItem value={EventBudgetType.TRAINING}>
+                Training Time (deducts from training hours budget)
               </MenuItem>
               <MenuItem value={EventBudgetType.HACK}>
                 Hack Time (deducts from hack hours budget)

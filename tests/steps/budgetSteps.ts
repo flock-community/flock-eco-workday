@@ -58,16 +58,16 @@ export async function Then_summary_card_shows(
   }
 }
 
-export async function When_I_click_add_study_money(page: Page) {
+export async function When_I_click_add_training_money(page: Page) {
   await page.getByRole('button', { name: 'Add' }).click();
-  await expect(page.getByText('Add Study Money Allocation')).toBeVisible();
+  await expect(page.getByText('Add Training Money Allocation')).toBeVisible();
 }
 
 /**
- * Fill in the study money allocation form fields.
+ * Fill in the training money allocation form fields.
  * date should be in YYYY-MM-DD format (HTML date input native format).
  */
-export async function When_I_fill_study_money_form(
+export async function When_I_fill_training_money_form(
   page: Page,
   description: string,
   amount: string,
@@ -84,7 +84,7 @@ export async function When_I_fill_study_money_form(
  */
 export async function When_I_click_create_button(page: Page) {
   await page.getByRole('button', { name: 'Create' }).click();
-  await expect(page.getByText('Add Study Money Allocation')).not.toBeVisible();
+  await expect(page.getByText('Add Training Money Allocation')).not.toBeVisible();
   await page.waitForLoadState('networkidle');
 }
 
@@ -148,7 +148,7 @@ function formatEuro(value: number): string {
 }
 
 /**
- * Assert that study money "Used:" changed by exactly the given delta (in euros, integer).
+ * Assert that training money "Used:" changed by exactly the given delta (in euros, integer).
  * Reads the current value and compares with the previously captured baseline.
  * Also verifies Budget is unchanged and Available = Budget - Used.
  */
@@ -214,14 +214,14 @@ export async function When_I_edit_allocation(
     .filter({ hasText: description })
     .first();
   await card.getByRole('button', { name: 'edit' }).click();
-  await expect(page.getByText('Edit Study Money Allocation')).toBeVisible();
+  await expect(page.getByText('Edit Training Money Allocation')).toBeVisible();
 }
 
 /**
- * Clears the Amount (EUR) field in the open study money dialog and types a new value.
+ * Clears the Amount (EUR) field in the open training money dialog and types a new value.
  * Call after When_I_edit_allocation (dialog must already be open).
  */
-export async function When_I_update_study_money_amount(
+export async function When_I_update_training_money_amount(
   page: Page,
   newAmount: string,
 ): Promise<void> {
@@ -231,12 +231,12 @@ export async function When_I_update_study_money_amount(
 }
 
 /**
- * Clicks the "Save" button in the open study money edit dialog.
+ * Clicks the "Save" button in the open training money edit dialog.
  * Waits for dialog to close and data to refresh.
  */
 export async function When_I_click_save_button(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Save' }).click();
-  await expect(page.getByText('Edit Study Money Allocation')).not.toBeVisible();
+  await expect(page.getByText('Edit Training Money Allocation')).not.toBeVisible();
   await page.waitForLoadState('networkidle');
 }
 

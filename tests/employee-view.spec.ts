@@ -4,13 +4,13 @@
 // Admin user: bert@sesam.straat (password: bert).
 //
 // Dev data for pino (current year):
-//   Contract: hackHours=160, studyHours=200, studyMoney=EUR5000
-//   Hours are deterministic: hack=16h used, study=0h used.
-//   Study money "used" fluctuates (~€3.182 ± €50) due to syncBudgetAllocations across 26 events.
+//   Contract: hackTimeBudget=160, trainingTimeBudget=200, trainingMoneyBudget=EUR5000
+//   Hours are deterministic: hack=16h used, training=0h used.
+//   Training money "used" fluctuates (~€3.182 ± €50) due to syncBudgetAllocations across 26 events.
 //
 // Assertion strategy:
 //   - Hours: exact assertions (deterministic)
-//   - Study money: verify budget is €5.000, used > 0 (exact amount not asserted)
+//   - Training money: verify budget is €5.000, used > 0 (exact amount not asserted)
 import { expect, test } from '@playwright/test';
 import {
   Given_I_am_on_budget_tab_for_person,
@@ -43,10 +43,10 @@ test.describe('Employee View (Read-Only)', () => {
     ).toBeVisible({ timeout: 15000 });
 
     await Then_summary_card_shows(page, 'Hack Hours', '144h', '160h', '16h');
-    await Then_summary_card_shows(page, 'Study Hours', '200h', '200h', '0h');
+    await Then_summary_card_shows(page, 'Training Hours', '200h', '200h', '0h');
 
-    // Study money: budget is deterministic, used fluctuates — only verify budget
-    await Then_summary_card_shows(page, 'Study Money', null, '€5.000', null);
+    // Training money: budget is deterministic, used fluctuates — only verify budget
+    await Then_summary_card_shows(page, 'Training Money', null, '€5.000', null);
   });
 
   test('EMPV-02: Employee sees allocation list with correct details', async ({
@@ -62,7 +62,7 @@ test.describe('Employee View (Read-Only)', () => {
       page.getByRole('heading', { name: /Budget Allocations/i }),
     ).toBeVisible();
 
-    // EventAllocationListItem may render differently than StudyMoneyAllocationListItem,
+    // EventAllocationListItem may render differently than TrainingMoneyAllocationListItem,
     // so use a direct locator as fallback.
     const paper = page
       .locator('.MuiPaper-root')
@@ -159,23 +159,23 @@ test.describe('Contract Budget Field Impact', () => {
   }) => {
     await openInternalContract(page, 'Pino');
 
-    const studyHoursField = page.getByLabel('Study hours');
-    const originalStudyHours = await studyHoursField.inputValue();
-    await studyHoursField.clear();
-    await studyHoursField.fill('200');
+    const trainingHoursField = page.getByLabel('Training hours');
+    const originalTrainingHours = await trainingHoursField.inputValue();
+    await trainingHoursField.clear();
+    await trainingHoursField.fill('200');
     await saveContract(page);
 
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
-    const studyCard = page
-      .getByRole('heading', { name: 'Study Hours', level: 6 })
+    const trainingCard = page
+      .getByRole('heading', { name: 'Training Hours', level: 6 })
       .locator('xpath=ancestor::*[contains(@class,"MuiCard-root")][1]');
-    await expect(studyCard.getByText('Budget:')).toContainText('200h');
+    await expect(trainingCard.getByText('Budget:')).toContainText('200h');
 
     // Restore the original value so dev data isn't permanently mutated.
     await openInternalContract(page, 'Pino');
-    const studyHoursRestore = page.getByLabel('Study hours');
-    await studyHoursRestore.clear();
-    await studyHoursRestore.fill(originalStudyHours);
+    const trainingHoursRestore = page.getByLabel('Training hours');
+    await trainingHoursRestore.clear();
+    await trainingHoursRestore.fill(originalTrainingHours);
     await saveContract(page);
   });
 
@@ -184,23 +184,23 @@ test.describe('Contract Budget Field Impact', () => {
   }) => {
     await openInternalContract(page, 'Pino');
 
-    const studyMoneyField = page.getByLabel('Study money');
-    const originalStudyMoney = await studyMoneyField.inputValue();
-    await studyMoneyField.clear();
-    await studyMoneyField.fill('3500');
+    const trainingMoneyField = page.getByLabel('Training money');
+    const originalTrainingMoney = await trainingMoneyField.inputValue();
+    await trainingMoneyField.clear();
+    await trainingMoneyField.fill('3500');
     await saveContract(page);
 
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
     const moneyCard = page
-      .getByRole('heading', { name: 'Study Money', level: 6, exact: true })
+      .getByRole('heading', { name: 'Training Money', level: 6, exact: true })
       .locator('xpath=ancestor::*[contains(@class,"MuiCard-root")][1]');
     await expect(moneyCard.getByText('Budget:')).toContainText('€3.500');
 
     // Restore the original value so dev data isn't permanently mutated.
     await openInternalContract(page, 'Pino');
-    const studyMoneyRestore = page.getByLabel('Study money');
-    await studyMoneyRestore.clear();
-    await studyMoneyRestore.fill(originalStudyMoney);
+    const trainingMoneyRestore = page.getByLabel('Training money');
+    await trainingMoneyRestore.clear();
+    await trainingMoneyRestore.fill(originalTrainingMoney);
     await saveContract(page);
   });
 });

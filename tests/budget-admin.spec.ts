@@ -3,18 +3,18 @@
 // Target person: pino@sesam.straat. Admin user: bert.
 //
 // Dev data for pino (current year):
-//   Contract: hackHours=160, studyHours=200, studyMoney=EUR5000
-//   Hours are deterministic: hack=16h used, study=0h used.
-//   Study money "used" fluctuates (~€3.182 ± €50) due to syncBudgetAllocations across 26 events.
+//   Contract: hackTimeBudget=160, trainingTimeBudget=200, trainingMoneyBudget=EUR5000
+//   Hours are deterministic: hack=16h used, training=0h used.
+//   Training money "used" fluctuates (~€3.182 ± €50) due to syncBudgetAllocations across 26 events.
 //
 // Assertion strategy:
 //   - Hours: exact assertions (deterministic)
-//   - Study money: delta-based assertions (read baseline, verify relative change)
+//   - Training money: delta-based assertions (read baseline, verify relative change)
 //   - Exact budget calculations verified in Spring Boot integration tests
 //
 // Note: BudgetCard renders EUR values with the € symbol and nl-NL locale
 //   (e.g., 2500 -> "€2.500", 350 -> "€350", 0 -> "€0")
-//   StudyMoneyAllocationListItem renders amounts with 2 decimal places
+//   TrainingMoneyAllocationListItem renders amounts with 2 decimal places
 //   (e.g., 350 -> "€350,00")
 import { expect, test } from '@playwright/test';
 import {
@@ -24,13 +24,13 @@ import {
   Then_allocation_list_does_not_contain,
   Then_money_used_changed_by,
   Then_summary_card_shows,
-  When_I_click_add_study_money,
+  When_I_click_add_training_money,
   When_I_click_create_button,
   When_I_click_save_button,
   When_I_delete_allocation,
   When_I_edit_allocation,
-  When_I_fill_study_money_form,
-  When_I_update_study_money_amount,
+  When_I_fill_training_money_form,
+  When_I_update_training_money_amount,
 } from './steps/budgetSteps';
 
 test.describe('Budget Admin - View and Create', () => {
@@ -52,24 +52,24 @@ test.describe('Budget Admin - View and Create', () => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
 
     await Then_summary_card_shows(page, 'Hack Hours', '144h', '160h', '16h');
-    await Then_summary_card_shows(page, 'Study Hours', '200h', '200h', '0h');
+    await Then_summary_card_shows(page, 'Training Hours', '200h', '200h', '0h');
 
-    // Study money "used" fluctuates slightly between DB recreations (~€3.182 ± €50)
+    // Training money "used" fluctuates slightly between DB recreations (~€3.182 ± €50)
     // due to syncBudgetAllocations across 26 events. Only verify budget is correct.
-    await Then_summary_card_shows(page, 'Study Money', null, '€5.000', null);
+    await Then_summary_card_shows(page, 'Training Money', null, '€5.000', null);
   });
 
-  test('BMGT-02: Create standalone study money allocation', async ({
+  test('BMGT-02: Create standalone training money allocation', async ({
     page,
   }) => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
 
-    const baselineUsed = await readCardUsedValue(page, 'Study Money');
+    const baselineUsed = await readCardUsedValue(page, 'Training Money');
 
-    await When_I_click_add_study_money(page);
+    await When_I_click_add_training_money(page);
 
     const currentYear = new Date().getFullYear();
-    await When_I_fill_study_money_form(
+    await When_I_fill_training_money_form(
       page,
       'Playwright test course',
       '350',
@@ -86,7 +86,7 @@ test.describe('Budget Admin - View and Create', () => {
 
     await Then_money_used_changed_by(
       page,
-      'Study Money',
+      'Training Money',
       baselineUsed,
       350,
       '€5.000',
@@ -112,13 +112,13 @@ test.describe('Budget Admin - Edit and Delete', () => {
     });
   });
 
-  // BMGT-03: Edit study money allocation
+  // BMGT-03: Edit training money allocation
   // Requires: "Playwright test course" allocation created by BMGT-02 (amount=350).
   // After edit: amount becomes 500. Delta from current state = +150 (500-350).
-  test('BMGT-03: Edit study money allocation', async ({ page }) => {
+  test('BMGT-03: Edit training money allocation', async ({ page }) => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
 
-    const baselineUsed = await readCardUsedValue(page, 'Study Money');
+    const baselineUsed = await readCardUsedValue(page, 'Training Money');
 
     // Allocation created by BMGT-02 (amount=350) must be present before editing.
     await Then_allocation_list_contains(
@@ -129,7 +129,7 @@ test.describe('Budget Admin - Edit and Delete', () => {
 
     await When_I_edit_allocation(page, 'Playwright test course');
 
-    await When_I_update_study_money_amount(page, '500');
+    await When_I_update_training_money_amount(page, '500');
 
     await When_I_click_save_button(page);
 
@@ -142,20 +142,20 @@ test.describe('Budget Admin - Edit and Delete', () => {
     // used increases by €150 (500-350)
     await Then_money_used_changed_by(
       page,
-      'Study Money',
+      'Training Money',
       baselineUsed,
       150,
       '€5.000',
     );
   });
 
-  // BMGT-04: Edit study time allocation
-  // Pino has no standalone study time allocations in dev data.
-  // Study time allocations are created via events and are event-linked;
+  // BMGT-04: Edit training time allocation
+  // Pino has no standalone training time allocations in dev data.
+  // Training time allocations are created via events and are event-linked;
   // event allocations have no edit/delete buttons by design.
-  test.fixme('BMGT-04: Edit study time allocation', async ({ page }) => {
-    // Skipped: No standalone study time allocations exist for pino in dev data.
-    // Study time for pino comes only from event-linked allocations (e.g., "Hack Day - March"),
+  test.fixme('BMGT-04: Edit training time allocation', async ({ page }) => {
+    // Skipped: No standalone training time allocations exist for pino in dev data.
+    // Training time for pino comes only from event-linked allocations (e.g., "Hack Day - March"),
     // which are managed from the Events page and do not expose edit buttons.
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
   });
@@ -170,13 +170,13 @@ test.describe('Budget Admin - Edit and Delete', () => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
   });
 
-  // BMGT-06: Delete study money allocation
+  // BMGT-06: Delete training money allocation
   // onDelete IS wired in BudgetAllocationFeature, so the delete flow is fully functional.
   // This test depends on the "Playwright test course" allocation created by BMGT-02.
-  test('BMGT-06: Delete study money allocation', async ({ page }) => {
+  test('BMGT-06: Delete training money allocation', async ({ page }) => {
     await Given_I_am_on_budget_tab_for_person(page, 'bert', 'Pino');
 
-    const baselineUsed = await readCardUsedValue(page, 'Study Money');
+    const baselineUsed = await readCardUsedValue(page, 'Training Money');
 
     // After BMGT-03 edit the amount is 500 (was 350 from BMGT-02).
     await Then_allocation_list_contains(
@@ -192,7 +192,7 @@ test.describe('Budget Admin - Edit and Delete', () => {
     // used decreases by €500 (the deleted allocation's amount)
     await Then_money_used_changed_by(
       page,
-      'Study Money',
+      'Training Money',
       baselineUsed,
       -500,
       '€5.000',
@@ -290,7 +290,7 @@ test.describe('Budget Admin - List UX', () => {
     expect(page.url()).toMatch(/\/event\?code=.+/);
   });
 
-  // LIST-03: Four filter chips (All / Hack Hours / Study Hours / Study Money) are present
+  // LIST-03: Four filter chips (All / Hack Hours / Training Hours / Training Money) are present
   // and toggling them filters the allocation list.
   // Chips are rendered in BudgetAllocationFeature only when allocations.length > 0.
   test('LIST-03: Filter chips are present and toggle the allocation list', async ({
@@ -302,13 +302,13 @@ test.describe('Budget Admin - List UX', () => {
 
     const allChip = page.getByRole('button', { name: 'All' }).first();
     const hackChip = page.getByRole('button', { name: 'Hack Hours' });
-    const studyHoursChip = page.getByRole('button', { name: 'Study Hours' });
-    const studyMoneyChip = page.getByRole('button', { name: 'Study Money' });
+    const trainingHoursChip = page.getByRole('button', { name: 'Training Hours' });
+    const trainingMoneyChip = page.getByRole('button', { name: 'Training Money' });
 
     await expect(allChip).toBeVisible({ timeout: 10000 });
     await expect(hackChip).toBeVisible();
-    await expect(studyHoursChip).toBeVisible();
-    await expect(studyMoneyChip).toBeVisible();
+    await expect(trainingHoursChip).toBeVisible();
+    await expect(trainingMoneyChip).toBeVisible();
 
     const allocationSection = page
       .locator('.MuiPaper-root')
@@ -320,7 +320,7 @@ test.describe('Budget Admin - List UX', () => {
     await hackChip.click();
     await page.waitForLoadState('networkidle');
 
-    // Filtering to Hack Hours hides standalone study money cards (freeform allocations),
+    // Filtering to Hack Hours hides standalone training money cards (freeform allocations),
     // so the count can only shrink.
     const hackItems = allocationSection.locator('.MuiCard-root');
     const hackCount = await hackItems.count();
@@ -357,7 +357,7 @@ test.describe('Budget Admin - UI Pattern Verification', () => {
     });
   });
 
-  // UI-01: "Add study money" button matches the site-wide + Add pattern.
+  // UI-01: "Add training money" button matches the site-wide + Add pattern.
   // BudgetAllocationFeature renders <Button><AddIcon/> Add</Button> for admin users,
   // identical to ProjectFeature, AssignmentFeature, and WorkDayFeature.
   // Verified in source: BudgetAllocationFeature.tsx lines 162-166.

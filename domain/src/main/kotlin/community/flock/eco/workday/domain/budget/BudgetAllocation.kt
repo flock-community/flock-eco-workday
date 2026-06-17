@@ -23,7 +23,7 @@ data class HackTimeBudgetAllocation(
     val totalHours: Double,
 ) : BudgetAllocation
 
-data class StudyTimeBudgetAllocation(
+data class TrainingTimeBudgetAllocation(
     override val id: Long = 0,
     override val person: Person,
     override val eventCode: String?,
@@ -33,7 +33,7 @@ data class StudyTimeBudgetAllocation(
     val totalHours: Double,
 ) : BudgetAllocation
 
-data class StudyMoneyBudgetAllocation(
+data class TrainingMoneyBudgetAllocation(
     override val id: Long = 0,
     override val person: Person,
     override val eventCode: String? = null,

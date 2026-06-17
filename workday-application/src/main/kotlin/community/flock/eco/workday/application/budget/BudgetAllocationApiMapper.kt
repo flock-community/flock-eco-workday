@@ -4,17 +4,17 @@ import community.flock.eco.workday.api.model.BudgetAllocationFile
 import community.flock.eco.workday.api.model.DailyTimeAllocationItem
 import community.flock.eco.workday.api.model.HackTimeAllocationInput
 import community.flock.eco.workday.api.model.HackTimeDetails
-import community.flock.eco.workday.api.model.StudyMoneyAllocationInput
-import community.flock.eco.workday.api.model.StudyMoneyDetails
-import community.flock.eco.workday.api.model.StudyTimeAllocationInput
-import community.flock.eco.workday.api.model.StudyTimeDetails
+import community.flock.eco.workday.api.model.TrainingMoneyAllocationInput
+import community.flock.eco.workday.api.model.TrainingMoneyDetails
+import community.flock.eco.workday.api.model.TrainingTimeAllocationInput
+import community.flock.eco.workday.api.model.TrainingTimeDetails
 import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.domain.budget.BudgetAllocationType
 import community.flock.eco.workday.domain.budget.DailyTimeAllocation
 import community.flock.eco.workday.domain.budget.HackTimeBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyMoneyBudgetAllocation
-import community.flock.eco.workday.domain.budget.StudyTimeBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingMoneyBudgetAllocation
+import community.flock.eco.workday.domain.budget.TrainingTimeBudgetAllocation
 import community.flock.eco.workday.domain.common.Document
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
@@ -50,17 +50,17 @@ class BudgetAllocationApiMapper(
         )
     }
 
-    fun consumeStudyTime(
-        input: StudyTimeAllocationInput,
+    fun consumeTrainingTime(
+        input: TrainingTimeAllocationInput,
         id: Long? = null,
-    ): StudyTimeBudgetAllocation {
+    ): TrainingTimeBudgetAllocation {
         require(input.dailyAllocations.all { it.hours >= 0 }) { "Hours cannot be negative" }
         val person =
             personService
                 .findByUuid(UUID.fromString(input.personId.value))
                 ?.toDomain()
                 ?: error("Cannot find person")
-        return StudyTimeBudgetAllocation(
+        return TrainingTimeBudgetAllocation(
             id = id ?: 0,
             person = person,
             eventCode = input.eventCode,
@@ -71,17 +71,17 @@ class BudgetAllocationApiMapper(
         )
     }
 
-    fun consumeStudyMoney(
-        input: StudyMoneyAllocationInput,
+    fun consumeTrainingMoney(
+        input: TrainingMoneyAllocationInput,
         id: Long? = null,
-    ): StudyMoneyBudgetAllocation {
+    ): TrainingMoneyBudgetAllocation {
         require(input.amount >= 0) { "Amount cannot be negative" }
         val person =
             personService
                 .findByUuid(UUID.fromString(input.personId.value))
                 ?.toDomain()
                 ?: error("Cannot find person")
-        return StudyMoneyBudgetAllocation(
+        return TrainingMoneyBudgetAllocation(
             id = id ?: 0,
             person = person,
             eventCode = input.eventCode,
@@ -104,7 +104,7 @@ class BudgetAllocationApiMapper(
             hours = hours,
             type =
                 when (type) {
-                    DailyAllocationTypeApi.STUDY -> BudgetAllocationType.STUDY
+                    DailyAllocationTypeApi.TRAINING -> BudgetAllocationType.TRAINING
                     DailyAllocationTypeApi.HACK -> BudgetAllocationType.HACK
                 },
         )
@@ -123,39 +123,39 @@ internal fun HackTimeBudgetAllocation.produce(): BudgetAllocationApi =
                 totalHours = totalHours,
                 dailyAllocations = dailyTimeAllocations.map { it.produce() },
             ),
-        studyTimeDetails = null,
-        studyMoneyDetails = null,
+        trainingTimeDetails = null,
+        trainingMoneyDetails = null,
     )
 
-internal fun StudyTimeBudgetAllocation.produce(): BudgetAllocationApi =
+internal fun TrainingTimeBudgetAllocation.produce(): BudgetAllocationApi =
     BudgetAllocationApi(
         id = id.toString(),
         personId = person.uuid.toString(),
         eventCode = eventCode,
         date = date.toString(),
         description = description,
-        type = BudgetAllocationTypeApi.STUDY_TIME,
+        type = BudgetAllocationTypeApi.TRAINING_TIME,
         hackTimeDetails = null,
-        studyTimeDetails =
-            StudyTimeDetails(
+        trainingTimeDetails =
+            TrainingTimeDetails(
                 totalHours = totalHours,
                 dailyAllocations = dailyTimeAllocations.map { it.produce() },
             ),
-        studyMoneyDetails = null,
+        trainingMoneyDetails = null,
     )
 
-internal fun StudyMoneyBudgetAllocation.produce(): BudgetAllocationApi =
+internal fun TrainingMoneyBudgetAllocation.produce(): BudgetAllocationApi =
     BudgetAllocationApi(
         id = id.toString(),
         personId = person.uuid.toString(),
         eventCode = eventCode,
         date = date.toString(),
         description = description,
-        type = BudgetAllocationTypeApi.STUDY_MONEY,
+        type = BudgetAllocationTypeApi.TRAINING_MONEY,
         hackTimeDetails = null,
-        studyTimeDetails = null,
-        studyMoneyDetails =
-            StudyMoneyDetails(
+        trainingTimeDetails = null,
+        trainingMoneyDetails =
+            TrainingMoneyDetails(
                 amount = amount.toDouble(),
                 files = files.map { it.produceBudgetFile() },
             ),
@@ -168,7 +168,7 @@ internal fun DailyTimeAllocation.produce(): DailyTimeAllocationItem =
         type =
             when (type) {
                 BudgetAllocationType.HACK -> DailyAllocationTypeApi.HACK
-                BudgetAllocationType.STUDY -> DailyAllocationTypeApi.STUDY
+                BudgetAllocationType.TRAINING -> DailyAllocationTypeApi.TRAINING
             },
     )
 

@@ -70,14 +70,14 @@ class BudgetAllocationTest {
     }
 
     @Test
-    fun `test 2 - can instantiate StudyTimeBudgetAllocation with dailyTimeAllocations containing STUDY type override`() {
+    fun `test 2 - can instantiate TrainingTimeBudgetAllocation with dailyTimeAllocations containing TRAINING type override`() {
         val person = testPerson()
         val date = LocalDate.of(2026, 3, 15)
         val allocation =
-            StudyTimeBudgetAllocation(
+            TrainingTimeBudgetAllocation(
                 id = 2L,
                 person = person,
-                eventCode = "STUDY-2026",
+                eventCode = "TRAINING-2026",
                 date = date,
                 description = "Kotlin Conference",
                 dailyTimeAllocations =
@@ -85,7 +85,7 @@ class BudgetAllocationTest {
                         DailyTimeAllocation(
                             date = date,
                             hours = 16.0,
-                            type = BudgetAllocationType.STUDY,
+                            type = BudgetAllocationType.TRAINING,
                         ),
                     ),
                 totalHours = 16.0,
@@ -94,23 +94,23 @@ class BudgetAllocationTest {
         assertNotNull(allocation)
         assertEquals(2L, allocation.id)
         assertEquals(person, allocation.person)
-        assertEquals("STUDY-2026", allocation.eventCode)
+        assertEquals("TRAINING-2026", allocation.eventCode)
         assertEquals(date, allocation.date)
         assertEquals("Kotlin Conference", allocation.description)
         assertEquals(1, allocation.dailyTimeAllocations.size)
         assertEquals(16.0, allocation.dailyTimeAllocations[0].hours)
-        assertEquals(BudgetAllocationType.STUDY, allocation.dailyTimeAllocations[0].type)
+        assertEquals(BudgetAllocationType.TRAINING, allocation.dailyTimeAllocations[0].type)
         assertEquals(16.0, allocation.totalHours)
     }
 
     @Test
-    fun `test 3 - can instantiate StudyMoneyBudgetAllocation with BigDecimal amount and optional files`() {
+    fun `test 3 - can instantiate TrainingMoneyBudgetAllocation with BigDecimal amount and optional files`() {
         val person = testPerson()
         val allocation =
-            StudyMoneyBudgetAllocation(
+            TrainingMoneyBudgetAllocation(
                 id = 3L,
                 person = person,
-                eventCode = null, // Study money may not be tied to events
+                eventCode = null, // Training money may not be tied to events
                 date = LocalDate.of(2026, 3, 20),
                 description = "Online course subscription",
                 amount = BigDecimal("149.99"),
@@ -128,7 +128,7 @@ class BudgetAllocationTest {
     }
 
     @Test
-    fun `test 4 - DailyTimeAllocation with HACK type differs from DailyTimeAllocation with STUDY type`() {
+    fun `test 4 - DailyTimeAllocation with HACK type differs from DailyTimeAllocation with TRAINING type`() {
         val date = LocalDate.of(2026, 3, 1)
         val hackAllocation =
             DailyTimeAllocation(
@@ -136,16 +136,16 @@ class BudgetAllocationTest {
                 hours = 8.0,
                 type = BudgetAllocationType.HACK,
             )
-        val studyAllocation =
+        val trainingAllocation =
             DailyTimeAllocation(
                 date = date,
                 hours = 8.0,
-                type = BudgetAllocationType.STUDY,
+                type = BudgetAllocationType.TRAINING,
             )
 
-        assertNotEquals(hackAllocation, studyAllocation)
+        assertNotEquals(hackAllocation, trainingAllocation)
         assertEquals(BudgetAllocationType.HACK, hackAllocation.type)
-        assertEquals(BudgetAllocationType.STUDY, studyAllocation.type)
+        assertEquals(BudgetAllocationType.TRAINING, trainingAllocation.type)
     }
 
     @Test
@@ -162,16 +162,16 @@ class BudgetAllocationTest {
                     dailyTimeAllocations = emptyList(),
                     totalHours = 0.0,
                 ),
-                StudyTimeBudgetAllocation(
+                TrainingTimeBudgetAllocation(
                     id = 2L,
                     person = person,
-                    eventCode = "STUDY-2026",
+                    eventCode = "TRAINING-2026",
                     date = LocalDate.of(2026, 3, 15),
                     description = "Conference",
                     dailyTimeAllocations = emptyList(),
                     totalHours = 0.0,
                 ),
-                StudyMoneyBudgetAllocation(
+                TrainingMoneyBudgetAllocation(
                     id = 3L,
                     person = person,
                     eventCode = null,
@@ -186,12 +186,12 @@ class BudgetAllocationTest {
             allocations.map { allocation ->
                 when (allocation) {
                     is HackTimeBudgetAllocation -> "HACK_TIME"
-                    is StudyTimeBudgetAllocation -> "STUDY_TIME"
-                    is StudyMoneyBudgetAllocation -> "STUDY_MONEY"
+                    is TrainingTimeBudgetAllocation -> "TRAINING_TIME"
+                    is TrainingMoneyBudgetAllocation -> "TRAINING_MONEY"
                 }
             }
 
-        assertEquals(listOf("HACK_TIME", "STUDY_TIME", "STUDY_MONEY"), types)
+        assertEquals(listOf("HACK_TIME", "TRAINING_TIME", "TRAINING_MONEY"), types)
     }
 
     @Test

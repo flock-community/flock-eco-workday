@@ -85,9 +85,9 @@ describe('EventBudgetSummaryBanner', () => {
     });
   });
 
-  // EVT-06: No STUDY fallback when allocation type is None
+  // EVT-06: No TRAINING fallback when allocation type is None
   describe('conditional section visibility in summary', () => {
-    it('does not show STUDY fallback when defaultBudgetType is null', () => {
+    it('does not show TRAINING fallback when defaultBudgetType is null', () => {
       render(
         <EventBudgetSummaryBanner
           totalBudget={0}
@@ -98,7 +98,7 @@ describe('EventBudgetSummaryBanner', () => {
         />,
       );
 
-      expect(screen.queryByText(/STUDY/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/TRAINING/)).not.toBeInTheDocument();
       expect(screen.getByText(/no budget allocations/i)).toBeInTheDocument();
     });
 

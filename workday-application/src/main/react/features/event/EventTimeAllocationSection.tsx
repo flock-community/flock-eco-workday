@@ -25,7 +25,7 @@ import { editDay, initDays, type Period } from '../period/Period';
 export interface PersonTimeAllocation {
   personId: string;
   personName: string;
-  studyPeriod: Period | null; // Study time hours per day, null if no study time
+  trainingPeriod: Period | null; // Training time hours per day, null if no training time
   hackPeriod: Period | null; // Hack time hours per day, null if no hack time
 }
 
@@ -52,7 +52,7 @@ export function EventTimeAllocationSection({
   const eventTo = dayjs(eventDates[eventDates.length - 1]);
 
   const hasExceptions = (participant: PersonTimeAllocation): boolean => {
-    return participant.studyPeriod !== null || participant.hackPeriod !== null;
+    return participant.trainingPeriod !== null || participant.hackPeriod !== null;
   };
 
   const participantsWithExceptions = participants.filter(hasExceptions);
@@ -75,7 +75,7 @@ export function EventTimeAllocationSection({
 
         return {
           ...p,
-          studyPeriod: defaultBudgetType === 'STUDY' ? defaultPeriod : null,
+          trainingPeriod: defaultBudgetType === 'TRAINING' ? defaultPeriod : null,
           hackPeriod: defaultBudgetType === 'HACK' ? defaultPeriod : null,
         };
       }
@@ -89,7 +89,7 @@ export function EventTimeAllocationSection({
       if (p.personId === personId) {
         return {
           ...p,
-          studyPeriod: null,
+          trainingPeriod: null,
           hackPeriod: null,
         };
       }
@@ -100,13 +100,13 @@ export function EventTimeAllocationSection({
 
   const handlePeriodChange = (
     personId: string,
-    type: 'study' | 'hack',
+    type: 'training' | 'hack',
     date: Dayjs,
     hours: number,
   ) => {
     const updated = participants.map((p) => {
       if (p.personId === personId) {
-        const periodKey = type === 'study' ? 'studyPeriod' : 'hackPeriod';
+        const periodKey = type === 'training' ? 'trainingPeriod' : 'hackPeriod';
         const currentPeriod = p[periodKey];
 
         if (!currentPeriod) {
@@ -136,8 +136,8 @@ export function EventTimeAllocationSection({
   const getTotalHours = (participant: PersonTimeAllocation): number => {
     let total = 0;
 
-    if (participant.studyPeriod?.days) {
-      total += participant.studyPeriod.days.reduce(
+    if (participant.trainingPeriod?.days) {
+      total += participant.trainingPeriod.days.reduce(
         (sum, hours) => sum + hours,
         0,
       );
@@ -150,7 +150,7 @@ export function EventTimeAllocationSection({
       );
     }
 
-    if (!participant.studyPeriod && !participant.hackPeriod) {
+    if (!participant.trainingPeriod && !participant.hackPeriod) {
       total = eventDayHours.reduce((s, h) => s + h, 0);
     }
 
@@ -160,22 +160,22 @@ export function EventTimeAllocationSection({
   const getValidationErrors = (participant: PersonTimeAllocation): string[] => {
     const errors: string[] = [];
 
-    const studyDays = participant.studyPeriod?.days || [];
+    const trainingDays = participant.trainingPeriod?.days || [];
     const hackDays = participant.hackPeriod?.days || [];
 
     eventDates.forEach((_, index) => {
-      const studyHours = studyDays[index] || 0;
-      const hackHours = hackDays[index] || 0;
-      const totalDayHours = studyHours + hackHours;
+      const trainingTimeBudget = trainingDays[index] || 0;
+      const hackTimeBudget = hackDays[index] || 0;
+      const totalDayHours = trainingTimeBudget + hackTimeBudget;
       const date = eventFrom.add(index, 'days').format('DD MMM YYYY');
 
-      if (studyHours < 0 || hackHours < 0) {
+      if (trainingTimeBudget < 0 || hackTimeBudget < 0) {
         errors.push(`${date}: Hours cannot be negative`);
       }
 
-      if (studyHours > 0 && hackHours > 0) {
+      if (trainingTimeBudget > 0 && hackTimeBudget > 0) {
         errors.push(
-          `${date}: Cannot have both study and hack hours on the same day`,
+          `${date}: Cannot have both training and hack hours on the same day`,
         );
       }
 
@@ -275,7 +275,7 @@ interface ParticipantTimeRowProps {
   validationErrors: string[];
   onAddCustomAllocation: () => void;
   onRemoveCustomAllocation: () => void;
-  onPeriodChange: (type: 'study' | 'hack', date: Dayjs, hours: number) => void;
+  onPeriodChange: (type: 'training' | 'hack', date: Dayjs, hours: number) => void;
 }
 
 function ParticipantTimeRow({
@@ -290,12 +290,12 @@ function ParticipantTimeRow({
   onPeriodChange,
 }: ParticipantTimeRowProps) {
   const hasExceptions =
-    participant.studyPeriod !== null || participant.hackPeriod !== null;
+    participant.trainingPeriod !== null || participant.hackPeriod !== null;
 
   // Create empty period for display when no custom allocation exists
-  const getOrCreatePeriod = (type: 'study' | 'hack'): Period => {
+  const getOrCreatePeriod = (type: 'training' | 'hack'): Period => {
     const existing =
-      type === 'study' ? participant.studyPeriod : participant.hackPeriod;
+      type === 'training' ? participant.trainingPeriod : participant.hackPeriod;
     if (existing) return existing;
 
     return {
@@ -379,11 +379,11 @@ function ParticipantTimeRow({
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <Typography variant="subtitle2" fontWeight="medium">
-                Study Time
+                Training Time
               </Typography>
-              {participant.studyPeriod && (
+              {participant.trainingPeriod && (
                 <Chip
-                  label={`${participant.studyPeriod.days?.reduce((sum, h) => sum + h, 0) || 0}h`}
+                  label={`${participant.trainingPeriod.days?.reduce((sum, h) => sum + h, 0) || 0}h`}
                   size="small"
                   color="primary"
                 />
@@ -391,8 +391,8 @@ function ParticipantTimeRow({
             </Box>
             <Box sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 1 }}>
               <PeriodInput
-                period={getOrCreatePeriod('study')}
-                onChange={(date, hours) => onPeriodChange('study', date, hours)}
+                period={getOrCreatePeriod('training')}
+                onChange={(date, hours) => onPeriodChange('training', date, hours)}
                 readonly={false}
               />
             </Box>
@@ -422,7 +422,7 @@ function ParticipantTimeRow({
 
           <Alert severity="info" icon={<Info />}>
             <Typography variant="caption">
-              Each day can only have hours in either Study Time OR Hack Time,
+              Each day can only have hours in either Training Time OR Hack Time,
               not both. Only fill in hours for the event dates (
               {eventFrom.format('DD MMM')} - {eventTo.format('DD MMM')}).
             </Typography>
