@@ -11,12 +11,14 @@ import {
   YAxis,
 } from 'recharts';
 import { AggregationClient } from '../../clients/AggregationClient';
+import { useChartColors } from '../../theme/chartColors';
 
 type TotalPerMonthChartProps = {
   year?: number;
 };
 
 export function TotalPerMonthChart({ year }: TotalPerMonthChartProps) {
+  const colors = useChartColors();
   const [state, setState] = useState<any>();
 
   useEffect(() => {
@@ -84,60 +86,60 @@ export function TotalPerMonthChart({ year }: TotalPerMonthChartProps) {
         />
         <Legend />
 
-        <Bar stackId="revenue" dataKey="actualRevenue" fill="#1de8b5" />
-        <Bar stackId="revenue" dataKey="loss" fill="#ef5350" />
+        <Bar stackId="revenue" dataKey="actualRevenue" fill={colors.revenue} />
+        <Bar stackId="revenue" dataKey="loss" fill={colors.loss} />
 
         <Bar
           stackId="cost"
           dataKey="actualCostContractExternal"
-          fill="#3f51b5"
+          fill={colors.cost}
         />
         <Bar
           stackId="cost"
           dataKey="actualCostContractInternal"
-          fill="#3f51b5"
+          fill={colors.cost}
         />
         <Bar
           stackId="cost"
           dataKey="actualCostContractInternalTax"
-          fill="#3f51b5"
+          fill={colors.cost}
         />
         <Bar
           stackId="cost"
           dataKey="actualCostContractInternalHoliday"
-          fill="#3f51b5"
+          fill={colors.cost}
         />
         <Bar
           stackId="cost"
           dataKey="actualCostContractInternalRetirement"
-          fill="#3f51b5"
+          fill={colors.cost}
         />
         <Bar
           stackId="cost"
           dataKey="actualCostContractInternalTraining"
-          fill="#3f51b5"
+          fill={colors.cost}
         />
         <Bar
           stackId="cost"
           dataKey="actualCostContractInternalTravel"
-          fill="#3f51b5"
+          fill={colors.cost}
         />
         <Bar
           stackId="cost"
           dataKey="actualCostContractInternalInsurance"
-          fill="#3f51b5"
+          fill={colors.cost}
         />
         <Bar
           stackId="cost"
           dataKey="actualCostContractManagement"
-          fill="#3f51b5"
+          fill={colors.cost}
         />
         <Bar
           stackId="cost"
           dataKey="actualCostContractService"
-          fill="#3f51b5"
+          fill={colors.cost}
         />
-        <Bar stackId="cost" dataKey="profit" fill="#66bb6a" />
+        <Bar stackId="cost" dataKey="profit" fill={colors.profit} />
       </BarChart>
     </ResponsiveContainer>
   );
