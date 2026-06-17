@@ -50,123 +50,158 @@
 ## Phase Details
 
 ### Phase 10: Budget Management Admin Tests
+
 **Goal**: Admin can manage budget allocations through the Budget Allocation tab — view summaries, create, edit, and delete allocations of all types
 **Depends on**: Nothing (first phase of v1.1; v1.0 feature code is complete)
 **Requirements**: BMGT-01, BMGT-02, BMGT-03, BMGT-04, BMGT-05, BMGT-06
 **Success Criteria** (what must be TRUE):
+
   1. Playwright test logs in as admin (bert@sesam.straat), navigates to a person's Budget Allocation tab, and asserts summary cards show used/remaining values for hack hours, study hours, and study money
   2. Playwright test creates a standalone study money allocation, saves it, and verifies it appears in the allocation list with correct amount and description
   3. Playwright test edits existing allocations (study money, study time, and hack time variants) and verifies updated values persist after page reload
   4. Playwright test deletes an allocation and verifies it is removed from the list and summary cards update accordingly
+
 **Plans**: 3 plans
 
 Plans:
+
 - [x] 10-01-PLAN.md — BDD step helpers and view-summary + create-allocation tests (BMGT-01, BMGT-02)
 - [x] 10-02-PLAN.md — Edit and delete allocation tests (BMGT-03, BMGT-04, BMGT-05, BMGT-06)
 - [x] 10-03-PLAN.md — Gap closure: wire onEdit, extend dialog for edit mode, replace BMGT-03 fixme with real test (BMGT-03)
 
 ### Phase 11: Event Workflow Tests
+
 **Goal**: Admin can create events with budget allocations, modify per-day breakdowns, and see allocations reflected in participant summaries
 **Depends on**: Phase 10 (reuses admin login and navigation patterns)
 **Requirements**: EVNT-01, EVNT-02, EVNT-03, EVNT-04
 **Success Criteria** (what must be TRUE):
+
   1. Playwright test creates an event, adds participants with per-day time allocations, saves, and verifies allocations appear on each participant's Budget Allocation tab
   2. Playwright test modifies day types (hack vs study) and hours-per-day on an existing event allocation, saves, and verifies updated values
   3. Playwright test adds a new participant to an existing event and removes another, then verifies allocation list changes accordingly
   4. Playwright test verifies that event-created allocations are reflected in the participant's budget summary cards (used hours increase, remaining decrease)
+
 **Plans**: 2 plans
 
 Plans:
+
 - [x] 11-01-PLAN.md — Event step helpers, create event with budget allocations, verify budget tab impact (EVNT-01, EVNT-04)
 - [x] 11-02-PLAN.md — Modify event allocation hours, add/remove participants (EVNT-02, EVNT-03)
 
 ### Phase 12: Employee View and Contract Tests
+
 **Goal**: Employees see their own budget allocations in read-only mode, and contract budget field changes are reflected in summaries
 **Depends on**: Phase 10 (allocation data created by admin tests serves as test fixture context)
 **Requirements**: EMPV-01, EMPV-02, EMPV-03, CTRT-01, CTRT-02
 **Success Criteria** (what must be TRUE):
+
   1. Playwright test logs in as employee (ieniemienie or pino), navigates to Budget Allocation tab, and asserts summary cards display correct budget values
   2. Playwright test verifies allocation list shows correct details (dates, hours, amounts) for the logged-in employee
   3. Playwright test confirms that create, edit, and delete controls are not visible or not functional for an employee user
   4. Playwright test logs in as admin, edits a contract's studyHours and studyMoney fields, saves, and verifies the budget summary cards reflect the updated contract values
+
 **Plans**: 2 plans
 
 Plans:
+
 - [x] 12-01-PLAN.md — Employee read-only view tests: summary cards, allocation list, no admin controls (EMPV-01, EMPV-02, EMPV-03)
 - [x] 12-02-PLAN.md — Contract budget field impact tests: edit studyHours/studyMoney, verify summary updates (CTRT-01, CTRT-02)
 
 ### Phase 13: Budget Calculation Tests
+
 **Goal**: Backend budget calculations are correct — remaining budget equals contract value minus sum of allocations, scoped by type and year
 **Depends on**: Nothing (SpringBootTests are independent of Playwright tests)
 **Requirements**: CALC-01, CALC-02, CALC-03
 **Success Criteria** (what must be TRUE):
+
   1. SpringBootTest asserts that budget remaining for a person/year equals contract budget minus sum of allocations for that person/year
   2. SpringBootTest asserts that hack hours, study hours, and study money calculations are independent — allocating study hours does not affect hack hour budget
   3. SpringBootTest asserts that allocations from a different year are excluded from the current year's budget calculation
+
 **Plans**: 1 plan
 
 Plans:
+
 - [x] 13-01-PLAN.md — Add CALC-01/02/03 tests to BudgetSummaryControllerTest: multi-allocation sum, type independence, year scoping (CALC-01, CALC-02, CALC-03)
 
 ### Phase 14: Event Dialog Bug Fix
+
 **Goal**: The event dialog is stable and does not trigger infinite re-render cycles, making event save workflows reliable
 **Depends on**: Nothing (isolated bug fix, no phase dependencies)
 **Requirements**: BUG-01
 **Success Criteria** (what must be TRUE):
+
   1. Opening the event dialog and saving an event with budget allocations does not produce a `Maximum update depth exceeded` console error
   2. The event dialog can be opened, modified, and saved multiple times in a session without browser freezing or React error overlay appearing
+
 **Plans**: 1 plan
 
 Plans:
+
 - [ ] 14-01-PLAN.md — Stabilize handleBudgetStateChange with useCallback; remove onBudgetStateChange from child useEffect deps (BUG-01)
 
 ### Phase 15: Event Allocation Persistence
+
 **Goal**: Saving an event automatically creates and syncs budget allocations for all participants — no manual "Customize" step required
 **Depends on**: Phase 14 (stable event dialog required before wiring new auto-create logic)
 **Requirements**: ALLOC-01, ALLOC-02, ALLOC-03, ALLOC-04, ALLOC-05
 **Success Criteria** (what must be TRUE):
+
   1. Admin saves an event with participants and a default time type; budget allocations appear on each participant's Budget Allocation tab without the admin clicking "Customize"
   2. Admin reopens an event; the previously selected default allocation type (hack vs study) is shown as selected, not reset to a default
   3. Admin saves an event with a money budget amount; study money allocations are created for each participant with equal shares that sum to the total
   4. Admin changes the budget type on an existing event and saves; existing allocations on participant tabs reflect the new type
   5. Admin changes the event's total money budget and saves; each participant's study money allocation is recalculated to the new equal share
+
 **Plans**: TBD
 
 ### Phase 16: Budget Allocation List UX
+
 **Goal**: The budget allocation list is scannable and navigable — event names are shown, admin can click through to events, and type filters reduce noise
 **Depends on**: Nothing (frontend-only changes to allocation list display)
 **Requirements**: LIST-01, LIST-02, LIST-03
 **Success Criteria** (what must be TRUE):
+
   1. Event-linked allocations in the budget allocation list show the event name (e.g., "React Summit 2026") rather than the raw event code
   2. Admin clicks an event allocation row and is navigated to that event's edit dialog; employee sees the same row as plain non-clickable text
   3. User selects a filter chip (Hack Hours, Study Hours, or Study Money) and the allocation list shows only items of that type; selecting no chip shows all
+
 **Plans**: 1 plan
 
 Plans:
+
 - [ ] 16-01-PLAN.md — Fix admin event link href from /event to /event?code={eventCode} in EventAllocationListItem (LIST-01, LIST-02, LIST-03)
 
 ### Phase 17: Event Money Summary and UI Polish
+
 **Goal**: The event money summary is informative (shows assigned vs unassigned amounts) and the "Add study money" button matches the site-wide add pattern
 **Depends on**: Nothing (two independent small UX changes)
 **Requirements**: SUMM-01, UI-01
 **Success Criteria** (what must be TRUE):
+
   1. The event money allocation summary shows two distinct values: amount assigned per participant and amount remaining unassigned, not a single total
   2. The "Add study money" button renders as `+ Add` consistent with the Projects, Assignments, and Workdays resource pages
+
 **Plans**: 1 plan
 
 Plans:
+
 - [x] 17-01-PLAN.md — Fix EventBudgetSummaryBanner fully-allocated wording; add EVNT-06 and UI-01 Playwright tests (SUMM-01, UI-01)
 
 ### Phase 18: Event Time Allocation Validation Fix
+
 **Goal**: Event time allocation validation uses per-day actual hours instead of the averaged scalar, so non-uniform schedules (e.g. 8h + 4h) never show false validation errors
 **Depends on**: Phase 15 (event allocation data flow established)
 **Requirements**: TIME-01
 **Success Criteria** (what must be TRUE):
+
   1. Opening an event with non-uniform day hours shows no false validation errors in the Time Budget Allocations section
   2. Clicking "Customize" on a non-uniform event seeds each day's input field with the actual day hours, not the average
+
 **Plans**: 1 plan
 
 Plans:
+
 - [x] 18-01-PLAN.md — Introduce eventDayHours array; fix validation, seed, and totals to use per-day cap (TIME-01)
 
 ## Progress
@@ -207,6 +242,7 @@ v1.2 phases execute in order: 14 → 15 → 16 → 17 (16 and 17 can run in para
 **Plans:** 3 plans
 
 Plans:
+
 - [x] 18.1-01-PLAN.md — Replace single-match update with delete-all-then-recreate in EventService.syncBudgetAllocations (backend fix)
 - [x] 18.1-02-PLAN.md — Add EventServiceTest.kt integration test covering HACK_TIME -> STUDY_TIME swap and the D-03 dual-allocation case
 - [x] 18.1-03-PLAN.md — Add EVNT-07 Playwright e2e test verifying admin sees Study Time allocation after changing event type, plus reusable `When_I_change_event_type_to` step helper
@@ -218,7 +254,52 @@ Plans:
 **Plans:** 1/1 plans complete
 
 Plans:
+
 - [ ] TBD (promote with /gsd:review-backlog when ready)
+
+### Phase 19: Close gap: TIME-01 — register in REQUIREMENTS.md and add Playwright e2e for non-uniform day-hours validation
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 18
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd:plan-phase 19 to break down)
+
+### Phase 20: Close gap: ALLOC-03 backend — gate StudyMoneyBudgetAllocation creation on event type in EventService.syncBudgetAllocations
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 19
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd:plan-phase 20 to break down)
+
+### Phase 21: Close gap: UI-01 — change Add Study Money button to bare 'Add' matching ProjectFeature pattern
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 20
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd:plan-phase 21 to break down)
+
+### Phase 22: Tech debt: remove dead generateDefaultAllocations/diffAllocations exports; correct 15-01-SUMMARY to reflect backend-driven architecture
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 21
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd:plan-phase 22 to break down)
 
 ---
 *Full v1.0 details: .planning/milestones/v1.0-ROADMAP.md*
