@@ -104,20 +104,15 @@ class EventService(
                 ),
             )
         val persons = personService.findByPersonCodeIdIn(personIds).toList()
-        event.reconcileEventDays(persons)
+        event.rebuildEventDaysFromTemplate(persons)
         return event.refreshed()
     }
 
-    private fun Event.reconcileEventDays(persons: List<Person>) {
-        val desired = persons.associateBy { it.uuid }
-        val current = eventDayRepository.findAllByEventCode(code)
-        current
-            .filter { it.person.uuid !in desired.keys }
-            .forEach { eventDayRepository.delete(it) }
-        val present = current.map { it.person.uuid }.toSet()
-        persons
-            .filter { it.uuid !in present }
-            .forEach { eventDayRepository.save(eventDayFor(it)) }
+    // Rebuilt (not membership-diffed) so an edited period/hours/days reaches every
+    // participant — each EventDay holds its own copy of those values.
+    private fun Event.rebuildEventDaysFromTemplate(persons: List<Person>) {
+        eventDayRepository.deleteAll(eventDayRepository.findAllByEventCode(code))
+        persons.forEach { eventDayRepository.save(eventDayFor(it)) }
     }
 
     private fun Event.eventDayFor(person: Person) =

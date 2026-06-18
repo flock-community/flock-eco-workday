@@ -4,6 +4,7 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.model.EventType
+import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.repository.EventRepository
 import community.flock.eco.workday.application.services.EventRatingService
 import community.flock.eco.workday.application.services.EventService
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 import java.util.UUID
+import kotlin.test.assertEquals
 
 class EventControllerTest : WorkdayIntegrationTest() {
     private val baseUrl: String = "/api/events"
@@ -50,6 +52,9 @@ class EventControllerTest : WorkdayIntegrationTest() {
 
     @Autowired
     private lateinit var eventRepository: EventRepository
+
+    @Autowired
+    private lateinit var eventDayRepository: EventDayRepository
 
     @Autowired
     private lateinit var personService: PersonService
@@ -211,6 +216,36 @@ class EventControllerTest : WorkdayIntegrationTest() {
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `editing an event re-syncs each participant's EventDay`() {
+        val person = createPerson(createUser(userAuthorities).account.user.code)
+        val day = LocalDate.of(2023, 3, 1)
+        val created =
+            EventForm(
+                description = "Hack",
+                from = day,
+                to = day,
+                hours = 8.0,
+                days = mutableListOf(8.0),
+                costs = 0.0,
+                personIds = listOf(person.uuid),
+                type = EventType.FLOCK_HACK_DAY,
+            ).run { eventService.create(this) }
+        assertEquals(8.0, eventDayRepository.findAllByEventCode(created.code).single().hours)
+
+        EventForm(
+            description = "Hack",
+            from = day,
+            to = day,
+            hours = 4.0,
+            days = mutableListOf(4.0),
+            costs = 0.0,
+            personIds = listOf(person.uuid),
+            type = EventType.FLOCK_HACK_DAY,
+        ).run { eventService.update(created.code, this) }
+        assertEquals(4.0, eventDayRepository.findAllByEventCode(created.code).single().hours)
     }
 
     private fun ResultActions.asyncDispatch(): ResultActions = mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))

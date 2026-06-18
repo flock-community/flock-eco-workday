@@ -7,8 +7,8 @@ import jakarta.persistence.ManyToOne
 import java.time.LocalDate
 import java.util.UUID
 
-// Joined child of `day`: reuses `day_seq` and the shared `day_days` table, so
-// changeset 030 only adds the `event_day` join row, no sequence or collection table.
+// Joined child of `day`: reuses `day_seq` and the shared `day_days` table — its
+// migration must add only the `event_day` join row, not a sequence or collection table.
 @Entity
 @EntityListeners(EventEntityListeners::class)
 class EventDay(

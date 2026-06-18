@@ -5,7 +5,7 @@ import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
 import liquibase.exception.ValidationErrors
 import liquibase.resource.ResourceAccessor
-import java.sql.Connection
+import java.sql.PreparedStatement
 import java.util.UUID
 
 // New day ids are drawn from day_seq (the Day hierarchy's own sequence), keeping
@@ -15,20 +15,43 @@ import java.util.UUID
 class BackfillEventDays : CustomTaskChange {
     override fun execute(database: Database) {
         val connection = (database.connection as JdbcConnection).underlyingConnection
-        val nextIdSql = nextIdSql(database)
-        val daysByEvent = connection.readDaysByEvent()
+        val daysByEvent = readDaysByEvent(connection)
 
-        connection.prepareStatement(SELECT_PAIRS).use { stmt ->
-            stmt.executeQuery().use { rows ->
+        val nextId = connection.prepareStatement(nextIdSql(database))
+        val insertDay = connection.prepareStatement(INSERT_DAY)
+        val insertEventDay = connection.prepareStatement(INSERT_EVENT_DAY)
+        val insertDayValue = connection.prepareStatement(INSERT_DAY_VALUE)
+        val pairs = connection.prepareStatement(SELECT_PAIRS)
+        try {
+            pairs.executeQuery().use { rows ->
                 while (rows.next()) {
                     val eventId = rows.getLong("event_id")
-                    val personId = rows.getLong("persons_id")
-                    val newId = connection.nextId(nextIdSql)
-                    connection.insertDay(newId, rows.getDate("event_from"), rows.getDouble("hours"), rows.getDate("event_to"))
-                    connection.insertEventDay(newId, personId, eventId)
-                    daysByEvent[eventId].orEmpty().forEach { connection.insertDayValue(newId, it) }
+                    val id = nextId.nextValue()
+                    insertDay.run {
+                        setLong(1, id)
+                        setString(2, UUID.randomUUID().toString())
+                        setDate(3, rows.getDate("event_from"))
+                        setDouble(4, rows.getDouble("hours"))
+                        setDate(5, rows.getDate("event_to"))
+                        executeUpdate()
+                    }
+                    insertEventDay.run {
+                        setLong(1, id)
+                        setLong(2, rows.getLong("persons_id"))
+                        setLong(3, eventId)
+                        executeUpdate()
+                    }
+                    daysByEvent[eventId].orEmpty().forEach { dayValue ->
+                        insertDayValue.run {
+                            setLong(1, id)
+                            setDouble(2, dayValue)
+                            executeUpdate()
+                        }
+                    }
                 }
             }
+        } finally {
+            listOf(pairs, insertDayValue, insertEventDay, insertDay, nextId).forEach { it.close() }
         }
     }
 
@@ -39,11 +62,10 @@ class BackfillEventDays : CustomTaskChange {
             "SELECT NEXT VALUE FOR day_seq"
         }
 
-    private fun Connection.nextId(sql: String): Long =
-        prepareStatement(sql).use { it.executeQuery().use { rows -> rows.next(); rows.getLong(1) } }
+    private fun PreparedStatement.nextValue(): Long = executeQuery().use { it.next(); it.getLong(1) }
 
-    private fun Connection.readDaysByEvent(): Map<Long, List<Double>> =
-        prepareStatement("SELECT event_id, days FROM event_days").use { stmt ->
+    private fun readDaysByEvent(connection: java.sql.Connection): Map<Long, List<Double>> =
+        connection.prepareStatement("SELECT event_id, days FROM event_days").use { stmt ->
             stmt.executeQuery().use { rows ->
                 buildMap<Long, MutableList<Double>> {
                     while (rows.next()) {
@@ -52,40 +74,6 @@ class BackfillEventDays : CustomTaskChange {
                 }
             }
         }
-
-    private fun Connection.insertDay(
-        id: Long,
-        from: java.sql.Date,
-        hours: Double,
-        to: java.sql.Date,
-    ) = prepareStatement("""INSERT INTO "day" ("id", "code", "from", "hours", "to") VALUES (?, ?, ?, ?, ?)""").use {
-        it.setLong(1, id)
-        it.setString(2, UUID.randomUUID().toString())
-        it.setDate(3, from)
-        it.setDouble(4, hours)
-        it.setDate(5, to)
-        it.executeUpdate()
-    }
-
-    private fun Connection.insertEventDay(
-        id: Long,
-        personId: Long,
-        eventId: Long,
-    ) = prepareStatement("INSERT INTO event_day (id, person_id, event_id) VALUES (?, ?, ?)").use {
-        it.setLong(1, id)
-        it.setLong(2, personId)
-        it.setLong(3, eventId)
-        it.executeUpdate()
-    }
-
-    private fun Connection.insertDayValue(
-        dayId: Long,
-        days: Double,
-    ) = prepareStatement("INSERT INTO day_days (day_id, days) VALUES (?, ?)").use {
-        it.setLong(1, dayId)
-        it.setDouble(2, days)
-        it.executeUpdate()
-    }
 
     override fun getConfirmationMessage() = "Backfilled event_day rows from event_persons"
 
@@ -96,6 +84,9 @@ class BackfillEventDays : CustomTaskChange {
     override fun validate(database: Database?): ValidationErrors = ValidationErrors()
 
     private companion object {
+        const val INSERT_DAY = """INSERT INTO "day" ("id", "code", "from", "hours", "to") VALUES (?, ?, ?, ?, ?)"""
+        const val INSERT_EVENT_DAY = "INSERT INTO event_day (id, person_id, event_id) VALUES (?, ?, ?)"
+        const val INSERT_DAY_VALUE = "INSERT INTO day_days (day_id, days) VALUES (?, ?)"
         const val SELECT_PAIRS =
             """SELECT ep.event_id AS event_id, ep.persons_id AS persons_id,
                       e."from" AS event_from, e."to" AS event_to, e."hours" AS hours
