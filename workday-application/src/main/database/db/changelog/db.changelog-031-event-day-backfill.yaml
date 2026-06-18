@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-031-event-day-backfill
+      author: claude-opus-4.8
+      comment: Create one EventDay per event_persons row, copying the event period/hours/days so per-person totals are preserved.
+      changes:
+        - customChange:
+            class: community.flock.eco.workday.application.migrations.BackfillEventDays

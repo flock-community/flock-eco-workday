@@ -18,7 +18,6 @@ import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventRating
 import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.Person
-import community.flock.eco.workday.application.repository.EventProjection
 import community.flock.eco.workday.application.services.EventRatingService
 import community.flock.eco.workday.application.services.EventService
 import community.flock.eco.workday.application.services.PersonService
@@ -87,8 +86,8 @@ class EventController(
         val projections =
             eventService
                 .findAllEventsOf(year)
-                .sortedBy { it.getFrom() }
-                .map { it.externalize() }
+                .sortedBy { it.from }
+                .map { it.toProjectionApi() }
         return GetEventsByYear.Response200(projections)
     }
 
@@ -182,7 +181,6 @@ class EventController(
             description = "N/A - $description",
             costs = 0.00,
             days = null,
-            persons = mutableListOf(),
             id = id,
             code = code,
             from = from,
@@ -223,22 +221,22 @@ class EventController(
             rating = rating,
         )
 
-    private fun EventProjection.externalize(): EventProjectionApi =
+    private fun Event.toProjectionApi(): EventProjectionApi =
         EventProjectionApi(
-            type = getType().toProjectionApi(),
-            from = getFrom().toString(),
-            to = getTo().toString(),
-            code = getCode(),
-            description = getDescription(),
-            persons = getPersons().map { it.externalize() },
+            type = type.toProjectionApi(),
+            from = from.toString(),
+            to = to.toString(),
+            code = code,
+            description = description,
+            persons = persons.map { it.toProjectionApi() },
         )
 
-    private fun community.flock.eco.workday.application.model.PersonProjection.externalize(): PersonProjectionApi =
+    private fun Person.toProjectionApi(): PersonProjectionApi =
         PersonProjectionApi(
-            uuid = getUuid().toString(),
-            firstname = getFirstname(),
-            lastname = getLastname(),
-            email = getEmail(),
+            uuid = uuid.toString(),
+            firstname = firstname,
+            lastname = lastname,
+            email = email,
         )
 
     private fun Person.externalize(): PersonApi =

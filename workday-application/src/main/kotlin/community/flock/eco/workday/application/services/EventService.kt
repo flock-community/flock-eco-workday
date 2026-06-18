@@ -3,8 +3,9 @@ package community.flock.eco.workday.application.services
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.interfaces.validate
 import community.flock.eco.workday.application.model.Event
+import community.flock.eco.workday.application.model.EventDay
 import community.flock.eco.workday.application.model.Person
-import community.flock.eco.workday.application.repository.EventProjection
+import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.repository.EventRatingRepository
 import community.flock.eco.workday.application.repository.EventRepository
 import community.flock.eco.workday.core.utils.toNullable
@@ -20,6 +21,7 @@ import java.util.UUID
 @Transactional
 class EventService(
     private val eventRepository: EventRepository,
+    private val eventDayRepository: EventDayRepository,
     private val eventRatingRepository: EventRatingRepository,
     private val personService: PersonService,
     private val entityManager: EntityManager,
@@ -28,60 +30,18 @@ class EventService(
 
     fun findAll(pageable: Pageable): Page<Event> = eventRepository.findAll(pageable)
 
-    fun findAllByPersonUuid(personCode: UUID) =
-        eventRepository
-            .findAllByPersonsIsEmptyOrPersonsUuid(personCode)
-
     fun findByCode(code: String) = eventRepository.findByCode(code).toNullable()
 
-    fun findAllEventsOf(year: Int): Iterable<EventProjection> =
+    fun findAllEventsOf(year: Int): Iterable<Event> =
         eventRepository.findAllByFromBetween(
             from = LocalDate.of(year, 1, 1),
             to = LocalDate.of(year, 12, 31),
         )
 
-    fun findAllActive(
-        from: LocalDate,
-        to: LocalDate,
-    ): Iterable<Event> {
-        val query =
-            "SELECT e FROM Event e LEFT JOIN FETCH e.days WHERE e.from <= :to AND (e.to is null OR e.to >= :from)"
-        return entityManager
-            .createQuery(query, Event::class.java)
-            .setParameter("from", from)
-            .setParameter("to", to)
-            .resultList
-            .toSet()
-    }
-
-    fun findAllActiveByPerson(
-        from: LocalDate,
-        to: LocalDate,
-        personCode: UUID,
-    ): Iterable<Event> {
-        val query =
-            """SELECT e
-                |FROM Event e
-                |LEFT JOIN FETCH e.days
-                |INNER JOIN e.persons p
-                |WHERE  e.from <= :to
-                |AND (e.to is null OR e.to >= :from)
-                |AND p.uuid = :personCode
-            """.trimMargin()
-        return entityManager
-            .createQuery(query, Event::class.java)
-            .setParameter("from", from)
-            .setParameter("to", to)
-            .setParameter("personCode", personCode)
-            .resultList
-            .toSet()
-    }
-
     fun create(form: EventForm): Event =
         form
             .validate()
             .consume()
-            .save()
 
     fun update(
         code: String,
@@ -94,7 +54,6 @@ class EventService(
                 form
                     .validate()
                     .consume(this)
-                    .save()
             }
 
     fun subscribeToEvent(
@@ -104,20 +63,12 @@ class EventService(
         eventRepository
             .findByCode(eventCode)
             .toNullable()
-            ?.run {
-                Event(
-                    description = description,
-                    id = id,
-                    code = code,
-                    from = from,
-                    to = to,
-                    hours = hours,
-                    costs = costs,
-                    type = type,
-                    days = days,
-                    persons = persons.filter { it.uuid != person.uuid }.plus(person).toMutableList(),
-                ).run { eventRepository.save(this) }
-            } ?: error("Cannot subscribe to Event: $eventCode")
+            ?.also { event ->
+                if (event.eventDays.none { it.person.uuid == person.uuid }) {
+                    eventDayRepository.save(event.eventDayFor(person))
+                }
+            }?.refreshed()
+            ?: error("Cannot subscribe to Event: $eventCode")
 
     fun unsubscribeFromEvent(
         eventCode: String,
@@ -126,45 +77,62 @@ class EventService(
         eventRepository
             .findByCode(eventCode)
             .toNullable()
-            ?.run {
-                Event(
-                    description = description,
-                    id = id,
-                    code = code,
-                    from = from,
-                    to = to,
-                    hours = hours,
-                    costs = costs,
-                    type = type,
-                    days = days,
-                    persons = persons.filter { it.uuid != person.uuid }.toMutableList(),
-                ).run { eventRepository.save(this) }
-            } ?: error("Cannot unsubscribe from Event: $eventCode")
+            ?.also { eventDayRepository.deleteByEventCodeAndPersonUuid(eventCode, person.uuid) }
+            ?.refreshed()
+            ?: error("Cannot unsubscribe from Event: $eventCode")
 
     @Transactional
     fun deleteByCode(code: String) {
         eventRatingRepository.deleteByEventCode(code)
+        eventDayRepository.deleteByEventCode(code)
         eventRepository.deleteByCode(code)
     }
 
-    private fun Event.save() = eventRepository.save(this)
+    private fun EventForm.consume(existing: Event? = null): Event {
+        val event =
+            eventRepository.save(
+                Event(
+                    id = existing?.id ?: 0L,
+                    code = existing?.code ?: UUID.randomUUID().toString(),
+                    description = description,
+                    from = from,
+                    to = to,
+                    hours = hours,
+                    days = days.toMutableList(),
+                    costs = costs,
+                    type = type,
+                ),
+            )
+        val persons = personService.findByPersonCodeIdIn(personIds).toList()
+        event.reconcileEventDays(persons)
+        return event.refreshed()
+    }
 
-    private fun EventForm.consume(it: Event? = null): Event {
-        val persons =
-            personService
-                .findByPersonCodeIdIn(personIds)
+    private fun Event.reconcileEventDays(persons: List<Person>) {
+        val desired = persons.associateBy { it.uuid }
+        val current = eventDayRepository.findAllByEventCode(code)
+        current
+            .filter { it.person.uuid !in desired.keys }
+            .forEach { eventDayRepository.delete(it) }
+        val present = current.map { it.person.uuid }.toSet()
+        persons
+            .filter { it.uuid !in present }
+            .forEach { eventDayRepository.save(eventDayFor(it)) }
+    }
 
-        return Event(
-            id = it?.id ?: 0L,
-            code = it?.code ?: UUID.randomUUID().toString(),
-            description = description,
+    private fun Event.eventDayFor(person: Person) =
+        EventDay(
             from = from,
             to = to,
-            persons = persons.toMutableList(),
             hours = hours,
-            days = days.toMutableList(),
-            costs = costs,
-            type = type,
+            days = days?.toMutableList(),
+            person = person,
+            event = this,
         )
-    }
+
+    private fun Event.refreshed(): Event =
+        also {
+            entityManager.flush()
+            entityManager.refresh(it)
+        }
 }

@@ -85,4 +85,13 @@ databaseChangeLog:
   - include:
       file: db.changelog-029-rename-hack-hours-to-hack-time-budget.yaml
       relativeToChangelogFile: true
+  - include:
+      file: db.changelog-030-event-day.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-031-event-day-backfill.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-032-drop-event-persons.yaml
+      relativeToChangelogFile: true
 

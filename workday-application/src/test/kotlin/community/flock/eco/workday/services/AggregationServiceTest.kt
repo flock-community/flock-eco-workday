@@ -4,7 +4,12 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.interfaces.Period
 import community.flock.eco.workday.application.model.Assignment
 import community.flock.eco.workday.application.model.ContractType
+import community.flock.eco.workday.application.model.Event
+import community.flock.eco.workday.application.model.EventDay
+import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.WorkDay
+import community.flock.eco.workday.application.repository.EventDayRepository
+import community.flock.eco.workday.application.repository.EventRepository
 import community.flock.eco.workday.application.services.AggregationService
 import community.flock.eco.workday.application.services.countWorkDaysInPeriod
 import community.flock.eco.workday.application.utils.DateUtils.countWorkDaysInMonth
@@ -26,6 +31,8 @@ class AggregationServiceTest(
     @Autowired val createHelper: CreateHelper,
     @Autowired val organisationHelper: OrganisationHelper,
     @Autowired val aggregationService: AggregationService,
+    @Autowired val eventRepository: EventRepository,
+    @Autowired val eventDayRepository: EventDayRepository,
 ) : WorkdayIntegrationTest() {
     private val firstDayOfYear = LocalDate.of(2020, 1, 1)
     private val lastDayOfYear = LocalDate.of(2020, 12, 31)
@@ -774,5 +781,32 @@ class AggregationServiceTest(
         assertEquals(BigDecimal("40.0"), result.workDays)
         assertEquals(80, result.event)
         assertEquals(BigDecimal("40.0"), result.leaveDayUsed)
+    }
+
+    @Test
+    fun `event hours are attributed per person and may be less than a full day`() {
+        val partTimer = createHelper.createPersonEntity("Part", "Timer")
+        val fullDay = createHelper.createPersonEntity("Full", "Day")
+        val day = LocalDate.of(2021, 12, 1)
+        createHelper.createContractInternal(partTimer, day, day)
+        createHelper.createContractInternal(fullDay, day, day)
+
+        val event =
+            eventRepository.save(
+                Event(
+                    description = "Hack day",
+                    from = day,
+                    to = day,
+                    hours = 8.0,
+                    days = mutableListOf(8.0),
+                    costs = 0.0,
+                    type = EventType.FLOCK_HACK_DAY,
+                ),
+            )
+        eventDayRepository.save(EventDay(from = day, to = day, hours = 4.0, days = mutableListOf(4.0), person = partTimer, event = event))
+        eventDayRepository.save(EventDay(from = day, to = day, hours = 8.0, days = mutableListOf(8.0), person = fullDay, event = event))
+
+        assertEquals(4, aggregationService.totalPerPerson(day, day, partTimer).event)
+        assertEquals(8, aggregationService.totalPerPerson(day, day, fullDay).event)
     }
 }

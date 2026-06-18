@@ -9,7 +9,7 @@ import jakarta.persistence.EntityListeners
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
-import jakarta.persistence.ManyToMany
+import jakarta.persistence.OneToMany
 import org.hibernate.annotations.BatchSize
 import java.time.LocalDate
 import java.util.UUID
@@ -28,8 +28,10 @@ class Event(
     val type: EventType,
     @ElementCollection(fetch = FetchType.EAGER)
     override val days: MutableList<Double>? = null,
-    @ManyToMany(fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
     @BatchSize(size = 50)
-    val persons: MutableList<Person>,
+    val eventDays: MutableList<EventDay> = mutableListOf(),
 ) : AbstractCodeEntity(id, code),
-    Daily
+    Daily {
+    val persons: List<Person> get() = eventDays.map { it.person }.distinct()
+}

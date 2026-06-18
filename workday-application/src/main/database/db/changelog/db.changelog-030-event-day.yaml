@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-030-event-day-1
+      author: claude-opus-4.8
+      comment: >-
+        EventDay is a joined child of the `day` hierarchy, so it reuses
+        `day_seq` and the shared `day_days` collection table. Only the
+        `event_day` join row (id PK/FK to day, person_id, event_id) is new.
+      changes:
+        - createTable:
+            tableName: event_day
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: event_dayPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: person_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: event_id
+                  type: BIGINT
+  - changeSet:
+      id: db.changelog-030-event-day-2
+      author: claude-opus-4.8
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: id
+            baseTableName: event_day
+            constraintName: FK_event_day_day
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: day
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: person_id
+            baseTableName: event_day
+            constraintName: FK_event_day_person
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: person
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: event_id
+            baseTableName: event_day
+            constraintName: FK_event_day_event
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: event
+            validate: true
