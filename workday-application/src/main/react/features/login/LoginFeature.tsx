@@ -54,6 +54,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
   [`& .${classes.cardHeader}`]: {
     backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
   },
 
   [`& .${classes.cardContent}`]: {
@@ -81,7 +82,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
     marginTop: '4rem',
     marginBottom: '2rem',
     width: '100%',
-    maxWidth: '380px',
+    maxWidth: '430px',
   },
 
   [`& .${classes.flock}`]: {
