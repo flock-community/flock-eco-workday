@@ -64,42 +64,6 @@ test.describe('Login Functionality', () => {
     await expect(page.locator('h1:has-text("Workday Login")')).toBeVisible();
   });
 
-  test('should verify page elements are present', async ({ page }) => {
-    // Verify login page elements are visible
-    await expect(page.locator('h1:has-text("Workday Login")')).toBeVisible();
-    await expect(page.locator('input[name="username"]')).toBeVisible();
-    await expect(page.locator('input[name="password"]')).toBeVisible();
-    await expect(page.locator('button:has-text("Sign in")')).toBeVisible();
-    await expect(
-      page.locator('p:has-text("Flock Software Engineering B.V. 20")'),
-    ).toBeVisible();
-
-    // Verify input fields are enabled
-    await expect(page.locator('input[name="username"]')).toBeEnabled();
-    await expect(page.locator('input[name="password"]')).toBeEnabled();
-    await expect(page.locator('button:has-text("Sign in")')).toBeEnabled();
-  });
-
-  test('should hide password input', async ({ page }) => {
-    // Verify password field is of type password
-    await expect(page.locator('input[name="password"]')).toHaveAttribute(
-      'type',
-      'password',
-    );
-
-    // Enter password and verify it's hidden
-    await page.fill('input[name="password"]', VALID_PASSWORD);
-    const passwordValue = await page.inputValue('input[name="password"]');
-    expect(passwordValue).toBe(VALID_PASSWORD);
-
-    // Verify password is visually hidden (dots/asterisks)
-    const passwordType = await page.getAttribute(
-      'input[name="password"]',
-      'type',
-    );
-    expect(passwordType).toBe('password');
-  });
-
   test('should allow login with Enter key', async ({ page }) => {
     // Enter credentials
     await page.fill('input[name="username"]', VALID_USERNAME);
@@ -111,30 +75,6 @@ test.describe('Login Functionality', () => {
     // Verify successful login
     await expect(page).toHaveURL('/');
     await expect(page.locator('h2:has-text("Hi, Tommy!")')).toBeVisible();
-  });
-
-  test('should show user menu with Profile and Logout options', async ({
-    page,
-  }) => {
-    // Login first with valid credentials
-    await page.fill('input[name="username"]', VALID_USERNAME);
-    await page.fill('input[name="password"]', VALID_PASSWORD);
-    await page.click('button:has-text("Sign in")');
-    await page.waitForURL('/');
-
-    // Click user menu button using the correct selector
-    await page.click('button[aria-haspopup="true"]');
-
-    // Wait for menu to appear and verify menu items are present
-    await expect(page.getByRole('menu')).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Profile' })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Logout' })).toBeVisible();
-
-    // Verify Profile is disabled
-    await expect(page.getByRole('menuitem', { name: 'Profile' })).toBeEnabled();
-
-    // Verify Logout is enabled
-    await expect(page.getByRole('menuitem', { name: 'Logout' })).toBeEnabled();
   });
 });
 

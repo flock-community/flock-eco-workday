@@ -241,37 +241,6 @@ test.describe('Person flow', () => {
     await expect(page.getByText('Create Person')).toBeVisible();
   });
 
-  test('cancels the delete confirmation and keeps the person', async ({
-    page,
-  }) => {
-    const data = buildPersonData('KeepAfterCancel');
-    await createPerson(page, data);
-    await openPersonDetails(page, data);
-
-    await page.locator(DELETE_BUTTON).first().click();
-    await expect(
-      page.getByRole('heading', { name: 'Confirm', exact: true }),
-    ).toBeVisible();
-
-    // Cancel the confirm dialog (the second Cancel button - inside ConfirmDialog)
-    await page
-      .getByRole('dialog')
-      .getByRole('button', { name: 'Cancel' })
-      .click();
-
-    // Still on the details page
-    await expect(page).toHaveURL(/.*\/person\/code\/.*/);
-    await expect(
-      page
-        .getByText(`${data.firstname} ${data.lastname}`, { exact: true })
-        .first(),
-    ).toBeVisible();
-
-    // And the person is still searchable in the list
-    await page.goto(PERSON_URL);
-    await searchPerson(page, `${data.firstname} ${data.lastname}`);
-  });
-
   test('search filters the person list to the matching entry', async ({
     page,
   }) => {

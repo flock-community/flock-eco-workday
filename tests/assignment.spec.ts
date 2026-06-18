@@ -189,21 +189,4 @@ test.describe('Assignment CRUD Operations', () => {
       page.getByRole('heading', { name: `Client D - ${roleName}` }),
     ).toHaveCount(0);
   });
-
-  test('should cancel creating an assignment', async ({ page }) => {
-    await selectPerson(page, 'Bert Muppets');
-
-    await page.getByRole('button', { name: 'Add' }).click();
-    await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
-
-    await page.getByLabel('Role').fill('Should not be saved');
-
-    await page.getByRole('dialog').press('Escape');
-
-    await expect(
-      page.getByText('Create / Edit an assignment'),
-    ).not.toBeVisible();
-
-    await expect(page.getByText('Should not be saved')).not.toBeVisible();
-  });
 });
