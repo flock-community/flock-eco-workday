@@ -159,7 +159,7 @@ test.describe('Contract Budget Field Impact', () => {
   }) => {
     await openInternalContract(page, 'Pino');
 
-    const trainingHoursField = page.getByLabel('Training hours');
+    const trainingHoursField = page.getByLabel('Training time');
     const originalTrainingHours = await trainingHoursField.inputValue();
     await trainingHoursField.clear();
     await trainingHoursField.fill('200');
@@ -173,7 +173,7 @@ test.describe('Contract Budget Field Impact', () => {
 
     // Restore the original value so dev data isn't permanently mutated.
     await openInternalContract(page, 'Pino');
-    const trainingHoursRestore = page.getByLabel('Training hours');
+    const trainingHoursRestore = page.getByLabel('Training time');
     await trainingHoursRestore.clear();
     await trainingHoursRestore.fill(originalTrainingHours);
     await saveContract(page);
@@ -184,7 +184,7 @@ test.describe('Contract Budget Field Impact', () => {
   }) => {
     await openInternalContract(page, 'Pino');
 
-    const trainingMoneyField = page.getByLabel('Training money');
+    const trainingMoneyField = page.getByLabel('Training budget');
     const originalTrainingMoney = await trainingMoneyField.inputValue();
     await trainingMoneyField.clear();
     await trainingMoneyField.fill('3500');
@@ -198,7 +198,7 @@ test.describe('Contract Budget Field Impact', () => {
 
     // Restore the original value so dev data isn't permanently mutated.
     await openInternalContract(page, 'Pino');
-    const trainingMoneyRestore = page.getByLabel('Training money');
+    const trainingMoneyRestore = page.getByLabel('Training budget');
     await trainingMoneyRestore.clear();
     await trainingMoneyRestore.fill(originalTrainingMoney);
     await saveContract(page);
