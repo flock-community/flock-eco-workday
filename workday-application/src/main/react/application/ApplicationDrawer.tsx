@@ -128,7 +128,7 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
       authority: 'LeaveDayAuthority.READ',
     },
     {
-      name: 'Sickday',
+      name: 'Sickdays',
       icon: HealingIcon,
       url: '/sickdays',
       authority: 'SickdayAuthority.READ',

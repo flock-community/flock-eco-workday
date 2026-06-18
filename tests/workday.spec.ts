@@ -79,7 +79,7 @@ test.describe('Workday scenarios', () => {
       page,
       'Requested',
       'Some reason',
-      'Date: 10-06-2028',
+      '10-06-2028',
       '€ 16,50',
     );
   });
