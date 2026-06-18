@@ -41,6 +41,7 @@ import community.flock.eco.workday.api.model.EventProjection as EventProjectionA
 import community.flock.eco.workday.api.model.EventProjectionType as EventProjectionTypeApi
 import community.flock.eco.workday.api.model.EventRating as EventRatingApi
 import community.flock.eco.workday.api.model.EventRatingForm as EventRatingFormApi
+import community.flock.eco.workday.api.model.AllocationType as AllocationTypeApi
 import community.flock.eco.workday.api.model.EventType as EventTypeApi
 import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.api.model.PersonProjection as PersonProjectionApi
@@ -180,7 +181,7 @@ class EventController(
     private fun Event.redact(): Event =
         Event(
             description = "N/A - $description",
-            costs = 0.00,
+            budget = 0.00,
             days = null,
             persons = mutableListOf(),
             id = id,
@@ -198,9 +199,10 @@ class EventController(
             to = to?.let(LocalDate::parse) ?: error("to is required"),
             hours = hours ?: 0.0,
             days = days?.toMutableList() ?: mutableListOf(),
-            costs = costs ?: 0.0,
+            budget = budget ?: 0.0,
             personIds = personIds?.map(UUID::fromString) ?: emptyList(),
             type = type?.toDomain() ?: EventType.GENERAL_EVENT,
+            defaultTimeAllocationType = defaultTimeAllocationType?.name,
         )
 
     private fun Event.externalize(): EventApi =
@@ -211,11 +213,19 @@ class EventController(
             from = from.toString(),
             to = to.toString(),
             hours = hours,
-            costs = costs,
+            budget = budget,
             type = type.toApi(),
+            defaultTimeAllocationType = defaultTimeAllocationType?.toAllocationTypeApi(),
             days = days,
             persons = persons.map { it.externalize() },
         )
+
+    private fun String.toAllocationTypeApi(): AllocationTypeApi? =
+        when (this) {
+            "HACK", "HACK_TIME" -> AllocationTypeApi.HACK
+            "TRAINING", "TRAINING_TIME" -> AllocationTypeApi.TRAINING
+            else -> null
+        }
 
     private fun EventRating.externalize(): EventRatingApi =
         EventRatingApi(

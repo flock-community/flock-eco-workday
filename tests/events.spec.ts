@@ -25,7 +25,7 @@ const EVENT_DESCRIPTION = `E2E event ${RUN_ID}`;
 const EVENT_DESCRIPTION_UPDATED = `${EVENT_DESCRIPTION} (updated)`;
 const EVENT_FROM = '04-05-2026';
 const EVENT_TO = '04-05-2026';
-const EVENT_COSTS = '125';
+const EVENT_BUDGET = '125';
 
 test.describe
   .serial('EventController /api/events (Wirespec)', () => {
@@ -56,7 +56,7 @@ test.describe
       await expect(dialog.getByLabel('Description')).toBeVisible();
 
       await dialog.getByLabel('Description').fill(EVENT_DESCRIPTION);
-      await dialog.getByLabel('Costs').fill(EVENT_COSTS);
+      await dialog.getByLabel('Budget').fill(EVENT_BUDGET);
       await When_I_fill_in_the_date_range_from_till(page, EVENT_FROM, EVENT_TO);
 
       const eventPost = page.waitForResponse(

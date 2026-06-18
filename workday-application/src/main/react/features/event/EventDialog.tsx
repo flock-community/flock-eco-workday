@@ -6,12 +6,28 @@ import Typography from '@mui/material/Typography';
 import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
-import { useEffect, useState } from 'react';
-import { EventClient, type FlockEventRequest } from '../../clients/EventClient';
+import dayjs from 'dayjs';
+import { Form, Formik } from 'formik';
+import { useEffect, useMemo, useState } from 'react';
+import { BudgetAllocationClient } from '../../clients/BudgetAllocationClient';
+import {
+  EventClient,
+  type FlockEventRequest,
+  type FullFlockEvent,
+} from '../../clients/EventClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { TransitionSlider } from '../../components/transitions/Slide';
-import { schema } from '../workday/WorkDayForm';
-import { EVENT_FORM_ID, EventForm } from './EventForm';
+import type { EventBudgetType } from '../../utils/mappings';
+import { mutatePeriod } from '../period/Period';
+import { EventBudgetManagementSection } from './EventBudgetManagementDialog';
+import { EVENT_FORM_ID, EventFormFields, eventFormSchema } from './EventForm';
+import type { PersonMoneyAllocation } from './EventMoneyAllocationSection';
+import type { PersonTimeAllocation } from './EventTimeAllocationSection';
+import {
+  apiAllocationsToMoneyParticipants,
+  apiAllocationsToTimeParticipants,
+  diffTimeOverrides,
+} from './eventBudgetTransformers';
 
 type EventDialogProps = {
   open: boolean;
@@ -21,6 +37,21 @@ type EventDialogProps = {
 
 export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
+  const [moneyBudgetExpanded, setMoneyBudgetExpanded] = useState(false);
+  const [timeBudgetExpanded, setTimeBudgetExpanded] = useState(false);
+  const [eventData, setEventData] = useState<FullFlockEvent | null>(null);
+  const [initialTimeParticipants, setInitialTimeParticipants] = useState<
+    PersonTimeAllocation[] | undefined
+  >(undefined);
+  const [initialMoneyParticipants, setInitialMoneyParticipants] = useState<
+    PersonMoneyAllocation[] | undefined
+  >(undefined);
+
+  const [budgetState, setBudgetState] = useState<{
+    timeParticipants: PersonTimeAllocation[];
+  }>({ timeParticipants: [] });
+  const [budgetsDirty, setBudgetsDirty] = useState(false);
+  const [showCloseWarning, setShowCloseWarning] = useState(false);
 
   // Raw form state: dates are Dayjs here and serialized on submit.
   const [state, setState] = useState<any>(undefined);
@@ -32,13 +63,40 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
           setState({
             ...res,
             personIds: res.persons.map((it) => it.uuid) ?? [],
+            defaultTimeAllocationType: res.defaultTimeAllocationType ?? null,
           });
+          setEventData(res);
+
+          // Allocations are no longer inline on the event response; fetch them
+          // from the dedicated budget-allocations endpoint, scoped to this event.
+          BudgetAllocationClient.findAll(undefined, undefined, code).then(
+            (allocations) => {
+              const timeParts = apiAllocationsToTimeParticipants(
+                allocations,
+                res.persons,
+                dayjs(res.from),
+                dayjs(res.to),
+              );
+              const moneyParts = apiAllocationsToMoneyParticipants(
+                allocations,
+                res.persons,
+              );
+              setInitialTimeParticipants(timeParts);
+              setInitialMoneyParticipants(moneyParts);
+            },
+          );
         });
       } else {
-        setState(schema.getDefault());
+        setState(eventFormSchema.getDefault());
+        setEventData(null);
       }
     } else {
       setState(undefined);
+      setEventData(null);
+      setInitialTimeParticipants(undefined);
+      setInitialMoneyParticipants(undefined);
+      setBudgetState({ timeParticipants: [] });
+      setBudgetsDirty(false);
     }
   }, [open, code]);
 
@@ -49,14 +107,66 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       to: it.to.format(ISO_8601_DATE),
       hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
       days: it.days,
-      costs: it.costs,
+      budget: it.budget,
       personIds: it.personIds,
       type: it.type,
+      defaultTimeAllocationType: it.defaultTimeAllocationType ?? undefined,
     };
     const persist = code ? EventClient.put(code, body) : EventClient.post(body);
     persist.then((res) => {
-      onComplete?.(res);
+      const showTime = !!it.defaultTimeAllocationType;
+      if (!code || !showTime) {
+        setBudgetsDirty(false);
+        onComplete?.(res);
+        return;
+      }
+      const eventCode = res.code ?? code;
+      const eventFrom = dayjs(it.from);
+      const eventDefaultDays = (it.days ?? []).map(
+        (d) => parseFloat(String(d ?? 0)) || 0,
+      );
+      const defaultBudgetType = it.defaultTimeAllocationType as EventBudgetType;
+
+      // Re-read post-save so overrides re-apply onto the backend's fresh rows (reusing ids).
+      BudgetAllocationClient.findAll(undefined, undefined, eventCode)
+        .then((fresh) =>
+          diffTimeOverrides(
+            fresh,
+            budgetState.timeParticipants,
+            eventDefaultDays,
+            defaultBudgetType,
+            eventCode,
+            eventFrom,
+          ),
+        )
+        .then(({ toCreate, toUpdate, toDelete }) =>
+          Promise.all([
+            ...toDelete.map((id) => BudgetAllocationClient.deleteById(id)),
+            ...toCreate.map((input) =>
+              BudgetAllocationClient.createTime(input),
+            ),
+            ...toUpdate.map(({ id, input }) =>
+              BudgetAllocationClient.updateTime(id, input),
+            ),
+          ]),
+        )
+        .catch((err) => {
+          console.error('Failed to save time allocation overrides:', err);
+        })
+        .finally(() => {
+          setBudgetsDirty(false);
+          onComplete?.(res);
+        });
     });
+  };
+
+  const handleBudgetStateChange = (next: {
+    moneyParticipants: PersonMoneyAllocation[];
+    timeParticipants: PersonTimeAllocation[];
+    dirty: boolean;
+  }) => {
+    setBudgetState({ timeParticipants: next.timeParticipants });
+    setBudgetsDirty(next.dirty);
   };
 
   const handleDelete = () => {
@@ -72,8 +182,26 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
     setOpenDelete(false);
   };
   const handleClose = () => {
+    if (budgetsDirty) {
+      setShowCloseWarning(true);
+    } else {
+      onComplete?.();
+    }
+  };
+  const handleConfirmClose = () => {
+    setBudgetsDirty(false);
+    setShowCloseWarning(false);
     onComplete?.();
   };
+
+  const initialValues = useMemo(
+    () =>
+      state
+        ? { ...eventFormSchema.getDefault(), ...mutatePeriod(state) }
+        : eventFormSchema.getDefault(),
+    [state],
+  );
+
   return (
     <>
       <Dialog
@@ -90,23 +218,55 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
           onClose={handleClose}
         />
         <DialogBody>
-          <Grid container spacing={1}>
-            <Grid>
-              {state && <EventForm value={state} onSubmit={handleSubmit} />}
-            </Grid>
-            {code && (
-              <Grid>
-                <Button
-                  variant="contained"
-                  color={'primary'}
-                  component="a"
-                  href={`/event_rating/${code}`}
-                >
-                  Event rating
-                </Button>
-              </Grid>
-            )}
-          </Grid>
+          {state && (
+            <Formik
+              enableReinitialize
+              initialValues={initialValues}
+              onSubmit={handleSubmit}
+              validationSchema={eventFormSchema}
+            >
+              {(formik) => (
+                <Grid container spacing={1}>
+                  <Grid size={{ xs: 12 }}>
+                    <Form id={EVENT_FORM_ID}>
+                      <EventFormFields
+                        values={formik.values}
+                        setFieldValue={formik.setFieldValue}
+                      />
+                    </Form>
+                  </Grid>
+                  {code && eventData && (
+                    <Grid size={{ xs: 12 }}>
+                      <EventBudgetManagementSection
+                        formValues={formik.values}
+                        persons={eventData.persons}
+                        timeExpanded={timeBudgetExpanded}
+                        setTimeExpanded={setTimeBudgetExpanded}
+                        moneyExpanded={moneyBudgetExpanded}
+                        setMoneyExpanded={setMoneyBudgetExpanded}
+                        onBudgetStateChange={handleBudgetStateChange}
+                        initialTimeParticipants={initialTimeParticipants}
+                        initialMoneyParticipants={initialMoneyParticipants}
+                        moneyReadOnly
+                      />
+                    </Grid>
+                  )}
+                  {code && (
+                    <Grid size={{ xs: 12 }}>
+                      <Button
+                        variant="contained"
+                        color={'primary'}
+                        component="a"
+                        href={`/event_rating/${code}`}
+                      >
+                        Event rating
+                      </Button>
+                    </Grid>
+                  )}
+                </Grid>
+              )}
+            </Formik>
+          )}
         </DialogBody>
         <Divider />
         <DialogFooter
@@ -121,6 +281,13 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
         onConfirm={handleDelete}
       >
         <Typography>Are you sure you want to remove this event?</Typography>
+      </ConfirmDialog>
+      <ConfirmDialog
+        open={showCloseWarning}
+        onClose={() => setShowCloseWarning(false)}
+        onConfirm={handleConfirmClose}
+      >
+        <Typography>You have unsaved budget changes. Close anyway?</Typography>
       </ConfirmDialog>
     </>
   );

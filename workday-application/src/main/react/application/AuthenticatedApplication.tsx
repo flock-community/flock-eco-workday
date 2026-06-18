@@ -2,6 +2,7 @@ import { UserFeature } from '@workday-user';
 import { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import AssignmentPage from '../features/assignments/AssignmentPage';
+import { BudgetAllocationPage } from '../features/budget';
 import { ClientFeature } from '../features/client/ClientFeature';
 import ContractPage from '../features/contract/ContractPage';
 import { DashboardFeature } from '../features/dashboard/DashboardFeature';
@@ -57,6 +58,12 @@ export const AuthenticatedApplication = () => {
           path="/reports/assignment-overview"
           component={AssignmentOverview}
         />
+        <Route
+          path="/budget-allocations"
+          exact
+          component={BudgetAllocationPage}
+        />
+
         <Redirect to="/" />
       </Switch>
     </>

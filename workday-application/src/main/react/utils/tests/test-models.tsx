@@ -68,7 +68,7 @@ export function createTestFlockEvent(
     hours: hours,
     days: days,
     persons: [],
-    costs: 0.0,
+    budget: 0.0,
     type: EventType.GENERAL_EVENT,
   };
 }

@@ -56,6 +56,7 @@ type Person {
   user: User?,
   fullName: String?
 }
+
 type PersonEvent {
   person: Person?,
   eventType: PersonEventEventType?,

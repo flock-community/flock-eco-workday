@@ -74,7 +74,7 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
 
   return (
     <Root>
-      <AppBar className={`${classes.navBar} full-width`}>
+      <AppBar position="static">
         <Toolbar>
           <IconButton
             className={classes.menuButton}

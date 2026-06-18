@@ -1,4 +1,5 @@
-import { MenuItem, Select } from '@mui/material';
+import { InputLabel, MenuItem, Select } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
 import { EventType } from '../../clients/EventClient';
 import { EventTypeMapping } from '../../utils/mappings';
 
@@ -17,18 +18,23 @@ export function EventTypeSelect({ onChange, value }) {
   };
 
   return (
-    <Select
-      fullWidth
-      value={value}
-      onChange={handleOnChange}
-      label="Event type"
-    >
-      {[
-        EventType.GENERAL_EVENT,
-        EventType.FLOCK_HACK_DAY,
-        EventType.FLOCK_COMMUNITY_DAY,
-        EventType.CONFERENCE,
-      ].map((eventType) => renderSelectOption(eventType))}
-    </Select>
+    <FormControl fullWidth>
+      <InputLabel id="event-select-label">Event type</InputLabel>
+      <Select
+        fullWidth
+        value={value || ''}
+        labelId="event-select-label"
+        onChange={handleOnChange}
+        label="Event type"
+        displayEmpty
+      >
+        {[
+          EventType.GENERAL_EVENT,
+          EventType.FLOCK_HACK_DAY,
+          EventType.FLOCK_COMMUNITY_DAY,
+          EventType.CONFERENCE,
+        ].map((eventType) => renderSelectOption(eventType))}
+      </Select>
+    </FormControl>
   );
 }

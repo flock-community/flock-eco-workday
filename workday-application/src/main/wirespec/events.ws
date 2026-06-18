@@ -39,8 +39,9 @@ type Event {
   from: String?,
   to: String?,
   hours: Number?,
-  costs: Number?,
+  budget: Number?,
   `type`: EventType?,
+  defaultTimeAllocationType: AllocationType?,
   days: Number[]?,
   persons: Person[]?
 }
@@ -53,9 +54,10 @@ type EventForm {
   to: String?,
   hours: Number?,
   days: Number[]?,
-  costs: Number?,
+  budget: Number?,
   personIds: String[]?,
-  `type`: EventFormType?
+  `type`: EventFormType?,
+  defaultTimeAllocationType: AllocationType?
 }
 enum EventFormType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT

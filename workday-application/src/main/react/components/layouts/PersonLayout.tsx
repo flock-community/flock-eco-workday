@@ -37,7 +37,10 @@ export default function PersonLayout({
         style={{ paddingBottom: '1.5rem' }}
       >
         {person ? (
-          children(person)
+          children(
+            person,
+            UserAuthorityUtil.hasAuthority(requireAuthority) === true,
+          )
         ) : (
           <Typography variant="caption">No person selected</Typography>
         )}

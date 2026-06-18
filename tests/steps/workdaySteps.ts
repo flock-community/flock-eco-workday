@@ -3,18 +3,25 @@ import dayjs from 'dayjs';
 
 export async function Given_I_am_logged_in_as_user(page, username: string) {
   await page.goto('/auth');
-  await page.getByLabel('Username').fill(`${username}@sesam.straat`);
-  await page.getByLabel('Password').fill(username);
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await page.waitForURL('**/*');
-  // Capitalize first letter for welcome message format
+  await page.waitForLoadState('networkidle');
   const capitalizedUsername =
     username.charAt(0).toUpperCase() + username.slice(1);
-  const welcomeMessage = await page.getByRole('heading', {
+  const welcomeHeading = page.getByRole('heading', {
     level: 2,
     name: `Hi, ${capitalizedUsername}!`,
   });
-  await expect(welcomeMessage).toBeVisible();
+  // If already logged in, /auth redirects to dashboard — skip login form
+  const usernameField = page.getByLabel('Username');
+  const isLoginPage = await usernameField
+    .waitFor({ state: 'visible', timeout: 5000 })
+    .then(() => true)
+    .catch(() => false);
+  if (isLoginPage) {
+    await usernameField.fill(`${username}@sesam.straat`);
+    await page.getByLabel('Password').fill(username);
+    await page.getByRole('button', { name: 'Sign in' }).click();
+  }
+  await expect(welcomeHeading).toBeVisible({ timeout: 20000 });
 }
 
 export async function When_I_go_to_my_work_days(page) {
@@ -48,15 +55,12 @@ export async function selectDateInPicker(
   // Format the date as DD-MM-YYYY (the format the application uses)
   const dateString = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
 
-  // Find the date input field and fill it directly
   const dateInput = page.getByLabel(dateLabel, { exact: true });
   await dateInput.click();
   await dateInput.fill(dateString);
 
-  // Press Enter or Tab to confirm the date
   await dateInput.press('Tab');
 
-  // Wait a moment for the date to be processed
   await page.waitForTimeout(200);
 }
 
@@ -101,10 +105,8 @@ export async function When_I_add_a_file(page, filename: string) {
 
   await fileInput.setInputFiles(`tests/files/${filename}`);
 
-  // Wait for the upload to complete
   await uploadPromise;
 
-  // Wait a moment for the UI to update
   await page.waitForTimeout(500);
 }
 
@@ -179,14 +181,12 @@ export async function When_I_select_the_assignment(
   page,
   assignmentText: string,
 ) {
-  // Click the assignment field to open the autocomplete
   await page.getByLabel('Assignment').click();
 
-  // Wait for the listbox to appear - MUI v5 renders it outside the dialog
+  // MUI v5 renders the listbox outside the dialog.
   const listbox = page.getByRole('listbox', { name: 'Assignment' });
   await listbox.waitFor({ state: 'visible', timeout: 5000 });
 
-  // Click the matching option
   await page
     .getByRole('option', { name: new RegExp(assignmentText, 'i') })
     .click();
