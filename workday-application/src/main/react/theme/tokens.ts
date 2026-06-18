@@ -40,7 +40,7 @@ export const lightPalette: PaletteOptions = {
     contrastText: '#fffdf5',
   },
   ...semantic,
-  done: '#3f7cac',
+  done: '#6f6757',
   background: { default: '#faf8f0', paper: '#fffdf5' },
   text: {
     primary: brand.ink,
@@ -70,7 +70,7 @@ export const darkPalette: PaletteOptions = {
     contrastText: '#16150f',
   },
   ...semantic,
-  done: '#6fa8d6',
+  done: '#a99e86',
   background: { default: '#23211a', paper: '#2c2a21' },
   text: {
     primary: '#f1ece0',
