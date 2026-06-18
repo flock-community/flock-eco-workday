@@ -14,6 +14,11 @@
     <link rel="manifest" href="/site.webmanifest" />
 
     <style>
+      /* Light-only UI: opt out of browser/OS forced dark mode so the wordmark
+         (notably the yellow "o") isn't algorithmically darkened. */
+      :root {
+        color-scheme: only light;
+      }
       body {
         margin: 0;
       }
