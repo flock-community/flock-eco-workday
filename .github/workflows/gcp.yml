@@ -9,6 +9,28 @@ on:
       - main
 
 jobs:
+  # Separate job (not a build-deploy step) so it runs concurrently with the Maven build.
+  frontend-checks:
+    name: Frontend checks
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Biome
+        run: npm run lint
+
+      - name: Run npm tests
+        run: npm test
+
   build-deploy:
     name: Build and Deploy
     runs-on: ubuntu-24.04
@@ -65,15 +87,11 @@ jobs:
           node-version: 22
           cache: "npm"
 
+      # node_modules needed for the e2e vite dev server and Playwright (lint + jest run in frontend-checks).
       - run: npm ci
-      - name: Biome
-        run: npm run lint
-
-      - name: Run npm tests
-        run: npm test
 
       - name: Full build
-        run: ./mvnw -B package
+        run: ./mvnw -B -T 1C package
 
       - name: Cache Playwright browsers
         id: playwright-cache
@@ -92,7 +110,7 @@ jobs:
         run: |
           echo "Starting backend server..."
           # Use develop profile with ci addon (Google Drive integration disabled)
-          ./mvnw -B compile spring-boot:run -DskipTests -Dspring-boot.run.profiles=develop,ci -Pdevelop -Dspring-boot.run.arguments=--workday.wirespec.lenient-deserialization=false > backend.log 2>&1 &
+          ./mvnw -B -T 1C compile spring-boot:run -DskipTests -Dspring-boot.run.profiles=develop,ci -Pdevelop -Dspring-boot.run.arguments=--workday.wirespec.lenient-deserialization=false > backend.log 2>&1 &
           echo $! > backend.pid
           echo "Backend server started with PID $(cat backend.pid)"
 
@@ -242,7 +260,7 @@ jobs:
       - name: Build and Deploy Development version
         if: github.actor != 'dependabot[bot]'
         id: deploy-develop
-        run: ./mvnw -B package jib:build -DskipTests -Pdevelop,frontend -Dnpm.ci.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
+        run: ./mvnw -B -T 1C package jib:build -DskipTests -Pdevelop,frontend -Dnpm.ci.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
 
       - name: Finish develop deployment
         if: always() && steps.deployment-develop.outputs.deployment_id != ''
@@ -261,7 +279,7 @@ jobs:
 
   deploy-production:
     name: Deploy to production
-    needs: build-deploy
+    needs: [frontend-checks, build-deploy]
     if: github.actor != 'dependabot[bot]' && github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-24.04
 
@@ -317,7 +335,7 @@ jobs:
       - run: npm ci
 
       - name: Build and Deploy
-        run: ./mvnw -B clean package jib:build -DskipTests -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
+        run: ./mvnw -B -T 1C clean package jib:build -DskipTests -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
 
       - name: Deploy image to Cloud Run (production)
         run: |
