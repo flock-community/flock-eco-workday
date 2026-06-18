@@ -261,20 +261,22 @@ export function EventBudgetManagementSection({
     });
   }, [participantIds, persons, totalBudget, initialTimeParticipants]);
 
-  // Revert untouched participants to the default only on an actual type flip — NOT on the
-  // initial mount, where doing so would wipe the per-person overrides just loaded from the API.
+  // On a real type flip, drop every per-person exception (incl. manual edits) — an override
+  // targeted the old budget type. The mount guard stops this wiping API-loaded overrides on open.
   const prevDefaultBudgetTypeRef = useRef(defaultBudgetType);
   useEffect(() => {
     if (prevDefaultBudgetTypeRef.current === defaultBudgetType) return;
     prevDefaultBudgetTypeRef.current = defaultBudgetType;
     if (timeParticipants.length === 0) return;
 
-    const updated = timeParticipants.map((p) => {
-      if (dirtyTime.has(p.personId)) return p; // Preserve manual edits
-      return { ...p, trainingPeriod: null, hackPeriod: null };
-    });
-
-    setTimeParticipants(updated);
+    setTimeParticipants(
+      timeParticipants.map((p) => ({
+        ...p,
+        trainingPeriod: null,
+        hackPeriod: null,
+      })),
+    );
+    setDirtyTime(new Set());
   }, [defaultBudgetType]);
 
   // Compute summary values for collapsed view (MUST be before useEffect that uses isDirty)
@@ -421,6 +423,10 @@ export function EventBudgetManagementSection({
     });
   };
 
+  const scrollExpandedIntoView = (node: HTMLElement) => {
+    node.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+
   const eventDays = formValues.to.diff(formValues.from, 'days') + 1;
   const eventDates: string[] = useMemo(() => {
     const dates: string[] = [];
@@ -450,6 +456,7 @@ export function EventBudgetManagementSection({
     <Accordion
       expanded={budgetExpanded}
       onChange={(_, isExpanded) => setBudgetExpanded(isExpanded)}
+      slotProps={{ transition: { onEntered: scrollExpandedIntoView } }}
       sx={{
         border: '1px solid',
         borderColor: 'divider',
@@ -523,6 +530,9 @@ export function EventBudgetManagementSection({
                 <Accordion
                   expanded={timeExpanded}
                   onChange={(_, isExpanded) => setTimeExpanded?.(isExpanded)}
+                  slotProps={{
+                    transition: { onEntered: scrollExpandedIntoView },
+                  }}
                 >
                   <AccordionSummary
                     expandIcon={<ExpandMore />}
@@ -571,6 +581,9 @@ export function EventBudgetManagementSection({
                 <Accordion
                   expanded={moneyExpanded}
                   onChange={(_, isExpanded) => setMoneyExpanded?.(isExpanded)}
+                  slotProps={{
+                    transition: { onEntered: scrollExpandedIntoView },
+                  }}
                 >
                   <AccordionSummary
                     expandIcon={<ExpandMore />}
