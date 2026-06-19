@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: db.changelog-030-event-day-1
-      author: claude-opus-4.8
+      author: rkorver
       comment: >-
         EventDay is a joined child of the `day` hierarchy, so it reuses
         `day_seq` and the shared `day_days` collection table. Only the
@@ -29,7 +29,7 @@ databaseChangeLog:
                   type: BIGINT
   - changeSet:
       id: db.changelog-030-event-day-2
-      author: claude-opus-4.8
+      author: rkorver
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: id
