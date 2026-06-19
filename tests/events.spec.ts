@@ -51,8 +51,9 @@ test.describe
 
       await When_I_click_the_button(page, 'Add');
       const dialog = page.getByRole('dialog');
-      // The dialog header is "Create Event"; anchor the assertions on the
-      // Description input which only exists inside the form.
+      await expect(
+        dialog.getByText('Create Event', { exact: true }),
+      ).toBeVisible();
       await expect(dialog.getByLabel('Description')).toBeVisible();
 
       await dialog.getByLabel('Description').fill(EVENT_DESCRIPTION);
@@ -95,6 +96,9 @@ test.describe
       await eventCard.click();
 
       const dialog = page.getByRole('dialog');
+      await expect(
+        dialog.getByText('Edit Event', { exact: true }),
+      ).toBeVisible();
       await expect(dialog.getByLabel('Description')).toBeVisible();
 
       const descriptionField = dialog.getByLabel('Description');
