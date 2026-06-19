@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-034-budget-on-event-day-0
+      author: rkorver
+      comment: >-
+        Per-person event money draw. EventDay already carries per-person event hours; cost
+        adds the matching money dimension, so used hack/study time and money both derive
+        from EventDay instead of separate allocation tables.
+      changes:
+        - addColumn:
+            tableName: event_day
+            columns:
+              - column:
+                  name: cost
+                  type: DECIMAL(19, 2)
+  - changeSet:
+      id: db.changelog-034-budget-on-event-day-1
+      author: rkorver
+      comment: Receipt files attached to an EventDay (reuses the Document embeddable, like cost_expense_files)
+      changes:
+        - createTable:
+            tableName: event_day_files
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: event_day_id
+                  type: BIGINT
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: file
+                  type: UUID
+  - changeSet:
+      id: db.changelog-034-budget-on-event-day-2
+      author: rkorver
+      comment: Receipt files cascade-delete with their EventDay
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: event_day_id
+            baseTableName: event_day_files
+            constraintName: FK_event_day_files_event_day
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: event_day
+            validate: true
+  - changeSet:
+      id: db.changelog-034-budget-on-event-day-3
+      author: rkorver
+      comment: >-
+        Per-event HACK|TRAINING marker. EventDay hours/cost derive a person's used hack/study
+        budget, but the category is not reducible to event.type (a self-booked study event is
+        TRAINING, not a CONFERENCE), so it is set explicitly here.
+      changes:
+        - addColumn:
+            tableName: event
+            columns:
+              - column:
+                  name: default_time_allocation_type
+                  type: VARCHAR(255)
