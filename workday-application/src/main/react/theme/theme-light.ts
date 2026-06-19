@@ -6,6 +6,7 @@ export const themeLight = createAppTheme('light');
 export const HighlightSpan = styled('span')(({ theme }) => ({
   position: 'relative',
   fontFamily: theme.typography.fontFamily,
+  color: theme.palette.primary.contrastText,
   '&::before': {
     content: '""',
     backgroundColor: theme.palette.primary.main,
