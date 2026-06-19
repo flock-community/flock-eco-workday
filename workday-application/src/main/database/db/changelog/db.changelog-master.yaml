@@ -99,4 +99,8 @@ databaseChangeLog:
   - include:
       file: db.changelog-032-drop-event-persons.yaml
       relativeToChangelogFile: true
+  # Budget (time + money) lives on EventDay; no separate allocation tables.
+  - include:
+      file: db.changelog-034-budget-on-event-day.yaml
+      relativeToChangelogFile: true
 
