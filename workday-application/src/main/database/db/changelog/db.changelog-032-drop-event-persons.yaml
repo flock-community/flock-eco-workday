@@ -1,8 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: db.changelog-032-drop-event-persons
-      author: rkorver
-      comment: Event participants now derive from EventDay; the event_persons join table is obsolete.
-      changes:
-        - dropTable:
-            tableName: event_persons

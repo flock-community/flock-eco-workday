@@ -12,6 +12,8 @@ import java.util.UUID
 // the shared `day` table collision-free without touching the sequence afterwards.
 // Events with no event_persons rows get no EventDays (none exist in seed data;
 // confirm the same on prod before deploy).
+// Skips pairs that already have an event_day, so it is safe to re-run as the Stage-2
+// catch-up (db.changelog-033) over rows written during a Stage-1 rollback window.
 class BackfillEventDays : CustomTaskChange {
     override fun execute(database: Database) {
         val connection = (database.connection as JdbcConnection).underlyingConnection
@@ -90,6 +92,10 @@ class BackfillEventDays : CustomTaskChange {
         const val SELECT_PAIRS =
             """SELECT ep.event_id AS event_id, ep.persons_id AS persons_id,
                       e."from" AS event_from, e."to" AS event_to, e."hours" AS hours
-               FROM event_persons ep JOIN "event" e ON e.id = ep.event_id"""
+               FROM event_persons ep JOIN "event" e ON e.id = ep.event_id
+               WHERE NOT EXISTS (
+                   SELECT 1 FROM event_day ed
+                   WHERE ed.event_id = ep.event_id AND ed.person_id = ep.persons_id
+               )"""
     }
 }

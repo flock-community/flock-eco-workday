@@ -85,13 +85,12 @@ databaseChangeLog:
   - include:
       file: db.changelog-029-rename-hack-hours-to-hack-time-budget.yaml
       relativeToChangelogFile: true
+  # event_persons is intentionally kept: 030+031 expand only, leaving the table so the
+  # prior release stays rollback-safe. The drop ships in a separate follow-up PR.
   - include:
       file: db.changelog-030-event-day.yaml
       relativeToChangelogFile: true
   - include:
       file: db.changelog-031-event-day-backfill.yaml
-      relativeToChangelogFile: true
-  - include:
-      file: db.changelog-032-drop-event-persons.yaml
       relativeToChangelogFile: true
 
