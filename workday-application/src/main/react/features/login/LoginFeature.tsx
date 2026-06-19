@@ -1,7 +1,7 @@
 import { Box, Card, CardContent, CardHeader, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { alpha, styled } from '@mui/material/styles';
+import { alpha, styled, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { useLoginType } from '../../hooks/LoginTypeHook';
 import { ColorModeToggle } from '../../theme/ColorModeToggle';
@@ -54,6 +54,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
   [`& .${classes.cardHeader}`]: {
     backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
   },
 
   [`& .${classes.cardContent}`]: {
@@ -80,11 +81,8 @@ const StyledBox = styled(Box)(({ theme }) => ({
   [`& .${classes.logo}`]: {
     marginTop: '4rem',
     marginBottom: '2rem',
-    maxWidth: '600px',
-  },
-
-  [`& .${classes.logo} img`]: {
-    filter: theme.palette.mode === 'dark' ? 'brightness(0) invert(1)' : 'none',
+    width: '100%',
+    maxWidth: '430px',
   },
 
   [`& .${classes.flock}`]: {
@@ -95,9 +93,15 @@ const StyledBox = styled(Box)(({ theme }) => ({
 }));
 
 export function LoginFeature() {
+  const theme = useTheme();
   const loginType = useLoginType();
   const isLoading = loginType.type === 'LOADING';
   const isGoogle = loginType.type === 'GOOGLE';
+
+  const logoSrc =
+    theme.palette.mode === 'dark'
+      ? '/images/workday_logo_dark.webp'
+      : '/images/workday_logo.webp';
 
   const googleIconLogo = (
     <img
@@ -114,7 +118,7 @@ export function LoginFeature() {
       <Box className={classes.background}>
         <Box className={classes.loginContent}>
           <Box className={classes.logo}>
-            <img width="100%" src="/images/workday_logo.webp" alt="" />
+            <img width="100%" src={logoSrc} alt="Workday" />
           </Box>
           <Card className={classes.card}>
             <CardHeader
@@ -136,6 +140,8 @@ export function LoginFeature() {
                   </Typography>
                   <Box className={classes.googleButton}>
                     <Button
+                      fullWidth
+                      size="large"
                       color={'secondary'}
                       variant="outlined"
                       href={'/oauth2/authorization/google'}

@@ -48,8 +48,10 @@ const Root = styled('div')(({ theme }) => ({
 
   [`& .${classes.buttonDone}`]: {
     backgroundColor: theme.palette.done,
+    color: theme.palette.getContrastText(theme.palette.done),
     '&:disabled': {
       backgroundColor: theme.palette.done,
+      color: theme.palette.getContrastText(theme.palette.done),
     },
   },
 }));

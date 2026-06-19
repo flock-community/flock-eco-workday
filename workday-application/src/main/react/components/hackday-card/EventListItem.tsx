@@ -3,7 +3,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
 import { alpha, styled } from '@mui/material/styles';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { FlockEvent } from '../../clients/EventClient';
 import { DMY_DATE } from '../../clients/util/DateFormats';
 import { usePerson } from '../../hooks/PersonHook';
@@ -31,45 +31,33 @@ export function EventListItem({
   onEventToggle,
 }: FlockEventListItemProps) {
   const [person] = usePerson();
-  const [dateString, setDateString] = useState<string>('');
-  const [btnState, setBtnState] = useState<boolean>(false);
 
-  const initDateString = (): void => {
-    if (event.from.isSame(event.to, 'day')) {
-      setDateString(`date: ${event.from.format(DMY_DATE)}`);
-    } else {
-      setDateString(
-        `from: ${event.from.format(DMY_DATE)} to: ${event.to.format(DMY_DATE)}`,
-      );
-    }
-  };
+  const dateString = useMemo(
+    () =>
+      event.from.isSame(event.to, 'day')
+        ? `date: ${event.from.format(DMY_DATE)}`
+        : `from: ${event.from.format(DMY_DATE)} to: ${event.to.format(DMY_DATE)}`,
+    [event],
+  );
 
-  const initButtonState = (): void => {
-    if (person?.uuid) {
-      setBtnState(isPersonAttending(event, person.uuid));
-    }
-  };
+  const attendingPerServer = person?.uuid
+    ? isPersonAttending(event, person.uuid)
+    : false;
+  const [btnState, setBtnState] = useState<boolean>(attendingPerServer);
 
   useEffect(() => {
-    if (event) {
-      initDateString();
-      initButtonState();
-    }
-  }, [event, initButtonState, initDateString]);
+    setBtnState(attendingPerServer);
+  }, [attendingPerServer]);
 
   const handleChange = () => {
     setBtnState(!btnState);
     onEventToggle(event, !btnState);
   };
 
-  const getClasses = (): string => {
-    return btnState ? classes.active : '';
-  };
-
   return (
     <StyledListItem
       data-testid={'flock-event-list-item'}
-      className={getClasses()}
+      className={btnState ? classes.active : ''}
     >
       <ListItemText primary={event.description} secondary={dateString} />
       <FormGroup row>
