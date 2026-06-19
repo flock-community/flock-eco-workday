@@ -1,8 +1,9 @@
 import { Box, Card, CardContent, CardHeader, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { alpha, styled, useTheme } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import { WorkdayLogo } from '../../components/WorkdayLogo';
 import { useLoginType } from '../../hooks/LoginTypeHook';
 import { ColorModeToggle } from '../../theme/ColorModeToggle';
 
@@ -93,15 +94,9 @@ const StyledBox = styled(Box)(({ theme }) => ({
 }));
 
 export function LoginFeature() {
-  const theme = useTheme();
   const loginType = useLoginType();
   const isLoading = loginType.type === 'LOADING';
   const isGoogle = loginType.type === 'GOOGLE';
-
-  const logoSrc =
-    theme.palette.mode === 'dark'
-      ? '/images/workday_logo_dark.webp'
-      : '/images/workday_logo.webp';
 
   const googleIconLogo = (
     <img
@@ -118,7 +113,7 @@ export function LoginFeature() {
       <Box className={classes.background}>
         <Box className={classes.loginContent}>
           <Box className={classes.logo}>
-            <img width="100%" src={logoSrc} alt="Workday" />
+            <WorkdayLogo />
           </Box>
           <Card className={classes.card}>
             <CardHeader
