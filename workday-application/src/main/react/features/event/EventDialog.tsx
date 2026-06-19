@@ -85,7 +85,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       >
         <DialogHeader
           icon={<EventIcon />}
-          headline="Create Event"
+          headline={code ? 'Edit Event' : 'Create Event'}
           subheadline="Have a fun time!"
           onClose={handleClose}
         />
