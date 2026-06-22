@@ -109,7 +109,7 @@ class AggregationService(
                     .sum(),
             hackHoursUsed =
                 data.eventDay
-                    .filter { it.type == EventType.FLOCK_HACK_DAY }
+                    .filter { it.event.type == EventType.FLOCK_HACK_DAY }
                     .sumOf { it.hours }
                     .toBigDecimal(),
         )
@@ -195,8 +195,8 @@ class AggregationService(
                             .sum(),
                     usedHours =
                         all.eventDay
-                            .filter { it.type == EventType.FLOCK_HACK_DAY }
-                            .filter { person in it.persons }
+                            .filter { it.event.type == EventType.FLOCK_HACK_DAY }
+                            .filter { it.person == person }
                             .sumOf { it.hours }
                             .toBigDecimal(),
                 )
@@ -322,7 +322,7 @@ class AggregationService(
                             .div(5),
                     event =
                         all.eventDay
-                            .filter { it.persons.isEmpty() || it.persons.contains(person) }
+                            .filter { it.person == person }
                             .map { it.totalHoursInPeriod(period) }
                             .sum()
                             .toInt(),
