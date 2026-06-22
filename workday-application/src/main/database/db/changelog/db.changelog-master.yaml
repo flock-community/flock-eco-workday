@@ -85,16 +85,13 @@ databaseChangeLog:
   - include:
       file: db.changelog-029-rename-hack-hours-to-hack-time-budget.yaml
       relativeToChangelogFile: true
-  # Expand (030+031) shipped earlier and kept event_persons for rollback safety. Contract:
-  # 033 re-syncs any rows written during the rollback window, then 032 drops the table.
+  # 032's drop assumes 031 backfilled event_day in the same deploy; if 030/031 ever
+  # ship as a separate release and get rolled back, re-add a catch-up backfill before 032.
   - include:
       file: db.changelog-030-event-day.yaml
       relativeToChangelogFile: true
   - include:
       file: db.changelog-031-event-day-backfill.yaml
-      relativeToChangelogFile: true
-  - include:
-      file: db.changelog-033-event-day-backfill-catchup.yaml
       relativeToChangelogFile: true
   - include:
       file: db.changelog-032-drop-event-persons.yaml
