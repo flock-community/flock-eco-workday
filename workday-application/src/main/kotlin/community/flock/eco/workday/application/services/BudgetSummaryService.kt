@@ -24,7 +24,7 @@ class BudgetSummaryService(
 
         val hackHoursBudget = internalContracts.map { it.totalHackDayHoursInPeriod(period) }.sum()
         val trainingHoursBudget = internalContracts.map { it.totalTrainingDayHoursInPeriod(period) }.sum()
-        val trainingMoneyBudget = internalContracts.fold(BigDecimal.ZERO) { acc, contract -> acc + contract.trainingMoneyBudget }
+        val trainingMoneyBudget = internalContracts.map { it.totalTrainingMoneyInPeriod(period) }.sum()
 
         val hackDays = data.eventDay.filter { it.event.allocationType == AllocationType.HACK }
         val trainingDays = data.eventDay.filter { it.event.allocationType == AllocationType.TRAINING }

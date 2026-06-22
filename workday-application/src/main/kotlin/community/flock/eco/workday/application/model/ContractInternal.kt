@@ -73,4 +73,10 @@ class ContractInternal(
             .sumOf { this.trainingTimeBudget }
             .toBigDecimal()
             .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
+
+    fun totalTrainingMoneyInPeriod(period: Period): BigDecimal =
+        this
+            .toDateRangeInPeriod(period)
+            .sumOf { this.trainingMoneyBudget }
+            .divide(period.countDays().toBigDecimal(), 10, RoundingMode.HALF_UP)
 }

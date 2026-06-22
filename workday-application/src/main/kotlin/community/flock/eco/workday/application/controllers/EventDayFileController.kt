@@ -20,7 +20,7 @@ class EventDayFileController(
     private val documentService: DocumentStorage,
 ) {
     @GetMapping("/api/events/files/{file}/{name}")
-    @PreAuthorize("hasAnyAuthority('EventAuthority.READ', 'EventAuthority.SUBSCRIBE')")
+    @PreAuthorize("hasAuthority('EventAuthority.READ')")
     fun getFiles(
         @PathVariable file: UUID,
         @PathVariable name: String,
@@ -46,6 +46,6 @@ class EventDayFileController(
 
 private fun getMediaType(name: String): MediaType {
     val extension = File(name).extension.lowercase()
-    val mime = MimeMappings.DEFAULT[extension]
+    val mime = MimeMappings.DEFAULT[extension] ?: MediaType.APPLICATION_OCTET_STREAM_VALUE
     return MediaType.parseMediaType(mime)
 }

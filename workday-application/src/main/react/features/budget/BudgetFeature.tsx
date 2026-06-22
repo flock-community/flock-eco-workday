@@ -1,4 +1,5 @@
 import {
+  Alert,
   FormControl,
   InputLabel,
   MenuItem,
@@ -22,12 +23,14 @@ type BudgetFeatureProps = {
 export function BudgetFeature({ person }: BudgetFeatureProps) {
   const [year, setYear] = useState(currentYear);
   const [summary, setSummary] = useState<BudgetSummaryResponse | null>(null);
+  const [error, setError] = useState(false);
 
   const loadSummary = useCallback(() => {
     setSummary(null);
+    setError(false);
     BudgetClient.getSummary(person, year)
       .then(setSummary)
-      .catch(() => setSummary(null));
+      .catch(() => setError(true));
   }, [person, year]);
 
   useEffect(() => {
@@ -61,7 +64,11 @@ export function BudgetFeature({ person }: BudgetFeatureProps) {
           </Select>
         </FormControl>
       </Stack>
-      <BudgetSummaryCards summary={summary} />
+      {error ? (
+        <Alert severity="error">Could not load the budget summary.</Alert>
+      ) : (
+        <BudgetSummaryCards summary={summary} />
+      )}
     </Stack>
   );
 }

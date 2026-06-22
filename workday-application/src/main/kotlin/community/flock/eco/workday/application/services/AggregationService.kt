@@ -21,8 +21,8 @@ import community.flock.eco.workday.application.model.ContractExternal
 import community.flock.eco.workday.application.model.ContractInternal
 import community.flock.eco.workday.application.model.ContractManagement
 import community.flock.eco.workday.application.model.ContractService
+import community.flock.eco.workday.application.model.AllocationType
 import community.flock.eco.workday.application.model.Day
-import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.model.PersonHackdayDetails
@@ -109,7 +109,7 @@ class AggregationService(
                     .sum(),
             hackHoursUsed =
                 data.eventDay
-                    .filter { it.event.type == EventType.FLOCK_HACK_DAY }
+                    .filter { it.event.allocationType == AllocationType.HACK }
                     .sumOf { it.hours }
                     .toBigDecimal(),
         )
@@ -195,7 +195,7 @@ class AggregationService(
                             .sum(),
                     usedHours =
                         all.eventDay
-                            .filter { it.event.type == EventType.FLOCK_HACK_DAY }
+                            .filter { it.event.allocationType == AllocationType.HACK }
                             .filter { it.person == person }
                             .sumOf { it.hours }
                             .toBigDecimal(),

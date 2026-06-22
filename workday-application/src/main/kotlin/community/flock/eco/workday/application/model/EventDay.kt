@@ -8,6 +8,7 @@ import jakarta.persistence.EntityListeners
 import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import org.hibernate.annotations.BatchSize
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
@@ -26,6 +27,7 @@ class EventDay(
     val cost: BigDecimal? = null,
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "event_day_files", joinColumns = [JoinColumn(name = "event_day_id")])
+    @BatchSize(size = 50)
     val files: MutableList<Document> = mutableListOf(),
     @ManyToOne
     val person: Person,

@@ -50,7 +50,7 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
     const handleDeleteFile = (file) => () => {
       setFieldValue(
         name,
-        value.filter((it) => it.file !== file),
+        value.filter((it) => it.fileReference !== file),
       );
     };
 

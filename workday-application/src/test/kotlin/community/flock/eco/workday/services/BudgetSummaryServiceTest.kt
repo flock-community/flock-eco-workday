@@ -71,6 +71,27 @@ class BudgetSummaryServiceTest(
     }
 
     @Test
+    fun `prorates the training money budget per period instead of summing it per contract`() {
+        val person = createHelper.createPersonEntity("Pro", "Rate")
+        createHelper.createContractInternal(
+            person = person,
+            from = LocalDate.of(year, 1, 1),
+            to = LocalDate.of(year, 6, 30),
+            trainingMoneyBudget = BigDecimal("5000.00"),
+        )
+        createHelper.createContractInternal(
+            person = person,
+            from = LocalDate.of(year, 7, 1),
+            to = LocalDate.of(year, 12, 31),
+            trainingMoneyBudget = BigDecimal("5000.00"),
+        )
+
+        val summary = budgetSummaryService.getSummary(person.uuid, year)
+
+        assertEquals(5000.0, summary.trainingMoneyBudget.budget.toDouble(), 0.01)
+    }
+
+    @Test
     fun `splits event cost evenly to the cent across participants`() {
         val one = createHelper.createPersonEntity("Split", "One")
         val two = createHelper.createPersonEntity("Split", "Two")

@@ -218,10 +218,10 @@ class EventController(
             hours = hours,
             costs = costs,
             type = type.toApi(),
-            defaultTimeAllocationType = defaultTimeAllocationType?.toApi(),
+            defaultTimeAllocationType = allocationType?.toApi(),
             days = days,
             persons = persons.map { it.externalize() },
-            files = eventDays.firstOrNull()?.files.orEmpty().map { it.externalize() },
+            files = eventDays.flatMap { it.files }.distinctBy { it.file }.map { it.externalize() },
         )
 
     private fun Document.externalize(): EventDayFileApi =

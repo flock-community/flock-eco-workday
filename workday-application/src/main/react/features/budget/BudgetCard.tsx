@@ -32,7 +32,7 @@ export function BudgetCard({
   unit,
 }: Readonly<BudgetCardProps>) {
   const { budget, used, available } = budgetItem;
-  const percentage = budget > 0 ? (used / budget) * 100 : 100;
+  const percentage = budget > 0 ? (used / budget) * 100 : used > 0 ? 100 : 0;
   const isOverBudget = available < 0;
   const statusColor = getStatusColor(percentage, isOverBudget);
 
