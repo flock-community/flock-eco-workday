@@ -2,6 +2,7 @@ package community.flock.eco.workday.application.services
 
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.interfaces.validate
+import community.flock.eco.workday.application.model.Document
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventDay
 import community.flock.eco.workday.application.model.Person
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.util.UUID
 
@@ -101,29 +104,54 @@ class EventService(
                     days = days.toMutableList(),
                     costs = costs,
                     type = type,
+                    defaultTimeAllocationType = defaultTimeAllocationType,
                 ),
             )
         val persons = personService.findByPersonCodeIdIn(personIds).toList()
-        event.rebuildEventDaysFromTemplate(persons)
+        event.rebuildEventDaysFromTemplate(persons, files)
         return event.refreshed()
     }
 
     // Rebuilt (not membership-diffed) so an edited period/hours/days reaches every
     // participant — each EventDay holds its own copy of those values.
-    private fun Event.rebuildEventDaysFromTemplate(persons: List<Person>) {
+    private fun Event.rebuildEventDaysFromTemplate(
+        persons: List<Person>,
+        files: List<Document>,
+    ) {
         eventDayRepository.deleteAll(eventDayRepository.findAllByEventCode(code))
-        persons.forEach { eventDayRepository.save(eventDayFor(it)) }
+        val costShares = splitEvenly(costs.toBigDecimal(), persons.size)
+        persons.forEachIndexed { index, person ->
+            eventDayRepository.save(eventDayFor(person, costShares[index], files))
+        }
     }
 
-    private fun Event.eventDayFor(person: Person) =
-        EventDay(
-            from = from,
-            to = to,
-            hours = hours,
-            days = days?.toMutableList(),
-            person = person,
-            event = this,
-        )
+    private fun Event.eventDayFor(
+        person: Person,
+        cost: BigDecimal? = null,
+        files: List<Document> = emptyList(),
+    ) = EventDay(
+        from = from,
+        to = to,
+        hours = hours,
+        days = days?.toMutableList(),
+        cost = cost,
+        files = files.toMutableList(),
+        person = person,
+        event = this,
+    )
+
+    private fun splitEvenly(
+        total: BigDecimal,
+        count: Int,
+    ): List<BigDecimal> {
+        if (count <= 0) return emptyList()
+        val cents = total.movePointRight(2).setScale(0, RoundingMode.HALF_UP).toLong()
+        val base = cents / count
+        val remainder = (cents % count).toInt()
+        return (0 until count).map { index ->
+            BigDecimal.valueOf(base + if (index < remainder) 1L else 0L, 2)
+        }
+    }
 
     private fun Event.refreshed(): Event =
         also {

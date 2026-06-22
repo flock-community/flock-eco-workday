@@ -2,6 +2,7 @@ import { UserFeature } from '@workday-user';
 import { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import AssignmentPage from '../features/assignments/AssignmentPage';
+import BudgetPage from '../features/budget/BudgetPage';
 import { ClientFeature } from '../features/client/ClientFeature';
 import ContractPage from '../features/contract/ContractPage';
 import { DashboardFeature } from '../features/dashboard/DashboardFeature';
@@ -50,6 +51,7 @@ export const AuthenticatedApplication = () => {
         <Route path="/person" component={PersonFeature} />
         <Route path="/profile" component={ProfileFeature} />
         <Route path="/event" component={EventFeature} />
+        <Route path="/budget" component={BudgetPage} />
         <Route path="/event_rating/:eventCode" component={EventRatingFeature} />
         <Route path="/reports/assignment" component={AssignmentReport} />
         <Route path="/reports/contract-overview" component={ContractOverview} />

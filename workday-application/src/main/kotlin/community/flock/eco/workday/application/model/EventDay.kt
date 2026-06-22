@@ -1,9 +1,14 @@
 package community.flock.eco.workday.application.model
 
 import community.flock.eco.workday.core.events.EventEntityListeners
+import jakarta.persistence.CollectionTable
+import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 
@@ -18,6 +23,10 @@ class EventDay(
     to: LocalDate = LocalDate.now(),
     hours: Double,
     days: MutableList<Double>? = null,
+    val cost: BigDecimal? = null,
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "event_day_files", joinColumns = [JoinColumn(name = "event_day_id")])
+    val files: MutableList<Document> = mutableListOf(),
     @ManyToOne
     val person: Person,
     @ManyToOne

@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.mocks
 
 import community.flock.eco.workday.application.forms.EventForm
+import community.flock.eco.workday.application.model.AllocationType
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.services.EventService
@@ -25,13 +26,37 @@ class LoadEventData(
         loadData.load {
             (
                 publicHolidays(loadPersonData) + communityDays(loadPersonData) + conferences(loadPersonData) +
-                    hackDays(
-                        loadPersonData,
-                    )
+                    hackDays(loadPersonData) + trainingEvents(loadPersonData)
             ).map { it.create() }
                 .let { data.addAll(it) }
         }
     }
+
+    private fun trainingEvents(loadPersonData: LoadPersonData) =
+        listOf(
+            EventForm(
+                description = "Kotlin Conf (training)",
+                from = LocalDate.of(now.year, 6, 10),
+                to = LocalDate.of(now.year, 6, 11),
+                days = mutableListOf(8.0, 8.0),
+                hours = 16.0,
+                personIds = loadPersonData.data.take(3).map { it.uuid },
+                costs = 2400.0,
+                type = EventType.CONFERENCE,
+                defaultTimeAllocationType = AllocationType.TRAINING,
+            ),
+            EventForm(
+                description = "Personal study budget",
+                from = LocalDate.of(now.year, 9, 2),
+                to = LocalDate.of(now.year, 9, 2),
+                days = mutableListOf(8.0),
+                hours = 8.0,
+                personIds = listOf(loadPersonData.findPersonByUserEmail("bert@sesam.straat").uuid),
+                costs = 450.0,
+                type = EventType.GENERAL_EVENT,
+                defaultTimeAllocationType = AllocationType.TRAINING,
+            ),
+        )
 
     private fun publicHolidays(loadPersonData: LoadPersonData) =
         listOf(

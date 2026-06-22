@@ -14,6 +14,8 @@ import community.flock.eco.workday.api.endpoint.UnsubscribeFromEvent
 import community.flock.eco.workday.application.authorities.EventAuthority
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.forms.EventRatingForm
+import community.flock.eco.workday.application.model.AllocationType
+import community.flock.eco.workday.application.model.Document
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventRating
 import community.flock.eco.workday.application.model.EventType
@@ -33,7 +35,9 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 import java.util.UUID
+import community.flock.eco.workday.api.model.AllocationType as AllocationTypeApi
 import community.flock.eco.workday.api.model.Event as EventApi
+import community.flock.eco.workday.api.model.EventDayFile as EventDayFileApi
 import community.flock.eco.workday.api.model.EventForm as EventFormApi
 import community.flock.eco.workday.api.model.EventFormType as EventFormTypeApi
 import community.flock.eco.workday.api.model.EventProjection as EventProjectionApi
@@ -43,6 +47,7 @@ import community.flock.eco.workday.api.model.EventRatingForm as EventRatingFormA
 import community.flock.eco.workday.api.model.EventType as EventTypeApi
 import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.api.model.PersonProjection as PersonProjectionApi
+import community.flock.eco.workday.api.model.UUID as UUIDApi
 
 @RestController
 class EventController(
@@ -199,6 +204,8 @@ class EventController(
             costs = costs ?: 0.0,
             personIds = personIds?.map(UUID::fromString) ?: emptyList(),
             type = type?.toDomain() ?: EventType.GENERAL_EVENT,
+            defaultTimeAllocationType = defaultTimeAllocationType?.toDomain(),
+            files = files?.map { Document(name = it.name, file = UUID.fromString(it.file.value)) } ?: emptyList(),
         )
 
     private fun Event.externalize(): EventApi =
@@ -211,8 +218,16 @@ class EventController(
             hours = hours,
             costs = costs,
             type = type.toApi(),
+            defaultTimeAllocationType = defaultTimeAllocationType?.toApi(),
             days = days,
             persons = persons.map { it.externalize() },
+            files = eventDays.firstOrNull()?.files.orEmpty().map { it.externalize() },
+        )
+
+    private fun Document.externalize(): EventDayFileApi =
+        EventDayFileApi(
+            name = name,
+            file = UUIDApi(file.toString()).also(UUIDApi::validate),
         )
 
     private fun EventRating.externalize(): EventRatingApi =
@@ -283,6 +298,18 @@ class EventController(
             EventFormTypeApi.FLOCK_COMMUNITY_DAY -> EventType.FLOCK_COMMUNITY_DAY
             EventFormTypeApi.CONFERENCE -> EventType.CONFERENCE
             EventFormTypeApi.GENERAL_EVENT -> EventType.GENERAL_EVENT
+        }
+
+    private fun AllocationType.toApi(): AllocationTypeApi =
+        when (this) {
+            AllocationType.HACK -> AllocationTypeApi.HACK
+            AllocationType.TRAINING -> AllocationTypeApi.TRAINING
+        }
+
+    private fun AllocationTypeApi.toDomain(): AllocationType =
+        when (this) {
+            AllocationTypeApi.HACK -> AllocationType.HACK
+            AllocationTypeApi.TRAINING -> AllocationType.TRAINING
         }
 
     private fun GetEventAll.Queries.toPageable(): Pageable {

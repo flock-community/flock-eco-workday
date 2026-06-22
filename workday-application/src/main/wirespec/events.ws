@@ -41,11 +41,24 @@ type Event {
   hours: Number?,
   costs: Number?,
   `type`: EventType?,
+  defaultTimeAllocationType: AllocationType?,
   days: Number[]?,
-  persons: Person[]?
+  persons: Person[]?,
+  files: EventDayFile[]?
 }
 enum EventType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
+}
+enum AllocationType {
+  HACK, TRAINING
+}
+type EventDayFile {
+  name: String,
+  file: UUID
+}
+type EventDayFileInput {
+  name: String,
+  file: UUID
 }
 type EventForm {
   description: String?,
@@ -55,7 +68,9 @@ type EventForm {
   days: Number[]?,
   costs: Number?,
   personIds: String[]?,
-  `type`: EventFormType?
+  `type`: EventFormType?,
+  defaultTimeAllocationType: AllocationType?,
+  files: EventDayFileInput[]?
 }
 enum EventFormType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT

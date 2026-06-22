@@ -3,6 +3,7 @@ package community.flock.eco.workday.application.model
 import community.flock.eco.workday.application.interfaces.Daily
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.core.model.AbstractCodeEntity
+import jakarta.persistence.Column
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
@@ -26,6 +27,9 @@ class Event(
     val costs: Double,
     @Enumerated(EnumType.STRING)
     val type: EventType,
+    @Enumerated(EnumType.STRING)
+    @Column(name = "default_time_allocation_type")
+    val defaultTimeAllocationType: AllocationType? = null,
     @ElementCollection(fetch = FetchType.EAGER)
     override val days: MutableList<Double>? = null,
     @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
@@ -34,4 +38,13 @@ class Event(
 ) : AbstractCodeEntity(id, code),
     Daily {
     val persons: List<Person> get() = eventDays.map { it.person }.distinct()
+
+    val allocationType: AllocationType?
+        get() = defaultTimeAllocationType ?: type.defaultAllocationType()
 }
+
+private fun EventType.defaultAllocationType(): AllocationType? =
+    when (this) {
+        EventType.FLOCK_HACK_DAY -> AllocationType.HACK
+        else -> null
+    }
