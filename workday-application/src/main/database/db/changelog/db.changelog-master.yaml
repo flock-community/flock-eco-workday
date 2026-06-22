@@ -95,3 +95,11 @@ databaseChangeLog:
       file: db.changelog-032-drop-event-persons.yaml
       relativeToChangelogFile: true
 
+  - include:
+      file: db.changelog-033-event-day-breakdown-backfill.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: db.changelog-034-drop-event-days.yaml
+      relativeToChangelogFile: true
+

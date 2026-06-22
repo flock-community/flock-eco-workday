@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-033-event-day-breakdown-backfill
+      author: rkorver
+      comment: Fill day_days from event_days for any EventDay still missing its breakdown, so nothing is lost when event_days is dropped (034).
+      changes:
+        - customChange:
+            class: community.flock.eco.workday.application.migrations.BackfillEventDayBreakdown

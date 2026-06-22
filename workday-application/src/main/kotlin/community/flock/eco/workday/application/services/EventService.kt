@@ -98,32 +98,36 @@ class EventService(
                     from = from,
                     to = to,
                     hours = hours,
-                    days = days.toMutableList(),
                     costs = costs,
                     type = type,
                 ),
             )
         val persons = personService.findByPersonCodeIdIn(personIds).toList()
-        event.rebuildEventDaysFromTemplate(persons)
+        event.rebuildEventDaysFromTemplate(persons, days)
         return event.refreshed()
     }
 
     // Rebuilt (not membership-diffed) so an edited period/hours/days reaches every
     // participant — each EventDay holds its own copy of those values.
-    private fun Event.rebuildEventDaysFromTemplate(persons: List<Person>) {
+    private fun Event.rebuildEventDaysFromTemplate(
+        persons: List<Person>,
+        days: List<Double>,
+    ) {
         eventDayRepository.deleteAll(eventDayRepository.findAllByEventCode(code))
-        persons.forEach { eventDayRepository.save(eventDayFor(it)) }
+        persons.forEach { eventDayRepository.save(eventDayFor(it, days)) }
     }
 
-    private fun Event.eventDayFor(person: Person) =
-        EventDay(
-            from = from,
-            to = to,
-            hours = hours,
-            days = days?.toMutableList(),
-            person = person,
-            event = this,
-        )
+    private fun Event.eventDayFor(
+        person: Person,
+        days: List<Double>? = this.days,
+    ) = EventDay(
+        from = from,
+        to = to,
+        hours = hours,
+        days = days?.toMutableList(),
+        person = person,
+        event = this,
+    )
 
     private fun Event.refreshed(): Event =
         also {

@@ -35,7 +35,6 @@ class EventRepositoryTest : WorkdayIntegrationTest() {
                     from = LocalDate.now(),
                     to = LocalDate.now().plusDays(5),
                     hours = 40.0,
-                    days = mutableListOf(8.0, 8.0, 8.0, 8.0, 8.0),
                     costs = 538.38,
                     type = EventType.GENERAL_EVENT,
                 ),

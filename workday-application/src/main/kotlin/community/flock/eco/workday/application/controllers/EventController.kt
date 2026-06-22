@@ -180,7 +180,6 @@ class EventController(
         Event(
             description = "N/A - $description",
             costs = 0.00,
-            days = null,
             id = id,
             code = code,
             from = from,

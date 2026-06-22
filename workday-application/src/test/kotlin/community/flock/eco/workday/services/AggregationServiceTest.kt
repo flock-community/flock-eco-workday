@@ -798,7 +798,6 @@ class AggregationServiceTest(
                     from = day,
                     to = day,
                     hours = 8.0,
-                    days = mutableListOf(8.0),
                     costs = 0.0,
                     type = EventType.FLOCK_HACK_DAY,
                 ),

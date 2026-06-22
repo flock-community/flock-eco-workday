@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-034-drop-event-days
+      author: rkorver
+      comment: >-
+        The event-level day breakdown now derives from the per-person EventDays
+        (stored in day_days), so the Event no longer owns an event_days collection.
+        Backfills 031 + 033 moved these values into day_days; drop the table.
+      changes:
+        - dropTable:
+            tableName: event_days

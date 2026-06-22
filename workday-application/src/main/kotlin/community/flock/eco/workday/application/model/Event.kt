@@ -3,7 +3,6 @@ package community.flock.eco.workday.application.model
 import community.flock.eco.workday.application.interfaces.Daily
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.core.model.AbstractCodeEntity
-import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.EnumType
@@ -26,12 +25,13 @@ class Event(
     val costs: Double,
     @Enumerated(EnumType.STRING)
     val type: EventType,
-    @ElementCollection(fetch = FetchType.EAGER)
-    override val days: MutableList<Double>? = null,
     @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
     @BatchSize(size = 50)
     val eventDays: MutableList<EventDay> = mutableListOf(),
 ) : AbstractCodeEntity(id, code),
     Daily {
     val persons: List<Person> get() = eventDays.map { it.person }.distinct()
+
+    // EventDays share one breakdown until per-person hours editing exists, so the first represents the event.
+    override val days: MutableList<Double>? get() = eventDays.firstOrNull()?.days
 }
