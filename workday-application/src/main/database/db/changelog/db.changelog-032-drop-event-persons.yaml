@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-032-drop-event-persons
+      author: rkorver
+      comment: >-
+        Contract step: event participants now derive from EventDay, so drop the obsolete
+        event_persons table. Runs after db.changelog-033 has re-synced any rows the prior
+        release may have written during an expand-phase rollback window.
+      changes:
+        - dropTable:
+            tableName: event_persons
