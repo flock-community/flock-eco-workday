@@ -85,8 +85,6 @@ databaseChangeLog:
   - include:
       file: db.changelog-029-rename-hack-hours-to-hack-time-budget.yaml
       relativeToChangelogFile: true
-  # 032's drop assumes 031 backfilled event_day in the same deploy; if 030/031 ever
-  # ship as a separate release and get rolled back, re-add a catch-up backfill before 032.
   - include:
       file: db.changelog-030-event-day.yaml
       relativeToChangelogFile: true
