@@ -32,8 +32,9 @@ export function BudgetCard({
   unit,
 }: Readonly<BudgetCardProps>) {
   const { budget, used, available } = budgetItem;
+  const hasBudget = budget > 0;
   const percentage = budget > 0 ? (used / budget) * 100 : used > 0 ? 100 : 0;
-  const isOverBudget = available < 0;
+  const isOverBudget = hasBudget && available < 0;
   const statusColor = getStatusColor(percentage, isOverBudget);
 
   const formatValue = (value: number): string => {
@@ -50,7 +51,9 @@ export function BudgetCard({
     <Card
       sx={{
         height: '100%',
-        bgcolor: getStatusBgTint(percentage, isOverBudget),
+        bgcolor: hasBudget
+          ? getStatusBgTint(percentage, isOverBudget)
+          : undefined,
         transition: 'background-color 0.3s ease',
       }}
     >
@@ -64,10 +67,16 @@ export function BudgetCard({
             <Typography
               variant="h4"
               fontWeight="bold"
-              color={isOverBudget ? 'error.main' : 'success.main'}
+              color={
+                !hasBudget
+                  ? 'text.secondary'
+                  : isOverBudget
+                    ? 'error.main'
+                    : 'success.main'
+              }
               sx={{ lineHeight: 1.2 }}
             >
-              {formatValue(available)}
+              {hasBudget ? formatValue(available) : 'n/a'}
             </Typography>
             <Typography variant="caption" color="text.secondary">
               available
@@ -90,29 +99,31 @@ export function BudgetCard({
             </Typography>
           </Box>
 
-          <Box>
-            <LinearProgress
-              variant="determinate"
-              value={Math.min(percentage, 100)}
-              color={statusColor}
-              sx={{
-                height: 10,
-                borderRadius: 5,
-                bgcolor: 'action.hover',
-                '& .MuiLinearProgress-bar': {
+          {hasBudget && (
+            <Box>
+              <LinearProgress
+                variant="determinate"
+                value={Math.min(percentage, 100)}
+                color={statusColor}
+                sx={{
+                  height: 10,
                   borderRadius: 5,
-                },
-              }}
-            />
-            <Typography
-              variant="caption"
-              color={isOverBudget ? 'error' : 'text.secondary'}
-              sx={{ mt: 0.5, display: 'block', textAlign: 'right' }}
-            >
-              {percentage.toFixed(0)}% used
-              {isOverBudget && ' (over budget!)'}
-            </Typography>
-          </Box>
+                  bgcolor: 'action.hover',
+                  '& .MuiLinearProgress-bar': {
+                    borderRadius: 5,
+                  },
+                }}
+              />
+              <Typography
+                variant="caption"
+                color={isOverBudget ? 'error' : 'text.secondary'}
+                sx={{ mt: 0.5, display: 'block', textAlign: 'right' }}
+              >
+                {percentage.toFixed(0)}% used
+                {isOverBudget && ' (over budget!)'}
+              </Typography>
+            </Box>
+          )}
         </Stack>
       </CardContent>
     </Card>
