@@ -13,17 +13,3 @@ databaseChangeLog:
               - column:
                   name: cost
                   type: DECIMAL(19, 2)
-  - changeSet:
-      id: db.changelog-034-budget-on-event-day-1
-      author: rkorver
-      comment: >-
-        Per-event HACK|TRAINING marker. EventDay hours/cost derive a person's used hack/study
-        budget, but the category is not reducible to event.type (a self-booked study event is
-        TRAINING, not a CONFERENCE), so it is set explicitly here.
-      changes:
-        - addColumn:
-            tableName: event
-            columns:
-              - column:
-                  name: default_time_allocation_type
-                  type: VARCHAR(255)
