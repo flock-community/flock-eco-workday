@@ -43,7 +43,7 @@ export function BudgetCard({
         maximumFractionDigits: 0,
       })}`;
     }
-    return `${value}${unit}`;
+    return `${value.toLocaleString('nl-NL', { maximumFractionDigits: 1 })}${unit}`;
   };
 
   return (

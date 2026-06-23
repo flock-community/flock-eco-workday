@@ -45,7 +45,12 @@ class BudgetController(
         if (personId == null) {
             return self ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not linked to person")
         }
-        val requested = UUID.fromString(personId)
+        val requested =
+            try {
+                UUID.fromString(personId)
+            } catch (e: IllegalArgumentException) {
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid personId")
+            }
         if (requested != self?.uuid && !auth.canQueryOthers()) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to query other persons")
         }

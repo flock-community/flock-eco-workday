@@ -22,11 +22,13 @@ type DropzoneAreaFieldProps = {
 
 export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
   const [upload, setUpload] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const renderField = ({ field: { value }, form: { setFieldValue } }) => {
     const handleDropFile = (files: File[]) => {
       setUpload(true);
-      return Promise.all(
+      setUploadError(null);
+      return Promise.allSettled(
         files.map(async (file: File) => {
           const formData = new FormData();
           formData.append('file', file);
@@ -45,11 +47,25 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
           } satisfies UploadedFile;
         }),
       )
-        .then((uploaded) => {
-          setFieldValue(name, [...value, ...uploaded]);
-        })
-        .catch((err) => {
-          console.error(err);
+        .then((results) => {
+          const uploaded = results
+            .filter(
+              (it): it is PromiseFulfilledResult<UploadedFile> =>
+                it.status === 'fulfilled',
+            )
+            .map((it) => it.value);
+          if (uploaded.length > 0) {
+            setFieldValue(name, [...value, ...uploaded]);
+          }
+          const failed = results.filter((it) => it.status === 'rejected');
+          if (failed.length > 0) {
+            for (const it of failed) {
+              console.error((it as PromiseRejectedResult).reason);
+            }
+            setUploadError(
+              `${failed.length} of ${files.length} file(s) failed to upload. Please try again.`,
+            );
+          }
         })
         .finally(() => {
           setUpload(false);
@@ -141,6 +157,11 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
               acceptedFiles={['image/jpeg', 'image/png', 'application/pdf']}
               onDrop={handleDropFile}
             />
+          )}
+          {uploadError && (
+            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+              {uploadError}
+            </Typography>
           )}
         </Grid>
         <Grid size={{ xs: 6 }}>

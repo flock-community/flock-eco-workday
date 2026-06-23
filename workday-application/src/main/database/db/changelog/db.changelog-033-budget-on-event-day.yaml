@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: db.changelog-034-budget-on-event-day-0
+      id: db.changelog-033-budget-on-event-day-0
       author: rkorver
       comment: >-
         Per-person event money draw. EventDay already carries per-person event hours; cost
@@ -14,7 +14,7 @@ databaseChangeLog:
                   name: cost
                   type: DECIMAL(19, 2)
   - changeSet:
-      id: db.changelog-034-budget-on-event-day-1
+      id: db.changelog-033-budget-on-event-day-1
       author: rkorver
       comment: >-
         Per-event HACK|TRAINING marker. EventDay hours/cost derive a person's used hack/study
