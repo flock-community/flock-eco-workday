@@ -1,0 +1,149 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: managerEmployeeFlow.spec.ts >> Manager-Employee Workflow: Bert manages, Ernie books >> Bert reviews the month overview
+- Location: tests/managerEmployeeFlow.spec.ts:289:5
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByText(/^Month: \d{4}-\d{2}$/)
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for getByText(/^Month: \d{4}-\d{2}$/)
+
+```
+
+```yaml
+- main:
+  - button "Menu"
+  - link "Flock. Workday":
+    - /url: /
+  - button "Switch to dark mode"
+  - button
+  - progressbar:
+    - img
+```
+
+# Test source
+
+```ts
+  197 |         .filter({ hasText: WORKDAY_FROM })
+  198 |         .filter({ hasText: ASSIGNMENT_ROLE });
+  199 |       const workRow = await findOnAnyPage(page, workRows);
+  200 |       await expect(workRow).toContainText(ASSIGNMENT_CLIENT);
+  201 | 
+  202 |       // ---- Sick day ----
+  203 |       await page.goto('/sickdays');
+  204 |       await page.waitForLoadState('networkidle');
+  205 |       await page.getByRole('button', { name: 'Add' }).click();
+  206 |       await expect(page.getByText('Create Sickday')).toBeVisible();
+  207 | 
+  208 |       await page
+  209 |         .getByRole('dialog')
+  210 |         .getByLabel('Description')
+  211 |         .fill(SICK_DESCRIPTION);
+  212 |       await When_I_fill_in_the_date_range_from_till(
+  213 |         page,
+  214 |         SICKDAY_DATE,
+  215 |         SICKDAY_DATE,
+  216 |       );
+  217 |       await page.getByRole('button', { name: 'Save' }).click();
+  218 |       await expect(page.getByText('Create Sickday')).not.toBeVisible();
+  219 |       await page.waitForLoadState('networkidle');
+  220 | 
+  221 |       const sickCards = page
+  222 |         .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+  223 |         .filter({ hasText: SICK_DESCRIPTION });
+  224 |       await findOnAnyPage(page, sickCards);
+  225 | 
+  226 |       // ---- Leave day (holiday) ----
+  227 |       await page.goto('/leave-days');
+  228 |       await page.waitForLoadState('networkidle');
+  229 |       await page.getByRole('button', { name: 'Add' }).click();
+  230 |       const leaveDialog = page.getByRole('dialog');
+  231 |       await expect(leaveDialog.getByLabel('Description')).toBeVisible();
+  232 | 
+  233 |       await leaveDialog.getByLabel('Description').fill(LEAVE_DESCRIPTION);
+  234 |       await When_I_fill_in_the_date_range_from_till(page, LEAVE_FROM, LEAVE_TO);
+  235 |       await page.getByRole('button', { name: 'Save' }).click();
+  236 |       // The leave-day dialog header is "Leave days", which also appears as
+  237 |       // the page title — so wait for the dialog itself to disappear instead
+  238 |       // of a text match. Without this wait, the MUI Slide close transition
+  239 |       // still overlays the pagination control while findOnAnyPage runs.
+  240 |       await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });
+  241 |       await page.waitForLoadState('networkidle');
+  242 | 
+  243 |       const leaveCards = page
+  244 |         .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+  245 |         .filter({ hasText: LEAVE_DESCRIPTION });
+  246 |       await findOnAnyPage(page, leaveCards);
+  247 |     });
+  248 | 
+  249 |     test('Bert approves the workday, sick day and leave day', async ({
+  250 |       page,
+  251 |     }) => {
+  252 |       await Given_I_am_logged_in_as_user(page, 'bert');
+  253 | 
+  254 |       // ---- Approve workday ----
+  255 |       await page.goto('/workdays');
+  256 |       await page.waitForLoadState('networkidle');
+  257 |       await selectErnieFromPersonSelector(page);
+  258 | 
+  259 |       const workRows = page
+  260 |         .locator('tr')
+  261 |         .filter({ hasText: WORKDAY_FROM })
+  262 |         .filter({ hasText: ASSIGNMENT_ROLE });
+  263 |       const workRow = await findOnAnyPage(page, workRows);
+  264 |       await changeStatusOnLocator(page, workRow, 'REQUESTED', 'APPROVED');
+  265 | 
+  266 |       // ---- Approve sick day ----
+  267 |       await page.goto('/sickdays');
+  268 |       await page.waitForLoadState('networkidle');
+  269 |       await selectErnieFromPersonSelector(page);
+  270 | 
+  271 |       const sickCards = page
+  272 |         .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+  273 |         .filter({ hasText: SICK_DESCRIPTION });
+  274 |       const sickCard = await findOnAnyPage(page, sickCards);
+  275 |       await changeStatusOnLocator(page, sickCard, 'REQUESTED', 'APPROVED');
+  276 | 
+  277 |       // ---- Approve leave day ----
+  278 |       await page.goto('/leave-days');
+  279 |       await page.waitForLoadState('networkidle');
+  280 |       await selectErnieFromPersonSelector(page);
+  281 | 
+  282 |       const leaveCards = page
+  283 |         .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+  284 |         .filter({ hasText: LEAVE_DESCRIPTION });
+  285 |       const leaveCard = await findOnAnyPage(page, leaveCards);
+  286 |       await changeStatusOnLocator(page, leaveCard, 'REQUESTED', 'APPROVED');
+  287 |     });
+  288 | 
+  289 |     test('Bert reviews the month overview', async ({ page }) => {
+  290 |       await Given_I_am_logged_in_as_user(page, 'bert');
+  291 |       await page.goto('/month');
+  292 |       await page.waitForLoadState('networkidle');
+  293 | 
+  294 |       // The booking dates above are all in May 2026, which is the current
+  295 |       // month per the session date — so the view opens directly on it. No
+  296 |       // chevron navigation needed.
+> 297 |       await expect(page.getByText(/^Month: \d{4}-\d{2}$/)).toBeVisible();
+      |                                                            ^ Error: expect(locator).toBeVisible() failed
+  298 |       await expect(page.getByText(/Total persons:/)).toBeVisible();
+  299 |       await expect(page.getByText(/Ernie/i).first()).toBeVisible();
+  300 |     });
+  301 |   });
+  302 | 
+```
