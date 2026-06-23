@@ -69,7 +69,10 @@ class EventService(
             ?.also { event ->
                 val existing = event.eventDays.firstOrNull { it.person.uuid == person.uuid }
                 when {
-                    existing == null -> eventDayRepository.save(event.eventDayFor(person, hours = hours ?: event.hours))
+                    existing == null -> {
+                        eventDayRepository.save(event.eventDayFor(person, hours = hours ?: event.hours))
+                        event.rebalanceCosts()
+                    }
                     hours != null && hours != existing.hours -> eventDayRepository.save(existing.withHours(hours))
                 }
             }?.refreshed()
@@ -82,8 +85,10 @@ class EventService(
         eventRepository
             .findByCode(eventCode)
             .toNullable()
-            ?.also { eventDayRepository.deleteByEventCodeAndPersonUuid(eventCode, person.uuid) }
-            ?.refreshed()
+            ?.also { event ->
+                eventDayRepository.deleteByEventCodeAndPersonUuid(eventCode, person.uuid)
+                event.rebalanceCosts()
+            }?.refreshed()
             ?: error("Cannot unsubscribe from Event: $eventCode")
 
     @Transactional
@@ -94,6 +99,7 @@ class EventService(
     }
 
     private fun EventForm.consume(existing: Event? = null): Event {
+        val previousHours = existing?.hours
         val event =
             eventRepository.save(
                 Event(
@@ -110,18 +116,39 @@ class EventService(
                 ),
             )
         val persons = personService.findByPersonCodeIdIn(personIds).toList()
-        event.rebuildEventDaysFromTemplate(persons)
+        event.rebuildEventDaysFromTemplate(persons, previousHours)
         return event.refreshed()
     }
 
-    // Rebuilt (not membership-diffed) so an edited period/hours/days reaches every
-    // participant — each EventDay holds its own copy of those values.
-    private fun Event.rebuildEventDaysFromTemplate(persons: List<Person>) {
-        eventDayRepository.deleteAll(eventDayRepository.findAllByEventCode(code))
+    // Override detected by hours diverging from the previous default, not by membership: the
+    // dialog round-trips every attendee into personIds, so a self-subscriber is otherwise
+    // indistinguishable from an admin-added participant.
+    private fun Event.rebuildEventDaysFromTemplate(
+        persons: List<Person>,
+        previousDefaultHours: Double?,
+    ) {
+        val existing = eventDayRepository.findAllByEventCode(code)
+        val overriddenHours =
+            existing
+                .filter { previousDefaultHours != null && it.hours != previousDefaultHours }
+                .associate { it.person.uuid to it.hours }
+        eventDayRepository.deleteAll(existing)
         val costShares = splitEvenly(costs.toBigDecimal(), persons.size)
         persons.forEachIndexed { index, person ->
-            eventDayRepository.save(eventDayFor(person, costShares[index]))
+            eventDayRepository.save(
+                eventDayFor(person, costShares[index], hours = overriddenHours[person.uuid] ?: hours),
+            )
         }
+    }
+
+    // Zero-cost events (e.g. hack days) are skipped so their per-person cost stays null.
+    private fun Event.rebalanceCosts() {
+        val total = costs.toBigDecimal()
+        if (total.signum() == 0) return
+        val days = eventDayRepository.findAllByEventCode(code)
+        if (days.isEmpty()) return
+        val costShares = splitEvenly(total, days.size)
+        days.forEachIndexed { index, day -> eventDayRepository.save(day.withCost(costShares[index])) }
     }
 
     private fun Event.eventDayFor(
@@ -150,6 +177,18 @@ class EventService(
             person = person,
             event = event,
         )
+
+    private fun EventDay.withCost(cost: BigDecimal) = EventDay(
+        id = id,
+        code = code,
+        from = from,
+        to = to,
+        hours = hours,
+        days = days?.toMutableList(),
+        cost = cost,
+        person = person,
+        event = event,
+    )
 
     private fun splitEvenly(
         total: BigDecimal,
