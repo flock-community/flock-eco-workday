@@ -8,7 +8,7 @@ import {
 
 // Budget-on-EventDay consuming feature:
 //   - GET /api/budget-summary renders the three summary cards (/budget page)
-//   - The event dialog exposes the "Counts towards budget" marker + receipts,
+//   - The event dialog exposes the "Counts towards budget" marker,
 //     and a TRAINING-marked event persists through POST /api/events.
 //
 // The session date sits in May 2026 (see events.spec.ts), so the booking and
@@ -43,9 +43,7 @@ test.describe('Budget on EventDay', () => {
     await expect(page.getByText('Used:').first()).toBeVisible();
   });
 
-  test('Admin creates a TRAINING-marked event with a receipt field', async ({
-    page,
-  }) => {
+  test('Admin creates a TRAINING-marked event', async ({ page }) => {
     await Given_I_am_logged_in_as_user(page, 'bert');
 
     await page.goto('/event');
@@ -60,8 +58,6 @@ test.describe('Budget on EventDay', () => {
 
     await dialog.getByLabel('Counts towards budget').click();
     await page.getByRole('option', { name: 'Training' }).click();
-
-    await expect(dialog.getByText('No files found')).toBeVisible();
 
     await When_I_fill_in_the_date_range_from_till(page, EVENT_FROM, EVENT_TO);
 

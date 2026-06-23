@@ -6,7 +6,11 @@ import { EventList } from './EventList';
 
 type UpcomingEventsCardProps = {
   items: FlockEvent[];
-  onEventToggle: (event: FlockEvent, isSubscribed: boolean) => void;
+  onEventToggle: (
+    event: FlockEvent,
+    isSubscribed: boolean,
+    hours?: number,
+  ) => void;
 };
 
 const rowsPerPage = 4;

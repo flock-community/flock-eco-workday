@@ -6,7 +6,6 @@ import { TextField } from 'formik-mui';
 import { useState } from 'react';
 import * as Yup from 'yup';
 import { DatePickerField } from '../../components/fields/DatePickerField';
-import { DropzoneAreaField } from '../../components/fields/DropzoneAreaField';
 import { PeriodInputField } from '../../components/fields/PeriodInputField';
 import { PersonSelectorField } from '../../components/fields/PersonSelectorField';
 import { EventTypeMappingToBillable } from '../../utils/mappings';
@@ -28,7 +27,6 @@ const schema = Yup.object().shape({
   costs: Yup.number().required().min(0).default(0),
   type: Yup.string().required('Field required').default('GENERAL_EVENT'),
   defaultTimeAllocationType: Yup.string().nullable().default(''),
-  files: Yup.array().default([]),
 });
 
 type EventFormProps = {
@@ -106,9 +104,6 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             reset={resetHours}
           />
         </Grid>
-        <Grid size={{ xs: 12 }}>
-          <DropzoneAreaField name="files" endpoint="/api/events/files" />
-        </Grid>
       </Grid>
     </Form>
   );
@@ -125,7 +120,6 @@ export function EventForm({ value, onSubmit }: EventFormProps) {
       costs: data.costs,
       type: data.type,
       defaultTimeAllocationType: data.defaultTimeAllocationType,
-      files: data.files,
     });
   };
 

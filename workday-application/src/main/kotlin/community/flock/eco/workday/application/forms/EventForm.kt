@@ -6,7 +6,6 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
 import community.flock.eco.workday.application.interfaces.Daily
 import community.flock.eco.workday.application.model.AllocationType
-import community.flock.eco.workday.application.model.Document
 import community.flock.eco.workday.application.model.EventType
 import java.time.LocalDate
 import java.util.UUID
@@ -25,5 +24,4 @@ data class EventForm(
     val personIds: List<UUID>,
     val type: EventType,
     val defaultTimeAllocationType: AllocationType? = null,
-    val files: List<Document> = emptyList(),
 ) : Daily

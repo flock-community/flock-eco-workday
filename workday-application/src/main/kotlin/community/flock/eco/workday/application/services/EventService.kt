@@ -2,7 +2,6 @@ package community.flock.eco.workday.application.services
 
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.interfaces.validate
-import community.flock.eco.workday.application.model.Document
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventDay
 import community.flock.eco.workday.application.model.Person
@@ -62,13 +61,16 @@ class EventService(
     fun subscribeToEvent(
         eventCode: String,
         person: Person,
+        hours: Double? = null,
     ): Event =
         eventRepository
             .findByCode(eventCode)
             .toNullable()
             ?.also { event ->
-                if (event.eventDays.none { it.person.uuid == person.uuid }) {
-                    eventDayRepository.save(event.eventDayFor(person))
+                val existing = event.eventDays.firstOrNull { it.person.uuid == person.uuid }
+                when {
+                    existing == null -> eventDayRepository.save(event.eventDayFor(person, hours = hours ?: event.hours))
+                    hours != null && hours != existing.hours -> eventDayRepository.save(existing.withHours(hours))
                 }
             }?.refreshed()
             ?: error("Cannot subscribe to Event: $eventCode")
@@ -108,37 +110,46 @@ class EventService(
                 ),
             )
         val persons = personService.findByPersonCodeIdIn(personIds).toList()
-        event.rebuildEventDaysFromTemplate(persons, files)
+        event.rebuildEventDaysFromTemplate(persons)
         return event.refreshed()
     }
 
     // Rebuilt (not membership-diffed) so an edited period/hours/days reaches every
     // participant — each EventDay holds its own copy of those values.
-    private fun Event.rebuildEventDaysFromTemplate(
-        persons: List<Person>,
-        files: List<Document>,
-    ) {
+    private fun Event.rebuildEventDaysFromTemplate(persons: List<Person>) {
         eventDayRepository.deleteAll(eventDayRepository.findAllByEventCode(code))
         val costShares = splitEvenly(costs.toBigDecimal(), persons.size)
         persons.forEachIndexed { index, person ->
-            eventDayRepository.save(eventDayFor(person, costShares[index], files))
+            eventDayRepository.save(eventDayFor(person, costShares[index]))
         }
     }
 
     private fun Event.eventDayFor(
         person: Person,
         cost: BigDecimal? = null,
-        files: List<Document> = emptyList(),
+        hours: Double = this.hours,
     ) = EventDay(
         from = from,
         to = to,
         hours = hours,
         days = days?.toMutableList(),
         cost = cost,
-        files = files.toMutableList(),
         person = person,
         event = this,
     )
+
+    private fun EventDay.withHours(hours: Double) =
+        EventDay(
+            id = id,
+            code = code,
+            from = from,
+            to = to,
+            hours = hours,
+            days = days?.toMutableList(),
+            cost = cost,
+            person = person,
+            event = event,
+        )
 
     private fun splitEvenly(
         total: BigDecimal,

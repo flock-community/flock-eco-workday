@@ -21,13 +21,18 @@ export function HackDayEventsCard({ onToggle }: HackDayEventsCardProps) {
     fetchEvents();
   }, [fetchEvents]);
 
-  const eventToggled = (event: FlockEvent, isPresent: boolean) => {
-    (isPresent ? subscribeToEvent(event) : unsubscribeFromEvent(event)).then(
-      () => {
-        fetchEvents();
-        onToggle?.();
-      },
-    );
+  const eventToggled = (
+    event: FlockEvent,
+    isPresent: boolean,
+    hours?: number,
+  ) => {
+    (isPresent
+      ? subscribeToEvent(event, hours)
+      : unsubscribeFromEvent(event)
+    ).then(() => {
+      fetchEvents();
+      onToggle?.();
+    });
   };
 
   return (

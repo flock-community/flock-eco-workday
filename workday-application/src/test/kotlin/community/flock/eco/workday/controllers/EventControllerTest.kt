@@ -153,11 +153,50 @@ class EventControllerTest : WorkdayIntegrationTest() {
             .perform(
                 put("$baseUrl/${event.code}/subscribe")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{}")
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.persons[0].uuid").value(person.uuid.toString()))
+
+        val eventDay = eventDayRepository.findAllByEventCode(event.code).single()
+        assertEquals(event.hours, eventDay.hours)
+    }
+
+    @Test
+    fun `Person can subscribe with a hack-hours override`() {
+        val event =
+            createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3), type = EventType.FLOCK_HACK_DAY)
+        val user = createUser(userAuthorities)
+        createPerson(user.account.user.code)
+
+        mvc
+            .perform(
+                put("$baseUrl/${event.code}/subscribe")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"hours": 4}""")
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+
+        val eventDay = eventDayRepository.findAllByEventCode(event.code).single()
+        assertEquals(4.0, eventDay.hours)
+
+        mvc
+            .perform(
+                put("$baseUrl/${event.code}/subscribe")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"hours": 6}""")
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+
+        val updated = eventDayRepository.findAllByEventCode(event.code).single()
+        assertEquals(6.0, updated.hours)
     }
 
     @Test

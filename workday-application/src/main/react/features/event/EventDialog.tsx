@@ -33,10 +33,6 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
             ...res,
             personIds: res.persons.map((it) => it.uuid) ?? [],
             defaultTimeAllocationType: res.defaultTimeAllocationType ?? '',
-            files: (res.files ?? []).map((it) => ({
-              name: it.name,
-              fileReference: it.file,
-            })),
           });
         });
       } else {
@@ -58,10 +54,6 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       personIds: it.personIds,
       type: it.type,
       defaultTimeAllocationType: it.defaultTimeAllocationType || undefined,
-      files: (it.files ?? []).map((file) => ({
-        name: file.name,
-        file: file.fileReference,
-      })),
     };
     const persist = code ? EventClient.put(code, body) : EventClient.post(body);
     persist.then((res) => {

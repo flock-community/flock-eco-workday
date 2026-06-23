@@ -1,11 +1,7 @@
 import { checkResponse, validateResponse } from '@workday-core';
 import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
-import type {
-  AllocationType,
-  EventDayFile,
-  EventForm,
-} from '../wirespec/model';
+import type { AllocationType, EventForm } from '../wirespec/model';
 import type { Person, PersonLight } from './PersonClient';
 
 const path = '/api/events';
@@ -34,7 +30,6 @@ export type FullFlockEvent = {
   costs: number;
   type: EventType;
   defaultTimeAllocationType?: AllocationType | null;
-  files?: EventDayFile[];
 };
 
 type FlockEventRawProjection = {
@@ -59,7 +54,6 @@ type FlockEventRaw = {
   costs: number;
   type: EventType;
   defaultTimeAllocationType?: AllocationType | null;
-  files?: EventDayFile[];
 };
 
 // The type we send to the backend: the generated wirespec contract.
@@ -94,7 +88,6 @@ const internalizeFull = (it: FlockEventRaw): FullFlockEvent => ({
   days: it.days,
   costs: it.costs,
   defaultTimeAllocationType: it.defaultTimeAllocationType,
-  files: it.files ?? [],
 });
 
 export const EVENT_PAGE_SIZE: number = 10;
@@ -163,12 +156,13 @@ const getHackDays = (year: number): Promise<FlockEvent[]> =>
     events.filter((event) => event.type === EventType.FLOCK_HACK_DAY),
   );
 
-const subscribeToEvent = (event: FlockEvent) => {
+const subscribeToEvent = (event: FlockEvent, hours?: number) => {
   const opts = {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify({ hours: hours ?? null }),
   };
   return fetch(`${path}/${event.code}/subscribe`, opts)
     .then(validateResponse<FlockEventRaw>)

@@ -16,7 +16,7 @@ endpoint DeleteEvent DELETE /api/events/{code: String} -> {
 endpoint GetEventsByYear GET /api/events/year ? {year: Integer32} -> {
   200 -> EventProjection[]
 }
-endpoint SubscribeToEvent PUT /api/events/{eventCode: String}/subscribe -> {
+endpoint SubscribeToEvent PUT EventSubscription /api/events/{eventCode: String}/subscribe -> {
   200 -> Event
 }
 endpoint UnsubscribeFromEvent PUT /api/events/{eventCode: String}/unsubscribe -> {
@@ -43,22 +43,13 @@ type Event {
   `type`: EventType?,
   defaultTimeAllocationType: AllocationType?,
   days: Number[]?,
-  persons: Person[]?,
-  files: EventDayFile[]?
+  persons: Person[]?
 }
 enum EventType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
 }
 enum AllocationType {
   HACK, TRAINING
-}
-type EventDayFile {
-  name: String,
-  file: UUID
-}
-type EventDayFileInput {
-  name: String,
-  file: UUID
 }
 type EventForm {
   description: String?,
@@ -69,11 +60,13 @@ type EventForm {
   costs: Number?,
   personIds: String[]?,
   `type`: EventFormType?,
-  defaultTimeAllocationType: AllocationType?,
-  files: EventDayFileInput[]?
+  defaultTimeAllocationType: AllocationType?
 }
 enum EventFormType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
+}
+type EventSubscription {
+  hours: Number?
 }
 type EventRatingForm {
   personId: String?,
@@ -90,7 +83,8 @@ type EventProjection {
   persons: PersonProjection[]?,
   code: String?,
   description: String?,
-  to: String?
+  to: String?,
+  hours: Number?
 }
 enum EventProjectionType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
