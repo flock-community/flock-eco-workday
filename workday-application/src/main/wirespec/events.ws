@@ -41,14 +41,14 @@ type Event {
   hours: Number?,
   costs: Number?,
   `type`: EventType?,
-  defaultTimeAllocationType: AllocationType?,
+  budgetCategory: BudgetCategory?,
   days: Number[]?,
   persons: Person[]?
 }
 enum EventType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
 }
-enum AllocationType {
+enum BudgetCategory {
   HACK, TRAINING
 }
 type EventForm {
@@ -60,7 +60,7 @@ type EventForm {
   costs: Number?,
   personIds: String[]?,
   `type`: EventFormType?,
-  defaultTimeAllocationType: AllocationType?
+  budgetCategory: BudgetCategory?
 }
 enum EventFormType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT

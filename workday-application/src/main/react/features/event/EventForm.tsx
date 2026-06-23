@@ -26,7 +26,7 @@ const schema = Yup.object().shape({
   personIds: Yup.array().default([]),
   costs: Yup.number().required().min(0).default(0),
   type: Yup.string().required('Field required').default('GENERAL_EVENT'),
-  defaultTimeAllocationType: Yup.string().nullable().default(''),
+  budgetCategory: Yup.string().nullable().default(''),
 });
 
 type EventFormProps = {
@@ -71,14 +71,14 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
         </Grid>
         <Grid size={{ xs: 6 }}>
           <Field
-            name="defaultTimeAllocationType"
-            label="Event type"
+            name="budgetCategory"
+            label="Budget category"
             select
             fullWidth
             disabled={isExistingEvent}
             helperText={
               isExistingEvent
-                ? "Event type can't be changed after creation"
+                ? "Budget category can't be changed after creation"
                 : undefined
             }
             component={TextField}
@@ -126,7 +126,7 @@ export function EventForm({ value, onSubmit }: EventFormProps) {
       days: data.days,
       costs: data.costs,
       type: data.type,
-      defaultTimeAllocationType: data.defaultTimeAllocationType,
+      budgetCategory: data.budgetCategory,
     });
   };
 

@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.model
 
-enum class AllocationType {
+enum class BudgetCategory {
     HACK,
     TRAINING,
 }

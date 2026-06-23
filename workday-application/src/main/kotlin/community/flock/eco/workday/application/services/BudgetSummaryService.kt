@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.services
 
-import community.flock.eco.workday.application.model.AllocationType
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.ContractInternal
 import community.flock.eco.workday.application.utils.NumericUtils.sum
 import org.springframework.stereotype.Service
@@ -28,8 +28,8 @@ class BudgetSummaryService(
         val trainingHoursBudget = internalContracts.map { it.totalTrainingDayHoursInPeriod(period) }.sum()
         val trainingMoneyBudget = internalContracts.map { it.totalTrainingMoneyInPeriod(period) }.sum()
 
-        val hackDays = eventDays.filter { it.event.allocationType == AllocationType.HACK }
-        val trainingDays = eventDays.filter { it.event.allocationType == AllocationType.TRAINING }
+        val hackDays = eventDays.filter { it.event.effectiveBudgetCategory == BudgetCategory.HACK }
+        val trainingDays = eventDays.filter { it.event.effectiveBudgetCategory == BudgetCategory.TRAINING }
         val hackHoursUsed = hackDays.sumOf { it.hours }.toBigDecimal()
         val trainingHoursUsed = trainingDays.sumOf { it.hours }.toBigDecimal()
         val trainingMoneyUsed = trainingDays.fold(BigDecimal.ZERO) { acc, day -> acc + (day.cost ?: BigDecimal.ZERO) }

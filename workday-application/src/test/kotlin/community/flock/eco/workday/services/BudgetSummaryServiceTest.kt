@@ -1,7 +1,7 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.WorkdayIntegrationTest
-import community.flock.eco.workday.application.model.AllocationType
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.services.BudgetSummaryService
@@ -52,7 +52,7 @@ class BudgetSummaryServiceTest(
             persons = listOf(person.uuid),
             costs = 1000.0,
             type = EventType.CONFERENCE,
-            defaultTimeAllocationType = AllocationType.TRAINING,
+            budgetCategory = BudgetCategory.TRAINING,
         )
 
         val summary = budgetSummaryService.getSummary(person.uuid, year)
@@ -106,7 +106,7 @@ class BudgetSummaryServiceTest(
                 persons = listOf(one.uuid, two.uuid, three.uuid),
                 costs = 1000.0,
                 type = EventType.CONFERENCE,
-                defaultTimeAllocationType = AllocationType.TRAINING,
+                budgetCategory = BudgetCategory.TRAINING,
             )
 
         val costs =

@@ -1,7 +1,7 @@
 import { checkResponse, validateResponse } from '@workday-core';
 import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
-import type { AllocationType, EventForm } from '../wirespec/model';
+import type { BudgetCategory, EventForm } from '../wirespec/model';
 import type { Person, PersonLight } from './PersonClient';
 
 const path = '/api/events';
@@ -29,7 +29,7 @@ export type FullFlockEvent = {
   persons: Person[];
   costs: number;
   type: EventType;
-  defaultTimeAllocationType?: AllocationType | null;
+  budgetCategory?: BudgetCategory | null;
 };
 
 type FlockEventRawProjection = {
@@ -53,7 +53,7 @@ type FlockEventRaw = {
   persons: Person[];
   costs: number;
   type: EventType;
-  defaultTimeAllocationType?: AllocationType | null;
+  budgetCategory?: BudgetCategory | null;
 };
 
 // The type we send to the backend: the generated wirespec contract.
@@ -87,7 +87,7 @@ const internalizeFull = (it: FlockEventRaw): FullFlockEvent => ({
   id: it.id,
   days: it.days,
   costs: it.costs,
-  defaultTimeAllocationType: it.defaultTimeAllocationType,
+  budgetCategory: it.budgetCategory,
 });
 
 export const EVENT_PAGE_SIZE: number = 10;

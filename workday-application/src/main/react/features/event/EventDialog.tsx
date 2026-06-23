@@ -32,7 +32,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
           setState({
             ...res,
             personIds: res.persons.map((it) => it.uuid) ?? [],
-            defaultTimeAllocationType: res.defaultTimeAllocationType ?? '',
+            budgetCategory: res.budgetCategory ?? '',
           });
         });
       } else {
@@ -53,7 +53,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       costs: it.costs,
       personIds: it.personIds,
       type: it.type,
-      defaultTimeAllocationType: it.defaultTimeAllocationType || undefined,
+      budgetCategory: it.budgetCategory || undefined,
     };
     const persist = code ? EventClient.put(code, body) : EventClient.post(body);
     persist.then((res) => {

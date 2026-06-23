@@ -10,7 +10,7 @@ import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.forms.SickDayForm
 import community.flock.eco.workday.application.forms.WorkDayForm
 import community.flock.eco.workday.application.mappers.toDomain
-import community.flock.eco.workday.application.model.AllocationType
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.Assignment
 import community.flock.eco.workday.application.model.Client
 import community.flock.eco.workday.application.model.EventType
@@ -233,7 +233,7 @@ class CreateHelper(
         persons: List<UUID>,
         costs: Double = 538.38,
         type: EventType = EventType.GENERAL_EVENT,
-        defaultTimeAllocationType: AllocationType? = null,
+        budgetCategory: BudgetCategory? = null,
     ) = EventForm(
         description = "Very description",
         from = from,
@@ -243,7 +243,7 @@ class CreateHelper(
         personIds = persons,
         costs = costs,
         type = type,
-        defaultTimeAllocationType = defaultTimeAllocationType,
+        budgetCategory = budgetCategory,
     ).run {
         eventService.create(this)
     }

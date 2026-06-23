@@ -28,8 +28,8 @@ class Event(
     @Enumerated(EnumType.STRING)
     val type: EventType,
     @Enumerated(EnumType.STRING)
-    @Column(name = "default_time_allocation_type")
-    val defaultTimeAllocationType: AllocationType? = null,
+    @Column(name = "budget_category")
+    val budgetCategory: BudgetCategory? = null,
     @ElementCollection(fetch = FetchType.EAGER)
     override val days: MutableList<Double>? = null,
     @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
@@ -39,12 +39,12 @@ class Event(
     Daily {
     val persons: List<Person> get() = eventDays.map { it.person }.distinct()
 
-    val allocationType: AllocationType?
-        get() = defaultTimeAllocationType ?: type.defaultAllocationType()
+    val effectiveBudgetCategory: BudgetCategory?
+        get() = budgetCategory ?: type.defaultBudgetCategory()
 }
 
-private fun EventType.defaultAllocationType(): AllocationType? =
+private fun EventType.defaultBudgetCategory(): BudgetCategory? =
     when (this) {
-        EventType.FLOCK_HACK_DAY -> AllocationType.HACK
+        EventType.FLOCK_HACK_DAY -> BudgetCategory.HACK
         else -> null
     }

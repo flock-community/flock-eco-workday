@@ -14,7 +14,7 @@ import community.flock.eco.workday.api.endpoint.UnsubscribeFromEvent
 import community.flock.eco.workday.application.authorities.EventAuthority
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.forms.EventRatingForm
-import community.flock.eco.workday.application.model.AllocationType
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventRating
 import community.flock.eco.workday.application.model.EventType
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 import java.util.UUID
-import community.flock.eco.workday.api.model.AllocationType as AllocationTypeApi
+import community.flock.eco.workday.api.model.BudgetCategory as BudgetCategoryApi
 import community.flock.eco.workday.api.model.Event as EventApi
 import community.flock.eco.workday.api.model.EventForm as EventFormApi
 import community.flock.eco.workday.api.model.EventFormType as EventFormTypeApi
@@ -202,7 +202,7 @@ class EventController(
             costs = costs ?: 0.0,
             personIds = personIds?.map(UUID::fromString) ?: emptyList(),
             type = type?.toDomain() ?: EventType.GENERAL_EVENT,
-            defaultTimeAllocationType = defaultTimeAllocationType?.toDomain(),
+            budgetCategory = budgetCategory?.toDomain(),
         )
 
     private fun Event.externalize(): EventApi =
@@ -215,7 +215,7 @@ class EventController(
             hours = hours,
             costs = costs,
             type = type.toApi(),
-            defaultTimeAllocationType = allocationType?.toApi(),
+            budgetCategory = effectiveBudgetCategory?.toApi(),
             days = days,
             persons = persons.map { it.externalize() },
         )
@@ -291,16 +291,16 @@ class EventController(
             EventFormTypeApi.GENERAL_EVENT -> EventType.GENERAL_EVENT
         }
 
-    private fun AllocationType.toApi(): AllocationTypeApi =
+    private fun BudgetCategory.toApi(): BudgetCategoryApi =
         when (this) {
-            AllocationType.HACK -> AllocationTypeApi.HACK
-            AllocationType.TRAINING -> AllocationTypeApi.TRAINING
+            BudgetCategory.HACK -> BudgetCategoryApi.HACK
+            BudgetCategory.TRAINING -> BudgetCategoryApi.TRAINING
         }
 
-    private fun AllocationTypeApi.toDomain(): AllocationType =
+    private fun BudgetCategoryApi.toDomain(): BudgetCategory =
         when (this) {
-            AllocationTypeApi.HACK -> AllocationType.HACK
-            AllocationTypeApi.TRAINING -> AllocationType.TRAINING
+            BudgetCategoryApi.HACK -> BudgetCategory.HACK
+            BudgetCategoryApi.TRAINING -> BudgetCategory.TRAINING
         }
 
     private fun GetEventAll.Queries.toPageable(): Pageable {

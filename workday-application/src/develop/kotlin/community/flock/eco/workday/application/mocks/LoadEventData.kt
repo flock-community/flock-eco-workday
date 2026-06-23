@@ -1,7 +1,7 @@
 package community.flock.eco.workday.application.mocks
 
 import community.flock.eco.workday.application.forms.EventForm
-import community.flock.eco.workday.application.model.AllocationType
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.services.EventService
@@ -43,7 +43,7 @@ class LoadEventData(
                 personIds = loadPersonData.data.take(3).map { it.uuid },
                 costs = 2400.0,
                 type = EventType.CONFERENCE,
-                defaultTimeAllocationType = AllocationType.TRAINING,
+                budgetCategory = BudgetCategory.TRAINING,
             ),
             EventForm(
                 description = "Personal study budget",
@@ -54,7 +54,7 @@ class LoadEventData(
                 personIds = listOf(loadPersonData.findPersonByUserEmail("bert@sesam.straat").uuid),
                 costs = 450.0,
                 type = EventType.GENERAL_EVENT,
-                defaultTimeAllocationType = AllocationType.TRAINING,
+                budgetCategory = BudgetCategory.TRAINING,
             ),
         )
 

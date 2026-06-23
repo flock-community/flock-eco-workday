@@ -25,5 +25,5 @@ databaseChangeLog:
             tableName: event
             columns:
               - column:
-                  name: default_time_allocation_type
+                  name: budget_category
                   type: VARCHAR(255)
