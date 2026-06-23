@@ -32,7 +32,6 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
           setState({
             ...res,
             personIds: res.persons.map((it) => it.uuid) ?? [],
-            budgetCategory: res.budgetCategory ?? '',
           });
         });
       } else {
@@ -53,7 +52,6 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       costs: it.costs,
       personIds: it.personIds,
       type: it.type,
-      budgetCategory: it.budgetCategory || undefined,
     };
     const persist = code ? EventClient.put(code, body) : EventClient.post(body);
     persist.then((res) => {

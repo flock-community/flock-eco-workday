@@ -112,7 +112,6 @@ class EventService(
                     days = days.toMutableList(),
                     costs = costs,
                     type = type,
-                    budgetCategory = budgetCategory,
                 ),
             )
         val persons = personService.findByPersonCodeIdIn(personIds).toList()

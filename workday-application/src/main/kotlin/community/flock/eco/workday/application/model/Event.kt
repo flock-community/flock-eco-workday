@@ -3,7 +3,6 @@ package community.flock.eco.workday.application.model
 import community.flock.eco.workday.application.interfaces.Daily
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.core.model.AbstractCodeEntity
-import jakarta.persistence.Column
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
@@ -27,9 +26,6 @@ class Event(
     val costs: Double,
     @Enumerated(EnumType.STRING)
     val type: EventType,
-    @Enumerated(EnumType.STRING)
-    @Column(name = "budget_category")
-    val budgetCategory: BudgetCategory? = null,
     @ElementCollection(fetch = FetchType.EAGER)
     override val days: MutableList<Double>? = null,
     @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
@@ -40,11 +36,12 @@ class Event(
     val persons: List<Person> get() = eventDays.map { it.person }.distinct()
 
     val effectiveBudgetCategory: BudgetCategory?
-        get() = budgetCategory ?: type.defaultBudgetCategory()
+        get() = type.defaultBudgetCategory()
 }
 
 private fun EventType.defaultBudgetCategory(): BudgetCategory? =
     when (this) {
         EventType.FLOCK_HACK_DAY -> BudgetCategory.HACK
-        else -> null
+        EventType.CONFERENCE -> BudgetCategory.TRAINING
+        EventType.FLOCK_COMMUNITY_DAY, EventType.GENERAL_EVENT -> null
     }

@@ -1,4 +1,4 @@
-import { MenuItem } from '@mui/material';
+import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import dayjs from 'dayjs';
 import { Field, Form, Formik, type FormikProps } from 'formik';
@@ -8,7 +8,10 @@ import * as Yup from 'yup';
 import { DatePickerField } from '../../components/fields/DatePickerField';
 import { PeriodInputField } from '../../components/fields/PeriodInputField';
 import { PersonSelectorField } from '../../components/fields/PersonSelectorField';
-import { EventTypeMappingToBillable } from '../../utils/mappings';
+import {
+  EventTypeBudgetLabel,
+  EventTypeMappingToBillable,
+} from '../../utils/mappings';
 import { mutatePeriod } from '../period/Period';
 import { EventTypeSelect } from './EventTypeSelect';
 
@@ -26,7 +29,6 @@ const schema = Yup.object().shape({
   personIds: Yup.array().default([]),
   costs: Yup.number().required().min(0).default(0),
   type: Yup.string().required('Field required').default('GENERAL_EVENT'),
-  budgetCategory: Yup.string().nullable().default(''),
 });
 
 type EventFormProps = {
@@ -41,12 +43,13 @@ type EventFormFieldsProps = {
 
 function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
   const [resetHours, setResetHours] = useState<boolean>(false);
-  const isExistingEvent = Boolean(values.code);
 
   const handleEventTypeChange = (newValue: string) => {
     setFieldValue('type', newValue);
     setResetHours(EventTypeMappingToBillable[newValue]);
   };
+
+  const budgetLabel = EventTypeBudgetLabel[values.type];
 
   return (
     <Form id={EVENT_FORM_ID}>
@@ -60,7 +63,7 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             component={TextField}
           />
         </Grid>
-        <Grid size={{ xs: 6 }}>
+        <Grid size={{ xs: 12 }}>
           <Field
             name="costs"
             type="number"
@@ -68,25 +71,6 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             fullWidth
             component={TextField}
           />
-        </Grid>
-        <Grid size={{ xs: 6 }}>
-          <Field
-            name="budgetCategory"
-            label="Budget category"
-            select
-            fullWidth
-            disabled={isExistingEvent}
-            helperText={
-              isExistingEvent
-                ? "Budget category can't be changed after creation"
-                : undefined
-            }
-            component={TextField}
-          >
-            <MenuItem value="">None</MenuItem>
-            <MenuItem value="HACK">Hack</MenuItem>
-            <MenuItem value="TRAINING">Training</MenuItem>
-          </Field>
         </Grid>
         <Grid size={{ xs: 12 }}>
           <PersonSelectorField name="personIds" multiple fullWidth />
@@ -96,6 +80,15 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             value={values.type}
             onChange={handleEventTypeChange}
           />
+          {budgetLabel && (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 0.5, display: 'block' }}
+            >
+              {budgetLabel}
+            </Typography>
+          )}
         </Grid>
         <Grid size={{ xs: 6 }}>
           <DatePickerField name="from" label="From" maxDate={values.to} />
@@ -126,7 +119,6 @@ export function EventForm({ value, onSubmit }: EventFormProps) {
       days: data.days,
       costs: data.costs,
       type: data.type,
-      budgetCategory: data.budgetCategory,
     });
   };
 

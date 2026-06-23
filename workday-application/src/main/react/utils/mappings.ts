@@ -13,3 +13,11 @@ export const EventTypeMappingToBillable: Record<EventType, boolean> = {
   [EventType.FLOCK_COMMUNITY_DAY]: true,
   [EventType.CONFERENCE]: false,
 };
+
+// Mirrors backend EventType.defaultBudgetCategory(); keep in sync.
+export const EventTypeBudgetLabel: Record<EventType, string | null> = {
+  [EventType.GENERAL_EVENT]: null,
+  [EventType.FLOCK_HACK_DAY]: 'Deducts from your hack day budget',
+  [EventType.FLOCK_COMMUNITY_DAY]: null,
+  [EventType.CONFERENCE]: 'Deducts from your training budget',
+};
