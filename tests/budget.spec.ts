@@ -6,13 +6,8 @@ import {
   When_I_fill_in_the_date_range_from_till,
 } from './steps/workdaySteps';
 
-// Budget-on-EventDay consuming feature:
-//   - GET /api/budget-summary renders the three summary cards (/budget page)
-//   - The event dialog exposes the "Event type" budget marker,
-//     and a TRAINING-marked event persists through POST /api/events.
-//
-// The session date sits in May 2026 (see events.spec.ts), so the booking and
-// the current-year budget summary line up with the seeded develop data.
+// The session date sits in May 2026 (see events.spec.ts), so the booking and the
+// current-year budget summary line up with the seeded develop data.
 const RUN_ID = Date.now();
 const TRAINING_EVENT_DESCRIPTION = `E2E training ${RUN_ID}`;
 const EVENT_FROM = '04-05-2026';
@@ -56,7 +51,7 @@ test.describe('Budget on EventDay', () => {
     await dialog.getByLabel('Description').fill(TRAINING_EVENT_DESCRIPTION);
     await dialog.getByLabel('Costs').fill(EVENT_COSTS);
 
-    await dialog.getByLabel('Event type').click();
+    await dialog.getByLabel('Budget category').click();
     await page.getByRole('option', { name: 'Training' }).click();
 
     await When_I_fill_in_the_date_range_from_till(page, EVENT_FROM, EVENT_TO);
