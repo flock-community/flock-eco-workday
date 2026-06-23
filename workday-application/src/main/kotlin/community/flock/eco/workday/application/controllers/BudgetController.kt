@@ -40,14 +40,18 @@ class BudgetController(
     private fun resolvePerson(
         auth: Authentication,
         personId: String?,
-    ): Person =
-        if (personId != null && auth.canQueryOthers()) {
-            personService.findByUuid(UUID.fromString(personId))
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found")
-        } else {
-            personService.findByUserCode(auth.name)
-                ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not linked to person")
+    ): Person {
+        val self = personService.findByUserCode(auth.name)
+        if (personId == null) {
+            return self ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not linked to person")
         }
+        val requested = UUID.fromString(personId)
+        if (requested != self?.uuid && !auth.canQueryOthers()) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to query other persons")
+        }
+        return personService.findByUuid(requested)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found")
+    }
 
     private fun Authentication.canQueryOthers(): Boolean =
         authorities.map { it.authority }.contains(AggregationAuthority.READ.toName())

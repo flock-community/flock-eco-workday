@@ -10,7 +10,8 @@ import java.util.UUID
 
 @Service
 class BudgetSummaryService(
-    private val dataService: DataService,
+    private val contractService: ContractService,
+    private val eventDayService: EventDayService,
 ) {
     fun getSummary(
         personId: UUID,
@@ -19,15 +20,16 @@ class BudgetSummaryService(
         val from = LocalDate.of(year, 1, 1)
         val to = LocalDate.of(year, 12, 31)
         val period = FromToPeriod(from, to)
-        val data = dataService.findAllData(from, to, personId)
-        val internalContracts = data.contract.filterIsInstance<ContractInternal>()
+        val internalContracts =
+            contractService.findAllActiveByPerson(from, to, personId).filterIsInstance<ContractInternal>()
+        val eventDays = eventDayService.findAllActiveByPerson(from, to, personId)
 
         val hackHoursBudget = internalContracts.map { it.totalHackDayHoursInPeriod(period) }.sum()
         val trainingHoursBudget = internalContracts.map { it.totalTrainingDayHoursInPeriod(period) }.sum()
         val trainingMoneyBudget = internalContracts.map { it.totalTrainingMoneyInPeriod(period) }.sum()
 
-        val hackDays = data.eventDay.filter { it.event.allocationType == AllocationType.HACK }
-        val trainingDays = data.eventDay.filter { it.event.allocationType == AllocationType.TRAINING }
+        val hackDays = eventDays.filter { it.event.allocationType == AllocationType.HACK }
+        val trainingDays = eventDays.filter { it.event.allocationType == AllocationType.TRAINING }
         val hackHoursUsed = hackDays.sumOf { it.hours }.toBigDecimal()
         val trainingHoursUsed = trainingDays.sumOf { it.hours }.toBigDecimal()
         val trainingMoneyUsed = trainingDays.fold(BigDecimal.ZERO) { acc, day -> acc + (day.cost ?: BigDecimal.ZERO) }

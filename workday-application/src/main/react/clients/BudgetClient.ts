@@ -1,3 +1,4 @@
+import { checkResponse, validateResponse } from '@workday-core';
 import type { BudgetSummaryResponse } from '../wirespec/model';
 import type { Person } from './PersonClient';
 
@@ -13,14 +14,15 @@ const buildQueryString = (
     .join('&')}`;
 };
 
-const getSummary = async (
+const getSummary = (
   person?: Person,
   year?: number,
 ): Promise<BudgetSummaryResponse> => {
   const query = buildQueryString({ personId: person?.uuid, year });
-  const res = await fetch(`${summaryPath}${query}`);
-  if (!res.ok) throw new Error(`Failed to fetch budget summary: ${res.status}`);
-  return res.json();
+  return fetch(`${summaryPath}${query}`)
+    .then((res) => validateResponse<BudgetSummaryResponse>(res))
+    .then(checkResponse)
+    .then((res) => res.body);
 };
 
 export const BudgetClient = {

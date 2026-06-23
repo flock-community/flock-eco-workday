@@ -35,16 +35,25 @@ export function DropzoneAreaField({ name, endpoint }: DropzoneAreaFieldProps) {
             body: formData,
           };
           const res = await fetch(endpoint, opts);
+          if (!res.ok) {
+            throw new Error(`Upload failed for ${file.name}: ${res.status}`);
+          }
           const uuid = await res.json();
           return {
             name: file.name,
             fileReference: uuid,
           } satisfies UploadedFile;
         }),
-      ).then((res) => {
-        setFieldValue(name, [...value, ...res]);
-        setUpload(false);
-      });
+      )
+        .then((uploaded) => {
+          setFieldValue(name, [...value, ...uploaded]);
+        })
+        .catch((err) => {
+          console.error(err);
+        })
+        .finally(() => {
+          setUpload(false);
+        });
     };
 
     const handleDeleteFile = (file) => () => {
