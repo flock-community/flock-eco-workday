@@ -1,0 +1,370 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: budget.spec.ts >> Budget on EventDay >> Admin creates a TRAINING-marked event
+- Location: tests/budget.spec.ts:46:3
+
+# Error details
+
+```
+Test timeout of 60000ms exceeded.
+```
+
+```
+Error: locator.click: Test timeout of 60000ms exceeded.
+Call log:
+  - waiting for getByRole('dialog').getByLabel('Event type')
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e5]:
+      - button [ref=e6] [cursor=pointer]:
+        - img [ref=e7]
+      - link [ref=e9] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e10]: Flock.
+        - generic [ref=e11]: Workday
+      - button [ref=e12] [cursor=pointer]:
+        - img [ref=e13]
+      - button [ref=e16] [cursor=pointer]:
+        - img [ref=e17]
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e23]: Events
+        - button [ref=e25] [cursor=pointer]:
+          - img [ref=e26]
+          - text: Add
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e33]:
+            - generic [ref=e34]:
+              - heading [level=6] [ref=e35]: Flock. Hack Day
+              - generic [ref=e37]: Flock. Hack Day
+            - paragraph [ref=e38]: "Period: 28-12-2026 - 28-12-2026"
+            - paragraph [ref=e39]: "Aantal dagen: 1"
+            - paragraph [ref=e40]: "Aantal uren: 8"
+            - paragraph [ref=e41]: "Totale kosten: € 750,00"
+            - paragraph [ref=e42]: Ieniemienie Mouse,Bert Muppets,Aart Staartjes
+          - generic [ref=e45]:
+            - generic [ref=e46]:
+              - heading [level=6] [ref=e47]: Flock. Hack Day
+              - generic [ref=e49]: Flock. Hack Day
+            - paragraph [ref=e50]: "Period: 14-11-2026 - 14-11-2026"
+            - paragraph [ref=e51]: "Aantal dagen: 1"
+            - paragraph [ref=e52]: "Aantal uren: 8"
+            - paragraph [ref=e53]: "Totale kosten: € 750,00"
+            - paragraph [ref=e54]: Tommy Dog,Ernie Muppets,Pino Woodpecker
+          - generic [ref=e57]:
+            - generic [ref=e58]:
+              - heading [level=6] [ref=e59]: Halloween
+              - generic [ref=e61]: General event
+            - paragraph [ref=e62]: "Period: 31-10-2026 - 31-10-2026"
+            - paragraph [ref=e63]: "Aantal dagen: 1"
+            - paragraph [ref=e64]: "Aantal uren: 2"
+            - paragraph [ref=e65]: "Totale kosten: € 18,13"
+            - paragraph [ref=e66]: Tommy Dog,Ieniemienie Mouse,Bert Muppets,Ernie Muppets,Aart Staartjes,Pino Woodpecker
+          - generic [ref=e69]:
+            - generic [ref=e70]:
+              - heading [level=6] [ref=e71]: Flock. Hack Day
+              - generic [ref=e73]: Flock. Hack Day
+            - paragraph [ref=e74]: "Period: 28-10-2026 - 28-10-2026"
+            - paragraph [ref=e75]: "Aantal dagen: 1"
+            - paragraph [ref=e76]: "Aantal uren: 8"
+            - paragraph [ref=e77]: "Totale kosten: € 750,00"
+            - paragraph [ref=e78]: Ieniemienie Mouse,Bert Muppets,Aart Staartjes
+          - generic [ref=e81]:
+            - generic [ref=e82]:
+              - heading [level=6] [ref=e83]: Flock. Hack Day
+              - generic [ref=e85]: Flock. Hack Day
+            - paragraph [ref=e86]: "Period: 14-09-2026 - 14-09-2026"
+            - paragraph [ref=e87]: "Aantal dagen: 1"
+            - paragraph [ref=e88]: "Aantal uren: 8"
+            - paragraph [ref=e89]: "Totale kosten: € 750,00"
+            - paragraph [ref=e90]: Tommy Dog,Ernie Muppets,Pino Woodpecker
+          - generic [ref=e93]:
+            - generic [ref=e94]:
+              - heading [level=6] [ref=e95]: Flock. Community Day
+              - generic [ref=e97]: Flock. Community Day
+            - paragraph [ref=e98]: "Period: 12-09-2026 - 12-09-2026"
+            - paragraph [ref=e99]: "Aantal dagen: 1"
+            - paragraph [ref=e100]: "Aantal uren: 7"
+            - paragraph [ref=e101]: "Totale kosten: € 750,00"
+            - paragraph [ref=e102]: Tommy Dog,Ieniemienie Mouse,Bert Muppets,Ernie Muppets,Aart Staartjes,Pino Woodpecker
+          - generic [ref=e105]:
+            - generic [ref=e106]:
+              - heading [level=6] [ref=e107]: Personal study budget
+              - generic [ref=e109]: General event
+            - paragraph [ref=e110]: "Period: 02-09-2026 - 02-09-2026"
+            - paragraph [ref=e111]: "Aantal dagen: 1"
+            - paragraph [ref=e112]: "Aantal uren: 8"
+            - paragraph [ref=e113]: "Totale kosten: € 450,00"
+            - paragraph [ref=e114]: Bert Muppets
+          - generic [ref=e117]:
+            - generic [ref=e118]:
+              - heading [level=6] [ref=e119]: Flock. Hack Day
+              - generic [ref=e121]: Flock. Hack Day
+            - paragraph [ref=e122]: "Period: 28-08-2026 - 28-08-2026"
+            - paragraph [ref=e123]: "Aantal dagen: 1"
+            - paragraph [ref=e124]: "Aantal uren: 8"
+            - paragraph [ref=e125]: "Totale kosten: € 750,00"
+            - paragraph [ref=e126]: Ieniemienie Mouse,Bert Muppets,Aart Staartjes
+          - generic [ref=e129]:
+            - generic [ref=e130]:
+              - heading [level=6] [ref=e131]: Flock. Hack Day
+              - generic [ref=e133]: Flock. Hack Day
+            - paragraph [ref=e134]: "Period: 28-08-2026 - 28-08-2026"
+            - paragraph [ref=e135]: "Aantal dagen: 1"
+            - paragraph [ref=e136]: "Aantal uren: 8"
+            - paragraph [ref=e137]: "Totale kosten: € 750,00"
+            - paragraph [ref=e138]: Ieniemienie Mouse,Bert Muppets,Aart Staartjes
+          - generic [ref=e141]:
+            - generic [ref=e142]:
+              - heading [level=6] [ref=e143]: Flock. Hack Day
+              - generic [ref=e145]: Flock. Hack Day
+            - paragraph [ref=e146]: "Period: 14-07-2026 - 14-07-2026"
+            - paragraph [ref=e147]: "Aantal dagen: 1"
+            - paragraph [ref=e148]: "Aantal uren: 8"
+            - paragraph [ref=e149]: "Totale kosten: € 750,00"
+            - paragraph [ref=e150]: Tommy Dog,Ernie Muppets,Pino Woodpecker
+        - navigation [ref=e152]:
+          - list [ref=e153]:
+            - listitem [ref=e154]:
+              - button [disabled]:
+                - img
+            - listitem [ref=e155]:
+              - button [ref=e156] [cursor=pointer]: "1"
+            - listitem [ref=e157]:
+              - button [ref=e158] [cursor=pointer]: "2"
+            - listitem [ref=e159]:
+              - button [ref=e160] [cursor=pointer]: "3"
+            - listitem [ref=e161]:
+              - button [ref=e162] [cursor=pointer]:
+                - img [ref=e163]
+  - dialog "Create Event Have a fun time!" [ref=e167]:
+    - heading "Create Event Have a fun time!" [level=2] [ref=e168]:
+      - generic [ref=e169]:
+        - img [ref=e171]
+        - generic [ref=e173]:
+          - paragraph [ref=e174]: Create Event
+          - generic [ref=e175]: Have a fun time!
+        - button [ref=e176] [cursor=pointer]:
+          - img [ref=e177]
+    - generic [ref=e184]:
+      - generic [ref=e186]:
+        - generic [ref=e187]: Description
+        - generic [ref=e188]:
+          - textbox "Description" [ref=e189]: E2E training 1782231280649
+          - group:
+            - generic: Description
+      - generic [ref=e191]:
+        - generic [ref=e192]: Costs
+        - generic [ref=e193]:
+          - spinbutton "Costs" [active] [ref=e194]: "300"
+          - group:
+            - generic: Costs
+      - generic [ref=e196]:
+        - generic: Budget category
+        - generic [ref=e197]:
+          - combobox "Budget category" [ref=e198] [cursor=pointer]
+          - textbox
+          - img
+          - group:
+            - generic: Budget category
+      - generic [ref=e202]:
+        - combobox [ref=e203] [cursor=pointer]
+        - textbox
+        - img
+        - group
+      - generic [ref=e205]:
+        - combobox [ref=e206] [cursor=pointer]: General event
+        - textbox: GENERAL_EVENT
+        - img
+        - group:
+          - generic: Event type
+      - generic [ref=e208]:
+        - generic [ref=e209]: From
+        - generic [ref=e210]:
+          - textbox "From" [ref=e211]:
+            - /placeholder: DD-MM-YYYY
+            - text: 23-06-2026
+          - button "Choose date, selected date is 23 jun 2026" [ref=e213] [cursor=pointer]:
+            - img [ref=e214]
+          - group:
+            - generic: From
+      - generic [ref=e217]:
+        - generic [ref=e218]: To
+        - generic [ref=e219]:
+          - textbox "To" [ref=e220]:
+            - /placeholder: DD-MM-YYYY
+            - text: 23-06-2026
+          - button "Choose date, selected date is 23 jun 2026" [ref=e222] [cursor=pointer]:
+            - img [ref=e223]
+          - group:
+            - generic: To
+      - generic [ref=e225]:
+        - generic [ref=e226]:
+          - paragraph [ref=e228]: Week
+          - paragraph [ref=e230]: Ma
+          - paragraph [ref=e232]: Di
+          - paragraph [ref=e234]: Wo
+          - paragraph [ref=e236]: Do
+          - paragraph [ref=e238]: Vr
+          - paragraph [ref=e240]: Za
+          - paragraph [ref=e242]: Zo
+          - paragraph [ref=e244]: Total
+        - generic [ref=e245]:
+          - paragraph [ref=e247]: "26"
+          - generic [ref=e249]:
+            - generic: "-"
+            - generic [ref=e250]:
+              - spinbutton "-" [disabled] [ref=e251]
+              - group:
+                - generic: "-"
+          - generic [ref=e253]:
+            - generic [ref=e254]: 23 Jun
+            - generic [ref=e255]:
+              - spinbutton "23 Jun" [ref=e256]: "8"
+              - group:
+                - generic: 23 Jun
+          - generic [ref=e258]:
+            - generic: "-"
+            - generic [ref=e259]:
+              - spinbutton "-" [disabled] [ref=e260]
+              - group:
+                - generic: "-"
+          - generic [ref=e262]:
+            - generic: "-"
+            - generic [ref=e263]:
+              - spinbutton "-" [disabled] [ref=e264]
+              - group:
+                - generic: "-"
+          - generic [ref=e266]:
+            - generic: "-"
+            - generic [ref=e267]:
+              - spinbutton "-" [disabled] [ref=e268]
+              - group:
+                - generic: "-"
+          - generic [ref=e270]:
+            - generic: "-"
+            - generic [ref=e271]:
+              - spinbutton "-" [disabled] [ref=e272]
+              - group:
+                - generic: "-"
+          - generic [ref=e274]:
+            - generic: "-"
+            - generic [ref=e275]:
+              - spinbutton "-" [disabled] [ref=e276]
+              - group:
+                - generic: "-"
+          - paragraph [ref=e278]: "8"
+        - generic [ref=e280]:
+          - paragraph [ref=e282]: Period total
+          - paragraph [ref=e284]: "8"
+        - group [ref=e285]:
+          - button "Clear all" [ref=e286] [cursor=pointer]
+          - button "8 hours per day" [ref=e287] [cursor=pointer]
+          - button "9 hours per day" [ref=e288] [cursor=pointer]
+    - separator [ref=e289]
+    - generic [ref=e290]:
+      - button "Cancel" [ref=e291] [cursor=pointer]
+      - button "Delete" [ref=e292] [cursor=pointer]
+      - button "Save" [ref=e293] [cursor=pointer]
+```
+
+# Test source
+
+```ts
+  1  | import { expect, test } from '@playwright/test';
+  2  | import { findOnAnyPage } from './steps/dayListSteps';
+  3  | import {
+  4  |   Given_I_am_logged_in_as_user,
+  5  |   When_I_click_the_button,
+  6  |   When_I_fill_in_the_date_range_from_till,
+  7  | } from './steps/workdaySteps';
+  8  | 
+  9  | // Budget-on-EventDay consuming feature:
+  10 | //   - GET /api/budget-summary renders the three summary cards (/budget page)
+  11 | //   - The event dialog exposes the "Event type" budget marker,
+  12 | //     and a TRAINING-marked event persists through POST /api/events.
+  13 | //
+  14 | // The session date sits in May 2026 (see events.spec.ts), so the booking and
+  15 | // the current-year budget summary line up with the seeded develop data.
+  16 | const RUN_ID = Date.now();
+  17 | const TRAINING_EVENT_DESCRIPTION = `E2E training ${RUN_ID}`;
+  18 | const EVENT_FROM = '04-05-2026';
+  19 | const EVENT_TO = '04-05-2026';
+  20 | const EVENT_COSTS = '300';
+  21 | 
+  22 | test.describe('Budget on EventDay', () => {
+  23 |   test.beforeEach(async ({ context }) => {
+  24 |     await context.clearCookies();
+  25 |   });
+  26 | 
+  27 |   test('Admin sees the budget summary cards', async ({ page }) => {
+  28 |     await Given_I_am_logged_in_as_user(page, 'bert');
+  29 | 
+  30 |     const summaryResponse = page.waitForResponse(
+  31 |       (response) =>
+  32 |         response.url().includes('/api/budget-summary') &&
+  33 |         response.request().method() === 'GET' &&
+  34 |         response.status() === 200,
+  35 |     );
+  36 |     await page.goto('/budget');
+  37 |     await summaryResponse;
+  38 | 
+  39 |     await expect(page.getByText('Hack Hours')).toBeVisible();
+  40 |     await expect(page.getByText('Training Hours')).toBeVisible();
+  41 |     await expect(page.getByText('Training Money')).toBeVisible();
+  42 |     await expect(page.getByText('Budget:').first()).toBeVisible();
+  43 |     await expect(page.getByText('Used:').first()).toBeVisible();
+  44 |   });
+  45 | 
+  46 |   test('Admin creates a TRAINING-marked event', async ({ page }) => {
+  47 |     await Given_I_am_logged_in_as_user(page, 'bert');
+  48 | 
+  49 |     await page.goto('/event');
+  50 |     await page.waitForLoadState('networkidle');
+  51 | 
+  52 |     await When_I_click_the_button(page, 'Add');
+  53 |     const dialog = page.getByRole('dialog');
+  54 |     await expect(dialog.getByLabel('Description')).toBeVisible();
+  55 | 
+  56 |     await dialog.getByLabel('Description').fill(TRAINING_EVENT_DESCRIPTION);
+  57 |     await dialog.getByLabel('Costs').fill(EVENT_COSTS);
+  58 | 
+> 59 |     await dialog.getByLabel('Event type').click();
+     |                                           ^ Error: locator.click: Test timeout of 60000ms exceeded.
+  60 |     await page.getByRole('option', { name: 'Training' }).click();
+  61 | 
+  62 |     await When_I_fill_in_the_date_range_from_till(page, EVENT_FROM, EVENT_TO);
+  63 | 
+  64 |     const eventPost = page.waitForResponse(
+  65 |       (response) =>
+  66 |         response.url().includes('/api/events') &&
+  67 |         response.request().method() === 'POST' &&
+  68 |         response.status() < 400,
+  69 |     );
+  70 |     await When_I_click_the_button(page, 'Save');
+  71 |     await eventPost;
+  72 |     await expect(dialog).toBeHidden({ timeout: 10000 });
+  73 |     await page.waitForLoadState('networkidle');
+  74 | 
+  75 |     const eventCards = page
+  76 |       .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+  77 |       .filter({ hasText: TRAINING_EVENT_DESCRIPTION });
+  78 |     const eventCard = await findOnAnyPage(page, eventCards);
+  79 |     await expect(eventCard).toContainText(TRAINING_EVENT_DESCRIPTION);
+  80 |   });
+  81 | });
+  82 | 
+```
