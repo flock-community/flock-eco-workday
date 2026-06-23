@@ -1,6 +1,7 @@
 package community.flock.eco.workday.model
 
 import community.flock.eco.workday.application.model.Day
+import community.flock.eco.workday.application.services.FromToPeriod
 import community.flock.eco.workday.application.utils.DateUtils
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -9,6 +10,24 @@ import kotlin.test.assertEquals
 class DayTest {
     val startDate: LocalDate = LocalDate.of(2021, 12, 1)
     val endDate: LocalDate = LocalDate.of(2021, 12, 5)
+
+    @Test
+    fun `total hours in period spreads evenly when days is shorter than the range`() {
+        val day = object : Day(id = 0L, hours = 16.0, from = startDate, to = startDate.plusDays(1), days = mutableListOf(8.0)) {}
+
+        val total = day.totalHoursInPeriod(FromToPeriod(startDate, startDate.plusDays(1)))
+
+        assertEquals(16.0, total.toDouble())
+    }
+
+    @Test
+    fun `hours per day spreads evenly when days is shorter than the range`() {
+        val day = object : Day(id = 0L, hours = 16.0, from = startDate, to = startDate.plusDays(1), days = mutableListOf(8.0)) {}
+
+        val resultHours = day.hoursPerDayInPeriod(startDate, startDate.plusDays(1)).map { it.value.toDouble() }
+
+        assertEquals(listOf(8.0, 8.0), resultHours)
+    }
 
     @Test
     fun `hours per day with missing days`() {

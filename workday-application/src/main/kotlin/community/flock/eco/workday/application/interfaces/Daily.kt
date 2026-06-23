@@ -23,22 +23,19 @@ interface Daily :
             .sum()
     }
 
-    fun hoursPerDay(): Map<LocalDate, BigDecimal> =
-        this
-            .toDateRange()
+    fun hoursPerDay(): Map<LocalDate, BigDecimal> {
+        val dateRange = this.toDateRange()
+        // days can round-trip shorter than the range; an even spread then avoids an out-of-bounds index
+        val positionalDays = this.days?.takeIf { it.size == dateRange.size }
+        val evenHoursPerDay =
+            this.hours
+                .toBigDecimal()
+                .divide(this.countDays().toBigDecimal(), 100, RoundingMode.HALF_UP)
+        return dateRange
             .mapIndexed { index, localDate ->
-                localDate to
-                    if (this.days?.isNotEmpty()!!) {
-                        this.days
-                            ?.get(index)
-                            ?.toBigDecimal()
-                            ?: BigDecimal.ZERO
-                    } else {
-                        this.hours
-                            .toBigDecimal()
-                            .divide(this.countDays().toBigDecimal(), 100, RoundingMode.HALF_UP)
-                    }
+                localDate to (positionalDays?.get(index)?.toBigDecimal() ?: evenHoursPerDay)
             }.toMap()
+    }
 }
 
 fun <T : Daily> T.validate(): T =
