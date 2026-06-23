@@ -13,6 +13,7 @@ const TRAINING_EVENT_DESCRIPTION = `E2E training ${RUN_ID}`;
 const EVENT_FROM = '04-05-2026';
 const EVENT_TO = '04-05-2026';
 const EVENT_COSTS = '300';
+const TRAINING_EVENT_TYPE = 'Conference';
 
 test.describe('Budget on EventDay', () => {
   test.beforeEach(async ({ context }) => {
@@ -51,8 +52,9 @@ test.describe('Budget on EventDay', () => {
     await dialog.getByLabel('Description').fill(TRAINING_EVENT_DESCRIPTION);
     await dialog.getByLabel('Costs').fill(EVENT_COSTS);
 
-    await dialog.getByLabel('Budget category').click();
-    await page.getByRole('option', { name: 'Training' }).click();
+    const eventTypeSelect = dialog.getByRole('combobox').nth(1);
+    await eventTypeSelect.click();
+    await page.getByRole('option', { name: TRAINING_EVENT_TYPE }).click();
 
     await When_I_fill_in_the_date_range_from_till(page, EVENT_FROM, EVENT_TO);
 
