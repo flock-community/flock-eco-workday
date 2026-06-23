@@ -77,7 +77,9 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             fullWidth
             disabled={isExistingEvent}
             helperText={
-              isExistingEvent ? "Event type can't be changed after creation" : undefined
+              isExistingEvent
+                ? "Event type can't be changed after creation"
+                : undefined
             }
             component={TextField}
           >
