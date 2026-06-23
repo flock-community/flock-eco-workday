@@ -109,7 +109,7 @@ class AggregationService(
                     .sum(),
             hackHoursUsed =
                 data.eventDay
-                    .filter { it.event.effectiveBudgetCategory == BudgetCategory.HACK }
+                    .filter { it.event.budgetCategory == BudgetCategory.HACK }
                     .sumOf { it.hours }
                     .toBigDecimal(),
         )
@@ -195,7 +195,7 @@ class AggregationService(
                             .sum(),
                     usedHours =
                         all.eventDay
-                            .filter { it.event.effectiveBudgetCategory == BudgetCategory.HACK }
+                            .filter { it.event.budgetCategory == BudgetCategory.HACK }
                             .filter { it.person == person }
                             .sumOf { it.hours }
                             .toBigDecimal(),

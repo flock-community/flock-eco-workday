@@ -28,11 +28,11 @@ class BudgetSummaryService(
         val trainingHoursBudget = internalContracts.map { it.totalTrainingDayHoursInPeriod(period) }.sum()
         val trainingMoneyBudget = internalContracts.map { it.totalTrainingMoneyInPeriod(period) }.sum()
 
-        val hackDays = eventDays.filter { it.event.effectiveBudgetCategory == BudgetCategory.HACK }
-        val trainingDays = eventDays.filter { it.event.effectiveBudgetCategory == BudgetCategory.TRAINING }
+        val hackDays = eventDays.filter { it.event.budgetCategory == BudgetCategory.HACK }
+        val trainingDays = eventDays.filter { it.event.budgetCategory == BudgetCategory.TRAINING }
         val hackHoursUsed = hackDays.sumOf { it.hours }.toBigDecimal()
         val trainingHoursUsed = trainingDays.sumOf { it.hours }.toBigDecimal()
-        val trainingMoneyUsed = trainingDays.fold(BigDecimal.ZERO) { acc, day -> acc + (day.cost ?: BigDecimal.ZERO) }
+        val trainingMoneyUsed = trainingDays.sumOf { it.cost ?: BigDecimal.ZERO }
 
         return PersonBudgetSummary(
             hackTimeBudget = PersonBudgetItem(hackHoursBudget, hackHoursUsed),
