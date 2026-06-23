@@ -41,6 +41,7 @@ type EventFormFieldsProps = {
 
 function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
   const [resetHours, setResetHours] = useState<boolean>(false);
+  const isExistingEvent = Boolean(values.code);
 
   const handleEventTypeChange = (newValue: string) => {
     setFieldValue('type', newValue);
@@ -71,9 +72,13 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
         <Grid size={{ xs: 6 }}>
           <Field
             name="defaultTimeAllocationType"
-            label="Counts towards budget"
+            label="Event type"
             select
             fullWidth
+            disabled={isExistingEvent}
+            helperText={
+              isExistingEvent ? "Event type can't be changed after creation" : undefined
+            }
             component={TextField}
           >
             <MenuItem value="">None</MenuItem>
