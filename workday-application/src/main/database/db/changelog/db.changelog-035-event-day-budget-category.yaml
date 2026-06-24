@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-035-event-day-budget-category-0
+      author: rkorver
+      comment: >-
+        Per-person budget category override on EventDay. Lets one person's hours on a single
+        event split across HACK and TRAINING budgets (one EventDay per category); a null value
+        falls back to the category derived from the event type.
+      changes:
+        - addColumn:
+            tableName: event_day
+            columns:
+              - column:
+                  name: budget_category
+                  type: VARCHAR(255)

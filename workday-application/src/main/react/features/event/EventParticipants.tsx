@@ -15,16 +15,34 @@ import { useEffect, useRef, useState } from 'react';
 import { EventType } from '../../clients/EventClient';
 import { type Person, PersonClient } from '../../clients/PersonClient';
 import { PeriodInput } from '../../components/inputs/PeriodInput';
+import { currencyFormatter } from '../../utils/Currency';
 import { editDay, type Period } from '../period/Period';
 
 export type Participant = {
   personId: string;
   hours: number;
-  // Per-day hours over the event's date range; undefined means the attendee follows the event blueprint.
+  // Per-day hours that draw on the training budget; undefined means the attendee follows the event blueprint.
   days?: number[];
+  // Per-day hours that draw on the hack budget, same date range as days; undefined means none.
+  hackDays?: number[];
   cost?: number;
-  hoursPinned?: boolean;
   costPinned?: boolean;
+};
+
+type EventDayForm = {
+  personId: string;
+  hours: number;
+  cost: number | null;
+  budgetCategory: 'HACK' | 'TRAINING' | null;
+  days: number[];
+};
+
+type EventDayRaw = {
+  personId?: string;
+  hours?: number;
+  cost?: number;
+  budgetCategory?: 'HACK' | 'TRAINING' | null;
+  days?: number[];
 };
 
 type EventParticipantsProps = {
@@ -41,14 +59,13 @@ type EventParticipantsProps = {
   setFieldValue: (field: string, value: unknown) => void;
 };
 
-const euro = (value: number) =>
-  value.toLocaleString('nl-NL', {
-    style: 'currency',
-    currency: 'EUR',
-  });
+const isMoneyBearing = (type: EventType) => type !== EventType.FLOCK_HACK_DAY;
+const isSplittable = (type: EventType) => type === EventType.CONFERENCE;
 
 const sum = (days: number[]) =>
   days.reduce((acc, h) => acc + (Number(h) || 0), 0);
+
+const zeros = (length: number) => new Array<number>(length).fill(0);
 
 const formatHours = (hours: number) =>
   `${hours.toLocaleString('nl-NL', { maximumFractionDigits: 1 })}h`;
@@ -74,61 +91,115 @@ function redistribute(rows: Participant[], total: number): Participant[] {
   return rows.map((r) => (r.costPinned ? r : { ...r, cost: shares[i++] ?? 0 }));
 }
 
+// Training and hack each map straight to their own budget row, carrying their per-day shape.
+export function toEventDayForms(
+  participants: Participant[],
+  type: EventType,
+  blueprint: number[],
+): EventDayForm[] {
+  const moneyBearing = isMoneyBearing(type);
+  const splittable = isSplittable(type);
+  const forms: EventDayForm[] = [];
+  for (const p of participants) {
+    const training = p.days ?? blueprint;
+    const hack = splittable ? (p.hackDays ?? zeros(blueprint.length)) : [];
+    const hackHours = sum(hack);
+    const trainingHours = sum(training);
+    const cost = moneyBearing ? (p.cost ?? 0) : null;
+    if (hackHours > 0) {
+      forms.push({
+        personId: p.personId,
+        hours: hackHours,
+        cost: null,
+        budgetCategory: 'HACK',
+        days: hack,
+      });
+    }
+    if (trainingHours > 0 || hackHours <= 0 || (cost ?? 0) > 0) {
+      forms.push({
+        personId: p.personId,
+        hours: trainingHours,
+        cost,
+        budgetCategory: null,
+        days: training,
+      });
+    }
+  }
+  return forms;
+}
+
 export function initParticipants(
-  eventDays:
-    | { personId?: string; hours?: number; cost?: number; days?: number[] }[]
-    | undefined,
-  defaultHours: number,
+  eventDays: EventDayRaw[] | undefined,
+  _defaultHours: number,
   type: EventType,
   total: number,
   defaultDays: number[],
 ): Participant[] {
   if (!eventDays || eventDays.length === 0) return [];
-  const moneyBearing = type !== EventType.FLOCK_HACK_DAY;
-  const multiDay = defaultDays.length > 1;
-  const isOverride = (saved?: number[]) =>
-    multiDay && !!saved && !sameDays(saved, defaultDays);
-  const shares = splitEvenly(total, eventDays.length);
-  return eventDays
-    .filter(
-      (
-        d,
-      ): d is {
-        personId: string;
-        hours?: number;
-        cost?: number;
-        days?: number[];
-      } => Boolean(d.personId),
-    )
-    .map((d, i) => {
-      const days = isOverride(d.days) ? d.days : undefined;
-      const hours = days ? sum(days) : (d.hours ?? defaultHours);
-      const cost = moneyBearing ? (d.cost ?? 0) : undefined;
-      return {
-        personId: d.personId,
-        hours,
-        days,
-        hoursPinned: hours !== defaultHours,
-        cost,
-        costPinned:
-          moneyBearing &&
-          d.cost != null &&
-          Math.abs(
-            Math.round(d.cost * 100) - Math.round((shares[i] ?? 0) * 100),
-          ) > 1,
-      };
-    });
+  const moneyBearing = isMoneyBearing(type);
+  const splittable = isSplittable(type);
+  const len = defaultDays.length;
+  const byPerson = new Map<
+    string,
+    { training: number[]; hack: number[]; cost: number }
+  >();
+  for (const d of eventDays) {
+    if (!d.personId) continue;
+    const entry = byPerson.get(d.personId) ?? {
+      training: zeros(len),
+      hack: zeros(len),
+      cost: 0,
+    };
+    const days = d.days ?? zeros(len);
+    const isHackBudgetSplit = splittable && d.budgetCategory === 'HACK';
+    if (isHackBudgetSplit) {
+      days.forEach((h, i) => {
+        entry.hack[i] = (entry.hack[i] ?? 0) + h;
+      });
+    } else {
+      days.forEach((h, i) => {
+        entry.training[i] = (entry.training[i] ?? 0) + h;
+      });
+      entry.cost += d.cost ?? 0;
+    }
+    byPerson.set(d.personId, entry);
+  }
+  const ids = [...byPerson.keys()];
+  const shares = splitEvenly(total, ids.length);
+  return ids.map((personId, i) => {
+    const entry = byPerson.get(personId) as {
+      training: number[];
+      hack: number[];
+      cost: number;
+    };
+    const days = sameDays(entry.training, defaultDays)
+      ? undefined
+      : entry.training;
+    const hackHours = sum(entry.hack);
+    const cost = moneyBearing ? entry.cost : undefined;
+    return {
+      personId,
+      hours: sum(entry.training) + hackHours,
+      days,
+      hackDays: hackHours > 0 ? entry.hack : undefined,
+      cost,
+      costPinned:
+        moneyBearing &&
+        Math.abs(
+          Math.round((cost ?? 0) * 100) - Math.round((shares[i] ?? 0) * 100),
+        ) > 1,
+    };
+  });
 }
 
 function reconcile(
   personIds: string[],
   current: Participant[],
-  defaultHours: number,
   defaultDays: number[],
   total: number,
   moneyBearing: boolean,
+  splittable: boolean,
 ): Participant[] {
-  const multiDay = defaultDays.length > 1;
   const byId = new Map(current.map((p) => [p.personId, p]));
   const rows: Participant[] = personIds.map((personId) => {
     const prev = byId.get(personId);
@@ -137,17 +208,17 @@ function reconcile(
       prev?.days && prev.days.length === defaultDays.length
         ? prev.days
         : undefined;
-    const hoursPinned = prev?.hoursPinned ?? false;
-    const hours = days
-      ? sum(days)
-      : multiDay || !hoursPinned
-        ? defaultHours
-        : (prev?.hours ?? defaultHours);
+    const hackDays =
+      splittable &&
+      prev?.hackDays &&
+      prev.hackDays.length === defaultDays.length
+        ? prev.hackDays
+        : undefined;
     return {
       personId,
       days,
-      hoursPinned,
-      hours,
+      hackDays,
+      hours: sum(days ?? defaultDays) + sum(hackDays ?? []),
       costPinned: moneyBearing ? (prev?.costPinned ?? false) : false,
       cost: moneyBearing
         ? prev?.costPinned
@@ -172,9 +243,9 @@ function same(a: Participant[], b: Participant[]): boolean {
       p.personId === b[i].personId &&
       p.hours === b[i].hours &&
       p.cost === b[i].cost &&
-      !!p.hoursPinned === !!b[i].hoursPinned &&
       !!p.costPinned === !!b[i].costPinned &&
-      sameDays(p.days, b[i].days),
+      sameDays(p.days, b[i].days) &&
+      sameDays(p.hackDays, b[i].hackDays),
   );
 }
 
@@ -190,8 +261,8 @@ export function EventParticipants({
   knownPersons = [],
   setFieldValue,
 }: EventParticipantsProps) {
-  const moneyBearing = type !== EventType.FLOCK_HACK_DAY;
-  const multiDay = defaultDays.length > 1;
+  const moneyBearing = isMoneyBearing(type);
+  const splittable = isSplittable(type);
   const [people, setPeople] =
     useState<{ uuid: string; firstname: string; lastname: string }[]>(
       knownPersons,
@@ -221,18 +292,18 @@ export function EventParticipants({
     const next = reconcile(
       personIds,
       current,
-      defaultHours,
       defaultDays,
       total,
       moneyBearing,
+      splittable,
     );
     if (!same(next, current)) setFieldValue('participants', next);
   }, [
     personIdsKey,
-    defaultHours,
-    defaultDays.length,
+    defaultDays,
     total,
     moneyBearing,
+    splittable,
     setFieldValue,
   ]);
 
@@ -249,7 +320,19 @@ export function EventParticipants({
       return next;
     });
 
-  const setDay = (id: string, date: Dayjs, hours: number) => {
+  const setTrainingDay = (id: string, date: Dayjs, hours: number) => {
+    setFieldValue(
+      'participants',
+      participants.map((p) => {
+        if (p.personId !== id) return p;
+        const base: Period = { from, to, days: p.days ?? defaultDays };
+        const days = editDay(base, date, hours).days ?? [];
+        return { ...p, days, hours: sum(days) + sum(p.hackDays ?? []) };
+      }),
+    );
+  };
+
+  const setHackDay = (id: string, date: Dayjs, hours: number) => {
     setFieldValue(
       'participants',
       participants.map((p) => {
@@ -257,11 +340,15 @@ export function EventParticipants({
         const base: Period = {
           from,
           to,
-          days: p.days ?? (multiDay ? defaultDays : [p.hours]),
+          days: p.hackDays ?? zeros(defaultDays.length),
         };
-        const next = editDay(base, date, hours);
-        const days = next.days ?? [];
-        return { ...p, days, hours: sum(days), hoursPinned: true };
+        const next = editDay(base, date, hours).days ?? [];
+        const hackDays = next.every((h) => h === 0) ? undefined : next;
+        return {
+          ...p,
+          hackDays,
+          hours: sum(p.days ?? defaultDays) + sum(hackDays ?? []),
+        };
       }),
     );
   };
@@ -272,8 +359,8 @@ export function EventParticipants({
         ? {
             ...p,
             days: undefined,
+            hackDays: undefined,
             hours: defaultHours,
-            hoursPinned: false,
             costPinned: false,
           }
         : p,
@@ -311,6 +398,30 @@ export function EventParticipants({
   const balanced = Math.round(costSum * 100) === Math.round(total * 100);
   const anyPinned = participants.some((p) => p.costPinned);
 
+  const costField = (p: Participant, weekIndex: number) =>
+    weekIndex === 0 ? (
+      <TextField
+        size="small"
+        type="number"
+        fullWidth
+        value={p.cost ?? 0}
+        onChange={(e) => setCost(p.personId, e.target.value)}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">€</InputAdornment>,
+        }}
+      />
+    ) : null;
+
+  const sectionHeader = (label: string) => (
+    <Typography
+      variant="subtitle2"
+      color="text.secondary"
+      sx={{ display: 'block', mb: 0.5, pl: 2 }}
+    >
+      {label}
+    </Typography>
+  );
+
   return (
     <Box sx={{ mt: 1 }}>
       <Stack
@@ -329,23 +440,41 @@ export function EventParticipants({
       </Stack>
       <Stack spacing={0.5} sx={{ mt: 1 }}>
         {participants.map((p) => {
-          const effectiveDays = p.days ?? (multiDay ? defaultDays : [p.hours]);
-          const personHours = sum(effectiveDays);
+          const trainingDays = p.days ?? defaultDays;
+          const hackDays = p.hackDays ?? zeros(defaultDays.length);
+          const trainingHours = sum(trainingDays);
+          const hackHours = sum(hackDays);
+          const personHours = trainingHours + hackHours;
+          const split = splittable && hackHours > 0;
           const open = expanded.has(p.personId);
-          const overridden =
-            !!p.hoursPinned || !!p.costPinned || p.days != null;
+          const overridden = p.days != null || hackHours > 0 || !!p.costPinned;
           return (
             <Box key={p.personId}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography sx={{ flex: 1 }} variant="body2">
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                sx={
+                  open
+                    ? { borderBottom: 1, borderColor: 'divider', pb: 0.5 }
+                    : undefined
+                }
+              >
+                <Typography
+                  sx={{ flex: 1, fontWeight: open ? 600 : undefined }}
+                  variant="body2"
+                >
                   {nameOf(p.personId)}
                 </Typography>
                 <Typography
                   variant="body2"
                   color={overridden ? 'text.primary' : 'text.secondary'}
                 >
-                  {formatHours(personHours)}
-                  {moneyBearing && ` · ${euro(p.cost ?? 0)}`}
+                  {split
+                    ? `Training ${formatHours(trainingHours)} · Hack ${formatHours(hackHours)}`
+                    : formatHours(personHours)}
+                  {moneyBearing &&
+                    ` · ${currencyFormatter.format(p.cost ?? 0)}`}
                 </Typography>
                 {open && overridden && (
                   <Button
@@ -365,37 +494,59 @@ export function EventParticipants({
               </Stack>
               <Collapse in={open} unmountOnExit>
                 <Box sx={{ py: 1 }}>
-                  <PeriodInput
-                    period={{ from, to, days: effectiveDays }}
-                    onChange={(date, hours) => setDay(p.personId, date, hours)}
-                    weekLabel
-                    hideWeekTotal
-                    hidePeriodTotal
-                    trailingHeader={moneyBearing ? 'Cost' : undefined}
-                    renderTrailing={
-                      moneyBearing
-                        ? (weekIndex) =>
-                            weekIndex === 0 ? (
-                              <TextField
-                                size="small"
-                                type="number"
-                                fullWidth
-                                value={p.cost ?? 0}
-                                onChange={(e) =>
-                                  setCost(p.personId, e.target.value)
-                                }
-                                InputProps={{
-                                  startAdornment: (
-                                    <InputAdornment position="start">
-                                      €
-                                    </InputAdornment>
-                                  ),
-                                }}
-                              />
-                            ) : null
-                        : undefined
-                    }
-                  />
+                  {splittable ? (
+                    <Stack spacing={1.5}>
+                      <Box>
+                        {sectionHeader('Training hours')}
+                        <PeriodInput
+                          period={{ from, to, days: trainingDays }}
+                          onChange={(date, hours) =>
+                            setTrainingDay(p.personId, date, hours)
+                          }
+                          weekLabel
+                          labelInset={2}
+                          hideWeekTotal
+                          hidePeriodTotal
+                          trailingHeader={moneyBearing ? 'Cost' : undefined}
+                          renderTrailing={
+                            moneyBearing
+                              ? (weekIndex) => costField(p, weekIndex)
+                              : undefined
+                          }
+                        />
+                      </Box>
+                      <Box>
+                        {sectionHeader('Hack hours')}
+                        <PeriodInput
+                          period={{ from, to, days: hackDays }}
+                          onChange={(date, hours) =>
+                            setHackDay(p.personId, date, hours)
+                          }
+                          weekLabel
+                          labelInset={2}
+                          hideWeekTotal
+                          hidePeriodTotal
+                        />
+                      </Box>
+                    </Stack>
+                  ) : (
+                    <PeriodInput
+                      period={{ from, to, days: trainingDays }}
+                      onChange={(date, hours) =>
+                        setTrainingDay(p.personId, date, hours)
+                      }
+                      weekLabel
+                      labelInset={2}
+                      hideWeekTotal
+                      hidePeriodTotal
+                      trailingHeader={moneyBearing ? 'Cost' : undefined}
+                      renderTrailing={
+                        moneyBearing
+                          ? (weekIndex) => costField(p, weekIndex)
+                          : undefined
+                      }
+                    />
+                  )}
                 </Box>
               </Collapse>
             </Box>
@@ -408,7 +559,8 @@ export function EventParticipants({
           color={balanced ? 'text.secondary' : 'error'}
           sx={{ mt: 1, display: 'block', textAlign: 'right' }}
         >
-          Shares total {euro(costSum)} of {euro(total)}
+          Shares total {currencyFormatter.format(costSum)} of{' '}
+          {currencyFormatter.format(total)}
           {!balanced && ' — does not match event cost'}
         </Typography>
       )}

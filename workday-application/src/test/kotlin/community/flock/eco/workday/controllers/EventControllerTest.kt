@@ -4,6 +4,7 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.forms.EventDayInput
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.forms.PersonForm
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.repository.EventRepository
@@ -492,6 +493,37 @@ class EventControllerTest : WorkdayIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("\$.eventDays[0].personId").value(person.uuid.toString()))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.eventDays[0].hours").value(5.0))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.eventDays[0].cost").value(1000.0))
+    }
+
+    @Test
+    fun `a person split across budget categories persists one event day per category, money on training only`() {
+        val day = LocalDate.of(2023, 3, 1)
+        val person = createPerson(createUser(userAuthorities).account.user.code)
+        val created =
+            EventForm(
+                description = "Conf",
+                from = day,
+                to = day,
+                hours = 8.0,
+                days = mutableListOf(8.0),
+                costs = 1000.0,
+                personIds = listOf(person.uuid),
+                participants =
+                    listOf(
+                        EventDayInput(person.uuid, hours = 6.0, cost = BigDecimal("1000.00"), budgetCategory = null),
+                        EventDayInput(person.uuid, hours = 2.0, cost = BigDecimal("999.00"), budgetCategory = BudgetCategory.HACK),
+                    ),
+                type = EventType.CONFERENCE,
+            ).run { eventService.create(this) }
+
+        val days = eventDayRepository.findAllByEventCode(created.code).sortedByDescending { it.hours }
+        assertEquals(2, days.size)
+        assertEquals(6.0, days[0].hours)
+        assertEquals(BigDecimal("1000.00"), days[0].cost)
+        assertNull(days[0].budgetCategory)
+        assertEquals(2.0, days[1].hours)
+        assertNull(days[1].cost)
+        assertEquals(BudgetCategory.HACK, days[1].budgetCategory)
     }
 
     private fun costSumOf(code: String): BigDecimal =

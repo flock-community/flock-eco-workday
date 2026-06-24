@@ -3,6 +3,7 @@ package community.flock.eco.workday.application.services
 import community.flock.eco.workday.application.forms.EventDayInput
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.interfaces.validate
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventDay
 import community.flock.eco.workday.application.model.Person
@@ -124,8 +125,8 @@ class EventService(
         return event.refreshed()
     }
 
-    // Per-attendee hours and cost arrive already balanced from the admin modal (cost shares
-    // sum to the event total); persist them verbatim, only normalizing money to whole cents.
+    // Cost shares arrive already balanced from the admin modal; persist verbatim (cents only).
+    // A person may appear once per budget category; HACK rows are hours-only, so money is dropped.
     private fun Event.rebuildEventDaysFromParticipants(participants: List<EventDayInput>) {
         eventDayRepository.deleteAll(eventDayRepository.findAllByEventCode(code))
         val personsById =
@@ -134,12 +135,15 @@ class EventService(
                 .associateBy { it.uuid }
         participants.forEach { participant ->
             val person = personsById[participant.personId] ?: return@forEach
+            val category = participant.budgetCategory ?: budgetCategory
+            val cost = if (category == BudgetCategory.HACK) null else participant.cost?.setScale(2, RoundingMode.HALF_UP)
             eventDayRepository.save(
                 eventDayFor(
                     person = person,
-                    cost = participant.cost?.setScale(2, RoundingMode.HALF_UP),
+                    cost = cost,
                     hours = participant.hours,
                     days = participant.days?.toMutableList() ?: days?.toMutableList(),
+                    budgetCategory = participant.budgetCategory,
                 ),
             )
         }
@@ -166,14 +170,16 @@ class EventService(
         }
     }
 
-    // Zero-cost events (e.g. hack days) are skipped so their per-person cost stays null.
+    // Money lands only on non-HACK rows: HACK is hours-only (no hack money budget), so its
+    // cost stays null and the event total splits across the remaining rows.
     private fun Event.rebalanceCosts() {
-        val total = costs.toBigDecimal()
-        if (total.signum() == 0) return
         val days = eventDayRepository.findAllByEventCode(code)
-        if (days.isEmpty()) return
-        val costShares = splitEvenly(total, days.size)
-        days.forEachIndexed { index, day -> day.cost = costShares[index] }
+        val (hackDays, moneyDays) = days.partition { (it.budgetCategory ?: budgetCategory) == BudgetCategory.HACK }
+        hackDays.forEach { it.cost = null }
+        val total = costs.toBigDecimal()
+        if (total.signum() == 0 || moneyDays.isEmpty()) return
+        val costShares = splitEvenly(total, moneyDays.size)
+        moneyDays.forEachIndexed { index, day -> day.cost = costShares[index] }
     }
 
     private fun Event.eventDayFor(
@@ -181,12 +187,14 @@ class EventService(
         cost: BigDecimal? = null,
         hours: Double = this.hours,
         days: MutableList<Double>? = this.days?.toMutableList(),
+        budgetCategory: BudgetCategory? = null,
     ) = EventDay(
         from = from,
         to = to,
         hours = hours,
         days = days,
         cost = cost,
+        budgetCategory = budgetCategory,
         person = person,
         event = this,
     )

@@ -4,6 +4,7 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.interfaces.Period
 import community.flock.eco.workday.application.model.Assignment
 import community.flock.eco.workday.application.model.ContractType
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventDay
 import community.flock.eco.workday.application.model.EventType
@@ -808,5 +809,48 @@ class AggregationServiceTest(
 
         assertEquals(4, aggregationService.totalPerPerson(day, day, partTimer).event)
         assertEquals(8, aggregationService.totalPerPerson(day, day, fullDay).event)
+    }
+
+    @Test
+    fun `a per-row hack split on a conference counts toward hack hours used`() {
+        val person = createHelper.createPersonEntity("Hack", "Spill")
+        val day = LocalDate.of(2021, 12, 1)
+        createHelper.createContractInternal(person, day, day)
+        val event =
+            eventRepository.save(
+                Event(
+                    description = "Conference partly on hack budget",
+                    from = day,
+                    to = day,
+                    hours = 8.0,
+                    days = mutableListOf(8.0),
+                    costs = 1000.0,
+                    type = EventType.CONFERENCE,
+                ),
+            )
+        eventDayRepository.save(
+            EventDay(
+                from = day,
+                to = day,
+                hours = 2.0,
+                days = mutableListOf(2.0),
+                budgetCategory = BudgetCategory.HACK,
+                person = person,
+                event = event,
+            ),
+        )
+        eventDayRepository.save(
+            EventDay(
+                from = day,
+                to = day,
+                hours = 6.0,
+                days = mutableListOf(6.0),
+                cost = BigDecimal("1000.00"),
+                person = person,
+                event = event,
+            ),
+        )
+
+        assertEquals(2.0, aggregationService.getHackdayDetailsMe(2021, person).hackHoursUsed.toDouble())
     }
 }
