@@ -1,6 +1,7 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.services.BudgetSummaryService
@@ -66,6 +67,51 @@ class BudgetSummaryServiceTest(
         assertEquals(5000.0, summary.trainingMoneyBudget.budget.toDouble())
         assertEquals(1000.0, summary.trainingMoneyBudget.used.toDouble())
         assertEquals(4000.0, summary.trainingMoneyBudget.available.toDouble())
+    }
+
+    @Test
+    fun `lists a per-event breakdown of the person's budget-bearing event days, sorted by date`() {
+        val person = createHelper.createPersonEntity("Break", "Down")
+        createHelper.createContractInternal(
+            person = person,
+            from = from,
+            to = to,
+            hackTimeBudget = 160,
+            trainingTimeBudget = 200,
+            trainingMoneyBudget = BigDecimal("5000.00"),
+        )
+
+        createHelper.createEvent(
+            from = LocalDate.of(year, 4, 1),
+            to = LocalDate.of(year, 4, 2),
+            hours = 16.0,
+            days = listOf(8.0, 8.0),
+            persons = listOf(person.uuid),
+            costs = 1000.0,
+            type = EventType.CONFERENCE,
+        )
+        createHelper.createEvent(
+            from = LocalDate.of(year, 3, 1),
+            to = LocalDate.of(year, 3, 1),
+            hours = 8.0,
+            days = listOf(8.0),
+            persons = listOf(person.uuid),
+            costs = 0.0,
+            type = EventType.FLOCK_HACK_DAY,
+        )
+
+        val events = budgetSummaryService.getSummary(person.uuid, year).events
+
+        assertEquals(2, events.size)
+
+        val hack = events[0]
+        assertEquals(BudgetCategory.HACK, hack.category)
+        assertEquals(8.0, hack.hours)
+
+        val training = events[1]
+        assertEquals(BudgetCategory.TRAINING, training.category)
+        assertEquals(16.0, training.hours)
+        assertEquals(BigDecimal("1000.00"), training.cost)
     }
 
     @Test

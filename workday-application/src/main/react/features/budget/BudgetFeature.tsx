@@ -10,7 +10,10 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { BudgetClient } from '../../clients/BudgetClient';
 import type { Person } from '../../clients/PersonClient';
+import { useUserMe } from '../../hooks/UserMeHook';
 import type { BudgetSummaryResponse } from '../../wirespec/model';
+import { EventDialog } from '../event/EventDialog';
+import { BudgetEventsTable } from './BudgetEventsTable';
 import { BudgetSummaryCards } from './BudgetSummaryCards';
 
 const currentYear = new Date().getFullYear();
@@ -21,9 +24,15 @@ type BudgetFeatureProps = {
 };
 
 export function BudgetFeature({ person }: BudgetFeatureProps) {
+  const [user] = useUserMe();
   const [year, setYear] = useState(currentYear);
   const [summary, setSummary] = useState<BudgetSummaryResponse | null>(null);
   const [error, setError] = useState(false);
+  const [editCode, setEditCode] = useState<string | undefined>(undefined);
+
+  const canEditEvents = Boolean(
+    user?.authorities?.includes('EventAuthority.WRITE'),
+  );
 
   const loadSummary = useCallback(() => {
     setSummary(null);
@@ -36,6 +45,11 @@ export function BudgetFeature({ person }: BudgetFeatureProps) {
   useEffect(() => {
     loadSummary();
   }, [loadSummary]);
+
+  const handleDialogComplete = () => {
+    setEditCode(undefined);
+    loadSummary();
+  };
 
   return (
     <Stack spacing={2}>
@@ -67,8 +81,21 @@ export function BudgetFeature({ person }: BudgetFeatureProps) {
       {error ? (
         <Alert severity="error">Could not load the budget summary.</Alert>
       ) : (
-        <BudgetSummaryCards summary={summary} />
+        <>
+          <BudgetSummaryCards summary={summary} />
+          {summary && (
+            <BudgetEventsTable
+              events={summary.events}
+              onEditEvent={canEditEvents ? setEditCode : undefined}
+            />
+          )}
+        </>
       )}
+      <EventDialog
+        open={Boolean(editCode)}
+        code={editCode}
+        onComplete={handleDialogComplete}
+      />
     </Stack>
   );
 }
