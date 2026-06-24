@@ -83,20 +83,6 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
         <Grid size={{ xs: 12 }}>
           <PersonSelectorField name="personIds" multiple fullWidth />
         </Grid>
-        <Grid size={{ xs: 12 }}>
-          <EventParticipants
-            personIds={values.personIds ?? []}
-            participants={values.participants ?? []}
-            defaultHours={sumHours(values.days)}
-            defaultDays={values.days ?? []}
-            from={values.from}
-            to={values.to}
-            total={Number(values.costs) || 0}
-            type={values.type}
-            knownPersons={values.persons}
-            setFieldValue={setFieldValue}
-          />
-        </Grid>
         <Grid size={{ xs: 12 }} style={{ marginTop: '1rem' }}>
           <EventTypeSelect
             value={values.type}
@@ -124,6 +110,20 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             from={values.from}
             to={values.to}
             reset={resetHours}
+          />
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <EventParticipants
+            personIds={values.personIds ?? []}
+            participants={values.participants ?? []}
+            defaultHours={sumHours(values.days)}
+            defaultDays={values.days ?? []}
+            from={values.from}
+            to={values.to}
+            total={Number(values.costs) || 0}
+            type={values.type}
+            knownPersons={values.persons}
+            setFieldValue={setFieldValue}
           />
         </Grid>
       </Grid>

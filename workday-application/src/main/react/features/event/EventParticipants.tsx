@@ -1,5 +1,5 @@
+import AddIcon from '@mui/icons-material/Add';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Box,
   Button,
@@ -272,14 +272,21 @@ export function EventParticipants({
     );
   };
 
-  const resetDays = (id: string) => {
+  const resetParticipant = (id: string) => {
+    const cleared = participants.map((p) =>
+      p.personId === id
+        ? {
+            ...p,
+            days: undefined,
+            hours: defaultHours,
+            hoursPinned: false,
+            costPinned: false,
+          }
+        : p,
+    );
     setFieldValue(
       'participants',
-      participants.map((p) =>
-        p.personId === id
-          ? { ...p, days: undefined, hours: defaultHours, hoursPinned: false }
-          : p,
-      ),
+      moneyBearing ? redistribute(cleared, total) : cleared,
     );
   };
 
@@ -327,85 +334,96 @@ export function EventParticipants({
           </Button>
         )}
       </Stack>
-      <Stack spacing={1} sx={{ mt: 1 }}>
+      <Stack spacing={0.5} sx={{ mt: 1 }}>
         {participants.map((p) => {
           const effectiveDays = p.days ?? defaultDays;
           const personHours = multiDay ? sum(effectiveDays) : p.hours;
           const open = expanded.has(p.personId);
+          const overridden =
+            !!p.hoursPinned || !!p.costPinned || p.days != null;
           return (
             <Box key={p.personId}>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Typography sx={{ flex: 1 }} variant="body2">
                   {nameOf(p.personId)}
                 </Typography>
-                {multiDay ? (
-                  <Typography
-                    variant="body2"
-                    sx={{ width: 70, textAlign: 'right' }}
-                  >
-                    {formatHours(personHours)}
-                  </Typography>
-                ) : (
-                  <TextField
-                    size="small"
-                    type="number"
-                    label="Hours"
-                    value={p.hours}
-                    onChange={(e) => setHours(p.personId, e.target.value)}
-                    sx={{ width: 110 }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">h</InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-                {moneyBearing && (
-                  <TextField
-                    size="small"
-                    type="number"
-                    label="Cost"
-                    value={p.cost ?? 0}
-                    onChange={(e) => setCost(p.personId, e.target.value)}
-                    sx={{ width: 130 }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">€</InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-                {multiDay && (
-                  <IconButton
-                    size="small"
-                    onClick={() => toggle(p.personId)}
-                    aria-label="hours per day"
-                  >
-                    {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  </IconButton>
-                )}
+                <Typography
+                  variant="body2"
+                  color={overridden ? 'text.primary' : 'text.secondary'}
+                >
+                  {formatHours(personHours)}
+                  {moneyBearing && ` · ${euro(p.cost ?? 0)}`}
+                </Typography>
+                <IconButton
+                  size="small"
+                  onClick={() => toggle(p.personId)}
+                  aria-label="customize hours and cost"
+                >
+                  {open ? <ExpandLessIcon /> : <AddIcon />}
+                </IconButton>
               </Stack>
-              {multiDay && (
-                <Collapse in={open} unmountOnExit>
-                  <Box sx={{ pl: 2, pr: 1, py: 1 }}>
-                    <PeriodInput
-                      period={{ from, to, days: effectiveDays }}
-                      onChange={(date, hours) =>
-                        setDay(p.personId, date, hours)
-                      }
-                    />
-                    {p.days && (
+              <Collapse in={open} unmountOnExit>
+                <Box sx={{ pl: 2, pr: 1, py: 1 }}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    {multiDay ? (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ width: 110 }}
+                      >
+                        {formatHours(personHours)} total
+                      </Typography>
+                    ) : (
+                      <TextField
+                        size="small"
+                        type="number"
+                        label="Hours"
+                        value={p.hours}
+                        onChange={(e) => setHours(p.personId, e.target.value)}
+                        sx={{ width: 110 }}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">h</InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                    {moneyBearing && (
+                      <TextField
+                        size="small"
+                        type="number"
+                        label="Cost"
+                        value={p.cost ?? 0}
+                        onChange={(e) => setCost(p.personId, e.target.value)}
+                        sx={{ width: 130 }}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">€</InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                    {overridden && (
                       <Button
                         size="small"
-                        sx={{ mt: 1 }}
-                        onClick={() => resetDays(p.personId)}
+                        onClick={() => resetParticipant(p.personId)}
                       >
-                        Reset to event days
+                        Reset
                       </Button>
                     )}
-                  </Box>
-                </Collapse>
-              )}
+                  </Stack>
+                  {multiDay && (
+                    <Box sx={{ mt: 1 }}>
+                      <PeriodInput
+                        period={{ from, to, days: effectiveDays }}
+                        onChange={(date, hours) =>
+                          setDay(p.personId, date, hours)
+                        }
+                      />
+                    </Box>
+                  )}
+                </Box>
+              </Collapse>
             </Box>
           );
         })}
