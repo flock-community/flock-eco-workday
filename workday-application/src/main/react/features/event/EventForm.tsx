@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import dayjs from 'dayjs';
 import { Field, Form, Formik, type FormikProps } from 'formik';
@@ -7,7 +8,10 @@ import * as Yup from 'yup';
 import { DatePickerField } from '../../components/fields/DatePickerField';
 import { PeriodInputField } from '../../components/fields/PeriodInputField';
 import { PersonSelectorField } from '../../components/fields/PersonSelectorField';
-import { EventTypeMappingToBillable } from '../../utils/mappings';
+import {
+  EventTypeBudgetLabel,
+  EventTypeMappingToBillable,
+} from '../../utils/mappings';
 import { mutatePeriod } from '../period/Period';
 import { EventTypeSelect } from './EventTypeSelect';
 
@@ -45,6 +49,8 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
     setResetHours(EventTypeMappingToBillable[newValue]);
   };
 
+  const budgetLabel = EventTypeBudgetLabel[values.type];
+
   return (
     <Form id={EVENT_FORM_ID}>
       <Grid container spacing={1}>
@@ -74,6 +80,15 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             value={values.type}
             onChange={handleEventTypeChange}
           />
+          {budgetLabel && (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 0.5, display: 'block' }}
+            >
+              {budgetLabel}
+            </Typography>
+          )}
         </Grid>
         <Grid size={{ xs: 6 }}>
           <DatePickerField name="from" label="From" maxDate={values.to} />

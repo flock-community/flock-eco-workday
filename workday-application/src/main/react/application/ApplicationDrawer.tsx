@@ -11,6 +11,7 @@ import HealingIcon from '@mui/icons-material/Healing';
 import HomeIcon from '@mui/icons-material/Home';
 import ExpensesIcon from '@mui/icons-material/Money';
 import UserIcon from '@mui/icons-material/Person';
+import BudgetIcon from '@mui/icons-material/Savings';
 import MonthIcon from '@mui/icons-material/Schedule';
 import HolidayIcon from '@mui/icons-material/WbSunny';
 import WorkdayIcon from '@mui/icons-material/Work';
@@ -144,6 +145,11 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
       icon: EventIcon,
       url: '/event',
       authority: 'EventAuthority.READ',
+    },
+    {
+      name: 'Budget',
+      icon: BudgetIcon,
+      url: '/budget',
     },
     {
       name: 'Users',

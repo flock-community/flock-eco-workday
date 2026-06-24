@@ -83,11 +83,12 @@ class EventController(
     @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
     override suspend fun getEventsByYear(request: GetEventsByYear.Request): GetEventsByYear.Response<*> {
         val year = request.queries.year ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "year is required")
+        val me = personService.findByUserCode(authentication().name)
         val projections =
             eventService
                 .findAllEventsOf(year)
                 .sortedBy { it.from }
-                .map { it.toProjectionApi() }
+                .map { it.toProjectionApi(me) }
         return GetEventsByYear.Response200(projections)
     }
 
@@ -126,7 +127,7 @@ class EventController(
         // generated interface; check the SUBSCRIBE authority explicitly.
         authentication().requireAuthority(EventAuthority.SUBSCRIBE)
         val person = currentPerson()
-        val event = eventService.subscribeToEvent(request.path.eventCode, person)
+        val event = eventService.subscribeToEvent(request.path.eventCode, person, request.body.hours)
         return SubscribeToEvent.Response200(event.externalize())
     }
 
@@ -221,7 +222,7 @@ class EventController(
             rating = rating,
         )
 
-    private fun Event.toProjectionApi(): EventProjectionApi =
+    private fun Event.toProjectionApi(me: Person?): EventProjectionApi =
         EventProjectionApi(
             type = type.toProjectionApi(),
             from = from.toString(),
@@ -229,6 +230,7 @@ class EventController(
             code = code,
             description = description,
             persons = persons.map { it.toProjectionApi() },
+            hours = eventDays.firstOrNull { it.person.uuid == me?.uuid }?.hours ?: hours,
         )
 
     private fun Person.toProjectionApi(): PersonProjectionApi =

@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.util.UUID
 
@@ -59,13 +61,19 @@ class EventService(
     fun subscribeToEvent(
         eventCode: String,
         person: Person,
+        hours: Double? = null,
     ): Event =
         eventRepository
             .findByCode(eventCode)
             .toNullable()
             ?.also { event ->
-                if (event.eventDays.none { it.person.uuid == person.uuid }) {
-                    eventDayRepository.save(event.eventDayFor(person))
+                val existing = event.eventDays.firstOrNull { it.person.uuid == person.uuid }
+                when {
+                    existing == null -> {
+                        eventDayRepository.save(event.eventDayFor(person, hours = hours ?: event.hours))
+                        event.rebalanceCosts()
+                    }
+                    hours != null && hours != existing.hours -> eventDayRepository.save(existing.with(hours = hours))
                 }
             }?.refreshed()
             ?: error("Cannot subscribe to Event: $eventCode")
@@ -77,8 +85,10 @@ class EventService(
         eventRepository
             .findByCode(eventCode)
             .toNullable()
-            ?.also { eventDayRepository.deleteByEventCodeAndPersonUuid(eventCode, person.uuid) }
-            ?.refreshed()
+            ?.also { event ->
+                eventDayRepository.deleteByEventCodeAndPersonUuid(eventCode, person.uuid)
+                event.rebalanceCosts()
+            }?.refreshed()
             ?: error("Cannot unsubscribe from Event: $eventCode")
 
     @Transactional
@@ -89,6 +99,7 @@ class EventService(
     }
 
     private fun EventForm.consume(existing: Event? = null): Event {
+        val previousHours = existing?.hours
         val event =
             eventRepository.save(
                 Event(
@@ -104,26 +115,82 @@ class EventService(
                 ),
             )
         val persons = personService.findByPersonCodeIdIn(personIds).toList()
-        event.rebuildEventDaysFromTemplate(persons)
+        event.rebuildEventDaysFromTemplate(persons, previousHours)
         return event.refreshed()
     }
 
-    // Rebuilt (not membership-diffed) so an edited period/hours/days reaches every
-    // participant — each EventDay holds its own copy of those values.
-    private fun Event.rebuildEventDaysFromTemplate(persons: List<Person>) {
-        eventDayRepository.deleteAll(eventDayRepository.findAllByEventCode(code))
-        persons.forEach { eventDayRepository.save(eventDayFor(it)) }
+    // Override detected by hours diverging from the previous default, not by membership: the
+    // dialog round-trips every attendee into personIds, so a self-subscriber is otherwise
+    // indistinguishable from an admin-added participant.
+    private fun Event.rebuildEventDaysFromTemplate(
+        persons: List<Person>,
+        previousDefaultHours: Double?,
+    ) {
+        val existing = eventDayRepository.findAllByEventCode(code)
+        val overriddenHours =
+            existing
+                .filter { previousDefaultHours != null && it.hours != previousDefaultHours }
+                .associate { it.person.uuid to it.hours }
+        eventDayRepository.deleteAll(existing)
+        val costShares = splitEvenly(costs.toBigDecimal(), persons.size)
+        persons.forEachIndexed { index, person ->
+            eventDayRepository.save(
+                eventDayFor(person, costShares[index], hours = overriddenHours[person.uuid] ?: hours),
+            )
+        }
     }
 
-    private fun Event.eventDayFor(person: Person) =
-        EventDay(
-            from = from,
-            to = to,
-            hours = hours,
-            days = days?.toMutableList(),
-            person = person,
-            event = this,
-        )
+    // Zero-cost events (e.g. hack days) are skipped so their per-person cost stays null.
+    private fun Event.rebalanceCosts() {
+        val total = costs.toBigDecimal()
+        if (total.signum() == 0) return
+        val days = eventDayRepository.findAllByEventCode(code)
+        if (days.isEmpty()) return
+        val costShares = splitEvenly(total, days.size)
+        days.forEachIndexed { index, day -> eventDayRepository.save(day.with(cost = costShares[index])) }
+    }
+
+    private fun Event.eventDayFor(
+        person: Person,
+        cost: BigDecimal? = null,
+        hours: Double = this.hours,
+    ) = EventDay(
+        from = from,
+        to = to,
+        hours = hours,
+        days = days?.toMutableList(),
+        cost = cost,
+        person = person,
+        event = this,
+    )
+
+    private fun EventDay.with(
+        hours: Double = this.hours,
+        cost: BigDecimal? = this.cost,
+    ) = EventDay(
+        id = id,
+        code = code,
+        from = from,
+        to = to,
+        hours = hours,
+        days = days?.toMutableList(),
+        cost = cost,
+        person = person,
+        event = event,
+    )
+
+    private fun splitEvenly(
+        total: BigDecimal,
+        count: Int,
+    ): List<BigDecimal> {
+        if (count <= 0) return emptyList()
+        val cents = total.movePointRight(2).setScale(0, RoundingMode.HALF_UP).toLong()
+        val base = cents / count
+        val remainder = (cents % count).toInt()
+        return (0 until count).map { index ->
+            BigDecimal.valueOf(base + if (index < remainder) 1L else 0L, 2)
+        }
+    }
 
     private fun Event.refreshed(): Event =
         also {

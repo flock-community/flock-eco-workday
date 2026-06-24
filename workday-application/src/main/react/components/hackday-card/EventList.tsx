@@ -5,7 +5,11 @@ import { EventListItem } from './EventListItem';
 
 type FlockEventListProps = {
   events: FlockEvent[];
-  onEventToggle: (event: FlockEvent, isSubscribed: boolean) => void;
+  onEventToggle: (
+    event: FlockEvent,
+    isSubscribed: boolean,
+    hours?: number,
+  ) => void;
 };
 
 export function EventList({ events, onEventToggle }: FlockEventListProps) {

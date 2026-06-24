@@ -1,15 +1,17 @@
-import { FormGroup } from '@mui/material';
+import { FormGroup, InputAdornment, TextField } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
 import { alpha, styled } from '@mui/material/styles';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FlockEvent } from '../../clients/EventClient';
 import { DMY_DATE } from '../../clients/util/DateFormats';
 import { usePerson } from '../../hooks/PersonHook';
 import { isPersonAttending } from '../../utils/EventUtils';
 
 const PREFIX = 'EventListItem';
+
+const HOURS_SAVE_DEBOUNCE_MS = 600;
 
 const classes = {
   active: `${PREFIX}Active`,
@@ -23,7 +25,11 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
 
 type FlockEventListItemProps = {
   event: FlockEvent;
-  onEventToggle: (flockEvent: FlockEvent, isSubscribed: boolean) => void;
+  onEventToggle: (
+    flockEvent: FlockEvent,
+    isSubscribed: boolean,
+    hours?: number,
+  ) => void;
 };
 
 export function EventListItem({
@@ -44,14 +50,41 @@ export function EventListItem({
     ? isPersonAttending(event, person.uuid)
     : false;
   const [btnState, setBtnState] = useState<boolean>(attendingPerServer);
+  const [hours, setHours] = useState<number>(event.hours);
+  const editingRef = useRef(false);
+  const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     setBtnState(attendingPerServer);
   }, [attendingPerServer]);
 
-  const handleChange = () => {
-    setBtnState(!btnState);
-    onEventToggle(event, !btnState);
+  useEffect(() => {
+    // Don't let a re-fetch overwrite hours mid-edit.
+    if (!editingRef.current) {
+      setHours(event.hours);
+    }
+  }, [event.hours]);
+
+  useEffect(
+    () => () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    },
+    [],
+  );
+
+  const handleToggle = () => {
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    const next = !btnState;
+    setBtnState(next);
+    onEventToggle(event, next, next ? hours : undefined);
+  };
+
+  const handleHoursChange = (value: number) => {
+    setHours(value);
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      onEventToggle(event, true, value);
+    }, HOURS_SAVE_DEBOUNCE_MS);
   };
 
   return (
@@ -60,10 +93,31 @@ export function EventListItem({
       className={btnState ? classes.active : ''}
     >
       <ListItemText primary={event.description} secondary={dateString} />
-      <FormGroup row>
+      <FormGroup row style={{ alignItems: 'center', gap: 8 }}>
+        {btnState && (
+          <TextField
+            type="number"
+            size="small"
+            value={Number.isFinite(hours) ? hours : ''}
+            onFocus={() => {
+              editingRef.current = true;
+            }}
+            onBlur={() => {
+              editingRef.current = false;
+            }}
+            onChange={(e) => handleHoursChange(Number(e.target.value))}
+            sx={{ width: 96 }}
+            slotProps={{
+              htmlInput: { min: 0, step: 1, 'aria-label': 'Hack hours' },
+              input: {
+                endAdornment: <InputAdornment position="end">h</InputAdornment>,
+              },
+            }}
+          />
+        )}
         <Switch
           checked={btnState}
-          onChange={handleChange}
+          onChange={handleToggle}
           name="presentToggle"
           color="primary"
         />

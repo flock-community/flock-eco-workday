@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertEquals
@@ -153,11 +154,50 @@ class EventControllerTest : WorkdayIntegrationTest() {
             .perform(
                 put("$baseUrl/${event.code}/subscribe")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{}")
                     .accept(MediaType.APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.persons[0].uuid").value(person.uuid.toString()))
+
+        val eventDay = eventDayRepository.findAllByEventCode(event.code).single()
+        assertEquals(event.hours, eventDay.hours)
+    }
+
+    @Test
+    fun `Person can subscribe with a hack-hours override`() {
+        val event =
+            createEvent(LocalDate.of(2023, 2, 2), LocalDate.of(2023, 2, 3), type = EventType.FLOCK_HACK_DAY)
+        val user = createUser(userAuthorities)
+        createPerson(user.account.user.code)
+
+        mvc
+            .perform(
+                put("$baseUrl/${event.code}/subscribe")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"hours": 4}""")
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+
+        val eventDay = eventDayRepository.findAllByEventCode(event.code).single()
+        assertEquals(4.0, eventDay.hours)
+
+        mvc
+            .perform(
+                put("$baseUrl/${event.code}/subscribe")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"hours": 6}""")
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+
+        val updated = eventDayRepository.findAllByEventCode(event.code).single()
+        assertEquals(6.0, updated.hours)
     }
 
     @Test
@@ -247,6 +287,105 @@ class EventControllerTest : WorkdayIntegrationTest() {
         ).run { eventService.update(created.code, this) }
         assertEquals(4.0, eventDayRepository.findAllByEventCode(created.code).single().hours)
     }
+
+    @Test
+    fun `editing an event keeps a participant's hour override`() {
+        val person = createPerson(createUser(userAuthorities).account.user.code)
+        val day = LocalDate.of(2023, 3, 1)
+        val created =
+            EventForm(
+                description = "Hack",
+                from = day,
+                to = day,
+                hours = 8.0,
+                days = mutableListOf(8.0),
+                costs = 0.0,
+                personIds = listOf(person.uuid),
+                type = EventType.FLOCK_HACK_DAY,
+            ).run { eventService.create(this) }
+
+        eventService.subscribeToEvent(created.code, person, 4.0)
+        assertEquals(4.0, eventDayRepository.findAllByEventCode(created.code).single().hours)
+
+        EventForm(
+            description = "Hack renamed",
+            from = day,
+            to = day,
+            hours = 8.0,
+            days = mutableListOf(8.0),
+            costs = 0.0,
+            personIds = listOf(person.uuid),
+            type = EventType.FLOCK_HACK_DAY,
+        ).run { eventService.update(created.code, this) }
+
+        assertEquals(4.0, eventDayRepository.findAllByEventCode(created.code).single().hours)
+    }
+
+    @Test
+    fun `editing an event removes a participant dropped from the form`() {
+        val keep = createPerson(createUser(userAuthorities).account.user.code)
+        val drop = createPerson(createUser(userAuthorities).account.user.code)
+        val day = LocalDate.of(2023, 3, 1)
+        val created =
+            EventForm(
+                description = "Conf",
+                from = day,
+                to = day,
+                hours = 8.0,
+                days = mutableListOf(8.0),
+                costs = 0.0,
+                personIds = listOf(keep.uuid, drop.uuid),
+                type = EventType.GENERAL_EVENT,
+            ).run { eventService.create(this) }
+        assertEquals(2, eventDayRepository.findAllByEventCode(created.code).size)
+
+        EventForm(
+            description = "Conf",
+            from = day,
+            to = day,
+            hours = 8.0,
+            days = mutableListOf(8.0),
+            costs = 0.0,
+            personIds = listOf(keep.uuid),
+            type = EventType.GENERAL_EVENT,
+        ).run { eventService.update(created.code, this) }
+
+        val remaining = eventDayRepository.findAllByEventCode(created.code)
+        assertEquals(1, remaining.size)
+        assertEquals(keep.uuid, remaining.single().person.uuid)
+    }
+
+    @Test
+    fun `event cost stays split to the total across subscribe and unsubscribe`() {
+        val day = LocalDate.of(2023, 3, 1)
+        val p1 = createPerson(createUser(userAuthorities).account.user.code)
+        val p2 = createPerson(createUser(userAuthorities).account.user.code)
+        val created =
+            EventForm(
+                description = "Conf",
+                from = day,
+                to = day,
+                hours = 8.0,
+                days = mutableListOf(8.0),
+                costs = 1000.0,
+                personIds = listOf(p1.uuid, p2.uuid),
+                type = EventType.CONFERENCE,
+            ).run { eventService.create(this) }
+        assertEquals(BigDecimal("1000.00"), costSumOf(created.code))
+
+        val p3 = createPerson(createUser(userAuthorities).account.user.code)
+        eventService.subscribeToEvent(created.code, p3)
+        assertEquals(3, eventDayRepository.findAllByEventCode(created.code).size)
+        assertEquals(BigDecimal("1000.00"), costSumOf(created.code))
+
+        eventService.unsubscribeFromEvent(created.code, p3)
+        assertEquals(BigDecimal("1000.00"), costSumOf(created.code))
+    }
+
+    private fun costSumOf(code: String): BigDecimal =
+        eventDayRepository
+            .findAllByEventCode(code)
+            .fold(BigDecimal.ZERO) { acc, day -> acc + (day.cost ?: BigDecimal.ZERO) }
 
     private fun ResultActions.asyncDispatch(): ResultActions = mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
 }

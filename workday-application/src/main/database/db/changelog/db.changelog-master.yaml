@@ -94,4 +94,7 @@ databaseChangeLog:
   - include:
       file: db.changelog-032-drop-event-persons.yaml
       relativeToChangelogFile: true
+  - include:
+      file: db.changelog-033-budget-on-event-day.yaml
+      relativeToChangelogFile: true
 

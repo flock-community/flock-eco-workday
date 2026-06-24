@@ -1,7 +1,10 @@
 import { EventClient, type FlockEvent } from '../clients/EventClient';
 
-export const subscribeToEvent = (event: FlockEvent): Promise<FlockEvent> => {
-  return EventClient.subscribeToEvent(event);
+export const subscribeToEvent = (
+  event: FlockEvent,
+  hours?: number,
+): Promise<FlockEvent> => {
+  return EventClient.subscribeToEvent(event, hours);
 };
 
 export const unsubscribeFromEvent = (

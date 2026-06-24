@@ -32,28 +32,29 @@ abstract class Day(
     override val days: MutableList<Double>? = null,
 ) : AbstractCodeEntity(id, code),
     Daily {
-    private fun getHoursPerDay(): Map<LocalDate, BigDecimal> =
-        when (days.isNullOrEmpty()) {
-            true -> {
+    private fun getHoursPerDay(): Map<LocalDate, BigDecimal> {
+        val dateRange = this.toDateRange()
+        val positionalDays = days?.takeIf { it.size == dateRange.size }
+        return when (positionalDays) {
+            null -> {
                 val workingDaysCount = BigDecimal(countWorkDaysInPeriod(from, to))
                 val hoursADay =
                     BigDecimal(hours)
                         .divide(workingDaysCount, 10, RoundingMode.HALF_UP)
-                this.toDateRange().associateWith {
+                dateRange.associateWith {
                     when (it.isWorkingDay()) {
                         true -> hoursADay
                         false -> BigDecimal("0.0")
                     }
                 }
             }
-            false -> {
-                this
-                    .toDateRange()
+            else ->
+                dateRange
                     .mapIndexed { index, localDate ->
-                        localDate to (days!![index]).toBigDecimal()
+                        localDate to positionalDays[index].toBigDecimal()
                     }.toMap()
-            }
         }
+    }
 
     fun hoursPerDayInPeriod(
         periodStart: LocalDate,

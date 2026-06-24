@@ -34,4 +34,12 @@ class Event(
 ) : AbstractCodeEntity(id, code),
     Daily {
     val persons: List<Person> get() = eventDays.map { it.person }.distinct()
+
+    val budgetCategory: BudgetCategory?
+        get() =
+            when (type) {
+                EventType.FLOCK_HACK_DAY -> BudgetCategory.HACK
+                EventType.CONFERENCE -> BudgetCategory.TRAINING
+                EventType.FLOCK_COMMUNITY_DAY, EventType.GENERAL_EVENT -> null
+            }
 }

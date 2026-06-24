@@ -41,7 +41,14 @@ class LoadContractData(
                 trainingTimeBudget = 200,
                 trainingMoneyBudget = BigDecimal("5000.00"),
             )
-            create("bert@sesam.straat", ContractType.INTERNAL, now.minusMonths(12), now.plusMonths(12))
+            create(
+                email = "bert@sesam.straat",
+                type = ContractType.INTERNAL,
+                from = now.minusMonths(12),
+                to = now.plusMonths(12),
+                trainingTimeBudget = 200,
+                trainingMoneyBudget = BigDecimal("5000.00"),
+            )
             create("ernie@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2020, 10, 27), LocalDate.of(2021, 10, 26))
             create("ernie@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2021, 10, 27), LocalDate.of(2021, 12, 31))
             create("ernie@sesam.straat", ContractType.EXTERNAL, LocalDate.of(2022, 1, 1), LocalDate.of(2022, 12, 31))

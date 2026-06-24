@@ -153,12 +153,13 @@ const getHackDays = (year: number): Promise<FlockEvent[]> =>
     events.filter((event) => event.type === EventType.FLOCK_HACK_DAY),
   );
 
-const subscribeToEvent = (event: FlockEvent) => {
+const subscribeToEvent = (event: FlockEvent, hours?: number) => {
   const opts = {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify({ hours: hours ?? null }),
   };
   return fetch(`${path}/${event.code}/subscribe`, opts)
     .then(validateResponse<FlockEventRaw>)

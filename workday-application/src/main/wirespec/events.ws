@@ -16,7 +16,7 @@ endpoint DeleteEvent DELETE /api/events/{code: String} -> {
 endpoint GetEventsByYear GET /api/events/year ? {year: Integer32} -> {
   200 -> EventProjection[]
 }
-endpoint SubscribeToEvent PUT /api/events/{eventCode: String}/subscribe -> {
+endpoint SubscribeToEvent PUT EventSubscription /api/events/{eventCode: String}/subscribe -> {
   200 -> Event
 }
 endpoint UnsubscribeFromEvent PUT /api/events/{eventCode: String}/unsubscribe -> {
@@ -60,6 +60,9 @@ type EventForm {
 enum EventFormType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
 }
+type EventSubscription {
+  hours: Number?
+}
 type EventRatingForm {
   personId: String?,
   eventCode: String?,
@@ -75,7 +78,8 @@ type EventProjection {
   persons: PersonProjection[]?,
   code: String?,
   description: String?,
-  to: String?
+  to: String?,
+  hours: Number?
 }
 enum EventProjectionType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
