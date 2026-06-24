@@ -97,4 +97,7 @@ databaseChangeLog:
   - include:
       file: db.changelog-033-budget-on-event-day.yaml
       relativeToChangelogFile: true
+  - include:
+      file: db.changelog-034-event-day-indexes.yaml
+      relativeToChangelogFile: true
 
