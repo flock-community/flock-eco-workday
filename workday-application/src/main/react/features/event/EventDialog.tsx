@@ -7,7 +7,11 @@ import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import { useEffect, useState } from 'react';
-import { EventClient, type FlockEventRequest } from '../../clients/EventClient';
+import {
+  EventClient,
+  EventType,
+  type FlockEventRequest,
+} from '../../clients/EventClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { TransitionSlider } from '../../components/transitions/Slide';
 import { schema } from '../workday/WorkDayForm';
@@ -43,6 +47,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   }, [open, code]);
 
   const handleSubmit = (it) => {
+    const moneyBearing = it.type !== EventType.FLOCK_HACK_DAY;
     const body: FlockEventRequest = {
       description: it.description,
       from: it.from.format(ISO_8601_DATE),
@@ -51,6 +56,11 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
       days: it.days,
       costs: it.costs,
       personIds: it.personIds,
+      participants: (it.participants ?? []).map((p) => ({
+        personId: p.personId,
+        hours: p.hours,
+        cost: moneyBearing ? (p.cost ?? 0) : null,
+      })),
       type: it.type,
     };
     const persist = code ? EventClient.put(code, body) : EventClient.post(body);

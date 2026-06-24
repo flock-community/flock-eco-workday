@@ -5,6 +5,7 @@ import { Field, Form, Formik, type FormikProps } from 'formik';
 import { TextField } from 'formik-mui';
 import { useState } from 'react';
 import * as Yup from 'yup';
+import type { EventType } from '../../clients/EventClient';
 import { DatePickerField } from '../../components/fields/DatePickerField';
 import { PeriodInputField } from '../../components/fields/PeriodInputField';
 import { PersonSelectorField } from '../../components/fields/PersonSelectorField';
@@ -13,7 +14,13 @@ import {
   EventTypeMappingToBillable,
 } from '../../utils/mappings';
 import { mutatePeriod } from '../period/Period';
+import { EventParticipants, initParticipants } from './EventParticipants';
 import { EventTypeSelect } from './EventTypeSelect';
+
+const sumHours = (days: unknown): number =>
+  Array.isArray(days)
+    ? days.reduce<number>((acc, cur) => acc + (Number(cur) || 0), 0)
+    : 0;
 
 export const EVENT_FORM_ID = 'event-form';
 
@@ -27,6 +34,7 @@ const schema = Yup.object().shape({
     .default(() => dayjs()),
   days: Yup.array().default([8]).nullable(),
   personIds: Yup.array().default([]),
+  participants: Yup.array().default([]),
   costs: Yup.number().required().min(0).default(0),
   type: Yup.string().required('Field required').default('GENERAL_EVENT'),
 });
@@ -75,6 +83,17 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
         <Grid size={{ xs: 12 }}>
           <PersonSelectorField name="personIds" multiple fullWidth />
         </Grid>
+        <Grid size={{ xs: 12 }}>
+          <EventParticipants
+            personIds={values.personIds ?? []}
+            participants={values.participants ?? []}
+            defaultHours={sumHours(values.days)}
+            total={Number(values.costs) || 0}
+            type={values.type}
+            knownPersons={values.persons}
+            setFieldValue={setFieldValue}
+          />
+        </Grid>
         <Grid size={{ xs: 12 }} style={{ marginTop: '1rem' }}>
           <EventTypeSelect
             value={values.type}
@@ -114,6 +133,7 @@ export function EventForm({ value, onSubmit }: EventFormProps) {
     onSubmit?.({
       description: data.description,
       personIds: data.personIds,
+      participants: data.participants,
       from: data.from,
       to: data.to,
       days: data.days,
@@ -122,7 +142,16 @@ export function EventForm({ value, onSubmit }: EventFormProps) {
     });
   };
 
-  const init = { ...schema.getDefault(), ...mutatePeriod(value) };
+  const base = { ...schema.getDefault(), ...mutatePeriod(value) };
+  const init = {
+    ...base,
+    participants: initParticipants(
+      value.eventDays,
+      sumHours(base.days),
+      base.type as EventType,
+      Number(base.costs) || 0,
+    ),
+  };
   return (
     value && (
       <Formik

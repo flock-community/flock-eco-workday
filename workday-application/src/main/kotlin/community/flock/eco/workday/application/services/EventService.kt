@@ -1,5 +1,6 @@
 package community.flock.eco.workday.application.services
 
+import community.flock.eco.workday.application.forms.EventDayInput
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.interfaces.validate
 import community.flock.eco.workday.application.model.Event
@@ -114,9 +115,33 @@ class EventService(
                     type = type,
                 ),
             )
-        val persons = personService.findByPersonCodeIdIn(personIds).toList()
-        event.rebuildEventDaysFromTemplate(persons, previousHours)
+        if (participants.isNotEmpty()) {
+            event.rebuildEventDaysFromParticipants(participants)
+        } else {
+            val persons = personService.findByPersonCodeIdIn(personIds).toList()
+            event.rebuildEventDaysFromTemplate(persons, previousHours)
+        }
         return event.refreshed()
+    }
+
+    // Per-attendee hours and cost arrive already balanced from the admin modal (cost shares
+    // sum to the event total); persist them verbatim, only normalizing money to whole cents.
+    private fun Event.rebuildEventDaysFromParticipants(participants: List<EventDayInput>) {
+        eventDayRepository.deleteAll(eventDayRepository.findAllByEventCode(code))
+        val personsById =
+            personService
+                .findByPersonCodeIdIn(participants.map { it.personId }.distinct())
+                .associateBy { it.uuid }
+        participants.forEach { participant ->
+            val person = personsById[participant.personId] ?: return@forEach
+            eventDayRepository.save(
+                eventDayFor(
+                    person = person,
+                    cost = participant.cost?.setScale(2, RoundingMode.HALF_UP),
+                    hours = participant.hours,
+                ),
+            )
+        }
     }
 
     // Override detected by hours diverging from the previous default, not by membership: the

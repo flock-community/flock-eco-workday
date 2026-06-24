@@ -42,7 +42,13 @@ type Event {
   costs: Number?,
   `type`: EventType?,
   days: Number[]?,
-  persons: Person[]?
+  persons: Person[]?,
+  eventDays: EventDay[]?
+}
+type EventDay {
+  personId: String?,
+  hours: Number?,
+  cost: Number?
 }
 enum EventType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
@@ -55,7 +61,13 @@ type EventForm {
   days: Number[]?,
   costs: Number?,
   personIds: String[]?,
+  participants: EventDayForm[]?,
   `type`: EventFormType?
+}
+type EventDayForm {
+  personId: String?,
+  hours: Number?,
+  cost: Number?
 }
 enum EventFormType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
