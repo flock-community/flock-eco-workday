@@ -416,6 +416,35 @@ class EventControllerTest : WorkdayIntegrationTest() {
     }
 
     @Test
+    fun `explicit participants persist their own per-day hours over a multi-day event`() {
+        val from = LocalDate.of(2023, 3, 1)
+        val to = LocalDate.of(2023, 3, 2)
+        val p1 = createPerson(createUser(userAuthorities).account.user.code)
+        val p2 = createPerson(createUser(userAuthorities).account.user.code)
+        val created =
+            EventForm(
+                description = "Conf",
+                from = from,
+                to = to,
+                hours = 16.0,
+                days = mutableListOf(8.0, 8.0),
+                costs = 0.0,
+                personIds = listOf(p1.uuid, p2.uuid),
+                participants =
+                    listOf(
+                        EventDayInput(p1.uuid, hours = 16.0, cost = null, days = listOf(8.0, 8.0)),
+                        EventDayInput(p2.uuid, hours = 8.0, cost = null, days = listOf(8.0, 0.0)),
+                    ),
+                type = EventType.FLOCK_HACK_DAY,
+            ).run { eventService.create(this) }
+
+        val byPerson = eventDayRepository.findAllByEventCode(created.code).associateBy { it.person.uuid }
+        assertEquals(listOf(8.0, 8.0), byPerson.getValue(p1.uuid).days!!.toList())
+        assertEquals(listOf(8.0, 0.0), byPerson.getValue(p2.uuid).days!!.toList())
+        assertEquals(8.0, byPerson.getValue(p2.uuid).hours)
+    }
+
+    @Test
     fun `hack event participants carry no cost`() {
         val day = LocalDate.of(2023, 3, 1)
         val person = createPerson(createUser(userAuthorities).account.user.code)

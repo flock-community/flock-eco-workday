@@ -48,7 +48,8 @@ type Event {
 type EventDay {
   personId: String?,
   hours: Number?,
-  cost: Number?
+  cost: Number?,
+  days: Number[]?
 }
 enum EventType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
@@ -67,7 +68,8 @@ type EventForm {
 type EventDayForm {
   personId: String?,
   hours: Number?,
-  cost: Number?
+  cost: Number?,
+  days: Number[]?
 }
 enum EventFormType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT

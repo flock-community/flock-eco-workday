@@ -88,6 +88,9 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             personIds={values.personIds ?? []}
             participants={values.participants ?? []}
             defaultHours={sumHours(values.days)}
+            defaultDays={values.days ?? []}
+            from={values.from}
+            to={values.to}
             total={Number(values.costs) || 0}
             type={values.type}
             knownPersons={values.persons}
@@ -150,6 +153,7 @@ export function EventForm({ value, onSubmit }: EventFormProps) {
       sumHours(base.days),
       base.type as EventType,
       Number(base.costs) || 0,
+      base.days ?? [],
     ),
   };
   return (

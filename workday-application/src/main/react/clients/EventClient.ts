@@ -22,6 +22,7 @@ export type FlockEventDay = {
   personId: string;
   hours: number;
   cost: number | null;
+  days?: number[];
 };
 
 export type FullFlockEvent = {

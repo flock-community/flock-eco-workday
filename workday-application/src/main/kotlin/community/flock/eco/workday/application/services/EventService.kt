@@ -139,6 +139,7 @@ class EventService(
                     person = person,
                     cost = participant.cost?.setScale(2, RoundingMode.HALF_UP),
                     hours = participant.hours,
+                    days = participant.days?.toMutableList() ?: days?.toMutableList(),
                 ),
             )
         }
@@ -179,11 +180,12 @@ class EventService(
         person: Person,
         cost: BigDecimal? = null,
         hours: Double = this.hours,
+        days: MutableList<Double>? = this.days?.toMutableList(),
     ) = EventDay(
         from = from,
         to = to,
         hours = hours,
-        days = days?.toMutableList(),
+        days = days,
         cost = cost,
         person = person,
         event = this,

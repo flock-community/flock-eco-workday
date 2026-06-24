@@ -31,4 +31,6 @@ data class EventDayInput(
     val personId: UUID,
     val hours: Double,
     val cost: BigDecimal? = null,
+    // Per-day hours over the event's date range; when null the person inherits the event blueprint.
+    val days: List<Double>? = null,
 )

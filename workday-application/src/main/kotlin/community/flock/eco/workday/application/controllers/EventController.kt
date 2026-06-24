@@ -214,6 +214,7 @@ class EventController(
             personId = personId,
             hours = hours ?: 0.0,
             cost = cost?.let { BigDecimal.valueOf(it) },
+            days = days,
         )
     }
 
@@ -237,6 +238,7 @@ class EventController(
             personId = person.uuid.toString(),
             hours = hours,
             cost = cost?.toDouble(),
+            days = days,
         )
 
     private fun EventRating.externalize(): EventRatingApi =
