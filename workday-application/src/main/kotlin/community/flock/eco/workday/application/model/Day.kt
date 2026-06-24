@@ -27,7 +27,7 @@ abstract class Day(
     code: String = UUID.randomUUID().toString(),
     override val from: LocalDate = LocalDate.now(),
     override val to: LocalDate = LocalDate.now(),
-    override val hours: Double,
+    override var hours: Double,
     @ElementCollection(fetch = FetchType.EAGER)
     override val days: MutableList<Double>? = null,
 ) : AbstractCodeEntity(id, code),
