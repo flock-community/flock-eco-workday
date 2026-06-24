@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-034-event-day-indexes-1
+      author: rkorver
+      comment: >-
+        Index event_day FK columns. findAllActiveByPerson filters by person_id
+        (via person.uuid), and Event's EAGER @OneToMany eventDays loads by
+        event_id — both scanned the full table without these indexes.
+      changes:
+        - createIndex:
+            indexName: event_day_person_id_index
+            tableName: event_day
+            columns:
+              - column:
+                  name: person_id
+        - createIndex:
+            indexName: event_day_event_id_index
+            tableName: event_day
+            columns:
+              - column:
+                  name: event_id
