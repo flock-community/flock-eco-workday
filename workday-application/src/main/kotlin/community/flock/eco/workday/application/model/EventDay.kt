@@ -19,7 +19,7 @@ class EventDay(
     to: LocalDate = LocalDate.now(),
     hours: Double,
     days: MutableList<Double>? = null,
-    val cost: BigDecimal? = null,
+    var cost: BigDecimal? = null,
     @ManyToOne
     val person: Person,
     @ManyToOne

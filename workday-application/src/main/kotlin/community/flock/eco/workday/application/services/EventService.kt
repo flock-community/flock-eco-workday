@@ -73,7 +73,7 @@ class EventService(
                         eventDayRepository.save(event.eventDayFor(person, hours = hours ?: event.hours))
                         event.rebalanceCosts()
                     }
-                    hours != null && hours != existing.hours -> eventDayRepository.save(existing.with(hours = hours))
+                    hours != null && hours != existing.hours -> existing.hours = hours
                 }
             }?.refreshed()
             ?: error("Cannot subscribe to Event: $eventCode")
@@ -147,7 +147,7 @@ class EventService(
         val days = eventDayRepository.findAllByEventCode(code)
         if (days.isEmpty()) return
         val costShares = splitEvenly(total, days.size)
-        days.forEachIndexed { index, day -> eventDayRepository.save(day.with(cost = costShares[index])) }
+        days.forEachIndexed { index, day -> day.cost = costShares[index] }
     }
 
     private fun Event.eventDayFor(
@@ -162,21 +162,6 @@ class EventService(
         cost = cost,
         person = person,
         event = this,
-    )
-
-    private fun EventDay.with(
-        hours: Double = this.hours,
-        cost: BigDecimal? = this.cost,
-    ) = EventDay(
-        id = id,
-        code = code,
-        from = from,
-        to = to,
-        hours = hours,
-        days = days?.toMutableList(),
-        cost = cost,
-        person = person,
-        event = event,
     )
 
     private fun splitEvenly(
