@@ -59,7 +59,7 @@ class BudgetController(
     }
 
     private fun Authentication.canQueryOthers(): Boolean =
-        authorities.map { it.authority }.contains(AggregationAuthority.READ.toName())
+        authorities.any { it.authority == AggregationAuthority.READ.toName() }
 }
 
 private fun PersonBudgetSummary.produce(): BudgetSummaryResponseApi =
