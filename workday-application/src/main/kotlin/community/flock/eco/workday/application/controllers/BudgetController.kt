@@ -4,6 +4,7 @@ import community.flock.eco.workday.api.endpoint.BudgetSummary
 import community.flock.eco.workday.application.authorities.AggregationAuthority
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.BudgetSummaryService
+import community.flock.eco.workday.application.services.PersonBudgetEvent
 import community.flock.eco.workday.application.services.PersonBudgetItem
 import community.flock.eco.workday.application.services.PersonBudgetSummary
 import community.flock.eco.workday.application.services.PersonService
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 import java.util.UUID
+import community.flock.eco.workday.api.model.BudgetEvent as BudgetEventApi
 import community.flock.eco.workday.api.model.BudgetItem as BudgetItemApi
 import community.flock.eco.workday.api.model.BudgetSummaryResponse as BudgetSummaryResponseApi
 
@@ -67,6 +69,17 @@ private fun PersonBudgetSummary.produce(): BudgetSummaryResponseApi =
         hackTimeBudget = hackTimeBudget.produce(),
         trainingTimeBudget = trainingTimeBudget.produce(),
         trainingMoneyBudget = trainingMoneyBudget.produce(),
+        events = events.map { it.produce() },
+    )
+
+private fun PersonBudgetEvent.produce(): BudgetEventApi =
+    BudgetEventApi(
+        eventCode = eventCode,
+        description = description,
+        from = from.toString(),
+        hours = hours,
+        cost = cost?.toDouble(),
+        category = category.name,
     )
 
 private fun PersonBudgetItem.produce(): BudgetItemApi =

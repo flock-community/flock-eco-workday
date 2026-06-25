@@ -12,9 +12,11 @@ import community.flock.eco.workday.api.endpoint.PutEvent
 import community.flock.eco.workday.api.endpoint.SubscribeToEvent
 import community.flock.eco.workday.api.endpoint.UnsubscribeFromEvent
 import community.flock.eco.workday.application.authorities.EventAuthority
+import community.flock.eco.workday.application.forms.EventDayInput
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.forms.EventRatingForm
 import community.flock.eco.workday.application.model.Event
+import community.flock.eco.workday.application.model.EventDay
 import community.flock.eco.workday.application.model.EventRating
 import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.Person
@@ -31,9 +33,12 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 import community.flock.eco.workday.api.model.Event as EventApi
+import community.flock.eco.workday.api.model.EventDay as EventDayApi
+import community.flock.eco.workday.api.model.EventDayForm as EventDayFormApi
 import community.flock.eco.workday.api.model.EventForm as EventFormApi
 import community.flock.eco.workday.api.model.EventFormType as EventFormTypeApi
 import community.flock.eco.workday.api.model.EventProjection as EventProjectionApi
@@ -199,8 +204,19 @@ class EventController(
             days = days?.toMutableList() ?: mutableListOf(),
             costs = costs ?: 0.0,
             personIds = personIds?.map(UUID::fromString) ?: emptyList(),
+            participants = participants?.mapNotNull { it.internalize() } ?: emptyList(),
             type = type?.toDomain() ?: EventType.GENERAL_EVENT,
         )
+
+    private fun EventDayFormApi.internalize(): EventDayInput? {
+        val personId = personId?.let(UUID::fromString) ?: return null
+        return EventDayInput(
+            personId = personId,
+            hours = hours ?: 0.0,
+            cost = cost?.let { BigDecimal.valueOf(it) },
+            days = days,
+        )
+    }
 
     private fun Event.externalize(): EventApi =
         EventApi(
@@ -214,6 +230,15 @@ class EventController(
             type = type.toApi(),
             days = days,
             persons = persons.map { it.externalize() },
+            eventDays = eventDays.map { it.externalize() },
+        )
+
+    private fun EventDay.externalize(): EventDayApi =
+        EventDayApi(
+            personId = person.uuid.toString(),
+            hours = hours,
+            cost = cost?.toDouble(),
+            days = days,
         )
 
     private fun EventRating.externalize(): EventRatingApi =

@@ -34,10 +34,26 @@ class BudgetSummaryService(
         val trainingHoursUsed = trainingDays.sumOf { it.hours }.toBigDecimal()
         val trainingMoneyUsed = trainingDays.sumOf { it.cost ?: BigDecimal.ZERO }
 
+        val budgetBearingDays = hackDays + trainingDays
+        val events =
+            budgetBearingDays
+                .sortedBy { it.event.from }
+                .map { day ->
+                    PersonBudgetEvent(
+                        eventCode = day.event.code,
+                        description = day.event.description,
+                        from = day.event.from,
+                        hours = day.hours,
+                        cost = day.cost,
+                        category = day.event.budgetCategory!!,
+                    )
+                }
+
         return PersonBudgetSummary(
             hackTimeBudget = PersonBudgetItem(hackHoursBudget, hackHoursUsed),
             trainingTimeBudget = PersonBudgetItem(trainingHoursBudget, trainingHoursUsed),
             trainingMoneyBudget = PersonBudgetItem(trainingMoneyBudget, trainingMoneyUsed),
+            events = events,
         )
     }
 }
@@ -46,6 +62,16 @@ data class PersonBudgetSummary(
     val hackTimeBudget: PersonBudgetItem,
     val trainingTimeBudget: PersonBudgetItem,
     val trainingMoneyBudget: PersonBudgetItem,
+    val events: List<PersonBudgetEvent>,
+)
+
+data class PersonBudgetEvent(
+    val eventCode: String,
+    val description: String,
+    val from: LocalDate,
+    val hours: Double,
+    val cost: BigDecimal?,
+    val category: BudgetCategory,
 )
 
 data class PersonBudgetItem(

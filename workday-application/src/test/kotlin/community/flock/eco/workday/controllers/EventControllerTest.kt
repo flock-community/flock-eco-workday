@@ -1,6 +1,7 @@
 package community.flock.eco.workday.controllers
 
 import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.forms.EventDayInput
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.model.EventType
@@ -29,6 +30,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class EventControllerTest : WorkdayIntegrationTest() {
     private val baseUrl: String = "/api/events"
@@ -380,6 +382,116 @@ class EventControllerTest : WorkdayIntegrationTest() {
 
         eventService.unsubscribeFromEvent(created.code, p3)
         assertEquals(BigDecimal("1000.00"), costSumOf(created.code))
+    }
+
+    @Test
+    fun `explicit participants persist per-person hours and cost faithfully`() {
+        val day = LocalDate.of(2023, 3, 1)
+        val p1 = createPerson(createUser(userAuthorities).account.user.code)
+        val p2 = createPerson(createUser(userAuthorities).account.user.code)
+        val created =
+            EventForm(
+                description = "Conf",
+                from = day,
+                to = day,
+                hours = 8.0,
+                days = mutableListOf(8.0),
+                costs = 1000.0,
+                personIds = listOf(p1.uuid, p2.uuid),
+                participants =
+                    listOf(
+                        EventDayInput(p1.uuid, hours = 4.0, cost = BigDecimal("600.00")),
+                        EventDayInput(p2.uuid, hours = 12.0, cost = BigDecimal("400.00")),
+                    ),
+                type = EventType.CONFERENCE,
+            ).run { eventService.create(this) }
+
+        val byPerson = eventDayRepository.findAllByEventCode(created.code).associateBy { it.person.uuid }
+        assertEquals(2, byPerson.size)
+        assertEquals(4.0, byPerson.getValue(p1.uuid).hours)
+        assertEquals(12.0, byPerson.getValue(p2.uuid).hours)
+        assertEquals(BigDecimal("600.00"), byPerson.getValue(p1.uuid).cost)
+        assertEquals(BigDecimal("400.00"), byPerson.getValue(p2.uuid).cost)
+        assertEquals(BigDecimal("1000.00"), costSumOf(created.code))
+    }
+
+    @Test
+    fun `explicit participants persist their own per-day hours over a multi-day event`() {
+        val from = LocalDate.of(2023, 3, 1)
+        val to = LocalDate.of(2023, 3, 2)
+        val p1 = createPerson(createUser(userAuthorities).account.user.code)
+        val p2 = createPerson(createUser(userAuthorities).account.user.code)
+        val created =
+            EventForm(
+                description = "Conf",
+                from = from,
+                to = to,
+                hours = 16.0,
+                days = mutableListOf(8.0, 8.0),
+                costs = 0.0,
+                personIds = listOf(p1.uuid, p2.uuid),
+                participants =
+                    listOf(
+                        EventDayInput(p1.uuid, hours = 16.0, cost = null, days = listOf(8.0, 8.0)),
+                        EventDayInput(p2.uuid, hours = 8.0, cost = null, days = listOf(8.0, 0.0)),
+                    ),
+                type = EventType.FLOCK_HACK_DAY,
+            ).run { eventService.create(this) }
+
+        val byPerson = eventDayRepository.findAllByEventCode(created.code).associateBy { it.person.uuid }
+        assertEquals(listOf(8.0, 8.0), byPerson.getValue(p1.uuid).days!!.toList())
+        assertEquals(listOf(8.0, 0.0), byPerson.getValue(p2.uuid).days!!.toList())
+        assertEquals(8.0, byPerson.getValue(p2.uuid).hours)
+    }
+
+    @Test
+    fun `hack event participants carry no cost`() {
+        val day = LocalDate.of(2023, 3, 1)
+        val person = createPerson(createUser(userAuthorities).account.user.code)
+        val created =
+            EventForm(
+                description = "Hack",
+                from = day,
+                to = day,
+                hours = 8.0,
+                days = mutableListOf(8.0),
+                costs = 0.0,
+                personIds = listOf(person.uuid),
+                participants = listOf(EventDayInput(person.uuid, hours = 8.0, cost = null)),
+                type = EventType.FLOCK_HACK_DAY,
+            ).run { eventService.create(this) }
+
+        assertNull(eventDayRepository.findAllByEventCode(created.code).single().cost)
+    }
+
+    @Test
+    fun `event response exposes per-person eventDays`() {
+        val day = LocalDate.of(2023, 3, 1)
+        val person = createPerson(createUser(userAuthorities).account.user.code)
+        val created =
+            EventForm(
+                description = "Conf",
+                from = day,
+                to = day,
+                hours = 8.0,
+                days = mutableListOf(8.0),
+                costs = 1000.0,
+                personIds = listOf(person.uuid),
+                participants = listOf(EventDayInput(person.uuid, hours = 5.0, cost = BigDecimal("1000.00"))),
+                type = EventType.CONFERENCE,
+            ).run { eventService.create(this) }
+
+        mvc
+            .perform(
+                get("$baseUrl/${created.code}")
+                    .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
+                    .accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.eventDays.length()").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.eventDays[0].personId").value(person.uuid.toString()))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.eventDays[0].hours").value(5.0))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.eventDays[0].cost").value(1000.0))
     }
 
     private fun costSumOf(code: String): BigDecimal =
