@@ -113,7 +113,9 @@ export function initParticipants(
         costPinned:
           moneyBearing &&
           d.cost != null &&
-          Math.round(d.cost * 100) !== Math.round((shares[i] ?? 0) * 100),
+          Math.abs(
+            Math.round(d.cost * 100) - Math.round((shares[i] ?? 0) * 100),
+          ) > 1,
       };
     });
 }
