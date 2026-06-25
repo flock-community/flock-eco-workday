@@ -110,6 +110,8 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             from={values.from}
             to={values.to}
             reset={resetHours}
+            weekLabel
+            hideWeekTotal
           />
         </Grid>
         <Grid size={{ xs: 12 }}>

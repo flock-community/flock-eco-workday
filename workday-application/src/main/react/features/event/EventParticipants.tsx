@@ -247,24 +247,16 @@ export function EventParticipants({
       return next;
     });
 
-  const setHours = (id: string, raw: string) => {
-    const value = Number(raw);
-    setFieldValue(
-      'participants',
-      participants.map((p) =>
-        p.personId === id
-          ? { ...p, hours: Number.isNaN(value) ? 0 : value, hoursPinned: true }
-          : p,
-      ),
-    );
-  };
-
   const setDay = (id: string, date: Dayjs, hours: number) => {
     setFieldValue(
       'participants',
       participants.map((p) => {
         if (p.personId !== id) return p;
-        const base: Period = { from, to, days: p.days ?? defaultDays };
+        const base: Period = {
+          from,
+          to,
+          days: p.days ?? (multiDay ? defaultDays : [p.hours]),
+        };
         const next = editDay(base, date, hours);
         const days = next.days ?? [];
         return { ...p, days, hours: sum(days), hoursPinned: true };
@@ -336,8 +328,8 @@ export function EventParticipants({
       </Stack>
       <Stack spacing={0.5} sx={{ mt: 1 }}>
         {participants.map((p) => {
-          const effectiveDays = p.days ?? defaultDays;
-          const personHours = multiDay ? sum(effectiveDays) : p.hours;
+          const effectiveDays = p.days ?? (multiDay ? defaultDays : [p.hours]);
+          const personHours = sum(effectiveDays);
           const open = expanded.has(p.personId);
           const overridden =
             !!p.hoursPinned || !!p.costPinned || p.days != null;
@@ -354,6 +346,14 @@ export function EventParticipants({
                   {formatHours(personHours)}
                   {moneyBearing && ` · ${euro(p.cost ?? 0)}`}
                 </Typography>
+                {open && overridden && (
+                  <Button
+                    size="small"
+                    onClick={() => resetParticipant(p.personId)}
+                  >
+                    Reset
+                  </Button>
+                )}
                 <IconButton
                   size="small"
                   onClick={() => toggle(p.personId)}
@@ -363,65 +363,38 @@ export function EventParticipants({
                 </IconButton>
               </Stack>
               <Collapse in={open} unmountOnExit>
-                <Box sx={{ pl: 2, pr: 1, py: 1 }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    {multiDay ? (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ width: 110 }}
-                      >
-                        {formatHours(personHours)} total
-                      </Typography>
-                    ) : (
-                      <TextField
-                        size="small"
-                        type="number"
-                        label="Hours"
-                        value={p.hours}
-                        onChange={(e) => setHours(p.personId, e.target.value)}
-                        sx={{ width: 110 }}
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">h</InputAdornment>
-                          ),
-                        }}
-                      />
-                    )}
-                    {moneyBearing && (
-                      <TextField
-                        size="small"
-                        type="number"
-                        label="Cost"
-                        value={p.cost ?? 0}
-                        onChange={(e) => setCost(p.personId, e.target.value)}
-                        sx={{ width: 130 }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">€</InputAdornment>
-                          ),
-                        }}
-                      />
-                    )}
-                    {overridden && (
-                      <Button
-                        size="small"
-                        onClick={() => resetParticipant(p.personId)}
-                      >
-                        Reset
-                      </Button>
-                    )}
-                  </Stack>
-                  {multiDay && (
-                    <Box sx={{ mt: 1 }}>
-                      <PeriodInput
-                        period={{ from, to, days: effectiveDays }}
-                        onChange={(date, hours) =>
-                          setDay(p.personId, date, hours)
-                        }
-                      />
-                    </Box>
-                  )}
+                <Box sx={{ py: 1 }}>
+                  <PeriodInput
+                    period={{ from, to, days: effectiveDays }}
+                    onChange={(date, hours) => setDay(p.personId, date, hours)}
+                    weekLabel
+                    hideWeekTotal
+                    hidePeriodTotal
+                    trailingHeader={moneyBearing ? 'Cost' : undefined}
+                    renderTrailing={
+                      moneyBearing
+                        ? (weekIndex) =>
+                            weekIndex === 0 ? (
+                              <TextField
+                                size="small"
+                                type="number"
+                                fullWidth
+                                value={p.cost ?? 0}
+                                onChange={(e) =>
+                                  setCost(p.personId, e.target.value)
+                                }
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      €
+                                    </InputAdornment>
+                                  ),
+                                }}
+                              />
+                            ) : null
+                        : undefined
+                    }
+                  />
                 </Box>
               </Collapse>
             </Box>
