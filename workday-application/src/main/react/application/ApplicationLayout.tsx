@@ -161,7 +161,8 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
             </Button>
           }
         >
-          Extend your session or be redirected you peasant.
+          Quick heads up: your session's almost up. Extend it to stick around,
+          or log back in.
         </Alert>
       </Snackbar>
     </Root>
