@@ -284,10 +284,9 @@ export function EventParticipants({
 
   const setCost = (id: string, raw: string) => {
     const value = Number(raw);
+    const cost = Number.isNaN(value) ? 0 : Math.max(0, value);
     const pinned = participants.map((p) =>
-      p.personId === id
-        ? { ...p, cost: Number.isNaN(value) ? 0 : value, costPinned: true }
-        : p,
+      p.personId === id ? { ...p, cost, costPinned: true } : p,
     );
     setFieldValue('participants', redistribute(pinned, total));
   };
