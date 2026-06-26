@@ -45,10 +45,10 @@ const Root = styled('div')({
 });
 
 type ApplicationLayoutProps = {
-  onDrawer: () => void;
+  onMenu: () => void;
 };
 
-export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
+export function ApplicationLayout({ onMenu }: ApplicationLayoutProps) {
   const handleLogout = () => {
     window.location.href = '/logout';
   };
@@ -68,8 +68,8 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
   };
 
   const handleClickDrawer = () => {
-    if (onDrawer) {
-      onDrawer();
+    if (onMenu) {
+      onMenu();
     }
   };
 
@@ -89,7 +89,6 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
             aria-label="Menu"
             onClick={handleClickDrawer}
             size="large"
-            sx={{ display: { md: 'none' } }}
           >
             <MenuIcon />
           </IconButton>

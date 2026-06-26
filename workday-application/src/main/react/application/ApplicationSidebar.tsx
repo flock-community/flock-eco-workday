@@ -1,11 +1,20 @@
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ProfileIcon from '@mui/icons-material/Person';
-import { Avatar, Box, Collapse, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Collapse,
+  IconButton,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import ButtonBase from '@mui/material/ButtonBase';
 import type { Theme } from '@mui/material/styles';
 import { createElement, useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { FlockBird } from '../components/FlockBird';
 import { useUserMe } from '../hooks/UserMeHook';
 import {
   isActive,
@@ -14,18 +23,6 @@ import {
   type NavLeaf,
   visibleSections,
 } from './applicationNav';
-
-function initials(name?: string) {
-  if (!name) return '?';
-  return (
-    name
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase() ?? '')
-      .join('') || '?'
-  );
-}
 
 const label = (sx?: object) => ({
   flex: 1,
@@ -95,7 +92,12 @@ function NavFolderItem({ folder }: { folder: NavFolder }) {
   );
 }
 
-export function ApplicationSidebar() {
+type ApplicationSidebarProps = {
+  open: boolean;
+  onClose: () => void;
+};
+
+export function ApplicationSidebar({ open, onClose }: ApplicationSidebarProps) {
   const [user] = useUserMe();
   if (!user) return null;
 
@@ -107,7 +109,7 @@ export function ApplicationSidebar() {
       component="nav"
       aria-label="Main navigation"
       sx={{
-        display: { xs: 'none', md: 'flex' },
+        display: { xs: 'none', md: open ? 'flex' : 'none' },
         flexDirection: 'column',
         gap: 0.25,
         position: 'fixed',
@@ -141,15 +143,13 @@ export function ApplicationSidebar() {
           sx={{
             width: 38,
             height: 38,
-            fontSize: 14,
-            fontWeight: 700,
             bgcolor: 'primary.main',
             color: 'primary.contrastText',
           }}
         >
-          {initials(user.name)}
+          <FlockBird style={{ width: 21, height: 21, display: 'block' }} />
         </Avatar>
-        <Box sx={{ minWidth: 0 }}>
+        <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography sx={label({ fontSize: 14, fontWeight: 600 })}>
             {user.name ?? 'Unknown'}
           </Typography>
@@ -157,6 +157,16 @@ export function ApplicationSidebar() {
             Flock · {role}
           </Typography>
         </Box>
+        <Tooltip title="Hide sidebar">
+          <IconButton
+            size="small"
+            aria-label="Hide sidebar"
+            onClick={onClose}
+            sx={{ color: 'text.secondary', mr: -0.5 }}
+          >
+            <ChevronLeftIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Box>
 
       {visibleSections(authorities).map((section, i) => (

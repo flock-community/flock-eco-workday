@@ -1,3 +1,4 @@
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { UserFeature } from '@workday-user';
 import { useEffect, useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
@@ -25,23 +26,37 @@ import { ApplicationDrawer } from './ApplicationDrawer';
 import { ApplicationLayout } from './ApplicationLayout';
 import { ApplicationSidebar } from './ApplicationSidebar';
 
+const SIDEBAR_KEY = 'flock.sidebarOpen';
+
 export const AuthenticatedApplication = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(
+    () => localStorage.getItem(SIDEBAR_KEY) !== 'false',
+  );
+  const isDesktop = useMediaQuery('(min-width:900px)');
 
   useEffect(() => {
+    localStorage.setItem(SIDEBAR_KEY, String(sidebarOpen));
     const grid = document.getElementById('index');
-    grid?.classList.add('has-sidebar');
-    return () => grid?.classList.remove('has-sidebar');
-  }, []);
+    if (!grid) return;
+    grid.classList.toggle('has-sidebar', sidebarOpen);
+    return () => grid.classList.remove('has-sidebar');
+  }, [sidebarOpen]);
+
+  const handleMenu = () =>
+    isDesktop ? setSidebarOpen((o) => !o) : setOpenDrawer(true);
 
   return (
     <>
-      <ApplicationSidebar />
+      <ApplicationSidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
       <ApplicationDrawer
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
       />
-      <ApplicationLayout onDrawer={() => setOpenDrawer(true)} />
+      <ApplicationLayout onMenu={handleMenu} />
       <Switch>
         <Route path="/" exact component={HomeFeature} />
         <Route path="/dashboard" exact component={DashboardFeature} />
