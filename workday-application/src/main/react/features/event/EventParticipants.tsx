@@ -15,6 +15,7 @@ import type { Dayjs } from 'dayjs';
 import { useEffect, useRef, useState } from 'react';
 import { EventType } from '../../clients/EventClient';
 import { type Person, PersonClient } from '../../clients/PersonClient';
+import { NO_SPINNER_SX } from '../../components/inputs/noSpinnerSx';
 import { PeriodInput } from '../../components/inputs/PeriodInput';
 import { currencyFormatter } from '../../utils/Currency';
 import { editDay, type Period } from '../period/Period';
@@ -427,6 +428,7 @@ export function EventParticipants({
         fullWidth
         value={p.cost ?? 0}
         onChange={(e) => setCost(p.personId, e.target.value)}
+        sx={NO_SPINNER_SX}
         InputProps={{
           startAdornment: <InputAdornment position="start">€</InputAdornment>,
         }}

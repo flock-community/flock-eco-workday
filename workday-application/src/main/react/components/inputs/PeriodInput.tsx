@@ -6,9 +6,9 @@ import weekOfYearPlugin from 'dayjs/plugin/weekOfYear';
 import { Fragment, type ReactNode } from 'react';
 import type { Period } from '../../features/period/Period';
 import type { DayMeta } from '../../hooks/DayMetaHook';
-
 // utils
 import { calcGrid } from '../../utils/calcGrid';
+import { NO_SPINNER_SX } from './noSpinnerSx';
 
 dayjs.extend(weekOfYearPlugin);
 
@@ -69,9 +69,6 @@ function DayField({
 }) {
   const background = backgroundFor(meta);
   const tooltip = tooltipFor(meta);
-  const sx = background
-    ? { '& .MuiOutlinedInput-root': { backgroundColor: background } }
-    : undefined;
   const field = (
     <TextField
       size="small"
@@ -80,7 +77,12 @@ function DayField({
       disabled={day.disabled}
       onChange={(ev) => onChange(day.date, parseFloat(ev.target.value || '0'))}
       type="number"
-      sx={sx}
+      sx={[
+        NO_SPINNER_SX,
+        background
+          ? { '& .MuiOutlinedInput-root': { backgroundColor: background } }
+          : false,
+      ]}
       fullWidth={fullWidth}
     />
   );

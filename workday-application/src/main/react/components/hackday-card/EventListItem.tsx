@@ -8,6 +8,7 @@ import type { FlockEvent } from '../../clients/EventClient';
 import { DMY_DATE } from '../../clients/util/DateFormats';
 import { usePerson } from '../../hooks/PersonHook';
 import { isPersonAttending } from '../../utils/EventUtils';
+import { NO_SPINNER_SX } from '../inputs/noSpinnerSx';
 
 const PREFIX = 'EventListItem';
 
@@ -106,12 +107,7 @@ export function EventListItem({
               editingRef.current = false;
             }}
             onChange={(e) => handleHoursChange(Number(e.target.value))}
-            sx={{
-              width: 96,
-              '& input[type=number]': { MozAppearance: 'textfield' },
-              '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
-                { WebkitAppearance: 'none', margin: 0 },
-            }}
+            sx={[{ width: 96 }, NO_SPINNER_SX]}
             slotProps={{
               htmlInput: { min: 0, step: 1, 'aria-label': 'Hack hours' },
               input: {
