@@ -490,10 +490,6 @@ export function EventParticipants({
               sx={{
                 ...ledgerRow,
                 py: 0.5,
-                borderLeft: 2,
-                borderColor: overridden ? 'primary.main' : 'transparent',
-                pl: 1,
-                ml: -1,
               }}
             >
               <Box sx={{ minWidth: 0 }}>
