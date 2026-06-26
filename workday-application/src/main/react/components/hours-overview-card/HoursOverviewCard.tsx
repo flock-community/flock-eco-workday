@@ -113,7 +113,7 @@ export function HoursOverviewCard({
           <BarChart
             data={data}
             layout="vertical"
-            margin={{ top: 8, right: 28, bottom: 0, left: 8 }}
+            margin={{ top: 24, right: 28, bottom: 0, left: 8 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
