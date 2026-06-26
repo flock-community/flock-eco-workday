@@ -51,12 +51,12 @@
         row-gap: var(--row-gap);
       }
 
-      .content-grid > :not(.content, .full-width),
-      .full-width > :not(.content, .full-width) {
-        grid-column: breakout;
-      }
-      .content-grid > .content {
+      .content-grid > :not(.breakout, .full-width),
+      .full-width > :not(.breakout, .full-width) {
         grid-column: content;
+      }
+      .content-grid > .breakout {
+        grid-column: breakout;
       }
 
       .content-grid > .full-width {

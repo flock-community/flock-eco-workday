@@ -1,8 +1,12 @@
-import { Box, CardContent } from '@mui/material';
-import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
-import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import {
   LEAVE_DAY_PAGE_SIZE,
@@ -16,19 +20,6 @@ import { FlockPagination } from '../../components/pagination/FlockPagination';
 // Types
 import type { DayListProps, DayProps } from '../../types';
 
-const PREFIX = 'LeaveDayList';
-
-const classes = {
-  list: `${PREFIX}List`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({
-  [`& .${classes.list}`]: (loading) => ({
-    opacity: loading ? 0.5 : 1,
-  }),
-});
-
 export function LeaveDayList({
   personId,
   refresh,
@@ -38,7 +29,7 @@ export function LeaveDayList({
   const [list, setList] = useState<DayProps[]>([]);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(-1);
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
@@ -58,32 +49,44 @@ export function LeaveDayList({
 
   function renderItem(item: DayProps, key: number) {
     return (
-      <Grid size={{ xs: 12 }} key={`holiday-list-item-${key}`}>
-        <DayListItem
-          value={item}
-          onClick={() => onClickRow(item)}
-          onClickStatus={(status) => onClickStatus(status, item)}
-          hasAuthority={'LeaveDayAuthority.ADMIN'}
-        />
-      </Grid>
-    );
-  }
-
-  if (list.length === 0) {
-    return (
-      <Card>
-        <CardContent>
-          <Typography>No leave days.</Typography>
-        </CardContent>
-      </Card>
+      <DayListItem
+        key={`holiday-list-item-${key}`}
+        value={item}
+        onClick={() => onClickRow(item)}
+        onClickStatus={(status) => onClickStatus(status, item)}
+        hasAuthority={'LeaveDayAuthority.ADMIN'}
+        showType
+      />
     );
   }
 
   return (
-    <Root>
-      <Grid container spacing={1} className={classes.list}>
-        {list.map(renderItem)}
-      </Grid>
+    <>
+      <TableContainer sx={{ opacity: loading ? 0.5 : 1 }}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Description</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>From</TableCell>
+              <TableCell>To</TableCell>
+              <TableCell align="right">Days</TableCell>
+              <TableCell align="right">Hours</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell />
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {list.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8}>No leave days.</TableCell>
+              </TableRow>
+            ) : (
+              list.map(renderItem)
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}
@@ -92,6 +95,6 @@ export function LeaveDayList({
           changePageCb={setPage}
         />
       </Box>
-    </Root>
+    </>
   );
 }

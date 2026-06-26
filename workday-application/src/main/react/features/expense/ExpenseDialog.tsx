@@ -12,7 +12,6 @@ import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { ExpenseClient } from '../../clients/ExpenseClient';
-import { TransitionSlider } from '../../components/transitions/Slide';
 import type {
   CostExpenseFile,
   Expense,
@@ -156,13 +155,7 @@ export function ExpenseDialog({
     : 'Create expense';
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        TransitionComponent={TransitionSlider}
-        maxWidth="lg"
-        fullWidth
-      >
+      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
         <DialogHeader
           icon={<WorkIcon />}
           headline={headline}

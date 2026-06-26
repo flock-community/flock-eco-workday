@@ -9,7 +9,6 @@ import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import { useEffect, useState } from 'react';
 import { EventClient, type FlockEventRequest } from '../../clients/EventClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
-import { TransitionSlider } from '../../components/transitions/Slide';
 import { schema } from '../workday/WorkDayForm';
 import { EVENT_FORM_ID, EventForm } from './EventForm';
 import { toEventDayForms } from './EventParticipants';
@@ -79,13 +78,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   };
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        TransitionComponent={TransitionSlider}
-        maxWidth="lg"
-        fullWidth
-      >
+      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
         <DialogHeader
           icon={<EventIcon />}
           headline={code ? 'Edit Event' : 'Create Event'}

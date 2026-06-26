@@ -11,7 +11,6 @@ import {
   ProjectClient,
   type ProjectRequest,
 } from '../../clients/ProjectClient';
-import { TransitionSlider } from '../../components/transitions/Slide';
 import ProjectForm, { PROJECT_FORM_ID } from './ProjectForm';
 
 type ProjectDialogProps = {
@@ -62,12 +61,7 @@ export default function ProjectDialog({
   }, [project]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={closeDialog}
-      TransitionComponent={TransitionSlider}
-      maxWidth="md"
-    >
+    <Dialog open={open} onClose={closeDialog} maxWidth="md">
       <DialogHeader
         headline="Create a project"
         icon={<ProjectIcon />}

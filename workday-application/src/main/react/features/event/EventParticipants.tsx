@@ -1,5 +1,5 @@
-import AddIcon from '@mui/icons-material/Add';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Box,
   Button,
@@ -531,7 +531,7 @@ export function EventParticipants({
                 onClick={() => toggle(p.personId)}
                 aria-label="customize hours and cost"
               >
-                {open ? <ExpandLessIcon /> : <AddIcon />}
+                {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </IconButton>
             </Box>
             <Collapse in={open} unmountOnExit>

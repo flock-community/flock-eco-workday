@@ -10,7 +10,6 @@ import type { Dayjs } from 'dayjs';
 import { useEffect, useState } from 'react';
 import { SickDayClient } from '../../clients/SickDayClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
-import { TransitionSlider } from '../../components/transitions/Slide';
 import { SICKDAY_FORM_ID, SickDayForm, schemaSickDayForm } from './SickDayForm';
 
 type SickDayDialogProps = {
@@ -107,13 +106,7 @@ export function SickDayDialog({
 
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        TransitionComponent={TransitionSlider}
-        maxWidth="lg"
-        fullWidth
-      >
+      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
         <DialogHeader
           icon={<HealingIcon />}
           headline={headline}

@@ -106,7 +106,12 @@ export function EventListItem({
               editingRef.current = false;
             }}
             onChange={(e) => handleHoursChange(Number(e.target.value))}
-            sx={{ width: 96 }}
+            sx={{
+              width: 96,
+              '& input[type=number]': { MozAppearance: 'textfield' },
+              '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
+                { WebkitAppearance: 'none', margin: 0 },
+            }}
             slotProps={{
               htmlInput: { min: 0, step: 1, 'aria-label': 'Hack hours' },
               input: {
