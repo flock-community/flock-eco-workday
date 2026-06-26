@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import {
   EVENT_PAGE_SIZE,
   EventClient,
+  EventType,
   type FlockEvent,
   type FullFlockEvent,
 } from '../../clients/EventClient';
@@ -23,6 +24,20 @@ type EventListProps = {
   refresh: boolean;
   onClickRow: (item: FullFlockEvent) => void;
 };
+
+function eventTypeChip(type: EventType) {
+  if (type === EventType.FLOCK_HACK_DAY) {
+    return { color: 'primary', variant: 'filled' } as const;
+  }
+  if (type === EventType.CONFERENCE) {
+    // accent.dark, not accent.main: bright accent is unreadable as text on light paper.
+    return {
+      variant: 'outlined',
+      sx: { color: 'accent.dark', borderColor: 'accent.dark' },
+    } as const;
+  }
+  return { variant: 'outlined' } as const;
+}
 
 export const EventList = ({
   refresh,
@@ -64,9 +79,8 @@ export const EventList = ({
         <TableCell>
           <Chip
             label={EventTypeMapping[item.type]}
-            size={'small'}
-            color={'primary'}
-            variant="outlined"
+            size="small"
+            {...eventTypeChip(item.type)}
           />
         </TableCell>
         <TableCell>{item.from.format('DD-MM-YYYY')}</TableCell>
