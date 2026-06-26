@@ -29,11 +29,11 @@ clean:
 
 # Format your codebase, and make it shine. Note that formatting is also part of the 'build' pattern, but this is way quicker
 format:
-	./mvnw test-compile -Pformat -Denforcer.skip -Djacoco.skip
+	./mvnw test-compile -Pformat
 
 # Use at your own risk. Get a JAR as quickly as possible, excluding as many validation along the way. Ideal when experimenting or reviewing
 yolo :
-	./mvnw verify -DskipTests -Denforcer.skip -Dspotless.skip -Djacoco.skip -Pdevelop
+	./mvnw verify -DskipTests -Dspotless.skip -Pdevelop
 
 # Run backend + frontend in Docker and execute Playwright tests, showing only test output
 verify:
