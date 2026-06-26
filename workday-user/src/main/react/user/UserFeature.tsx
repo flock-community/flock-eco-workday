@@ -1,4 +1,4 @@
-import { Card } from '@mui/material';
+import { Box, Card } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { UserDialog } from './UserDialog';
 import { UserTable } from './UserTable';
@@ -62,11 +62,13 @@ export function UserFeature({ enablePassword }: UserFeatureProps) {
           onAdd={handleNewClick}
           onSearchChange={handleSearchChange}
         />
-        <UserTable
-          refresh={reload}
-          search={debouncedSearchState}
-          onRowClick={handleRowClick}
-        />
+        <Box sx={{ px: 1 }}>
+          <UserTable
+            refresh={reload}
+            search={debouncedSearchState}
+            onRowClick={handleRowClick}
+          />
+        </Box>
       </Card>
       <UserDialog
         open={dialogState.open}
