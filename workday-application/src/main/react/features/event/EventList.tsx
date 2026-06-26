@@ -30,11 +30,7 @@ function eventTypeChip(type: EventType) {
     return { color: 'primary', variant: 'filled' } as const;
   }
   if (type === EventType.CONFERENCE) {
-    // accent.dark, not accent.main: bright accent is unreadable as text on light paper.
-    return {
-      variant: 'outlined',
-      sx: { color: 'accent.dark', borderColor: 'accent.dark' },
-    } as const;
+    return { color: 'accent', variant: 'filled' } as const;
   }
   return { variant: 'outlined' } as const;
 }
