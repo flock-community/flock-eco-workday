@@ -23,6 +23,7 @@ export type FlockEventDay = {
   hours: number;
   cost: number | null;
   days?: number[];
+  budgetCategory: 'HACK' | 'TRAINING' | null;
 };
 
 export type FullFlockEvent = {

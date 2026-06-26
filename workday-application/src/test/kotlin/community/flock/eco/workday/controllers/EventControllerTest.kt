@@ -4,6 +4,7 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.forms.EventDayInput
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.forms.PersonForm
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.repository.EventRepository
@@ -416,6 +417,68 @@ class EventControllerTest : WorkdayIntegrationTest() {
     }
 
     @Test
+    fun `PUT with explicit participants rebuilds per-person EventDays without duplicate day codes`() {
+        val day = LocalDate.of(2023, 3, 1)
+        val p1 = createPerson(createUser(userAuthorities).account.user.code)
+        val p2 = createPerson(createUser(userAuthorities).account.user.code)
+        val p3 = createPerson(createUser(userAuthorities).account.user.code)
+        val created =
+            EventForm(
+                description = "Conf",
+                from = day,
+                to = day,
+                hours = 8.0,
+                days = mutableListOf(8.0),
+                costs = 1000.0,
+                personIds = listOf(p1.uuid, p2.uuid),
+                participants =
+                    listOf(
+                        EventDayInput(p1.uuid, hours = 4.0, cost = BigDecimal("600.00")),
+                        EventDayInput(p2.uuid, hours = 12.0, cost = BigDecimal("400.00")),
+                    ),
+                type = EventType.CONFERENCE,
+            ).run { eventService.create(this) }
+
+        // Through the controller so a duplicate DAY.CODE in the rebuild surfaces as a 500 (regression #541).
+        mvc
+            .perform(
+                put("$baseUrl/${created.code}")
+                    .with(SecurityMockMvcRequestPostProcessors.user(createUser(adminAuthorities)))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(
+                        // language=json
+                        """
+                        {
+                          "description": "Conf",
+                          "from": "2023-03-01",
+                          "to": "2023-03-01",
+                          "hours": 8.0,
+                          "days": [8.0],
+                          "costs": 1000.0,
+                          "personIds": ["${p1.uuid}", "${p3.uuid}"],
+                          "participants": [
+                            {"personId": "${p1.uuid}", "hours": 6.0, "cost": 700.0, "days": [8.0]},
+                            {"personId": "${p3.uuid}", "hours": 10.0, "cost": 300.0, "days": [8.0]}
+                          ],
+                          "type": "CONFERENCE"
+                        }
+                        """.trimIndent(),
+                    ).accept(MediaType.APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+
+        val rows = eventDayRepository.findAllByEventCode(created.code)
+        val byPerson = rows.associateBy { it.person.uuid }
+        assertEquals(setOf(p1.uuid, p3.uuid), byPerson.keys)
+        assertEquals(6.0, byPerson.getValue(p1.uuid).hours)
+        assertEquals(10.0, byPerson.getValue(p3.uuid).hours)
+        assertEquals(BigDecimal("700.00"), byPerson.getValue(p1.uuid).cost)
+        assertEquals(BigDecimal("300.00"), byPerson.getValue(p3.uuid).cost)
+        assertEquals(BigDecimal("1000.00"), costSumOf(created.code))
+        assertEquals(rows.size, rows.map { it.code }.distinct().size)
+    }
+
+    @Test
     fun `explicit participants persist their own per-day hours over a multi-day event`() {
         val from = LocalDate.of(2023, 3, 1)
         val to = LocalDate.of(2023, 3, 2)
@@ -492,6 +555,37 @@ class EventControllerTest : WorkdayIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("\$.eventDays[0].personId").value(person.uuid.toString()))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.eventDays[0].hours").value(5.0))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.eventDays[0].cost").value(1000.0))
+    }
+
+    @Test
+    fun `a person split across budget categories persists one event day per category, money on training only`() {
+        val day = LocalDate.of(2023, 3, 1)
+        val person = createPerson(createUser(userAuthorities).account.user.code)
+        val created =
+            EventForm(
+                description = "Conf",
+                from = day,
+                to = day,
+                hours = 8.0,
+                days = mutableListOf(8.0),
+                costs = 1000.0,
+                personIds = listOf(person.uuid),
+                participants =
+                    listOf(
+                        EventDayInput(person.uuid, hours = 6.0, cost = BigDecimal("1000.00"), budgetCategory = null),
+                        EventDayInput(person.uuid, hours = 2.0, cost = BigDecimal("999.00"), budgetCategory = BudgetCategory.HACK),
+                    ),
+                type = EventType.CONFERENCE,
+            ).run { eventService.create(this) }
+
+        val days = eventDayRepository.findAllByEventCode(created.code).sortedByDescending { it.hours }
+        assertEquals(2, days.size)
+        assertEquals(6.0, days[0].hours)
+        assertEquals(BigDecimal("1000.00"), days[0].cost)
+        assertNull(days[0].budgetCategory)
+        assertEquals(2.0, days[1].hours)
+        assertNull(days[1].cost)
+        assertEquals(BudgetCategory.HACK, days[1].budgetCategory)
     }
 
     private fun costSumOf(code: String): BigDecimal =

@@ -15,6 +15,7 @@ import community.flock.eco.workday.application.authorities.EventAuthority
 import community.flock.eco.workday.application.forms.EventDayInput
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.forms.EventRatingForm
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventDay
 import community.flock.eco.workday.application.model.EventRating
@@ -36,6 +37,7 @@ import org.springframework.web.server.ResponseStatusException
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
+import community.flock.eco.workday.api.model.BudgetCategory as BudgetCategoryApi
 import community.flock.eco.workday.api.model.Event as EventApi
 import community.flock.eco.workday.api.model.EventDay as EventDayApi
 import community.flock.eco.workday.api.model.EventDayForm as EventDayFormApi
@@ -215,6 +217,7 @@ class EventController(
             hours = hours ?: 0.0,
             cost = cost?.let { BigDecimal.valueOf(it) },
             days = days,
+            budgetCategory = budgetCategory?.toDomain(),
         )
     }
 
@@ -239,7 +242,20 @@ class EventController(
             hours = hours,
             cost = cost?.toDouble(),
             days = days,
+            budgetCategory = (budgetCategory ?: event.budgetCategory)?.toApi(),
         )
+
+    private fun BudgetCategory.toApi(): BudgetCategoryApi =
+        when (this) {
+            BudgetCategory.HACK -> BudgetCategoryApi.HACK
+            BudgetCategory.TRAINING -> BudgetCategoryApi.TRAINING
+        }
+
+    private fun BudgetCategoryApi.toDomain(): BudgetCategory =
+        when (this) {
+            BudgetCategoryApi.HACK -> BudgetCategory.HACK
+            BudgetCategoryApi.TRAINING -> BudgetCategory.TRAINING
+        }
 
     private fun EventRating.externalize(): EventRatingApi =
         EventRatingApi(

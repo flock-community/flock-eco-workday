@@ -35,8 +35,8 @@ test.describe('Budget on EventDay', () => {
     await expect(page.getByText('Hack Hours')).toBeVisible();
     await expect(page.getByText('Training Hours')).toBeVisible();
     await expect(page.getByText('Training Money')).toBeVisible();
-    await expect(page.getByText('Budget:').first()).toBeVisible();
-    await expect(page.getByText('Used:').first()).toBeVisible();
+    await expect(page.getByText('available').first()).toBeVisible();
+    await expect(page.getByText(/of .* used/).first()).toBeVisible();
   });
 
   test('Admin creates a TRAINING-marked event', async ({ page }) => {

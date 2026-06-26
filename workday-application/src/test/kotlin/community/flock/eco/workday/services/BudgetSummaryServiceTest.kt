@@ -1,10 +1,13 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.forms.EventDayInput
+import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.repository.EventDayRepository
 import community.flock.eco.workday.application.services.BudgetSummaryService
+import community.flock.eco.workday.application.services.EventService
 import community.flock.eco.workday.helpers.CreateHelper
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Test
@@ -18,6 +21,7 @@ class BudgetSummaryServiceTest(
     @Autowired val createHelper: CreateHelper,
     @Autowired val budgetSummaryService: BudgetSummaryService,
     @Autowired val eventDayRepository: EventDayRepository,
+    @Autowired val eventService: EventService,
 ) : WorkdayIntegrationTest() {
     private val year = 2022
     private val from = LocalDate.of(year, 1, 1)
@@ -133,6 +137,80 @@ class BudgetSummaryServiceTest(
         val summary = budgetSummaryService.getSummary(person.uuid, year)
 
         assertEquals(5000.0, summary.trainingMoneyBudget.budget.toDouble(), 0.01)
+    }
+
+    @Test
+    fun `splits a person's conference hours across hack and training budgets`() {
+        val person = createHelper.createPersonEntity("Mix", "Split")
+        createHelper.createContractInternal(
+            person = person,
+            from = from,
+            to = to,
+            hackTimeBudget = 160,
+            trainingTimeBudget = 200,
+            trainingMoneyBudget = BigDecimal("5000.00"),
+        )
+
+        EventForm(
+            description = "Conference partly on hack budget",
+            from = LocalDate.of(year, 4, 1),
+            to = LocalDate.of(year, 4, 1),
+            hours = 8.0,
+            days = mutableListOf(8.0),
+            costs = 1000.0,
+            personIds = listOf(person.uuid),
+            participants =
+                listOf(
+                    EventDayInput(person.uuid, hours = 6.0, cost = BigDecimal("1000.00"), budgetCategory = null),
+                    EventDayInput(person.uuid, hours = 2.0, cost = null, budgetCategory = BudgetCategory.HACK),
+                ),
+            type = EventType.CONFERENCE,
+        ).run { eventService.create(this) }
+
+        val summary = budgetSummaryService.getSummary(person.uuid, year)
+
+        assertEquals(2.0, summary.hackTimeBudget.used.toDouble())
+        assertEquals(6.0, summary.trainingTimeBudget.used.toDouble())
+        assertEquals(1000.0, summary.trainingMoneyBudget.used.toDouble())
+    }
+
+    @Test
+    fun `per-event breakdown labels a split conference's days by their own budget category`() {
+        val person = createHelper.createPersonEntity("Mix", "Label")
+        createHelper.createContractInternal(
+            person = person,
+            from = from,
+            to = to,
+            hackTimeBudget = 160,
+            trainingTimeBudget = 200,
+            trainingMoneyBudget = BigDecimal("5000.00"),
+        )
+
+        EventForm(
+            description = "Conference partly on hack budget",
+            from = LocalDate.of(year, 4, 1),
+            to = LocalDate.of(year, 4, 1),
+            hours = 8.0,
+            days = mutableListOf(8.0),
+            costs = 1000.0,
+            personIds = listOf(person.uuid),
+            participants =
+                listOf(
+                    EventDayInput(person.uuid, hours = 6.0, cost = BigDecimal("1000.00"), budgetCategory = null),
+                    EventDayInput(person.uuid, hours = 2.0, cost = null, budgetCategory = BudgetCategory.HACK),
+                ),
+            type = EventType.CONFERENCE,
+        ).run { eventService.create(this) }
+
+        val events = budgetSummaryService.getSummary(person.uuid, year).events
+
+        val hack = events.single { it.category == BudgetCategory.HACK }
+        assertEquals(2.0, hack.hours)
+        assertEquals(null, hack.cost)
+
+        val training = events.single { it.category == BudgetCategory.TRAINING }
+        assertEquals(6.0, training.hours)
+        assertEquals(BigDecimal("1000.00"), training.cost)
     }
 
     @Test
