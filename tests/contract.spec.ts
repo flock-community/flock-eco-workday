@@ -49,7 +49,7 @@ test.describe('Contract CRUD Operations', () => {
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
 
-    await expect(page.getByText('Monthly salary: 5000').first()).toBeVisible({
+    await expect(page.getByText('€ 5000 /mo').first()).toBeVisible({
       timeout: 30000,
     });
   });
@@ -74,11 +74,11 @@ test.describe('Contract CRUD Operations', () => {
 
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(page.getByText('Monthly salary: 4500').first()).toBeVisible({
+    await expect(page.getByText('€ 4500 /mo').first()).toBeVisible({
       timeout: 30000,
     });
 
-    await page.getByText('Monthly salary: 4500').first().click();
+    await page.getByText('€ 4500 /mo').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
     await page.getByLabel('Monthly salary').clear();
@@ -87,7 +87,7 @@ test.describe('Contract CRUD Operations', () => {
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
 
-    await expect(page.getByText('Monthly salary: 6000').first()).toBeVisible({
+    await expect(page.getByText('€ 6000 /mo').first()).toBeVisible({
       timeout: 30000,
     });
   });
@@ -112,11 +112,11 @@ test.describe('Contract CRUD Operations', () => {
 
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(page.getByText('Monthly salary: 3500').first()).toBeVisible({
+    await expect(page.getByText('€ 3500 /mo').first()).toBeVisible({
       timeout: 30000,
     });
 
-    await page.getByText('Monthly salary: 3500').first().click();
+    await page.getByText('€ 3500 /mo').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
     await page.getByRole('button', { name: 'Delete' }).click();
@@ -127,6 +127,6 @@ test.describe('Contract CRUD Operations', () => {
     await page.getByRole('button', { name: 'Confirm' }).click();
 
     await page.waitForLoadState('networkidle');
-    await expect(page.getByText('Monthly salary: 3500')).not.toBeVisible();
+    await expect(page.getByText('€ 3500 /mo')).not.toBeVisible();
   });
 });

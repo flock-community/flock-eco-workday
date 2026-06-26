@@ -71,11 +71,11 @@ test.describe
       await expect(dialog).toBeHidden({ timeout: 10000 });
       await page.waitForLoadState('networkidle');
 
-      // Each event renders inside a Card. The seeded develop data inserts
+      // Each event renders as a table row. The seeded develop data inserts
       // ~27 events, so the new entry can sit one or two pages deep — walk
       // pagination to find the description.
       const eventCards = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: EVENT_DESCRIPTION });
       const eventCard = await findOnAnyPage(page, eventCards);
       await expect(eventCard).toContainText(EVENT_DESCRIPTION);
@@ -90,7 +90,7 @@ test.describe
       await page.waitForLoadState('networkidle');
 
       const eventCards = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: EVENT_DESCRIPTION });
       const eventCard = await findOnAnyPage(page, eventCards);
       await eventCard.click();
@@ -116,7 +116,7 @@ test.describe
       await page.waitForLoadState('networkidle');
 
       const updatedCards = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: EVENT_DESCRIPTION_UPDATED });
       await findOnAnyPage(page, updatedCards);
     });
@@ -130,7 +130,7 @@ test.describe
       await page.waitForLoadState('networkidle');
 
       const eventCards = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: EVENT_DESCRIPTION_UPDATED });
       const eventCard = await findOnAnyPage(page, eventCards);
       await eventCard.click();
@@ -161,7 +161,7 @@ test.describe
       await page.goto('/event');
       await page.waitForLoadState('networkidle');
       const remaining = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: EVENT_DESCRIPTION_UPDATED });
       const maxPages = 25;
       for (let i = 0; i < maxPages; i++) {

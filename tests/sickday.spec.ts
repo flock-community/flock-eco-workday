@@ -71,7 +71,7 @@ test.describe
       // The new sick day appears in the from-desc paginated list. Walk pages
       // because seeded ernie sick days populate earlier pages.
       const sickCards = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: SICK_DESCRIPTION });
       const sickCard = await findOnAnyPage(page, sickCards);
       await expect(
@@ -91,7 +91,7 @@ test.describe
       await selectPersonInLayout(page, 'Ernie Muppets');
 
       const sickCards = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: SICK_DESCRIPTION });
       const sickCard = await findOnAnyPage(page, sickCards);
       await changeStatusOnLocator(page, sickCard, 'REQUESTED', 'APPROVED');
