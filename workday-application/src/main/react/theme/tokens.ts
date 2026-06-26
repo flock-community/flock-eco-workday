@@ -6,9 +6,17 @@ import type { TypographyVariantsOptions } from '@mui/material/styles/createTypog
 declare module '@mui/material/styles' {
   interface Palette {
     done: string;
+    accent: Palette['primary'];
   }
   interface PaletteOptions {
     done?: string;
+    accent?: PaletteOptions['primary'];
+  }
+}
+
+declare module '@mui/material/Chip' {
+  interface ChipPropsColorOverrides {
+    accent: true;
   }
 }
 
@@ -18,6 +26,8 @@ export const brand = {
   yellow: '#fcde00', // oklch(0.90 0.185 103)
   yellowLight: '#fde64d',
   yellowDark: '#e6cb00',
+  cyan: '#23e5db', // light-blue brand accent (blueprint + live flock.community)
+  cyanDark: '#0c7d77', // accessible deep cyan for accent text/borders on light paper
   ink: '#1c1b14', // warm near-black, contrast on yellow
 } as const;
 
@@ -38,6 +48,12 @@ export const lightPalette: PaletteOptions = {
     light: '#6b7686',
     dark: '#323d4d',
     contrastText: '#fffdf5',
+  },
+  accent: {
+    main: brand.cyan,
+    light: '#67efe6',
+    dark: brand.cyanDark,
+    contrastText: brand.ink,
   },
   ...semantic,
   done: '#6f6757',
@@ -68,6 +84,12 @@ export const darkPalette: PaletteOptions = {
     light: '#c4cdd9',
     dark: '#7e8a9b',
     contrastText: '#16150f',
+  },
+  accent: {
+    main: brand.cyan,
+    light: '#67efe6',
+    dark: '#15b3ab',
+    contrastText: '#06302d',
   },
   ...semantic,
   done: '#a99e86',

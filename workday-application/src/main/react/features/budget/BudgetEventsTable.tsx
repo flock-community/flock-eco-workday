@@ -69,9 +69,7 @@ export function BudgetEventsTable({
                   <Chip
                     size="small"
                     label={categoryLabel[event.category] ?? event.category}
-                    color={
-                      event.category === 'TRAINING' ? 'secondary' : 'primary'
-                    }
+                    color={event.category === 'TRAINING' ? 'accent' : 'primary'}
                     sx={{ fontWeight: 600 }}
                   />
                 </TableCell>
