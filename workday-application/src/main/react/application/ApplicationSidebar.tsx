@@ -1,15 +1,7 @@
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ProfileIcon from '@mui/icons-material/Person';
-import {
-  Avatar,
-  Box,
-  Collapse,
-  IconButton,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, Collapse, Typography } from '@mui/material';
 import ButtonBase from '@mui/material/ButtonBase';
 import type { Theme } from '@mui/material/styles';
 import { createElement, useState } from 'react';
@@ -103,12 +95,7 @@ function NavFolderItem({ folder }: { folder: NavFolder }) {
   );
 }
 
-type ApplicationSidebarProps = {
-  open: boolean;
-  onClose: () => void;
-};
-
-export function ApplicationSidebar({ open, onClose }: ApplicationSidebarProps) {
+export function ApplicationSidebar() {
   const [user] = useUserMe();
   if (!user) return null;
 
@@ -120,7 +107,7 @@ export function ApplicationSidebar({ open, onClose }: ApplicationSidebarProps) {
       component="nav"
       aria-label="Main navigation"
       sx={{
-        display: { xs: 'none', md: open ? 'flex' : 'none' },
+        display: { xs: 'none', md: 'flex' },
         flexDirection: 'column',
         gap: 0.25,
         position: 'fixed',
@@ -170,16 +157,6 @@ export function ApplicationSidebar({ open, onClose }: ApplicationSidebarProps) {
             Flock · {role}
           </Typography>
         </Box>
-        <Tooltip title="Hide sidebar">
-          <IconButton
-            size="small"
-            aria-label="Hide sidebar"
-            onClick={onClose}
-            sx={{ color: 'text.secondary', mr: -0.5 }}
-          >
-            <ChevronLeftIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
       </Box>
 
       {visibleSections(authorities).map((section, i) => (
