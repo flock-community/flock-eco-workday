@@ -30,8 +30,10 @@ export function HomeFeature() {
   const [user] = useUserMe();
   const status = useLoginStatus();
   const [withinNWeek] = useState<number>(6);
-  const [contracts, setContracts] = useState<any[]>([]);
-  const [personEvents, setPersonEvents] = useState<PersonEvent[]>([]);
+  const [contracts, setContracts] = useState<any[] | undefined>(undefined);
+  const [personEvents, setPersonEvents] = useState<PersonEvent[] | undefined>(
+    undefined,
+  );
   const [totalPerPersonMe, setTotalPerPersonMe] = useState<any>(undefined);
   const [personHolidayDetails, setPersonHolidayDetails] =
     useState<PersonHolidayDetails>();

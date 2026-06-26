@@ -10,12 +10,13 @@ import {
 import Table from '@mui/material/Table';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import type { Contract } from '../../clients/ContractClient';
 import { DMY_DATE } from '../../clients/util/DateFormats';
 
 type ContractsEndingProps = {
   withinNWeeks: number;
-  contracts: Contract[];
+  contracts?: Contract[];
 };
 
 export default function ContractsEnding({
@@ -48,7 +49,7 @@ export default function ContractsEnding({
             <TableCell>Type</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>{contracts.map(renderContract)}</TableBody>
+        <TableBody>{contracts?.map(renderContract)}</TableBody>
       </Table>
     </TableContainer>
   );
@@ -56,7 +57,15 @@ export default function ContractsEnding({
   return (
     <Card>
       <CardHeader title={`Contracts ending within ${withinNWeeks} weeks`} />
-      <CardContent>{contracts.length > 0 ? table : noContent}</CardContent>
+      <CardContent>
+        {contracts === undefined ? (
+          <AlignedLoader />
+        ) : contracts.length > 0 ? (
+          table
+        ) : (
+          noContent
+        )}
+      </CardContent>
     </Card>
   );
 }

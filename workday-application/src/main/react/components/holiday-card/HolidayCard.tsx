@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import { useEffect, useState } from 'react';
 import type { PersonHolidayDetails } from '../../clients/AggregationClient';
 import { HighlightSpan } from '../../theme/theme-light';
@@ -90,26 +91,35 @@ export function HolidayCard({ item }: HolidayCardProps) {
         <CardHeader
           title={'Leave days'}
           action={
-            <IconButton onClick={openLeaveDayDetailsDialog}>
+            <IconButton
+              onClick={openLeaveDayDetailsDialog}
+              disabled={item === undefined}
+            >
               <InfoOutlined />
             </IconButton>
           }
         />
         <CardContent className={classes.containerWrapper}>
-          <div className={classes.hoursLeftWrapper}>
-            <Typography variant="body1">You have</Typography>
-            <div className={classes.hoursLeft}>
-              <HighlightSpan>{hoursFormatter.format(available)}</HighlightSpan>
+          {item === undefined ? (
+            <AlignedLoader />
+          ) : (
+            <div className={classes.hoursLeftWrapper}>
+              <Typography variant="body1">You have</Typography>
+              <div className={classes.hoursLeft}>
+                <HighlightSpan>
+                  {hoursFormatter.format(available)}
+                </HighlightSpan>
+              </div>
+              <Typography variant="body1">
+                hours left
+                <Tooltip title="Based on 8 work hours per day">
+                  <Box component="span" display="block" fontStyle="italic">
+                    {hoursFormatter.format(available / 8)} days
+                  </Box>
+                </Tooltip>
+              </Typography>
             </div>
-            <Typography variant="body1">
-              hours left
-              <Tooltip title="Based on 8 work hours per day">
-                <Box component="span" display="block" fontStyle="italic">
-                  {hoursFormatter.format(available / 8)} days
-                </Box>
-              </Tooltip>
-            </Typography>
-          </div>
+          )}
         </CardContent>
       </Card>
       {leaveDayDetailsItem !== undefined && (
