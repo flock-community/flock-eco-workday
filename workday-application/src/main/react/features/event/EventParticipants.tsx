@@ -408,6 +408,16 @@ export function EventParticipants({
   const balanced = Math.round(costSum * 100) === Math.round(total * 100);
   const anyPinned = participants.some((p) => p.costPinned);
 
+  const cols = moneyBearing
+    ? 'minmax(0, 1fr) 72px 104px 40px'
+    : 'minmax(0, 1fr) 72px 40px';
+  const ledgerRow = {
+    display: 'grid',
+    gridTemplateColumns: cols,
+    columnGap: 1.5,
+    alignItems: 'center',
+  } as const;
+
   const costField = (p: Participant, weekIndex: number) =>
     weekIndex === 0 ? (
       <TextField
@@ -424,9 +434,9 @@ export function EventParticipants({
 
   const sectionHeader = (label: string) => (
     <Typography
-      variant="subtitle2"
+      variant="caption"
       color="text.secondary"
-      sx={{ display: 'block', mb: 0.5, pl: 2 }}
+      sx={{ display: 'block', mb: 0.5, fontWeight: 600 }}
     >
       {label}
     </Typography>
@@ -434,144 +444,186 @@ export function EventParticipants({
 
   return (
     <Box sx={{ mt: 1 }}>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="baseline"
-      >
-        <Typography variant="subtitle2" color="text.secondary">
-          Per attendee
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="overline" color="text.secondary">
+          Attendees · {participants.length}
         </Typography>
         {moneyBearing && anyPinned && (
           <Button size="small" onClick={resetSplit}>
-            Reset to even split
+            Even split
           </Button>
         )}
       </Stack>
-      <Stack spacing={0.5} sx={{ mt: 1 }}>
-        {participants.map((p) => {
-          const trainingDays = p.days ?? defaultDays;
-          const hackDays = p.hackDays ?? zeros(defaultDays.length);
-          const trainingHours = sum(trainingDays);
-          const hackHours = sum(hackDays);
-          const personHours = trainingHours + hackHours;
-          const split = splittable && hackHours > 0;
-          const open = expanded.has(p.personId);
-          const overridden = p.days != null || hackHours > 0 || !!p.costPinned;
-          return (
-            <Box key={p.personId}>
-              <Stack
-                direction="row"
-                spacing={1}
-                alignItems="center"
-                sx={
-                  open
-                    ? { borderBottom: 1, borderColor: 'divider', pb: 0.5 }
-                    : undefined
-                }
-              >
-                <Typography
-                  sx={{ flex: 1, fontWeight: open ? 600 : undefined }}
-                  variant="body2"
-                >
+
+      <Box
+        sx={{ ...ledgerRow, py: 0.5, borderBottom: 1, borderColor: 'divider' }}
+      >
+        <span />
+        <Typography variant="caption" color="text.secondary" textAlign="right">
+          Hours
+        </Typography>
+        {moneyBearing && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            textAlign="right"
+          >
+            Cost
+          </Typography>
+        )}
+        <span />
+      </Box>
+
+      {participants.map((p) => {
+        const trainingDays = p.days ?? defaultDays;
+        const hackDays = p.hackDays ?? zeros(defaultDays.length);
+        const trainingHours = sum(trainingDays);
+        const hackHours = sum(hackDays);
+        const personHours = trainingHours + hackHours;
+        const split = splittable && hackHours > 0;
+        const open = expanded.has(p.personId);
+        const overridden = p.days != null || hackHours > 0 || !!p.costPinned;
+        return (
+          <Box key={p.personId}>
+            <Box
+              sx={{
+                ...ledgerRow,
+                py: 0.5,
+                borderLeft: 2,
+                borderColor: overridden ? 'primary.main' : 'transparent',
+                pl: 1,
+                ml: -1,
+              }}
+            >
+              <Box sx={{ minWidth: 0 }}>
+                <Typography variant="body2" noWrap title={nameOf(p.personId)}>
                   {nameOf(p.personId)}
                 </Typography>
+                {split && (
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    noWrap
+                    sx={{ display: 'block' }}
+                  >
+                    {formatHours(trainingHours)} training ·{' '}
+                    {formatHours(hackHours)} hack
+                  </Typography>
+                )}
+              </Box>
+              <Typography
+                variant="body2"
+                textAlign="right"
+                fontWeight={overridden ? 600 : 400}
+                color={overridden ? 'text.primary' : 'text.secondary'}
+              >
+                {formatHours(personHours)}
+              </Typography>
+              {moneyBearing && (
                 <Typography
                   variant="body2"
-                  color={overridden ? 'text.primary' : 'text.secondary'}
+                  textAlign="right"
+                  fontWeight={p.costPinned ? 600 : 400}
+                  color={p.costPinned ? 'text.primary' : 'text.secondary'}
                 >
-                  {split
-                    ? `Training ${formatHours(trainingHours)} · Hack ${formatHours(hackHours)}`
-                    : formatHours(personHours)}
-                  {moneyBearing &&
-                    ` · ${currencyFormatter.format(p.cost ?? 0)}`}
+                  {currencyFormatter.format(p.cost ?? 0)}
                 </Typography>
-                {open && overridden && (
-                  <Button
-                    size="small"
-                    onClick={() => resetParticipant(p.personId)}
-                  >
-                    Reset
-                  </Button>
-                )}
-                <IconButton
-                  size="small"
-                  onClick={() => toggle(p.personId)}
-                  aria-label="customize hours and cost"
-                >
-                  {open ? <ExpandLessIcon /> : <AddIcon />}
-                </IconButton>
-              </Stack>
-              <Collapse in={open} unmountOnExit>
-                <Box sx={{ py: 1 }}>
-                  {splittable ? (
-                    <Stack spacing={1.5}>
-                      <Box>
-                        {sectionHeader('Training hours')}
-                        <PeriodInput
-                          period={{ from, to, days: trainingDays }}
-                          onChange={(date, hours) =>
-                            setTrainingDay(p.personId, date, hours)
-                          }
-                          weekLabel
-                          labelInset={2}
-                          hideWeekTotal
-                          hidePeriodTotal
-                          trailingHeader={moneyBearing ? 'Cost' : undefined}
-                          renderTrailing={
-                            moneyBearing
-                              ? (weekIndex) => costField(p, weekIndex)
-                              : undefined
-                          }
-                        />
-                      </Box>
-                      <Box>
-                        {sectionHeader('Hack hours')}
-                        <PeriodInput
-                          period={{ from, to, days: hackDays }}
-                          onChange={(date, hours) =>
-                            setHackDay(p.personId, date, hours)
-                          }
-                          weekLabel
-                          labelInset={2}
-                          hideWeekTotal
-                          hidePeriodTotal
-                        />
-                      </Box>
-                    </Stack>
-                  ) : (
-                    <PeriodInput
-                      period={{ from, to, days: trainingDays }}
-                      onChange={(date, hours) =>
-                        setTrainingDay(p.personId, date, hours)
-                      }
-                      weekLabel
-                      labelInset={2}
-                      hideWeekTotal
-                      hidePeriodTotal
-                      trailingHeader={moneyBearing ? 'Cost' : undefined}
-                      renderTrailing={
-                        moneyBearing
-                          ? (weekIndex) => costField(p, weekIndex)
-                          : undefined
-                      }
-                    />
-                  )}
-                </Box>
-              </Collapse>
+              )}
+              <IconButton
+                size="small"
+                onClick={() => toggle(p.personId)}
+                aria-label="customize hours and cost"
+              >
+                {open ? <ExpandLessIcon /> : <AddIcon />}
+              </IconButton>
             </Box>
-          );
-        })}
-      </Stack>
+            <Collapse in={open} unmountOnExit>
+              <Box
+                sx={{
+                  p: 1.5,
+                  mb: 0.5,
+                  borderRadius: 2,
+                  bgcolor: 'action.hover',
+                }}
+              >
+                {splittable ? (
+                  <Stack spacing={1.5}>
+                    <Box>
+                      {sectionHeader('Training hours')}
+                      <PeriodInput
+                        period={{ from, to, days: trainingDays }}
+                        onChange={(date, hours) =>
+                          setTrainingDay(p.personId, date, hours)
+                        }
+                        weekLabel
+                        labelInset={2}
+                        hideWeekTotal
+                        hidePeriodTotal
+                        trailingHeader={moneyBearing ? 'Cost' : undefined}
+                        renderTrailing={
+                          moneyBearing
+                            ? (weekIndex) => costField(p, weekIndex)
+                            : undefined
+                        }
+                      />
+                    </Box>
+                    <Box>
+                      {sectionHeader('Hack hours')}
+                      <PeriodInput
+                        period={{ from, to, days: hackDays }}
+                        onChange={(date, hours) =>
+                          setHackDay(p.personId, date, hours)
+                        }
+                        weekLabel
+                        labelInset={2}
+                        hideWeekTotal
+                        hidePeriodTotal
+                      />
+                    </Box>
+                  </Stack>
+                ) : (
+                  <PeriodInput
+                    period={{ from, to, days: trainingDays }}
+                    onChange={(date, hours) =>
+                      setTrainingDay(p.personId, date, hours)
+                    }
+                    weekLabel
+                    labelInset={2}
+                    hideWeekTotal
+                    hidePeriodTotal
+                    trailingHeader={moneyBearing ? 'Cost' : undefined}
+                    renderTrailing={
+                      moneyBearing
+                        ? (weekIndex) => costField(p, weekIndex)
+                        : undefined
+                    }
+                  />
+                )}
+                {overridden && (
+                  <Box sx={{ mt: 1, textAlign: 'right' }}>
+                    <Button
+                      size="small"
+                      onClick={() => resetParticipant(p.personId)}
+                    >
+                      Reset to event default
+                    </Button>
+                  </Box>
+                )}
+              </Box>
+            </Collapse>
+          </Box>
+        );
+      })}
+
       {moneyBearing && (
         <Typography
           variant="caption"
-          color={balanced ? 'text.secondary' : 'error'}
+          color={balanced ? 'text.secondary' : 'error.main'}
           sx={{ mt: 1, display: 'block', textAlign: 'right' }}
         >
-          Shares total {currencyFormatter.format(costSum)} of{' '}
-          {currencyFormatter.format(total)}
-          {!balanced && ' — does not match event cost'}
+          {balanced
+            ? 'Shares match the event cost'
+            : `Shares total ${currencyFormatter.format(costSum)}, event cost is ${currencyFormatter.format(total)}`}
         </Typography>
       )}
     </Box>
