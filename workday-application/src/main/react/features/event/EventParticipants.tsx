@@ -566,7 +566,7 @@ export function EventParticipants({
                           setTrainingDay(p.personId, date, hours)
                         }
                         weekLabel
-                        labelInset={2}
+                        labelInset={1}
                         hideWeekTotal
                         hidePeriodTotal
                         trailingHeader={moneyBearing ? 'Cost' : undefined}
@@ -585,7 +585,7 @@ export function EventParticipants({
                           setHackDay(p.personId, date, hours)
                         }
                         weekLabel
-                        labelInset={2}
+                        labelInset={1}
                         hideWeekTotal
                         hidePeriodTotal
                       />
@@ -598,7 +598,7 @@ export function EventParticipants({
                       setTrainingDay(p.personId, date, hours)
                     }
                     weekLabel
-                    labelInset={2}
+                    labelInset={1}
                     hideWeekTotal
                     hidePeriodTotal
                     trailingHeader={moneyBearing ? 'Cost' : undefined}

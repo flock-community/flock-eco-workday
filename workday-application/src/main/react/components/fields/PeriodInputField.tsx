@@ -34,6 +34,7 @@ type PeriodInputFieldProps = {
   dayMeta?: Map<string, DayMeta>;
   weekLabel?: boolean;
   hideWeekTotal?: boolean;
+  labelInset?: number;
 };
 
 function PeriodInputRenderer({
@@ -46,6 +47,7 @@ function PeriodInputRenderer({
   dayMeta,
   weekLabel,
   hideWeekTotal,
+  labelInset,
 }: Readonly<PeriodInputRendererProps>) {
   const [period, setPeriod] = useState<Period>({
     from,
@@ -96,6 +98,7 @@ function PeriodInputRenderer({
         dayMeta={dayMeta}
         weekLabel={weekLabel}
         hideWeekTotal={hideWeekTotal}
+        labelInset={labelInset}
       />
       <ButtonGroup className={classes.buttons} size="small" fullWidth>
         <Button variant="outlined" onClick={() => setHoursPerDay(0)}>
@@ -122,6 +125,7 @@ type PeriodInputRendererProps = {
   dayMeta?: Map<string, DayMeta>;
   weekLabel?: boolean;
   hideWeekTotal?: boolean;
+  labelInset?: number;
 };
 
 export function PeriodInputField({
@@ -132,6 +136,7 @@ export function PeriodInputField({
   dayMeta,
   weekLabel,
   hideWeekTotal,
+  labelInset,
 }: Readonly<PeriodInputFieldProps>) {
   return (
     <StyledField id={name} name={name}>
@@ -146,6 +151,7 @@ export function PeriodInputField({
           dayMeta={dayMeta}
           weekLabel={weekLabel}
           hideWeekTotal={hideWeekTotal}
+          labelInset={labelInset}
         />
       )}
     </StyledField>
