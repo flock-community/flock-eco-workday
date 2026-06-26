@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
 import community.flock.eco.workday.application.interfaces.Daily
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.EventType
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -33,4 +34,5 @@ data class EventDayInput(
     val cost: BigDecimal? = null,
     // Per-day hours over the event's date range; when null the person inherits the event blueprint.
     val days: List<Double>? = null,
+    val budgetCategory: BudgetCategory? = null,
 )

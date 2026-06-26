@@ -31,6 +31,12 @@ const categoryLabel: Record<string, string> = {
   TRAINING: 'Training',
 };
 
+// Hack mirrors the day-grid's hackday green; training takes the slate secondary.
+const categoryChipSx: Record<string, object> = {
+  HACK: { color: 'success.main', bgcolor: 'rgba(46, 125, 50, 0.12)' },
+  TRAINING: { color: 'secondary.main', bgcolor: 'rgba(72, 86, 106, 0.12)' },
+};
+
 export function BudgetEventsTable({
   events,
   onEditEvent,
@@ -68,8 +74,11 @@ export function BudgetEventsTable({
                 <TableCell>
                   <Chip
                     size="small"
-                    variant="outlined"
                     label={categoryLabel[event.category] ?? event.category}
+                    sx={{
+                      fontWeight: 600,
+                      ...categoryChipSx[event.category],
+                    }}
                   />
                 </TableCell>
                 <TableCell align="right">
@@ -79,7 +88,17 @@ export function BudgetEventsTable({
                   h
                 </TableCell>
                 <TableCell align="right">
-                  {event.category === 'TRAINING' ? euro(event.cost ?? 0) : '—'}
+                  {event.category === 'TRAINING' ? (
+                    euro(event.cost ?? 0)
+                  ) : (
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color="text.secondary"
+                    >
+                      no cost
+                    </Typography>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

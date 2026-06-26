@@ -3,6 +3,8 @@ package community.flock.eco.workday.application.model
 import community.flock.eco.workday.core.events.EventEntityListeners
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.ManyToOne
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -20,6 +22,9 @@ class EventDay(
     hours: Double,
     days: MutableList<Double>? = null,
     var cost: BigDecimal? = null,
+    // null falls back to the category derived from event.type; set per row to split a person across budgets.
+    @Enumerated(EnumType.STRING)
+    var budgetCategory: BudgetCategory? = null,
     @ManyToOne
     val person: Person,
     @ManyToOne

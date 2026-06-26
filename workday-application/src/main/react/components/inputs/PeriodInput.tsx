@@ -25,6 +25,8 @@ export type PeriodInputProps = {
   hidePeriodTotal?: boolean;
   trailingHeader?: ReactNode;
   renderTrailing?: (weekIndex: number) => ReactNode;
+  // Insets only the week-label column so day fields stay aligned with an un-inset grid above.
+  labelInset?: number;
 };
 
 // Background-only fill — green for hackdays, purple for leave (no
@@ -101,6 +103,7 @@ export function PeriodInput({
   hidePeriodTotal,
   trailingHeader,
   renderTrailing,
+  labelInset,
 }: PeriodInputProps) {
   const grid = calcGrid(period);
 
@@ -131,7 +134,7 @@ export function PeriodInput({
             alignItems: 'stretch',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', pl: labelInset }}>
             {!weekLabel && (
               <Typography variant="body2" color="text.secondary">
                 Week
@@ -178,8 +181,15 @@ export function PeriodInput({
             const trailingNode = hasTrailing ? renderTrailing(weekIndex) : null;
             return (
               <Fragment key={`${week.year} week-${week.weekNumber}`}>
-                <Box sx={{ display: 'flex', alignItems: 'center', py: 0.75 }}>
-                  <Typography variant="body2">
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    py: 0.75,
+                    pl: labelInset,
+                  }}
+                >
+                  <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
                     {weekLabel ? `Week ${week.weekNumber}` : week.weekNumber}
                   </Typography>
                 </Box>

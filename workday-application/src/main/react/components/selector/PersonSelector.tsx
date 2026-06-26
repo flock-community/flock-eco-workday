@@ -57,9 +57,11 @@ export function PersonSelector({
   }
 
   function renderValue(values: any) {
+    if (!items) return '';
     if (values.length <= 3) {
       return values
         .map((uuid) => items.find((it) => it.uuid === uuid))
+        .filter(Boolean)
         .map(renderString)
         .join(', ');
     } else {

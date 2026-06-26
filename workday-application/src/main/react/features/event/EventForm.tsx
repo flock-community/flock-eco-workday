@@ -104,13 +104,14 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
         <Grid size={{ xs: 6 }}>
           <DatePickerField name="to" label="To" minDate={values.from} />
         </Grid>
-        <Grid size={{ xs: 12 }}>
+        <Grid size={{ xs: 12 }} sx={{ px: 1.5 }}>
           <PeriodInputField
             name="days"
             from={values.from}
             to={values.to}
             reset={resetHours}
             weekLabel
+            labelInset={1}
             hideWeekTotal
           />
         </Grid>

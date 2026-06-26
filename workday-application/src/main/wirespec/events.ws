@@ -49,7 +49,11 @@ type EventDay {
   personId: String?,
   hours: Number?,
   cost: Number?,
-  days: Number[]?
+  days: Number[]?,
+  budgetCategory: BudgetCategory?
+}
+enum BudgetCategory {
+  HACK, TRAINING
 }
 enum EventType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
@@ -69,7 +73,8 @@ type EventDayForm {
   personId: String?,
   hours: Number?,
   cost: Number?,
-  days: Number[]?
+  days: Number[]?,
+  budgetCategory: BudgetCategory?
 }
 enum EventFormType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
