@@ -71,7 +71,13 @@ export function WorkDayList({
     if (list.length === 0) {
       return (
         <TableRow>
-          <TableCell colSpan={8}>No workdays</TableCell>
+          <TableCell
+            colSpan={8}
+            align="center"
+            sx={{ py: 4, color: 'text.secondary' }}
+          >
+            No workdays
+          </TableCell>
         </TableRow>
       );
     }

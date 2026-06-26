@@ -33,8 +33,12 @@ export function ContractFeature({ person }: ContractFeatureProps) {
         <CardHeader
           title="Contracts"
           action={
-            <Button color="primary" onClick={handleClickAdd}>
-              <AddIcon /> Add
+            <Button
+              color="primary"
+              onClick={handleClickAdd}
+              startIcon={<AddIcon />}
+            >
+              Add
             </Button>
           }
         />

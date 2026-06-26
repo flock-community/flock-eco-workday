@@ -116,8 +116,8 @@ export const PersonTable = () => {
         <CardHeader
           title="Persons"
           action={
-            <Button onClick={handleDialogOpen}>
-              <AddIcon /> Add
+            <Button onClick={handleDialogOpen} startIcon={<AddIcon />}>
+              Add
             </Button>
           }
         />

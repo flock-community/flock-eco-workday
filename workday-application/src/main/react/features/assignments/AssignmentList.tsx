@@ -75,7 +75,13 @@ export function AssignmentList({
           <TableBody>
             {items.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columnCount}>No assignments</TableCell>
+                <TableCell
+                  colSpan={columnCount}
+                  align="center"
+                  sx={{ py: 4, color: 'text.secondary' }}
+                >
+                  No assignments
+                </TableCell>
               </TableRow>
             ) : (
               items.map((assignment) => (

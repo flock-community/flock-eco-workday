@@ -74,7 +74,13 @@ export function SickDayList({
           <TableBody>
             {list.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7}>No sick days</TableCell>
+                <TableCell
+                  colSpan={7}
+                  align="center"
+                  sx={{ py: 4, color: 'text.secondary' }}
+                >
+                  No sick days
+                </TableCell>
               </TableRow>
             ) : (
               list.map(renderItem)

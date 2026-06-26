@@ -194,7 +194,10 @@ export function createAppTheme(mode: ColorMode): Theme {
 
       MuiTableCell: {
         styleOverrides: {
-          root: { borderColor: palette.divider },
+          root: {
+            borderColor: palette.divider,
+            fontVariantNumeric: 'tabular-nums',
+          },
           head: {
             fontWeight: 700,
             fontSize: '0.74rem',

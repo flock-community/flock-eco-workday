@@ -115,7 +115,13 @@ export const EventList = ({
           <TableBody>
             {items.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8}>No events</TableCell>
+                <TableCell
+                  colSpan={8}
+                  align="center"
+                  sx={{ py: 4, color: 'text.secondary' }}
+                >
+                  No events
+                </TableCell>
               </TableRow>
             ) : (
               items.map(renderItem)

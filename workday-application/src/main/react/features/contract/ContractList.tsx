@@ -82,7 +82,13 @@ export function ContractList({
           <TableBody>
             {items.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5}>No contracts</TableCell>
+                <TableCell
+                  colSpan={5}
+                  align="center"
+                  sx={{ py: 4, color: 'text.secondary' }}
+                >
+                  No contracts
+                </TableCell>
               </TableRow>
             ) : (
               items.map((it) => (

@@ -79,7 +79,13 @@ export function LeaveDayList({
           <TableBody>
             {list.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8}>No leave days.</TableCell>
+                <TableCell
+                  colSpan={8}
+                  align="center"
+                  sx={{ py: 4, color: 'text.secondary' }}
+                >
+                  No leave days
+                </TableCell>
               </TableRow>
             ) : (
               list.map(renderItem)

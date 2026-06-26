@@ -1,5 +1,5 @@
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
-import EuroIcon from '@mui/icons-material/Euro';
+import PaymentsIcon from '@mui/icons-material/Payments';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import { Box, Card, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
@@ -105,7 +105,7 @@ export function ExpenseList({
                 {item.expenseType === 'TRAVEL' ? (
                   <DriveEtaIcon fontSize="small" color="action" />
                 ) : (
-                  <EuroIcon fontSize="small" color="action" />
+                  <PaymentsIcon fontSize="small" color="action" />
                 )}
                 <span>{item.description ? item.description : 'Untitled'}</span>
               </Box>

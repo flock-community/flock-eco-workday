@@ -89,8 +89,8 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
             />
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <Button onClick={createProject}>
-              <AddIcon /> Add project
+            <Button onClick={createProject} startIcon={<AddIcon />}>
+              Add project
             </Button>
           </Grid>
         </Grid>
