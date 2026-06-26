@@ -110,6 +110,34 @@ describe('initParticipants', () => {
     ]);
   });
 
+  it('falls back to stored hours when a row has no per-day breakdown (subscribe path)', () => {
+    const parts = initParticipants(
+      [{ personId: 'a', hours: 4 }],
+      8,
+      EventType.FLOCK_HACK_DAY,
+      0,
+      [8],
+    );
+    expect(parts[0]).toMatchObject({ hours: 4, days: [4] });
+
+    const forms = toEventDayForms(parts, EventType.FLOCK_HACK_DAY, [8]);
+    expect(forms).toEqual([
+      { personId: 'a', hours: 4, cost: null, budgetCategory: null, days: [4] },
+    ]);
+  });
+
+  it('rebuilds hours from the scalar when stored days no longer span the range', () => {
+    const parts = initParticipants(
+      [{ personId: 'a', hours: 16, cost: 1200, days: [8, 8, 8] }],
+      16,
+      EventType.CONFERENCE,
+      1200,
+      [8, 8],
+    );
+    expect(parts[0].hours).toBe(16);
+    expect(parts[0].days).toBeUndefined();
+  });
+
   it('treats a saved per-day array equal to the blueprint as inherited (no override)', () => {
     const parts = initParticipants(
       [

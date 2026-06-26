@@ -139,6 +139,16 @@ export function initParticipants(
   const moneyBearing = isMoneyBearing(type);
   const splittable = isSplittable(type);
   const len = defaultDays.length;
+  // Trust stored per-day only when it spans the range; else rebuild from scalar hours
+  // (subscribe sets hours without days) so a round-trip never zeroes the attendee.
+  const perDayHours = (d: EventDayRaw): number[] => {
+    if (d.days && d.days.length === len) return d.days;
+    const hours = d.hours ?? 0;
+    if (len === 0) return [];
+    if (len === 1) return [hours];
+    if (sum(defaultDays) === hours) return defaultDays;
+    return zeros(len).map(() => hours / len);
+  };
   const byPerson = new Map<
     string,
     { training: number[]; hack: number[]; cost: number }
@@ -150,7 +160,7 @@ export function initParticipants(
       hack: zeros(len),
       cost: 0,
     };
-    const days = d.days ?? zeros(len);
+    const days = perDayHours(d);
     const isHackBudgetSplit = splittable && d.budgetCategory === 'HACK';
     if (isHackBudgetSplit) {
       days.forEach((h, i) => {
