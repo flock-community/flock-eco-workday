@@ -20,14 +20,20 @@ declare module '@mui/material/Chip' {
   }
 }
 
+declare module '@mui/material/LinearProgress' {
+  interface LinearProgressPropsColorOverrides {
+    accent: true;
+  }
+}
+
 // Flock brand. Designed in OKLCH for perceptual consistency, emitted as hex so
 // MUI's colour manipulators (lighten/darken/alpha) keep working for hover/focus.
 export const brand = {
   yellow: '#fcde00', // oklch(0.90 0.185 103)
   yellowLight: '#fde64d',
   yellowDark: '#e6cb00',
-  cyan: '#23e5db', // light-blue brand accent (blueprint + live flock.community)
-  cyanDark: '#0c7d77', // accessible deep cyan for accent text/borders on light paper
+  teal: '#0ae6ab', // brand accent (live flock.community)
+  tealDark: '#077f5e', // accessible deep teal for accent text/borders on light paper
   ink: '#1c1b14', // warm near-black, contrast on yellow
 } as const;
 
@@ -50,9 +56,9 @@ export const lightPalette: PaletteOptions = {
     contrastText: '#fffdf5',
   },
   accent: {
-    main: brand.cyan,
-    light: '#67efe6',
-    dark: brand.cyanDark,
+    main: brand.teal,
+    light: '#5cf0c6',
+    dark: brand.tealDark,
     contrastText: brand.ink,
   },
   ...semantic,
@@ -86,10 +92,10 @@ export const darkPalette: PaletteOptions = {
     contrastText: '#16150f',
   },
   accent: {
-    main: brand.cyan,
-    light: '#67efe6',
-    dark: '#15b3ab',
-    contrastText: '#06302d',
+    main: brand.teal,
+    light: '#5cf0c6',
+    dark: '#0fbf8f',
+    contrastText: '#04261c',
   },
   ...semantic,
   done: '#a99e86',

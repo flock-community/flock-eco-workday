@@ -37,6 +37,7 @@ export function BudgetSummaryCards({ summary }: BudgetSummaryCardsProps) {
           title="Training Hours"
           budgetItem={summary.trainingTimeBudget}
           unit="h"
+          base="accent"
         />
       </Grid>
       <Grid size={{ xs: 12, md: 4 }}>
@@ -44,6 +45,7 @@ export function BudgetSummaryCards({ summary }: BudgetSummaryCardsProps) {
           title="Training Money"
           budgetItem={summary.trainingMoneyBudget}
           unit="€"
+          base="accent"
         />
       </Grid>
     </Grid>
