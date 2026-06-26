@@ -29,6 +29,7 @@
       /* Content Grid start */
       .content-grid {
         --padding-inline: 24px;
+        --sidebar-width: 256px;
         --content-max-width: 1280px;
         --breakout-max-width: 1820px;
         --breakout-size: calc(
@@ -61,6 +62,14 @@
 
       .content-grid > .full-width {
         grid-column: full-width;
+      }
+
+      /* Persistent left rail offsets the whole grid (top bar + content)
+         on desktop; below the breakpoint the rail collapses to a drawer. */
+      @media (min-width: 900px) {
+        .content-grid.has-sidebar {
+          padding-left: var(--sidebar-width);
+        }
       }
       /*  Content grid end */
 

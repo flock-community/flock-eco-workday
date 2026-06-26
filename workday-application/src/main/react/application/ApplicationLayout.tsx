@@ -89,6 +89,7 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
             aria-label="Menu"
             onClick={handleClickDrawer}
             size="large"
+            sx={{ display: { md: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
