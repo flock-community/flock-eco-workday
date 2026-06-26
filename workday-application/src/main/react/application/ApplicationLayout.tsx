@@ -13,6 +13,7 @@ import Toolbar from '@mui/material/Toolbar';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
+import { FlockBird } from '../components/FlockBird';
 // Hooks
 import { useSession } from '../hooks/SessionHook';
 import { ColorModeToggle } from '../theme/ColorModeToggle';
@@ -73,9 +74,15 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
   };
 
   return (
-    <Root>
-      <AppBar className={`${classes.navBar} full-width`}>
-        <Toolbar>
+    <Root className="full-width">
+      <AppBar className={classes.navBar}>
+        <Toolbar
+          sx={{
+            width: '100%',
+            maxWidth: 'var(--content-max-width)',
+            mx: 'auto',
+          }}
+        >
           <IconButton
             className={classes.menuButton}
             color="inherit"
@@ -93,8 +100,8 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
             to="/"
             sx={{
               display: 'inline-flex',
-              alignItems: 'baseline',
-              gap: '0.3rem',
+              alignItems: 'center',
+              gap: '0.6rem',
               fontSize: '1.2rem',
               letterSpacing: '-0.01em',
             }}
@@ -102,15 +109,36 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
             <Box
               component="span"
               sx={{
-                fontWeight: 800,
+                display: 'inline-flex',
                 color: (t) =>
                   t.palette.mode === 'dark' ? 'primary.main' : 'inherit',
               }}
             >
-              Flock.
-            </Box>{' '}
-            <Box component="span" sx={{ fontWeight: 400, opacity: 0.85 }}>
-              Workday
+              <FlockBird
+                style={{ height: '1.9rem', width: 'auto', display: 'block' }}
+              />
+            </Box>
+            <Box
+              component="span"
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'baseline',
+                gap: '0.3rem',
+              }}
+            >
+              <Box
+                component="span"
+                sx={{
+                  fontWeight: 800,
+                  color: (t) =>
+                    t.palette.mode === 'dark' ? 'primary.main' : 'inherit',
+                }}
+              >
+                Flock.
+              </Box>{' '}
+              <Box component="span" sx={{ fontWeight: 400, opacity: 0.85 }}>
+                Workday
+              </Box>
             </Box>
           </Link>
 
