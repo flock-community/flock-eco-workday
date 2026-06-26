@@ -1,0 +1,251 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: sickday.spec.ts >> SickdayController /api/sickdays >> Worker submits a sick day (POST /api/sickdays)
+- Location: tests/sickday.spec.ts:38:5
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: locator('.MuiCard-root:not(:has(.MuiCard-root))').filter({ hasText: 'Sickday spec 1782484070266' }).first().getByRole('button', { name: 'REQUESTED' })
+Expected: visible
+Error: strict mode violation: locator('.MuiCard-root:not(:has(.MuiCard-root))').filter({ hasText: 'Sickday spec 1782484070266' }).first().getByRole('button', { name: 'REQUESTED' }) resolved to 5 elements:
+    1) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).first()
+    2) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).nth(1)
+    3) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).nth(2)
+    4) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).nth(3)
+    5) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).nth(4)
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for locator('.MuiCard-root:not(:has(.MuiCard-root))').filter({ hasText: 'Sickday spec 1782484070266' }).first().getByRole('button', { name: 'REQUESTED' })
+
+```
+
+# Page snapshot
+
+```yaml
+- main [ref=e2]:
+  - generic [ref=e5]:
+    - button "Menu" [ref=e6] [cursor=pointer]:
+      - img [ref=e7]
+    - link "Flock Flock. Workday" [ref=e9] [cursor=pointer]:
+      - /url: /
+      - img "Flock" [ref=e11]
+      - generic [ref=e14]:
+        - generic [ref=e15]: Flock.
+        - generic [ref=e16]: Workday
+    - button "Switch to dark mode" [ref=e17] [cursor=pointer]:
+      - img [ref=e18]
+    - button [ref=e21] [cursor=pointer]:
+      - img [ref=e22]
+  - generic [ref=e26]:
+    - generic [ref=e27]:
+      - generic [ref=e29]: Sick days
+      - button "Add" [ref=e31] [cursor=pointer]:
+        - img [ref=e32]
+        - text: Add
+    - generic [ref=e34]:
+      - table [ref=e36]:
+        - rowgroup [ref=e37]:
+          - row "Description From To Days Hours Status" [ref=e38]:
+            - columnheader "Description" [ref=e39]
+            - columnheader "From" [ref=e40]
+            - columnheader "To" [ref=e41]
+            - columnheader "Days" [ref=e42]
+            - columnheader "Hours" [ref=e43]
+            - columnheader "Status" [ref=e44]
+            - columnheader [ref=e45]
+        - rowgroup [ref=e46]:
+          - row "Cough for Ernie 18-06-2026 21-06-2026 2 32 REQUESTED" [ref=e47]:
+            - cell "Cough for Ernie" [ref=e48]
+            - cell "18-06-2026" [ref=e49]
+            - cell "21-06-2026" [ref=e50]
+            - cell "2" [ref=e51]
+            - cell "32" [ref=e52]
+            - cell "REQUESTED" [ref=e53]:
+              - generic [ref=e54]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e55]:
+              - button [ref=e56] [cursor=pointer]:
+                - img [ref=e57]
+          - row "Sickday spec 1782484070266 11-05-2026 15-05-2026 5 40 REQUESTED" [ref=e59]:
+            - cell "Sickday spec 1782484070266" [ref=e60]
+            - cell "11-05-2026" [ref=e61]
+            - cell "15-05-2026" [ref=e62]
+            - cell "5" [ref=e63]
+            - cell "40" [ref=e64]
+            - cell "REQUESTED" [ref=e65]:
+              - generic [ref=e66]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e67]:
+              - button [ref=e68] [cursor=pointer]:
+                - img [ref=e69]
+          - row "Runny nose for Ernie 10-03-2026 11-03-2026 2 16 REQUESTED" [ref=e71]:
+            - cell "Runny nose for Ernie" [ref=e72]
+            - cell "10-03-2026" [ref=e73]
+            - cell "11-03-2026" [ref=e74]
+            - cell "2" [ref=e75]
+            - cell "16" [ref=e76]
+            - cell "REQUESTED" [ref=e77]:
+              - generic [ref=e78]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e79]:
+              - button [ref=e80] [cursor=pointer]:
+                - img [ref=e81]
+          - row "Cough for Ernie 25-04-2025 25-04-2025 1 8 REQUESTED" [ref=e83]:
+            - cell "Cough for Ernie" [ref=e84]
+            - cell "25-04-2025" [ref=e85]
+            - cell "25-04-2025" [ref=e86]
+            - cell "1" [ref=e87]
+            - cell "8" [ref=e88]
+            - cell "REQUESTED" [ref=e89]:
+              - generic [ref=e90]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e91]:
+              - button [ref=e92] [cursor=pointer]:
+                - img [ref=e93]
+          - row "Runny nose for Ernie 15-01-2025 20-01-2025 4 48 REQUESTED" [ref=e95]:
+            - cell "Runny nose for Ernie" [ref=e96]
+            - cell "15-01-2025" [ref=e97]
+            - cell "20-01-2025" [ref=e98]
+            - cell "4" [ref=e99]
+            - cell "48" [ref=e100]
+            - cell "REQUESTED" [ref=e101]:
+              - generic [ref=e102]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e103]:
+              - button [ref=e104] [cursor=pointer]:
+                - img [ref=e105]
+      - navigation "pagination navigation" [ref=e108]:
+        - list [ref=e109]:
+          - listitem [ref=e110]:
+            - button "Go to previous page" [ref=e111] [cursor=pointer]:
+              - img [ref=e112]
+          - listitem [ref=e114]:
+            - button "Go to page 1" [ref=e115] [cursor=pointer]: "1"
+          - listitem [ref=e116]:
+            - button "Go to page 2" [ref=e117] [cursor=pointer]: "2"
+          - listitem [ref=e118]:
+            - button "page 3" [ref=e119] [cursor=pointer]: "3"
+          - listitem [ref=e120]:
+            - button "Go to page 4" [ref=e121] [cursor=pointer]: "4"
+          - listitem [ref=e122]:
+            - button "Go to page 5" [ref=e123] [cursor=pointer]: "5"
+          - listitem [ref=e124]:
+            - button "Go to next page" [active] [ref=e125] [cursor=pointer]:
+              - img [ref=e126]
+```
+
+# Test source
+
+```ts
+  1   | import { expect, test } from '@playwright/test';
+  2   | import {
+  3   |   changeStatusOnLocator,
+  4   |   findOnAnyPage,
+  5   |   selectPersonInLayout,
+  6   | } from './steps/dayListSteps';
+  7   | import {
+  8   |   Given_I_am_logged_in_as_user,
+  9   |   When_I_click_the_button,
+  10  |   When_I_fill_in_the_date_range_from_till,
+  11  | } from './steps/workdaySteps';
+  12  | 
+  13  | // SickdayController exposes /api/sickdays and is exercised here via the
+  14  | // SickDayPage UI. Today's session date is 2026-05-02 and the booking dates
+  15  | // are kept within May 2026 (a clean Mon → Fri week) so the PeriodInputField
+  16  | // only renders five inputs while the helper sets the date range.
+  17  | const RUN_ID = Date.now();
+  18  | const SICK_DESCRIPTION = `Sickday spec ${RUN_ID}`;
+  19  | const SICKDAY_FROM = '11-05-2026';
+  20  | const SICKDAY_TO = '15-05-2026';
+  21  | 
+  22  | test.describe
+  23  |   .serial('SickdayController /api/sickdays', () => {
+  24  |     test.beforeEach(async ({ context }) => {
+  25  |       await context.clearCookies();
+  26  |     });
+  27  | 
+  28  |     test.afterEach(async ({ page, context }) => {
+  29  |       await context.clearCookies();
+  30  |       await page.evaluate(() => {
+  31  |         if (typeof window.localStorage !== 'undefined')
+  32  |           window.localStorage.clear();
+  33  |         if (typeof window.sessionStorage !== 'undefined')
+  34  |           window.sessionStorage.clear();
+  35  |       });
+  36  |     });
+  37  | 
+  38  |     test('Worker submits a sick day (POST /api/sickdays)', async ({ page }) => {
+  39  |       await Given_I_am_logged_in_as_user(page, 'ernie');
+  40  | 
+  41  |       await page.goto('/sickdays');
+  42  |       await page.waitForLoadState('networkidle');
+  43  | 
+  44  |       // The dialog only opens after the SickDayClient.get bootstrap completes,
+  45  |       // so wait for the form field that signals the dialog body is ready.
+  46  |       await When_I_click_the_button(page, 'Add');
+  47  |       const dialog = page.getByRole('dialog');
+  48  |       await expect(dialog.getByLabel('Description')).toBeVisible();
+  49  | 
+  50  |       await dialog.getByLabel('Description').fill(SICK_DESCRIPTION);
+  51  |       await When_I_fill_in_the_date_range_from_till(
+  52  |         page,
+  53  |         SICKDAY_FROM,
+  54  |         SICKDAY_TO,
+  55  |       );
+  56  | 
+  57  |       // The POST is what closes the dialog, so disappearance is the success
+  58  |       // signal. Without this wait, the next assertion races the MUI Slide
+  59  |       // transition that still overlays the listing.
+  60  |       const sickPost = page.waitForResponse(
+  61  |         (response) =>
+  62  |           response.url().includes('/api/sickdays') &&
+  63  |           response.request().method() === 'POST' &&
+  64  |           response.status() < 400,
+  65  |       );
+  66  |       await When_I_click_the_button(page, 'Save');
+  67  |       await sickPost;
+  68  |       await expect(dialog).toBeHidden({ timeout: 10000 });
+  69  |       await page.waitForLoadState('networkidle');
+  70  | 
+  71  |       // The new sick day appears in the from-desc paginated list. Walk pages
+  72  |       // because seeded ernie sick days populate earlier pages.
+  73  |       const sickCards = page
+  74  |         .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+  75  |         .filter({ hasText: SICK_DESCRIPTION });
+  76  |       const sickCard = await findOnAnyPage(page, sickCards);
+  77  |       await expect(
+  78  |         sickCard.getByRole('button', { name: 'REQUESTED' }),
+> 79  |       ).toBeVisible();
+      |         ^ Error: expect(locator).toBeVisible() failed
+  80  |     });
+  81  | 
+  82  |     test('Admin filters sick days by personId and approves (GET + PUT /api/sickdays)', async ({
+  83  |       page,
+  84  |     }) => {
+  85  |       await Given_I_am_logged_in_as_user(page, 'bert');
+  86  | 
+  87  |       await page.goto('/sickdays');
+  88  |       await page.waitForLoadState('networkidle');
+  89  | 
+  90  |       // Picking ernie triggers GET /api/sickdays?personId=<ernie-uuid>.
+  91  |       await selectPersonInLayout(page, 'Ernie Muppets');
+  92  | 
+  93  |       const sickCards = page
+  94  |         .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+  95  |         .filter({ hasText: SICK_DESCRIPTION });
+  96  |       const sickCard = await findOnAnyPage(page, sickCards);
+  97  |       await changeStatusOnLocator(page, sickCard, 'REQUESTED', 'APPROVED');
+  98  |     });
+  99  |   });
+  100 | 
+```

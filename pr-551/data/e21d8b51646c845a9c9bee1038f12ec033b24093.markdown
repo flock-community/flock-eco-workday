@@ -1,0 +1,304 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: managerEmployeeFlow.spec.ts >> Manager-Employee Workflow: Bert manages, Ernie books >> Bert approves the workday, sick day and leave day
+- Location: tests/managerEmployeeFlow.spec.ts:249:5
+
+# Error details
+
+```
+Error: locator.click: Error: strict mode violation: locator('.MuiCard-root:not(:has(.MuiCard-root))').filter({ hasText: 'Workflow flu 1782484139099' }).first().getByRole('button', { name: 'REQUESTED' }) resolved to 5 elements:
+    1) <button tabindex="0" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).first()
+    2) <button tabindex="0" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).nth(1)
+    3) <button tabindex="0" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).nth(2)
+    4) <button tabindex="0" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).nth(3)
+    5) <button tabindex="0" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).nth(4)
+
+Call log:
+  - waiting for locator('.MuiCard-root:not(:has(.MuiCard-root))').filter({ hasText: 'Workflow flu 1782484139099' }).first().getByRole('button', { name: 'REQUESTED' })
+
+```
+
+# Page snapshot
+
+```yaml
+- main [ref=e2]:
+  - generic [ref=e5]:
+    - button "Menu" [ref=e6] [cursor=pointer]:
+      - img [ref=e7]
+    - link "Flock Flock. Workday" [ref=e9] [cursor=pointer]:
+      - /url: /
+      - img "Flock" [ref=e11]
+      - generic [ref=e14]:
+        - generic [ref=e15]: Flock.
+        - generic [ref=e16]: Workday
+    - button "Switch to dark mode" [ref=e17] [cursor=pointer]:
+      - img [ref=e18]
+    - button [ref=e21] [cursor=pointer]:
+      - img [ref=e22]
+  - generic [ref=e24]:
+    - generic [ref=e27]:
+      - generic [ref=e28]: Select person
+      - generic [ref=e29]:
+        - combobox [ref=e30] [cursor=pointer]: Ernie Muppets
+        - textbox: ff56a8e8-a568-4b66-a925-696c49fa0dd3
+        - img
+        - group:
+          - generic: Select person
+    - generic [ref=e32]:
+      - generic [ref=e33]:
+        - generic [ref=e35]: Sick days
+        - button "Add" [ref=e37] [cursor=pointer]:
+          - img [ref=e38]
+          - text: Add
+      - generic [ref=e40]:
+        - table [ref=e42]:
+          - rowgroup [ref=e43]:
+            - row "Description From To Days Hours Status" [ref=e44]:
+              - columnheader "Description" [ref=e45]
+              - columnheader "From" [ref=e46]
+              - columnheader "To" [ref=e47]
+              - columnheader "Days" [ref=e48]
+              - columnheader "Hours" [ref=e49]
+              - columnheader "Status" [ref=e50]
+              - columnheader [ref=e51]
+          - rowgroup [ref=e52]:
+            - row "Cough for Ernie 18-06-2026 21-06-2026 2 32 REQUESTED" [ref=e53]:
+              - cell "Cough for Ernie" [ref=e54]
+              - cell "18-06-2026" [ref=e55]
+              - cell "21-06-2026" [ref=e56]
+              - cell "2" [ref=e57]
+              - cell "32" [ref=e58]
+              - cell "REQUESTED" [ref=e59]:
+                - button "REQUESTED" [ref=e61] [cursor=pointer]
+              - cell [ref=e62]:
+                - button [ref=e63] [cursor=pointer]:
+                  - img [ref=e64]
+            - row "Workflow flu 1782484050853 18-05-2026 18-05-2026 1 8 REQUESTED" [ref=e66]:
+              - cell "Workflow flu 1782484050853" [ref=e67]
+              - cell "18-05-2026" [ref=e68]
+              - cell "18-05-2026" [ref=e69]
+              - cell "1" [ref=e70]
+              - cell "8" [ref=e71]
+              - cell "REQUESTED" [ref=e72]:
+                - button "REQUESTED" [ref=e74] [cursor=pointer]
+              - cell [ref=e75]:
+                - button [ref=e76] [cursor=pointer]:
+                  - img [ref=e77]
+            - row "Workflow flu 1782484090616 18-05-2026 18-05-2026 1 8 REQUESTED" [ref=e79]:
+              - cell "Workflow flu 1782484090616" [ref=e80]
+              - cell "18-05-2026" [ref=e81]
+              - cell "18-05-2026" [ref=e82]
+              - cell "1" [ref=e83]
+              - cell "8" [ref=e84]
+              - cell "REQUESTED" [ref=e85]:
+                - button "REQUESTED" [ref=e87] [cursor=pointer]
+              - cell [ref=e88]:
+                - button [ref=e89] [cursor=pointer]:
+                  - img [ref=e90]
+            - row "Workflow flu 1782484139099 18-05-2026 18-05-2026 1 8 REQUESTED" [ref=e92]:
+              - cell "Workflow flu 1782484139099" [ref=e93]
+              - cell "18-05-2026" [ref=e94]
+              - cell "18-05-2026" [ref=e95]
+              - cell "1" [ref=e96]
+              - cell "8" [ref=e97]
+              - cell "REQUESTED" [ref=e98]:
+                - button "REQUESTED" [ref=e100] [cursor=pointer]
+              - cell [ref=e101]:
+                - button [ref=e102] [cursor=pointer]:
+                  - img [ref=e103]
+            - row "Runny nose for Ernie 10-03-2026 11-03-2026 2 16 REQUESTED" [ref=e105]:
+              - cell "Runny nose for Ernie" [ref=e106]
+              - cell "10-03-2026" [ref=e107]
+              - cell "11-03-2026" [ref=e108]
+              - cell "2" [ref=e109]
+              - cell "16" [ref=e110]
+              - cell "REQUESTED" [ref=e111]:
+                - button "REQUESTED" [ref=e113] [cursor=pointer]
+              - cell [ref=e114]:
+                - button [ref=e115] [cursor=pointer]:
+                  - img [ref=e116]
+        - navigation "pagination navigation" [ref=e119]:
+          - list [ref=e120]:
+            - listitem [ref=e121]:
+              - button "Go to previous page" [ref=e122] [cursor=pointer]:
+                - img [ref=e123]
+            - listitem [ref=e125]:
+              - button "Go to page 1" [ref=e126] [cursor=pointer]: "1"
+            - listitem [ref=e127]:
+              - button "Go to page 2" [ref=e128] [cursor=pointer]: "2"
+            - listitem [ref=e129]:
+              - button "page 3" [ref=e130] [cursor=pointer]: "3"
+            - listitem [ref=e131]:
+              - button "Go to page 4" [ref=e132] [cursor=pointer]: "4"
+            - listitem [ref=e133]:
+              - button "Go to page 5" [ref=e134] [cursor=pointer]: "5"
+            - listitem [ref=e135]:
+              - button "Go to next page" [active] [ref=e136] [cursor=pointer]:
+                - img [ref=e137]
+```
+
+# Test source
+
+```ts
+  1   | import { expect, type Locator, type Page, test } from '@playwright/test';
+  2   | import {
+  3   |   Given_I_am_logged_in_as_user,
+  4   |   When_I_fill_in_the_date_range_from_till,
+  5   | } from './steps/workdaySteps';
+  6   | 
+  7   | // Each run inserts uniquely identifiable assignment / sick / leave entries so
+  8   | // we can recognise our own records even when seeded mock data fills the same
+  9   | // lists.
+  10  | //
+  11  | // Dates are kept inside the current month (today is 2026-05-02 per the
+  12  | // session). This avoids the WorkDay/SickDay/LeaveDay forms re-rendering a
+  13  | // huge `PeriodInputField` (one input per weekday between `from` and `to`)
+  14  | // while the helper sets the dates one at a time — which would freeze the
+  15  | // browser long enough to time the fill action out. The week-aligned days
+  16  | // were chosen so each booking spans a clean Mon → Fri window:
+  17  | //
+  18  | //   2026-05-04 = Monday
+  19  | //   2026-05-11 = Monday
+  20  | //   2026-05-15 = Friday
+  21  | //   2026-05-18 = Monday
+  22  | //   2026-05-25 = Monday
+  23  | //   2026-05-29 = Friday
+  24  | //
+  25  | // Seeded ernie work days for 2026 are 1st → 10th of each month, so we
+  26  | // place our work day in week 4 to avoid the 1st-of-month seeded entries.
+  27  | const RUN_ID = Date.now();
+  28  | const ASSIGNMENT_ROLE = `Workflow tester ${RUN_ID}`;
+  29  | const ASSIGNMENT_CLIENT = 'Client B';
+  30  | const ASSIGNMENT_FROM = '04-05-2026';
+  31  | const ASSIGNMENT_TO = '31-05-2026';
+  32  | const SICK_DESCRIPTION = `Workflow flu ${RUN_ID}`;
+  33  | const LEAVE_DESCRIPTION = `Workflow holiday ${RUN_ID}`;
+  34  | 
+  35  | const WORKDAY_FROM = '25-05-2026';
+  36  | const WORKDAY_TO = '29-05-2026';
+  37  | const SICKDAY_DATE = '18-05-2026';
+  38  | const LEAVE_FROM = '11-05-2026';
+  39  | const LEAVE_TO = '15-05-2026';
+  40  | 
+  41  | async function selectErnieFromPersonSelector(page: Page) {
+  42  |   await page.getByRole('combobox').first().click();
+  43  |   await page.getByRole('option', { name: 'Ernie Muppets' }).click();
+  44  |   await page.waitForLoadState('networkidle');
+  45  | }
+  46  | 
+  47  | async function changeStatusOnLocator(
+  48  |   page: Page,
+  49  |   locator: Locator,
+  50  |   fromStatus: string,
+  51  |   toStatus: string,
+  52  | ) {
+  53  |   await expect(locator).toBeVisible();
+> 54  |   await locator.getByRole('button', { name: fromStatus }).click();
+      |                                                           ^ Error: locator.click: Error: strict mode violation: locator('.MuiCard-root:not(:has(.MuiCard-root))').filter({ hasText: 'Workflow flu 1782484139099' }).first().getByRole('button', { name: 'REQUESTED' }) resolved to 5 elements:
+  55  |   await page.getByRole('menuitem', { name: toStatus }).click();
+  56  |   await page.waitForLoadState('networkidle');
+  57  |   await expect(locator.getByRole('button', { name: toStatus })).toBeVisible();
+  58  | }
+  59  | 
+  60  | // Walk the FlockPagination ("Go to next page") until `locator` resolves.
+  61  | // Both the SickDay and LeaveDay APIs sit on top of Spring's standard
+  62  | // Pageable resolver, which sets the `x-total` response header that the
+  63  | // frontend uses to compute the page count. The WorkDay API does the same
+  64  | // via its Page<T>.toResponse() helper. Seeded mock data spreads dozens of
+  65  | // entries across years for ernie, so our run-specific entry can sit
+  66  | // several pages deep.
+  67  | async function findOnAnyPage(
+  68  |   page: Page,
+  69  |   locator: Locator,
+  70  |   maxPages = 25,
+  71  | ): Promise<Locator> {
+  72  |   for (let i = 0; i < maxPages; i++) {
+  73  |     if ((await locator.count()) > 0) {
+  74  |       return locator.first();
+  75  |     }
+  76  |     const nextBtn = page.getByRole('button', { name: 'Go to next page' });
+  77  |     if (
+  78  |       (await nextBtn.count()) === 0 ||
+  79  |       !(await nextBtn.isVisible()) ||
+  80  |       !(await nextBtn.isEnabled())
+  81  |     ) {
+  82  |       throw new Error(
+  83  |         `findOnAnyPage: could not find locator within ${maxPages} pages`,
+  84  |       );
+  85  |     }
+  86  |     await nextBtn.click();
+  87  |     await page.waitForLoadState('networkidle');
+  88  |   }
+  89  |   throw new Error('findOnAnyPage: exceeded the page-walk safety limit');
+  90  | }
+  91  | 
+  92  | test.describe
+  93  |   .serial('Manager-Employee Workflow: Bert manages, Ernie books', () => {
+  94  |     test.beforeEach(async ({ context }) => {
+  95  |       await context.clearCookies();
+  96  |     });
+  97  | 
+  98  |     test.afterEach(async ({ page, context }) => {
+  99  |       await context.clearCookies();
+  100 |       await page.evaluate(() => {
+  101 |         if (typeof window.localStorage !== 'undefined')
+  102 |           window.localStorage.clear();
+  103 |         if (typeof window.sessionStorage !== 'undefined')
+  104 |           window.sessionStorage.clear();
+  105 |       });
+  106 |     });
+  107 | 
+  108 |     test('Bert (manager) creates an assignment for Ernie', async ({ page }) => {
+  109 |       await Given_I_am_logged_in_as_user(page, 'bert');
+  110 |       await page.goto('/assignments');
+  111 |       await page.waitForLoadState('networkidle');
+  112 | 
+  113 |       await selectErnieFromPersonSelector(page);
+  114 | 
+  115 |       await page.getByRole('button', { name: 'Add' }).click();
+  116 |       await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
+  117 | 
+  118 |       await page.getByLabel('Hourly rate').clear();
+  119 |       await page.getByLabel('Hourly rate').fill('95');
+  120 |       await page.getByLabel('Hours per week').clear();
+  121 |       await page.getByLabel('Hours per week').fill('40');
+  122 |       await page.getByLabel('Role').fill(ASSIGNMENT_ROLE);
+  123 | 
+  124 |       const startDate = page.getByLabel('Start date');
+  125 |       await startDate.click();
+  126 |       await startDate.fill(ASSIGNMENT_FROM);
+  127 |       await startDate.press('Tab');
+  128 |       await page.waitForTimeout(200);
+  129 | 
+  130 |       const endDate = page.getByLabel('End date');
+  131 |       await endDate.click();
+  132 |       await endDate.fill(ASSIGNMENT_TO);
+  133 |       await endDate.press('Tab');
+  134 |       await page.waitForTimeout(200);
+  135 | 
+  136 |       const clientSelect = page
+  137 |         .getByRole('dialog')
+  138 |         .getByRole('combobox')
+  139 |         .first();
+  140 |       await clientSelect.click();
+  141 |       await page.getByRole('option', { name: ASSIGNMENT_CLIENT }).click();
+  142 | 
+  143 |       await page.getByRole('button', { name: 'Save' }).click();
+  144 |       // The dialog only closes after the POST resolves, so dialog teardown
+  145 |       // is itself proof that the assignment was persisted. We do not assert
+  146 |       // on the rendered list here: the assignment controller does not set
+  147 |       // an `x-total` header, so the AssignmentList shows count=0 and never
+  148 |       // exposes a "Go to next page" button — and Ernie's seven seeded
+  149 |       // assignments push our new Client B card onto a later page. The
+  150 |       // follow-up test exercises the assignment by booking against it,
+  151 |       // which would fail outright if creation had not succeeded.
+  152 |       await expect(
+  153 |         page.getByText('Create / Edit an assignment'),
+  154 |       ).not.toBeVisible();
+```

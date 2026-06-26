@@ -1,0 +1,220 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: contract.spec.ts >> Contract CRUD Operations >> should delete a contract
+- Location: tests/contract.spec.ts:95:3
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByText('Monthly salary: 3500').first()
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" with timeout 30000ms
+  - waiting for getByText('Monthly salary: 3500').first()
+
+```
+
+```yaml
+- main:
+  - button "Menu"
+  - link "Flock Flock. Workday":
+    - /url: /
+    - img "Flock"
+    - text: Flock. Workday
+  - button "Switch to dark mode"
+  - button
+  - text: Select person
+  - combobox: Tommy Dog
+  - text: Contracts
+  - button "Add"
+  - table:
+    - rowgroup:
+      - row "Type From To Hours/week Compensation":
+        - columnheader "Type"
+        - columnheader "From"
+        - columnheader "To"
+        - columnheader "Hours/week"
+        - columnheader "Compensation"
+    - rowgroup:
+      - row "INTERNAL 01-03-2040 now 20 € 3500 /mo":
+        - cell "INTERNAL"
+        - cell "01-03-2040"
+        - cell "now":
+          - emphasis: now
+        - cell "20"
+        - cell "€ 3500 /mo"
+      - row "INTERNAL 01-03-2040 now 20 € 3500 /mo":
+        - cell "INTERNAL"
+        - cell "01-03-2040"
+        - cell "now":
+          - emphasis: now
+        - cell "20"
+        - cell "€ 3500 /mo"
+      - row "INTERNAL 01-02-2040 now 32 € 4500 /mo":
+        - cell "INTERNAL"
+        - cell "01-02-2040"
+        - cell "now":
+          - emphasis: now
+        - cell "32"
+        - cell "€ 4500 /mo"
+      - row "INTERNAL 01-02-2040 now 32 € 4500 /mo":
+        - cell "INTERNAL"
+        - cell "01-02-2040"
+        - cell "now":
+          - emphasis: now
+        - cell "32"
+        - cell "€ 4500 /mo"
+      - row "INTERNAL 01-02-2040 now 32 € 4500 /mo":
+        - cell "INTERNAL"
+        - cell "01-02-2040"
+        - cell "now":
+          - emphasis: now
+        - cell "32"
+        - cell "€ 4500 /mo"
+  - navigation "pagination navigation":
+    - list:
+      - listitem:
+        - button "Go to previous page" [disabled]
+      - listitem:
+        - button "page 1": "1"
+      - listitem:
+        - button "Go to page 2": "2"
+      - listitem:
+        - button "Go to next page"
+```
+
+# Test source
+
+```ts
+  15  |   async function selectPerson(page, personName: string) {
+  16  |     const personSelect = page.getByRole('combobox');
+  17  |     await personSelect.click();
+  18  |     await page.getByRole('option', { name: personName }).click();
+  19  |     await page.waitForLoadState('networkidle');
+  20  |   }
+  21  | 
+  22  |   test('should display existing contracts for a person', async ({ page }) => {
+  23  |     await selectPerson(page, TEST_PERSON);
+  24  | 
+  25  |     await expect(page.getByText('Contracts')).toBeVisible();
+  26  |     await expect(page.getByRole('button', { name: 'Add' })).toBeVisible();
+  27  |   });
+  28  | 
+  29  |   test('should create a new internal contract', async ({ page }) => {
+  30  |     await selectPerson(page, TEST_PERSON);
+  31  | 
+  32  |     await page.getByRole('button', { name: 'Add' }).click();
+  33  |     await expect(page.getByRole('dialog')).toBeVisible();
+  34  | 
+  35  |     await expect(page.locator('#contract-type-select')).toBeVisible();
+  36  | 
+  37  |     await page.getByLabel('Monthly salary').clear();
+  38  |     await page.getByLabel('Monthly salary').fill('5000');
+  39  | 
+  40  |     await page.getByLabel('Hours per week').clear();
+  41  |     await page.getByLabel('Hours per week').fill('36');
+  42  | 
+  43  |     const startDate = page.getByLabel('Start date');
+  44  |     await startDate.click();
+  45  |     await startDate.fill('01-01-2040');
+  46  |     await startDate.press('Tab');
+  47  |     await page.waitForTimeout(200);
+  48  | 
+  49  |     await page.getByRole('button', { name: 'Save' }).click();
+  50  |     await expect(page.getByRole('dialog')).not.toBeVisible();
+  51  | 
+  52  |     await expect(page.getByText('Monthly salary: 5000').first()).toBeVisible({
+  53  |       timeout: 30000,
+  54  |     });
+  55  |   });
+  56  | 
+  57  |   test('should update an existing contract', async ({ page }) => {
+  58  |     await selectPerson(page, TEST_PERSON);
+  59  | 
+  60  |     await page.getByRole('button', { name: 'Add' }).click();
+  61  |     await expect(page.getByRole('dialog')).toBeVisible();
+  62  | 
+  63  |     await page.getByLabel('Monthly salary').clear();
+  64  |     await page.getByLabel('Monthly salary').fill('4500');
+  65  | 
+  66  |     await page.getByLabel('Hours per week').clear();
+  67  |     await page.getByLabel('Hours per week').fill('32');
+  68  | 
+  69  |     const startDate = page.getByLabel('Start date');
+  70  |     await startDate.click();
+  71  |     await startDate.fill('01-02-2040');
+  72  |     await startDate.press('Tab');
+  73  |     await page.waitForTimeout(200);
+  74  | 
+  75  |     await page.getByRole('button', { name: 'Save' }).click();
+  76  |     await expect(page.getByRole('dialog')).not.toBeVisible();
+  77  |     await expect(page.getByText('Monthly salary: 4500').first()).toBeVisible({
+  78  |       timeout: 30000,
+  79  |     });
+  80  | 
+  81  |     await page.getByText('Monthly salary: 4500').first().click();
+  82  |     await expect(page.getByRole('dialog')).toBeVisible();
+  83  | 
+  84  |     await page.getByLabel('Monthly salary').clear();
+  85  |     await page.getByLabel('Monthly salary').fill('6000');
+  86  | 
+  87  |     await page.getByRole('button', { name: 'Save' }).click();
+  88  |     await expect(page.getByRole('dialog')).not.toBeVisible();
+  89  | 
+  90  |     await expect(page.getByText('Monthly salary: 6000').first()).toBeVisible({
+  91  |       timeout: 30000,
+  92  |     });
+  93  |   });
+  94  | 
+  95  |   test('should delete a contract', async ({ page }) => {
+  96  |     await selectPerson(page, TEST_PERSON);
+  97  | 
+  98  |     await page.getByRole('button', { name: 'Add' }).click();
+  99  |     await expect(page.getByRole('dialog')).toBeVisible();
+  100 | 
+  101 |     await page.getByLabel('Monthly salary').clear();
+  102 |     await page.getByLabel('Monthly salary').fill('3500');
+  103 | 
+  104 |     await page.getByLabel('Hours per week').clear();
+  105 |     await page.getByLabel('Hours per week').fill('20');
+  106 | 
+  107 |     const startDate = page.getByLabel('Start date');
+  108 |     await startDate.click();
+  109 |     await startDate.fill('01-03-2040');
+  110 |     await startDate.press('Tab');
+  111 |     await page.waitForTimeout(200);
+  112 | 
+  113 |     await page.getByRole('button', { name: 'Save' }).click();
+  114 |     await expect(page.getByRole('dialog')).not.toBeVisible();
+> 115 |     await expect(page.getByText('Monthly salary: 3500').first()).toBeVisible({
+      |                                                                  ^ Error: expect(locator).toBeVisible() failed
+  116 |       timeout: 30000,
+  117 |     });
+  118 | 
+  119 |     await page.getByText('Monthly salary: 3500').first().click();
+  120 |     await expect(page.getByRole('dialog')).toBeVisible();
+  121 | 
+  122 |     await page.getByRole('button', { name: 'Delete' }).click();
+  123 | 
+  124 |     await expect(
+  125 |       page.getByText('Are you sure you would like to delete contract:'),
+  126 |     ).toBeVisible();
+  127 |     await page.getByRole('button', { name: 'Confirm' }).click();
+  128 | 
+  129 |     await page.waitForLoadState('networkidle');
+  130 |     await expect(page.getByText('Monthly salary: 3500')).not.toBeVisible();
+  131 |   });
+  132 | });
+  133 | 
+```

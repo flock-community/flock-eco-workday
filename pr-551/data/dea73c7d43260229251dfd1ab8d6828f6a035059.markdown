@@ -1,0 +1,227 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: assignment.spec.ts >> Assignment CRUD Operations >> should delete an assignment
+- Location: tests/assignment.spec.ts:137:3
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByRole('heading', { name: 'Client D - DeleteRole-1782484407143' }).first()
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" with timeout 30000ms
+  - waiting for getByRole('heading', { name: 'Client D - DeleteRole-1782484407143' }).first()
+
+```
+
+```yaml
+- main:
+  - button "Menu"
+  - link "Flock Flock. Workday":
+    - /url: /
+    - img "Flock"
+    - text: Flock. Workday
+  - button "Switch to dark mode"
+  - button
+  - text: Select person
+  - combobox: Tommy Dog
+  - text: Assignments
+  - button "Add"
+  - table:
+    - rowgroup:
+      - row "Client Role From To Hourly rate Hours/week Project":
+        - columnheader "Client"
+        - columnheader "Role"
+        - columnheader "From"
+        - columnheader "To"
+        - columnheader "Hourly rate"
+        - columnheader "Hours/week"
+        - columnheader "Project"
+    - rowgroup:
+      - row "Client D DeleteRole-1782484407143 01-06-2026 now 75 24 -":
+        - cell "Client D"
+        - cell "DeleteRole-1782484407143"
+        - cell "01-06-2026"
+        - cell "now":
+          - emphasis: now
+        - cell "75"
+        - cell "24"
+        - cell "-"
+      - row "Client D DeleteRole-1782484365542 01-06-2026 now 75 24 -":
+        - cell "Client D"
+        - cell "DeleteRole-1782484365542"
+        - cell "01-06-2026"
+        - cell "now":
+          - emphasis: now
+        - cell "75"
+        - cell "24"
+        - cell "-"
+      - row "Client D DeleteRole-1782484323807 01-06-2026 now 75 24 -":
+        - cell "Client D"
+        - cell "DeleteRole-1782484323807"
+        - cell "01-06-2026"
+        - cell "now":
+          - emphasis: now
+        - cell "75"
+        - cell "24"
+        - cell "-"
+      - row "Client A DevOps engineer 01-06-2025 now 90 36 Project A1":
+        - cell "Client A"
+        - cell "DevOps engineer"
+        - cell "01-06-2025"
+        - cell "now":
+          - emphasis: now
+        - cell "90"
+        - cell "36"
+        - cell "Project A1"
+  - navigation "pagination navigation":
+    - list:
+      - listitem:
+        - button "Go to previous page" [disabled]
+      - listitem:
+        - button "page 1": "1"
+      - listitem:
+        - button "Go to next page" [disabled]
+```
+
+# Test source
+
+```ts
+  69  | 
+  70  |     await expect(
+  71  |       page.getByRole('heading', { name: `Client B - ${roleName}` }).first(),
+  72  |     ).toBeVisible({ timeout: 30000 });
+  73  |     await expect(page.getByText('Hourly rate: 120').first()).toBeVisible();
+  74  |     await expect(page.getByText('Hours per week: 40').first()).toBeVisible();
+  75  |   });
+  76  | 
+  77  |   test('should edit an existing assignment', async ({ page }) => {
+  78  |     const timestamp = Date.now();
+  79  |     const roleName = `EditRole-${timestamp}`;
+  80  |     const updatedRole = `UpdatedRole-${timestamp}`;
+  81  | 
+  82  |     await selectPerson(page, 'Bert Muppets');
+  83  | 
+  84  |     await page.getByRole('button', { name: 'Add' }).click();
+  85  |     await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
+  86  | 
+  87  |     await page.getByLabel('Hourly rate').clear();
+  88  |     await page.getByLabel('Hourly rate').fill('95');
+  89  | 
+  90  |     await page.getByLabel('Hours per week').clear();
+  91  |     await page.getByLabel('Hours per week').fill('32');
+  92  | 
+  93  |     await page.getByLabel('Role').fill(roleName);
+  94  | 
+  95  |     const startDate = page.getByLabel('Start date');
+  96  |     await startDate.click();
+  97  |     await startDate.fill('01-01-2027');
+  98  |     await startDate.press('Tab');
+  99  |     await page.waitForTimeout(200);
+  100 | 
+  101 |     await selectClient(page, 'Client A');
+  102 | 
+  103 |     await page.getByRole('button', { name: 'Save' }).click();
+  104 |     await expect(
+  105 |       page.getByText('Create / Edit an assignment'),
+  106 |     ).not.toBeVisible();
+  107 | 
+  108 |     await expect(
+  109 |       page.getByRole('heading', { name: `Client A - ${roleName}` }).first(),
+  110 |     ).toBeVisible({ timeout: 30000 });
+  111 | 
+  112 |     await page
+  113 |       .getByRole('heading', { name: `Client A - ${roleName}` })
+  114 |       .first()
+  115 |       .click();
+  116 | 
+  117 |     await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
+  118 |     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
+  119 | 
+  120 |     await page.getByLabel('Role').clear();
+  121 |     await page.getByLabel('Role').fill(updatedRole);
+  122 | 
+  123 |     await page.getByLabel('Hourly rate').clear();
+  124 |     await page.getByLabel('Hourly rate').fill('110');
+  125 | 
+  126 |     await page.getByRole('button', { name: 'Save' }).click();
+  127 |     await expect(
+  128 |       page.getByText('Create / Edit an assignment'),
+  129 |     ).not.toBeVisible();
+  130 | 
+  131 |     await expect(
+  132 |       page.getByRole('heading', { name: `Client A - ${updatedRole}` }).first(),
+  133 |     ).toBeVisible({ timeout: 30000 });
+  134 |     await expect(page.getByText('Hourly rate: 110').first()).toBeVisible();
+  135 |   });
+  136 | 
+  137 |   test('should delete an assignment', async ({ page }) => {
+  138 |     const timestamp = Date.now();
+  139 |     const roleName = `DeleteRole-${timestamp}`;
+  140 | 
+  141 |     await selectPerson(page, 'Tommy Dog');
+  142 | 
+  143 |     await page.getByRole('button', { name: 'Add' }).click();
+  144 |     await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
+  145 | 
+  146 |     await page.getByLabel('Hourly rate').clear();
+  147 |     await page.getByLabel('Hourly rate').fill('75');
+  148 | 
+  149 |     await page.getByLabel('Hours per week').clear();
+  150 |     await page.getByLabel('Hours per week').fill('24');
+  151 | 
+  152 |     await page.getByLabel('Role').fill(roleName);
+  153 | 
+  154 |     const startDate = page.getByLabel('Start date');
+  155 |     await startDate.click();
+  156 |     await startDate.fill('01-06-2026');
+  157 |     await startDate.press('Tab');
+  158 |     await page.waitForTimeout(200);
+  159 | 
+  160 |     await selectClient(page, 'Client D');
+  161 | 
+  162 |     await page.getByRole('button', { name: 'Save' }).click();
+  163 |     await expect(
+  164 |       page.getByText('Create / Edit an assignment'),
+  165 |     ).not.toBeVisible();
+  166 | 
+  167 |     await expect(
+  168 |       page.getByRole('heading', { name: `Client D - ${roleName}` }).first(),
+> 169 |     ).toBeVisible({ timeout: 30000 });
+      |       ^ Error: expect(locator).toBeVisible() failed
+  170 | 
+  171 |     await page
+  172 |       .getByRole('heading', { name: `Client D - ${roleName}` })
+  173 |       .first()
+  174 |       .click();
+  175 |     await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
+  176 | 
+  177 |     await page.getByRole('button', { name: 'Delete' }).click();
+  178 | 
+  179 |     await expect(page.getByRole('heading', { name: 'Confirm' })).toBeVisible();
+  180 |     await expect(
+  181 |       page.getByText('Are you sure you would like to delete assignment'),
+  182 |     ).toBeVisible();
+  183 | 
+  184 |     await page.getByRole('button', { name: 'Confirm' }).click();
+  185 | 
+  186 |     await page.waitForLoadState('networkidle');
+  187 | 
+  188 |     await expect(
+  189 |       page.getByRole('heading', { name: `Client D - ${roleName}` }),
+  190 |     ).toHaveCount(0);
+  191 |   });
+  192 | });
+  193 | 
+```
