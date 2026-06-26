@@ -46,9 +46,13 @@ const Root = styled('div')({
 
 type ApplicationLayoutProps = {
   onMenu: () => void;
+  showMenuButton?: boolean;
 };
 
-export function ApplicationLayout({ onMenu }: ApplicationLayoutProps) {
+export function ApplicationLayout({
+  onMenu,
+  showMenuButton = true,
+}: ApplicationLayoutProps) {
   const handleLogout = () => {
     window.location.href = '/logout';
   };
@@ -89,6 +93,7 @@ export function ApplicationLayout({ onMenu }: ApplicationLayoutProps) {
             aria-label="Menu"
             onClick={handleClickDrawer}
             size="large"
+            sx={{ display: showMenuButton ? 'inline-flex' : 'none' }}
           >
             <MenuIcon />
           </IconButton>

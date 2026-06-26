@@ -56,7 +56,10 @@ export const AuthenticatedApplication = () => {
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
       />
-      <ApplicationLayout onMenu={handleMenu} />
+      <ApplicationLayout
+        onMenu={handleMenu}
+        showMenuButton={!isDesktop || !sidebarOpen}
+      />
       <Switch>
         <Route path="/" exact component={HomeFeature} />
         <Route path="/dashboard" exact component={DashboardFeature} />
