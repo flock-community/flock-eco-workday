@@ -14,7 +14,6 @@ import ButtonBase from '@mui/material/ButtonBase';
 import type { Theme } from '@mui/material/styles';
 import { createElement, useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import { FlockBird } from '../components/FlockBird';
 import { useUserMe } from '../hooks/UserMeHook';
 import {
   isActive,
@@ -23,6 +22,18 @@ import {
   type NavLeaf,
   visibleSections,
 } from './applicationNav';
+
+function initials(name?: string) {
+  if (!name) return '?';
+  return (
+    name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() ?? '')
+      .join('') || '?'
+  );
+}
 
 const label = (sx?: object) => ({
   flex: 1,
@@ -143,11 +154,13 @@ export function ApplicationSidebar({ open, onClose }: ApplicationSidebarProps) {
           sx={{
             width: 38,
             height: 38,
+            fontSize: 14,
+            fontWeight: 700,
             bgcolor: 'primary.main',
             color: 'primary.contrastText',
           }}
         >
-          <FlockBird style={{ width: 21, height: 21, display: 'block' }} />
+          {initials(user.name)}
         </Avatar>
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography sx={label({ fontSize: 14, fontWeight: 600 })}>
