@@ -1,0 +1,254 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: leaveday.spec.ts >> LeaveDayController /api/leave-days >> Worker submits a holiday (POST /api/leave-days)
+- Location: tests/leaveday.spec.ts:38:5
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: locator('.MuiCard-root:not(:has(.MuiCard-root))').filter({ hasText: 'Leaveday spec 1782486147868' }).first().getByRole('button', { name: 'REQUESTED' })
+Expected: visible
+Error: strict mode violation: locator('.MuiCard-root:not(:has(.MuiCard-root))').filter({ hasText: 'Leaveday spec 1782486147868' }).first().getByRole('button', { name: 'REQUESTED' }) resolved to 5 elements:
+    1) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).first()
+    2) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).nth(1)
+    3) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).nth(2)
+    4) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).nth(3)
+    5) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByRole('button', { name: 'REQUESTED' }).nth(4)
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for locator('.MuiCard-root:not(:has(.MuiCard-root))').filter({ hasText: 'Leaveday spec 1782486147868' }).first().getByRole('button', { name: 'REQUESTED' })
+
+```
+
+# Page snapshot
+
+```yaml
+- main [ref=e2]:
+  - generic [ref=e5]:
+    - button "Menu" [ref=e6] [cursor=pointer]:
+      - img [ref=e7]
+    - link "Flock Flock. Workday" [ref=e9] [cursor=pointer]:
+      - /url: /
+      - img "Flock" [ref=e11]
+      - generic [ref=e14]:
+        - generic [ref=e15]: Flock.
+        - generic [ref=e16]: Workday
+    - button "Switch to dark mode" [ref=e17] [cursor=pointer]:
+      - img [ref=e18]
+    - button [ref=e21] [cursor=pointer]:
+      - img [ref=e22]
+  - generic [ref=e26]:
+    - generic [ref=e27]:
+      - generic [ref=e29]: Leave days
+      - button "Add" [ref=e31] [cursor=pointer]:
+        - img [ref=e32]
+        - text: Add
+    - generic [ref=e34]:
+      - table [ref=e36]:
+        - rowgroup [ref=e37]:
+          - row "Description Type From To Days Hours Status" [ref=e38]:
+            - columnheader "Description" [ref=e39]
+            - columnheader "Type" [ref=e40]
+            - columnheader "From" [ref=e41]
+            - columnheader "To" [ref=e42]
+            - columnheader "Days" [ref=e43]
+            - columnheader "Hours" [ref=e44]
+            - columnheader "Status" [ref=e45]
+            - columnheader [ref=e46]
+        - rowgroup [ref=e47]:
+          - row "Test holiday Ernie HOLIDAY 22-06-2026 27-06-2026 5 48 REQUESTED" [ref=e48]:
+            - cell "Test holiday Ernie" [ref=e49]
+            - cell "HOLIDAY" [ref=e50]
+            - cell "22-06-2026" [ref=e51]
+            - cell "27-06-2026" [ref=e52]
+            - cell "5" [ref=e53]
+            - cell "48" [ref=e54]
+            - cell "REQUESTED" [ref=e55]:
+              - generic [ref=e56]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e57]:
+              - button [ref=e58] [cursor=pointer]:
+                - img [ref=e59]
+          - row "Paid parental leave for Ernie for month JUNE PAID_PARENTAL_LEAVE 01-06-2026 30-06-2026 22 46 REQUESTED" [ref=e61]:
+            - cell "Paid parental leave for Ernie for month JUNE" [ref=e62]
+            - cell "PAID_PARENTAL_LEAVE" [ref=e63]
+            - cell "01-06-2026" [ref=e64]
+            - cell "30-06-2026" [ref=e65]
+            - cell "22" [ref=e66]
+            - cell "46" [ref=e67]
+            - cell "REQUESTED" [ref=e68]:
+              - generic [ref=e69]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e70]:
+              - button [ref=e71] [cursor=pointer]:
+                - img [ref=e72]
+          - row "Test paid leave for Ernie PAID_LEAVE 08-05-2026 09-05-2026 1 16 REQUESTED" [ref=e74]:
+            - cell "Test paid leave for Ernie" [ref=e75]
+            - cell "PAID_LEAVE" [ref=e76]
+            - cell "08-05-2026" [ref=e77]
+            - cell "09-05-2026" [ref=e78]
+            - cell "1" [ref=e79]
+            - cell "16" [ref=e80]
+            - cell "REQUESTED" [ref=e81]:
+              - generic [ref=e82]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e83]:
+              - button [ref=e84] [cursor=pointer]:
+                - img [ref=e85]
+          - row "Leaveday spec 1782486147868 HOLIDAY 04-05-2026 08-05-2026 5 40 REQUESTED" [ref=e87]:
+            - cell "Leaveday spec 1782486147868" [ref=e88]
+            - cell "HOLIDAY" [ref=e89]
+            - cell "04-05-2026" [ref=e90]
+            - cell "08-05-2026" [ref=e91]
+            - cell "5" [ref=e92]
+            - cell "40" [ref=e93]
+            - cell "REQUESTED" [ref=e94]:
+              - generic [ref=e95]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e96]:
+              - button [ref=e97] [cursor=pointer]:
+                - img [ref=e98]
+          - row "Paid parental leave for Ernie for month MAY PAID_PARENTAL_LEAVE 01-05-2026 31-05-2026 21 50 REQUESTED" [ref=e100]:
+            - cell "Paid parental leave for Ernie for month MAY" [ref=e101]
+            - cell "PAID_PARENTAL_LEAVE" [ref=e102]
+            - cell "01-05-2026" [ref=e103]
+            - cell "31-05-2026" [ref=e104]
+            - cell "21" [ref=e105]
+            - cell "50" [ref=e106]
+            - cell "REQUESTED" [ref=e107]:
+              - generic [ref=e108]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e109]:
+              - button [ref=e110] [cursor=pointer]:
+                - img [ref=e111]
+      - navigation "pagination navigation" [ref=e114]:
+        - list [ref=e115]:
+          - listitem [ref=e116]:
+            - button "Go to previous page" [ref=e117] [cursor=pointer]:
+              - img [ref=e118]
+          - listitem [ref=e120]:
+            - button "Go to page 1" [ref=e121] [cursor=pointer]: "1"
+          - listitem [ref=e122]:
+            - generic [ref=e123]: …
+          - listitem [ref=e124]:
+            - button "Go to page 4" [ref=e125] [cursor=pointer]: "4"
+          - listitem [ref=e126]:
+            - button "Go to page 5" [ref=e127] [cursor=pointer]: "5"
+          - listitem [ref=e128]:
+            - button "page 6" [ref=e129] [cursor=pointer]: "6"
+          - listitem [ref=e130]:
+            - button "Go to page 7" [ref=e131] [cursor=pointer]: "7"
+          - listitem [ref=e132]:
+            - button "Go to page 8" [ref=e133] [cursor=pointer]: "8"
+          - listitem [ref=e134]:
+            - button "Go to next page" [active] [ref=e135] [cursor=pointer]:
+              - img [ref=e136]
+```
+
+# Test source
+
+```ts
+  1  | import { expect, test } from '@playwright/test';
+  2  | import {
+  3  |   changeStatusOnLocator,
+  4  |   findOnAnyPage,
+  5  |   selectPersonInLayout,
+  6  | } from './steps/dayListSteps';
+  7  | import {
+  8  |   Given_I_am_logged_in_as_user,
+  9  |   When_I_click_the_button,
+  10 |   When_I_fill_in_the_date_range_from_till,
+  11 | } from './steps/workdaySteps';
+  12 | 
+  13 | // LeaveDayController exposes /api/leave-days and is exercised here via the
+  14 | // LeaveDayPage UI. Today's session date is 2026-05-02 so the booking dates
+  15 | // stay inside May 2026 to keep the PeriodInputField light while the helper
+  16 | // sets the date range.
+  17 | const RUN_ID = Date.now();
+  18 | const LEAVE_DESCRIPTION = `Leaveday spec ${RUN_ID}`;
+  19 | const LEAVE_FROM = '04-05-2026';
+  20 | const LEAVE_TO = '08-05-2026';
+  21 | 
+  22 | test.describe
+  23 |   .serial('LeaveDayController /api/leave-days', () => {
+  24 |     test.beforeEach(async ({ context }) => {
+  25 |       await context.clearCookies();
+  26 |     });
+  27 | 
+  28 |     test.afterEach(async ({ page, context }) => {
+  29 |       await context.clearCookies();
+  30 |       await page.evaluate(() => {
+  31 |         if (typeof window.localStorage !== 'undefined')
+  32 |           window.localStorage.clear();
+  33 |         if (typeof window.sessionStorage !== 'undefined')
+  34 |           window.sessionStorage.clear();
+  35 |       });
+  36 |     });
+  37 | 
+  38 |     test('Worker submits a holiday (POST /api/leave-days)', async ({
+  39 |       page,
+  40 |     }) => {
+  41 |       await Given_I_am_logged_in_as_user(page, 'ernie');
+  42 | 
+  43 |       await page.goto('/leave-days');
+  44 |       await page.waitForLoadState('networkidle');
+  45 | 
+  46 |       await When_I_click_the_button(page, 'Add');
+  47 |       const dialog = page.getByRole('dialog');
+  48 |       // The dialog header is "Leave days", which collides with the page title,
+  49 |       // so anchor on the Description field that only exists inside the form.
+  50 |       await expect(dialog.getByLabel('Description')).toBeVisible();
+  51 | 
+  52 |       await dialog.getByLabel('Description').fill(LEAVE_DESCRIPTION);
+  53 |       await When_I_fill_in_the_date_range_from_till(page, LEAVE_FROM, LEAVE_TO);
+  54 | 
+  55 |       const leavePost = page.waitForResponse(
+  56 |         (response) =>
+  57 |           response.url().includes('/api/leave-days') &&
+  58 |           response.request().method() === 'POST' &&
+  59 |           response.status() < 400,
+  60 |       );
+  61 |       await When_I_click_the_button(page, 'Save');
+  62 |       await leavePost;
+  63 |       await expect(dialog).toBeHidden({ timeout: 10000 });
+  64 |       await page.waitForLoadState('networkidle');
+  65 | 
+  66 |       const leaveCards = page
+  67 |         .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+  68 |         .filter({ hasText: LEAVE_DESCRIPTION });
+  69 |       const leaveCard = await findOnAnyPage(page, leaveCards);
+  70 |       await expect(
+  71 |         leaveCard.getByRole('button', { name: 'REQUESTED' }),
+> 72 |       ).toBeVisible();
+     |         ^ Error: expect(locator).toBeVisible() failed
+  73 |     });
+  74 | 
+  75 |     test('Admin filters leave days by personId and approves (GET + PUT /api/leave-days)', async ({
+  76 |       page,
+  77 |     }) => {
+  78 |       await Given_I_am_logged_in_as_user(page, 'bert');
+  79 | 
+  80 |       await page.goto('/leave-days');
+  81 |       await page.waitForLoadState('networkidle');
+  82 | 
+  83 |       // Picking ernie triggers GET /api/leave-days?personId=<ernie-uuid>.
+  84 |       await selectPersonInLayout(page, 'Ernie Muppets');
+  85 | 
+  86 |       const leaveCards = page
+  87 |         .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+  88 |         .filter({ hasText: LEAVE_DESCRIPTION });
+  89 |       const leaveCard = await findOnAnyPage(page, leaveCards);
+  90 |       await changeStatusOnLocator(page, leaveCard, 'REQUESTED', 'APPROVED');
+  91 |     });
+  92 |   });
+  93 | 
+```

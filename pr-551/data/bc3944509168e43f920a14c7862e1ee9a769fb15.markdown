@@ -1,0 +1,181 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: workdayAdmin.spec.ts >> WorkdayController /api/workdays admin flow >> Worker submits a workday (POST /api/workdays)
+- Location: tests/workdayAdmin.spec.ts:45:5
+
+# Error details
+
+```
+Error: findOnAnyPage: could not find locator within 25 pages
+```
+
+# Page snapshot
+
+```yaml
+- main [ref=e2]:
+  - generic [ref=e5]:
+    - button "Menu" [ref=e6] [cursor=pointer]:
+      - img [ref=e7]
+    - link "Flock Flock. Workday" [ref=e9] [cursor=pointer]:
+      - /url: /
+      - img "Flock" [ref=e11]
+      - generic [ref=e14]:
+        - generic [ref=e15]: Flock.
+        - generic [ref=e16]: Workday
+    - button "Switch to dark mode" [ref=e17] [cursor=pointer]:
+      - img [ref=e18]
+    - button [ref=e21] [cursor=pointer]:
+      - img [ref=e22]
+  - generic [ref=e26]:
+    - generic [ref=e27]:
+      - generic [ref=e29]: Work days
+      - button "Add" [ref=e31] [cursor=pointer]:
+        - img [ref=e32]
+        - text: Add
+    - generic [ref=e35]:
+      - table [ref=e39]:
+        - rowgroup [ref=e40]:
+          - row "Client Assignment From To Days Hours Status" [ref=e41]:
+            - columnheader "Client" [ref=e42]
+            - columnheader "Assignment" [ref=e43]
+            - columnheader "From" [ref=e44]
+            - columnheader "To" [ref=e45]
+            - columnheader "Days" [ref=e46]
+            - columnheader "Hours" [ref=e47]
+            - columnheader "Status" [ref=e48]
+            - columnheader [ref=e49]
+        - rowgroup [ref=e50]:
+          - row "Client D Junior software engineer 01-04-2026 10-04-2026 10 80 REQUESTED" [ref=e51]:
+            - cell "Client D" [ref=e52]
+            - cell "Junior software engineer" [ref=e53]
+            - cell "01-04-2026" [ref=e54]
+            - cell "10-04-2026" [ref=e55]
+            - cell "10" [ref=e56]
+            - cell "80" [ref=e57]
+            - cell "REQUESTED" [ref=e58]:
+              - generic [ref=e59]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e60]:
+              - button [ref=e61] [cursor=pointer]:
+                - img [ref=e62]
+          - row "Client D Junior software engineer 01-03-2026 10-03-2026 10 80 REQUESTED" [ref=e64]:
+            - cell "Client D" [ref=e65]
+            - cell "Junior software engineer" [ref=e66]
+            - cell "01-03-2026" [ref=e67]
+            - cell "10-03-2026" [ref=e68]
+            - cell "10" [ref=e69]
+            - cell "80" [ref=e70]
+            - cell "REQUESTED" [ref=e71]:
+              - generic [ref=e72]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e73]:
+              - button [ref=e74] [cursor=pointer]:
+                - img [ref=e75]
+          - row "Client D Junior software engineer 01-02-2026 10-02-2026 10 80 REQUESTED" [ref=e77]:
+            - cell "Client D" [ref=e78]
+            - cell "Junior software engineer" [ref=e79]
+            - cell "01-02-2026" [ref=e80]
+            - cell "10-02-2026" [ref=e81]
+            - cell "10" [ref=e82]
+            - cell "80" [ref=e83]
+            - cell "REQUESTED" [ref=e84]:
+              - generic [ref=e85]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e86]:
+              - button [ref=e87] [cursor=pointer]:
+                - img [ref=e88]
+          - row "Client D Junior software engineer 01-01-2026 10-01-2026 10 80 REQUESTED" [ref=e90]:
+            - cell "Client D" [ref=e91]
+            - cell "Junior software engineer" [ref=e92]
+            - cell "01-01-2026" [ref=e93]
+            - cell "10-01-2026" [ref=e94]
+            - cell "10" [ref=e95]
+            - cell "80" [ref=e96]
+            - cell "REQUESTED" [ref=e97]:
+              - generic [ref=e98]:
+                - button "REQUESTED" [disabled]
+            - cell [ref=e99]:
+              - button [ref=e100] [cursor=pointer]:
+                - img [ref=e101]
+      - navigation "pagination navigation" [ref=e104]:
+        - list [ref=e105]:
+          - listitem [ref=e106]:
+            - button "Go to previous page" [ref=e107] [cursor=pointer]:
+              - img [ref=e108]
+          - listitem [ref=e110]:
+            - button "Go to page 1" [ref=e111] [cursor=pointer]: "1"
+          - listitem [ref=e112]:
+            - button "Go to page 2" [ref=e113] [cursor=pointer]: "2"
+          - listitem [ref=e114]:
+            - button "page 3" [ref=e115] [cursor=pointer]: "3"
+          - listitem [ref=e116]:
+            - button "Go to next page" [disabled]:
+              - img
+```
+
+# Test source
+
+```ts
+  1  | import { expect, type Locator, type Page } from '@playwright/test';
+  2  | 
+  3  | // Walk the FlockPagination ("Go to next page") until `locator` resolves.
+  4  | // The WorkDay/SickDay/LeaveDay listings are server-paginated and the seeded
+  5  | // mock data spreads many entries across years for every fixture user, so a
+  6  | // run-specific entry can sit several pages deep.
+  7  | export async function findOnAnyPage(
+  8  |   page: Page,
+  9  |   locator: Locator,
+  10 |   maxPages = 25,
+  11 | ): Promise<Locator> {
+  12 |   for (let i = 0; i < maxPages; i++) {
+  13 |     const nextBtn = page.getByRole('button', { name: 'Go to next page' });
+  14 |     // networkidle fires when the fetch settles, not when React has painted the
+  15 |     // rows, so poll until the target row or the pager is on screen — otherwise
+  16 |     // the count() below races the render and reports a false "not found".
+  17 |     await expect
+  18 |       .poll(
+  19 |         async () => (await locator.count()) > 0 || (await nextBtn.count()) > 0,
+  20 |         { timeout: 15000 },
+  21 |       )
+  22 |       .toBe(true);
+  23 |     if ((await locator.count()) > 0) {
+  24 |       return locator.first();
+  25 |     }
+  26 |     if (!(await nextBtn.isVisible()) || !(await nextBtn.isEnabled())) {
+> 27 |       throw new Error(
+     |             ^ Error: findOnAnyPage: could not find locator within 25 pages
+  28 |         `findOnAnyPage: could not find locator within ${maxPages} pages`,
+  29 |       );
+  30 |     }
+  31 |     await nextBtn.click();
+  32 |     await page.waitForLoadState('networkidle');
+  33 |   }
+  34 |   throw new Error('findOnAnyPage: exceeded the page-walk safety limit');
+  35 | }
+  36 | 
+  37 | export async function selectPersonInLayout(page: Page, personName: string) {
+  38 |   await page.getByRole('combobox').first().click();
+  39 |   await page.getByRole('option', { name: personName }).click();
+  40 |   await page.waitForLoadState('networkidle');
+  41 | }
+  42 | 
+  43 | export async function changeStatusOnLocator(
+  44 |   page: Page,
+  45 |   locator: Locator,
+  46 |   fromStatus: string,
+  47 |   toStatus: string,
+  48 | ) {
+  49 |   await expect(locator).toBeVisible();
+  50 |   await locator.getByRole('button', { name: fromStatus }).click();
+  51 |   await page.getByRole('menuitem', { name: toStatus }).click();
+  52 |   await page.waitForLoadState('networkidle');
+  53 |   await expect(locator.getByRole('button', { name: toStatus })).toBeVisible();
+  54 | }
+  55 | 
+```
