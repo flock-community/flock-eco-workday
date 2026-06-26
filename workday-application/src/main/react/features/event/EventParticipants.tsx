@@ -10,6 +10,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import type { Dayjs } from 'dayjs';
 import { useEffect, useRef, useState } from 'react';
 import { EventType } from '../../clients/EventClient';
@@ -539,12 +540,21 @@ export function EventParticipants({
             </Box>
             <Collapse in={open} unmountOnExit>
               <Box
-                sx={{
+                sx={(theme) => ({
                   p: 1.5,
                   mb: 0.5,
                   borderRadius: 2,
                   bgcolor: 'action.hover',
-                }}
+                  // Override MUI's darker disabled border so all cells share the `divider` outline.
+                  '& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline':
+                    { borderColor: theme.palette.divider },
+                  '& .MuiOutlinedInput-root:not(.Mui-disabled)': {
+                    backgroundColor: alpha(
+                      theme.palette.background.paper,
+                      0.55,
+                    ),
+                  },
+                })}
               >
                 {splittable ? (
                   <Stack spacing={1.5}>
