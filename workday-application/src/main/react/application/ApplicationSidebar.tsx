@@ -8,6 +8,7 @@ import { createElement, useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { FlockBird } from '../components/FlockBird';
 import { useUserMe } from '../hooks/UserMeHook';
+import { ColorModeToggle } from '../theme/ColorModeToggle';
 import {
   isActive,
   isFolder,
@@ -185,7 +186,14 @@ export function ApplicationSidebar() {
       ))}
 
       <Box sx={{ flex: 1 }} />
-      <NavItem item={{ name: 'Profile', icon: ProfileIcon, url: '/profile' }} />
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <NavItem
+            item={{ name: 'Profile', icon: ProfileIcon, url: '/profile' }}
+          />
+        </Box>
+        <ColorModeToggle size="small" sx={{ color: 'text.secondary' }} />
+      </Box>
     </Box>
   );
 }

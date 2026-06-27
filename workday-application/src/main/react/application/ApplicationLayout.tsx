@@ -15,7 +15,6 @@ import { Link as RouterLink } from 'react-router-dom';
 
 // Hooks
 import { useSession } from '../hooks/SessionHook';
-import { ColorModeToggle } from '../theme/ColorModeToggle';
 
 const PREFIX = 'ApplicationLayout';
 
@@ -129,16 +128,6 @@ export function ApplicationLayout({ onMenu }: ApplicationLayoutProps) {
               </Box>
             </Box>
           </Link>
-
-          <ColorModeToggle
-            edge={false}
-            sx={{
-              mr: 0.5,
-              opacity: 0.6,
-              transition: 'opacity 160ms ease',
-              '&:hover': { opacity: 1 },
-            }}
-          />
 
           <div>
             <IconButton
