@@ -19,6 +19,7 @@ import { styled } from '@mui/material/styles';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { type Person, PersonClient } from '../../../clients/PersonClient';
+import { TableCard } from '../../../components/TableCard';
 import { PersonDialog } from '../PersonDialog';
 import { PersonTableHead } from './PersonTableHead';
 
@@ -130,55 +131,57 @@ export const PersonTable = () => {
               inputRef={searchInputRef}
             />
           </Box>
-          <TableContainer>
-            <Table>
-              <PersonTableHead />
-              <TableBody>
-                {personList.map((person) => {
-                  return (
-                    <TableRow
-                      key={person.fullName}
-                      hover
-                      className={classes.tblRow}
-                    >
-                      <TableCell
-                        className={classes.tblName}
-                        component="th"
-                        scope="row"
+          <TableCard>
+            <TableContainer>
+              <Table>
+                <PersonTableHead />
+                <TableBody>
+                  {personList.map((person) => {
+                    return (
+                      <TableRow
+                        key={person.fullName}
+                        hover
+                        className={classes.tblRow}
                       >
-                        <Link
-                          key={person.uuid}
-                          to={`${url}/code/${person.uuid}`}
-                          className={classes.link}
+                        <TableCell
+                          className={classes.tblName}
+                          component="th"
+                          scope="row"
                         >
-                          {person.fullName}
-                        </Link>
-                      </TableCell>
-                      <TableCell className={classes.tblEmail} align="left">
-                        <Typography className={classes.tblRow}>
-                          {person.email}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="left">
-                        {person.active && <CheckBox />}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[]}
-              component="div"
-              count={count}
-              // remove labelDisplayRows by replacing it with an empty return
-              labelDisplayedRows={() => null}
-              rowsPerPage={size}
-              page={page}
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handleRowsPerPageChange}
-            />
-          </TableContainer>
+                          <Link
+                            key={person.uuid}
+                            to={`${url}/code/${person.uuid}`}
+                            className={classes.link}
+                          >
+                            {person.fullName}
+                          </Link>
+                        </TableCell>
+                        <TableCell className={classes.tblEmail} align="left">
+                          <Typography className={classes.tblRow}>
+                            {person.email}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="left">
+                          {person.active && <CheckBox />}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+              <TablePagination
+                rowsPerPageOptions={[]}
+                component="div"
+                count={count}
+                // remove labelDisplayRows by replacing it with an empty return
+                labelDisplayedRows={() => null}
+                rowsPerPage={size}
+                page={page}
+                onPageChange={handlePageChange}
+                onRowsPerPageChange={handleRowsPerPageChange}
+              />
+            </TableContainer>
+          </TableCard>
         </CardContent>
       </Card>
       <PersonDialog open={dialog.open} onClose={handleDialogClose} />
