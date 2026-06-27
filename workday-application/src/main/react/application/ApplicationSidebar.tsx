@@ -1,11 +1,12 @@
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ProfileIcon from '@mui/icons-material/Person';
-import { Avatar, Box, Collapse, Typography } from '@mui/material';
+import { Box, Collapse, Typography } from '@mui/material';
 import ButtonBase from '@mui/material/ButtonBase';
 import type { Theme } from '@mui/material/styles';
 import { createElement, useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { FlockBird } from '../components/FlockBird';
 import { useUserMe } from '../hooks/UserMeHook';
 import {
   isActive,
@@ -14,18 +15,6 @@ import {
   type NavLeaf,
   visibleSections,
 } from './applicationNav';
-
-function initials(name?: string) {
-  if (!name) return '?';
-  return (
-    name
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase() ?? '')
-      .join('') || '?'
-  );
-}
 
 const label = (sx?: object) => ({
   flex: 1,
@@ -138,18 +127,21 @@ export function ApplicationSidebar() {
           borderColor: 'divider',
         }}
       >
-        <Avatar
+        <Box
           sx={{
             width: 38,
             height: 38,
-            fontSize: 14,
-            fontWeight: 700,
+            borderRadius: '50%',
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             bgcolor: 'primary.main',
             color: 'primary.contrastText',
           }}
         >
-          {initials(user.name)}
-        </Avatar>
+          <FlockBird style={{ height: '1.35rem', width: 'auto', display: 'block' }} />
+        </Box>
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography sx={label({ fontSize: 14, fontWeight: 600 })}>
             {user.name ?? 'Unknown'}

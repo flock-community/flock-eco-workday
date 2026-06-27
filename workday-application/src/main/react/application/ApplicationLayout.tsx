@@ -13,7 +13,6 @@ import Toolbar from '@mui/material/Toolbar';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { FlockBird } from '../components/FlockBird';
 // Hooks
 import { useSession } from '../hooks/SessionHook';
 import { ColorModeToggle } from '../theme/ColorModeToggle';
@@ -102,28 +101,10 @@ export function ApplicationLayout({ onMenu }: ApplicationLayoutProps) {
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.6rem',
               fontSize: '1.2rem',
               letterSpacing: '-0.01em',
             }}
           >
-            <Box
-              component="span"
-              sx={{
-                display: 'inline-flex',
-                color: (t) =>
-                  t.palette.mode === 'dark' ? 'primary.main' : 'inherit',
-              }}
-            >
-              <FlockBird
-                style={{
-                  height: '1.9rem',
-                  width: 'auto',
-                  display: 'block',
-                  transform: 'translateY(6%)',
-                }}
-              />
-            </Box>
             <Box
               component="span"
               sx={{
