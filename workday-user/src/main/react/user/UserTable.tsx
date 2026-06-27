@@ -1,9 +1,9 @@
+import { Box, Pagination } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableFooter from '@mui/material/TableFooter';
+import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useEffect, useState } from 'react';
 import UserClient from './UserClient';
@@ -22,6 +22,7 @@ export function UserTable({
   onRowClick,
   onChangePage,
 }: Readonly<UserTableProps>) {
+  const pageSize = size || 10;
   const [state, setState] = useState({
     page: 0,
     count: 0,
@@ -30,14 +31,12 @@ export function UserTable({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
-    UserClient.findAllUsers(search || '', state.page, size || 10).then(
-      (res) => {
-        setState({ ...state, ...res });
-      },
-    );
-  }, [refresh, search, size, state.page]);
+    UserClient.findAllUsers(search || '', state.page, pageSize).then((res) => {
+      setState({ ...state, ...res });
+    });
+  }, [refresh, search, pageSize, state.page]);
 
-  const handleChangePage = (_event, page) => {
+  const handleChangePage = (page: number) => {
     setState({ ...state, page });
     onChangePage?.(page);
   };
@@ -47,36 +46,55 @@ export function UserTable({
   };
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>Name</TableCell>
-          <TableCell>Email</TableCell>
-          <TableCell>Authorities</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {state.list.map((it) => (
-          <TableRow key={it.id} hover onClick={handleRowClick(it)}>
-            <TableCell component="th" scope="row">
-              {it.name}
-            </TableCell>
-            <TableCell>{it.email}</TableCell>
-            <TableCell>{it.authorities.length}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TablePagination
-            count={state.count}
-            rowsPerPage={size || 10}
-            page={state.page}
-            rowsPerPageOptions={[]}
-            onPageChange={handleChangePage}
-          />
-        </TableRow>
-      </TableFooter>
-    </Table>
+    <Box>
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Authorities</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {state.list.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={3}
+                  align="center"
+                  sx={{ py: 4, color: 'text.secondary' }}
+                >
+                  No users
+                </TableCell>
+              </TableRow>
+            ) : (
+              state.list.map((it) => (
+                <TableRow
+                  key={it.id}
+                  hover
+                  sx={{ cursor: 'pointer' }}
+                  onClick={handleRowClick(it)}
+                >
+                  <TableCell component="th" scope="row">
+                    {it.name}
+                  </TableCell>
+                  <TableCell>{it.email}</TableCell>
+                  <TableCell>{it.authorities.length}</TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Box mt={2}>
+        <Pagination
+          count={Math.ceil(state.count / pageSize)}
+          page={state.page + 1}
+          onChange={(_event, value) => handleChangePage(value - 1)}
+          color="primary"
+          shape="rounded"
+        />
+      </Box>
+    </Box>
   );
 }

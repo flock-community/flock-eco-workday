@@ -9,7 +9,6 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TablePagination,
   TableRow,
   TextField,
   Typography,
@@ -19,11 +18,14 @@ import { styled } from '@mui/material/styles';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { type Person, PersonClient } from '../../../clients/PersonClient';
+import { FlockPagination } from '../../../components/pagination/FlockPagination';
 import { TableCard } from '../../../components/TableCard';
 import { PersonDialog } from '../PersonDialog';
 import { PersonTableHead } from './PersonTableHead';
 
 const PREFIX = 'PersonTable';
+
+const PERSON_PAGE_SIZE = 10;
 
 const classes = {
   tblEmail: `${PREFIX}TblEmail`,
@@ -54,13 +56,13 @@ const StyledBox = styled(Box)(({ theme }) => ({
 export const PersonTable = () => {
   const { url } = useRouteMatch();
   const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
   const [count, setCount] = useState(-1);
   const [personList, setPersonList] = useState<Person[]>([]);
   const [dialog, setDialog] = useState({ open: false });
   const [refresh, setRefresh] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [debouncedSearchState, setDebouncedSearchState] = useState<string>('');
+  const [loading, setLoading] = useState(true);
 
   // Add this useEffect for debouncing
   useEffect(() => {
@@ -79,14 +81,16 @@ export const PersonTable = () => {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
+    setLoading(true);
     PersonClient.findAllByFullName(
-      { page, size, sort: 'firstname' },
+      { page, size: PERSON_PAGE_SIZE, sort: 'firstname' },
       debouncedSearchState,
     ).then((res) => {
       setPersonList(res.list);
       setCount(res.count);
+      setLoading(false);
     });
-  }, [refresh, page, size, debouncedSearchState]);
+  }, [refresh, page, debouncedSearchState]);
 
   const handleDialogOpen = () => {
     setDialog({ open: true });
@@ -95,16 +99,6 @@ export const PersonTable = () => {
   const handleDialogClose = () => {
     setRefresh(!refresh);
     setDialog({ open: false });
-  };
-
-  const handlePageChange = (_, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleRowsPerPageChange = (event) => {
-    const rowsPerPage = event.target.value;
-    setSize(+rowsPerPage);
-    setPage(0);
   };
 
   return (
@@ -131,13 +125,23 @@ export const PersonTable = () => {
               inputRef={searchInputRef}
             />
           </Box>
-          <TableCard>
+          <TableCard loading={loading}>
             <TableContainer>
-              <Table>
+              <Table size="small">
                 <PersonTableHead />
                 <TableBody>
-                  {personList.map((person) => {
-                    return (
+                  {personList.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={3}
+                        align="center"
+                        sx={{ py: 4, color: 'text.secondary' }}
+                      >
+                        No persons
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    personList.map((person) => (
                       <TableRow
                         key={person.fullName}
                         hover
@@ -165,23 +169,20 @@ export const PersonTable = () => {
                           {person.active && <CheckBox />}
                         </TableCell>
                       </TableRow>
-                    );
-                  })}
+                    ))
+                  )}
                 </TableBody>
               </Table>
-              <TablePagination
-                rowsPerPageOptions={[]}
-                component="div"
-                count={count}
-                // remove labelDisplayRows by replacing it with an empty return
-                labelDisplayedRows={() => null}
-                rowsPerPage={size}
-                page={page}
-                onPageChange={handlePageChange}
-                onRowsPerPageChange={handleRowsPerPageChange}
-              />
             </TableContainer>
           </TableCard>
+          <Box mt={2}>
+            <FlockPagination
+              currentPage={page + 1}
+              numberOfItems={count}
+              itemsPerPage={PERSON_PAGE_SIZE}
+              changePageCb={setPage}
+            />
+          </Box>
         </CardContent>
       </Card>
       <PersonDialog open={dialog.open} onClose={handleDialogClose} />
