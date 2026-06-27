@@ -92,7 +92,7 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
   }
 
   return (
-    <Card variant={'outlined'} style={{ borderRadius: 0 }}>
+    <Card variant={'outlined'}>
       <CardHeader title={'Missing hours'} />
       {data.length === 0 && (
         <CardContent>
