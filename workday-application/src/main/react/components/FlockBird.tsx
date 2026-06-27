@@ -1,11 +1,10 @@
 import type { SVGProps } from 'react';
 
-// viewBox is the full-logo disc's bounding box (not the bird's), keeping the
-// bird centred with its original padding now that the disc is gone.
+// viewBox tracks the bird's own bounds (centre ~143,53), not the SVG's.
 export function FlockBird(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
-      viewBox="110 12 78 78"
+      viewBox="109 19 68 68"
       fill="currentColor"
       role="img"
       aria-label="Flock"
