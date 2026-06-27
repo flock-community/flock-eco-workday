@@ -31,11 +31,15 @@ export function ExpensesCard({ items }: ExpenseCardProps) {
   };
 
   return (
-    <Card variant={'outlined'} data-testid={'expenses-card'}>
+    <Card
+      variant={'outlined'}
+      data-testid={'expenses-card'}
+      sx={{ borderRadius: '14px' }}
+    >
       <CardHeader title={'Expenses'} />
       <CardContent className={'flow'}>
         <Box>
-          <Typography variant={'h6'}>open</Typography>
+          <Typography sx={sectionLabel}>Open</Typography>
           <ExpenseTable
             tableItems={openExpenses}
             page={openPage}
@@ -43,7 +47,7 @@ export function ExpensesCard({ items }: ExpenseCardProps) {
           />
         </Box>
         <Box>
-          <Typography variant={'h6'}>most recent</Typography>
+          <Typography sx={sectionLabel}>Most recent</Typography>
           <ExpenseTable
             tableItems={recentExpenses}
             page={recentPage}
@@ -54,3 +58,12 @@ export function ExpensesCard({ items }: ExpenseCardProps) {
     </Card>
   );
 }
+
+const sectionLabel = {
+  fontSize: 11,
+  fontWeight: 600,
+  letterSpacing: '0.1em',
+  textTransform: 'uppercase',
+  color: 'text.secondary',
+  mb: 1,
+} as const;
