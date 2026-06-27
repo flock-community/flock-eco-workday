@@ -20,6 +20,11 @@ const classes = {
 };
 
 const Root = styled('div')(({ theme }) => ({
+  // Uniform width so every status reads as the same chip regardless of label length.
+  '& .MuiButton-root': {
+    minWidth: 124,
+  },
+
   [`& .${classes.buttonRequested}`]: {
     backgroundColor: 'transparent',
     color: theme.palette.mode === 'dark' ? brand.cyan : brand.cyanDark,
@@ -50,9 +55,37 @@ const Root = styled('div')(({ theme }) => ({
   },
 
   [`& .${classes.buttonRejected}`]: {
-    backgroundColor: theme.palette.error[500],
+    backgroundColor: alpha(
+      theme.palette.error.main,
+      theme.palette.mode === 'dark' ? 0.22 : 0.14,
+    ),
+    color:
+      theme.palette.mode === 'dark'
+        ? theme.palette.error.light
+        : theme.palette.error.dark,
+    outline: `1px solid ${alpha(
+      theme.palette.error.main,
+      theme.palette.mode === 'dark' ? 0.5 : 0.4,
+    )}`,
+    '&:hover': {
+      backgroundColor: alpha(
+        theme.palette.error.main,
+        theme.palette.mode === 'dark' ? 0.3 : 0.2,
+      ),
+    },
     '&:disabled': {
-      backgroundColor: theme.palette.error[500],
+      backgroundColor: alpha(
+        theme.palette.error.main,
+        theme.palette.mode === 'dark' ? 0.22 : 0.14,
+      ),
+      color:
+        theme.palette.mode === 'dark'
+          ? theme.palette.error.light
+          : theme.palette.error.dark,
+      outline: `1px solid ${alpha(
+        theme.palette.error.main,
+        theme.palette.mode === 'dark' ? 0.5 : 0.4,
+      )}`,
     },
   },
 
