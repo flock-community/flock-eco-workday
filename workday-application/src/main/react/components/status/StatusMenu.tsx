@@ -41,9 +41,11 @@ const Root = styled('div')(({ theme }) => ({
   },
 
   [`& .${classes.buttonApproved}`]: {
-    backgroundColor: theme.palette.success[500],
+    backgroundColor: brand.teal,
+    color: theme.palette.getContrastText(brand.teal),
     '&:disabled': {
-      backgroundColor: theme.palette.success[500],
+      backgroundColor: brand.teal,
+      color: theme.palette.getContrastText(brand.teal),
     },
   },
 
