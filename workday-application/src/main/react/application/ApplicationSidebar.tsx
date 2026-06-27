@@ -6,7 +6,7 @@ import ButtonBase from '@mui/material/ButtonBase';
 import type { Theme } from '@mui/material/styles';
 import { createElement, useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import { FlockBird } from '../components/FlockBird';
+import { FlockDisc } from '../components/FlockDisc';
 import { useUserMe } from '../hooks/UserMeHook';
 import { ColorModeToggle } from '../theme/ColorModeToggle';
 import {
@@ -128,21 +128,9 @@ export function ApplicationSidebar() {
           borderColor: 'divider',
         }}
       >
-        <Box
-          sx={{
-            width: 38,
-            height: 38,
-            borderRadius: '50%',
-            flexShrink: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            bgcolor: 'primary.main',
-            color: 'primary.contrastText',
-          }}
-        >
-          <FlockBird style={{ height: '1.7rem', width: 'auto', display: 'block' }} />
-        </Box>
+        <FlockDisc
+          style={{ width: 38, height: 38, flexShrink: 0, display: 'block' }}
+        />
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography sx={label({ fontSize: 14, fontWeight: 600 })}>
             {user.name ?? 'Unknown'}
