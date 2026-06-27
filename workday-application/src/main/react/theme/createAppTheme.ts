@@ -133,7 +133,6 @@ export function createAppTheme(mode: ColorMode): Theme {
 
       MuiCardHeader: {
         styleOverrides: {
-          root: { padding: '20px 24px' },
           title: { fontSize: '1.05rem', fontWeight: 600 },
           subheader: { color: palette.text.secondary },
           // Drop MUI's negative action margins so the Add button stays inside the padding.
