@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import clsx from 'clsx';
 import { useState } from 'react';
 import {
@@ -20,15 +20,14 @@ const classes = {
 
 const Root = styled('div')(({ theme }) => ({
   [`& .${classes.buttonRequested}`]: {
-    backgroundColor: 'unset',
-    color: theme.palette.text.primary,
+    backgroundColor: alpha(theme.palette.accent.main, 0.16),
+    color: theme.palette.accent.dark,
     '&:hover': {
-      backgroundColor: theme.palette.action.hover,
+      backgroundColor: alpha(theme.palette.accent.main, 0.28),
     },
     '&.Mui-disabled': {
-      backgroundColor: 'unset',
-      color: theme.palette.text.secondary,
-      outline: `1px solid ${theme.palette.divider}`,
+      backgroundColor: alpha(theme.palette.accent.main, 0.16),
+      color: theme.palette.accent.dark,
     },
   },
 
