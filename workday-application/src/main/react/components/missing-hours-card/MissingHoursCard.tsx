@@ -83,7 +83,7 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
       <ListItemButton
         key={index}
         onClick={() => openWorkDayDialog(item)}
-        sx={{ borderRadius: 2, py: 1 }}
+        sx={{ borderRadius: 2, py: 0.75 }}
       >
         <ListItemText
           primary={`You have missing hours in
@@ -91,6 +91,7 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
                       month: 'long',
                     })}`}
           primaryTypographyProps={{ fontSize: 14 }}
+          sx={{ my: 0 }}
         />
       </ListItemButton>
     );

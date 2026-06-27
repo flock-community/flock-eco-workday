@@ -26,7 +26,7 @@ export default function PersonEvents({
   personEvents,
 }: PersonEventsProps) {
   const noContent = (
-    <Typography variant="caption">
+    <Typography color="text.secondary">
       No person events within {withinNWeeks} weeks
     </Typography>
   );
@@ -66,7 +66,7 @@ export default function PersonEvents({
   );
 
   return (
-    <Card>
+    <Card variant="outlined" sx={{ borderRadius: '14px' }}>
       <CardHeader title={`Person events within ${withinNWeeks} weeks`} />
       <CardContent>
         {personEvents === undefined ? (

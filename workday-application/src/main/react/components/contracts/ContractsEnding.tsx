@@ -24,7 +24,7 @@ export default function ContractsEnding({
   contracts,
 }: ContractsEndingProps) {
   const noContent = (
-    <Typography variant="caption">
+    <Typography color="text.secondary">
       No contracts ending within {withinNWeeks} weeks
     </Typography>
   );
@@ -55,7 +55,7 @@ export default function ContractsEnding({
   );
 
   return (
-    <Card>
+    <Card variant="outlined" sx={{ borderRadius: '14px' }}>
       <CardHeader title={`Contracts ending within ${withinNWeeks} weeks`} />
       <CardContent>
         {contracts === undefined ? (
