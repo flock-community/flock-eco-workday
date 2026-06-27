@@ -80,14 +80,12 @@ export function ClientList({ refresh, onItemClick }: ClientListProps) {
           </Table>
         </TableContainer>
       </TableCard>
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={CLIENT_PAGE_SIZE}
-          changePageCb={setPage}
-        />
-      </Box>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={CLIENT_PAGE_SIZE}
+        changePageCb={setPage}
+      />
     </Box>
   );
 }

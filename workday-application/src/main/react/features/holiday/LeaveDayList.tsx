@@ -1,5 +1,4 @@
 import {
-  Box,
   Table,
   TableBody,
   TableCell,
@@ -96,14 +95,12 @@ export function LeaveDayList({
           </Table>
         </TableContainer>
       </TableCard>
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={LEAVE_DAY_PAGE_SIZE}
-          changePageCb={setPage}
-        />
-      </Box>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={LEAVE_DAY_PAGE_SIZE}
+        changePageCb={setPage}
+      />
     </>
   );
 }

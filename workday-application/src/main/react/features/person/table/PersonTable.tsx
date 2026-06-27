@@ -175,14 +175,12 @@ export const PersonTable = () => {
               </Table>
             </TableContainer>
           </TableCard>
-          <Box mt={2}>
-            <FlockPagination
-              currentPage={page + 1}
-              numberOfItems={count}
-              itemsPerPage={PERSON_PAGE_SIZE}
-              changePageCb={setPage}
-            />
-          </Box>
+          <FlockPagination
+            currentPage={page + 1}
+            numberOfItems={count}
+            itemsPerPage={PERSON_PAGE_SIZE}
+            changePageCb={setPage}
+          />
         </CardContent>
       </Card>
       <PersonDialog open={dialog.open} onClose={handleDialogClose} />

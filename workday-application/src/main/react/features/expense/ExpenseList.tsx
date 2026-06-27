@@ -130,33 +130,29 @@ export function ExpenseList({
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.length === 0 ? (
-                !loading && (
-                  <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      align="center"
-                      sx={{ py: 4, color: 'text.secondary' }}
-                    >
-                      No expenses
-                    </TableCell>
-                  </TableRow>
-                )
-              ) : (
-                items.map(renderRow)
-              )}
+              {items.length === 0
+                ? !loading && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={5}
+                        align="center"
+                        sx={{ py: 4, color: 'text.secondary' }}
+                      >
+                        No expenses
+                      </TableCell>
+                    </TableRow>
+                  )
+                : items.map(renderRow)}
             </TableBody>
           </Table>
         </TableContainer>
       </TableCard>
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={EXPENSE_PAGE_SIZE}
-          changePageCb={setPage}
-        />
-      </Box>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={EXPENSE_PAGE_SIZE}
+        changePageCb={setPage}
+      />
     </Box>
   );
 }

@@ -90,14 +90,12 @@ export function WorkDayList({
           </Table>
         </TableContainer>
       </TableCard>
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={WORK_DAY_PAGE_SIZE}
-          changePageCb={setPage}
-        />
-      </Box>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={WORK_DAY_PAGE_SIZE}
+        changePageCb={setPage}
+      />
     </Box>
   );
 }

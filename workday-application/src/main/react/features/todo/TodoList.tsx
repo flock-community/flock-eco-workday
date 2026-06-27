@@ -1,4 +1,4 @@
-import { Box, Card, Link, Typography } from '@mui/material';
+import { Card, Link, Typography } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Grid from '@mui/material/Grid';
@@ -154,14 +154,12 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
         renderFunction={renderItem}
         exposedValue={setSelectedTab}
       />
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={TODO_PAGE_SIZE}
-          changePageCb={handlePageChange}
-        />
-      </Box>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={TODO_PAGE_SIZE}
+        changePageCb={handlePageChange}
+      />
     </>
   );
 }

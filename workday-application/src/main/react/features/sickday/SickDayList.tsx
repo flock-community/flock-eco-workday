@@ -1,5 +1,4 @@
 import {
-  Box,
   Table,
   TableBody,
   TableCell,
@@ -91,14 +90,12 @@ export function SickDayList({
           </Table>
         </TableContainer>
       </TableCard>
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={SICKDAY_PAGE_SIZE}
-          changePageCb={setPage}
-        />
-      </Box>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={SICKDAY_PAGE_SIZE}
+        changePageCb={setPage}
+      />
     </>
   );
 }
