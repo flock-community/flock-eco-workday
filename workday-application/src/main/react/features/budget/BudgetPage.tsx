@@ -11,7 +11,7 @@ export default function BudgetPage() {
   const [year, setYear] = useState(currentYear);
 
   const yearSelect = (
-    <FormControl size="small" sx={{ minWidth: 120 }}>
+    <FormControl sx={{ minWidth: 120 }}>
       <InputLabel id="budget-year-label">Year</InputLabel>
       <Select
         labelId="budget-year-label"
