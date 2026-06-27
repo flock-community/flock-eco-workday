@@ -19,85 +19,47 @@ const classes = {
   buttonDone: `${PREFIX}ButtonDone`,
 };
 
-const Root = styled('div')(({ theme }) => ({
-  // Uniform width so every status reads as the same chip regardless of label length.
-  '& .MuiButton-root': {
-    minWidth: 124,
-  },
+const Root = styled('div')(({ theme }) => {
+  const isDark = theme.palette.mode === 'dark';
 
-  [`& .${classes.buttonRequested}`]: {
-    backgroundColor: 'transparent',
-    color: theme.palette.mode === 'dark' ? brand.cyan : brand.cyanDark,
-    outline: `1px solid ${alpha(
+  const softTintChip = (main: string, fg: string) => {
+    const base = {
+      backgroundColor: alpha(main, isDark ? 0.22 : 0.14),
+      color: fg,
+      outline: `1px solid ${alpha(main, isDark ? 0.5 : 0.4)}`,
+    };
+    return {
+      ...base,
+      '&:hover': { backgroundColor: alpha(main, isDark ? 0.3 : 0.2) },
+      '&:disabled': base,
+      '&.Mui-disabled': base,
+    };
+  };
+
+  return {
+    // Uniform width so every status reads as the same chip regardless of label length.
+    '& .MuiButton-root': {
+      minWidth: 124,
+    },
+
+    [`& .${classes.buttonRequested}`]: softTintChip(
       brand.cyan,
-      theme.palette.mode === 'dark' ? 0.6 : 0.75,
-    )}`,
-    '&:hover': {
-      backgroundColor: alpha(brand.cyan, 0.1),
-    },
-    '&.Mui-disabled': {
-      backgroundColor: 'transparent',
-      color: theme.palette.mode === 'dark' ? brand.cyan : brand.cyanDark,
-      outline: `1px solid ${alpha(
-        brand.cyan,
-        theme.palette.mode === 'dark' ? 0.6 : 0.75,
-      )}`,
-    },
-  },
-
-  [`& .${classes.buttonApproved}`]: {
-    backgroundColor: brand.teal,
-    color: theme.palette.getContrastText(brand.teal),
-    '&:disabled': {
-      backgroundColor: brand.teal,
-      color: theme.palette.getContrastText(brand.teal),
-    },
-  },
-
-  [`& .${classes.buttonRejected}`]: {
-    backgroundColor: alpha(
-      theme.palette.error.main,
-      theme.palette.mode === 'dark' ? 0.22 : 0.14,
+      isDark ? brand.cyan : brand.cyanDark,
     ),
-    color:
-      theme.palette.mode === 'dark'
-        ? theme.palette.error.light
-        : theme.palette.error.dark,
-    outline: `1px solid ${alpha(
-      theme.palette.error.main,
-      theme.palette.mode === 'dark' ? 0.5 : 0.4,
-    )}`,
-    '&:hover': {
-      backgroundColor: alpha(
-        theme.palette.error.main,
-        theme.palette.mode === 'dark' ? 0.3 : 0.2,
-      ),
-    },
-    '&:disabled': {
-      backgroundColor: alpha(
-        theme.palette.error.main,
-        theme.palette.mode === 'dark' ? 0.22 : 0.14,
-      ),
-      color:
-        theme.palette.mode === 'dark'
-          ? theme.palette.error.light
-          : theme.palette.error.dark,
-      outline: `1px solid ${alpha(
-        theme.palette.error.main,
-        theme.palette.mode === 'dark' ? 0.5 : 0.4,
-      )}`,
-    },
-  },
 
-  [`& .${classes.buttonDone}`]: {
-    backgroundColor: theme.palette.done,
-    color: theme.palette.getContrastText(theme.palette.done),
-    '&:disabled': {
-      backgroundColor: theme.palette.done,
-      color: theme.palette.getContrastText(theme.palette.done),
-    },
-  },
-}));
+    [`& .${classes.buttonApproved}`]: softTintChip(
+      brand.teal,
+      isDark ? brand.teal : brand.tealDark,
+    ),
+
+    [`& .${classes.buttonRejected}`]: softTintChip(
+      theme.palette.error.main,
+      isDark ? theme.palette.error.light : theme.palette.error.dark,
+    ),
+
+    [`& .${classes.buttonDone}`]: softTintChip(theme.palette.done, theme.palette.done),
+  };
+});
 
 type StatusMenuProps = {
   onChange: (status: string) => void;
