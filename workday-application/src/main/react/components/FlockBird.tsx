@@ -1,10 +1,10 @@
 import type { SVGProps } from 'react';
 
-// viewBox tracks the bird's own bounds (centre ~143,53), not the SVG's.
+// viewBox tracks the bird's own bounds (centre ~144,53), not the SVG's.
 export function FlockBird(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
-      viewBox="109 19 68 68"
+      viewBox="113 22 62 62"
       fill="currentColor"
       role="img"
       aria-label="Flock"

@@ -141,7 +141,7 @@ export function ApplicationSidebar() {
             color: 'primary.contrastText',
           }}
         >
-          <FlockBird style={{ height: '1.35rem', width: 'auto', display: 'block' }} />
+          <FlockBird style={{ height: '1.7rem', width: 'auto', display: 'block' }} />
         </Box>
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography sx={label({ fontSize: 14, fontWeight: 600 })}>
