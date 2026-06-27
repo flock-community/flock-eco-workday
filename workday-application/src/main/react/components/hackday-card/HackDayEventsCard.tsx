@@ -36,7 +36,7 @@ export function HackDayEventsCard({ onToggle }: HackDayEventsCardProps) {
   };
 
   return (
-    <Card variant="outlined" style={{ borderRadius: 0 }}>
+    <Card variant="outlined">
       <CardHeader title="Hack days of this year" />
       <CardContent>
         <HackDayList items={flockEvents} onEventToggle={eventToggled} />

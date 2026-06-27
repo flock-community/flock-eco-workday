@@ -31,11 +31,7 @@ export function ExpensesCard({ items }: ExpenseCardProps) {
   };
 
   return (
-    <Card
-      variant={'outlined'}
-      style={{ borderRadius: 0 }}
-      data-testid={'expenses-card'}
-    >
+    <Card variant={'outlined'} data-testid={'expenses-card'}>
       <CardHeader title={'Expenses'} />
       <CardContent className={'flow'}>
         <Box>
