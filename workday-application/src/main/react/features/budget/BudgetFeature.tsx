@@ -1,4 +1,4 @@
-import { Alert, Stack, Typography } from '@mui/material';
+import { Alert, Stack } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { BudgetClient } from '../../clients/BudgetClient';
 import type { Person } from '../../clients/PersonClient';
@@ -42,9 +42,6 @@ export function BudgetFeature({ person, year }: BudgetFeatureProps) {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">
-        Budget {person.firstname} {person.lastname}
-      </Typography>
       {error ? (
         <Alert severity="error">Could not load the budget summary.</Alert>
       ) : (
