@@ -14,6 +14,7 @@ import {
   AssignmentClient,
 } from '../../clients/AssignmentClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
+import { TableCard } from '../../components/TableCard';
 import { isDefined } from '../../utils/validation';
 
 type AssignmentListProps = {
@@ -58,60 +59,68 @@ export function AssignmentList({
   };
 
   return (
-    <>
-      <TableContainer sx={{ opacity: loading ? 0.5 : 1 }}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>Client</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>From</TableCell>
-              <TableCell>To</TableCell>
-              {isAdmin && <TableCell align="right">Hourly rate</TableCell>}
-              <TableCell align="right">Hours/week</TableCell>
-              <TableCell>Project</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {items.length === 0 ? (
+    <Box>
+      <TableCard loading={loading}>
+        <TableContainer>
+          <Table size="small">
+            <TableHead>
               <TableRow>
-                <TableCell
-                  colSpan={columnCount}
-                  align="center"
-                  sx={{ py: 4, color: 'text.secondary' }}
-                >
-                  No assignments
-                </TableCell>
+                <TableCell>Client</TableCell>
+                <TableCell>Role</TableCell>
+                <TableCell>From</TableCell>
+                <TableCell>To</TableCell>
+                {isAdmin && <TableCell align="right">Hourly rate</TableCell>}
+                <TableCell align="right">Hours/week</TableCell>
+                <TableCell>Project</TableCell>
               </TableRow>
-            ) : (
-              items.map((assignment) => (
-                <TableRow
-                  key={`assignment-${assignment.code}`}
-                  hover={!disableEdit}
-                  sx={{ cursor: disableEdit ? 'default' : 'pointer' }}
-                  onClick={handleClickItem(assignment)}
-                >
-                  <TableCell>{assignment.client.name}</TableCell>
-                  <TableCell>{assignment.role}</TableCell>
-                  <TableCell>{assignment.from.format('DD-MM-YYYY')}</TableCell>
-                  <TableCell>
-                    {assignment.to ? (
-                      assignment.to.format('DD-MM-YYYY')
-                    ) : (
-                      <em>now</em>
-                    )}
+            </TableHead>
+            <TableBody>
+              {items.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columnCount}
+                    align="center"
+                    sx={{ py: 4, color: 'text.secondary' }}
+                  >
+                    No assignments
                   </TableCell>
-                  {isAdmin && (
-                    <TableCell align="right">{assignment.hourlyRate}</TableCell>
-                  )}
-                  <TableCell align="right">{assignment.hoursPerWeek}</TableCell>
-                  <TableCell>{assignment.project?.name ?? '-'}</TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : (
+                items.map((assignment) => (
+                  <TableRow
+                    key={`assignment-${assignment.code}`}
+                    hover={!disableEdit}
+                    sx={{ cursor: disableEdit ? 'default' : 'pointer' }}
+                    onClick={handleClickItem(assignment)}
+                  >
+                    <TableCell>{assignment.client.name}</TableCell>
+                    <TableCell>{assignment.role}</TableCell>
+                    <TableCell>
+                      {assignment.from.format('DD-MM-YYYY')}
+                    </TableCell>
+                    <TableCell>
+                      {assignment.to ? (
+                        assignment.to.format('DD-MM-YYYY')
+                      ) : (
+                        <em>now</em>
+                      )}
+                    </TableCell>
+                    {isAdmin && (
+                      <TableCell align="right">
+                        {assignment.hourlyRate}
+                      </TableCell>
+                    )}
+                    <TableCell align="right">
+                      {assignment.hoursPerWeek}
+                    </TableCell>
+                    <TableCell>{assignment.project?.name ?? '-'}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </TableCard>
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}
@@ -120,6 +129,6 @@ export function AssignmentList({
           changePageCb={setPage}
         />
       </Box>
-    </>
+    </Box>
   );
 }

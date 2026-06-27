@@ -13,6 +13,7 @@ import {
   ContractClient,
 } from '../../clients/ContractClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
+import { TableCard } from '../../components/TableCard';
 import { ContractType } from './ContractType';
 
 const formatDate = (date) => (date ? date.format('DD-MM-YYYY') : <em>now</em>);
@@ -67,50 +68,52 @@ export function ContractList({
   };
 
   return (
-    <>
-      <TableContainer sx={{ opacity: loading ? 0.5 : 1 }}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>Type</TableCell>
-              <TableCell>From</TableCell>
-              <TableCell>To</TableCell>
-              <TableCell align="right">Hours/week</TableCell>
-              <TableCell align="right">Compensation</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {items.length === 0 ? (
+    <Box>
+      <TableCard loading={loading}>
+        <TableContainer>
+          <Table size="small">
+            <TableHead>
               <TableRow>
-                <TableCell
-                  colSpan={5}
-                  align="center"
-                  sx={{ py: 4, color: 'text.secondary' }}
-                >
-                  No contracts
-                </TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>From</TableCell>
+                <TableCell>To</TableCell>
+                <TableCell align="right">Hours/week</TableCell>
+                <TableCell align="right">Compensation</TableCell>
               </TableRow>
-            ) : (
-              items.map((it) => (
-                <TableRow
-                  key={it.code}
-                  hover
-                  sx={{ cursor: 'pointer' }}
-                  onClick={handleClickItem(it)}
-                >
-                  <TableCell>{it.type}</TableCell>
-                  <TableCell>{formatDate(it.from)}</TableCell>
-                  <TableCell>{formatDate(it.to)}</TableCell>
-                  <TableCell align="right">
-                    {hasHoursPerWeek(it.type) ? it.hoursPerWeek : '-'}
+            </TableHead>
+            <TableBody>
+              {items.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    align="center"
+                    sx={{ py: 4, color: 'text.secondary' }}
+                  >
+                    No contracts
                   </TableCell>
-                  <TableCell align="right">{compensation(it)}</TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : (
+                items.map((it) => (
+                  <TableRow
+                    key={it.code}
+                    hover
+                    sx={{ cursor: 'pointer' }}
+                    onClick={handleClickItem(it)}
+                  >
+                    <TableCell>{it.type}</TableCell>
+                    <TableCell>{formatDate(it.from)}</TableCell>
+                    <TableCell>{formatDate(it.to)}</TableCell>
+                    <TableCell align="right">
+                      {hasHoursPerWeek(it.type) ? it.hoursPerWeek : '-'}
+                    </TableCell>
+                    <TableCell align="right">{compensation(it)}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </TableCard>
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}
@@ -119,6 +122,6 @@ export function ContractList({
           changePageCb={setPage}
         />
       </Box>
-    </>
+    </Box>
   );
 }

@@ -17,6 +17,7 @@ import {
   type FullFlockEvent,
 } from '../../clients/EventClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
+import { TableCard } from '../../components/TableCard';
 import { EventTypeMapping } from '../../utils/mappings';
 import { isDefined } from '../../utils/validation';
 
@@ -97,38 +98,40 @@ export const EventList = ({
   }
 
   return (
-    <>
-      <TableContainer sx={{ opacity: loading ? 0.5 : 1 }}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>Event</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>From</TableCell>
-              <TableCell>To</TableCell>
-              <TableCell align="right">Days</TableCell>
-              <TableCell align="right">People</TableCell>
-              <TableCell align="right">Hours</TableCell>
-              <TableCell align="right">Cost</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {items.length === 0 ? (
+    <Box>
+      <TableCard loading={loading}>
+        <TableContainer>
+          <Table size="small">
+            <TableHead>
               <TableRow>
-                <TableCell
-                  colSpan={8}
-                  align="center"
-                  sx={{ py: 4, color: 'text.secondary' }}
-                >
-                  No events
-                </TableCell>
+                <TableCell>Event</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>From</TableCell>
+                <TableCell>To</TableCell>
+                <TableCell align="right">Days</TableCell>
+                <TableCell align="right">People</TableCell>
+                <TableCell align="right">Hours</TableCell>
+                <TableCell align="right">Cost</TableCell>
               </TableRow>
-            ) : (
-              items.map(renderItem)
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {items.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={8}
+                    align="center"
+                    sx={{ py: 4, color: 'text.secondary' }}
+                  >
+                    No events
+                  </TableCell>
+                </TableRow>
+              ) : (
+                items.map(renderItem)
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </TableCard>
       <Box mt={2}>
         <FlockPagination
           currentPage={page + 1}
@@ -137,6 +140,6 @@ export const EventList = ({
           changePageCb={setPage}
         />
       </Box>
-    </>
+    </Box>
   );
 };
