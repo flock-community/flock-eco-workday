@@ -164,7 +164,7 @@ export function HomeFeature() {
       </section>
 
       {(showContractsEnding || showPersonEvents) && (
-        <section className={'flow'}>
+        <section className={'flow'} style={{ '--flow-gap': '16px' } as React.CSSProperties}>
           {showContractsEnding && (
             <ContractsEnding withinNWeeks={withinNWeek} contracts={contracts} />
           )}
