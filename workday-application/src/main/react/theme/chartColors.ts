@@ -24,14 +24,14 @@ export type ChartColors = {
 };
 
 const light: ChartColors = {
-  worked: '#1f9e8a',
+  worked: '#0f8a6f',
   forecast: '#79c7b8',
   leave: '#3f7cac',
   paidParentalLeave: '#cf7fa2',
   unpaidParentalLeave: '#8fbce4',
-  paidLeave: '#5aa873',
+  paidLeave: '#5dcaa5',
   sick: '#c0392b',
-  event: '#c8791b',
+  event: '#ecc200',
   missing: '#b5b2a4',
   contract: '#9a978a',
   plus: '#6e6b60',
@@ -44,14 +44,14 @@ const light: ChartColors = {
 };
 
 const dark: ChartColors = {
-  worked: '#4fd1bb',
+  worked: '#34c9a8',
   forecast: '#2e9483',
   leave: '#6fa8d6',
   paidParentalLeave: '#e3a0bd',
   unpaidParentalLeave: '#a9cdf0',
-  paidLeave: '#6cc48f',
+  paidLeave: '#74d6b4',
   sick: '#e57368',
-  event: '#e0973a',
+  event: '#f0c419',
   missing: '#8a877a',
   contract: '#9c9888',
   plus: '#c2bdac',
