@@ -127,7 +127,7 @@ export function HomeFeature() {
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={openAddWorkDay}
-                size="small"
+                sx={{ borderRadius: '999px', textTransform: 'none', fontWeight: 600 }}
               >
                 Workday
               </Button>
@@ -135,7 +135,7 @@ export function HomeFeature() {
                 variant="outlined"
                 startIcon={<AirplaneIcon />}
                 onClick={() => setLeaveDayOpen(true)}
-                size="small"
+                sx={{ borderRadius: '999px', textTransform: 'none' }}
               >
                 Holiday
               </Button>
@@ -149,7 +149,7 @@ export function HomeFeature() {
                     setExpenseOpen(true);
                   }
                 }}
-                size="small"
+                sx={{ borderRadius: '999px', textTransform: 'none' }}
               >
                 Expense
               </Button>
