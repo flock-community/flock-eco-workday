@@ -13,6 +13,8 @@ import Toolbar from '@mui/material/Toolbar';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
+import { ColorModeToggle } from '../theme/ColorModeToggle';
+
 // Hooks
 import { useSession } from '../hooks/SessionHook';
 
@@ -129,6 +131,8 @@ export function ApplicationLayout({ onMenu }: ApplicationLayoutProps) {
               </Box>
             </Box>
           </Link>
+
+          <ColorModeToggle edge={false} sx={{ mr: 0.5 }} />
 
           <div>
             <IconButton

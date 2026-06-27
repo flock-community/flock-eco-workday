@@ -6,7 +6,6 @@ import ListSubheader from '@mui/material/ListSubheader';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { useUserMe } from '../hooks/UserMeHook';
-import { ColorModeToggle } from '../theme/ColorModeToggle';
 import ApplicationMenuItem from './ApplicationMenuItem';
 import { visibleSections } from './applicationNav';
 
@@ -75,11 +74,6 @@ export function ApplicationDrawer({ open, onClose }: ApplicationDrawerProps) {
         >
           Workday
         </Typography>
-        <ColorModeToggle
-          color="inherit"
-          size="small"
-          sx={{ ml: 'auto', alignSelf: 'center', opacity: 0.7, '&:hover': { opacity: 1 } }}
-        />
       </Box>
       <Divider />
       <Box className={classes.list} role="presentation" onKeyDown={handleClose}>

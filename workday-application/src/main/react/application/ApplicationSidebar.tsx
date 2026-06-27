@@ -8,7 +8,6 @@ import { createElement, useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { FlockDisc } from '../components/FlockDisc';
 import { useUserMe } from '../hooks/UserMeHook';
-import { ColorModeToggle } from '../theme/ColorModeToggle';
 import {
   isActive,
   isFolder,
@@ -128,9 +127,9 @@ export function ApplicationSidebar() {
           borderColor: 'divider',
         }}
       >
-        <FlockDisc
-          style={{ width: 38, height: 38, flexShrink: 0, display: 'block' }}
-        />
+        <RouterLink to="/" aria-label="Home" style={{ display: 'flex', flexShrink: 0 }}>
+          <FlockDisc style={{ width: 38, height: 38, display: 'block' }} />
+        </RouterLink>
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography sx={label({ fontSize: 14, fontWeight: 600 })}>
             {user.name ?? 'Unknown'}
@@ -174,14 +173,7 @@ export function ApplicationSidebar() {
       ))}
 
       <Box sx={{ flex: 1 }} />
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <NavItem
-            item={{ name: 'Profile', icon: ProfileIcon, url: '/profile' }}
-          />
-        </Box>
-        <ColorModeToggle size="small" sx={{ color: 'text.secondary' }} />
-      </Box>
+      <NavItem item={{ name: 'Profile', icon: ProfileIcon, url: '/profile' }} />
     </Box>
   );
 }
