@@ -116,7 +116,12 @@ export function ApplicationLayout({ onMenu }: ApplicationLayoutProps) {
               }}
             >
               <FlockBird
-                style={{ height: '1.9rem', width: 'auto', display: 'block' }}
+                style={{
+                  height: '1.9rem',
+                  width: 'auto',
+                  display: 'block',
+                  transform: 'translateY(6%)',
+                }}
               />
             </Box>
             <Box
