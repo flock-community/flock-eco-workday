@@ -11,15 +11,15 @@ import { updateStatus } from './TodoService';
 export function TodoFeature() {
   const [refresh, setRefresh] = useState(false);
 
-  const handleItemClick = (status: StatusProps, item: Todo) => {
+  const handleItemClick = (status: StatusProps, item: Todo) =>
     updateStatus(status, item)
       .then(() => {
         setRefresh((current) => !current);
       })
       .catch((error) => {
         addError(`Could not update status: ${error?.message ?? error}`);
+        throw error;
       });
-  };
 
   return (
     <Box

@@ -41,7 +41,7 @@ const typeToPath = (type: TypeProp) => {
 };
 
 type TodoListProps = {
-  onItemClick: (status: StatusProps, item: Todo) => void;
+  onItemClick: (status: StatusProps, item: Todo) => void | Promise<void>;
   refresh: boolean;
 };
 
@@ -53,6 +53,9 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
   const [count, setCount] = useState(-1);
   const [selectedTab, setSelectedTab] = useState(0);
   const [paginatedItems, setPaginatedItems] = useState<GroupedTodos[]>([]);
+  const [statusOverrides, setStatusOverrides] = useState<
+    Record<string, StatusProps>
+  >({});
 
   const handlePageChange = (value: number) => {
     setPage(value);
@@ -66,6 +69,7 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
     TodoClient.all().then((res) => {
       const groupedTodos = groupByType(res);
       setList(groupedTodos);
+      setStatusOverrides({});
     });
   }, [refresh]);
 
@@ -80,7 +84,16 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
   }, []);
 
   const handleStatusChange = (item: Todo) => (status: StatusProps) => {
-    onItemClick(status, item);
+    const id = String(item.id);
+    // Flip the chip immediately; the row leaves on the follow-up refetch.
+    setStatusOverrides((current) => ({ ...current, [id]: status }));
+    Promise.resolve(onItemClick(status, item)).catch(() => {
+      setStatusOverrides((current) => {
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+    });
   };
 
   const _mapTodoType: Record<TodoType, string> = {
@@ -112,7 +125,7 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
               <StatusMenu
                 onChange={handleStatusChange(item)}
                 disabled={false}
-                value="REQUESTED"
+                value={statusOverrides[String(item.id)] ?? 'REQUESTED'}
               />
             }
           />
