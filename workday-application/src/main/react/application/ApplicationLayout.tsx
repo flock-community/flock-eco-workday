@@ -80,6 +80,7 @@ export function ApplicationLayout({ onMenu }: ApplicationLayoutProps) {
             width:
               'min(100% - (var(--padding-inline) * 2), var(--content-max-width))',
             mx: 'auto',
+            px: '16px',
           }}
         >
           <IconButton

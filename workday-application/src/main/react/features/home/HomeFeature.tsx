@@ -107,7 +107,7 @@ export function HomeFeature() {
       style={{ marginTop: '24px', paddingBottom: '24px' } as React.CSSProperties}
       flow-gap={'wide'}
     >
-      <section>
+      <section style={{ paddingLeft: 16, paddingRight: 16 }}>
         <Box
           style={{
             display: 'flex',

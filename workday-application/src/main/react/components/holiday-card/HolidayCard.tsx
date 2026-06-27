@@ -21,7 +21,7 @@ export function HolidayCard({ item }: HolidayCardProps) {
     <>
       <Card
         variant="outlined"
-        sx={{ p: '20px 22px', borderRadius: '14px', position: 'relative' }}
+        sx={{ p: '20px 16px', borderRadius: '14px', position: 'relative' }}
       >
         {item === undefined ? (
           <AlignedLoader />

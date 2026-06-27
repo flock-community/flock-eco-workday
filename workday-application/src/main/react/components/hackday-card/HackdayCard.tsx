@@ -38,7 +38,7 @@ export function HackdayCard({ refreshKey }: HackdayCardProps) {
       <Card
         variant="outlined"
         sx={{
-          p: '20px 22px',
+          p: '20px 16px',
           borderRadius: '14px',
           ...(isOver && {
             borderColor: 'warning.light',
