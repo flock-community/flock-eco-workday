@@ -45,6 +45,8 @@ export function UserTable({
     onRowClick?.(user);
   };
 
+  const pageCount = Math.ceil(state.count / pageSize);
+
   return (
     <Box>
       <TableContainer>
@@ -86,15 +88,16 @@ export function UserTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <Box mt={2}>
+      {pageCount > 1 && (
         <Pagination
-          count={Math.ceil(state.count / pageSize)}
+          sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}
+          count={pageCount}
           page={state.page + 1}
           onChange={(_event, value) => handleChangePage(value - 1)}
           color="primary"
           shape="rounded"
         />
-      </Box>
+      )}
     </Box>
   );
 }
