@@ -4,6 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { alpha, styled } from '@mui/material/styles';
 import clsx from 'clsx';
 import { useState } from 'react';
+import { brand } from '../../theme/tokens';
 import {
   canChangeStatus,
   filterTransitionsFromByStatus,
@@ -21,15 +22,21 @@ const classes = {
 const Root = styled('div')(({ theme }) => ({
   [`& .${classes.buttonRequested}`]: {
     backgroundColor: 'transparent',
-    color: theme.palette.accent.dark,
-    outline: `1px solid ${alpha(theme.palette.accent.main, 0.5)}`,
+    color: theme.palette.mode === 'dark' ? brand.cyan : brand.cyanDark,
+    outline: `1px solid ${alpha(
+      brand.cyan,
+      theme.palette.mode === 'dark' ? 0.6 : 0.75,
+    )}`,
     '&:hover': {
-      backgroundColor: alpha(theme.palette.accent.main, 0.1),
+      backgroundColor: alpha(brand.cyan, 0.1),
     },
     '&.Mui-disabled': {
       backgroundColor: 'transparent',
-      color: theme.palette.accent.dark,
-      outline: `1px solid ${alpha(theme.palette.accent.main, 0.5)}`,
+      color: theme.palette.mode === 'dark' ? brand.cyan : brand.cyanDark,
+      outline: `1px solid ${alpha(
+        brand.cyan,
+        theme.palette.mode === 'dark' ? 0.6 : 0.75,
+      )}`,
     },
   },
 

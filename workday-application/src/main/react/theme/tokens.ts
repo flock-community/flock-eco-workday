@@ -34,6 +34,8 @@ export const brand = {
   yellowDark: '#e6cb00',
   teal: '#0ae6ab', // brand accent (live flock.community)
   tealDark: '#077f5e', // accessible deep teal for accent text/borders on light paper
+  cyan: '#23e5db', // styleguide accent cyan
+  cyanDark: '#0c7f78', // readable cyan text/border on light paper
   ink: '#1c1b14', // warm near-black, contrast on yellow
 } as const;
 
