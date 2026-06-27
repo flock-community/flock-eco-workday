@@ -20,14 +20,16 @@ const classes = {
 
 const Root = styled('div')(({ theme }) => ({
   [`& .${classes.buttonRequested}`]: {
-    backgroundColor: alpha(theme.palette.accent.main, 0.16),
+    backgroundColor: 'transparent',
     color: theme.palette.accent.dark,
+    outline: `1px solid ${alpha(theme.palette.accent.main, 0.5)}`,
     '&:hover': {
-      backgroundColor: alpha(theme.palette.accent.main, 0.28),
+      backgroundColor: alpha(theme.palette.accent.main, 0.1),
     },
     '&.Mui-disabled': {
-      backgroundColor: alpha(theme.palette.accent.main, 0.16),
+      backgroundColor: 'transparent',
       color: theme.palette.accent.dark,
+      outline: `1px solid ${alpha(theme.palette.accent.main, 0.5)}`,
     },
   },
 

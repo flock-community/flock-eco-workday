@@ -76,9 +76,10 @@ export function ApplicationLayout({ onMenu }: ApplicationLayoutProps) {
     <Root className="full-width">
       <AppBar className={classes.navBar}>
         <Toolbar
+          disableGutters
           sx={{
-            width: '100%',
-            maxWidth: 'var(--content-max-width)',
+            width:
+              'min(100% - (var(--padding-inline) * 2), var(--content-max-width))',
             mx: 'auto',
           }}
         >
@@ -129,7 +130,15 @@ export function ApplicationLayout({ onMenu }: ApplicationLayoutProps) {
             </Box>
           </Link>
 
-          <ColorModeToggle edge={false} sx={{ mr: 0.5 }} />
+          <ColorModeToggle
+            edge={false}
+            sx={{
+              mr: 0.5,
+              opacity: 0.6,
+              transition: 'opacity 160ms ease',
+              '&:hover': { opacity: 1 },
+            }}
+          />
 
           <div>
             <IconButton

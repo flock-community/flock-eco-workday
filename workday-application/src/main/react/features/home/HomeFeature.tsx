@@ -115,7 +115,6 @@ export function HomeFeature() {
             justifyContent: 'space-between',
             flexWrap: 'wrap',
             gap: '12px',
-            paddingInline: '16px',
           }}
         >
           <Typography variant="h2">
@@ -157,9 +156,7 @@ export function HomeFeature() {
           )}
         </Box>
         {!hasAccess && (
-          <Box sx={{ paddingInline: '16px' }}>
-            <Typography>No roles are assigned to your account.</Typography>
-          </Box>
+          <Typography>No roles are assigned to your account.</Typography>
         )}
       </section>
 
