@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Card, CardContent } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
 import type { ReactNode } from 'react';
@@ -25,19 +25,23 @@ export default function PersonLayout({
   return (
     <Box className={'full-width content-grid'}>
       <UserAuthorityUtil has={requireAuthority}>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <PersonSelector
-              value={person?.uuid}
-              onChange={handleChangePerson}
-              label="Select person"
-              embedded={false}
-              multiple={false}
-              fullWidth
-            />
-          </Box>
-          {actions}
-        </Box>
+        <Card>
+          <CardContent>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <PersonSelector
+                  value={person?.uuid}
+                  onChange={handleChangePerson}
+                  label="Select person"
+                  embedded
+                  multiple={false}
+                  fullWidth
+                />
+              </Box>
+              {actions}
+            </Box>
+          </CardContent>
+        </Card>
       </UserAuthorityUtil>
       <Box
         className={'flow'}
