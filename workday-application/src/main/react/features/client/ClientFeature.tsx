@@ -35,9 +35,9 @@ export function ClientFeature() {
 
   return (
     <Box
-      className={'flow full-width'}
+      className={'flow'}
       flow-gap={'wide'}
-      style={{ paddingInline: 24, paddingBottom: '1.5rem' }}
+      style={{ paddingBottom: '1.5rem' }}
     >
       <ClientList
         refresh={reload}

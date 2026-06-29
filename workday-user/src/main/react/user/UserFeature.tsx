@@ -60,9 +60,9 @@ export function UserFeature({ enablePassword }: UserFeatureProps) {
 
   return (
     <Box
-      className={'flow full-width'}
+      className={'flow'}
       flow-gap={'wide'}
-      style={{ paddingInline: 24, paddingBottom: '1.5rem' }}
+      style={{ paddingBottom: '1.5rem' }}
     >
       <Card>
         <Box
@@ -91,6 +91,7 @@ export function UserFeature({ enablePassword }: UserFeatureProps) {
             }}
           >
             <TextField
+              autoFocus
               size="small"
               value={searchState}
               onChange={(event) => setSearchState(event.target.value)}

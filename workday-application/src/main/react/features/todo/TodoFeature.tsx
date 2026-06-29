@@ -14,9 +14,9 @@ export function TodoFeature() {
 
   return (
     <Box
-      className={'flow full-width'}
+      className={'flow'}
       flow-gap={'wide'}
-      style={{ paddingInline: 24, paddingBottom: '1.5rem' }}
+      style={{ paddingBottom: '1.5rem' }}
     >
       <TodoList onItemClick={handleItemClick} refresh={false} />
     </Box>

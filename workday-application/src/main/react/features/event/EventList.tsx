@@ -128,6 +128,7 @@ export const EventList = ({
   const toolbar = (
     <>
       <TextField
+        autoFocus
         size="small"
         placeholder="Search events"
         value={search}

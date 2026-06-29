@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { type Person, PersonClient } from '../../../clients/PersonClient';
 import { FlockPagination } from '../../../components/pagination/FlockPagination';
@@ -71,10 +71,6 @@ export const PersonTable = () => {
     };
   }, [searchTerm]);
 
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => searchInputRef?.current?.focus(), []);
-
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     setLoading(true);
@@ -99,19 +95,19 @@ export const PersonTable = () => {
 
   return (
     <StyledBox
-      className={'flow full-width'}
+      className={'flow'}
       flow-gap={'wide'}
-      style={{ paddingInline: 24, paddingBottom: '1.5rem' }}
+      style={{ paddingBottom: '1.5rem' }}
     >
       <TableCard
         title="Persons"
         toolbar={
           <TextField
+            autoFocus
             size="small"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Search name"
-            inputRef={searchInputRef}
           />
         }
         action={
