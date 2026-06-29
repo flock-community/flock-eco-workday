@@ -1,0 +1,328 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: workday.spec.ts >> Workday scenarios >> Submitting an expense
+- Location: tests/workday.spec.ts:62:3
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: locator('.MuiCard-root').filter({ hasText: 'Expenses' }).first().locator('.MuiCard-root').first().getByText('REQUESTED', { exact: true })
+Expected: visible
+Error: strict mode violation: locator('.MuiCard-root').filter({ hasText: 'Expenses' }).first().locator('.MuiCard-root').first().getByText('REQUESTED', { exact: true }) resolved to 2 elements:
+    1) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByText('REQUESTED').first()
+    2) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByText('REQUESTED').nth(1)
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for locator('.MuiCard-root').filter({ hasText: 'Expenses' }).first().locator('.MuiCard-root').first().getByText('REQUESTED', { exact: true })
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - main [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img [ref=e6]
+        - generic [ref=e11]:
+          - paragraph [ref=e12]: Tommy
+          - paragraph [ref=e13]: Flock · member
+      - generic [ref=e14]:
+        - link [ref=e15] [cursor=pointer]:
+          - /url: /
+          - img [ref=e16]
+          - generic [ref=e18]: Home
+        - link [ref=e19] [cursor=pointer]:
+          - /url: /budget
+          - img [ref=e20]
+          - generic [ref=e22]: Budget
+      - generic [ref=e23]:
+        - paragraph [ref=e24]: Time & expenses
+        - link [ref=e25] [cursor=pointer]:
+          - /url: /workdays
+          - img [ref=e26]
+          - generic [ref=e28]: Workdays
+        - link [ref=e29] [cursor=pointer]:
+          - /url: /leave-days
+          - img [ref=e30]
+          - generic [ref=e32]: Leave days
+        - link [ref=e33] [cursor=pointer]:
+          - /url: /sickdays
+          - img [ref=e34]
+          - generic [ref=e36]: Sickdays
+        - link [ref=e37] [cursor=pointer]:
+          - /url: /expenses
+          - img [ref=e38]
+          - generic [ref=e40]: Expenses
+      - generic [ref=e41]:
+        - paragraph [ref=e42]: Clients & work
+        - link [ref=e43] [cursor=pointer]:
+          - /url: /assignments
+          - img [ref=e44]
+          - generic [ref=e46]: Assignments
+      - link [ref=e48] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=e49]
+        - generic [ref=e51]: Profile
+    - generic [ref=e54]:
+      - link [ref=e55] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e56]:
+          - generic [ref=e57]: Flock.
+          - generic [ref=e58]: Workday
+      - button [ref=e59] [cursor=pointer]:
+        - img [ref=e60]
+      - button [ref=e63] [cursor=pointer]:
+        - img [ref=e64]
+    - generic [ref=e68]:
+      - generic [ref=e69]:
+        - generic [ref=e71]: Expenses
+        - button [active] [ref=e73] [cursor=pointer]:
+          - img [ref=e75]
+          - text: Add
+      - table [ref=e82]:
+        - rowgroup [ref=e83]:
+          - row [ref=e84]:
+            - columnheader [ref=e85]: Description
+            - columnheader [ref=e86]: Date
+            - columnheader [ref=e87]: Amount
+            - columnheader [ref=e88]: Status
+            - columnheader [ref=e89]
+        - rowgroup [ref=e90]:
+          - row [ref=e91]:
+            - cell [ref=e92]:
+              - generic [ref=e93]:
+                - img [ref=e94]
+                - generic [ref=e96]:
+                  - generic [ref=e97]: Some reason
+                  - link [ref=e98] [cursor=pointer]:
+                    - /url: /api/expenses/files/e86844d8-16fe-409c-a853-43ff9aec7b3a/receipt.jpg
+                    - text: receipt.jpg
+            - cell [ref=e99]: 10-06-2028
+            - cell [ref=e100]: € 16,50
+            - cell [ref=e101]:
+              - generic [ref=e102]:
+                - button [disabled]: REQUESTED
+            - cell [ref=e103]:
+              - button [ref=e104] [cursor=pointer]:
+                - img [ref=e105]
+          - row [ref=e107]:
+            - cell [ref=e108]:
+              - generic [ref=e109]:
+                - img [ref=e110]
+                - generic [ref=e113]: Travel expense description 1
+            - cell [ref=e114]: 30-06-2026
+            - cell [ref=e115]: € 19,00
+            - cell [ref=e116]:
+              - generic [ref=e117]:
+                - button [disabled]: REQUESTED
+            - cell [ref=e118]:
+              - button [ref=e119] [cursor=pointer]:
+                - img [ref=e120]
+          - row [ref=e122]:
+            - cell [ref=e123]:
+              - generic [ref=e124]:
+                - img [ref=e125]
+                - generic [ref=e128]: Cost expense description 1
+            - cell [ref=e129]: 30-06-2026
+            - cell [ref=e130]: € 50,00
+            - cell [ref=e131]:
+              - generic [ref=e132]:
+                - button [disabled]: REQUESTED
+            - cell [ref=e133]:
+              - button [ref=e134] [cursor=pointer]:
+                - img [ref=e135]
+  - dialog "Create expense Add your expense." [ref=e139]:
+    - heading "Create expense Add your expense." [level=2] [ref=e140]:
+      - generic [ref=e141]:
+        - img [ref=e143]
+        - generic [ref=e145]:
+          - generic [ref=e146]: Create expense
+          - generic [ref=e147]: Add your expense.
+        - button [ref=e148] [cursor=pointer]:
+          - img [ref=e149]
+    - generic [ref=e153]:
+      - generic [ref=e156]:
+        - combobox "Cost" [ref=e157] [cursor=pointer]
+        - textbox: COST
+        - img
+        - group
+      - generic [ref=e160]:
+        - generic [ref=e162]:
+          - generic: Description
+          - generic [ref=e163]:
+            - textbox "Description" [ref=e164]
+            - group:
+              - generic: Description
+        - generic [ref=e166]:
+          - generic [ref=e167]: Date
+          - generic [ref=e168]:
+            - textbox "Date" [ref=e169]:
+              - /placeholder: DD-MM-YYYY
+              - text: 29-06-2026
+            - button "Choose date, selected date is 29 jun 2026" [ref=e171] [cursor=pointer]:
+              - img [ref=e172]
+            - group:
+              - generic: Date
+        - generic [ref=e175]:
+          - generic [ref=e176]: Amount
+          - generic [ref=e177]:
+            - spinbutton "Amount" [ref=e178]: "0"
+            - group:
+              - generic: Amount
+        - generic [ref=e180]:
+          - generic [ref=e183] [cursor=pointer]:
+            - button "Choose File" [ref=e184]
+            - img [ref=e185]
+            - heading "Drag & drop files here" [level=6] [ref=e187]
+            - paragraph [ref=e188]: or click to browse
+            - generic [ref=e189]: Max 10 files, 5 MB each
+            - generic [ref=e190]: "Accepted: image/jpeg, image/png, application/pdf"
+          - paragraph [ref=e192]: No files found
+    - separator [ref=e193]
+    - generic [ref=e194]:
+      - button "Cancel" [ref=e195] [cursor=pointer]
+      - button "Delete" [ref=e196] [cursor=pointer]
+      - button "Save" [ref=e197] [cursor=pointer]: Save
+```
+
+# Test source
+
+```ts
+  72  |   );
+  73  |   const to = dayjs(
+  74  |     `${tillYear}-${tillMonth.toString().padStart(2, '0')}-${tillDay.toString().padStart(2, '0')}`,
+  75  |   );
+  76  |   const today = dayjs();
+  77  |   if (to.isAfter(today, 'month')) {
+  78  |     await selectDateInPicker(page, 'To', tillDay, tillMonth, tillYear);
+  79  |   }
+  80  |   if (from.isBefore(today, 'month')) {
+  81  |     await selectDateInPicker(page, 'From', fromDay, fromMonth, fromYear);
+  82  |   }
+  83  |   if (!to.isAfter(today, 'month')) {
+  84  |     await selectDateInPicker(page, 'To', tillDay, tillMonth, tillYear);
+  85  |   }
+  86  |   if (!from.isBefore(today, 'month')) {
+  87  |     await selectDateInPicker(page, 'From', fromDay, fromMonth, fromYear);
+  88  |   }
+  89  | }
+  90  | 
+  91  | export async function When_I_add_a_file(page, filename: string) {
+  92  |   const fileInput = await page.locator('input[type="file"]');
+  93  | 
+  94  |   // Listen for the upload request before setting the file
+  95  |   const uploadPromise = page.waitForResponse(
+  96  |     (response) =>
+  97  |       response.url().includes('/api/expenses/files') &&
+  98  |       response.status() === 200,
+  99  |     { timeout: 10000 },
+  100 |   );
+  101 | 
+  102 |   await fileInput.setInputFiles(`tests/files/${filename}`);
+  103 | 
+  104 |   // Wait for the upload to complete
+  105 |   await uploadPromise;
+  106 | 
+  107 |   // Wait a moment for the UI to update
+  108 |   await page.waitForTimeout(500);
+  109 | }
+  110 | 
+  111 | export async function Then_I_see_the_new_work_days_for_the_month_with_hours(
+  112 |   page,
+  113 |   _month: string,
+  114 |   _year: string,
+  115 |   totalHours: string,
+  116 | ) {
+  117 |   await page.waitForLoadState('networkidle');
+  118 |   const firstRow = page.locator('table tbody tr').first();
+  119 |   const hoursElement = firstRow.locator('td').nth(5);
+  120 |   await expect(hoursElement).toHaveText(totalHours);
+  121 | }
+  122 | 
+  123 | export async function Then_the_timesheet_was_uploaded_to_backend(page) {
+  124 |   const request = await page.waitForRequest(
+  125 |     (request) =>
+  126 |       request.url().includes('/api/workdays') && request.method() === 'POST',
+  127 |   );
+  128 |   expect(request.method()).toBe('POST');
+  129 | }
+  130 | 
+  131 | export async function When_I_go_to_my_expenses(page) {
+  132 |   await page.goto('/expenses');
+  133 | }
+  134 | 
+  135 | export async function Then_I_do_not_see_any_expenses(page) {
+  136 |   const noExpensesMessage = await page.getByText('No expenses');
+  137 |   await expect(noExpensesMessage).toBeVisible();
+  138 | }
+  139 | 
+  140 | export async function Then_I_am_on_the_create_expense_page(page) {
+  141 |   const createExpenseText = await page.getByText('Create expense');
+  142 |   await expect(createExpenseText).toBeVisible();
+  143 | }
+  144 | 
+  145 | export async function When_I_fill_in_the_expense_details(
+  146 |   page: Page,
+  147 |   date: string,
+  148 |   amount: string,
+  149 |   description: string,
+  150 | ) {
+  151 |   const [day, month, year] = date.split('-').map(Number);
+  152 |   await selectDateInPicker(page, 'Date', day, month, year);
+  153 |   await page.fill('input[type="number"]', amount);
+  154 |   await page.fill('input[type="text"]', description);
+  155 | }
+  156 | 
+  157 | export async function Then_I_see_the_expense_as(
+  158 |   page,
+  159 |   status: string,
+  160 |   reason: string,
+  161 |   date: string,
+  162 |   total: string,
+  163 | ) {
+  164 |   const containerCard = page
+  165 |     .locator('.MuiCard-root')
+  166 |     .filter({ hasText: 'Expenses' })
+  167 |     .first();
+  168 |   const expenseCard = containerCard.locator('.MuiCard-root').first();
+  169 |   const statusButton = expenseCard.getByText(status.toUpperCase(), {
+  170 |     exact: true,
+  171 |   });
+> 172 |   await expect(statusButton).toBeVisible();
+      |                              ^ Error: expect(locator).toBeVisible() failed
+  173 |   await expect(expenseCard).toContainText(reason);
+  174 |   await expect(expenseCard).toContainText(date);
+  175 |   await expect(expenseCard).toContainText(total);
+  176 | }
+  177 | 
+  178 | export async function When_I_select_the_assignment(
+  179 |   page,
+  180 |   assignmentText: string,
+  181 | ) {
+  182 |   // Click the assignment field to open the autocomplete
+  183 |   await page.getByLabel('Assignment').click();
+  184 | 
+  185 |   // Wait for the listbox to appear - MUI v5 renders it outside the dialog
+  186 |   const listbox = page.getByRole('listbox', { name: 'Assignment' });
+  187 |   await listbox.waitFor({ state: 'visible', timeout: 5000 });
+  188 | 
+  189 |   // Click the matching option
+  190 |   await page
+  191 |     .getByRole('option', { name: new RegExp(assignmentText, 'i') })
+  192 |     .click();
+  193 | }
+  194 | 
+```

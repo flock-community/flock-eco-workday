@@ -1,0 +1,308 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: assignment.spec.ts >> Assignment CRUD Operations >> should display assignments for a selected person
+- Location: tests/assignment.spec.ts:34:3
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByText('Assignments')
+Expected: visible
+Error: strict mode violation: getByText('Assignments') resolved to 2 elements:
+    1) <span class="MuiBox-root css-1gz4ws5">Assignments</span> aka getByRole('link', { name: 'Assignments' })
+    2) <span class="MuiTypography-root MuiTypography-h5 MuiCardHeader-title css-1uzvym2-MuiTypography-root">Assignments</span> aka getByText('Assignments').nth(1)
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for getByText('Assignments')
+
+```
+
+# Page snapshot
+
+```yaml
+- main [ref=e2]:
+  - navigation "Main navigation" [ref=e3]:
+    - generic [ref=e4]:
+      - link "Home" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "Flock" [ref=e6]
+      - generic [ref=e11]:
+        - paragraph [ref=e12]: Bert
+        - paragraph [ref=e13]: Flock · admin
+    - generic [ref=e14]:
+      - link "Home" [ref=e15] [cursor=pointer]:
+        - /url: /
+        - img [ref=e16]
+        - generic [ref=e18]: Home
+      - link "Month" [ref=e19] [cursor=pointer]:
+        - /url: /month
+        - img [ref=e20]
+        - generic [ref=e23]: Month
+      - link "Todo" [ref=e24] [cursor=pointer]:
+        - /url: /todo
+        - img [ref=e25]
+        - generic [ref=e27]: Todo
+      - link "Budget" [ref=e28] [cursor=pointer]:
+        - /url: /budget
+        - img [ref=e29]
+        - generic [ref=e31]: Budget
+    - generic [ref=e32]:
+      - paragraph [ref=e33]: Time & expenses
+      - link "Workdays" [ref=e34] [cursor=pointer]:
+        - /url: /workdays
+        - img [ref=e35]
+        - generic [ref=e37]: Workdays
+      - link "Leave days" [ref=e38] [cursor=pointer]:
+        - /url: /leave-days
+        - img [ref=e39]
+        - generic [ref=e41]: Leave days
+      - link "Sickdays" [ref=e42] [cursor=pointer]:
+        - /url: /sickdays
+        - img [ref=e43]
+        - generic [ref=e45]: Sickdays
+      - link "Expenses" [ref=e46] [cursor=pointer]:
+        - /url: /expenses
+        - img [ref=e47]
+        - generic [ref=e49]: Expenses
+      - link "Events" [ref=e50] [cursor=pointer]:
+        - /url: /event
+        - img [ref=e51]
+        - generic [ref=e53]: Events
+    - generic [ref=e54]:
+      - paragraph [ref=e55]: Clients & work
+      - link "Clients" [ref=e56] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e57]
+        - generic [ref=e59]: Clients
+      - link "Projects" [ref=e60] [cursor=pointer]:
+        - /url: /projects
+        - img [ref=e61]
+        - generic [ref=e63]: Projects
+      - link "Assignments" [ref=e64] [cursor=pointer]:
+        - /url: /assignments
+        - img [ref=e65]
+        - generic [ref=e67]: Assignments
+      - link "Contracts" [ref=e68] [cursor=pointer]:
+        - /url: /contracts
+        - img [ref=e69]
+        - generic [ref=e71]: Contracts
+    - generic [ref=e72]:
+      - paragraph [ref=e73]: People & insight
+      - link "Persons" [ref=e74] [cursor=pointer]:
+        - /url: /person
+        - img [ref=e75]
+        - generic [ref=e77]: Persons
+      - link "Users" [ref=e78] [cursor=pointer]:
+        - /url: /users
+        - img [ref=e79]
+        - generic [ref=e81]: Users
+      - link "Dashboard" [ref=e82] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e83]
+        - generic [ref=e85]: Dashboard
+      - button "Reports" [ref=e86] [cursor=pointer]:
+        - img [ref=e87]
+        - generic [ref=e89]: Reports
+        - img [ref=e90]
+    - link "Profile" [ref=e92] [cursor=pointer]:
+      - /url: /profile
+      - img [ref=e93]
+      - generic [ref=e95]: Profile
+  - generic [ref=e98]:
+    - link "Flock. Workday" [ref=e99] [cursor=pointer]:
+      - /url: /
+      - generic [ref=e100]:
+        - generic [ref=e101]: Flock.
+        - generic [ref=e102]: Workday
+    - button "Switch to dark mode" [ref=e103] [cursor=pointer]:
+      - img [ref=e104]
+    - button [ref=e107] [cursor=pointer]:
+      - img [ref=e108]
+  - generic [ref=e110]:
+    - generic [ref=e116]:
+      - generic [ref=e117]: Select person
+      - generic [ref=e118]:
+        - combobox [active] [ref=e119] [cursor=pointer]: Tommy Dog
+        - textbox: 865128e4-0cf7-4c57-9d4d-5253a9318feb
+        - img
+        - group:
+          - generic: Select person
+    - generic [ref=e121]:
+      - generic [ref=e122]:
+        - generic [ref=e124]: Assignments
+        - button "Add" [ref=e126] [cursor=pointer]:
+          - img [ref=e128]
+          - text: Add
+      - table [ref=e135]:
+        - rowgroup [ref=e136]:
+          - row "Client Role From To Hourly rate Hours/week Project" [ref=e137]:
+            - columnheader "Client" [ref=e138]
+            - columnheader "Role" [ref=e139]
+            - columnheader "From" [ref=e140]
+            - columnheader "To" [ref=e141]
+            - columnheader "Hourly rate" [ref=e142]
+            - columnheader "Hours/week" [ref=e143]
+            - columnheader "Project" [ref=e144]
+        - rowgroup [ref=e145]:
+          - row "Client A DevOps engineer 01-06-2025 now 90 36 Project A1" [ref=e146] [cursor=pointer]:
+            - cell "Client A" [ref=e147]
+            - cell "DevOps engineer" [ref=e148]
+            - cell "01-06-2025" [ref=e149]
+            - cell "now" [ref=e150]:
+              - emphasis [ref=e151]: now
+            - cell "90" [ref=e152]
+            - cell "36" [ref=e153]
+            - cell "Project A1" [ref=e154]
+```
+
+# Test source
+
+```ts
+  1   | import { expect, test } from '@playwright/test';
+  2   | import { Given_I_am_logged_in_as_user } from './steps/workdaySteps';
+  3   | 
+  4   | const ASSIGNMENT_URL = '/assignments';
+  5   | const ADMIN_USERNAME = 'bert';
+  6   | 
+  7   | test.describe('Assignment CRUD Operations', () => {
+  8   |   test.beforeEach(async ({ page }) => {
+  9   |     await Given_I_am_logged_in_as_user(page, ADMIN_USERNAME);
+  10  |     await page.goto(ASSIGNMENT_URL);
+  11  |     await page.waitForLoadState('networkidle');
+  12  |   });
+  13  | 
+  14  |   async function selectPerson(page, personName: string) {
+  15  |     const personSelect = page.getByRole('combobox');
+  16  |     await personSelect.click();
+  17  |     await page.getByRole('option', { name: personName }).click();
+  18  |     await page.waitForLoadState('networkidle');
+  19  |   }
+  20  | 
+  21  |   async function selectClient(page, clientName: string) {
+  22  |     const clientSelect = page.getByRole('dialog').getByRole('combobox').first();
+  23  |     await clientSelect.click();
+  24  |     await page.getByRole('option', { name: clientName }).click();
+  25  |   }
+  26  | 
+  27  |   function assignmentRow(page, uniqueRole: string) {
+  28  |     return page
+  29  |       .locator('table tbody tr')
+  30  |       .filter({ hasText: uniqueRole })
+  31  |       .first();
+  32  |   }
+  33  | 
+  34  |   test('should display assignments for a selected person', async ({ page }) => {
+  35  |     await selectPerson(page, 'Tommy Dog');
+  36  | 
+> 37  |     await expect(page.getByText('Assignments')).toBeVisible();
+      |                                                 ^ Error: expect(locator).toBeVisible() failed
+  38  |     const row = assignmentRow(page, 'DevOps engineer');
+  39  |     await expect(row).toBeVisible();
+  40  |     await expect(row).toContainText('Client A');
+  41  |   });
+  42  | 
+  43  |   test('should create a new assignment', async ({ page }) => {
+  44  |     const timestamp = Date.now();
+  45  |     const roleName = `CreateRole-${timestamp}`;
+  46  | 
+  47  |     await selectPerson(page, 'Ernie Muppets');
+  48  | 
+  49  |     await page.getByRole('button', { name: 'Add' }).click();
+  50  |     await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
+  51  | 
+  52  |     await page.getByLabel('Hourly rate').clear();
+  53  |     await page.getByLabel('Hourly rate').fill('120');
+  54  | 
+  55  |     await page.getByLabel('Hours per week').clear();
+  56  |     await page.getByLabel('Hours per week').fill('40');
+  57  | 
+  58  |     await page.getByLabel('Role').fill(roleName);
+  59  | 
+  60  |     const startDate = page.getByLabel('Start date');
+  61  |     await startDate.click();
+  62  |     await startDate.fill('01-01-2026');
+  63  |     await startDate.press('Tab');
+  64  |     await page.waitForTimeout(200);
+  65  | 
+  66  |     const endDate = page.getByLabel('End date');
+  67  |     await endDate.click();
+  68  |     await endDate.fill('31-12-2026');
+  69  |     await endDate.press('Tab');
+  70  |     await page.waitForTimeout(200);
+  71  | 
+  72  |     await selectClient(page, 'Client B');
+  73  | 
+  74  |     await page.getByRole('button', { name: 'Save' }).click();
+  75  |     await expect(
+  76  |       page.getByText('Create / Edit an assignment'),
+  77  |     ).not.toBeVisible();
+  78  | 
+  79  |     const row = assignmentRow(page, roleName);
+  80  |     await expect(row).toBeVisible({ timeout: 30000 });
+  81  |     await expect(row).toContainText('Client B');
+  82  |     await expect(
+  83  |       row.getByRole('cell', { name: '120', exact: true }),
+  84  |     ).toBeVisible();
+  85  |     await expect(
+  86  |       row.getByRole('cell', { name: '40', exact: true }),
+  87  |     ).toBeVisible();
+  88  |   });
+  89  | 
+  90  |   test('should edit an existing assignment', async ({ page }) => {
+  91  |     const timestamp = Date.now();
+  92  |     const roleName = `EditRole-${timestamp}`;
+  93  |     const updatedRole = `UpdatedRole-${timestamp}`;
+  94  | 
+  95  |     await selectPerson(page, 'Bert Muppets');
+  96  | 
+  97  |     await page.getByRole('button', { name: 'Add' }).click();
+  98  |     await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
+  99  | 
+  100 |     await page.getByLabel('Hourly rate').clear();
+  101 |     await page.getByLabel('Hourly rate').fill('95');
+  102 | 
+  103 |     await page.getByLabel('Hours per week').clear();
+  104 |     await page.getByLabel('Hours per week').fill('32');
+  105 | 
+  106 |     await page.getByLabel('Role').fill(roleName);
+  107 | 
+  108 |     const startDate = page.getByLabel('Start date');
+  109 |     await startDate.click();
+  110 |     await startDate.fill('01-01-2027');
+  111 |     await startDate.press('Tab');
+  112 |     await page.waitForTimeout(200);
+  113 | 
+  114 |     await selectClient(page, 'Client A');
+  115 | 
+  116 |     await page.getByRole('button', { name: 'Save' }).click();
+  117 |     await expect(
+  118 |       page.getByText('Create / Edit an assignment'),
+  119 |     ).not.toBeVisible();
+  120 | 
+  121 |     const row = assignmentRow(page, roleName);
+  122 |     await expect(row).toBeVisible({ timeout: 30000 });
+  123 |     await expect(row).toContainText('Client A');
+  124 | 
+  125 |     await row.click();
+  126 | 
+  127 |     await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
+  128 |     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
+  129 | 
+  130 |     await page.getByLabel('Role').clear();
+  131 |     await page.getByLabel('Role').fill(updatedRole);
+  132 | 
+  133 |     await page.getByLabel('Hourly rate').clear();
+  134 |     await page.getByLabel('Hourly rate').fill('110');
+  135 | 
+  136 |     await page.getByRole('button', { name: 'Save' }).click();
+  137 |     await expect(
+```

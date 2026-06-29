@@ -1,0 +1,291 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: workday.spec.ts >> Workday scenarios >> Submitting an expense
+- Location: tests/workday.spec.ts:62:3
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: locator('.MuiCard-root').filter({ hasText: 'Expenses' }).first().locator('.MuiCard-root').first().getByText('REQUESTED', { exact: true })
+Expected: visible
+Error: strict mode violation: locator('.MuiCard-root').filter({ hasText: 'Expenses' }).first().locator('.MuiCard-root').first().getByText('REQUESTED', { exact: true }) resolved to 3 elements:
+    1) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByText('REQUESTED').first()
+    2) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByText('REQUESTED').nth(1)
+    3) <button disabled tabindex="-1" type="button" aria-haspopup="true" aria-expanded="false" class="MuiButtonBase-root Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-disableElevation StatusMenuButtonRequested css-kstmv7-MuiButtonBase-root-MuiButton-root">REQUESTED</button> aka getByText('REQUESTED').nth(2)
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for locator('.MuiCard-root').filter({ hasText: 'Expenses' }).first().locator('.MuiCard-root').first().getByText('REQUESTED', { exact: true })
+
+```
+
+# Page snapshot
+
+```yaml
+- main [ref=e2]:
+  - navigation "Main navigation" [ref=e3]:
+    - generic [ref=e4]:
+      - link "Home" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "Flock" [ref=e6]
+      - generic [ref=e11]:
+        - paragraph [ref=e12]: Tommy
+        - paragraph [ref=e13]: Flock · member
+    - generic [ref=e14]:
+      - link "Home" [ref=e15] [cursor=pointer]:
+        - /url: /
+        - img [ref=e16]
+        - generic [ref=e18]: Home
+      - link "Budget" [ref=e19] [cursor=pointer]:
+        - /url: /budget
+        - img [ref=e20]
+        - generic [ref=e22]: Budget
+    - generic [ref=e23]:
+      - paragraph [ref=e24]: Time & expenses
+      - link "Workdays" [ref=e25] [cursor=pointer]:
+        - /url: /workdays
+        - img [ref=e26]
+        - generic [ref=e28]: Workdays
+      - link "Leave days" [ref=e29] [cursor=pointer]:
+        - /url: /leave-days
+        - img [ref=e30]
+        - generic [ref=e32]: Leave days
+      - link "Sickdays" [ref=e33] [cursor=pointer]:
+        - /url: /sickdays
+        - img [ref=e34]
+        - generic [ref=e36]: Sickdays
+      - link "Expenses" [ref=e37] [cursor=pointer]:
+        - /url: /expenses
+        - img [ref=e38]
+        - generic [ref=e40]: Expenses
+    - generic [ref=e41]:
+      - paragraph [ref=e42]: Clients & work
+      - link "Assignments" [ref=e43] [cursor=pointer]:
+        - /url: /assignments
+        - img [ref=e44]
+        - generic [ref=e46]: Assignments
+    - link "Profile" [ref=e48] [cursor=pointer]:
+      - /url: /profile
+      - img [ref=e49]
+      - generic [ref=e51]: Profile
+  - generic [ref=e54]:
+    - link "Flock. Workday" [ref=e55] [cursor=pointer]:
+      - /url: /
+      - generic [ref=e56]:
+        - generic [ref=e57]: Flock.
+        - generic [ref=e58]: Workday
+    - button "Switch to dark mode" [ref=e59] [cursor=pointer]:
+      - img [ref=e60]
+    - button [ref=e63] [cursor=pointer]:
+      - img [ref=e64]
+  - generic [ref=e68]:
+    - generic [ref=e69]:
+      - generic [ref=e71]: Expenses
+      - button "Add" [active] [ref=e73] [cursor=pointer]:
+        - img [ref=e75]
+        - text: Add
+    - table [ref=e82]:
+      - rowgroup [ref=e83]:
+        - row "Description Date Amount Status" [ref=e84]:
+          - columnheader "Description" [ref=e85]
+          - columnheader "Date" [ref=e86]
+          - columnheader "Amount" [ref=e87]
+          - columnheader "Status" [ref=e88]
+          - columnheader [ref=e89]
+      - rowgroup [ref=e90]:
+        - row "Some reason receipt.jpg 10-06-2028 € 16,50 REQUESTED" [ref=e91]:
+          - cell "Some reason receipt.jpg" [ref=e92]:
+            - generic [ref=e93]:
+              - img [ref=e94]
+              - generic [ref=e96]:
+                - generic [ref=e97]: Some reason
+                - link "receipt.jpg" [ref=e98] [cursor=pointer]:
+                  - /url: /api/expenses/files/e86844d8-16fe-409c-a853-43ff9aec7b3a/receipt.jpg
+          - cell "10-06-2028" [ref=e99]
+          - cell "€ 16,50" [ref=e100]
+          - cell "REQUESTED" [ref=e101]:
+            - generic [ref=e102]:
+              - button "REQUESTED" [disabled]
+          - cell [ref=e103]:
+            - button [ref=e104] [cursor=pointer]:
+              - img [ref=e105]
+        - row "Some reason receipt.jpg 10-06-2028 € 16,50 REQUESTED" [ref=e107]:
+          - cell "Some reason receipt.jpg" [ref=e108]:
+            - generic [ref=e109]:
+              - img [ref=e110]
+              - generic [ref=e112]:
+                - generic [ref=e113]: Some reason
+                - link "receipt.jpg" [ref=e114] [cursor=pointer]:
+                  - /url: /api/expenses/files/21048208-4155-49b2-bfa8-3396d1968629/receipt.jpg
+          - cell "10-06-2028" [ref=e115]
+          - cell "€ 16,50" [ref=e116]
+          - cell "REQUESTED" [ref=e117]:
+            - generic [ref=e118]:
+              - button "REQUESTED" [disabled]
+          - cell [ref=e119]:
+            - button [ref=e120] [cursor=pointer]:
+              - img [ref=e121]
+        - row "Travel expense description 1 30-06-2026 € 19,00 REQUESTED" [ref=e123]:
+          - cell "Travel expense description 1" [ref=e124]:
+            - generic [ref=e125]:
+              - img [ref=e126]
+              - generic [ref=e129]: Travel expense description 1
+          - cell "30-06-2026" [ref=e130]
+          - cell "€ 19,00" [ref=e131]
+          - cell "REQUESTED" [ref=e132]:
+            - generic [ref=e133]:
+              - button "REQUESTED" [disabled]
+          - cell [ref=e134]:
+            - button [ref=e135] [cursor=pointer]:
+              - img [ref=e136]
+        - row "Cost expense description 1 30-06-2026 € 50,00 REQUESTED" [ref=e138]:
+          - cell "Cost expense description 1" [ref=e139]:
+            - generic [ref=e140]:
+              - img [ref=e141]
+              - generic [ref=e144]: Cost expense description 1
+          - cell "30-06-2026" [ref=e145]
+          - cell "€ 50,00" [ref=e146]
+          - cell "REQUESTED" [ref=e147]:
+            - generic [ref=e148]:
+              - button "REQUESTED" [disabled]
+          - cell [ref=e149]:
+            - button [ref=e150] [cursor=pointer]:
+              - img [ref=e151]
+```
+
+# Test source
+
+```ts
+  72  |   );
+  73  |   const to = dayjs(
+  74  |     `${tillYear}-${tillMonth.toString().padStart(2, '0')}-${tillDay.toString().padStart(2, '0')}`,
+  75  |   );
+  76  |   const today = dayjs();
+  77  |   if (to.isAfter(today, 'month')) {
+  78  |     await selectDateInPicker(page, 'To', tillDay, tillMonth, tillYear);
+  79  |   }
+  80  |   if (from.isBefore(today, 'month')) {
+  81  |     await selectDateInPicker(page, 'From', fromDay, fromMonth, fromYear);
+  82  |   }
+  83  |   if (!to.isAfter(today, 'month')) {
+  84  |     await selectDateInPicker(page, 'To', tillDay, tillMonth, tillYear);
+  85  |   }
+  86  |   if (!from.isBefore(today, 'month')) {
+  87  |     await selectDateInPicker(page, 'From', fromDay, fromMonth, fromYear);
+  88  |   }
+  89  | }
+  90  | 
+  91  | export async function When_I_add_a_file(page, filename: string) {
+  92  |   const fileInput = await page.locator('input[type="file"]');
+  93  | 
+  94  |   // Listen for the upload request before setting the file
+  95  |   const uploadPromise = page.waitForResponse(
+  96  |     (response) =>
+  97  |       response.url().includes('/api/expenses/files') &&
+  98  |       response.status() === 200,
+  99  |     { timeout: 10000 },
+  100 |   );
+  101 | 
+  102 |   await fileInput.setInputFiles(`tests/files/${filename}`);
+  103 | 
+  104 |   // Wait for the upload to complete
+  105 |   await uploadPromise;
+  106 | 
+  107 |   // Wait a moment for the UI to update
+  108 |   await page.waitForTimeout(500);
+  109 | }
+  110 | 
+  111 | export async function Then_I_see_the_new_work_days_for_the_month_with_hours(
+  112 |   page,
+  113 |   _month: string,
+  114 |   _year: string,
+  115 |   totalHours: string,
+  116 | ) {
+  117 |   await page.waitForLoadState('networkidle');
+  118 |   const firstRow = page.locator('table tbody tr').first();
+  119 |   const hoursElement = firstRow.locator('td').nth(5);
+  120 |   await expect(hoursElement).toHaveText(totalHours);
+  121 | }
+  122 | 
+  123 | export async function Then_the_timesheet_was_uploaded_to_backend(page) {
+  124 |   const request = await page.waitForRequest(
+  125 |     (request) =>
+  126 |       request.url().includes('/api/workdays') && request.method() === 'POST',
+  127 |   );
+  128 |   expect(request.method()).toBe('POST');
+  129 | }
+  130 | 
+  131 | export async function When_I_go_to_my_expenses(page) {
+  132 |   await page.goto('/expenses');
+  133 | }
+  134 | 
+  135 | export async function Then_I_do_not_see_any_expenses(page) {
+  136 |   const noExpensesMessage = await page.getByText('No expenses');
+  137 |   await expect(noExpensesMessage).toBeVisible();
+  138 | }
+  139 | 
+  140 | export async function Then_I_am_on_the_create_expense_page(page) {
+  141 |   const createExpenseText = await page.getByText('Create expense');
+  142 |   await expect(createExpenseText).toBeVisible();
+  143 | }
+  144 | 
+  145 | export async function When_I_fill_in_the_expense_details(
+  146 |   page: Page,
+  147 |   date: string,
+  148 |   amount: string,
+  149 |   description: string,
+  150 | ) {
+  151 |   const [day, month, year] = date.split('-').map(Number);
+  152 |   await selectDateInPicker(page, 'Date', day, month, year);
+  153 |   await page.fill('input[type="number"]', amount);
+  154 |   await page.fill('input[type="text"]', description);
+  155 | }
+  156 | 
+  157 | export async function Then_I_see_the_expense_as(
+  158 |   page,
+  159 |   status: string,
+  160 |   reason: string,
+  161 |   date: string,
+  162 |   total: string,
+  163 | ) {
+  164 |   const containerCard = page
+  165 |     .locator('.MuiCard-root')
+  166 |     .filter({ hasText: 'Expenses' })
+  167 |     .first();
+  168 |   const expenseCard = containerCard.locator('.MuiCard-root').first();
+  169 |   const statusButton = expenseCard.getByText(status.toUpperCase(), {
+  170 |     exact: true,
+  171 |   });
+> 172 |   await expect(statusButton).toBeVisible();
+      |                              ^ Error: expect(locator).toBeVisible() failed
+  173 |   await expect(expenseCard).toContainText(reason);
+  174 |   await expect(expenseCard).toContainText(date);
+  175 |   await expect(expenseCard).toContainText(total);
+  176 | }
+  177 | 
+  178 | export async function When_I_select_the_assignment(
+  179 |   page,
+  180 |   assignmentText: string,
+  181 | ) {
+  182 |   // Click the assignment field to open the autocomplete
+  183 |   await page.getByLabel('Assignment').click();
+  184 | 
+  185 |   // Wait for the listbox to appear - MUI v5 renders it outside the dialog
+  186 |   const listbox = page.getByRole('listbox', { name: 'Assignment' });
+  187 |   await listbox.waitFor({ state: 'visible', timeout: 5000 });
+  188 | 
+  189 |   // Click the matching option
+  190 |   await page
+  191 |     .getByRole('option', { name: new RegExp(assignmentText, 'i') })
+  192 |     .click();
+  193 | }
+  194 | 
+```
