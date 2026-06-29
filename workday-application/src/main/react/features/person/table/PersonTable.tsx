@@ -22,7 +22,7 @@ import { PersonTableHead } from './PersonTableHead';
 
 const PREFIX = 'PersonTable';
 
-const PERSON_PAGE_SIZE = 10;
+const PERSON_PAGE_SIZE = 15;
 
 const classes = {
   tblEmail: `${PREFIX}TblEmail`,

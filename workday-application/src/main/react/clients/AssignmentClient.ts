@@ -61,7 +61,7 @@ const internalizingClient = InternalizingClient<
   Assignment
 >(path, internalize);
 
-export const ASSIGNMENT_PAGE_SIZE = 5;
+export const ASSIGNMENT_PAGE_SIZE = 15;
 
 const findAllByPersonId: (
   personId: string,

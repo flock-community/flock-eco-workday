@@ -98,7 +98,7 @@ const internalizeFull = (it: FlockEventRaw): FullFlockEvent => ({
   costs: it.costs,
 });
 
-export const EVENT_PAGE_SIZE: number = 25;
+export const EVENT_PAGE_SIZE: number = 15;
 
 const internalizingClient = InternalizingClient<
   FlockEventRequest,

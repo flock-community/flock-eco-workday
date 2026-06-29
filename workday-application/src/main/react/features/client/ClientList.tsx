@@ -15,7 +15,7 @@ import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { TableCard } from '../../components/TableCard';
 import { isDefined } from '../../utils/validation';
 
-const CLIENT_PAGE_SIZE = 20;
+const CLIENT_PAGE_SIZE = 15;
 
 type ClientListProps = {
   refresh?: boolean;

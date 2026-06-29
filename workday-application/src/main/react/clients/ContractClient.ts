@@ -15,7 +15,7 @@ const externalPath = `${path}-external`;
 const managementPath = `${path}-management`;
 const servicePath = `${path}-service`;
 
-export const CONTRACT_PAGE_SIZE = 5;
+export const CONTRACT_PAGE_SIZE = 15;
 
 export type Contract = {
   id: number;

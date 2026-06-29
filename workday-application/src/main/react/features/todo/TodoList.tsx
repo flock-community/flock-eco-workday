@@ -21,7 +21,7 @@ import { groupByType } from '../../utils/groupByType';
 import { getPaginatedTabs } from '../../utils/paginationHelpers';
 import type { Todo } from '../../wirespec/model';
 
-const TODO_PAGE_SIZE = 5;
+const TODO_PAGE_SIZE = 15;
 
 const typeToPath = (type: TypeProp) => {
   switch (type) {
