@@ -34,7 +34,9 @@ test.describe('Assignment CRUD Operations', () => {
   test('should display assignments for a selected person', async ({ page }) => {
     await selectPerson(page, 'Tommy Dog');
 
-    await expect(page.getByText('Assignments')).toBeVisible();
+    await expect(
+      page.locator('.MuiCardHeader-title', { hasText: 'Assignments' }),
+    ).toBeVisible();
     const row = assignmentRow(page, 'DevOps engineer');
     await expect(row).toBeVisible();
     await expect(row).toContainText('Client A');

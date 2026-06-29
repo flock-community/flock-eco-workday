@@ -165,14 +165,15 @@ export async function Then_I_see_the_expense_as(
     .locator('.MuiCard-root')
     .filter({ hasText: 'Expenses' })
     .first();
-  const expenseCard = containerCard.locator('.MuiCard-root').first();
-  const statusButton = expenseCard.getByText(status.toUpperCase(), {
-    exact: true,
-  });
-  await expect(statusButton).toBeVisible();
-  await expect(expenseCard).toContainText(reason);
-  await expect(expenseCard).toContainText(date);
-  await expect(expenseCard).toContainText(total);
+  const expenseRow = containerCard
+    .locator('tr')
+    .filter({ hasText: reason })
+    .first();
+  await expect(
+    expenseRow.getByText(status.toUpperCase(), { exact: true }),
+  ).toBeVisible();
+  await expect(expenseRow).toContainText(date);
+  await expect(expenseRow).toContainText(total);
 }
 
 export async function When_I_select_the_assignment(

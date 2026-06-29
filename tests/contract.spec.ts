@@ -22,7 +22,9 @@ test.describe('Contract CRUD Operations', () => {
   test('should display existing contracts for a person', async ({ page }) => {
     await selectPerson(page, TEST_PERSON);
 
-    await expect(page.getByText('Contracts')).toBeVisible();
+    await expect(
+      page.locator('.MuiCardHeader-title', { hasText: 'Contracts' }),
+    ).toBeVisible();
     await expect(page.getByRole('button', { name: 'Add' })).toBeVisible();
   });
 
