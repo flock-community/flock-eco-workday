@@ -24,7 +24,7 @@ test.describe('Project CRUD Operations', () => {
 
   test('should display the seeded project list', async ({ page }) => {
     await expect(
-      page.locator('.MuiCardHeader-title', { hasText: 'Projects' }),
+      page.getByRole('heading', { name: 'Projects' }),
     ).toBeVisible();
     await expect(
       page.getByRole('cell', { name: 'Empty project' }),
