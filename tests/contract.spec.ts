@@ -23,7 +23,7 @@ test.describe('Contract CRUD Operations', () => {
     await selectPerson(page, TEST_PERSON);
 
     await expect(
-      page.locator('.MuiCardHeader-title', { hasText: 'Contracts' }),
+      page.getByRole('heading', { name: 'Contracts' }),
     ).toBeVisible();
     await expect(page.getByRole('button', { name: 'Add' })).toBeVisible();
   });
