@@ -18,15 +18,12 @@
     </modules>
 
     <properties>
-        <appengine-maven-plugin.version>2.2.0</appengine-maven-plugin.version>
         <biweekly.version>0.6.8</biweekly.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
-        <dokka.skip>true</dokka.skip>
         <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
         <google-api-drive.version>v3-rev20251210-2.0.0</google-api-drive.version>
         <google-api-sheets.version>v4-rev20251110-2.0.0</google-api-sheets.version>
-        <gpg.skip>true</gpg.skip>
         <h2.version>2.3.232</h2.version>
         <java.version>21</java.version>
         <javax-mail.version>2.1.3</javax-mail.version>
@@ -41,20 +38,17 @@
         <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <mockito.version>5.23.0</mockito.version>
         <mockk.version>1.14.3</mockk.version>
         <node.version>v22.22.3</node.version>
         <npm.ci.skip>false</npm.ci.skip>
         <npm.version>10.9.8</npm.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <quality.skip>false</quality.skip>
         <reflections.version>0.10.2</reflections.version>
         <spotless.version>3.1.0</spotless.version>
         <spring.boot.version>3.5.14</spring.boot.version>
         <spring.cloud.gcp.version>6.5.8</spring.cloud.gcp.version>
         <springdoc.version>2.8.6</springdoc.version>
-        <springmockk.version>4.0.2</springmockk.version>
         <wirespec.version>0.18.13</wirespec.version>
     </properties>
 
@@ -168,21 +162,9 @@
                 <version>${springdoc.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.ninja-squad</groupId>
-                <artifactId>springmockk</artifactId>
-                <version>${springmockk.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>io.mockk</groupId>
-                <artifactId>mockk</artifactId>
+                <artifactId>mockk-jvm</artifactId>
                 <version>${mockk.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -269,29 +251,6 @@
                     </configuration>
                 </plugin>
 
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
-                    <configuration>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                        <preparationGoals>frontend:npm@version --non-recursive</preparationGoals>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <goals>
-                                <goal>jar-no-fork</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
                 <!-- Build Helper Maven Plugin -->
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -336,17 +295,6 @@
                     <groupId>com.google.cloud.tools</groupId>
                     <artifactId>jib-maven-plugin</artifactId>
                     <version>${jib-maven-plugin.version}</version>
-                </plugin>
-
-                <!-- App Engine Maven Plugin (GCP) -->
-                <plugin>
-                    <groupId>com.google.cloud.tools</groupId>
-                    <artifactId>appengine-maven-plugin</artifactId>
-                    <version>${appengine-maven-plugin.version}</version>
-                    <configuration>
-                        <version>1</version>
-                        <projectId>flock-community</projectId>
-                    </configuration>
                 </plugin>
 
                 <!-- Maven Surefire Plugin (Testing) -->
@@ -416,26 +364,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <preparationGoals>frontend:npm@version --non-recursive</preparationGoals>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
@@ -496,36 +424,6 @@
                             </includes>
                             <skipIfEmpty>true</skipIfEmpty>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.jetbrains.dokka</groupId>
-                <artifactId>dokka-maven-plugin</artifactId>
-                <version>1.9.0</version>
-                <configuration>
-                    <skip>${dokka.skip}</skip>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>javadocJar</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                        <phase>verify</phase>
                     </execution>
                 </executions>
             </plugin>
