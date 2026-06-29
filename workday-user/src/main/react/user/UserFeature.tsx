@@ -1,8 +1,15 @@
-import { Box, Card } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  TextField,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { UserDialog } from './UserDialog';
 import { UserTable } from './UserTable';
-import { UserToolbar } from './UserToolbar';
 
 type UserFeatureProps = {
   enablePassword?: boolean;
@@ -36,10 +43,6 @@ export function UserFeature({ enablePassword }: UserFeatureProps) {
     });
   };
 
-  const handleSearchChange = (search: string) => {
-    setSearchState(search);
-  };
-
   const handleNewClick = () => {
     setDialogState({
       open: true,
@@ -56,19 +59,38 @@ export function UserFeature({ enablePassword }: UserFeatureProps) {
   };
 
   return (
-    <>
+    <Box
+      className={'flow'}
+      flow-gap={'wide'}
+      style={{ paddingBottom: '1.5rem' }}
+    >
       <Card>
-        <UserToolbar
-          onAdd={handleNewClick}
-          onSearchChange={handleSearchChange}
+        <CardHeader
+          title="Users"
+          action={
+            <Button onClick={handleNewClick} startIcon={<AddIcon />}>
+              Add
+            </Button>
+          }
         />
-        <Box sx={{ px: 1 }}>
-          <UserTable
-            refresh={reload}
-            search={debouncedSearchState}
-            onRowClick={handleRowClick}
-          />
-        </Box>
+        <CardContent>
+          <Box m={2}>
+            <TextField
+              value={searchState}
+              onChange={(event) => setSearchState(event.target.value)}
+              placeholder="Search name"
+            />
+          </Box>
+          <Card>
+            <CardContent>
+              <UserTable
+                refresh={reload}
+                search={debouncedSearchState}
+                onRowClick={handleRowClick}
+              />
+            </CardContent>
+          </Card>
+        </CardContent>
       </Card>
       <UserDialog
         open={dialogState.open}
@@ -76,6 +98,6 @@ export function UserFeature({ enablePassword }: UserFeatureProps) {
         onComplete={handleComplete}
         enablePassword={enablePassword}
       />
-    </>
+    </Box>
   );
 }

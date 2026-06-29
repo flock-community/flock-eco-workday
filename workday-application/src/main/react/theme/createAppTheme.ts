@@ -135,6 +135,8 @@ export function createAppTheme(mode: ColorMode): Theme {
         styleOverrides: {
           title: { fontSize: '1.05rem', fontWeight: 600 },
           subheader: { color: palette.text.secondary },
+          // Drop MUI's negative action margins so the Add button stays inside the padding.
+          action: { alignSelf: 'center', margin: 0 },
         },
       },
 

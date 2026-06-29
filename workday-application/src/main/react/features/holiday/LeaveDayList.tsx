@@ -1,5 +1,4 @@
 import {
-  Box,
   Table,
   TableBody,
   TableCell,
@@ -13,6 +12,7 @@ import {
   LeaveDayClient,
 } from '../../clients/LeaveDayClient';
 import { DayListItem } from '../../components/DayListItem';
+import { TableCard } from '../../components/TableCard';
 
 // Components
 import { FlockPagination } from '../../components/pagination/FlockPagination';
@@ -62,45 +62,45 @@ export function LeaveDayList({
 
   return (
     <>
-      <TableContainer sx={{ opacity: loading ? 0.5 : 1 }}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>Description</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>From</TableCell>
-              <TableCell>To</TableCell>
-              <TableCell align="right">Days</TableCell>
-              <TableCell align="right">Hours</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {list.length === 0 ? (
+      <TableCard loading={loading}>
+        <TableContainer>
+          <Table size="small">
+            <TableHead>
               <TableRow>
-                <TableCell
-                  colSpan={8}
-                  align="center"
-                  sx={{ py: 4, color: 'text.secondary' }}
-                >
-                  No leave days
-                </TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>From</TableCell>
+                <TableCell>To</TableCell>
+                <TableCell align="right">Days</TableCell>
+                <TableCell align="right">Hours</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell />
               </TableRow>
-            ) : (
-              list.map(renderItem)
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={LEAVE_DAY_PAGE_SIZE}
-          changePageCb={setPage}
-        />
-      </Box>
+            </TableHead>
+            <TableBody>
+              {list.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={8}
+                    align="center"
+                    sx={{ py: 4, color: 'text.secondary' }}
+                  >
+                    No leave days
+                  </TableCell>
+                </TableRow>
+              ) : (
+                list.map(renderItem)
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </TableCard>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={LEAVE_DAY_PAGE_SIZE}
+        changePageCb={setPage}
+      />
     </>
   );
 }

@@ -13,10 +13,10 @@ import Toolbar from '@mui/material/Toolbar';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { FlockBird } from '../components/FlockBird';
+import { ColorModeToggle } from '../theme/ColorModeToggle';
+
 // Hooks
 import { useSession } from '../hooks/SessionHook';
-import { ColorModeToggle } from '../theme/ColorModeToggle';
 
 const PREFIX = 'ApplicationLayout';
 
@@ -45,10 +45,10 @@ const Root = styled('div')({
 });
 
 type ApplicationLayoutProps = {
-  onDrawer: () => void;
+  onMenu: () => void;
 };
 
-export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
+export function ApplicationLayout({ onMenu }: ApplicationLayoutProps) {
   const handleLogout = () => {
     window.location.href = '/logout';
   };
@@ -68,8 +68,8 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
   };
 
   const handleClickDrawer = () => {
-    if (onDrawer) {
-      onDrawer();
+    if (onMenu) {
+      onMenu();
     }
   };
 
@@ -77,10 +77,12 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
     <Root className="full-width">
       <AppBar className={classes.navBar}>
         <Toolbar
+          disableGutters
           sx={{
-            width: '100%',
-            maxWidth: 'var(--content-max-width)',
+            width:
+              'min(100% - (var(--padding-inline) * 2), var(--content-max-width))',
             mx: 'auto',
+            px: '16px',
           }}
         >
           <IconButton
@@ -89,6 +91,7 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
             aria-label="Menu"
             onClick={handleClickDrawer}
             size="large"
+            sx={{ display: { md: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
@@ -101,23 +104,10 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.6rem',
               fontSize: '1.2rem',
               letterSpacing: '-0.01em',
             }}
           >
-            <Box
-              component="span"
-              sx={{
-                display: 'inline-flex',
-                color: (t) =>
-                  t.palette.mode === 'dark' ? 'primary.main' : 'inherit',
-              }}
-            >
-              <FlockBird
-                style={{ height: '1.9rem', width: 'auto', display: 'block' }}
-              />
-            </Box>
             <Box
               component="span"
               sx={{

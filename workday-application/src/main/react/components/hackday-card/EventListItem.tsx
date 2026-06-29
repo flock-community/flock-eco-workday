@@ -93,7 +93,12 @@ export function EventListItem({
       data-testid={'flock-event-list-item'}
       className={btnState ? classes.active : ''}
     >
-      <ListItemText primary={event.description} secondary={dateString} />
+      <ListItemText
+        primary={event.description}
+        secondary={dateString}
+        primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+        secondaryTypographyProps={{ fontSize: 13 }}
+      />
       <FormGroup row style={{ alignItems: 'center', gap: 8 }}>
         {btnState && (
           <TextField

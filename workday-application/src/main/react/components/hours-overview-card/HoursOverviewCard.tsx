@@ -106,7 +106,7 @@ export function HoursOverviewCard({
   const height = 50 + data.length * 50;
 
   return (
-    <Card variant={'outlined'}>
+    <Card variant={'outlined'} sx={{ borderRadius: '14px' }}>
       <CardHeader title={'Hours overview'} />
       <CardContent>
         <ResponsiveContainer width="100%" height={height}>
