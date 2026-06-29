@@ -1,4 +1,6 @@
+import AddIcon from '@mui/icons-material/Add';
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -12,11 +14,8 @@ import {
   LeaveDayClient,
 } from '../../clients/LeaveDayClient';
 import { DayListItem } from '../../components/DayListItem';
-// Components
 import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { TableCard } from '../../components/TableCard';
-
-// Types
 import type { DayListProps, DayProps } from '../../types';
 
 export function LeaveDayList({
@@ -24,6 +23,7 @@ export function LeaveDayList({
   refresh,
   onClickRow,
   onClickStatus,
+  onClickAdd,
 }: DayListProps) {
   const [list, setList] = useState<DayProps[]>([]);
   const [page, setPage] = useState(0);
@@ -61,7 +61,15 @@ export function LeaveDayList({
 
   return (
     <>
-      <TableCard loading={loading}>
+      <TableCard
+        title="Leave days"
+        action={
+          <Button startIcon={<AddIcon />} onClick={onClickAdd}>
+            Add
+          </Button>
+        }
+        loading={loading}
+      >
         <TableContainer>
           <Table size="small">
             <TableHead>

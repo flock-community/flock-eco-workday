@@ -1,5 +1,7 @@
+import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -22,6 +24,7 @@ type AssignmentListProps = {
   personId?: string;
   onItemClick: (item: any) => void;
   disableEdit: boolean;
+  onClickAdd?: () => void;
 };
 
 export function AssignmentList({
@@ -29,6 +32,7 @@ export function AssignmentList({
   personId,
   onItemClick,
   disableEdit,
+  onClickAdd,
 }: Readonly<AssignmentListProps>) {
   const [items, setItems] = useState<any[]>([]);
   const [page, setPage] = useState(0);
@@ -60,7 +64,17 @@ export function AssignmentList({
 
   return (
     <Box>
-      <TableCard loading={loading}>
+      <TableCard
+        title="Assignments"
+        action={
+          disableEdit ? undefined : (
+            <Button startIcon={<AddIcon />} onClick={onClickAdd}>
+              Add
+            </Button>
+          )
+        }
+        loading={loading}
+      >
         <TableContainer>
           <Table size="small">
             <TableHead>

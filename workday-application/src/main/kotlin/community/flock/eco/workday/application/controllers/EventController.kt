@@ -76,7 +76,11 @@ class EventController(
     @PreAuthorize("hasAnyAuthority('EventAuthority.READ', 'EventAuthority.SUBSCRIBE')")
     override suspend fun getEventAll(request: GetEventAll.Request): GetEventAll.Response<*> {
         val auth = authentication()
-        val page = eventService.findAll(request.queries.toPageable())
+        val pageable = request.queries.toPageable()
+        val page =
+            request.queries.year
+                ?.let { eventService.findAllByYear(it, pageable) }
+                ?: eventService.findAll(pageable)
         val body =
             page.content.map { event ->
                 if (!event.isAuthenticated(auth)) event.redact() else event
@@ -329,11 +333,8 @@ class EventController(
         }
 
     private fun GetEventAll.Queries.toPageable(): Pageable {
-        // The React EventList always requests `from,desc` ordering (see
-        // EventClient.getAll). Hardcode the same sort here so behavior matches
-        // the pre-Wirespec controller, which auto-resolved Spring's Pageable.
-        val sort = Sort.by("from").descending().and(Sort.by("id"))
-        return PageRequest.of(page ?: 0, size ?: 10, sort)
+        val oldestFirst = Sort.by("from").ascending().and(Sort.by("id"))
+        return PageRequest.of(page ?: 0, size ?: 10, oldestFirst)
     }
 
     private fun Authentication.isAdmin(): Boolean =

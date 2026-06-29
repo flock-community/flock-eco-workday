@@ -1,7 +1,5 @@
-import { Box, Card, CardHeader } from '@mui/material';
-import CardContent from '@mui/material/CardContent';
+import { Box } from '@mui/material';
 import { addError } from '../../hooks/ErrorHook';
-// Types
 import type { StatusProps } from '../../types';
 import type { Todo } from '../../wirespec/model';
 import { TodoList } from './TodoList';
@@ -16,16 +14,11 @@ export function TodoFeature() {
 
   return (
     <Box
-      className={'flow'}
+      className={'flow full-width'}
       flow-gap={'wide'}
-      style={{ paddingBottom: '1.5rem' }}
+      style={{ paddingInline: 24, paddingBottom: '1.5rem' }}
     >
-      <Card>
-        <CardHeader title="Todo's" />
-        <CardContent>
-          <TodoList onItemClick={handleItemClick} refresh={false} />
-        </CardContent>
-      </Card>
+      <TodoList onItemClick={handleItemClick} refresh={false} />
     </Box>
   );
 }

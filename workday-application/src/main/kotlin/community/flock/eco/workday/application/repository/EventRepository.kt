@@ -1,6 +1,8 @@
 package community.flock.eco.workday.application.repository
 
 import community.flock.eco.workday.application.model.Event
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
@@ -18,4 +20,10 @@ interface EventRepository : JpaRepository<Event, Long> {
         from: LocalDate,
         to: LocalDate,
     ): Iterable<Event>
+
+    fun findAllByFromBetween(
+        from: LocalDate,
+        to: LocalDate,
+        pageable: Pageable,
+    ): Page<Event>
 }

@@ -1,5 +1,3 @@
-import AddIcon from '@mui/icons-material/Add';
-import { Button, Card, CardContent, CardHeader } from '@mui/material';
 import { useState } from 'react';
 import { LeaveDayClient } from '../../clients/LeaveDayClient';
 import type { Person } from '../../clients/PersonClient';
@@ -47,24 +45,13 @@ export function LeaveDayFeature({ person }: LeaveDayFeatureProps) {
 
   return (
     <>
-      <Card>
-        <CardHeader
-          title="Leave days"
-          action={
-            <Button onClick={handleClickAdd} startIcon={<AddIcon />}>
-              Add
-            </Button>
-          }
-        />
-        <CardContent>
-          <LeaveDayList
-            personId={person?.uuid}
-            refresh={refresh}
-            onClickRow={handleClickRow}
-            onClickStatus={handleStatusChange}
-          />
-        </CardContent>
-      </Card>
+      <LeaveDayList
+        personId={person?.uuid}
+        refresh={refresh}
+        onClickRow={handleClickRow}
+        onClickStatus={handleStatusChange}
+        onClickAdd={handleClickAdd}
+      />
       <LeaveDayDialog
         open={open}
         code={value?.code}

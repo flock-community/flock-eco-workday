@@ -98,7 +98,7 @@ const internalizeFull = (it: FlockEventRaw): FullFlockEvent => ({
   costs: it.costs,
 });
 
-export const EVENT_PAGE_SIZE: number = 10;
+export const EVENT_PAGE_SIZE: number = 25;
 
 const internalizingClient = InternalizingClient<
   FlockEventRequest,
@@ -106,12 +106,15 @@ const internalizingClient = InternalizingClient<
   FullFlockEvent
 >(path, internalizeFull);
 
-const getAll = (page: number, pageSize = EVENT_PAGE_SIZE) => {
-  return internalizingClient.findAllByPage({
-    page,
-    size: pageSize,
-    sort: 'from,desc',
-  });
+const getAll = (page: number, year?: number, pageSize = EVENT_PAGE_SIZE) => {
+  return internalizingClient.queryByPage(
+    {
+      page,
+      size: pageSize,
+      sort: 'from,asc',
+    },
+    { year },
+  );
 };
 
 // TODO: Rating type

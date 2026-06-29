@@ -39,7 +39,11 @@ const Root = styled('div')(({ theme }) => {
   return {
     // Uniform width so every status reads as the same chip regardless of label length.
     '& .MuiButton-root': {
-      minWidth: 124,
+      minWidth: 100,
+      padding: '1px 10px',
+      fontSize: '0.72rem',
+      fontWeight: 500,
+      lineHeight: 1.7,
     },
 
     [`& .${classes.buttonRequested}`]: softTintChip(
@@ -112,6 +116,7 @@ export function StatusMenu({ onChange, disabled, value }: StatusMenuProps) {
     // @ts-expect-error
     <Root className={classes.status}>
       <Button
+        size="small"
         aria-haspopup="true"
         aria-expanded={expanded}
         disabled={disabled}

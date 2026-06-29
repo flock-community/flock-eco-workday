@@ -1,5 +1,7 @@
+import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
+  Button,
   TableBody,
   TableCell,
   TableContainer,
@@ -9,10 +11,8 @@ import Table from '@mui/material/Table';
 import TableRow from '@mui/material/TableRow';
 import { useEffect, useState } from 'react';
 import { WORK_DAY_PAGE_SIZE, WorkDayClient } from '../../clients/WorkDayClient';
-// Components
 import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { TableCard } from '../../components/TableCard';
-// Types
 import type { DayListProps, DayProps } from '../../types';
 import { WorkDayListItem } from './WorkDayListItem';
 
@@ -21,6 +21,7 @@ export function WorkDayList({
   refresh,
   onClickRow,
   onClickStatus,
+  onClickAdd,
 }: DayListProps) {
   const [list, setList] = useState<DayProps[]>([]);
   const [page, setPage] = useState(0);
@@ -71,7 +72,15 @@ export function WorkDayList({
 
   return (
     <Box>
-      <TableCard loading={loading}>
+      <TableCard
+        title="Work days"
+        action={
+          <Button startIcon={<AddIcon />} onClick={onClickAdd}>
+            Add
+          </Button>
+        }
+        loading={loading}
+      >
         <TableContainer>
           <Table size="small">
             <TableHead>

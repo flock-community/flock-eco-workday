@@ -1,4 +1,11 @@
-import { TableBody, TableCell, TableContainer, TableHead } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import {
+  Button,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+} from '@mui/material';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableRow from '@mui/material/TableRow';
@@ -7,7 +14,7 @@ import { type Project, ProjectClient } from '../../clients/ProjectClient';
 import { TableCard } from '../../components/TableCard';
 import ProjectListItem from './ProjectListItem';
 
-export default function ProjectList({ editProject, refresh }) {
+export default function ProjectList({ editProject, refresh, onClickAdd }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,7 +35,15 @@ export default function ProjectList({ editProject, refresh }) {
 
   return (
     <Box>
-      <TableCard loading={loading}>
+      <TableCard
+        title="Projects"
+        action={
+          <Button startIcon={<AddIcon />} onClick={onClickAdd}>
+            Add
+          </Button>
+        }
+        loading={loading}
+      >
         <TableContainer>
           <Table size="small" aria-label="collapsible table">
             <TableHead>

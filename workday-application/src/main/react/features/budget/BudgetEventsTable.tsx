@@ -39,7 +39,13 @@ export function BudgetEventsTable({
 
   return (
     <Card>
-      <CardContent>
+      <CardContent
+        sx={{
+          '& tbody tr:last-child td, & tbody tr:last-child th': {
+            borderBottom: 0,
+          },
+        }}
+      >
         <Typography variant="subtitle2" color="text.secondary" gutterBottom>
           Events
         </Typography>
