@@ -1,19 +1,25 @@
+import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
+  Button,
   Chip,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import {
   EVENT_PAGE_SIZE,
   EventClient,
   EventType,
-  type FlockEvent,
   type FullFlockEvent,
 } from '../../clients/EventClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
@@ -24,7 +30,14 @@ import { isDefined } from '../../utils/validation';
 type EventListProps = {
   refresh: boolean;
   onClickRow: (item: FullFlockEvent) => void;
+  onClickAdd: () => void;
 };
+
+type TypeFilter = EventType | 'ALL';
+
+const currentYear = new Date().getFullYear();
+const selectableYears = [currentYear, currentYear - 1, currentYear - 2];
+const YEAR_FETCH_SIZE = 500;
 
 function eventTypeChip(type: EventType) {
   if (type === EventType.FLOCK_HACK_DAY) {
@@ -39,24 +52,39 @@ function eventTypeChip(type: EventType) {
 export const EventList = ({
   refresh,
   onClickRow,
+  onClickAdd,
 }: Readonly<EventListProps>) => {
-  const [items, setItems] = useState<FlockEvent[]>([]);
+  const [allItems, setAllItems] = useState<FullFlockEvent[]>([]);
   const [page, setPage] = useState(0);
-  const [count, setCount] = useState(0);
+  const [year, setYear] = useState(currentYear);
+  const [search, setSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('ALL');
   const [loading, setLoading] = useState(true);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     setLoading(true);
 
-    EventClient.getAll(page)
+    EventClient.getAll(0, year, YEAR_FETCH_SIZE)
       .then((res) => {
-        setItems(res.list);
-        setCount(res.count);
+        setAllItems(res.list);
+        setPage(0);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [refresh, page]);
+  }, [refresh, year]);
+
+  const filtered = allItems.filter((item) => {
+    const matchesType = typeFilter === 'ALL' || item.type === typeFilter;
+    const matchesSearch =
+      search.trim() === '' ||
+      item.description.toLowerCase().includes(search.trim().toLowerCase());
+    return matchesType && matchesSearch;
+  });
+  const paged = filtered.slice(
+    page * EVENT_PAGE_SIZE,
+    (page + 1) * EVENT_PAGE_SIZE,
+  );
 
   function handleClickRow(item: FullFlockEvent) {
     return () => {
@@ -97,11 +125,75 @@ export const EventList = ({
     );
   }
 
+  const toolbar = (
+    <>
+      <TextField
+        autoFocus
+        size="small"
+        placeholder="Search events"
+        value={search}
+        onChange={(event) => {
+          setSearch(event.target.value);
+          setPage(0);
+        }}
+        sx={{ minWidth: 200 }}
+      />
+      <FormControl size="small" sx={{ minWidth: 150 }}>
+        <InputLabel id="event-type-label">Type</InputLabel>
+        <Select
+          labelId="event-type-label"
+          label="Type"
+          value={typeFilter}
+          onChange={(event) => {
+            setTypeFilter(event.target.value as TypeFilter);
+            setPage(0);
+          }}
+        >
+          <MenuItem value="ALL">All types</MenuItem>
+          {Object.values(EventType).map((type) => (
+            <MenuItem key={type} value={type}>
+              {EventTypeMapping[type]}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl size="small" sx={{ minWidth: 110 }}>
+        <InputLabel id="event-year-label">Year</InputLabel>
+        <Select
+          labelId="event-year-label"
+          label="Year"
+          value={year}
+          onChange={(event) => {
+            setYear(Number(event.target.value));
+            setPage(0);
+          }}
+        >
+          {selectableYears.map((selectableYear) => (
+            <MenuItem key={selectableYear} value={selectableYear}>
+              {selectableYear}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </>
+  );
+
+  const addButton = (
+    <Button variant="contained" startIcon={<AddIcon />} onClick={onClickAdd}>
+      Add
+    </Button>
+  );
+
   return (
     <Box>
-      <TableCard loading={loading}>
+      <TableCard
+        title="Events"
+        toolbar={toolbar}
+        action={addButton}
+        loading={loading}
+      >
         <TableContainer>
-          <Table size="small">
+          <Table size="small" sx={{ minWidth: 800 }}>
             <TableHead>
               <TableRow>
                 <TableCell>Event</TableCell>
@@ -115,7 +207,7 @@ export const EventList = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.length === 0 ? (
+              {filtered.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={8}
@@ -126,7 +218,7 @@ export const EventList = ({
                   </TableCell>
                 </TableRow>
               ) : (
-                items.map(renderItem)
+                paged.map(renderItem)
               )}
             </TableBody>
           </Table>
@@ -134,7 +226,7 @@ export const EventList = ({
       </TableCard>
       <FlockPagination
         currentPage={page + 1}
-        numberOfItems={count}
+        numberOfItems={filtered.length}
         itemsPerPage={EVENT_PAGE_SIZE}
         changePageCb={setPage}
       />

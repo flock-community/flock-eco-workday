@@ -56,8 +56,8 @@ export function WorkDayListItem({
         />
       </TableCell>
       <TableCell>
-        <IconButton onClick={onClick} size="large">
-          <CreateIcon />
+        <IconButton onClick={onClick} size="small">
+          <CreateIcon fontSize="small" />
         </IconButton>
       </TableCell>
     </StyledTableRow>

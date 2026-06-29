@@ -4,8 +4,8 @@ import {
   Button,
   Card,
   CardContent,
-  CardHeader,
   TextField,
+  Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { UserDialog } from './UserDialog';
@@ -65,31 +65,55 @@ export function UserFeature({ enablePassword }: UserFeatureProps) {
       style={{ paddingBottom: '1.5rem' }}
     >
       <Card>
-        <CardHeader
-          title="Users"
-          action={
-            <Button onClick={handleNewClick} startIcon={<AddIcon />}>
-              Add
-            </Button>
-          }
-        />
-        <CardContent>
-          <Box m={2}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 2,
+            px: 2,
+            py: 1.5,
+            borderBottom: 1,
+            borderColor: 'divider',
+          }}
+        >
+          <Box sx={{ flexShrink: 0 }}>
+            <Typography variant="h6">Users</Typography>
+          </Box>
+          <Box
+            sx={{
+              ml: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 2,
+              minWidth: 0,
+            }}
+          >
             <TextField
+              autoFocus
+              size="small"
               value={searchState}
               onChange={(event) => setSearchState(event.target.value)}
               placeholder="Search name"
             />
           </Box>
-          <Card>
-            <CardContent>
-              <UserTable
-                refresh={reload}
-                search={debouncedSearchState}
-                onRowClick={handleRowClick}
-              />
-            </CardContent>
-          </Card>
+          <Button onClick={handleNewClick} startIcon={<AddIcon />}>
+            Add
+          </Button>
+        </Box>
+        <CardContent
+          sx={{
+            '& tbody tr:last-child td, & tbody tr:last-child th': {
+              borderBottom: 0,
+            },
+          }}
+        >
+          <UserTable
+            refresh={reload}
+            search={debouncedSearchState}
+            onRowClick={handleRowClick}
+          />
         </CardContent>
       </Card>
       <UserDialog

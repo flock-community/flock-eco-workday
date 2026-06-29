@@ -60,7 +60,7 @@ const costExpenseClient = NonInternalizingClient<CostExpenseInput, Expense>(
   costPath,
 );
 
-export const EXPENSE_PAGE_SIZE: number = 5;
+export const EXPENSE_PAGE_SIZE: number = 15;
 
 // TODO: Deprecated method, should use findAllByPersonIdNEW (https://flock.atlassian.net/browse/WRK-176)
 const findAllByPersonId = (personId, page, pageSize = EXPENSE_PAGE_SIZE) =>

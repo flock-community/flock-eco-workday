@@ -1,5 +1,7 @@
+import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -13,14 +15,19 @@ import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { TableCard } from '../../components/TableCard';
 import { isDefined } from '../../utils/validation';
 
-const CLIENT_PAGE_SIZE = 20;
+const CLIENT_PAGE_SIZE = 15;
 
 type ClientListProps = {
   refresh?: boolean;
   onItemClick?: (item: Client) => void;
+  onClickAdd?: () => void;
 };
 
-export function ClientList({ refresh, onItemClick }: ClientListProps) {
+export function ClientList({
+  refresh,
+  onItemClick,
+  onClickAdd,
+}: ClientListProps) {
   const [list, setList] = useState<Client[]>([]);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
@@ -46,7 +53,15 @@ export function ClientList({ refresh, onItemClick }: ClientListProps) {
 
   return (
     <Box>
-      <TableCard loading={loading}>
+      <TableCard
+        title="Clients"
+        action={
+          <Button startIcon={<AddIcon />} onClick={onClickAdd}>
+            Add
+          </Button>
+        }
+        loading={loading}
+      >
         <TableContainer>
           <Table size="small">
             <TableHead>

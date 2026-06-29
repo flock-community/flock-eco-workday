@@ -1,4 +1,4 @@
-endpoint GetEventAll GET /api/events ? {page: Integer32?, size: Integer32?, sort: String?} -> {
+endpoint GetEventAll GET /api/events ? {page: Integer32?, size: Integer32?, sort: String?, year: Integer32?} -> {
   200 -> Event[] # { `x-total`: Integer32 }
 }
 endpoint GetEventByCode GET /api/events/{code: String} -> {

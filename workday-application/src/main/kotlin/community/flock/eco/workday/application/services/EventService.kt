@@ -42,6 +42,16 @@ class EventService(
             to = LocalDate.of(year, 12, 31),
         )
 
+    fun findAllByYear(
+        year: Int,
+        pageable: Pageable,
+    ): Page<Event> =
+        eventRepository.findAllByFromBetween(
+            from = LocalDate.of(year, 1, 1),
+            to = LocalDate.of(year, 12, 31),
+            pageable = pageable,
+        )
+
     fun create(form: EventForm): Event =
         form
             .validate()

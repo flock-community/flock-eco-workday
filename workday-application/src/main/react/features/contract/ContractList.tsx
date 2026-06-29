@@ -1,5 +1,7 @@
+import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -40,11 +42,13 @@ type ContractListProps = {
   refresh: boolean;
   personId?: string;
   onItemClick: (item: any) => void;
+  onClickAdd?: () => void;
 };
 export function ContractList({
   refresh,
   personId,
   onItemClick,
+  onClickAdd,
 }: Readonly<ContractListProps>) {
   const [items, setItems] = useState<any[]>([]);
   const [page, setPage] = useState(0);
@@ -69,7 +73,15 @@ export function ContractList({
 
   return (
     <Box>
-      <TableCard loading={loading}>
+      <TableCard
+        title="Contracts"
+        action={
+          <Button startIcon={<AddIcon />} onClick={onClickAdd}>
+            Add
+          </Button>
+        }
+        loading={loading}
+      >
         <TableContainer>
           <Table size="small">
             <TableHead>

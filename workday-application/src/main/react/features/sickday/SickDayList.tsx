@@ -1,4 +1,6 @@
+import AddIcon from '@mui/icons-material/Add';
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -9,11 +11,8 @@ import {
 import { useEffect, useState } from 'react';
 import { SICKDAY_PAGE_SIZE, SickDayClient } from '../../clients/SickDayClient';
 import { DayListItem } from '../../components/DayListItem';
-// Components
 import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { TableCard } from '../../components/TableCard';
-
-// Types
 import type { DayListProps, DayProps } from '../../types';
 
 export function SickDayList({
@@ -21,6 +20,7 @@ export function SickDayList({
   refresh,
   onClickRow,
   onClickStatus,
+  onClickAdd,
 }: Readonly<DayListProps>) {
   const [list, setList] = useState<DayProps[]>([]);
   const [page, setPage] = useState(0);
@@ -57,7 +57,15 @@ export function SickDayList({
 
   return (
     <>
-      <TableCard loading={loading}>
+      <TableCard
+        title="Sick days"
+        action={
+          <Button startIcon={<AddIcon />} onClick={onClickAdd}>
+            Add
+          </Button>
+        }
+        loading={loading}
+      >
         <TableContainer>
           <Table size="small">
             <TableHead>

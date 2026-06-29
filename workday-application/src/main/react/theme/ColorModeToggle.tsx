@@ -1,5 +1,5 @@
 import DarkModeIcon from '@mui/icons-material/Bedtime';
-import LightModeIcon from '@mui/icons-material/LightModeOutlined';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useColorMode } from './ColorMode';

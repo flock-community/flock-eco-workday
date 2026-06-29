@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
 
-export const WORK_DAY_PAGE_SIZE = 5;
+export const WORK_DAY_PAGE_SIZE = 15;
 
 const internalize = (it) => ({
   ...it,

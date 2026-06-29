@@ -49,8 +49,8 @@ export function DayListItem({
         />
       </TableCell>
       <TableCell align="right">
-        <IconButton onClick={onClick} size="large">
-          <CreateIcon />
+        <IconButton onClick={onClick} size="small">
+          <CreateIcon fontSize="small" />
         </IconButton>
       </TableCell>
     </TableRow>

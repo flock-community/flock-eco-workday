@@ -1,8 +1,10 @@
+import AddIcon from '@mui/icons-material/Add';
 import CreateIcon from '@mui/icons-material/Create';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import {
   Box,
+  Button,
   IconButton,
   Link,
   Table,
@@ -26,6 +28,7 @@ export function ExpenseList({
   personId,
   refresh,
   onClickRow,
+  onClickAdd,
 }: Readonly<DayListProps>) {
   const [items, setItems] = useState<Expense[]>([]);
   const [page, setPage] = useState(0);
@@ -107,8 +110,8 @@ export function ExpenseList({
           />
         </TableCell>
         <TableCell align="right">
-          <IconButton onClick={handleClickRow(item)} size="large">
-            <CreateIcon />
+          <IconButton onClick={handleClickRow(item)} size="small">
+            <CreateIcon fontSize="small" />
           </IconButton>
         </TableCell>
       </TableRow>
@@ -117,7 +120,15 @@ export function ExpenseList({
 
   return (
     <Box>
-      <TableCard loading={loading}>
+      <TableCard
+        title="Expenses"
+        action={
+          <Button startIcon={<AddIcon />} onClick={onClickAdd}>
+            Add
+          </Button>
+        }
+        loading={loading}
+      >
         <TableContainer>
           <Table size="small">
             <TableHead>

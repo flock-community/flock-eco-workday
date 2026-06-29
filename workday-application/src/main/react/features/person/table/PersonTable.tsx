@@ -2,9 +2,6 @@ import { CheckBox } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
-  Card,
-  CardContent,
-  CardHeader,
   Table,
   TableBody,
   TableCell,
@@ -15,7 +12,7 @@ import {
 } from '@mui/material';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { type Person, PersonClient } from '../../../clients/PersonClient';
 import { FlockPagination } from '../../../components/pagination/FlockPagination';
@@ -25,7 +22,7 @@ import { PersonTableHead } from './PersonTableHead';
 
 const PREFIX = 'PersonTable';
 
-const PERSON_PAGE_SIZE = 10;
+const PERSON_PAGE_SIZE = 15;
 
 const classes = {
   tblEmail: `${PREFIX}TblEmail`,
@@ -64,7 +61,6 @@ export const PersonTable = () => {
   const [debouncedSearchState, setDebouncedSearchState] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
-  // Add this useEffect for debouncing
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchState(searchTerm);
@@ -74,10 +70,6 @@ export const PersonTable = () => {
       clearTimeout(timer);
     };
   }, [searchTerm]);
-
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => searchInputRef?.current?.focus(), []);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
@@ -107,82 +99,79 @@ export const PersonTable = () => {
       flow-gap={'wide'}
       style={{ paddingBottom: '1.5rem' }}
     >
-      <Card>
-        <CardHeader
-          title="Persons"
-          action={
-            <Button onClick={handleDialogOpen} startIcon={<AddIcon />}>
-              Add
-            </Button>
-          }
-        />
-        <CardContent>
-          <Box m={2}>
-            <TextField
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search name"
-              inputRef={searchInputRef}
-            />
-          </Box>
-          <TableCard loading={loading}>
-            <TableContainer>
-              <Table size="small">
-                <PersonTableHead />
-                <TableBody>
-                  {personList.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={3}
-                        align="center"
-                        sx={{ py: 4, color: 'text.secondary' }}
-                      >
-                        No persons
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    personList.map((person) => (
-                      <TableRow
-                        key={person.fullName}
-                        hover
-                        className={classes.tblRow}
-                      >
-                        <TableCell
-                          className={classes.tblName}
-                          component="th"
-                          scope="row"
-                        >
-                          <Link
-                            key={person.uuid}
-                            to={`${url}/code/${person.uuid}`}
-                            className={classes.link}
-                          >
-                            {person.fullName}
-                          </Link>
-                        </TableCell>
-                        <TableCell className={classes.tblEmail} align="left">
-                          <Typography className={classes.tblRow}>
-                            {person.email}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="left">
-                          {person.active && <CheckBox />}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </TableCard>
-          <FlockPagination
-            currentPage={page + 1}
-            numberOfItems={count}
-            itemsPerPage={PERSON_PAGE_SIZE}
-            changePageCb={setPage}
+      <TableCard
+        title="Persons"
+        toolbar={
+          <TextField
+            autoFocus
+            size="small"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Search name"
           />
-        </CardContent>
-      </Card>
+        }
+        action={
+          <Button onClick={handleDialogOpen} startIcon={<AddIcon />}>
+            Add
+          </Button>
+        }
+        loading={loading}
+      >
+        <TableContainer>
+          <Table size="small">
+            <PersonTableHead />
+            <TableBody>
+              {personList.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={3}
+                    align="center"
+                    sx={{ py: 4, color: 'text.secondary' }}
+                  >
+                    No persons
+                  </TableCell>
+                </TableRow>
+              ) : (
+                personList.map((person) => (
+                  <TableRow
+                    key={person.fullName}
+                    hover
+                    className={classes.tblRow}
+                  >
+                    <TableCell
+                      className={classes.tblName}
+                      component="th"
+                      scope="row"
+                    >
+                      <Link
+                        key={person.uuid}
+                        to={`${url}/code/${person.uuid}`}
+                        className={classes.link}
+                      >
+                        {person.fullName}
+                      </Link>
+                    </TableCell>
+                    <TableCell className={classes.tblEmail} align="left">
+                      <Typography className={classes.tblRow}>
+                        {person.email}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="left">
+                      {person.active && <CheckBox />}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </TableCard>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={PERSON_PAGE_SIZE}
+        changePageCb={setPage}
+      />
       <PersonDialog open={dialog.open} onClose={handleDialogClose} />
     </StyledBox>
   );

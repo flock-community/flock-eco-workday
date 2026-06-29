@@ -1,8 +1,4 @@
-import AddIcon from '@mui/icons-material/Add';
-import { Card, CardContent, CardHeader } from '@mui/material';
-import Button from '@mui/material/Button';
-import { useContext, useState } from 'react';
-import { ApplicationContext } from '../../application/ApplicationContext';
+import { useState } from 'react';
 import type { Person } from '../../clients/PersonClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { WorkDayClient } from '../../clients/WorkDayClient';
@@ -18,7 +14,6 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
   const [refresh, setRefresh] = useState(false);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<any>();
-  const { authorities } = useContext(ApplicationContext);
 
   function handleCompleteDialog() {
     setRefresh(!refresh);
@@ -54,24 +49,13 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
 
   return (
     <>
-      <Card>
-        <CardHeader
-          title="Work days"
-          action={
-            <Button onClick={handleClickAdd} startIcon={<AddIcon />}>
-              Add
-            </Button>
-          }
-        />
-        <CardContent>
-          <WorkDayList
-            personId={person.uuid}
-            onClickRow={handleClickRow}
-            refresh={refresh}
-            onClickStatus={handleStatusChange}
-          />
-        </CardContent>
-      </Card>
+      <WorkDayList
+        personId={person.uuid}
+        onClickRow={handleClickRow}
+        refresh={refresh}
+        onClickStatus={handleStatusChange}
+        onClickAdd={handleClickAdd}
+      />
       <WorkDayDialog
         personFullName={person.fullName}
         open={open}
