@@ -145,8 +145,8 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.ninja-squad</groupId>
-            <artifactId>springmockk</artifactId>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk-jvm</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -216,11 +216,6 @@
                     <skip>false</skip>
                     <mainClass>community.flock.eco.workday.application.ApplicationKt</mainClass>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>appengine-maven-plugin</artifactId>
             </plugin>
 
             <plugin>
