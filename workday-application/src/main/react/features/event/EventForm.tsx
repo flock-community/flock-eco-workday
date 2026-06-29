@@ -9,6 +9,7 @@ import type { EventType } from '../../clients/EventClient';
 import { DatePickerField } from '../../components/fields/DatePickerField';
 import { PeriodInputField } from '../../components/fields/PeriodInputField';
 import { PersonSelectorField } from '../../components/fields/PersonSelectorField';
+import { NO_SPINNER_SX } from '../../components/inputs/noSpinnerSx';
 import {
   EventTypeBudgetLabel,
   EventTypeMappingToBillable,
@@ -78,6 +79,7 @@ function EventFormFields({ values, setFieldValue }: EventFormFieldsProps) {
             label="Costs"
             fullWidth
             component={TextField}
+            sx={NO_SPINNER_SX}
           />
         </Grid>
         <Grid size={{ xs: 12 }}>

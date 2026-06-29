@@ -51,8 +51,8 @@ export function LeaveDayFeature({ person }: LeaveDayFeatureProps) {
         <CardHeader
           title="Leave days"
           action={
-            <Button onClick={handleClickAdd}>
-              <AddIcon /> Add
+            <Button onClick={handleClickAdd} startIcon={<AddIcon />}>
+              Add
             </Button>
           }
         />

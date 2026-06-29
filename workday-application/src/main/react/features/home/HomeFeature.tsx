@@ -1,4 +1,7 @@
-import { Box } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import AirplaneIcon from '@mui/icons-material/AirplaneTicket';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import { Box, Button } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useState } from 'react';
@@ -20,14 +23,25 @@ import { HolidayCard } from '../../components/holiday-card/HolidayCard';
 import { HoursOverviewCard } from '../../components/hours-overview-card/HoursOverviewCard';
 import { MissingHoursCard } from '../../components/missing-hours-card/MissingHoursCard';
 import PersonEvents from '../../components/person/PersonEvents';
-import { QuickLinks } from '../../components/quick-links/QuickLinks';
+import { addError } from '../../hooks/ErrorHook';
+import { usePerson } from '../../hooks/PersonHook';
 import { useLoginStatus } from '../../hooks/StatusHook';
 import { useUserMe } from '../../hooks/UserMeHook';
 import { HighlightSpan } from '../../theme/theme-light';
 import type { Expense } from '../../wirespec/model/Expense';
+import { ExpenseDialog } from '../expense/ExpenseDialog';
+import { LeaveDayDialog } from '../holiday/LeaveDayDialog';
+import { WorkDayDialog } from '../workday/WorkDayDialog';
+
+const twoCol: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(min(360px, 100%), 1fr))',
+  gap: '16px',
+};
 
 export function HomeFeature() {
   const [user] = useUserMe();
+  const [person] = usePerson();
   const status = useLoginStatus();
   const [withinNWeek] = useState<number>(6);
   const [contracts, setContracts] = useState<any[]>([]);
@@ -35,9 +49,12 @@ export function HomeFeature() {
   const [totalPerPersonMe, setTotalPerPersonMe] = useState<any>(undefined);
   const [personHolidayDetails, setPersonHolidayDetails] =
     useState<PersonHolidayDetails>();
-
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [hackdayRefreshKey, setHackdayRefreshKey] = useState(0);
+
+  const [workDayOpen, setWorkDayOpen] = useState(false);
+  const [leaveDayOpen, setLeaveDayOpen] = useState(false);
+  const [expenseOpen, setExpenseOpen] = useState(false);
 
   const handleHackdayToggle = useCallback(() => {
     setHackdayRefreshKey((k) => k + 1);
@@ -76,26 +93,84 @@ export function HomeFeature() {
     }
   }, [status, hasAccess, showContractsEnding, showPersonEvents, withinNWeek]);
 
+  const openAddWorkDay = () => {
+    if (person === null) {
+      addError('No person selected');
+    } else {
+      setWorkDayOpen(true);
+    }
+  };
+
   return (
     <div
       className={'content flow'}
-      style={{ marginTop: '24px', paddingBottom: '24px' }}
+      style={
+        { marginTop: '24px', paddingBottom: '24px' } as React.CSSProperties
+      }
       flow-gap={'wide'}
     >
-      <section className={'flow'}>
-        <Box style={{ paddingInline: '16px' }}>
+      <section style={{ paddingLeft: 16, paddingRight: 16 }}>
+        <Box
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
+        >
           <Typography variant="h2">
             Hi, <HighlightSpan>{user?.name}!</HighlightSpan>
           </Typography>
+          {hasAccess && (
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={openAddWorkDay}
+                sx={{
+                  borderRadius: '999px',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                }}
+              >
+                Workday
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<AirplaneIcon />}
+                onClick={() => setLeaveDayOpen(true)}
+                sx={{ borderRadius: '999px', textTransform: 'none' }}
+              >
+                Holiday
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<ReceiptIcon />}
+                onClick={() => {
+                  if (person === null) {
+                    addError('No person selected');
+                  } else {
+                    setExpenseOpen(true);
+                  }
+                }}
+                sx={{ borderRadius: '999px', textTransform: 'none' }}
+              >
+                Expense
+              </Button>
+            </Box>
+          )}
         </Box>
         {!hasAccess && (
-          <div>
-            <Typography>No roles are assigned to your account.</Typography>
-          </div>
+          <Typography>No roles are assigned to your account.</Typography>
         )}
       </section>
+
       {(showContractsEnding || showPersonEvents) && (
-        <section className={'flow'}>
+        <section
+          className={'flow'}
+          style={{ '--flow-gap': '16px' } as React.CSSProperties}
+        >
           {showContractsEnding && (
             <ContractsEnding withinNWeeks={withinNWeek} contracts={contracts} />
           )}
@@ -107,28 +182,52 @@ export function HomeFeature() {
           )}
         </section>
       )}
-      {hasAccess && (
-        <section className={'flow'}>
-          <QuickLinks />
 
-          <div className={'gid-auto-fit'}>
+      {hasAccess && (
+        <section
+          className={'flow'}
+          style={{ '--flow-gap': '16px' } as React.CSSProperties}
+        >
+          <div style={twoCol}>
             <HolidayCard item={personHolidayDetails} />
             <HackdayCard refreshKey={hackdayRefreshKey} />
           </div>
 
           <HoursOverviewCard totalPerPersonMe={totalPerPersonMe} />
 
-          <div className={'gid-auto-fit'}>
-            <MissingHoursCard totalPerPersonMe={totalPerPersonMe} />
+          <div style={twoCol}>
             <ExpensesCard items={expenses} />
-          </div>
-
-          <div className={'gid-auto-fit'}>
-            <HackDayEventsCard onToggle={handleHackdayToggle} />
-            <div />
+            <div
+              className={'flow'}
+              style={{ '--flow-gap': '16px' } as React.CSSProperties}
+            >
+              <MissingHoursCard totalPerPersonMe={totalPerPersonMe} />
+              <HackDayEventsCard onToggle={handleHackdayToggle} />
+            </div>
           </div>
         </section>
       )}
+
+      <WorkDayDialog
+        personFullName={person?.fullName}
+        open={workDayOpen}
+        code={undefined}
+        onComplete={() => setWorkDayOpen(false)}
+      />
+      <LeaveDayDialog
+        open={leaveDayOpen}
+        code={undefined}
+        personId={person?.uuid}
+        onComplete={() => setLeaveDayOpen(false)}
+      />
+      <ExpenseDialog
+        open={expenseOpen}
+        id={undefined}
+        personId={person?.uuid}
+        personFullName={person?.fullName ?? ''}
+        onComplete={() => setExpenseOpen(false)}
+        expenseType={'COST'}
+      />
     </div>
   );
 }

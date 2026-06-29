@@ -1,35 +1,40 @@
-import { Box, Card, Chip, Typography } from '@mui/material';
-import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
-import { styled } from '@mui/material/styles';
+import {
+  Box,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import {
   EVENT_PAGE_SIZE,
   EventClient,
+  EventType,
   type FlockEvent,
   type FullFlockEvent,
 } from '../../clients/EventClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
+import { TableCard } from '../../components/TableCard';
 import { EventTypeMapping } from '../../utils/mappings';
 import { isDefined } from '../../utils/validation';
-
-const PREFIX = 'EventList';
-
-const classes = {
-  list: `${PREFIX}List`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({
-  [`& .${classes.list}`]: (loading) => ({
-    opacity: loading ? 0.5 : 1,
-  }),
-});
 
 type EventListProps = {
   refresh: boolean;
   onClickRow: (item: FullFlockEvent) => void;
 };
+
+function eventTypeChip(type: EventType) {
+  if (type === EventType.FLOCK_HACK_DAY) {
+    return { color: 'primary', variant: 'filled' } as const;
+  }
+  if (type === EventType.CONFERENCE) {
+    return { color: 'accent', variant: 'filled' } as const;
+  }
+  return { variant: 'outlined' } as const;
+}
 
 export const EventList = ({
   refresh,
@@ -38,7 +43,7 @@ export const EventList = ({
   const [items, setItems] = useState<FlockEvent[]>([]);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
@@ -61,72 +66,78 @@ export const EventList = ({
 
   function renderItem(item: FullFlockEvent) {
     return (
-      <Grid key={`workday-list-item-${item.id}`} size={{ xs: 12 }}>
-        <Card onClick={handleClickRow(item)}>
-          <CardContent>
-            <Box
-              style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}
-            >
-              <Typography variant="h6">{item.description}</Typography>
-              <Chip
-                label={EventTypeMapping[item.type]}
-                size={'small'}
-                color={'primary'}
-                variant="outlined"
-              />
-            </Box>
-            <Typography>
-              Period: {item.from.format('DD-MM-YYYY')} -{' '}
-              {item.to ? item.to.format('DD-MM-YYYY') : <em>now</em>}
-            </Typography>
-            <Typography>
-              Aantal dagen: {item.to.diff(item.from, 'days') + 1}
-            </Typography>
-            <Typography>Aantal uren: {item.hours}</Typography>
-            <Typography>
-              Totale kosten:{' '}
-              {item.costs.toLocaleString('nl-NL', {
-                style: 'currency',
-                currency: 'EUR',
-              })}
-            </Typography>
-            <Typography>
-              {item.persons
-                .toSorted((a, b) => (a.lastname > b.lastname ? 1 : -1))
-                .map((person) => `${person.firstname} ${person.lastname}`)
-                .join(',')}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-    );
-  }
-
-  if (items.length === 0) {
-    return (
-      <Card>
-        <CardContent>
-          <Grid container spacing={1} className={classes.list}>
-            <Typography>No events</Typography>
-          </Grid>
-        </CardContent>
-      </Card>
+      <TableRow
+        key={`event-list-item-${item.id}`}
+        hover
+        sx={{ cursor: 'pointer' }}
+        onClick={handleClickRow(item)}
+      >
+        <TableCell>{item.description}</TableCell>
+        <TableCell>
+          <Chip
+            label={EventTypeMapping[item.type]}
+            size="small"
+            {...eventTypeChip(item.type)}
+          />
+        </TableCell>
+        <TableCell>{item.from.format('DD-MM-YYYY')}</TableCell>
+        <TableCell>{item.to ? item.to.format('DD-MM-YYYY') : 'now'}</TableCell>
+        <TableCell align="right">
+          {item.to ? item.to.diff(item.from, 'days') + 1 : '-'}
+        </TableCell>
+        <TableCell align="right">{item.persons.length}</TableCell>
+        <TableCell align="right">{item.hours}</TableCell>
+        <TableCell align="right">
+          {item.costs.toLocaleString('nl-NL', {
+            style: 'currency',
+            currency: 'EUR',
+          })}
+        </TableCell>
+      </TableRow>
     );
   }
 
   return (
-    <Root>
-      <Grid container spacing={1} className={classes.list}>
-        {items.map(renderItem)}
-      </Grid>
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={EVENT_PAGE_SIZE}
-          changePageCb={setPage}
-        />
-      </Box>
-    </Root>
+    <Box>
+      <TableCard loading={loading}>
+        <TableContainer>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Event</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>From</TableCell>
+                <TableCell>To</TableCell>
+                <TableCell align="right">Days</TableCell>
+                <TableCell align="right">People</TableCell>
+                <TableCell align="right">Hours</TableCell>
+                <TableCell align="right">Cost</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {items.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={8}
+                    align="center"
+                    sx={{ py: 4, color: 'text.secondary' }}
+                  >
+                    No events
+                  </TableCell>
+                </TableRow>
+              ) : (
+                items.map(renderItem)
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </TableCard>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={EVENT_PAGE_SIZE}
+        changePageCb={setPage}
+      />
+    </Box>
   );
 };

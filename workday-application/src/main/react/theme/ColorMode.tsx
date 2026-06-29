@@ -40,6 +40,9 @@ export function ColorModeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, mode);
+    // `only` (not plain `light`) blocks mobile browsers' forced auto-dark.
+    document.documentElement.style.colorScheme =
+      mode === 'dark' ? 'dark' : 'only light';
   }, [mode]);
 
   const theme = useMemo(() => createAppTheme(mode), [mode]);
@@ -56,7 +59,7 @@ export function ColorModeProvider({ children }: { children: ReactNode }) {
   return (
     <ColorModeContext.Provider value={value}>
       <ThemeProvider theme={theme}>
-        <CssBaseline enableColorScheme />
+        <CssBaseline />
         {children}
       </ThemeProvider>
     </ColorModeContext.Provider>

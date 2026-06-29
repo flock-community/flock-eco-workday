@@ -53,8 +53,8 @@ export function ProjectFeature() {
         <CardHeader
           title="Projects"
           action={
-            <Button onClick={newProject}>
-              <AddIcon /> Add
+            <Button onClick={newProject} startIcon={<AddIcon />}>
+              Add
             </Button>
           }
         />

@@ -1,5 +1,5 @@
 import HolidayIcon from '@mui/icons-material/WbSunny';
-import { Dialog, MenuItem, Select, Slide } from '@mui/material';
+import { Dialog, MenuItem, Select } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
@@ -113,13 +113,7 @@ export function LeaveDayDialog({
 
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        TransitionComponent={Slide}
-        maxWidth={'md'}
-        fullWidth
-      >
+      <Dialog open={open} onClose={handleClose} maxWidth={'md'} fullWidth>
         <DialogHeader
           icon={<HolidayIcon />}
           headline="Leave days"

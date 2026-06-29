@@ -37,8 +37,8 @@ export function EventFeature() {
         <CardHeader
           title="Events"
           action={
-            <Button onClick={handleClickAdd}>
-              <AddIcon /> Add
+            <Button onClick={handleClickAdd} startIcon={<AddIcon />}>
+              Add
             </Button>
           }
         />

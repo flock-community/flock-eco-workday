@@ -10,6 +10,7 @@ import {
 import Table from '@mui/material/Table';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import type {
   PersonEvent,
   PersonEventType,
@@ -17,7 +18,7 @@ import type {
 
 type PersonEventsProps = {
   withinNWeeks: number;
-  personEvents: PersonEvent[];
+  personEvents?: PersonEvent[];
 };
 
 export default function PersonEvents({
@@ -25,7 +26,7 @@ export default function PersonEvents({
   personEvents,
 }: PersonEventsProps) {
   const noContent = (
-    <Typography variant="caption">
+    <Typography color="text.secondary">
       No person events within {withinNWeeks} weeks
     </Typography>
   );
@@ -59,15 +60,23 @@ export default function PersonEvents({
             <TableCell>Date</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>{personEvents.map(renderPersonEvent)}</TableBody>
+        <TableBody>{personEvents?.map(renderPersonEvent)}</TableBody>
       </Table>
     </TableContainer>
   );
 
   return (
-    <Card>
+    <Card variant="outlined" sx={{ borderRadius: '14px' }}>
       <CardHeader title={`Person events within ${withinNWeeks} weeks`} />
-      <CardContent>{personEvents.length > 0 ? table : noContent}</CardContent>
+      <CardContent>
+        {personEvents === undefined ? (
+          <AlignedLoader />
+        ) : personEvents.length > 0 ? (
+          table
+        ) : (
+          noContent
+        )}
+      </CardContent>
     </Card>
   );
 }

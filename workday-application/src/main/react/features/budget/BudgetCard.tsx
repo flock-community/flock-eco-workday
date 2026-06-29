@@ -12,27 +12,32 @@ interface BudgetCardProps {
   title: string;
   budgetItem: BudgetItem;
   unit: string;
+  base?: 'primary' | 'accent';
 }
 
-// 'primary' is brand yellow: the healthy gauge fill, escalating only past 75%.
-type GaugeColor = 'primary' | 'warning' | 'error';
+type GaugeColor = 'primary' | 'accent' | 'warning' | 'error';
 
-function gaugeColor(percentage: number, isOverBudget: boolean): GaugeColor {
+function gaugeColor(
+  percentage: number,
+  isOverBudget: boolean,
+  base: 'primary' | 'accent',
+): GaugeColor {
   if (isOverBudget) return 'error';
   if (percentage > 75) return 'warning';
-  return 'primary';
+  return base;
 }
 
 export function BudgetCard({
   title,
   budgetItem,
   unit,
+  base = 'primary',
 }: Readonly<BudgetCardProps>) {
   const { budget, used, available } = budgetItem;
   const hasBudget = budget > 0;
   const percentage = budget > 0 ? (used / budget) * 100 : used > 0 ? 100 : 0;
   const isOverBudget = hasBudget && available < 0;
-  const color = gaugeColor(percentage, isOverBudget);
+  const color = gaugeColor(percentage, isOverBudget, base);
 
   const formatValue = (value: number): string => {
     if (unit === '€') {
@@ -55,7 +60,7 @@ export function BudgetCard({
           <Typography variant="overline" color="text.secondary">
             {title}
           </Typography>
-          {hasBudget && color !== 'primary' && (
+          {hasBudget && (color === 'warning' || color === 'error') && (
             <Box
               sx={{
                 width: 8,

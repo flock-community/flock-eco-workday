@@ -1,139 +1,134 @@
-import { InfoOutlined } from '@mui/icons-material';
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  IconButton,
-  Tooltip,
-  Typography,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { InfoOutlined, WarningAmberRounded } from '@mui/icons-material';
+import { Box, Card, IconButton } from '@mui/material';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import { useCallback, useEffect, useState } from 'react';
 import {
   AggregationClient,
   type PersonHackdayDetails,
 } from '../../clients/AggregationClient';
-import { HighlightSpan } from '../../theme/theme-light';
 import { hoursFormatter } from '../../utils/Hours';
 import { HackdayDetailDialog } from './HackdayDetailDialog';
-
-const PREFIX = 'HackdayCard';
-
-const classes = {
-  containerWrapper: `${PREFIX}ContainerWrapper`,
-  hoursLeftWrapper: `${PREFIX}HoursLeftWrapper`,
-  hoursLeft: `${PREFIX}HoursLeft`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')(() => ({
-  [`& .${classes.containerWrapper}`]: {
-    containerType: 'inline-size',
-  },
-
-  [`& .${classes.hoursLeftWrapper}`]: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    '@container (max-width: 500px)': {
-      flexDirection: 'column',
-      alignItems: 'center',
-    },
-  },
-
-  [`& .${classes.hoursLeft}`]: {
-    fontSize: 'clamp(2.5rem, 12cqw, 4.5rem)',
-    fontWeight: 700,
-    lineHeight: 1.1,
-    position: 'relative',
-    textAlign: 'center',
-    zIndex: 2,
-    marginInline: '1.25rem',
-    '@container (max-width: 500px)': {
-      fontSize: 'clamp(2.5rem, 16cqw, 3.5rem)',
-    },
-  },
-}));
 
 type HackdayCardProps = {
   refreshKey?: number;
 };
 
 export function HackdayCard({ refreshKey }: HackdayCardProps) {
-  const [hackdayDetailsOpen, setHackdayDetailsOpen] = useState<boolean>(false);
-  const [personHackDayDetails, setPersonHackdayDetails] =
-    useState<PersonHackdayDetails>(undefined);
+  const [hackdayDetailsOpen, setHackdayDetailsOpen] = useState(false);
+  const [details, setDetails] = useState<PersonHackdayDetails | undefined>(
+    undefined,
+  );
 
-  const fetchHackdayDetailsForCurrentYear = useCallback(() => {
+  const fetch = useCallback(() => {
     AggregationClient.hackdayDetailsMeYear(new Date().getFullYear()).then(
-      (res) => setPersonHackdayDetails(res),
+      (res) => setDetails(res),
     );
   }, []);
 
   useEffect(() => {
-    fetchHackdayDetailsForCurrentYear();
-  }, [fetchHackdayDetailsForCurrentYear, refreshKey]);
+    fetch();
+  }, [fetch, refreshKey]);
 
-  const openLeaveDayDetailsDialog = () => {
-    setHackdayDetailsOpen(true);
-  };
-
-  const handleCloseLeaveDayDetailDialog = () => {
-    setHackdayDetailsOpen(false);
-  };
+  const remaining = details?.totalHoursRemaining ?? 0;
+  const isOver = remaining < 0;
+  const daysOver = (Math.abs(remaining) / 8).toLocaleString('nl-NL', {
+    maximumFractionDigits: 1,
+  });
 
   return (
-    <Root>
-      <Card variant="outlined">
-        <CardHeader
-          title="Hack days"
-          action={
-            <IconButton
-              onClick={openLeaveDayDetailsDialog}
-              disabled={personHackDayDetails === undefined}
+    <>
+      <Card
+        variant="outlined"
+        sx={{
+          p: '20px 16px',
+          borderRadius: '14px',
+          ...(isOver && {
+            borderColor: 'warning.light',
+            bgcolor: (t) =>
+              t.palette.mode === 'dark'
+                ? 'rgba(237,174,0,.07)'
+                : 'rgba(252,239,202,.35)',
+          }),
+        }}
+      >
+        {details === undefined ? (
+          <AlignedLoader />
+        ) : (
+          <>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                mb: 1.5,
+              }}
             >
-              <InfoOutlined />
-            </IconButton>
-          }
-        />
-        <CardContent className={classes.containerWrapper}>
-          {personHackDayDetails === undefined ? (
-            <AlignedLoader />
-          ) : (
-            <div className={classes.hoursLeftWrapper}>
-              <Typography variant="body1">You have</Typography>
-              <div className={classes.hoursLeft}>
-                <HighlightSpan>
-                  {hoursFormatter.format(
-                    personHackDayDetails?.totalHoursRemaining,
-                  )}
-                </HighlightSpan>
-              </div>
-              <Typography variant="body1">
-                hours left
-                <Tooltip title="Based on 8 work hours per day">
-                  <Box component="span" display="block" fontStyle="italic">
-                    {hoursFormatter.format(
-                      (personHackDayDetails?.totalHoursRemaining ?? 0) / 8,
-                    )}{' '}
-                    days
-                  </Box>
-                </Tooltip>
-              </Typography>
-            </div>
-          )}
-        </CardContent>
+              <Box
+                component="span"
+                sx={{
+                  fontSize: '11px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '.1em',
+                  fontWeight: 600,
+                  color: isOver ? 'warning.dark' : 'text.secondary',
+                }}
+              >
+                Hack days
+              </Box>
+              <IconButton
+                size="small"
+                onClick={() => setHackdayDetailsOpen(true)}
+                sx={{ mr: -0.5, mt: -0.5, color: 'text.disabled' }}
+              >
+                <InfoOutlined sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Box>
+
+            <Box
+              sx={{
+                fontSize: '2.8rem',
+                fontWeight: 700,
+                lineHeight: 1,
+                letterSpacing: '-.03em',
+                color: isOver ? 'warning.dark' : 'inherit',
+              }}
+            >
+              {isOver ? '−' : ''}
+              {hoursFormatter.format(Math.abs(remaining))}
+              <Box
+                component="span"
+                sx={{ fontSize: '1.1rem', fontWeight: 400, ml: 0.25 }}
+              >
+                h
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                fontSize: '13px',
+                mt: 1,
+                color: isOver ? 'warning.dark' : 'text.secondary',
+              }}
+            >
+              {isOver && <WarningAmberRounded sx={{ fontSize: 15 }} />}
+              {isOver
+                ? `${daysOver} days over budget`
+                : `${(remaining / 8).toLocaleString('nl-NL', { maximumFractionDigits: 1 })} days remaining`}
+            </Box>
+          </>
+        )}
       </Card>
+
       {hackdayDetailsOpen && (
         <HackdayDetailDialog
           open={hackdayDetailsOpen}
-          item={personHackDayDetails}
-          onComplete={handleCloseLeaveDayDetailDialog}
+          item={details}
+          onComplete={() => setHackdayDetailsOpen(false)}
         />
       )}
-    </Root>
+    </>
   );
 }

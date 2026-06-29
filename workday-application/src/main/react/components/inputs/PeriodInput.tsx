@@ -1,14 +1,15 @@
 import { Box, TextField, Tooltip } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import { alpha, type Theme, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import dayjs, { type Dayjs } from 'dayjs';
 import weekOfYearPlugin from 'dayjs/plugin/weekOfYear';
 import { Fragment, type ReactNode } from 'react';
 import type { Period } from '../../features/period/Period';
 import type { DayMeta } from '../../hooks/DayMetaHook';
-
 // utils
 import { calcGrid } from '../../utils/calcGrid';
+import { NO_SPINNER_SX } from './noSpinnerSx';
 
 dayjs.extend(weekOfYearPlugin);
 
@@ -29,16 +30,19 @@ export type PeriodInputProps = {
   labelInset?: number;
 };
 
-// Background-only fill — green for hackdays, purple for leave (no
-// distinction between requested/approved). Green + purple stays distinct
-// across deuteranopia, protanopia, and tritanopia.
-const HACKDAY_BG = 'rgba(46, 125, 50, 0.16)';
+// Day-cell tints; yellow (hack/event) vs purple (leave) kept distinct for colour-blind users.
 const LEAVE_BG = 'rgba(126, 87, 194, 0.18)';
 
-const backgroundFor = (meta: DayMeta | undefined): string | undefined => {
+const backgroundFor = (
+  meta: DayMeta | undefined,
+  theme: Theme,
+): string | undefined => {
   if (!meta) return undefined;
-  // General events share the hackday colour (green) by request.
-  if (meta.hackday || meta.generalEvent) return HACKDAY_BG;
+  if (meta.hackday || meta.generalEvent)
+    return alpha(
+      theme.palette.primary.main,
+      theme.palette.mode === 'dark' ? 0.2 : 0.38,
+    );
   if (meta.leave) return LEAVE_BG;
   return undefined;
 };
@@ -67,11 +71,9 @@ function DayField({
   onChange: (day: Dayjs, hours: number) => void;
   fullWidth?: boolean;
 }) {
-  const background = backgroundFor(meta);
+  const theme = useTheme();
+  const background = backgroundFor(meta, theme);
   const tooltip = tooltipFor(meta);
-  const sx = background
-    ? { '& .MuiOutlinedInput-root': { backgroundColor: background } }
-    : undefined;
   const field = (
     <TextField
       size="small"
@@ -80,7 +82,12 @@ function DayField({
       disabled={day.disabled}
       onChange={(ev) => onChange(day.date, parseFloat(ev.target.value || '0'))}
       type="number"
-      sx={sx}
+      sx={[
+        NO_SPINNER_SX,
+        background
+          ? { '& .MuiOutlinedInput-root': { backgroundColor: background } }
+          : false,
+      ]}
       fullWidth={fullWidth}
     />
   );

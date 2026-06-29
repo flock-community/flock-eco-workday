@@ -1,124 +1,94 @@
-import { InfoOutlined } from '@mui/icons-material';
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  IconButton,
-  Tooltip,
-  Typography,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { InfoOutlined, WarningAmberRounded } from '@mui/icons-material';
+import { Box, Card, IconButton } from '@mui/material';
+import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import { useEffect, useState } from 'react';
 import type { PersonHolidayDetails } from '../../clients/AggregationClient';
-import { HighlightSpan } from '../../theme/theme-light';
 import { hoursFormatter } from '../../utils/Hours';
 import { HolidayDetailDialog } from './HolidayDetailDialog';
-
-const PREFIX = 'HolidayCard';
-
-const classes = {
-  containerWrapper: `${PREFIX}ContainerWrapper`,
-  hoursLeftWrapper: `${PREFIX}HoursLeftWrapper`,
-  hoursLeft: `${PREFIX}HoursLeft`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')(() => ({
-  [`& .${classes.containerWrapper}`]: {
-    containerType: 'inline-size',
-  },
-
-  [`& .${classes.hoursLeftWrapper}`]: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    '@container (max-width: 500px)': {
-      flexDirection: 'column',
-      alignItems: 'center',
-    },
-  },
-
-  [`& .${classes.hoursLeft}`]: {
-    fontSize: 'clamp(2.5rem, 12cqw, 4.5rem)',
-    fontWeight: 700,
-    lineHeight: 1.1,
-    position: 'relative',
-    textAlign: 'center',
-    zIndex: 2,
-    marginInline: '1.25rem',
-    '@container (max-width: 500px)': {
-      fontSize: 'clamp(2.5rem, 16cqw, 3.5rem)',
-    },
-  },
-}));
 
 type HolidayCardProps = {
   item?: PersonHolidayDetails;
 };
 
 export function HolidayCard({ item }: HolidayCardProps) {
-  const [available, setAvailable] = useState<number>(0);
-  const [holidayHoursDetails, setHolidayHoursDetails] =
-    useState<PersonHolidayDetails>();
-  const [leaveDayDetailsOpen, setLeaveDayDetailsOpen] =
-    useState<boolean>(false);
-  const [leaveDayDetailsItem, setLeaveDayDetailsItem] =
-    useState<PersonHolidayDetails>();
+  const [leaveDayDetailsOpen, setLeaveDayDetailsOpen] = useState(false);
 
-  useEffect(() => {
-    if (item) {
-      setHolidayHoursDetails(item);
-      setAvailable(item.totalHoursRemaining);
-    }
-  }, [item]);
-
-  const openLeaveDayDetailsDialog = () => {
-    setLeaveDayDetailsOpen(true);
-    setLeaveDayDetailsItem(holidayHoursDetails);
-  };
-
-  const handleCloseLeaveDayDetailDialog = () => {
-    setLeaveDayDetailsOpen(false);
-    setLeaveDayDetailsItem(undefined);
-  };
+  const available = item?.totalHoursRemaining ?? 0;
+  const days = (available / 8).toLocaleString('nl-NL', {
+    maximumFractionDigits: 1,
+  });
+  const resetYear = new Date().getFullYear() + 1;
 
   return (
-    <Root>
-      <Card variant={'outlined'}>
-        <CardHeader
-          title={'Leave days'}
-          action={
-            <IconButton onClick={openLeaveDayDetailsDialog}>
-              <InfoOutlined />
-            </IconButton>
-          }
-        />
-        <CardContent className={classes.containerWrapper}>
-          <div className={classes.hoursLeftWrapper}>
-            <Typography variant="body1">You have</Typography>
-            <div className={classes.hoursLeft}>
-              <HighlightSpan>{hoursFormatter.format(available)}</HighlightSpan>
-            </div>
-            <Typography variant="body1">
-              hours left
-              <Tooltip title="Based on 8 work hours per day">
-                <Box component="span" display="block" fontStyle="italic">
-                  {hoursFormatter.format(available / 8)} days
-                </Box>
-              </Tooltip>
-            </Typography>
-          </div>
-        </CardContent>
+    <>
+      <Card
+        variant="outlined"
+        sx={{ p: '20px 16px', borderRadius: '14px', position: 'relative' }}
+      >
+        {item === undefined ? (
+          <AlignedLoader />
+        ) : (
+          <>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                mb: 1.5,
+              }}
+            >
+              <Box
+                component="span"
+                sx={{
+                  fontSize: '11px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '.1em',
+                  color: 'text.secondary',
+                  fontWeight: 600,
+                }}
+              >
+                Leave remaining
+              </Box>
+              <IconButton
+                size="small"
+                onClick={() => setLeaveDayDetailsOpen(true)}
+                sx={{ mr: -0.5, mt: -0.5, color: 'text.disabled' }}
+              >
+                <InfoOutlined sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Box>
+
+            <Box
+              sx={{
+                fontSize: '2.8rem',
+                fontWeight: 700,
+                lineHeight: 1,
+                letterSpacing: '-.03em',
+              }}
+            >
+              {hoursFormatter.format(available)}
+              <Box
+                component="span"
+                sx={{ fontSize: '1.1rem', fontWeight: 400, ml: 0.25 }}
+              >
+                h
+              </Box>
+            </Box>
+
+            <Box sx={{ fontSize: '13px', color: 'text.secondary', mt: 1 }}>
+              {days} days · resets Jan {resetYear}
+            </Box>
+          </>
+        )}
       </Card>
-      {leaveDayDetailsItem !== undefined && (
+
+      {item !== undefined && (
         <HolidayDetailDialog
           open={leaveDayDetailsOpen}
-          item={leaveDayDetailsItem}
-          onComplete={handleCloseLeaveDayDetailDialog}
+          item={item}
+          onComplete={() => setLeaveDayDetailsOpen(false)}
         />
       )}
-    </Root>
+    </>
   );
 }

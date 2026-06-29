@@ -80,19 +80,25 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
 
   function renderItem(item: AggregationPersonObject, index: number) {
     return (
-      <ListItemButton key={index} onClick={() => openWorkDayDialog(item)}>
+      <ListItemButton
+        key={index}
+        onClick={() => openWorkDayDialog(item)}
+        sx={{ borderRadius: 2, py: 0.75 }}
+      >
         <ListItemText
           primary={`You have missing hours in
                     ${new Date(item.monthYear).toLocaleString('en-EN', {
                       month: 'long',
                     })}`}
+          primaryTypographyProps={{ fontSize: 14 }}
+          sx={{ my: 0 }}
         />
       </ListItemButton>
     );
   }
 
   return (
-    <Card variant={'outlined'} style={{ borderRadius: 0 }}>
+    <Card variant={'outlined'} sx={{ borderRadius: '14px' }}>
       <CardHeader title={'Missing hours'} />
       {data.length === 0 && (
         <CardContent>
@@ -101,7 +107,9 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
       )}
       {data.length > 0 && (
         <CardContent>
-          <List>{data.map((it, idx) => renderItem(it, idx))}</List>
+          <List disablePadding>
+            {data.map((it, idx) => renderItem(it, idx))}
+          </List>
         </CardContent>
       )}
       <MissingHoursDetailDialog

@@ -5,7 +5,6 @@ import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import type { Dayjs } from 'dayjs';
 import { PersonClient, type PersonRequest } from '../../clients/PersonClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
-import { TransitionSlider } from '../../components/transitions/Slide';
 import { PERSON_FORM_ID, PersonForm } from './PersonForm';
 
 type PersonDialogProps = {
@@ -49,13 +48,7 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      TransitionComponent={TransitionSlider}
-      maxWidth="lg"
-      fullWidth
-    >
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogHeader
         icon={<PersonAdd />}
         headline="Create Person"

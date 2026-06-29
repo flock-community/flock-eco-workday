@@ -70,8 +70,12 @@ export const DialogHeader = (props: DialogHeaderProps) => {
       <div className={classes.dialogTitle}>
         <div className={classes.iconWrapper}>{icon}</div>
         <div className={classes.titleText}>
-          <Typography variant="body1">{headline}</Typography>
-          <Typography variant="caption">{subheadline}</Typography>
+          <Typography variant="h6" component="span">
+            {headline}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {subheadline}
+          </Typography>
         </div>
         <Button className={classes.closeBtn} onClick={onClose}>
           <Close />

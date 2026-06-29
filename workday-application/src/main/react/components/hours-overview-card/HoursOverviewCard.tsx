@@ -94,7 +94,7 @@ export function HoursOverviewCard({
 
   if (data.length === 0) {
     return (
-      <Card variant={'outlined'} style={{ borderRadius: 0 }}>
+      <Card variant={'outlined'}>
         <CardHeader title={'Hours overview'} />
         <CardContent>
           <Typography display={'block'}>No hours data available.</Typography>
@@ -106,14 +106,14 @@ export function HoursOverviewCard({
   const height = 50 + data.length * 50;
 
   return (
-    <Card variant={'outlined'} style={{ borderRadius: 0 }}>
+    <Card variant={'outlined'} sx={{ borderRadius: '14px' }}>
       <CardHeader title={'Hours overview'} />
       <CardContent>
         <ResponsiveContainer width="100%" height={height}>
           <BarChart
             data={data}
             layout="vertical"
-            margin={{ top: 8, right: 28, bottom: 0, left: 8 }}
+            margin={{ top: 24, right: 28, bottom: 0, left: 8 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis

@@ -24,11 +24,22 @@ test.describe('Assignment CRUD Operations', () => {
     await page.getByRole('option', { name: clientName }).click();
   }
 
+  function assignmentRow(page, uniqueRole: string) {
+    return page
+      .locator('table tbody tr')
+      .filter({ hasText: uniqueRole })
+      .first();
+  }
+
   test('should display assignments for a selected person', async ({ page }) => {
     await selectPerson(page, 'Tommy Dog');
 
-    await expect(page.getByText('Assignments')).toBeVisible();
-    await expect(page.getByText('Client A - DevOps engineer')).toBeVisible();
+    await expect(
+      page.locator('.MuiCardHeader-title', { hasText: 'Assignments' }),
+    ).toBeVisible();
+    const row = assignmentRow(page, 'DevOps engineer');
+    await expect(row).toBeVisible();
+    await expect(row).toContainText('Client A');
   });
 
   test('should create a new assignment', async ({ page }) => {
@@ -67,11 +78,15 @@ test.describe('Assignment CRUD Operations', () => {
       page.getByText('Create / Edit an assignment'),
     ).not.toBeVisible();
 
+    const row = assignmentRow(page, roleName);
+    await expect(row).toBeVisible({ timeout: 30000 });
+    await expect(row).toContainText('Client B');
     await expect(
-      page.getByRole('heading', { name: `Client B - ${roleName}` }).first(),
-    ).toBeVisible({ timeout: 30000 });
-    await expect(page.getByText('Hourly rate: 120').first()).toBeVisible();
-    await expect(page.getByText('Hours per week: 40').first()).toBeVisible();
+      row.getByRole('cell', { name: '120', exact: true }),
+    ).toBeVisible();
+    await expect(
+      row.getByRole('cell', { name: '40', exact: true }),
+    ).toBeVisible();
   });
 
   test('should edit an existing assignment', async ({ page }) => {
@@ -105,14 +120,11 @@ test.describe('Assignment CRUD Operations', () => {
       page.getByText('Create / Edit an assignment'),
     ).not.toBeVisible();
 
-    await expect(
-      page.getByRole('heading', { name: `Client A - ${roleName}` }).first(),
-    ).toBeVisible({ timeout: 30000 });
+    const row = assignmentRow(page, roleName);
+    await expect(row).toBeVisible({ timeout: 30000 });
+    await expect(row).toContainText('Client A');
 
-    await page
-      .getByRole('heading', { name: `Client A - ${roleName}` })
-      .first()
-      .click();
+    await row.click();
 
     await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
@@ -128,10 +140,12 @@ test.describe('Assignment CRUD Operations', () => {
       page.getByText('Create / Edit an assignment'),
     ).not.toBeVisible();
 
+    const updatedRow = assignmentRow(page, updatedRole);
+    await expect(updatedRow).toBeVisible({ timeout: 30000 });
+    await expect(updatedRow).toContainText('Client A');
     await expect(
-      page.getByRole('heading', { name: `Client A - ${updatedRole}` }).first(),
-    ).toBeVisible({ timeout: 30000 });
-    await expect(page.getByText('Hourly rate: 110').first()).toBeVisible();
+      updatedRow.getByRole('cell', { name: '110', exact: true }),
+    ).toBeVisible();
   });
 
   test('should delete an assignment', async ({ page }) => {
@@ -164,14 +178,11 @@ test.describe('Assignment CRUD Operations', () => {
       page.getByText('Create / Edit an assignment'),
     ).not.toBeVisible();
 
-    await expect(
-      page.getByRole('heading', { name: `Client D - ${roleName}` }).first(),
-    ).toBeVisible({ timeout: 30000 });
+    const row = assignmentRow(page, roleName);
+    await expect(row).toBeVisible({ timeout: 30000 });
+    await expect(row).toContainText('Client D');
 
-    await page
-      .getByRole('heading', { name: `Client D - ${roleName}` })
-      .first()
-      .click();
+    await row.click();
     await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
 
     await page.getByRole('button', { name: 'Delete' }).click();
@@ -186,7 +197,7 @@ test.describe('Assignment CRUD Operations', () => {
     await page.waitForLoadState('networkidle');
 
     await expect(
-      page.getByRole('heading', { name: `Client D - ${roleName}` }),
+      page.locator('table tbody tr').filter({ hasText: roleName }),
     ).toHaveCount(0);
   });
 });

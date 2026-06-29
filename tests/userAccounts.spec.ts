@@ -39,7 +39,7 @@ test.describe('User account management', () => {
 
     // Locate the new user in the list.
     await page.goto('/users');
-    await page.getByLabel('search').fill(unique);
+    await page.getByPlaceholder('Search name').fill(unique);
 
     const row = page.locator('table tbody tr', { hasText: unique });
     await expect(row).toBeVisible();

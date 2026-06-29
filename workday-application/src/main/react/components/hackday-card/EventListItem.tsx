@@ -8,6 +8,7 @@ import type { FlockEvent } from '../../clients/EventClient';
 import { DMY_DATE } from '../../clients/util/DateFormats';
 import { usePerson } from '../../hooks/PersonHook';
 import { isPersonAttending } from '../../utils/EventUtils';
+import { NO_SPINNER_SX } from '../inputs/noSpinnerSx';
 
 const PREFIX = 'EventListItem';
 
@@ -92,7 +93,12 @@ export function EventListItem({
       data-testid={'flock-event-list-item'}
       className={btnState ? classes.active : ''}
     >
-      <ListItemText primary={event.description} secondary={dateString} />
+      <ListItemText
+        primary={event.description}
+        secondary={dateString}
+        primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+        secondaryTypographyProps={{ fontSize: 13 }}
+      />
       <FormGroup row style={{ alignItems: 'center', gap: 8 }}>
         {btnState && (
           <TextField
@@ -106,7 +112,7 @@ export function EventListItem({
               editingRef.current = false;
             }}
             onChange={(e) => handleHoursChange(Number(e.target.value))}
-            sx={{ width: 96 }}
+            sx={[{ width: 96 }, NO_SPINNER_SX]}
             slotProps={{
               htmlInput: { min: 0, step: 1, 'aria-label': 'Hack hours' },
               input: {

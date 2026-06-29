@@ -58,8 +58,8 @@ export function WorkDayFeature({ person }: WorkDayFeatureProps) {
         <CardHeader
           title="Work days"
           action={
-            <Button onClick={handleClickAdd}>
-              <AddIcon /> Add
+            <Button onClick={handleClickAdd} startIcon={<AddIcon />}>
+              Add
             </Button>
           }
         />

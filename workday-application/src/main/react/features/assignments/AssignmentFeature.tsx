@@ -38,8 +38,8 @@ export function AssignmentFeature({ person }: AssignmentFeatureProps) {
           title="Assignments"
           action={
             hasWriteAuthority && (
-              <Button onClick={handleClickAdd}>
-                <AddIcon /> Add
+              <Button onClick={handleClickAdd} startIcon={<AddIcon />}>
+                Add
               </Button>
             )
           }

@@ -4,17 +4,17 @@ const headCells = [
   {
     id: 'name',
     disablePadding: false,
-    label: 'name'.toUpperCase(),
+    label: 'Name',
   },
   {
     id: 'email',
     disablePadding: false,
-    label: 'email'.toUpperCase(),
+    label: 'Email',
   },
   {
     id: 'active',
     disablePadding: false,
-    label: 'active'.toUpperCase(),
+    label: 'Active',
   },
 ];
 

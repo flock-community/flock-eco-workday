@@ -75,7 +75,7 @@ export const SimpleTabs = ({
 
         return (
           <TabPanel key={category} value={value} index={index}>
-            <Grid container spacing={1}>
+            <Grid container spacing={1} sx={{ pt: 2 }}>
               {selectedTab?.todos.map((item, index) => {
                 return renderFunction(item, index);
               })}

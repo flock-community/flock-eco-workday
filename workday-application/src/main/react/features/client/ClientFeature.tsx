@@ -45,8 +45,8 @@ export function ClientFeature() {
         <CardHeader
           title="Clients"
           action={
-            <Button onClick={handleAdd}>
-              <AddIcon /> Add
+            <Button onClick={handleAdd} startIcon={<AddIcon />}>
+              Add
             </Button>
           }
         />

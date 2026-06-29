@@ -29,6 +29,7 @@
       /* Content Grid start */
       .content-grid {
         --padding-inline: 24px;
+        --sidebar-width: 256px;
         --content-max-width: 1280px;
         --breakout-max-width: 1820px;
         --breakout-size: calc(
@@ -51,16 +52,24 @@
         row-gap: var(--row-gap);
       }
 
-      .content-grid > :not(.content, .full-width),
-      .full-width > :not(.content, .full-width) {
-        grid-column: breakout;
-      }
-      .content-grid > .content {
+      .content-grid > :not(.breakout, .full-width),
+      .full-width > :not(.breakout, .full-width) {
         grid-column: content;
+      }
+      .content-grid > .breakout {
+        grid-column: breakout;
       }
 
       .content-grid > .full-width {
         grid-column: full-width;
+      }
+
+      /* Persistent left rail offsets the whole grid (top bar + content)
+         on desktop; below the breakpoint the rail collapses to a drawer. */
+      @media (min-width: 900px) {
+        .content-grid.has-sidebar {
+          padding-left: var(--sidebar-width);
+        }
       }
       /*  Content grid end */
 

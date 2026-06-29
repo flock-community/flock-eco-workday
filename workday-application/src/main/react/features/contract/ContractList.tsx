@@ -1,27 +1,40 @@
-import { Box, CardContent } from '@mui/material';
-import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
-import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import {
   CONTRACT_PAGE_SIZE,
   ContractClient,
 } from '../../clients/ContractClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
+import { TableCard } from '../../components/TableCard';
 import { ContractType } from './ContractType';
 
-const PREFIX = 'ContractList';
+const formatDate = (date) => (date ? date.format('DD-MM-YYYY') : <em>now</em>);
 
-const classes = {
-  list: `${PREFIX}List`,
-};
+function compensation(it): string {
+  switch (it.type) {
+    case ContractType.EXTERNAL:
+      return `€ ${it.hourlyRate} /h`;
+    case ContractType.INTERNAL:
+      return `€ ${it.monthlySalary} /mo`;
+    case ContractType.MANAGEMENT:
+      return `€ ${it.monthlyFee} /mo`;
+    case ContractType.SERVICE:
+      return `€ ${it.monthlyCost} /mo`;
+    default:
+      return '-';
+  }
+}
 
-const Root = styled('i')({
-  [`& .${classes.list}`]: (loading) => ({
-    opacity: loading ? 0.5 : 1,
-  }),
-});
+const hasHoursPerWeek = (type) =>
+  type === ContractType.EXTERNAL || type === ContractType.INTERNAL;
 
 type ContractListProps = {
   refresh: boolean;
@@ -36,7 +49,7 @@ export function ContractList({
   const [items, setItems] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(-1);
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
@@ -54,62 +67,59 @@ export function ContractList({
     if (onItemClick) onItemClick(it);
   };
 
-  if (items.length === 0) {
-    return (
-      <Card>
-        <CardContent>
-          <Typography>No result</Typography>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <>
-      <Grid container spacing={1} className={classes.list}>
-        {items.map((it) => (
-          <Grid size={{ xs: 12 }} key={it.code}>
-            <Card onClick={handleClickItem(it)}>
-              <CardContent>
-                <Typography>{it.type}</Typography>
-                <Typography>
-                  Period: <FormatDate date={it.from} /> -{' '}
-                  <FormatDate date={it.to} />
-                </Typography>
-                {it.type === ContractType.EXTERNAL && (
-                  <Typography>Hourly rate: {it.hourlyRate} </Typography>
-                )}
-                {it.type === ContractType.INTERNAL && (
-                  <Typography>Monthly salary: {it.monthlySalary} </Typography>
-                )}
-                {it.type === ContractType.MANAGEMENT && (
-                  <Typography>Monthly fee: {it.monthlyFee} </Typography>
-                )}
-                {it.type === ContractType.SERVICE && (
-                  <Typography>Monthly cost: {it.monthlyCost} </Typography>
-                )}
-                {[ContractType.EXTERNAL, ContractType.INTERNAL].includes(
-                  it.type,
-                ) && (
-                  <Typography>Hours per week: {it.hoursPerWeek} </Typography>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={CONTRACT_PAGE_SIZE}
-          changePageCb={setPage}
-        />
-      </Box>
-    </>
+    <Box>
+      <TableCard loading={loading}>
+        <TableContainer>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Type</TableCell>
+                <TableCell>From</TableCell>
+                <TableCell>To</TableCell>
+                <TableCell align="right">Hours/week</TableCell>
+                <TableCell align="right">Compensation</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {items.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    align="center"
+                    sx={{ py: 4, color: 'text.secondary' }}
+                  >
+                    No contracts
+                  </TableCell>
+                </TableRow>
+              ) : (
+                items.map((it) => (
+                  <TableRow
+                    key={it.code}
+                    hover
+                    sx={{ cursor: 'pointer' }}
+                    onClick={handleClickItem(it)}
+                  >
+                    <TableCell>{it.type}</TableCell>
+                    <TableCell>{formatDate(it.from)}</TableCell>
+                    <TableCell>{formatDate(it.to)}</TableCell>
+                    <TableCell align="right">
+                      {hasHoursPerWeek(it.type) ? it.hoursPerWeek : '-'}
+                    </TableCell>
+                    <TableCell align="right">{compensation(it)}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </TableCard>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={CONTRACT_PAGE_SIZE}
+        changePageCb={setPage}
+      />
+    </Box>
   );
-}
-
-function FormatDate({ date }) {
-  return date ? date.format('DD-MM-YYYY') : <Root>now</Root>;
 }
