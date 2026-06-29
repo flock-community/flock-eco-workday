@@ -107,7 +107,9 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
       )}
       {data.length > 0 && (
         <CardContent>
-          <List disablePadding>{data.map((it, idx) => renderItem(it, idx))}</List>
+          <List disablePadding>
+            {data.map((it, idx) => renderItem(it, idx))}
+          </List>
         </CardContent>
       )}
       <MissingHoursDetailDialog

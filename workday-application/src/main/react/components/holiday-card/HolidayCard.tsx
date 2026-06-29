@@ -14,7 +14,9 @@ export function HolidayCard({ item }: HolidayCardProps) {
   const [leaveDayDetailsOpen, setLeaveDayDetailsOpen] = useState(false);
 
   const available = item?.totalHoursRemaining ?? 0;
-  const days = (available / 8).toLocaleString('nl-NL', { maximumFractionDigits: 1 });
+  const days = (available / 8).toLocaleString('nl-NL', {
+    maximumFractionDigits: 1,
+  });
   const resetYear = new Date().getFullYear() + 1;
 
   return (

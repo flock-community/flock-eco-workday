@@ -12,10 +12,9 @@ import {
   LeaveDayClient,
 } from '../../clients/LeaveDayClient';
 import { DayListItem } from '../../components/DayListItem';
-import { TableCard } from '../../components/TableCard';
-
 // Components
 import { FlockPagination } from '../../components/pagination/FlockPagination';
+import { TableCard } from '../../components/TableCard';
 
 // Types
 import type { DayListProps, DayProps } from '../../types';

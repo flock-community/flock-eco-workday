@@ -127,7 +127,11 @@ export function ApplicationSidebar() {
           borderColor: 'divider',
         }}
       >
-        <RouterLink to="/" aria-label="Home" style={{ display: 'flex', flexShrink: 0 }}>
+        <RouterLink
+          to="/"
+          aria-label="Home"
+          style={{ display: 'flex', flexShrink: 0 }}
+        >
           <FlockDisc style={{ width: 38, height: 38, display: 'block' }} />
         </RouterLink>
         <Box sx={{ minWidth: 0, flex: 1 }}>

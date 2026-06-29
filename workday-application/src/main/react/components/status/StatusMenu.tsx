@@ -57,7 +57,10 @@ const Root = styled('div')(({ theme }) => {
       isDark ? theme.palette.error.light : theme.palette.error.dark,
     ),
 
-    [`& .${classes.buttonDone}`]: softTintChip(theme.palette.done, theme.palette.done),
+    [`& .${classes.buttonDone}`]: softTintChip(
+      theme.palette.done,
+      theme.palette.done,
+    ),
   };
 });
 

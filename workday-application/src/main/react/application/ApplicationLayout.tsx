@@ -12,11 +12,9 @@ import { styled } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-
-import { ColorModeToggle } from '../theme/ColorModeToggle';
-
 // Hooks
 import { useSession } from '../hooks/SessionHook';
+import { ColorModeToggle } from '../theme/ColorModeToggle';
 
 const PREFIX = 'ApplicationLayout';
 

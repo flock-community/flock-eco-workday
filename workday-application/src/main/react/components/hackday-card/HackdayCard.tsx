@@ -15,7 +15,9 @@ type HackdayCardProps = {
 
 export function HackdayCard({ refreshKey }: HackdayCardProps) {
   const [hackdayDetailsOpen, setHackdayDetailsOpen] = useState(false);
-  const [details, setDetails] = useState<PersonHackdayDetails | undefined>(undefined);
+  const [details, setDetails] = useState<PersonHackdayDetails | undefined>(
+    undefined,
+  );
 
   const fetch = useCallback(() => {
     AggregationClient.hackdayDetailsMeYear(new Date().getFullYear()).then(
@@ -91,7 +93,8 @@ export function HackdayCard({ refreshKey }: HackdayCardProps) {
                 color: isOver ? 'warning.dark' : 'inherit',
               }}
             >
-              {isOver ? '−' : ''}{hoursFormatter.format(Math.abs(remaining))}
+              {isOver ? '−' : ''}
+              {hoursFormatter.format(Math.abs(remaining))}
               <Box
                 component="span"
                 sx={{ fontSize: '1.1rem', fontWeight: 400, ml: 0.25 }}

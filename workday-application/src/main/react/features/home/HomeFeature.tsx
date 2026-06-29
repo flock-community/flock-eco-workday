@@ -23,15 +23,15 @@ import { HolidayCard } from '../../components/holiday-card/HolidayCard';
 import { HoursOverviewCard } from '../../components/hours-overview-card/HoursOverviewCard';
 import { MissingHoursCard } from '../../components/missing-hours-card/MissingHoursCard';
 import PersonEvents from '../../components/person/PersonEvents';
+import { addError } from '../../hooks/ErrorHook';
+import { usePerson } from '../../hooks/PersonHook';
+import { useLoginStatus } from '../../hooks/StatusHook';
+import { useUserMe } from '../../hooks/UserMeHook';
+import { HighlightSpan } from '../../theme/theme-light';
+import type { Expense } from '../../wirespec/model/Expense';
 import { ExpenseDialog } from '../expense/ExpenseDialog';
 import { LeaveDayDialog } from '../holiday/LeaveDayDialog';
 import { WorkDayDialog } from '../workday/WorkDayDialog';
-import { useLoginStatus } from '../../hooks/StatusHook';
-import { useUserMe } from '../../hooks/UserMeHook';
-import { usePerson } from '../../hooks/PersonHook';
-import { addError } from '../../hooks/ErrorHook';
-import { HighlightSpan } from '../../theme/theme-light';
-import type { Expense } from '../../wirespec/model/Expense';
 
 const twoCol: React.CSSProperties = {
   display: 'grid',
@@ -104,7 +104,9 @@ export function HomeFeature() {
   return (
     <div
       className={'content flow'}
-      style={{ marginTop: '24px', paddingBottom: '24px' } as React.CSSProperties}
+      style={
+        { marginTop: '24px', paddingBottom: '24px' } as React.CSSProperties
+      }
       flow-gap={'wide'}
     >
       <section style={{ paddingLeft: 16, paddingRight: 16 }}>
@@ -126,7 +128,11 @@ export function HomeFeature() {
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={openAddWorkDay}
-                sx={{ borderRadius: '999px', textTransform: 'none', fontWeight: 600 }}
+                sx={{
+                  borderRadius: '999px',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                }}
               >
                 Workday
               </Button>
@@ -161,7 +167,10 @@ export function HomeFeature() {
       </section>
 
       {(showContractsEnding || showPersonEvents) && (
-        <section className={'flow'} style={{ '--flow-gap': '16px' } as React.CSSProperties}>
+        <section
+          className={'flow'}
+          style={{ '--flow-gap': '16px' } as React.CSSProperties}
+        >
           {showContractsEnding && (
             <ContractsEnding withinNWeeks={withinNWeek} contracts={contracts} />
           )}

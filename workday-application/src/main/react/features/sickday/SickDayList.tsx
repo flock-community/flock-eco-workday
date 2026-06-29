@@ -9,10 +9,9 @@ import {
 import { useEffect, useState } from 'react';
 import { SICKDAY_PAGE_SIZE, SickDayClient } from '../../clients/SickDayClient';
 import { DayListItem } from '../../components/DayListItem';
-import { TableCard } from '../../components/TableCard';
-
 // Components
 import { FlockPagination } from '../../components/pagination/FlockPagination';
+import { TableCard } from '../../components/TableCard';
 
 // Types
 import type { DayListProps, DayProps } from '../../types';
