@@ -1,0 +1,249 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: assignment.spec.ts >> Assignment CRUD Operations >> should display assignments for a selected person
+- Location: tests/assignment.spec.ts:34:3
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: locator('.MuiCardHeader-title').filter({ hasText: 'Assignments' })
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" with timeout 5000ms
+  - waiting for locator('.MuiCardHeader-title').filter({ hasText: 'Assignments' })
+
+```
+
+```yaml
+- main:
+  - navigation "Main navigation":
+    - link "Home":
+      - /url: /
+      - img "Flock"
+    - paragraph: Bert
+    - paragraph: Flock · admin
+    - link "Home":
+      - /url: /
+    - link "Month":
+      - /url: /month
+    - link "Todo":
+      - /url: /todo
+    - link "Budget":
+      - /url: /budget
+    - paragraph: Time & expenses
+    - link "Workdays":
+      - /url: /workdays
+    - link "Leave days":
+      - /url: /leave-days
+    - link "Sickdays":
+      - /url: /sickdays
+    - link "Expenses":
+      - /url: /expenses
+    - link "Events":
+      - /url: /event
+    - paragraph: Clients & work
+    - link "Clients":
+      - /url: /clients
+    - link "Projects":
+      - /url: /projects
+    - link "Assignments":
+      - /url: /assignments
+    - link "Contracts":
+      - /url: /contracts
+    - paragraph: People & insight
+    - link "Persons":
+      - /url: /person
+    - link "Users":
+      - /url: /users
+    - link "Dashboard":
+      - /url: /dashboard
+    - button "Reports"
+    - link "Profile":
+      - /url: /profile
+  - link "Flock. Workday":
+    - /url: /
+  - button "Switch to dark mode"
+  - button
+  - text: Select person
+  - combobox "Select person": Tommy Dog
+  - button "Clear"
+  - button "Open"
+  - heading "Assignments" [level=6]
+  - button "Add"
+  - table:
+    - rowgroup:
+      - row "Client Role From To Hourly rate Hours/week Project":
+        - columnheader "Client"
+        - columnheader "Role"
+        - columnheader "From"
+        - columnheader "To"
+        - columnheader "Hourly rate"
+        - columnheader "Hours/week"
+        - columnheader "Project"
+    - rowgroup:
+      - row "Client A DevOps engineer 01-06-2025 now 90 36 Project A1":
+        - cell "Client A"
+        - cell "DevOps engineer"
+        - cell "01-06-2025"
+        - cell "now":
+          - emphasis: now
+        - cell "90"
+        - cell "36"
+        - cell "Project A1"
+```
+
+# Test source
+
+```ts
+  1   | import { expect, test } from '@playwright/test';
+  2   | import { Given_I_am_logged_in_as_user } from './steps/workdaySteps';
+  3   | 
+  4   | const ASSIGNMENT_URL = '/assignments';
+  5   | const ADMIN_USERNAME = 'bert';
+  6   | 
+  7   | test.describe('Assignment CRUD Operations', () => {
+  8   |   test.beforeEach(async ({ page }) => {
+  9   |     await Given_I_am_logged_in_as_user(page, ADMIN_USERNAME);
+  10  |     await page.goto(ASSIGNMENT_URL);
+  11  |     await page.waitForLoadState('networkidle');
+  12  |   });
+  13  | 
+  14  |   async function selectPerson(page, personName: string) {
+  15  |     const personSelect = page.getByRole('combobox');
+  16  |     await personSelect.click();
+  17  |     await page.getByRole('option', { name: personName }).click();
+  18  |     await page.waitForLoadState('networkidle');
+  19  |   }
+  20  | 
+  21  |   async function selectClient(page, clientName: string) {
+  22  |     const clientSelect = page.getByRole('dialog').getByRole('combobox').first();
+  23  |     await clientSelect.click();
+  24  |     await page.getByRole('option', { name: clientName }).click();
+  25  |   }
+  26  | 
+  27  |   function assignmentRow(page, uniqueRole: string) {
+  28  |     return page
+  29  |       .locator('table tbody tr')
+  30  |       .filter({ hasText: uniqueRole })
+  31  |       .first();
+  32  |   }
+  33  | 
+  34  |   test('should display assignments for a selected person', async ({ page }) => {
+  35  |     await selectPerson(page, 'Tommy Dog');
+  36  | 
+  37  |     await expect(
+  38  |       page.locator('.MuiCardHeader-title', { hasText: 'Assignments' }),
+> 39  |     ).toBeVisible();
+      |       ^ Error: expect(locator).toBeVisible() failed
+  40  |     const row = assignmentRow(page, 'DevOps engineer');
+  41  |     await expect(row).toBeVisible();
+  42  |     await expect(row).toContainText('Client A');
+  43  |   });
+  44  | 
+  45  |   test('should create a new assignment', async ({ page }) => {
+  46  |     const timestamp = Date.now();
+  47  |     const roleName = `CreateRole-${timestamp}`;
+  48  | 
+  49  |     await selectPerson(page, 'Ernie Muppets');
+  50  | 
+  51  |     await page.getByRole('button', { name: 'Add' }).click();
+  52  |     await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
+  53  | 
+  54  |     await page.getByLabel('Hourly rate').clear();
+  55  |     await page.getByLabel('Hourly rate').fill('120');
+  56  | 
+  57  |     await page.getByLabel('Hours per week').clear();
+  58  |     await page.getByLabel('Hours per week').fill('40');
+  59  | 
+  60  |     await page.getByLabel('Role').fill(roleName);
+  61  | 
+  62  |     const startDate = page.getByLabel('Start date');
+  63  |     await startDate.click();
+  64  |     await startDate.fill('01-01-2026');
+  65  |     await startDate.press('Tab');
+  66  |     await page.waitForTimeout(200);
+  67  | 
+  68  |     const endDate = page.getByLabel('End date');
+  69  |     await endDate.click();
+  70  |     await endDate.fill('31-12-2026');
+  71  |     await endDate.press('Tab');
+  72  |     await page.waitForTimeout(200);
+  73  | 
+  74  |     await selectClient(page, 'Client B');
+  75  | 
+  76  |     await page.getByRole('button', { name: 'Save' }).click();
+  77  |     await expect(
+  78  |       page.getByText('Create / Edit an assignment'),
+  79  |     ).not.toBeVisible();
+  80  | 
+  81  |     const row = assignmentRow(page, roleName);
+  82  |     await expect(row).toBeVisible({ timeout: 30000 });
+  83  |     await expect(row).toContainText('Client B');
+  84  |     await expect(
+  85  |       row.getByRole('cell', { name: '120', exact: true }),
+  86  |     ).toBeVisible();
+  87  |     await expect(
+  88  |       row.getByRole('cell', { name: '40', exact: true }),
+  89  |     ).toBeVisible();
+  90  |   });
+  91  | 
+  92  |   test('should edit an existing assignment', async ({ page }) => {
+  93  |     const timestamp = Date.now();
+  94  |     const roleName = `EditRole-${timestamp}`;
+  95  |     const updatedRole = `UpdatedRole-${timestamp}`;
+  96  | 
+  97  |     await selectPerson(page, 'Bert Muppets');
+  98  | 
+  99  |     await page.getByRole('button', { name: 'Add' }).click();
+  100 |     await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
+  101 | 
+  102 |     await page.getByLabel('Hourly rate').clear();
+  103 |     await page.getByLabel('Hourly rate').fill('95');
+  104 | 
+  105 |     await page.getByLabel('Hours per week').clear();
+  106 |     await page.getByLabel('Hours per week').fill('32');
+  107 | 
+  108 |     await page.getByLabel('Role').fill(roleName);
+  109 | 
+  110 |     const startDate = page.getByLabel('Start date');
+  111 |     await startDate.click();
+  112 |     await startDate.fill('01-01-2027');
+  113 |     await startDate.press('Tab');
+  114 |     await page.waitForTimeout(200);
+  115 | 
+  116 |     await selectClient(page, 'Client A');
+  117 | 
+  118 |     await page.getByRole('button', { name: 'Save' }).click();
+  119 |     await expect(
+  120 |       page.getByText('Create / Edit an assignment'),
+  121 |     ).not.toBeVisible();
+  122 | 
+  123 |     const row = assignmentRow(page, roleName);
+  124 |     await expect(row).toBeVisible({ timeout: 30000 });
+  125 |     await expect(row).toContainText('Client A');
+  126 | 
+  127 |     await row.click();
+  128 | 
+  129 |     await expect(page.getByText('Create / Edit an assignment')).toBeVisible();
+  130 |     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
+  131 | 
+  132 |     await page.getByLabel('Role').clear();
+  133 |     await page.getByLabel('Role').fill(updatedRole);
+  134 | 
+  135 |     await page.getByLabel('Hourly rate').clear();
+  136 |     await page.getByLabel('Hourly rate').fill('110');
+  137 | 
+  138 |     await page.getByRole('button', { name: 'Save' }).click();
+  139 |     await expect(
+```
