@@ -5,3 +5,6 @@ databaseChangeLog:
   - include:
     - file: flock-eco-feature-user-002-oauth-unique-reference.yaml
       relativeToChangelogFile: true
+  - include:
+    - file: flock-eco-feature-user-003-purge-orphan-user-accounts.yaml
+      relativeToChangelogFile: true
