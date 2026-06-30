@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Conditional
 import org.springframework.context.annotation.Configuration
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.http.converter.HttpMessageConversionException
@@ -72,6 +73,10 @@ class KratosIdentityUserResolver(
             throw HydraUserinfoUnavailableException("Hydra /userinfo returned an unparseable response", ex)
         }
 
+    // Both catches re-read the winner of a find-or-create race. The DataIntegrityViolationException one
+    // depends on resolve() running outside a transaction: this @Transactional create must be the outermost
+    // tx so the unique-constraint violation flushes at its own commit and is caught here. An enclosing tx
+    // would defer the throw past these catches and 500 the request.
     private fun findOrCreateAccount(
         sub: String,
         email: String,
@@ -88,7 +93,8 @@ class KratosIdentityUserResolver(
                     ),
                 ).user
         } catch (ex: UserAccountExistsException) {
-            // A concurrent request created the account first; re-read instead of failing.
+            findExistingUserBySub(sub) ?: throw ex
+        } catch (ex: DataIntegrityViolationException) {
             findExistingUserBySub(sub) ?: throw ex
         }
 }

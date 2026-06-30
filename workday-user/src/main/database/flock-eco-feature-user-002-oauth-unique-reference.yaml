@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: flock-eco-feature-user-002-oauth-unique-reference-1
+      author: rkorver
+      comment: >-
+        Make (provider, reference) unique on user_account_oauth so a find-or-create
+        race can no longer mint duplicate OAuth couplings (which broke
+        findByReference and 500'd every authenticated request). DESTRUCTIVE: first
+        deduplicates existing rows, keeping the oldest (min id) per
+        (provider, reference). NULL provider/reference tuples are left untouched —
+        they never violate a unique constraint under Postgres NULL semantics.
+      changes:
+        - sql:
+            sql: >-
+              DELETE FROM user_account_oauth
+              WHERE provider IS NOT NULL
+                AND reference IS NOT NULL
+                AND id NOT IN (
+                  SELECT MIN(id)
+                  FROM user_account_oauth
+                  WHERE provider IS NOT NULL AND reference IS NOT NULL
+                  GROUP BY provider, reference
+                );
+        - addUniqueConstraint:
+            tableName: user_account_oauth
+            columnNames: provider, reference
+            constraintName: uc_user_account_oauth_provider_reference
