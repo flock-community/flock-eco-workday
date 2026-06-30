@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
+import { findOnAnyPage } from './steps/dayListSteps';
 import {
   Given_I_am_logged_in_as_user,
   When_I_fill_in_the_date_range_from_till,
@@ -55,38 +56,6 @@ async function changeStatusOnLocator(
   await page.getByRole('menuitem', { name: toStatus }).click();
   await page.waitForLoadState('networkidle');
   await expect(locator.getByRole('button', { name: toStatus })).toBeVisible();
-}
-
-// Walk the FlockPagination ("Go to next page") until `locator` resolves.
-// Both the SickDay and LeaveDay APIs sit on top of Spring's standard
-// Pageable resolver, which sets the `x-total` response header that the
-// frontend uses to compute the page count. The WorkDay API does the same
-// via its Page<T>.toResponse() helper. Seeded mock data spreads dozens of
-// entries across years for ernie, so our run-specific entry can sit
-// several pages deep.
-async function findOnAnyPage(
-  page: Page,
-  locator: Locator,
-  maxPages = 25,
-): Promise<Locator> {
-  for (let i = 0; i < maxPages; i++) {
-    if ((await locator.count()) > 0) {
-      return locator.first();
-    }
-    const nextBtn = page.getByRole('button', { name: 'Go to next page' });
-    if (
-      (await nextBtn.count()) === 0 ||
-      !(await nextBtn.isVisible()) ||
-      !(await nextBtn.isEnabled())
-    ) {
-      throw new Error(
-        `findOnAnyPage: could not find locator within ${maxPages} pages`,
-      );
-    }
-    await nextBtn.click();
-    await page.waitForLoadState('networkidle');
-  }
-  throw new Error('findOnAnyPage: exceeded the page-walk safety limit');
 }
 
 test.describe
