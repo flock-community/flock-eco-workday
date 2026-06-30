@@ -77,7 +77,7 @@ function DayField({
   const field = (
     <TextField
       size="small"
-      label={day.disabled ? '-' : day.date.format('DD MMM')}
+      label={day.disabled ? '' : day.date.format('DD MMM')}
       value={day.value}
       disabled={day.disabled}
       onChange={(ev) => onChange(day.date, parseFloat(ev.target.value || '0'))}
@@ -87,6 +87,7 @@ function DayField({
         background
           ? { '& .MuiOutlinedInput-root': { backgroundColor: background } }
           : false,
+        day.disabled ? { opacity: 0.4 } : false,
       ]}
       fullWidth={fullWidth}
     />
