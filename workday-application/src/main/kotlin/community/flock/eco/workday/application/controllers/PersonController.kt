@@ -193,12 +193,11 @@ class PersonController(
 
     private fun User.externalize(): UserApi {
         val created: LocalDateTime? = created
-        val authorities: Set<String>? = authorities
         return UserApi(
             id = code,
             name = name,
             email = email,
-            authorities = authorities?.toList(),
+            authorities = authorities.toList(),
             accounts = null,
             created = created?.toString(),
         )
