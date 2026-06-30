@@ -8,6 +8,7 @@ import community.flock.eco.workday.api.endpoint.PutSickDay
 import community.flock.eco.workday.application.authorities.SickdayAuthority
 import community.flock.eco.workday.application.forms.SickDayForm
 import community.flock.eco.workday.application.interfaces.applyAllowedToUpdate
+import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.model.SickDay
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.SickDayService
@@ -125,19 +126,25 @@ class SickdayController(
             ?: throw ResponseStatusException(FORBIDDEN, "User is not linked to person")
     }
 
-    private fun SickDay.externalize(): SickDayApi =
-        SickDayApi(
-            personId = person.uuid.toString(),
+    private fun SickDay.externalize(): SickDayApi {
+        // sick_day columns lack NOT NULL; JPA can hydrate null into these non-null properties.
+        val person: Person? = person
+        val from: LocalDate? = from
+        val to: LocalDate? = to
+        val status: Status? = status
+        return SickDayApi(
+            personId = person?.uuid?.toString(),
             id = id,
             code = code,
-            from = from.toString(),
-            to = to.toString(),
+            from = from?.toString(),
+            to = to?.toString(),
             hours = hours,
             days = days,
             description = description,
-            status = status.toApi(),
+            status = status?.toApi(),
             type = "SickDay",
         )
+    }
 
     private fun Status.toApi(): SickDayStatusApi =
         when (this) {

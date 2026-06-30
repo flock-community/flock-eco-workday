@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FlockEvent } from '../../clients/EventClient';
 import { FlockPagination } from '../pagination/FlockPagination';
 import { EventList } from './EventList';
@@ -15,18 +15,25 @@ type UpcomingEventsCardProps = {
 
 const rowsPerPage = 4;
 
-const getFirstUpcomingEventPage = (items: FlockEvent[]) => {
+const lastPage = (count: number) =>
+  Math.max(0, Math.ceil(count / rowsPerPage) - 1);
+
+const pageOfNextUpcomingEvent = (items: FlockEvent[]) => {
   const today = dayjs();
-  const closestEventIndex = items.findIndex((event) =>
-    event.from.isAfter(today, 'day'),
-  );
-  return closestEventIndex === -1
-    ? 0
-    : Math.floor(closestEventIndex / rowsPerPage);
+  const idx = items.findIndex((event) => !event.from.isBefore(today, 'day'));
+  return idx === -1 ? lastPage(items.length) : Math.floor(idx / rowsPerPage);
 };
 
 export function HackDayList({ items, onEventToggle }: UpcomingEventsCardProps) {
-  const [page, setPage] = useState(getFirstUpcomingEventPage(items));
+  const [page, setPage] = useState(0);
+  const landedOnUpcoming = useRef(false);
+
+  useEffect(() => {
+    if (!landedOnUpcoming.current && items.length > 0) {
+      landedOnUpcoming.current = true;
+      setPage(pageOfNextUpcomingEvent(items));
+    }
+  }, [items]);
 
   return (
     <>
