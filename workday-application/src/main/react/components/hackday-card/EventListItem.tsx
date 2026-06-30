@@ -19,8 +19,16 @@ const classes = {
 };
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
+  border: '1px solid transparent',
+  borderRadius: 6,
+  marginBottom: theme.spacing(1),
+  transition: theme.transitions.create(['background-color', 'border-color']),
+  '&:last-of-type': {
+    marginBottom: 0,
+  },
   [`&.${classes.active}`]: {
-    backgroundColor: alpha(theme.palette.primary.main, 0.14),
+    backgroundColor: alpha(theme.palette.primary.main, 0.12),
+    borderColor: theme.palette.primary.main,
   },
 }));
 
