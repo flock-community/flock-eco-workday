@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.api.model.PersonEvent as PersonEventApi
@@ -163,10 +164,14 @@ class PersonController(
                 }
             }
 
-    private fun Person.externalize(): PersonApi =
-        PersonApi(
+    private fun Person.externalize(): PersonApi {
+        // person/user columns lack NOT NULL; JPA can hydrate null into these non-null properties.
+        val uuid: UUID? = uuid
+        val firstname: String? = firstname
+        val lastname: String? = lastname
+        return PersonApi(
             id = id,
-            uuid = uuid.toString(),
+            uuid = uuid?.toString(),
             firstname = firstname,
             lastname = lastname,
             email = email,
@@ -182,18 +187,21 @@ class PersonController(
             shirtSize = shirtSize,
             googleDriveId = googleDriveId,
             user = user?.externalize(),
-            fullName = "$firstname $lastname",
+            fullName = listOfNotNull(firstname, lastname).joinToString(" ").ifBlank { null },
         )
+    }
 
-    private fun User.externalize(): UserApi =
-        UserApi(
+    private fun User.externalize(): UserApi {
+        val created: LocalDateTime? = created
+        return UserApi(
             id = code,
             name = name,
             email = email,
             authorities = authorities.toList(),
             accounts = null,
-            created = created.toString(),
+            created = created?.toString(),
         )
+    }
 
     private fun PersonEvent.externalize(): PersonEventApi =
         PersonEventApi(

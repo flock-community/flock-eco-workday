@@ -2,3 +2,6 @@ databaseChangeLog:
   - include:
     - file: flock-eco-feature-user-001-init.yaml
       relativeToChangelogFile: true
+  - include:
+    - file: flock-eco-feature-user-002-oauth-unique-reference.yaml
+      relativeToChangelogFile: true
