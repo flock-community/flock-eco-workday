@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: flock-eco-feature-user-003-purge-orphan-user-accounts-1
+      author: rkorver
+      comment: >-
+        Repair for flock-eco-feature-user-002. That changeset deduped by deleting
+        rows from the user_account_oauth subclass table but left their user_account
+        base rows behind. UserAccount is JOINED-inheritance with no discriminator,
+        so an orphan base row (no row in oauth/password/key) has no resolvable
+        concrete type: when Hibernate batch-loads the EAGER, polymorphic
+        User.accounts collection it builds an EntityKey with a null persister and
+        NPEs — 500ing every authenticated read that touches such a user. Delete the
+        orphaned base rows. DESTRUCTIVE, but an orphan carries no oauth/password/key
+        data, so it is already dead as an entity.
+      changes:
+        - sql:
+            sql: >-
+              DELETE FROM user_account
+              WHERE NOT EXISTS (SELECT 1 FROM user_account_oauth o WHERE o.id = user_account.id)
+                AND NOT EXISTS (SELECT 1 FROM user_account_password p WHERE p.id = user_account.id)
+                AND NOT EXISTS (SELECT 1 FROM user_account_key k WHERE k.id = user_account.id)
