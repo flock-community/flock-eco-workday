@@ -1,14 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
-import {
-  Box,
-  Button,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-} from '@mui/material';
-import Table from '@mui/material/Table';
-import TableRow from '@mui/material/TableRow';
+import { Box, Button } from '@mui/material';
+import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import { WORK_DAY_PAGE_SIZE, WorkDayClient } from '../../clients/WorkDayClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
@@ -52,24 +44,6 @@ export function WorkDayList({
     );
   }
 
-  const renderItems = () => {
-    if (list.length === 0) {
-      return (
-        <TableRow>
-          <TableCell
-            colSpan={8}
-            align="center"
-            sx={{ py: 4, color: 'text.secondary' }}
-          >
-            No workdays
-          </TableCell>
-        </TableRow>
-      );
-    }
-
-    return list.map(renderItem);
-  };
-
   return (
     <Box>
       <TableCard
@@ -81,23 +55,21 @@ export function WorkDayList({
         }
         loading={loading}
       >
-        <TableContainer>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Client</TableCell>
-                <TableCell>Assignment</TableCell>
-                <TableCell>From</TableCell>
-                <TableCell>To</TableCell>
-                <TableCell align="right">Days</TableCell>
-                <TableCell align="right">Hours</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell />
-              </TableRow>
-            </TableHead>
-            <TableBody>{renderItems()}</TableBody>
-          </Table>
-        </TableContainer>
+        <DataTable
+          columns={[
+            { header: 'Client' },
+            { header: 'Assignment' },
+            { header: 'From' },
+            { header: 'To' },
+            { header: 'Days', align: 'right' },
+            { header: 'Hours', align: 'right' },
+            { header: 'Status' },
+            {},
+          ]}
+          items={list}
+          renderRow={renderItem}
+          emptyMessage="No workdays"
+        />
       </TableCard>
       <FlockPagination
         currentPage={page + 1}

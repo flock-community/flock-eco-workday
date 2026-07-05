@@ -1,14 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
-import {
-  Button,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-} from '@mui/material';
+import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableRow from '@mui/material/TableRow';
+import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import { type Project, ProjectClient } from '../../clients/ProjectClient';
 import { TableCard } from '../../components/TableCard';
@@ -44,32 +37,13 @@ export default function ProjectList({ editProject, refresh, onClickAdd }) {
         }
         loading={loading}
       >
-        <TableContainer>
-          <Table size="small" aria-label="collapsible table">
-            <TableHead>
-              <TableRow>
-                <TableCell />
-                <TableCell>Project name</TableCell>
-                <TableCell />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {projects.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={3}
-                    align="center"
-                    sx={{ py: 4, color: 'text.secondary' }}
-                  >
-                    No projects
-                  </TableCell>
-                </TableRow>
-              ) : (
-                projects.map(renderItem)
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <DataTable
+          columns={[{}, { header: 'Project name' }, {}]}
+          items={projects}
+          renderRow={renderItem}
+          emptyMessage="No projects"
+          aria-label="collapsible table"
+        />
       </TableCard>
     </Box>
   );

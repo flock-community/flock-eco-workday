@@ -1,14 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
-import {
-  Box,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
+import { Box, Button, TableCell, TableRow } from '@mui/material';
+import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import { type Client, ClientClient } from '../../clients/ClientClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
@@ -62,38 +54,21 @@ export function ClientList({
         }
         loading={loading}
       >
-        <TableContainer>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {list.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    align="center"
-                    sx={{ py: 4, color: 'text.secondary' }}
-                  >
-                    No clients
-                  </TableCell>
-                </TableRow>
-              ) : (
-                list.map((it) => (
-                  <TableRow
-                    key={`clients-${it.code}`}
-                    hover
-                    sx={{ cursor: 'pointer' }}
-                    onClick={handleItem(it)}
-                  >
-                    <TableCell>{it.name}</TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <DataTable
+          columns={[{ header: 'Name' }]}
+          items={list}
+          renderRow={(it) => (
+            <TableRow
+              key={`clients-${it.code}`}
+              hover
+              sx={{ cursor: 'pointer' }}
+              onClick={handleItem(it)}
+            >
+              <TableCell>{it.name}</TableCell>
+            </TableRow>
+          )}
+          emptyMessage="No clients"
+        />
       </TableCard>
       <FlockPagination
         currentPage={page + 1}

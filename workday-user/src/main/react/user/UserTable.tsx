@@ -1,10 +1,7 @@
 import { Box, Pagination } from '@mui/material';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import UserClient from './UserClient';
 
@@ -49,45 +46,29 @@ export function UserTable({
 
   return (
     <Box>
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Authorities</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {state.list.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={3}
-                  align="center"
-                  sx={{ py: 4, color: 'text.secondary' }}
-                >
-                  No users
-                </TableCell>
-              </TableRow>
-            ) : (
-              state.list.map((it) => (
-                <TableRow
-                  key={it.id}
-                  hover
-                  sx={{ cursor: 'pointer' }}
-                  onClick={handleRowClick(it)}
-                >
-                  <TableCell component="th" scope="row">
-                    {it.name}
-                  </TableCell>
-                  <TableCell>{it.email}</TableCell>
-                  <TableCell>{it.authorities.length}</TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <DataTable
+        columns={[
+          { header: 'Name' },
+          { header: 'Email' },
+          { header: 'Authorities' },
+        ]}
+        items={state.list}
+        renderRow={(it: any) => (
+          <TableRow
+            key={it.id}
+            hover
+            sx={{ cursor: 'pointer' }}
+            onClick={handleRowClick(it)}
+          >
+            <TableCell component="th" scope="row">
+              {it.name}
+            </TableCell>
+            <TableCell>{it.email}</TableCell>
+            <TableCell>{it.authorities.length}</TableCell>
+          </TableRow>
+        )}
+        emptyMessage="No users"
+      />
       {pageCount > 1 && (
         <Pagination
           sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}

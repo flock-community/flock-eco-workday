@@ -1,13 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
+import { Button } from '@mui/material';
+import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import { SICKDAY_PAGE_SIZE, SickDayClient } from '../../clients/SickDayClient';
 import { DayListItem } from '../../components/DayListItem';
@@ -66,36 +59,20 @@ export function SickDayList({
         }
         loading={loading}
       >
-        <TableContainer>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Description</TableCell>
-                <TableCell>From</TableCell>
-                <TableCell>To</TableCell>
-                <TableCell align="right">Days</TableCell>
-                <TableCell align="right">Hours</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {list.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    align="center"
-                    sx={{ py: 4, color: 'text.secondary' }}
-                  >
-                    No sick days
-                  </TableCell>
-                </TableRow>
-              ) : (
-                list.map(renderItem)
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <DataTable
+          columns={[
+            { header: 'Description' },
+            { header: 'From' },
+            { header: 'To' },
+            { header: 'Days', align: 'right' },
+            { header: 'Hours', align: 'right' },
+            { header: 'Status' },
+            {},
+          ]}
+          items={list}
+          renderRow={renderItem}
+          emptyMessage="No sick days"
+        />
       </TableCard>
       <FlockPagination
         currentPage={page + 1}

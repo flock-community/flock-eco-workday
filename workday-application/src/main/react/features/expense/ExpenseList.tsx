@@ -7,13 +7,10 @@ import {
   Button,
   IconButton,
   Link,
-  Table,
-  TableBody,
   TableCell,
-  TableContainer,
-  TableHead,
   TableRow,
 } from '@mui/material';
+import { DataTable } from '@workday-core/components/DataTable';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useState } from 'react';
@@ -129,34 +126,18 @@ export function ExpenseList({
         }
         loading={loading}
       >
-        <TableContainer>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Description</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell align="right">Amount</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {items.length === 0
-                ? !loading && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={5}
-                        align="center"
-                        sx={{ py: 4, color: 'text.secondary' }}
-                      >
-                        No expenses
-                      </TableCell>
-                    </TableRow>
-                  )
-                : items.map(renderRow)}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <DataTable
+          columns={[
+            { header: 'Description' },
+            { header: 'Date' },
+            { header: 'Amount', align: 'right' },
+            { header: 'Status' },
+            {},
+          ]}
+          items={items}
+          renderRow={renderRow}
+          emptyMessage="No expenses"
+        />
       </TableCard>
       <FlockPagination
         currentPage={page + 1}
