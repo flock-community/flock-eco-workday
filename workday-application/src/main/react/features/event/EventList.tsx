@@ -7,14 +7,11 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Table,
-  TableBody,
   TableCell,
-  TableContainer,
-  TableHead,
   TableRow,
   TextField,
 } from '@mui/material';
+import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import {
   EVENT_PAGE_SIZE,
@@ -192,37 +189,22 @@ export const EventList = ({
         action={addButton}
         loading={loading}
       >
-        <TableContainer>
-          <Table size="small" sx={{ minWidth: 800 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Event</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell>From</TableCell>
-                <TableCell>To</TableCell>
-                <TableCell align="right">Days</TableCell>
-                <TableCell align="right">People</TableCell>
-                <TableCell align="right">Hours</TableCell>
-                <TableCell align="right">Cost</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filtered.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={8}
-                    align="center"
-                    sx={{ py: 4, color: 'text.secondary' }}
-                  >
-                    No events
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paged.map(renderItem)
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <DataTable
+          columns={[
+            { header: 'Event' },
+            { header: 'Type' },
+            { header: 'From' },
+            { header: 'To' },
+            { header: 'Days', align: 'right' },
+            { header: 'People', align: 'right' },
+            { header: 'Hours', align: 'right' },
+            { header: 'Cost', align: 'right' },
+          ]}
+          items={paged}
+          renderRow={renderItem}
+          emptyMessage="No events"
+          sx={{ minWidth: 800 }}
+        />
       </TableCard>
       <FlockPagination
         currentPage={page + 1}

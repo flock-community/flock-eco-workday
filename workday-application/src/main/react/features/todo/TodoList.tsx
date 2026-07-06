@@ -1,15 +1,6 @@
-import {
-  Box,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Tabs,
-} from '@mui/material';
+import { Box, Tab, TableCell, TableRow, Tabs } from '@mui/material';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { TodoClient } from '../../clients/TodoClient';
@@ -127,52 +118,36 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
             />
           ))}
         </Tabs>
-        <TableContainer>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Person</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell align="right">Status</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {currentTodos.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={3}
-                    align="center"
-                    sx={{ py: 4, color: 'text.secondary' }}
-                  >
-                    Nothing todo
-                  </TableCell>
-                </TableRow>
-              ) : (
-                currentTodos.map((item) => (
-                  <TableRow
-                    key={`todo-list-item-${item.id}`}
-                    hover
-                    sx={{ cursor: 'pointer' }}
-                    onClick={handleRowClick(item)}
-                  >
-                    <TableCell>{item.personName}</TableCell>
-                    <TableCell>{item.description}</TableCell>
-                    <TableCell
-                      align="right"
-                      onClick={(event) => event.stopPropagation()}
-                    >
-                      <StatusMenu
-                        onChange={handleStatusChange(item)}
-                        disabled={false}
-                        value={statusOverrides[String(item.id)] ?? 'REQUESTED'}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <DataTable
+          columns={[
+            { header: 'Person' },
+            { header: 'Description' },
+            { header: 'Status', align: 'right' },
+          ]}
+          items={currentTodos}
+          renderRow={(item) => (
+            <TableRow
+              key={`todo-list-item-${item.id}`}
+              hover
+              sx={{ cursor: 'pointer' }}
+              onClick={handleRowClick(item)}
+            >
+              <TableCell>{item.personName}</TableCell>
+              <TableCell>{item.description}</TableCell>
+              <TableCell
+                align="right"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <StatusMenu
+                  onChange={handleStatusChange(item)}
+                  disabled={false}
+                  value={statusOverrides[String(item.id)] ?? 'REQUESTED'}
+                />
+              </TableCell>
+            </TableRow>
+          )}
+          emptyMessage="Nothing todo"
+        />
       </TableCard>
       <FlockPagination
         currentPage={page + 1}

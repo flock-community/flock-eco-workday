@@ -1,14 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
-import {
-  Box,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
+import { Box, Button, TableCell, TableRow } from '@mui/material';
+import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import {
   CONTRACT_PAGE_SIZE,
@@ -82,49 +74,33 @@ export function ContractList({
         }
         loading={loading}
       >
-        <TableContainer>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Type</TableCell>
-                <TableCell>From</TableCell>
-                <TableCell>To</TableCell>
-                <TableCell align="right">Hours/week</TableCell>
-                <TableCell align="right">Compensation</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {items.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    align="center"
-                    sx={{ py: 4, color: 'text.secondary' }}
-                  >
-                    No contracts
-                  </TableCell>
-                </TableRow>
-              ) : (
-                items.map((it) => (
-                  <TableRow
-                    key={it.code}
-                    hover
-                    sx={{ cursor: 'pointer' }}
-                    onClick={handleClickItem(it)}
-                  >
-                    <TableCell>{it.type}</TableCell>
-                    <TableCell>{formatDate(it.from)}</TableCell>
-                    <TableCell>{formatDate(it.to)}</TableCell>
-                    <TableCell align="right">
-                      {hasHoursPerWeek(it.type) ? it.hoursPerWeek : '-'}
-                    </TableCell>
-                    <TableCell align="right">{compensation(it)}</TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <DataTable
+          columns={[
+            { header: 'Type' },
+            { header: 'From' },
+            { header: 'To' },
+            { header: 'Hours/week', align: 'right' },
+            { header: 'Compensation', align: 'right' },
+          ]}
+          items={items}
+          renderRow={(it) => (
+            <TableRow
+              key={it.code}
+              hover
+              sx={{ cursor: 'pointer' }}
+              onClick={handleClickItem(it)}
+            >
+              <TableCell>{it.type}</TableCell>
+              <TableCell>{formatDate(it.from)}</TableCell>
+              <TableCell>{formatDate(it.to)}</TableCell>
+              <TableCell align="right">
+                {hasHoursPerWeek(it.type) ? it.hoursPerWeek : '-'}
+              </TableCell>
+              <TableCell align="right">{compensation(it)}</TableCell>
+            </TableRow>
+          )}
+          emptyMessage="No contracts"
+        />
       </TableCard>
       <FlockPagination
         currentPage={page + 1}
