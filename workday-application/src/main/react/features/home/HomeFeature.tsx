@@ -27,7 +27,6 @@ import { addError } from '../../hooks/ErrorHook';
 import { usePerson } from '../../hooks/PersonHook';
 import { useLoginStatus } from '../../hooks/StatusHook';
 import { useUserMe } from '../../hooks/UserMeHook';
-import { HighlightSpan } from '../../theme/theme-light';
 import type { Expense } from '../../wirespec/model/Expense';
 import { ExpenseDialog } from '../expense/ExpenseDialog';
 import { LeaveDayDialog } from '../holiday/LeaveDayDialog';
@@ -119,9 +118,7 @@ export function HomeFeature() {
             gap: '12px',
           }}
         >
-          <Typography variant="h2">
-            Hi, <HighlightSpan>{user?.name}!</HighlightSpan>
-          </Typography>
+          <Typography variant="h2">Hi, {user?.name}!</Typography>
           {hasAccess && (
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               <Button
