@@ -1,0 +1,20 @@
+{
+  "b-login": "The login screen",
+  "b-home-1": "The old home — hamburger & drawer",
+  "b-home-2": "Quick links, leave & hack widgets",
+  "b-events": "Events — a card per event",
+  "b-event-dialog": "One shared cost, everyone in one list",
+  "b-leave": "Leave days",
+  "b-sick": "Sick days",
+  "b-expenses": "Expenses — each list styled its own way",
+  "a-login": "Redesigned login — now with dark mode",
+  "a-home-1": "New home — persistent rail & quick actions",
+  "a-home-2": "Leave & hack gauges, hours overview",
+  "a-hackdays": "Hack days — next up first, ready to toggle",
+  "a-events": "Events — one table: search, type & year filters",
+  "a-event-dialog": "Per-attendee hours, costs & budgets",
+  "a-leave": "One table pattern everywhere — soft status chips",
+  "a-sick": "Sick days — same shell",
+  "a-expenses": "Expenses — same shell, same chips",
+  "a-dark": "Sunglasses on — dark mode across the app"
+}
