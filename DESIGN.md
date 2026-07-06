@@ -8,7 +8,7 @@ perceptual consistency and emitted as hex/rgb so MUI's colour manipulators
 ## Color
 
 Strategy: **committed**. The Flock yellow carries real surface presence (app bar,
-primary actions, the marker highlight) against warm, low-chroma neutrals. Neutrals
+primary actions) against warm, low-chroma neutrals. Neutrals
 are tinted toward the yellow hue (~100) so nothing is a dead grey, and pure
 `#000`/`#fff` are never used.
 
