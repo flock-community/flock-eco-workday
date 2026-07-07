@@ -14,7 +14,7 @@ Flock Workday is a standalone workforce-management application: time tracking, l
 
 ## Brand Personality
 
-Flock. Confident, warm, a little playful. Three words: bold, friendly, precise. The signature is the bright Flock yellow (#fcde00) used with conviction, paired with a hand-drawn marker-highlight motif that gives an otherwise utilitarian tool a human, crafted touch. Voice is direct and lightly irreverent (the existing session-expiry copy calls the user a "peasant"), never corporate-bland.
+Flock. Confident, warm, a little playful. Three words: bold, friendly, precise. The signature is the bright Flock yellow (#fcde00) used with conviction, giving an otherwise utilitarian tool a human, crafted touch. Voice is direct and lightly irreverent (the existing session-expiry copy calls the user a "peasant"), never corporate-bland.
 
 ## Anti-references
 
@@ -26,7 +26,7 @@ Flock. Confident, warm, a little playful. Three words: bold, friendly, precise. 
 
 - **Yellow with intent.** The Flock yellow is the brand and stays prominent, but it signals (brand surfaces, primary action, highlight) rather than smothering. Every yellow placement is a deliberate choice, not a fill-by-default.
 - **Calm density.** Data-entry and review screens reward fast scanning: clear hierarchy, generous-but-consistent rhythm, quiet neutrals so the yellow and the data stand out.
-- **Crafted, not corporate.** Keep the human touches (the marker highlight, the cheeky copy). The tool should feel made by people who care.
+- **Crafted, not corporate.** Keep the human touches (the cheeky copy). The tool should feel made by people who care.
 - **One coherent system.** Colour, type, spacing, elevation and components come from shared tokens so every screen inherits the polish, including future ones.
 - **Light and dark, both first-class.** Neutrals are tinted toward the brand hue; the yellow reads well on warm off-white and warm near-black alike.
 

@@ -8,7 +8,7 @@ perceptual consistency and emitted as hex/rgb so MUI's colour manipulators
 ## Color
 
 Strategy: **committed**. The Flock yellow carries real surface presence (app bar,
-primary actions, the marker highlight) against warm, low-chroma neutrals. Neutrals
+primary actions) against warm, low-chroma neutrals. Neutrals
 are tinted toward the yellow hue (~100) so nothing is a dead grey, and pure
 `#000`/`#fff` are never used.
 
@@ -85,6 +85,6 @@ No layout-property animation, no bounce. Respect `prefers-reduced-motion`.
 
 ## Signature
 
-The hand-drawn marker highlight (`HighlightSpan` + the `#markerShape` SVG turbulence
-filter in `index.html`) is the brand's human touch. Kept and reusable beyond the home
-greeting.
+The hand-drawn marker highlight was retired; the home greeting is a plain heading.
+The brand's human touch now rests on the cheeky copy and on yellow used with intent
+(AppBar, primary actions, selection states).
