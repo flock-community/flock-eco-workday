@@ -1,7 +1,8 @@
 import { UserFeature } from '@workday-user';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import AssignmentPage from '../features/assignments/AssignmentPage';
+import BudgetPage from '../features/budget/BudgetPage';
 import { ClientFeature } from '../features/client/ClientFeature';
 import ContractPage from '../features/contract/ContractPage';
 import { DashboardFeature } from '../features/dashboard/DashboardFeature';
@@ -22,17 +23,25 @@ import { TodoFeature } from '../features/todo/TodoFeature';
 import WorkDayPage from '../features/workday/WorkDayPage';
 import { ApplicationDrawer } from './ApplicationDrawer';
 import { ApplicationLayout } from './ApplicationLayout';
+import { ApplicationSidebar } from './ApplicationSidebar';
 
 export const AuthenticatedApplication = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
 
+  useEffect(() => {
+    const grid = document.getElementById('index');
+    grid?.classList.add('has-sidebar');
+    return () => grid?.classList.remove('has-sidebar');
+  }, []);
+
   return (
     <>
+      <ApplicationSidebar />
       <ApplicationDrawer
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
       />
-      <ApplicationLayout onDrawer={() => setOpenDrawer(true)} />
+      <ApplicationLayout onMenu={() => setOpenDrawer(true)} />
       <Switch>
         <Route path="/" exact component={HomeFeature} />
         <Route path="/dashboard" exact component={DashboardFeature} />
@@ -50,6 +59,7 @@ export const AuthenticatedApplication = () => {
         <Route path="/person" component={PersonFeature} />
         <Route path="/profile" component={ProfileFeature} />
         <Route path="/event" component={EventFeature} />
+        <Route path="/budget" component={BudgetPage} />
         <Route path="/event_rating/:eventCode" component={EventRatingFeature} />
         <Route path="/reports/assignment" component={AssignmentReport} />
         <Route path="/reports/contract-overview" component={ContractOverview} />

@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class ContractControllerTest(
@@ -50,7 +51,7 @@ class ContractControllerTest(
                 from = LocalDate.of(2024, 1, 1),
                 to = LocalDate.of(2024, 12, 31),
                 holidayHours = 192,
-                hackHours = 160,
+                hackTimeBudget = 160,
                 billable = true,
             )
 
@@ -69,11 +70,55 @@ class ContractControllerTest(
             .andExpect(jsonPath("$.monthlySalary").value(form.monthlySalary))
             .andExpect(jsonPath("$.hoursPerWeek").value(form.hoursPerWeek))
             .andExpect(jsonPath("$.holidayHours").value(form.holidayHours))
-            .andExpect(jsonPath("$.hackHours").value(form.hackHours))
+            .andExpect(jsonPath("$.hackTimeBudget").value(form.hackTimeBudget))
             .andExpect(jsonPath("$.billable").value(form.billable))
             .andExpect(jsonPath("$.from").value(form.from.toString()))
             .andExpect(jsonPath("$.to").value(form.to.toString()))
             .andExpect(jsonPath("$.person.uuid").value(person.uuid.toString()))
+    }
+
+    @Test
+    fun `GET should return the training budget of an internal contract`() {
+        val adminUser = createHelper.createUserEntity(adminAuthorities)
+        val person = createHelper.createPersonEntity()
+
+        val form =
+            ContractInternalForm(
+                personId = person.uuid,
+                monthlySalary = 5000.0,
+                hoursPerWeek = 40,
+                from = LocalDate.of(2024, 1, 1),
+                to = LocalDate.of(2024, 12, 31),
+                holidayHours = 192,
+                hackTimeBudget = 160,
+                billable = true,
+                trainingTimeBudget = 180,
+                trainingMoneyBudget = BigDecimal("3200.00"),
+            )
+
+        val created =
+            mvc
+                .perform(
+                    post("/api/contracts-internal")
+                        .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                        .content(mapper.writeValueAsString(form))
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON),
+                ).asyncDispatch()
+                .andExpect(status().isOk)
+                .andReturn()
+        val code = mapper.readTree(created.response.contentAsString)["code"].asText()
+
+        mvc
+            .perform(
+                get("$baseUrl/$code")
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(jsonPath("$.trainingTimeBudget").value(180))
+            .andExpect(jsonPath("$.trainingMoneyBudget").value(3200.0))
     }
 
     @Test
@@ -214,7 +259,7 @@ class ContractControllerTest(
                 from = LocalDate.of(2024, 1, 1),
                 to = LocalDate.of(2025, 12, 31),
                 holidayHours = 200,
-                hackHours = 100,
+                hackTimeBudget = 100,
                 billable = false,
             )
 
@@ -231,7 +276,7 @@ class ContractControllerTest(
             .andExpect(jsonPath("$.monthlySalary").value(updateForm.monthlySalary))
             .andExpect(jsonPath("$.hoursPerWeek").value(updateForm.hoursPerWeek))
             .andExpect(jsonPath("$.holidayHours").value(updateForm.holidayHours))
-            .andExpect(jsonPath("$.hackHours").value(updateForm.hackHours))
+            .andExpect(jsonPath("$.hackTimeBudget").value(updateForm.hackTimeBudget))
             .andExpect(jsonPath("$.billable").value(updateForm.billable))
             .andExpect(jsonPath("$.to").value(updateForm.to.toString()))
     }

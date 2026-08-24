@@ -1,9 +1,11 @@
 import { Box, Card, CardContent, CardHeader, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import { WorkdayLogo } from '../../components/WorkdayLogo';
 import { useLoginType } from '../../hooks/LoginTypeHook';
+import { ColorModeToggle } from '../../theme/ColorModeToggle';
 
 const PREFIX = 'LoginFeature';
 
@@ -22,9 +24,13 @@ const classes = {
 
 const StyledBox = styled(Box)(({ theme }) => ({
   [`&.${classes.root}`]: {
+    position: 'relative',
     width: '100%',
     minHeight: '100vh',
-    backgroundImage: `linear-gradient(to bottom, white, ${theme.palette.primary.main})`,
+    backgroundImage: `linear-gradient(180deg, ${theme.palette.background.default} 0%, ${theme.palette.background.default} 38%, ${alpha(
+      theme.palette.primary.main,
+      theme.palette.mode === 'dark' ? 0.26 : 0.55,
+    )} 100%)`,
   },
 
   [`& .${classes.background}`]: {
@@ -49,6 +55,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
   [`& .${classes.cardHeader}`]: {
     backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
   },
 
   [`& .${classes.cardContent}`]: {
@@ -75,7 +82,8 @@ const StyledBox = styled(Box)(({ theme }) => ({
   [`& .${classes.logo}`]: {
     marginTop: '4rem',
     marginBottom: '2rem',
-    maxWidth: '600px',
+    width: '100%',
+    maxWidth: '430px',
   },
 
   [`& .${classes.flock}`]: {
@@ -101,10 +109,11 @@ export function LoginFeature() {
 
   return (
     <StyledBox className={classes.root}>
+      <ColorModeToggle sx={{ position: 'absolute', top: 16, right: 16 }} />
       <Box className={classes.background}>
         <Box className={classes.loginContent}>
           <Box className={classes.logo}>
-            <img width="100%" src="/images/workday_logo.webp" alt="" />
+            <WorkdayLogo />
           </Box>
           <Card className={classes.card}>
             <CardHeader
@@ -126,6 +135,8 @@ export function LoginFeature() {
                   </Typography>
                   <Box className={classes.googleButton}>
                     <Button
+                      fullWidth
+                      size="large"
                       color={'secondary'}
                       variant="outlined"
                       href={'/oauth2/authorization/google'}

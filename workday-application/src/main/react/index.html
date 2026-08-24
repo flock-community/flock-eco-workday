@@ -14,6 +14,11 @@
     <link rel="manifest" href="/site.webmanifest" />
 
     <style>
+      /* Light-only UI: opt out of browser/OS forced dark mode so the wordmark
+         (notably the yellow "o") isn't algorithmically darkened. */
+      :root {
+        color-scheme: only light;
+      }
       body {
         margin: 0;
       }
@@ -24,6 +29,7 @@
       /* Content Grid start */
       .content-grid {
         --padding-inline: 24px;
+        --sidebar-width: 256px;
         --content-max-width: 1280px;
         --breakout-max-width: 1820px;
         --breakout-size: calc(
@@ -46,16 +52,24 @@
         row-gap: var(--row-gap);
       }
 
-      .content-grid > :not(.content, .full-width),
-      .full-width > :not(.content, .full-width) {
-        grid-column: breakout;
-      }
-      .content-grid > .content {
+      .content-grid > :not(.breakout, .full-width),
+      .full-width > :not(.breakout, .full-width) {
         grid-column: content;
+      }
+      .content-grid > .breakout {
+        grid-column: breakout;
       }
 
       .content-grid > .full-width {
         grid-column: full-width;
+      }
+
+      /* Persistent left rail offsets the whole grid (top bar + content)
+         on desktop; below the breakpoint the rail collapses to a drawer. */
+      @media (min-width: 900px) {
+        .content-grid.has-sidebar {
+          padding-left: var(--sidebar-width);
+        }
       }
       /*  Content grid end */
 
@@ -101,29 +115,5 @@
   <body>
     <main id="index" class="content-grid"></main>
     <script type="module" src="./index.jsx"></script>
-    <svg
-      xmlns="//www.w3.org/2000/svg"
-      version="1.1"
-      class="svg-filters"
-      style="display: none"
-    >
-      <defs>
-        <filter id="markerShape">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0 0.15"
-            numOctaves="1"
-            result="warp"
-          />
-          <feDisplacementMap
-            xChannelSelector="R"
-            yChannelSelector="G"
-            scale="30"
-            in="SourceGraphic"
-            in2="warp"
-          />
-        </filter>
-      </defs>
-    </svg>
   </body>
 </html>

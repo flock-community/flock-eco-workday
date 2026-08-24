@@ -1,6 +1,3 @@
-import AddIcon from '@mui/icons-material/Add';
-import { Card, CardContent, CardHeader } from '@mui/material';
-import Button from '@mui/material/Button';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
 import { useState } from 'react';
 import type { Person } from '../../clients/PersonClient';
@@ -33,26 +30,13 @@ export function AssignmentFeature({ person }: AssignmentFeatureProps) {
 
   return (
     <>
-      <Card>
-        <CardHeader
-          title="Assignments"
-          action={
-            hasWriteAuthority && (
-              <Button onClick={handleClickAdd}>
-                <AddIcon /> Add
-              </Button>
-            )
-          }
-        />
-        <CardContent>
-          <AssignmentList
-            personId={person?.uuid}
-            onItemClick={handleItemClick}
-            refresh={reload}
-            disableEdit={!hasWriteAuthority}
-          />
-        </CardContent>
-      </Card>
+      <AssignmentList
+        personId={person?.uuid}
+        onItemClick={handleItemClick}
+        refresh={reload}
+        disableEdit={!hasWriteAuthority}
+        onClickAdd={handleClickAdd}
+      />
       <AssignmentDialog
         code={dialog.code}
         open={dialog.open}

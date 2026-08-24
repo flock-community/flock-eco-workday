@@ -1,57 +1,87 @@
-import { Box, Card, Chip, Typography } from '@mui/material';
-import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
-import { styled } from '@mui/material/styles';
+import AddIcon from '@mui/icons-material/Add';
+import {
+  Box,
+  Button,
+  Chip,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TableCell,
+  TableRow,
+  TextField,
+} from '@mui/material';
+import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import {
   EVENT_PAGE_SIZE,
   EventClient,
-  type FlockEvent,
+  EventType,
   type FullFlockEvent,
 } from '../../clients/EventClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
+import { TableCard } from '../../components/TableCard';
 import { EventTypeMapping } from '../../utils/mappings';
 import { isDefined } from '../../utils/validation';
-
-const PREFIX = 'EventList';
-
-const classes = {
-  list: `${PREFIX}List`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({
-  [`& .${classes.list}`]: (loading) => ({
-    opacity: loading ? 0.5 : 1,
-  }),
-});
 
 type EventListProps = {
   refresh: boolean;
   onClickRow: (item: FullFlockEvent) => void;
+  onClickAdd: () => void;
 };
+
+type TypeFilter = EventType | 'ALL';
+
+const currentYear = new Date().getFullYear();
+const selectableYears = [currentYear, currentYear - 1, currentYear - 2];
+const YEAR_FETCH_SIZE = 500;
+
+function eventTypeChip(type: EventType) {
+  if (type === EventType.FLOCK_HACK_DAY) {
+    return { color: 'primary', variant: 'filled' } as const;
+  }
+  if (type === EventType.CONFERENCE) {
+    return { color: 'accent', variant: 'filled' } as const;
+  }
+  return { variant: 'outlined' } as const;
+}
 
 export const EventList = ({
   refresh,
   onClickRow,
+  onClickAdd,
 }: Readonly<EventListProps>) => {
-  const [items, setItems] = useState<FlockEvent[]>([]);
+  const [allItems, setAllItems] = useState<FullFlockEvent[]>([]);
   const [page, setPage] = useState(0);
-  const [count, setCount] = useState(0);
-  const [_loading, setLoading] = useState(true);
+  const [year, setYear] = useState(currentYear);
+  const [search, setSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('ALL');
+  const [loading, setLoading] = useState(true);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     setLoading(true);
 
-    EventClient.getAll(page)
+    EventClient.getAll(0, year, YEAR_FETCH_SIZE)
       .then((res) => {
-        setItems(res.list);
-        setCount(res.count);
+        setAllItems(res.list);
+        setPage(0);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [refresh, page]);
+  }, [refresh, year]);
+
+  const filtered = allItems.filter((item) => {
+    const matchesType = typeFilter === 'ALL' || item.type === typeFilter;
+    const matchesSearch =
+      search.trim() === '' ||
+      item.description.toLowerCase().includes(search.trim().toLowerCase());
+    return matchesType && matchesSearch;
+  });
+  const paged = filtered.slice(
+    page * EVENT_PAGE_SIZE,
+    (page + 1) * EVENT_PAGE_SIZE,
+  );
 
   function handleClickRow(item: FullFlockEvent) {
     return () => {
@@ -61,72 +91,127 @@ export const EventList = ({
 
   function renderItem(item: FullFlockEvent) {
     return (
-      <Grid key={`workday-list-item-${item.id}`} size={{ xs: 12 }}>
-        <Card onClick={handleClickRow(item)}>
-          <CardContent>
-            <Box
-              style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}
-            >
-              <Typography variant="h6">{item.description}</Typography>
-              <Chip
-                label={EventTypeMapping[item.type]}
-                size={'small'}
-                color={'primary'}
-                variant="outlined"
-              />
-            </Box>
-            <Typography>
-              Period: {item.from.format('DD-MM-YYYY')} -{' '}
-              {item.to ? item.to.format('DD-MM-YYYY') : <em>now</em>}
-            </Typography>
-            <Typography>
-              Aantal dagen: {item.to.diff(item.from, 'days') + 1}
-            </Typography>
-            <Typography>Aantal uren: {item.hours}</Typography>
-            <Typography>
-              Totale kosten:{' '}
-              {item.costs.toLocaleString('nl-NL', {
-                style: 'currency',
-                currency: 'EUR',
-              })}
-            </Typography>
-            <Typography>
-              {item.persons
-                .toSorted((a, b) => (a.lastname > b.lastname ? 1 : -1))
-                .map((person) => `${person.firstname} ${person.lastname}`)
-                .join(',')}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
+      <TableRow
+        key={`event-list-item-${item.id}`}
+        hover
+        sx={{ cursor: 'pointer' }}
+        onClick={handleClickRow(item)}
+      >
+        <TableCell>{item.description}</TableCell>
+        <TableCell>
+          <Chip
+            label={EventTypeMapping[item.type]}
+            size="small"
+            {...eventTypeChip(item.type)}
+          />
+        </TableCell>
+        <TableCell>{item.from.format('DD-MM-YYYY')}</TableCell>
+        <TableCell>{item.to ? item.to.format('DD-MM-YYYY') : 'now'}</TableCell>
+        <TableCell align="right">
+          {item.to ? item.to.diff(item.from, 'days') + 1 : '-'}
+        </TableCell>
+        <TableCell align="right">{item.persons.length}</TableCell>
+        <TableCell align="right">{item.hours}</TableCell>
+        <TableCell align="right">
+          {item.costs.toLocaleString('nl-NL', {
+            style: 'currency',
+            currency: 'EUR',
+          })}
+        </TableCell>
+      </TableRow>
     );
   }
 
-  if (items.length === 0) {
-    return (
-      <Card>
-        <CardContent>
-          <Grid container spacing={1} className={classes.list}>
-            <Typography>No events</Typography>
-          </Grid>
-        </CardContent>
-      </Card>
-    );
-  }
+  const toolbar = (
+    <>
+      <TextField
+        autoFocus
+        size="small"
+        placeholder="Search events"
+        value={search}
+        onChange={(event) => {
+          setSearch(event.target.value);
+          setPage(0);
+        }}
+        sx={{ minWidth: 200 }}
+      />
+      <FormControl size="small" sx={{ minWidth: 150 }}>
+        <InputLabel id="event-type-label">Type</InputLabel>
+        <Select
+          labelId="event-type-label"
+          label="Type"
+          value={typeFilter}
+          onChange={(event) => {
+            setTypeFilter(event.target.value as TypeFilter);
+            setPage(0);
+          }}
+        >
+          <MenuItem value="ALL">All types</MenuItem>
+          {Object.values(EventType).map((type) => (
+            <MenuItem key={type} value={type}>
+              {EventTypeMapping[type]}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl size="small" sx={{ minWidth: 110 }}>
+        <InputLabel id="event-year-label">Year</InputLabel>
+        <Select
+          labelId="event-year-label"
+          label="Year"
+          value={year}
+          onChange={(event) => {
+            setYear(Number(event.target.value));
+            setPage(0);
+          }}
+        >
+          {selectableYears.map((selectableYear) => (
+            <MenuItem key={selectableYear} value={selectableYear}>
+              {selectableYear}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </>
+  );
+
+  const addButton = (
+    <Button variant="contained" startIcon={<AddIcon />} onClick={onClickAdd}>
+      Add
+    </Button>
+  );
 
   return (
-    <Root>
-      <Grid container spacing={1} className={classes.list}>
-        {items.map(renderItem)}
-      </Grid>
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={EVENT_PAGE_SIZE}
-          changePageCb={setPage}
+    <Box>
+      <TableCard
+        title="Events"
+        toolbar={toolbar}
+        action={addButton}
+        loading={loading}
+      >
+        <DataTable
+          columns={[
+            { header: 'Event' },
+            { header: 'Type' },
+            { header: 'From' },
+            { header: 'To' },
+            { header: 'Days', align: 'right' },
+            { header: 'People', align: 'right' },
+            { header: 'Hours', align: 'right' },
+            { header: 'Cost', align: 'right' },
+          ]}
+          items={paged}
+          renderRow={renderItem}
+          emptyMessage="No events"
+          sx={{ minWidth: 800 }}
         />
-      </Box>
-    </Root>
+      </TableCard>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={filtered.length}
+        itemsPerPage={EVENT_PAGE_SIZE}
+        changePageCb={setPage}
+      />
+    </Box>
   );
 };

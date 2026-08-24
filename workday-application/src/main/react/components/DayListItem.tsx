@@ -1,5 +1,5 @@
-import { Card, CardContent, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import CreateIcon from '@mui/icons-material/Create';
+import { IconButton, TableCell, TableRow } from '@mui/material';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
 import type { Dayjs } from 'dayjs';
 // types
@@ -18,30 +18,12 @@ function countWeekdays(from: Dayjs, to: Dayjs): number {
   return count;
 }
 
-const PREFIX = 'DayListItem';
-
-const classes = {
-  root: `${PREFIX}Root`,
-  status: `${PREFIX}Status`,
-};
-
-const StyledCard = styled(Card)(({ theme }) => ({
-  [`& .${classes.root}`]: {
-    position: 'relative',
-  },
-
-  [`& .${classes.status}`]: {
-    position: 'absolute',
-    top: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-}));
-
 type DayListItemProps = {
   value: DayProps;
   onClick: () => void;
   onClickStatus: (status: string) => void;
   hasAuthority: string;
+  showType?: boolean;
 };
 
 export function DayListItem({
@@ -49,30 +31,28 @@ export function DayListItem({
   onClick,
   onClickStatus,
   hasAuthority,
+  showType,
 }: DayListItemProps) {
   return (
-    <StyledCard onClick={onClick}>
-      <CardContent className={classes.root}>
-        <Typography variant="h6">
-          {value.description ? value.description : 'empty'}
-        </Typography>
-        {value.type && <Typography>Type: {value.type}</Typography>}
-        <Typography>
-          Period: {value.from.format('DD-MM-YYYY')} -{' '}
-          {value.to.format('DD-MM-YYYY')}
-        </Typography>
-        <Typography>
-          Aantal dagen: {countWeekdays(value.from, value.to)}
-        </Typography>
-        <Typography>Aantal uren: {value.hours}</Typography>
-        <div className={classes.status}>
-          <StatusMenu
-            onChange={onClickStatus}
-            disabled={!UserAuthorityUtil.hasAuthority(hasAuthority)}
-            value={value.status}
-          />
-        </div>
-      </CardContent>
-    </StyledCard>
+    <TableRow>
+      <TableCell>{value.description ? value.description : 'empty'}</TableCell>
+      {showType && <TableCell>{value.type}</TableCell>}
+      <TableCell>{value.from.format('DD-MM-YYYY')}</TableCell>
+      <TableCell>{value.to.format('DD-MM-YYYY')}</TableCell>
+      <TableCell align="right">{countWeekdays(value.from, value.to)}</TableCell>
+      <TableCell align="right">{value.hours}</TableCell>
+      <TableCell>
+        <StatusMenu
+          onChange={onClickStatus}
+          disabled={!UserAuthorityUtil.hasAuthority(hasAuthority)}
+          value={value.status}
+        />
+      </TableCell>
+      <TableCell align="right">
+        <IconButton onClick={onClick} size="small">
+          <CreateIcon fontSize="small" />
+        </IconButton>
+      </TableCell>
+    </TableRow>
   );
 }

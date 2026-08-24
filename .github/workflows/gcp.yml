@@ -8,44 +8,69 @@ on:
     branches:
       - main
 
+env:
+  E2E_SHARD_TOTAL: 3
+
 jobs:
-  build-deploy:
-    name: Build and Deploy
+  # Frontend lint + jest. Independent of the Maven build, so it runs concurrently with it.
+  frontend-checks:
+    name: Frontend checks
     runs-on: ubuntu-24.04
-
-    # Add "id-token" with the intended permissions.
-    permissions:
-      contents: "write"
-      id-token: "write"
-      pull-requests: "write"
-      deployments: "write"
-
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - id: "auth"
-        name: "Authenticate to Google Cloud"
-        if: github.actor != 'dependabot[bot]'
-        uses: "google-github-actions/auth@v3"
+      - uses: actions/setup-node@v6
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDED }}
-          service_account: ${{ secrets.GCP_SA_EMAIL }}
+          node-version: 22
+          cache: "npm"
 
-      - name: Setup gcloud environment
-        if: github.actor != 'dependabot[bot]'
-        uses: google-github-actions/setup-gcloud@v3
+      - run: npm ci
 
-      - name: Google cloud info
-        if: github.actor != 'dependabot[bot]'
-        run: gcloud info
+      - name: Biome
+        run: npm run lint
 
-      - name: Setup docker
-        if: github.actor != 'dependabot[bot]'
-        run: gcloud auth configure-docker
+      - name: Run npm tests
+        run: npm test
+
+  # Backend compile + unit tests (surefire). Gates the deploy jobs.
+  backend-tests:
+    name: Backend tests
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Full build
+        run: ./mvnw -B -T 1C package
+
+  # Sharded across runners (own backend each) rather than raising workers: the suite shares one seeded backend, so in-process parallelism collides.
+  e2e:
+    name: e2e (shard ${{ matrix.shard }}/3)
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
 
       - uses: actions/setup-java@v5
         with:
@@ -66,14 +91,6 @@ jobs:
           cache: "npm"
 
       - run: npm ci
-      - name: Biome
-        run: npm run lint
-
-      - name: Run npm tests
-        run: npm test
-
-      - name: Full build
-        run: ./mvnw -B package
 
       - name: Cache Playwright browsers
         id: playwright-cache
@@ -92,7 +109,7 @@ jobs:
         run: |
           echo "Starting backend server..."
           # Use develop profile with ci addon (Google Drive integration disabled)
-          ./mvnw -B compile spring-boot:run -DskipTests -Dspring-boot.run.profiles=develop,ci -Pdevelop -Dspring-boot.run.arguments=--workday.wirespec.lenient-deserialization=false > backend.log 2>&1 &
+          ./mvnw -B -T 1C compile spring-boot:run -DskipTests -Dspring-boot.run.profiles=develop,ci -Pdevelop -Dspring-boot.run.arguments=--workday.wirespec.lenient-deserialization=false > backend.log 2>&1 &
           echo $! > backend.pid
           echo "Backend server started with PID $(cat backend.pid)"
 
@@ -107,7 +124,7 @@ jobs:
           echo "Backend is ready!"
 
       - name: Run Playwright tests
-        run: npm run test:e2e
+        run: npx playwright test --shard=${{ matrix.shard }}/${{ env.E2E_SHARD_TOTAL }} --reporter=blob
 
       - name: Assert no strict-deserialization regressions
         if: always()
@@ -130,19 +147,70 @@ jobs:
             echo "No backend.log file found"
           fi
 
-      - name: Upload Playwright test results
+      - name: Upload blob report
         uses: actions/upload-artifact@v7
         if: always()
         with:
+          name: blob-report-${{ matrix.shard }}
+          path: blob-report/
+          retention-days: 30
+
+      - name: Upload backend log
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: backend-log-${{ matrix.shard }}
+          path: backend.log
+          retention-days: 30
+
+      - name: Stop backend server
+        if: always()
+        run: |
+          if [ -f backend.pid ]; then
+            kill $(cat backend.pid) || true
+            rm backend.pid
+          fi
+
+  # Merge the shard blob reports into one HTML dashboard and publish it.
+  e2e-report:
+    name: e2e report
+    runs-on: ubuntu-24.04
+    needs: e2e
+    if: always() && github.actor != 'dependabot[bot]'
+
+    permissions:
+      contents: "write"
+      pull-requests: "write"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Download blob reports
+        uses: actions/download-artifact@v6
+        with:
+          path: all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
+
+      - name: Merge into HTML report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+
+      - name: Upload merged report
+        uses: actions/upload-artifact@v7
+        with:
           name: playwright-report
-          path: |
-            playwright-report/
-            test-results/
-            backend.log
+          path: playwright-report/
           retention-days: 30
 
       - name: Determine Playwright Pages target directory
-        if: always() && github.actor != 'dependabot[bot]'
         id: pages-target
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -154,7 +222,11 @@ jobs:
           fi
 
       - name: Deploy Playwright report to GitHub Pages
-        if: always() && github.actor != 'dependabot[bot]' && hashFiles('playwright-report/index.html') != ''
+        if: hashFiles('playwright-report/index.html') != ''
+        # Best-effort: concurrent runs race on gh-pages and peaceiris rejects the
+        # non-fast-forward. v4 has no `force` (only `force_orphan`, which wipes the
+        # keep_files reports), so tolerate the race rather than fail the deploy.
+        continue-on-error: true
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -167,7 +239,7 @@ jobs:
           user_email: "github-actions[bot]@users.noreply.github.com"
 
       - name: Comment Playwright report link on PR
-        if: always() && github.event_name == 'pull_request' && github.actor != 'dependabot[bot]' && hashFiles('playwright-report/index.html') != ''
+        if: github.event_name == 'pull_request' && hashFiles('playwright-report/index.html') != ''
         uses: actions/github-script@v9
         with:
           script: |
@@ -197,19 +269,59 @@ jobs:
               });
             }
 
-      - name: Stop backend server
-        if: always()
-        run: |
-          if [ -f backend.pid ]; then
-            kill $(cat backend.pid) || true
-            rm backend.pid
-          fi
-          if [ -f backend.log ]; then
-            rm backend.log
-          fi
+  # Build the develop image and push it. Gated on backend tests + e2e passing.
+  deploy-develop:
+    name: Deploy develop image
+    runs-on: ubuntu-24.04
+    needs: [backend-tests, e2e]
+    if: github.actor != 'dependabot[bot]'
+
+    permissions:
+      contents: "read"
+      id-token: "write"
+      deployments: "write"
+
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v3"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDED }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - name: Setup gcloud environment
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Setup docker
+        run: gcloud auth configure-docker
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - run: npm ci
 
       - name: Start develop deployment
-        if: github.actor != 'dependabot[bot]'
         id: deployment-develop
         uses: actions/github-script@v9
         with:
@@ -236,9 +348,8 @@ jobs:
             core.setOutput('deployment_id', deployment.data.id);
 
       - name: Build and Deploy Development version
-        if: github.actor != 'dependabot[bot]'
         id: deploy-develop
-        run: ./mvnw -B package jib:build -DskipTests -Pdevelop,frontend -Dnpm.ci.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
+        run: ./mvnw -B -T 1C package jib:build -DskipTests -Pdevelop,frontend -Dnpm.ci.skip -Djib.container.environment=SPRING_PROFILES_ACTIVE=develop -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday-develop -Djib.to.tags=${{ github.sha }} --file pom.xml
 
       - name: Finish develop deployment
         if: always() && steps.deployment-develop.outputs.deployment_id != ''
@@ -257,7 +368,7 @@ jobs:
 
   deploy-production:
     name: Deploy to production
-    needs: build-deploy
+    needs: [frontend-checks, backend-tests, e2e, deploy-develop]
     if: github.actor != 'dependabot[bot]' && github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-24.04
 
@@ -313,4 +424,11 @@ jobs:
       - run: npm ci
 
       - name: Build and Deploy
-        run: ./mvnw -B clean package jib:build -DskipTests -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
+        run: ./mvnw -B -T 1C clean package jib:build -DskipTests -Pfrontend -Dnpm.ci.skip -Djib.to.image=eu.gcr.io/flock-community/flock-eco-workday -Djib.to.tags=${{ github.sha }} --file pom.xml
+
+      - name: Deploy image to Cloud Run (production)
+        run: |
+          gcloud run deploy workday-app \
+            --image eu.gcr.io/flock-community/flock-eco-workday:${{ github.sha }} \
+            --region europe-west1 \
+            --project flock-community

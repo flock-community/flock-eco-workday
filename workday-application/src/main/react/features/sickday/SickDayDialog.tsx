@@ -6,10 +6,10 @@ import { ConfirmDialog } from '@workday-core/components/ConfirmDialog';
 import { DialogFooter, DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
+import type { Dayjs } from 'dayjs';
 import { useEffect, useState } from 'react';
 import { SickDayClient } from '../../clients/SickDayClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
-import { TransitionSlider } from '../../components/transitions/Slide';
 import { SICKDAY_FORM_ID, SickDayForm, schemaSickDayForm } from './SickDayForm';
 
 type SickDayDialogProps = {
@@ -23,9 +23,9 @@ type SickDayDialogProps = {
 type SickDayDialogForm = {
   description: string;
   status: string;
-  from: string;
-  to: string;
-  days: number;
+  from: Dayjs;
+  to: Dayjs;
+  days: number[];
 };
 
 export function SickDayDialog({
@@ -75,7 +75,7 @@ export function SickDayDialog({
           });
         });
       } else {
-        setState(schemaSickDayForm.default());
+        setState(schemaSickDayForm.getDefault());
       }
     }
   }, [code, open]);
@@ -106,13 +106,7 @@ export function SickDayDialog({
 
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        TransitionComponent={TransitionSlider}
-        maxWidth="lg"
-        fullWidth
-      >
+      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
         <DialogHeader
           icon={<HealingIcon />}
           headline={headline}

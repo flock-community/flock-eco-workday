@@ -5,7 +5,11 @@ import { EventListItem } from './EventListItem';
 
 type FlockEventListProps = {
   events: FlockEvent[];
-  onEventToggle: (event: FlockEvent, isSubscribed: boolean) => void;
+  onEventToggle: (
+    event: FlockEvent,
+    isSubscribed: boolean,
+    hours?: number,
+  ) => void;
 };
 
 export function EventList({ events, onEventToggle }: FlockEventListProps) {
@@ -16,7 +20,7 @@ export function EventList({ events, onEventToggle }: FlockEventListProps) {
   }
 
   return (
-    <List data-testid={'flock-event-list'}>
+    <List data-testid={'flock-event-list'} disablePadding>
       {events.map((event) => (
         <EventListItem
           key={event.code}

@@ -54,13 +54,15 @@ export const ContractFormManagement = ({
 
   const schema = object({
     monthlyFee: number().required().default(4000),
-    from: mixed().required().default(dayjs()),
-    to: mixed().default(null),
+    from: mixed()
+      .required()
+      .default(() => dayjs()),
+    to: mixed().nullable().default(null),
   });
 
   return (
     <Formik
-      initialValues={{ ...schema.cast(), ...init }}
+      initialValues={{ ...schema.getDefault(), ...init }}
       onSubmit={onSubmit}
       validationSchema={schema}
       enableReinitialize

@@ -79,4 +79,28 @@ databaseChangeLog:
   - include:
       file: db.changelog-026-hibernate6-sequences.yaml
       relativeToChangelogFile: true
+  - include:
+      file: db.changelog-028-contract-internal-training-budget.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-029-rename-hack-hours-to-hack-time-budget.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-030-event-day.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-031-event-day-backfill.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-032-drop-event-persons.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-033-budget-on-event-day.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-034-event-day-indexes.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-035-event-day-budget-category.yaml
+      relativeToChangelogFile: true
 

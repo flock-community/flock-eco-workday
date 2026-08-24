@@ -1,6 +1,4 @@
-import AddIcon from '@mui/icons-material/Add';
-import { Box, Card, CardContent, CardHeader } from '@mui/material';
-import Button from '@mui/material/Button';
+import { Box } from '@mui/material';
 import { useState } from 'react';
 import { ClientDialog } from './ClientDialog';
 import { ClientList } from './ClientList';
@@ -41,19 +39,11 @@ export function ClientFeature() {
       flow-gap={'wide'}
       style={{ paddingBottom: '1.5rem' }}
     >
-      <Card>
-        <CardHeader
-          title="Clients"
-          action={
-            <Button onClick={handleAdd}>
-              <AddIcon /> Add
-            </Button>
-          }
-        />
-        <CardContent>
-          <ClientList refresh={reload} onItemClick={handleItem} />
-        </CardContent>
-      </Card>
+      <ClientList
+        refresh={reload}
+        onItemClick={handleItem}
+        onClickAdd={handleAdd}
+      />
       <ClientDialog
         code={dialog.code}
         open={dialog.open}

@@ -29,6 +29,7 @@ export type DayListProps = {
   refresh: boolean;
   onClickRow: (item: any) => void;
   onClickStatus: (status: string, item: any) => void;
+  onClickAdd?: () => void;
 };
 
 export type GroupedTodos = {

@@ -1,20 +1,16 @@
-import { Box, Card, CardHeader } from '@mui/material';
-import CardContent from '@mui/material/CardContent';
-import { useState } from 'react';
-// Types
+import { Box } from '@mui/material';
+import { addError } from '../../hooks/ErrorHook';
 import type { StatusProps } from '../../types';
 import type { Todo } from '../../wirespec/model';
 import { TodoList } from './TodoList';
 import { updateStatus } from './TodoService';
 
 export function TodoFeature() {
-  const [refresh, setRefresh] = useState(false);
-
-  const handleItemClick = (status: StatusProps, item: Todo) => {
-    updateStatus(status, item).then(() => {
-      setRefresh(!refresh);
+  const handleItemClick = (status: StatusProps, item: Todo) =>
+    updateStatus(status, item).catch((error) => {
+      addError(`Could not update status: ${error?.message ?? error}`);
+      throw error;
     });
-  };
 
   return (
     <Box
@@ -22,12 +18,7 @@ export function TodoFeature() {
       flow-gap={'wide'}
       style={{ paddingBottom: '1.5rem' }}
     >
-      <Card>
-        <CardHeader title="Todo's" />
-        <CardContent>
-          <TodoList onItemClick={handleItemClick} refresh={refresh} />
-        </CardContent>
-      </Card>
+      <TodoList onItemClick={handleItemClick} refresh={false} />
     </Box>
   );
 }

@@ -64,7 +64,7 @@ test.describe
       await page.waitForLoadState('networkidle');
 
       const leaveCards = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: LEAVE_DESCRIPTION });
       const leaveCard = await findOnAnyPage(page, leaveCards);
       await expect(
@@ -84,7 +84,7 @@ test.describe
       await selectPersonInLayout(page, 'Ernie Muppets');
 
       const leaveCards = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: LEAVE_DESCRIPTION });
       const leaveCard = await findOnAnyPage(page, leaveCards);
       await changeStatusOnLocator(page, leaveCard, 'REQUESTED', 'APPROVED');

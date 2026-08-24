@@ -1,9 +1,10 @@
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import clsx from 'clsx';
 import { useState } from 'react';
+import { brand } from '../../theme/tokens';
 import {
   canChangeStatus,
   filterTransitionsFromByStatus,
@@ -18,38 +19,54 @@ const classes = {
   buttonDone: `${PREFIX}ButtonDone`,
 };
 
-const Root = styled('div')(({ theme }) => ({
-  [`& .${classes.buttonRequested}`]: {
-    backgroundColor: 'unset',
-    '&:disabled': {
-      backgroundColor: 'unset',
-      outline: '1px solid',
-    },
-  },
+const Root = styled('div')(({ theme }) => {
+  const isDark = theme.palette.mode === 'dark';
 
-  [`& .${classes.buttonApproved}`]: {
-    backgroundColor: theme.palette.success[500],
-    '&:disabled': {
-      backgroundColor: theme.palette.success[500],
-    },
-  },
+  const softTintChip = (main: string, fg: string) => {
+    const base = {
+      backgroundColor: alpha(main, isDark ? 0.22 : 0.14),
+      color: fg,
+      outline: `1px solid ${alpha(main, isDark ? 0.5 : 0.4)}`,
+    };
+    return {
+      ...base,
+      '&:hover': { backgroundColor: alpha(main, isDark ? 0.3 : 0.2) },
+      '&:disabled': base,
+      '&.Mui-disabled': base,
+    };
+  };
 
-  [`& .${classes.buttonRejected}`]: {
-    backgroundColor: theme.palette.error[500],
-    '&:disabled': {
-      backgroundColor: theme.palette.error[500],
+  return {
+    // Uniform width so every status reads as the same chip regardless of label length.
+    '& .MuiButton-root': {
+      minWidth: 100,
+      padding: '1px 10px',
+      fontSize: '0.72rem',
+      fontWeight: 500,
+      lineHeight: 1.7,
     },
-  },
 
-  [`& .${classes.buttonDone}`]: {
-    // @ts-expect-error
-    backgroundColor: theme.palette.done,
-    '&:disabled': {
-      // @ts-expect-error
-      backgroundColor: theme.palette.done,
-    },
-  },
-}));
+    [`& .${classes.buttonRequested}`]: softTintChip(
+      brand.cyan,
+      isDark ? brand.cyan : brand.cyanDark,
+    ),
+
+    [`& .${classes.buttonApproved}`]: softTintChip(
+      brand.teal,
+      isDark ? brand.teal : brand.tealDark,
+    ),
+
+    [`& .${classes.buttonRejected}`]: softTintChip(
+      theme.palette.error.main,
+      isDark ? theme.palette.error.light : theme.palette.error.dark,
+    ),
+
+    [`& .${classes.buttonDone}`]: softTintChip(
+      theme.palette.done,
+      theme.palette.done,
+    ),
+  };
+});
 
 type StatusMenuProps = {
   onChange: (status: string) => void;
@@ -99,6 +116,7 @@ export function StatusMenu({ onChange, disabled, value }: StatusMenuProps) {
     // @ts-expect-error
     <Root className={classes.status}>
       <Button
+        size="small"
         aria-haspopup="true"
         aria-expanded={expanded}
         disabled={disabled}

@@ -1,8 +1,6 @@
-import { Box, CardContent } from '@mui/material';
-import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
-import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import AddIcon from '@mui/icons-material/Add';
+import { Box, Button, TableCell, TableRow } from '@mui/material';
+import { DataTable } from '@workday-core/components/DataTable';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
 import { useEffect, useState } from 'react';
 import {
@@ -10,26 +8,15 @@ import {
   AssignmentClient,
 } from '../../clients/AssignmentClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
+import { TableCard } from '../../components/TableCard';
 import { isDefined } from '../../utils/validation';
-
-const PREFIX = 'AssignmentList';
-
-const classes = {
-  list: `${PREFIX}List`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({
-  [`& .${classes.list}`]: (loading) => ({
-    opacity: loading ? 0.5 : 1,
-  }),
-});
 
 type AssignmentListProps = {
   refresh: boolean;
   personId?: string;
   onItemClick: (item: any) => void;
   disableEdit: boolean;
+  onClickAdd?: () => void;
 };
 
 export function AssignmentList({
@@ -37,11 +24,16 @@ export function AssignmentList({
   personId,
   onItemClick,
   disableEdit,
+  onClickAdd,
 }: Readonly<AssignmentListProps>) {
   const [items, setItems] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(-1);
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  const isAdmin = Boolean(
+    UserAuthorityUtil.hasAuthority('AssignmentAuthority.ADMIN'),
+  );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
@@ -61,56 +53,65 @@ export function AssignmentList({
     if (!disableEdit && isDefined(onItemClick)) onItemClick(it);
   };
 
-  if (items.length === 0) {
-    return (
-      <Card>
-        <CardContent>
-          <Typography>No result</Typography>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <Root>
-      <Grid container spacing={1} className={classes.list}>
-        {items.map((assignment) => (
-          <Grid size={{ xs: 12 }} key={`assignment-${assignment.code}`}>
-            <Card onClick={handleClickItem(assignment)}>
-              <CardContent>
-                <Typography variant="h6">
-                  {assignment.client.name} - {assignment.role}
-                </Typography>
-                <Typography>
-                  Period: {assignment.from.format('DD-MM-YYYY')} -{' '}
-                  {assignment.to ? (
-                    assignment.to.format('DD-MM-YYYY')
-                  ) : (
-                    <i>now</i>
-                  )}
-                </Typography>
-                <UserAuthorityUtil has={'AssignmentAuthority.ADMIN'}>
-                  <Typography>Hourly rate: {assignment.hourlyRate} </Typography>
-                </UserAuthorityUtil>
-                <Typography>
-                  Hours per week: {assignment.hoursPerWeek}{' '}
-                </Typography>
-                {assignment.project && (
-                  <Typography>Project: {assignment.project.name}</Typography>
+    <Box>
+      <TableCard
+        title="Assignments"
+        action={
+          disableEdit ? undefined : (
+            <Button startIcon={<AddIcon />} onClick={onClickAdd}>
+              Add
+            </Button>
+          )
+        }
+        loading={loading}
+      >
+        <DataTable
+          columns={[
+            { header: 'Client' },
+            { header: 'Role' },
+            { header: 'From' },
+            { header: 'To' },
+            ...(isAdmin
+              ? [{ header: 'Hourly rate', align: 'right' as const }]
+              : []),
+            { header: 'Hours/week', align: 'right' },
+            { header: 'Project' },
+          ]}
+          items={items}
+          renderRow={(assignment) => (
+            <TableRow
+              key={`assignment-${assignment.code}`}
+              hover={!disableEdit}
+              sx={{ cursor: disableEdit ? 'default' : 'pointer' }}
+              onClick={handleClickItem(assignment)}
+            >
+              <TableCell>{assignment.client.name}</TableCell>
+              <TableCell>{assignment.role}</TableCell>
+              <TableCell>{assignment.from.format('DD-MM-YYYY')}</TableCell>
+              <TableCell>
+                {assignment.to ? (
+                  assignment.to.format('DD-MM-YYYY')
+                ) : (
+                  <em>now</em>
                 )}
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={ASSIGNMENT_PAGE_SIZE}
-          changePageCb={setPage}
+              </TableCell>
+              {isAdmin && (
+                <TableCell align="right">{assignment.hourlyRate}</TableCell>
+              )}
+              <TableCell align="right">{assignment.hoursPerWeek}</TableCell>
+              <TableCell>{assignment.project?.name ?? '-'}</TableCell>
+            </TableRow>
+          )}
+          emptyMessage="No assignments"
         />
-      </Box>
-    </Root>
+      </TableCard>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={ASSIGNMENT_PAGE_SIZE}
+        changePageCb={setPage}
+      />
+    </Box>
   );
 }

@@ -1,6 +1,4 @@
-import AddIcon from '@mui/icons-material/Add';
-import { Box, Card, CardContent, CardHeader } from '@mui/material';
-import Button from '@mui/material/Button';
+import { Box } from '@mui/material';
 import { useState } from 'react';
 import type { FlockEvent } from '../../clients/EventClient';
 import { EventDialog } from './EventDialog';
@@ -33,19 +31,11 @@ export function EventFeature() {
       flow-gap={'wide'}
       style={{ paddingBottom: '1.5rem' }}
     >
-      <Card>
-        <CardHeader
-          title="Events"
-          action={
-            <Button onClick={handleClickAdd}>
-              <AddIcon /> Add
-            </Button>
-          }
-        />
-        <CardContent>
-          <EventList onClickRow={handleClickRow} refresh={reload} />
-        </CardContent>
-      </Card>
+      <EventList
+        onClickRow={handleClickRow}
+        onClickAdd={handleClickAdd}
+        refresh={reload}
+      />
       <EventDialog
         open={open}
         code={state?.code}

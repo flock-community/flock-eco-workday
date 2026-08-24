@@ -1,6 +1,3 @@
-import AddIcon from '@mui/icons-material/Add';
-import { Card, CardContent, CardHeader } from '@mui/material';
-import Button from '@mui/material/Button';
 import { useState } from 'react';
 import type { Person } from '../../clients/PersonClient';
 import { ContractDialog } from './ContractDialog';
@@ -29,23 +26,12 @@ export function ContractFeature({ person }: ContractFeatureProps) {
 
   return (
     <>
-      <Card>
-        <CardHeader
-          title="Contracts"
-          action={
-            <Button color="primary" onClick={handleClickAdd}>
-              <AddIcon /> Add
-            </Button>
-          }
-        />
-        <CardContent>
-          <ContractList
-            personId={person?.uuid}
-            onItemClick={handleItemClick}
-            refresh={reload}
-          />
-        </CardContent>
-      </Card>
+      <ContractList
+        personId={person?.uuid}
+        onItemClick={handleItemClick}
+        refresh={reload}
+        onClickAdd={handleClickAdd}
+      />
       <ContractDialog
         code={dialog.code}
         open={dialog.open}

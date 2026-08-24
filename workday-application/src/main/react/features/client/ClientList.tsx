@@ -1,62 +1,81 @@
-import { CardContent } from '@mui/material';
-import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
-import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import AddIcon from '@mui/icons-material/Add';
+import { Box, Button, TableCell, TableRow } from '@mui/material';
+import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import { type Client, ClientClient } from '../../clients/ClientClient';
+import { FlockPagination } from '../../components/pagination/FlockPagination';
+import { TableCard } from '../../components/TableCard';
 import { isDefined } from '../../utils/validation';
 
-const PREFIX = 'ClientList';
-
-const classes = {
-  root: `${PREFIX}Root`,
-  fab: `${PREFIX}Fab`,
-};
-
-const StyledGrid = styled(Grid)({
-  [`&.${classes.root}`]: {
-    padding: 10,
-  },
-  [`& .${classes.fab}`]: {
-    position: 'absolute',
-    bottom: '25px',
-    right: '25px',
-  },
-});
+const CLIENT_PAGE_SIZE = 15;
 
 type ClientListProps = {
   refresh?: boolean;
   onItemClick?: (item: Client) => void;
+  onClickAdd?: () => void;
 };
 
-export function ClientList({ refresh, onItemClick }: ClientListProps) {
+export function ClientList({
+  refresh,
+  onItemClick,
+  onClickAdd,
+}: ClientListProps) {
   const [list, setList] = useState<Client[]>([]);
+  const [page, setPage] = useState(0);
+  const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
+    setLoading(true);
     ClientClient.findAllByPage({
-      page: 0,
-      size: 100,
+      page,
+      size: CLIENT_PAGE_SIZE,
       sort: 'name,asc',
-    }).then((res) => setList(res.list));
-  }, [refresh]);
+    }).then((res) => {
+      setList(res.list);
+      setCount(res.count);
+      setLoading(false);
+    });
+  }, [refresh, page]);
 
-  const handleItem = (it) => () => {
+  const handleItem = (it: Client) => () => {
     if (isDefined(onItemClick)) onItemClick(it);
   };
 
   return (
-    <StyledGrid container className={classes.root} spacing={1}>
-      {list.map((it) => (
-        <Grid size={{ xs: 12 }} key={`clients-${it.code}`}>
-          <Card onClick={handleItem(it)}>
-            <CardContent>
-              <Typography variant="h6">{it.name}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </StyledGrid>
+    <Box>
+      <TableCard
+        title="Clients"
+        action={
+          <Button startIcon={<AddIcon />} onClick={onClickAdd}>
+            Add
+          </Button>
+        }
+        loading={loading}
+      >
+        <DataTable
+          columns={[{ header: 'Name' }]}
+          items={list}
+          renderRow={(it) => (
+            <TableRow
+              key={`clients-${it.code}`}
+              hover
+              sx={{ cursor: 'pointer' }}
+              onClick={handleItem(it)}
+            >
+              <TableCell>{it.name}</TableCell>
+            </TableRow>
+          )}
+          emptyMessage="No clients"
+        />
+      </TableCard>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={CLIENT_PAGE_SIZE}
+        changePageCb={setPage}
+      />
+    </Box>
   );
 }

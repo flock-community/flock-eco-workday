@@ -13,12 +13,12 @@ const classes = {
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({
+const Root = styled('div')(({ theme }) => ({
   [`& .${classes.row}`]: {
     fontStyle: 'italic',
-    backgroundColor: '#EFEFEF',
+    backgroundColor: theme.palette.action.hover,
   },
-});
+}));
 
 type NonProductiveHoursProps = {
   personId: string;

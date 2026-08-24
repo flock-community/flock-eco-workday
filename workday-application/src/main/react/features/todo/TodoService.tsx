@@ -65,6 +65,7 @@ export const updateStatus = (status: WorkDayStatus, item: Todo) => {
       break;
     case 'HOLIDAY':
     case 'PLUSDAY':
+    case 'PAID_LEAVE':
     case 'PAID_PARENTAL_LEAVE':
     case 'UNPAID_PARENTAL_LEAVE':
       updateFunction = updateStatusLeaveDay;
@@ -72,6 +73,8 @@ export const updateStatus = (status: WorkDayStatus, item: Todo) => {
     case 'EXPENSE':
       updateFunction = updateStatusExpense;
       break;
+    default:
+      throw new Error(`Cannot update status for todo type: ${item.todoType}`);
   }
 
   return updateFunction(item.id, status);

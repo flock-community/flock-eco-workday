@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-028-contract-internal-training-budget
+      author: rkorver
+      changes:
+        - addColumn:
+            tableName: contract_internal
+            columns:
+              - column:
+                  name: training_time_budget
+                  type: integer
+                  defaultValue: "0"
+              - column:
+                  name: training_money_budget
+                  type: DECIMAL(19, 2)
+                  defaultValue: "0.00"

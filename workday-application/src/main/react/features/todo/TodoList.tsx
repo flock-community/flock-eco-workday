@@ -1,21 +1,18 @@
-import { Box, Card, Link, Typography } from '@mui/material';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
-import Grid from '@mui/material/Grid';
+import { Box, Tab, TableCell, TableRow, Tabs } from '@mui/material';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
+import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { TodoClient } from '../../clients/TodoClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { StatusMenu } from '../../components/status/StatusMenu';
-import { SimpleTabs } from '../../components/tabs/Tabs';
+import { TableCard } from '../../components/TableCard';
 import type { GroupedTodos, StatusProps, TypeProp } from '../../types';
 import { groupByType } from '../../utils/groupByType';
 import { getPaginatedTabs } from '../../utils/paginationHelpers';
-import type { Todo, TodoType } from '../../wirespec/model';
+import type { Todo } from '../../wirespec/model';
 
-// @todo make this a global PAGE_SIZE constants
-const TODO_PAGE_SIZE = 5;
+const TODO_PAGE_SIZE = 15;
 
 const typeToPath = (type: TypeProp) => {
   switch (type) {
@@ -41,7 +38,7 @@ const typeToPath = (type: TypeProp) => {
 };
 
 type TodoListProps = {
-  onItemClick: (status: StatusProps, item: Todo) => void;
+  onItemClick: (status: StatusProps, item: Todo) => void | Promise<void>;
   refresh: boolean;
 };
 
@@ -50,76 +47,39 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
 
   const [list, setList] = useState<GroupedTodos[]>();
   const [page, setPage] = useState(0);
-  const [count, setCount] = useState(-1);
   const [selectedTab, setSelectedTab] = useState(0);
-  const [paginatedItems, setPaginatedItems] = useState<GroupedTodos[]>([]);
-
-  const handlePageChange = (value: number) => {
-    setPage(value);
-    setPaginatedItems(
-      getPaginatedTabs(list as GroupedTodos[], value, TODO_PAGE_SIZE),
-    );
-  };
+  const [statusOverrides, setStatusOverrides] = useState<
+    Record<string, StatusProps>
+  >({});
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
     TodoClient.all().then((res) => {
-      const groupedTodos = groupByType(res);
-      setList(groupedTodos);
+      setList(groupByType(res));
+      setStatusOverrides({});
     });
   }, [refresh]);
 
-  useEffect(() => {
-    if (!list) return;
-    setCount(list[selectedTab].todos.length);
-    setPaginatedItems(getPaginatedTabs(list, page, TODO_PAGE_SIZE));
-  }, [list, page, selectedTab]);
-
-  useEffect(() => {
+  const handleTabChange = (_event: unknown, value: number) => {
+    setSelectedTab(value);
     setPage(0);
-  }, []);
+  };
 
   const handleStatusChange = (item: Todo) => (status: StatusProps) => {
-    onItemClick(status, item);
+    const id = String(item.id);
+    setStatusOverrides((current) => ({ ...current, [id]: status }));
+    Promise.resolve(onItemClick(status, item)).catch(() => {
+      setStatusOverrides((current) => {
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+    });
   };
 
-  const _mapTodoType: Record<TodoType, string> = {
-    WORKDAY: '',
-    SICKDAY: '',
-    HOLIDAY: '',
-    PAID_PARENTAL_LEAVE: '',
-    UNPAID_PARENTAL_LEAVE: '',
-    EXPENSE: '',
-    PLUSDAY: '',
-    PAID_LEAVE: '',
-  };
-  const handleCardClick = (item: Todo) => () => {
+  const handleRowClick = (item: Todo) => () => {
     history.push(`/${typeToPath(item.todoType)}?personId=${item.personId}`);
   };
-
-  function renderItem(item: Todo, key: number) {
-    return (
-      <Grid size={{ xs: 12 }} key={`todo-list-item-${key}`}>
-        <Card>
-          <CardHeader
-            title={
-              <Link onClick={handleCardClick(item)} color="textPrimary">
-                {item.personName}
-              </Link>
-            }
-            subheader={`${item.todoType}: ${item.description}`}
-            action={
-              <StatusMenu
-                onChange={handleStatusChange(item)}
-                disabled={false}
-                value="REQUESTED"
-              />
-            }
-          />
-        </Card>
-      </Grid>
-    );
-  }
 
   if (!list) {
     return <AlignedLoader />;
@@ -127,28 +87,74 @@ export function TodoList({ onItemClick, refresh }: TodoListProps) {
 
   if (list.length === 0) {
     return (
-      <Card>
-        <CardContent>
-          <Typography>Nothing todo</Typography>
-        </CardContent>
-      </Card>
+      <TableCard title="Todo's">
+        <Box sx={{ py: 4, textAlign: 'center', color: 'text.secondary' }}>
+          Nothing todo
+        </Box>
+      </TableCard>
     );
   }
+
+  // a refetch can drop the active type's group (last todo approved), shrinking list under selectedTab
+  const safeTab = Math.min(selectedTab, list.length - 1);
+  const paginated = getPaginatedTabs(list, page, TODO_PAGE_SIZE);
+  const currentTodos = paginated[safeTab]?.todos ?? [];
+  const count = list[safeTab]?.todos.length ?? 0;
+
   return (
-    <>
-      <SimpleTabs
-        data={paginatedItems}
-        renderFunction={renderItem}
-        exposedValue={setSelectedTab}
-      />
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={TODO_PAGE_SIZE}
-          changePageCb={handlePageChange}
+    <Box>
+      <TableCard title="Todo's">
+        <Tabs
+          value={selectedTab}
+          onChange={handleTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{ mb: 1 }}
+        >
+          {list.map((group) => (
+            <Tab
+              key={group.todoType}
+              label={group.todoType.replaceAll('_', ' ')}
+            />
+          ))}
+        </Tabs>
+        <DataTable
+          columns={[
+            { header: 'Person' },
+            { header: 'Description' },
+            { header: 'Status', align: 'right' },
+          ]}
+          items={currentTodos}
+          renderRow={(item) => (
+            <TableRow
+              key={`todo-list-item-${item.id}`}
+              hover
+              sx={{ cursor: 'pointer' }}
+              onClick={handleRowClick(item)}
+            >
+              <TableCell>{item.personName}</TableCell>
+              <TableCell>{item.description}</TableCell>
+              <TableCell
+                align="right"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <StatusMenu
+                  onChange={handleStatusChange(item)}
+                  disabled={false}
+                  value={statusOverrides[String(item.id)] ?? 'REQUESTED'}
+                />
+              </TableCell>
+            </TableRow>
+          )}
+          emptyMessage="Nothing todo"
         />
-      </Box>
-    </>
+      </TableCard>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={TODO_PAGE_SIZE}
+        changePageCb={setPage}
+      />
+    </Box>
   );
 }

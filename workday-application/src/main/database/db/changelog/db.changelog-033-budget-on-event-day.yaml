@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-033-budget-on-event-day-0
+      author: rkorver
+      comment: >-
+        Per-person event money draw. EventDay already carries per-person event hours; cost
+        adds the matching money dimension, so used hack/study time and money both derive
+        from EventDay instead of separate allocation tables.
+      changes:
+        - addColumn:
+            tableName: event_day
+            columns:
+              - column:
+                  name: cost
+                  type: DECIMAL(19, 2)

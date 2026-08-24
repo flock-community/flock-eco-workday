@@ -11,12 +11,14 @@ import {
   YAxis,
 } from 'recharts';
 import { AggregationClient } from '../../clients/AggregationClient';
+import { useChartColors } from '../../theme/chartColors';
 
 type ExternalOverviewChartProps = {
   year?: number;
 };
 
 export function ExternalOverviewChart({ year }: ExternalOverviewChartProps) {
+  const colors = useChartColors();
   const [state, setState] = useState<any | null>(null);
 
   useEffect(() => {
@@ -60,20 +62,20 @@ export function ExternalOverviewChart({ year }: ExternalOverviewChartProps) {
         <Line
           yAxisId="right"
           dataKey="countContractExternal"
-          stroke="#9e9e9e"
+          stroke={colors.count}
           name="Count"
         />
 
         <Line
           yAxisId="left"
           dataKey="actualRevenueExternal"
-          stroke="#1de8b5"
+          stroke={colors.revenue}
           name="Revenue"
         />
         <Line
           yAxisId="left"
           dataKey="actualCostContractExternal"
-          stroke="#3f51b5"
+          stroke={colors.cost}
           name="Cost"
         />
       </LineChart>

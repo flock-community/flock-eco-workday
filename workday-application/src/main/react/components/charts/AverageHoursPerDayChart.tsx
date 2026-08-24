@@ -11,6 +11,7 @@ import {
   YAxis,
 } from 'recharts';
 import { AggregationClient } from '../../clients/AggregationClient';
+import { useChartColors } from '../../theme/chartColors';
 
 type AverageHoursPerDayChartProps = {
   year?: number;
@@ -19,6 +20,7 @@ type AverageHoursPerDayChartProps = {
 export function AverageHoursPerDayChart({
   year,
 }: AverageHoursPerDayChartProps) {
+  const colors = useChartColors();
   const [state, setState] = useState<any>(null);
 
   useEffect(() => {
@@ -44,8 +46,12 @@ export function AverageHoursPerDayChart({
           }
         />
         <Legend />
-        <Bar stackId="forcast" dataKey="forecastHoursGross" fill="#1de8b5" />
-        <Bar stackId="actual" dataKey="actualHours" fill="#3f51b5" />
+        <Bar
+          stackId="forcast"
+          dataKey="forecastHoursGross"
+          fill={colors.forecast}
+        />
+        <Bar stackId="actual" dataKey="actualHours" fill={colors.worked} />
       </BarChart>
     </ResponsiveContainer>
   );

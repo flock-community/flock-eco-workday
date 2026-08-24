@@ -11,11 +11,13 @@ import {
   YAxis,
 } from 'recharts';
 import { AggregationClient } from '../../clients/AggregationClient';
+import { useChartColors } from '../../theme/chartColors';
 
 type SickdayPerPersonChartProps = {
   year?: number;
 };
 export function SickdayPerPersonChart({ year }: SickdayPerPersonChartProps) {
+  const colors = useChartColors();
   const [state, setState] = useState<any>();
 
   useEffect(() => {
@@ -31,7 +33,11 @@ export function SickdayPerPersonChart({ year }: SickdayPerPersonChartProps) {
 
   return (
     <ResponsiveContainer height={height}>
-      <BarChart data={state} layout="vertical">
+      <BarChart
+        data={state}
+        layout="vertical"
+        margin={{ top: 8, right: 28, bottom: 0, left: 8 }}
+      >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis type="number" dataKey="sickDays" />
         <YAxis type="category" dataKey="name" width={150} />
@@ -43,7 +49,7 @@ export function SickdayPerPersonChart({ year }: SickdayPerPersonChartProps) {
           }
         />
         <Legend />
-        <Bar dataKey="sickDays" fill="#3f51b5" />
+        <Bar dataKey="sickDays" fill={colors.sick} />
       </BarChart>
     </ResponsiveContainer>
   );

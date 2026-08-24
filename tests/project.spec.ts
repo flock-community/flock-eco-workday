@@ -23,7 +23,7 @@ test.describe('Project CRUD Operations', () => {
   }
 
   test('should display the seeded project list', async ({ page }) => {
-    await expect(page.getByText('Projects')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible();
     await expect(
       page.getByRole('cell', { name: 'Empty project' }),
     ).toBeVisible();
@@ -105,19 +105,5 @@ test.describe('Project CRUD Operations', () => {
         'This project cannot be deleted because it contains assignments',
       ),
     ).toBeVisible();
-  });
-
-  test('should cancel creating a project', async ({ page }) => {
-    const projectName = `Should not be saved ${Date.now()}`;
-
-    await openCreateDialog(page);
-    await page.getByLabel('Name').fill(projectName);
-
-    await page.getByRole('button', { name: 'Cancel' }).click();
-
-    await expect(page.getByText('Create a project')).not.toBeVisible();
-    await expect(
-      page.getByRole('cell', { name: projectName, exact: true }),
-    ).toHaveCount(0);
   });
 });

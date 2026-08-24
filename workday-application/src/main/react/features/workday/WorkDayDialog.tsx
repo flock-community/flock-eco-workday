@@ -12,7 +12,6 @@ import { useEffect, useState } from 'react';
 import { ExportClient } from '../../clients/ExportClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
 import { WorkDayClient } from '../../clients/WorkDayClient';
-import { TransitionSlider } from '../../components/transitions/Slide';
 import { isDefined } from '../../utils/validation';
 import { schema, WORKDAY_FORM_ID, WorkDayForm } from './WorkDayForm';
 
@@ -80,7 +79,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
           });
         });
       } else {
-        setState(schema.cast());
+        setState(schema.getDefault());
       }
     } else {
       setState(null);
@@ -164,13 +163,7 @@ export function WorkDayDialog({ personFullName, open, code, onComplete }) {
 
   return (
     <Root>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        // TransitionComponent={TransitionSlider}
-        maxWidth="lg"
-        fullWidth
-      >
+      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
         <DialogHeader
           icon={<WorkIcon />}
           headline={headline}

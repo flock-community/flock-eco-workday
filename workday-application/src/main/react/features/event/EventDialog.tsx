@@ -9,9 +9,9 @@ import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import { useEffect, useState } from 'react';
 import { EventClient, type FlockEventRequest } from '../../clients/EventClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
-import { TransitionSlider } from '../../components/transitions/Slide';
 import { schema } from '../workday/WorkDayForm';
 import { EVENT_FORM_ID, EventForm } from './EventForm';
+import { toEventDayForms } from './EventParticipants';
 
 type EventDialogProps = {
   open: boolean;
@@ -35,7 +35,7 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
           });
         });
       } else {
-        setState(schema.cast());
+        setState(schema.getDefault());
       }
     } else {
       setState(undefined);
@@ -43,14 +43,16 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   }, [open, code]);
 
   const handleSubmit = (it) => {
+    const blueprint: number[] = it.days ?? [];
     const body: FlockEventRequest = {
       description: it.description,
       from: it.from.format(ISO_8601_DATE),
       to: it.to.format(ISO_8601_DATE),
-      hours: it.days.reduce((acc, cur) => acc + parseFloat(cur || 0), 0),
+      hours: blueprint.reduce((acc, cur) => acc + (Number(cur) || 0), 0),
       days: it.days,
       costs: it.costs,
       personIds: it.personIds,
+      participants: toEventDayForms(it.participants ?? [], it.type, blueprint),
       type: it.type,
     };
     const persist = code ? EventClient.put(code, body) : EventClient.post(body);
@@ -76,16 +78,10 @@ export function EventDialog({ open, code, onComplete }: EventDialogProps) {
   };
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        TransitionComponent={TransitionSlider}
-        maxWidth="lg"
-        fullWidth
-      >
+      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
         <DialogHeader
           icon={<EventIcon />}
-          headline="Create Event"
+          headline={code ? 'Edit Event' : 'Create Event'}
           subheadline="Have a fun time!"
           onClose={handleClose}
         />

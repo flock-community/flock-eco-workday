@@ -18,6 +18,14 @@ export type FlockEvent = {
   type: EventType;
 };
 
+export type FlockEventDay = {
+  personId: string;
+  hours: number;
+  cost: number | null;
+  days?: number[];
+  budgetCategory: 'HACK' | 'TRAINING' | null;
+};
+
 export type FullFlockEvent = {
   id: number;
   description: string;
@@ -27,6 +35,7 @@ export type FullFlockEvent = {
   hours: number;
   days: number[];
   persons: Person[];
+  eventDays: FlockEventDay[];
   costs: number;
   type: EventType;
 };
@@ -50,6 +59,7 @@ type FlockEventRaw = {
   hours: number;
   days: number[];
   persons: Person[];
+  eventDays?: FlockEventDay[];
   costs: number;
   type: EventType;
 };
@@ -81,13 +91,14 @@ const internalizeFull = (it: FlockEventRaw): FullFlockEvent => ({
   to: dayjs(it.to),
   hours: it.hours,
   persons: it.persons,
+  eventDays: it.eventDays ?? [],
   type: it.type,
   id: it.id,
   days: it.days,
   costs: it.costs,
 });
 
-export const EVENT_PAGE_SIZE: number = 10;
+export const EVENT_PAGE_SIZE: number = 15;
 
 const internalizingClient = InternalizingClient<
   FlockEventRequest,
@@ -95,12 +106,15 @@ const internalizingClient = InternalizingClient<
   FullFlockEvent
 >(path, internalizeFull);
 
-const getAll = (page: number, pageSize = EVENT_PAGE_SIZE) => {
-  return internalizingClient.findAllByPage({
-    page,
-    size: pageSize,
-    sort: 'from,desc',
-  });
+const getAll = (page: number, year?: number, pageSize = EVENT_PAGE_SIZE) => {
+  return internalizingClient.queryByPage(
+    {
+      page,
+      size: pageSize,
+      sort: 'from,asc',
+    },
+    { year },
+  );
 };
 
 // TODO: Rating type
@@ -153,12 +167,13 @@ const getHackDays = (year: number): Promise<FlockEvent[]> =>
     events.filter((event) => event.type === EventType.FLOCK_HACK_DAY),
   );
 
-const subscribeToEvent = (event: FlockEvent) => {
+const subscribeToEvent = (event: FlockEvent, hours?: number) => {
   const opts = {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify({ hours: hours ?? null }),
   };
   return fetch(`${path}/${event.code}/subscribe`, opts)
     .then(validateResponse<FlockEventRaw>)

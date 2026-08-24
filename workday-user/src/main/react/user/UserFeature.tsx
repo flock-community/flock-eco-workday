@@ -1,8 +1,15 @@
-import { Card } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { UserDialog } from './UserDialog';
 import { UserTable } from './UserTable';
-import { UserToolbar } from './UserToolbar';
 
 type UserFeatureProps = {
   enablePassword?: boolean;
@@ -36,10 +43,6 @@ export function UserFeature({ enablePassword }: UserFeatureProps) {
     });
   };
 
-  const handleSearchChange = (search: string) => {
-    setSearchState(search);
-  };
-
   const handleNewClick = () => {
     setDialogState({
       open: true,
@@ -56,17 +59,62 @@ export function UserFeature({ enablePassword }: UserFeatureProps) {
   };
 
   return (
-    <>
+    <Box
+      className={'flow'}
+      flow-gap={'wide'}
+      style={{ paddingBottom: '1.5rem' }}
+    >
       <Card>
-        <UserToolbar
-          onAdd={handleNewClick}
-          onSearchChange={handleSearchChange}
-        />
-        <UserTable
-          refresh={reload}
-          search={debouncedSearchState}
-          onRowClick={handleRowClick}
-        />
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 2,
+            px: 2,
+            py: 1.5,
+            borderBottom: 1,
+            borderColor: 'divider',
+          }}
+        >
+          <Box sx={{ flexShrink: 0 }}>
+            <Typography variant="h6">Users</Typography>
+          </Box>
+          <Box
+            sx={{
+              ml: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 2,
+              minWidth: 0,
+            }}
+          >
+            <TextField
+              autoFocus
+              size="small"
+              value={searchState}
+              onChange={(event) => setSearchState(event.target.value)}
+              placeholder="Search name"
+            />
+          </Box>
+          <Button onClick={handleNewClick} startIcon={<AddIcon />}>
+            Add
+          </Button>
+        </Box>
+        <CardContent
+          sx={{
+            '& tbody tr:last-child td, & tbody tr:last-child th': {
+              borderBottom: 0,
+            },
+          }}
+        >
+          <UserTable
+            refresh={reload}
+            search={debouncedSearchState}
+            onRowClick={handleRowClick}
+          />
+        </CardContent>
       </Card>
       <UserDialog
         open={dialogState.open}
@@ -74,6 +122,6 @@ export function UserFeature({ enablePassword }: UserFeatureProps) {
         onComplete={handleComplete}
         enablePassword={enablePassword}
       />
-    </>
+    </Box>
   );
 }

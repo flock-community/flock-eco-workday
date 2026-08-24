@@ -21,8 +21,8 @@ import community.flock.eco.workday.application.model.ContractExternal
 import community.flock.eco.workday.application.model.ContractInternal
 import community.flock.eco.workday.application.model.ContractManagement
 import community.flock.eco.workday.application.model.ContractService
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.Day
-import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.model.PersonHackdayDetails
@@ -109,7 +109,7 @@ class AggregationService(
                     .sum(),
             hackHoursUsed =
                 data.eventDay
-                    .filter { it.type == EventType.FLOCK_HACK_DAY }
+                    .filter { (it.budgetCategory ?: it.event.budgetCategory) == BudgetCategory.HACK }
                     .sumOf { it.hours }
                     .toBigDecimal(),
         )
@@ -195,8 +195,8 @@ class AggregationService(
                             .sum(),
                     usedHours =
                         all.eventDay
-                            .filter { it.type == EventType.FLOCK_HACK_DAY }
-                            .filter { person in it.persons }
+                            .filter { (it.budgetCategory ?: it.event.budgetCategory) == BudgetCategory.HACK }
+                            .filter { it.person == person }
                             .sumOf { it.hours }
                             .toBigDecimal(),
                 )
@@ -274,6 +274,10 @@ class AggregationService(
                     .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                     .sum()
                     .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
+            paidLeaveHours =
+                allData.leaveDay
+                    .filter { it.type == LeaveDayType.PAID_LEAVE }
+                    .totalHoursInPeriod(from, to),
             paidParentalLeaveUsed =
                 allData.leaveDay
                     .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }
@@ -318,7 +322,7 @@ class AggregationService(
                             .div(5),
                     event =
                         all.eventDay
-                            .filter { it.persons.isEmpty() || it.persons.contains(person) }
+                            .filter { it.person == person }
                             .map { it.totalHoursInPeriod(period) }
                             .sum()
                             .toInt(),
@@ -339,6 +343,11 @@ class AggregationService(
                             .map { BigDecimal(it.hoursPerWeek * 24 * 8) }
                             .sum()
                             .divide(BigDecimal(totalWorkDays * 40), 10, RoundingMode.HALF_UP),
+                    paidLeaveHours =
+                        all.leaveDay
+                            .filter { it.type == LeaveDayType.PAID_LEAVE }
+                            .filter { it.person == person }
+                            .totalHoursInPeriod(from, to),
                     paidParentalLeaveUsed =
                         all.leaveDay
                             .filter { it.type == LeaveDayType.PAID_PARENTAL_LEAVE }

@@ -1,7 +1,15 @@
-import { Card, CardContent, CardHeader } from '@mui/material';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
+import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded';
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import { useEffect, useState } from 'react';
@@ -53,6 +61,7 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
             it.total -
               (it.workDays +
                 it.leaveDayUsed +
+                it.paidLeaveHours +
                 it.sickDays +
                 it.event +
                 it.paidParentalLeaveUsed +
@@ -78,20 +87,34 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
   };
 
   function renderItem(item: AggregationPersonObject, index: number) {
+    const monthLabel = new Date(item.monthYear).toLocaleString('en-EN', {
+      month: 'long',
+      year: 'numeric',
+    });
+    const hours = Math.round(item.missing);
     return (
-      <ListItemButton key={index} onClick={() => openWorkDayDialog(item)}>
-        <ListItemText
-          primary={`You have missing hours in
-                    ${new Date(item.monthYear).toLocaleString('en-EN', {
-                      month: 'long',
-                    })}`}
-        />
-      </ListItemButton>
+      <TableRow
+        hover
+        key={index}
+        onClick={() => openWorkDayDialog(item)}
+        sx={{ cursor: 'pointer' }}
+        data-testid={'table-row-missing-hours'}
+      >
+        <TableCell>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <ScheduleRoundedIcon fontSize="small" color="action" />
+            <span>{monthLabel}</span>
+          </Box>
+        </TableCell>
+        <TableCell width={110} align={'right'}>
+          {hours} h
+        </TableCell>
+      </TableRow>
     );
   }
 
   return (
-    <Card variant={'outlined'} style={{ borderRadius: 0 }}>
+    <Card variant={'outlined'} sx={{ borderRadius: '14px' }}>
       <CardHeader title={'Missing hours'} />
       {data.length === 0 && (
         <CardContent>
@@ -100,7 +123,15 @@ export function MissingHoursCard({ totalPerPersonMe }: MissingHoursCardProps) {
       )}
       {data.length > 0 && (
         <CardContent>
-          <List>{data.map((it, idx) => renderItem(it, idx))}</List>
+          <Table size={'small'}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Month</TableCell>
+                <TableCell align={'right'}>Missing</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>{data.map((it, idx) => renderItem(it, idx))}</TableBody>
+          </Table>
         </CardContent>
       )}
       <MissingHoursDetailDialog

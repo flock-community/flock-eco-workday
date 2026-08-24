@@ -14,57 +14,23 @@ import Typography from '@mui/material/Typography';
 import { DialogHeader } from '@workday-core/components/dialog';
 import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import { useEffect, useState } from 'react';
+import { useChartColors } from '../../theme/chartColors';
 import type { AggregationPersonObject } from './MissingHoursCard';
 
 const PREFIX = 'MissingHoursDetailDialog';
 
 const classes = {
   flexDataContainer: `${PREFIX}flexDataContainer`,
-  dataItemWorkDay: `${PREFIX}dataItemWorkDay`,
-  dataItemHoliday: `${PREFIX}dataItemHoliday`,
-  dataItemPaidPL: `${PREFIX}dataItemPaidPL`,
-  dataItemUnpaidPL: `${PREFIX}dataItemUnpaidPL`,
-  dataItemSickDay: `${PREFIX}dataItemSickDay`,
-  dataItemEventDay: `${PREFIX}dataItemEventDay`,
-  dataItemMissing: `${PREFIX}dataItemMissing`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')(({ theme }) => ({
+const Root = styled('div')(() => ({
   [`& .${classes.flexDataContainer}`]: {
     display: 'flex',
     height: '2rem',
     '& > *': {
       flexBasis: '0%',
     },
-  },
-
-  [`& .${classes.dataItemWorkDay}`]: {
-    backgroundColor: '#1de8b5',
-  },
-
-  [`& .${classes.dataItemHoliday}`]: {
-    backgroundColor: '#42a5f5',
-  },
-
-  [`& .${classes.dataItemPaidPL}`]: {
-    backgroundColor: '#ffb6c1',
-  },
-
-  [`& .${classes.dataItemUnpaidPL}`]: {
-    backgroundColor: '#87cefa',
-  },
-
-  [`& .${classes.dataItemSickDay}`]: {
-    backgroundColor: '#ef5350',
-  },
-
-  [`& .${classes.dataItemEventDay}`]: {
-    backgroundColor: '#fed766',
-  },
-
-  [`& .${classes.dataItemMissing}`]: {
-    backgroundColor: '#9e9e9e',
   },
 }));
 
@@ -79,6 +45,7 @@ export function MissingHoursDetailDialog({
   item,
   onComplete,
 }: MissingHoursDetailDialogProps) {
+  const colors = useChartColors();
   const [state, setState] = useState<any>(null);
 
   useEffect(() => {
@@ -117,38 +84,52 @@ export function MissingHoursDetailDialog({
             <Box className={'flow'}>
               <div className={classes.flexDataContainer}>
                 <div
-                  className={classes.dataItemWorkDay}
-                  style={{ flexGrow: state?.workDays }}
+                  style={{
+                    flexGrow: state?.workDays,
+                    backgroundColor: colors.worked,
+                  }}
                 ></div>
                 <div
-                  className={classes.dataItemHoliday}
-                  style={{ flexGrow: state?.leaveDayUsed }}
+                  style={{
+                    flexGrow: state?.leaveDayUsed,
+                    backgroundColor: colors.leave,
+                  }}
                 ></div>
                 <div
-                  className={classes.dataItemPaidPL}
-                  style={{ flexGrow: state?.paidParentalLeaveUsed }}
+                  style={{
+                    flexGrow: state?.paidParentalLeaveUsed,
+                    backgroundColor: colors.paidParentalLeave,
+                  }}
                 ></div>
                 <div
-                  className={classes.dataItemUnpaidPL}
-                  style={{ flexGrow: state?.unpaidParentalLeaveUsed }}
+                  style={{
+                    flexGrow: state?.unpaidParentalLeaveUsed,
+                    backgroundColor: colors.unpaidParentalLeave,
+                  }}
                 ></div>
                 <div
-                  className={classes.dataItemSickDay}
-                  style={{ flexGrow: state?.sickDays }}
+                  style={{
+                    flexGrow: state?.sickDays,
+                    backgroundColor: colors.sick,
+                  }}
                 ></div>
                 <div
-                  className={classes.dataItemEventDay}
-                  style={{ flexGrow: state?.event }}
+                  style={{
+                    flexGrow: state?.event,
+                    backgroundColor: colors.event,
+                  }}
                 ></div>
                 <div
-                  className={classes.dataItemMissing}
-                  style={{ flexGrow: state?.missing }}
+                  style={{
+                    flexGrow: state?.missing,
+                    backgroundColor: colors.missing,
+                  }}
                 ></div>
               </div>
 
               <List dense={true}>
                 <ListItem>
-                  <ListItemIcon style={{ color: '#1de8b5' }}>
+                  <ListItemIcon style={{ color: colors.worked }}>
                     <WorkdayIcon />
                   </ListItemIcon>
                   <ListItemText primary={'Worked hours'} />
@@ -157,7 +138,7 @@ export function MissingHoursDetailDialog({
                   </ListItemSecondaryAction>
                 </ListItem>
                 <ListItem>
-                  <ListItemIcon style={{ color: '#42a5f5' }}>
+                  <ListItemIcon style={{ color: colors.leave }}>
                     <HolidayIcon />
                   </ListItemIcon>
                   <ListItemText primary={'Holiday hours'} />
@@ -166,7 +147,7 @@ export function MissingHoursDetailDialog({
                   </ListItemSecondaryAction>
                 </ListItem>
                 <ListItem>
-                  <ListItemIcon style={{ color: '#ffb6c1' }}>
+                  <ListItemIcon style={{ color: colors.paidParentalLeave }}>
                     <ChildCare />
                   </ListItemIcon>
                   <ListItemText primary={'Paid Parental leave'} />
@@ -175,7 +156,7 @@ export function MissingHoursDetailDialog({
                   </ListItemSecondaryAction>
                 </ListItem>
                 <ListItem>
-                  <ListItemIcon style={{ color: '#87cefa' }}>
+                  <ListItemIcon style={{ color: colors.unpaidParentalLeave }}>
                     <ChildCare />
                   </ListItemIcon>
                   <ListItemText primary={'Unpaid Parental leave'} />
@@ -184,7 +165,7 @@ export function MissingHoursDetailDialog({
                   </ListItemSecondaryAction>
                 </ListItem>
                 <ListItem>
-                  <ListItemIcon style={{ color: '#ef5350' }}>
+                  <ListItemIcon style={{ color: colors.sick }}>
                     <HealingIcon />
                   </ListItemIcon>
                   <ListItemText primary={'Sick hours'} />
@@ -193,7 +174,7 @@ export function MissingHoursDetailDialog({
                   </ListItemSecondaryAction>
                 </ListItem>
                 <ListItem>
-                  <ListItemIcon style={{ color: '#fed766' }}>
+                  <ListItemIcon style={{ color: colors.event }}>
                     <EventIcon />
                   </ListItemIcon>
                   <ListItemText primary={'Event hours'} />
@@ -202,7 +183,7 @@ export function MissingHoursDetailDialog({
                   </ListItemSecondaryAction>
                 </ListItem>
                 <ListItem>
-                  <ListItemIcon style={{ color: '#9E9E9E' }}>
+                  <ListItemIcon style={{ color: colors.missing }}>
                     <MoreHoriz />
                   </ListItemIcon>
                   <ListItemText primary={'Missing hours'} />

@@ -1,5 +1,3 @@
-import AddIcon from '@mui/icons-material/Add';
-import { Button, Card, CardContent, CardHeader } from '@mui/material';
 import { useState } from 'react';
 import type { Person } from '../../clients/PersonClient';
 import { SickDayClient } from '../../clients/SickDayClient';
@@ -47,24 +45,13 @@ export function SickDayFeature({ person }: SickDayFeatureProps) {
 
   return (
     <>
-      <Card>
-        <CardHeader
-          title="Sick days"
-          action={
-            <Button onClick={handleClickAdd}>
-              <AddIcon /> Add
-            </Button>
-          }
-        />
-        <CardContent>
-          <SickDayList
-            personId={person?.uuid}
-            onClickRow={handleClickRow}
-            refresh={refresh}
-            onClickStatus={handleStatusChange}
-          />
-        </CardContent>
-      </Card>
+      <SickDayList
+        personId={person?.uuid}
+        onClickRow={handleClickRow}
+        refresh={refresh}
+        onClickStatus={handleStatusChange}
+        onClickAdd={handleClickAdd}
+      />
       <SickDayDialog
         personFullName={person.fullName}
         open={open}

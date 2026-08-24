@@ -11,6 +11,7 @@ module.exports = {
     '/node_modules/',
     '/tests/', // Ignore Playwright tests
     '/dist/',
+    '/.claude/', // Ignore Claude worktree copies of the repo
   ],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
@@ -22,6 +23,5 @@ module.exports = {
     '^@workday-core/(.*)$': '<rootDir>/workday-core/src/main/react/$1',
     '^@workday-user$': '<rootDir>/workday-user/src/main/react',
     '^@workday-user/(.*)$': '<rootDir>/workday-user/src/main/react/$1',
-    '\\.(css|less|scss)$': 'identity-obj-proxy',
   },
 };

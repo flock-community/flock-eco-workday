@@ -25,13 +25,35 @@ class LoadEventData(
         loadData.load {
             (
                 publicHolidays(loadPersonData) + communityDays(loadPersonData) + conferences(loadPersonData) +
-                    hackDays(
-                        loadPersonData,
-                    )
+                    hackDays(loadPersonData) + trainingEvents(loadPersonData)
             ).map { it.create() }
                 .let { data.addAll(it) }
         }
     }
+
+    private fun trainingEvents(loadPersonData: LoadPersonData) =
+        listOf(
+            EventForm(
+                description = "Kotlin Conf (training)",
+                from = LocalDate.of(now.year, 6, 10),
+                to = LocalDate.of(now.year, 6, 11),
+                days = mutableListOf(8.0, 8.0),
+                hours = 16.0,
+                personIds = loadPersonData.data.take(3).map { it.uuid },
+                costs = 2400.0,
+                type = EventType.CONFERENCE,
+            ),
+            EventForm(
+                description = "Personal study budget",
+                from = LocalDate.of(now.year, 9, 2),
+                to = LocalDate.of(now.year, 9, 2),
+                days = mutableListOf(8.0),
+                hours = 8.0,
+                personIds = listOf(loadPersonData.findPersonByUserEmail("bert@sesam.straat").uuid),
+                costs = 450.0,
+                type = EventType.CONFERENCE,
+            ),
+        )
 
     private fun publicHolidays(loadPersonData: LoadPersonData) =
         listOf(
@@ -103,6 +125,11 @@ class LoadEventData(
     private fun hackDays(loadPersonData: LoadPersonData): List<EventForm> {
         val hackDays = mutableListOf<EventForm>()
         repeat(20) { i ->
+            // Half attendance keeps a realistic hack-budget remainder, not exactly zero.
+            val attendees =
+                loadPersonData.data
+                    .filterIndexed { personIdx, _ -> (i + personIdx) % 2 == 0 }
+                    .map { it.uuid }
             hackDays.add(
                 EventForm(
                     description = "Flock. Hack Day",
@@ -110,7 +137,7 @@ class LoadEventData(
                     to = LocalDate.of(now.year, i % 12 + 1, (i % 2 + 1) * 14),
                     days = mutableListOf(8.0),
                     hours = 8.0,
-                    personIds = loadPersonData.data.map { it.uuid },
+                    personIds = attendees,
                     costs = 750.0,
                     type = EventType.FLOCK_HACK_DAY,
                 ),

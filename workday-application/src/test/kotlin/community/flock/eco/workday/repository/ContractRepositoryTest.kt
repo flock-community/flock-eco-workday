@@ -30,7 +30,7 @@ class ContractRepositoryTest : WorkdayIntegrationTest() {
                 hoursPerWeek = 40,
                 monthlySalary = 500.0,
                 holidayHours = 192,
-                hackHours = 160,
+                hackTimeBudget = 160,
             )
         val saved = contractRepository.save(new)
         val update =
@@ -43,7 +43,7 @@ class ContractRepositoryTest : WorkdayIntegrationTest() {
 //            monthlySalary = saved.monthlySalary,
 //            hoursPerWeek = saved.hoursPerWeek,
                 holidayHours = saved.holidayHours,
-                hackHours = saved.hackHours,
+                hackTimeBudget = saved.hackTimeBudget,
                 billable = saved.billable,
                 to = LocalDate.of(2020, 6, 1),
                 hoursPerWeek = 80,

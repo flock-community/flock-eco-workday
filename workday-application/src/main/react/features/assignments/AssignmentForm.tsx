@@ -38,12 +38,6 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
   };
 
   const form = ({ values, setFieldValue }) => {
-    const handleRefresh = (promise) => {
-      promise.then((_res) => {
-        console.log(`Items in project selector updated`);
-      });
-    };
-
     return (
       <Form id={ASSIGNMENT_FORM_ID}>
         <Grid container spacing={1}>
@@ -89,15 +83,14 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
           </Grid>
           <Grid size={{ xs: 12 }}>
             <ProjectSelectorField
-              onRefresh={handleRefresh}
               refresh={doRefresh}
               name="projectCode"
               fullWidth
             />
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <Button onClick={createProject}>
-              <AddIcon /> Add project
+            <Button onClick={createProject} startIcon={<AddIcon />}>
+              Add project
             </Button>
           </Grid>
         </Grid>
@@ -122,7 +115,15 @@ export const AssignmentForm = ({ value, onSubmit }: AssignmentFormProps) => {
   return (
     <>
       <Formik
-        initialValues={{ ...ASSIGNMENT_FORM_SCHEMA.cast(), ...init }}
+        // Form fields hold Dayjs dates that convert to the wire AssignmentRequest
+        // (string dates) at the submit boundary. yup 1.x types getDefault() (cast()
+        // was untyped before), so assert the in-form shape here.
+        initialValues={
+          {
+            ...ASSIGNMENT_FORM_SCHEMA.getDefault(),
+            ...init,
+          } as unknown as AssignmentRequest
+        }
         onSubmit={onSubmit}
         validationSchema={ASSIGNMENT_FORM_SCHEMA}
         enableReinitialize

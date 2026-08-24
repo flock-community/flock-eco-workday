@@ -14,12 +14,14 @@ import {
   AggregationClient,
   type AggregationHackDay,
 } from '../../clients/AggregationClient';
+import { useChartColors } from '../../theme/chartColors';
 
 type HackDaysPerPersonChartProps = {
   readonly year: number;
 };
 
 export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
+  const colors = useChartColors();
   const [state, setState] = useState<AggregationHackDay[] | null>(null);
 
   useEffect(() => {
@@ -43,7 +45,11 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
 
   return (
     <ResponsiveContainer height={height}>
-      <BarChart data={state} layout="vertical">
+      <BarChart
+        data={state}
+        layout="vertical"
+        margin={{ top: 8, right: 28, bottom: 0, left: 8 }}
+      >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis type="number" />
         <YAxis type="category" dataKey="name" width={150} />
@@ -59,20 +65,20 @@ export function HackDaysPerPersonChart({ year }: HackDaysPerPersonChartProps) {
           stackId="available"
           dataKey="contractHours"
           name="contract"
-          fill="#9e9e9e"
+          fill={colors.contract}
         />
         <Bar
           stackId="used"
           dataKey="hackHoursUsed"
           name="used"
-          fill="#42a5f5"
+          fill={colors.leave}
         />
 
         <Bar
           stackId="used"
           dataKey="availableHours"
           name="available"
-          fill="#d2d2d2"
+          fill={colors.available}
         />
       </BarChart>
     </ResponsiveContainer>

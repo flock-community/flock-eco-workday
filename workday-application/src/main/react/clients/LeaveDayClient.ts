@@ -10,7 +10,7 @@ const internalize = (it) => ({
 const path = '/api/leave-days';
 const resourceClient = InternalizingClient(path, internalize);
 
-export const LEAVE_DAY_PAGE_SIZE = 5;
+export const LEAVE_DAY_PAGE_SIZE = 15;
 
 const findAllByPersonId = (personId, page) =>
   resourceClient.queryByPage(

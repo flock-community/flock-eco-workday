@@ -1,6 +1,3 @@
-import AddIcon from '@mui/icons-material/Add';
-import { Card, CardContent, CardHeader } from '@mui/material';
-import Button from '@mui/material/Button';
 import { useState } from 'react';
 import type { Person } from '../../clients/PersonClient';
 import type { Expense } from '../../wirespec/model';
@@ -42,24 +39,13 @@ export function ExpenseFeature({ person }: ExpenseFeatureProps) {
 
   return (
     <>
-      <Card>
-        <CardHeader
-          title="Expenses"
-          action={
-            <Button onClick={handleClickAdd}>
-              <AddIcon /> Add
-            </Button>
-          }
-        />
-        <CardContent>
-          <ExpenseList
-            personId={person?.uuid}
-            onClickRow={handleClickRow}
-            refresh={reload}
-            onClickStatus={() => {}}
-          />
-        </CardContent>
-      </Card>
+      <ExpenseList
+        personId={person?.uuid}
+        onClickRow={handleClickRow}
+        refresh={reload}
+        onClickStatus={() => {}}
+        onClickAdd={handleClickAdd}
+      />
       <ExpenseDialog
         id={id}
         open={open}

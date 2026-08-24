@@ -1,4 +1,12 @@
-import { Box, CardContent, MenuItem, Select } from '@mui/material';
+import {
+  Box,
+  CardContent,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from '@mui/material';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import dayjs from 'dayjs';
@@ -27,23 +35,41 @@ export function DashboardFeature() {
       flow-gap={'wide'}
       style={{ paddingBottom: '1.5rem' }}
     >
-      <Card>
-        <CardHeader title="Year" />
-        <CardContent>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
+          gap: 2,
+          flexWrap: 'wrap',
+          px: { xs: 0.5, sm: 1 },
+        }}
+      >
+        <Box>
+          <Typography variant="overline" color="text.secondary" display="block">
+            Reports
+          </Typography>
+          <Typography variant="h4">Dashboard</Typography>
+        </Box>
+        <FormControl size="small" sx={{ minWidth: 120 }}>
+          <InputLabel id="dashboard-year-label">Year</InputLabel>
           <Select
+            labelId="dashboard-year-label"
+            label="Year"
             value={year.toString()}
             onChange={(e) => setYear(parseInt(e.target.value as string, 10))}
           >
             {Array.from(Array(now.year() - startYear + 1).keys())
               .map((i) => String(startYear + i))
+              .reverse()
               .map((it) => (
                 <MenuItem key={it} value={it}>
                   {it}
                 </MenuItem>
               ))}
           </Select>
-        </CardContent>
-      </Card>
+        </FormControl>
+      </Box>
 
       <Card>
         <CardHeader title="Actual cost revenue" />

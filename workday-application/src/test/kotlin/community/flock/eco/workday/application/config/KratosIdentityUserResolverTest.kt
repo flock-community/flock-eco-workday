@@ -14,6 +14,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -131,6 +132,19 @@ class KratosIdentityUserResolverTest {
         val resolved = resolver.resolve("sub-race", "token-race")
 
         assertThat(resolved.email).isEqualTo("race@flock.community")
+    }
+
+    @Test
+    fun `a unique-constraint race loser re-reads the account by reference instead of failing`() {
+        val user = userWithEmail("constraint@flock.community")
+        every { userAccountService.findUserAccountOauthByReference("sub-constraint") } returnsMany
+            listOf(null, oauth(user, "sub-constraint"))
+        every { userAccountService.createUserAccountOauth(any()) } throws DataIntegrityViolationException("uc_user_account_oauth_provider_reference")
+        expectUserinfo("token-constraint", withSuccess(userinfoBody("constraint@flock.community"), MediaType.APPLICATION_JSON))
+
+        val resolved = resolver.resolve("sub-constraint", "token-constraint")
+
+        assertThat(resolved.email).isEqualTo("constraint@flock.community")
     }
 
     private fun expectUserinfo(

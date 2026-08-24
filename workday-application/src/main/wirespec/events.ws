@@ -1,4 +1,4 @@
-endpoint GetEventAll GET /api/events ? {page: Integer32?, size: Integer32?, sort: String?} -> {
+endpoint GetEventAll GET /api/events ? {page: Integer32?, size: Integer32?, sort: String?, year: Integer32?} -> {
   200 -> Event[] # { `x-total`: Integer32 }
 }
 endpoint GetEventByCode GET /api/events/{code: String} -> {
@@ -16,7 +16,7 @@ endpoint DeleteEvent DELETE /api/events/{code: String} -> {
 endpoint GetEventsByYear GET /api/events/year ? {year: Integer32} -> {
   200 -> EventProjection[]
 }
-endpoint SubscribeToEvent PUT /api/events/{eventCode: String}/subscribe -> {
+endpoint SubscribeToEvent PUT EventSubscription /api/events/{eventCode: String}/subscribe -> {
   200 -> Event
 }
 endpoint UnsubscribeFromEvent PUT /api/events/{eventCode: String}/unsubscribe -> {
@@ -42,7 +42,18 @@ type Event {
   costs: Number?,
   `type`: EventType?,
   days: Number[]?,
-  persons: Person[]?
+  persons: Person[]?,
+  eventDays: EventDay[]?
+}
+type EventDay {
+  personId: String?,
+  hours: Number?,
+  cost: Number?,
+  days: Number[]?,
+  budgetCategory: BudgetCategory?
+}
+enum BudgetCategory {
+  HACK, TRAINING
 }
 enum EventType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
@@ -55,10 +66,21 @@ type EventForm {
   days: Number[]?,
   costs: Number?,
   personIds: String[]?,
+  participants: EventDayForm[]?,
   `type`: EventFormType?
+}
+type EventDayForm {
+  personId: String?,
+  hours: Number?,
+  cost: Number?,
+  days: Number[]?,
+  budgetCategory: BudgetCategory?
 }
 enum EventFormType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT
+}
+type EventSubscription {
+  hours: Number?
 }
 type EventRatingForm {
   personId: String?,
@@ -75,7 +97,8 @@ type EventProjection {
   persons: PersonProjection[]?,
   code: String?,
   description: String?,
-  to: String?
+  to: String?,
+  hours: Number?
 }
 enum EventProjectionType {
   FLOCK_HACK_DAY, FLOCK_COMMUNITY_DAY, CONFERENCE, GENERAL_EVENT

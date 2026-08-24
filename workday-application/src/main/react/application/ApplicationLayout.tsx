@@ -1,6 +1,6 @@
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from '@mui/material';
+import { Box, Link } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
@@ -12,9 +12,9 @@ import { styled } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-
 // Hooks
 import { useSession } from '../hooks/SessionHook';
+import { ColorModeToggle } from '../theme/ColorModeToggle';
 
 const PREFIX = 'ApplicationLayout';
 
@@ -43,10 +43,10 @@ const Root = styled('div')({
 });
 
 type ApplicationLayoutProps = {
-  onDrawer: () => void;
+  onMenu: () => void;
 };
 
-export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
+export function ApplicationLayout({ onMenu }: ApplicationLayoutProps) {
   const handleLogout = () => {
     window.location.href = '/logout';
   };
@@ -66,34 +66,71 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
   };
 
   const handleClickDrawer = () => {
-    if (onDrawer) {
-      onDrawer();
+    if (onMenu) {
+      onMenu();
     }
   };
 
   return (
-    <Root>
-      <AppBar className={`${classes.navBar} full-width`}>
-        <Toolbar>
+    <Root className="full-width">
+      <AppBar className={classes.navBar}>
+        <Toolbar
+          disableGutters
+          sx={{
+            width:
+              'min(100% - (var(--padding-inline) * 2), var(--content-max-width))',
+            mx: 'auto',
+            px: '16px',
+          }}
+        >
           <IconButton
             className={classes.menuButton}
             color="inherit"
             aria-label="Menu"
             onClick={handleClickDrawer}
             size="large"
+            sx={{ display: { md: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
           <Link
-            variant="h6"
             color="inherit"
             className={classes.grow}
             underline="none"
             component={RouterLink}
             to="/"
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              fontSize: '1.2rem',
+              letterSpacing: '-0.01em',
+            }}
           >
-            Flock. Workday
+            <Box
+              component="span"
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'baseline',
+                gap: '0.3rem',
+              }}
+            >
+              <Box
+                component="span"
+                sx={{
+                  fontWeight: 800,
+                  color: (t) =>
+                    t.palette.mode === 'dark' ? 'primary.main' : 'inherit',
+                }}
+              >
+                Flock.
+              </Box>{' '}
+              <Box component="span" sx={{ fontWeight: 400, opacity: 0.85 }}>
+                Workday
+              </Box>
+            </Box>
           </Link>
+
+          <ColorModeToggle edge={false} sx={{ mr: 0.5 }} />
 
           <div>
             <IconButton
@@ -140,7 +177,8 @@ export function ApplicationLayout({ onDrawer }: ApplicationLayoutProps) {
             </Button>
           }
         >
-          Extend your session or be redirected you peasant.
+          Quick heads up: your session's almost up. Extend it to stick around,
+          or log back in.
         </Alert>
       </Snackbar>
     </Root>

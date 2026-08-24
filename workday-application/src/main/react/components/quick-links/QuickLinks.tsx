@@ -75,7 +75,7 @@ export function QuickLinks() {
 
   return (
     <Root>
-      <Card variant={'outlined'} style={{ borderRadius: 0 }}>
+      <Card variant={'outlined'}>
         <CardHeader title={'Quick links'} />
         <CardContent className={classes.containerWrapper}>
           <Box className={classes.buttonWrapper}>

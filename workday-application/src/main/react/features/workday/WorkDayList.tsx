@@ -1,47 +1,24 @@
-import {
-  Box,
-  Card,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-} from '@mui/material';
-import CardContent from '@mui/material/CardContent';
-import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TableRow from '@mui/material/TableRow';
+import AddIcon from '@mui/icons-material/Add';
+import { Box, Button } from '@mui/material';
+import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import { WORK_DAY_PAGE_SIZE, WorkDayClient } from '../../clients/WorkDayClient';
-// Components
 import { FlockPagination } from '../../components/pagination/FlockPagination';
-// Types
+import { TableCard } from '../../components/TableCard';
 import type { DayListProps, DayProps } from '../../types';
 import { WorkDayListItem } from './WorkDayListItem';
-
-const PREFIX = 'WorkDayList';
-
-const classes = {
-  card: `${PREFIX}Card`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')({
-  [`& .${classes.card}`]: (loading) => ({
-    marginTop: '10px',
-    opacity: loading ? 0.5 : 1,
-  }),
-});
 
 export function WorkDayList({
   personId,
   refresh,
   onClickRow,
   onClickStatus,
+  onClickAdd,
 }: DayListProps) {
   const [list, setList] = useState<DayProps[]>([]);
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh needs to be in dependencies to trigger reloads when parent changes it
   useEffect(() => {
@@ -67,49 +44,39 @@ export function WorkDayList({
     );
   }
 
-  const renderItems = () => {
-    if (list.length === 0) {
-      return (
-        <TableRow>
-          <TableCell colSpan={8}>No workdays</TableCell>
-        </TableRow>
-      );
-    }
-
-    return list.map(renderItem);
-  };
-
   return (
-    <Root>
-      <Card className={classes.card}>
-        <CardContent>
-          <TableContainer>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Client</TableCell>
-                  <TableCell>Assignment</TableCell>
-                  <TableCell>From</TableCell>
-                  <TableCell>To</TableCell>
-                  <TableCell align="right">Days</TableCell>
-                  <TableCell align="right">Hours</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell />
-                </TableRow>
-              </TableHead>
-              <TableBody>{renderItems()}</TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
-      <Box mt={2}>
-        <FlockPagination
-          currentPage={page + 1}
-          numberOfItems={count}
-          itemsPerPage={WORK_DAY_PAGE_SIZE}
-          changePageCb={setPage}
+    <Box>
+      <TableCard
+        title="Work days"
+        action={
+          <Button startIcon={<AddIcon />} onClick={onClickAdd}>
+            Add
+          </Button>
+        }
+        loading={loading}
+      >
+        <DataTable
+          columns={[
+            { header: 'Client' },
+            { header: 'Assignment' },
+            { header: 'From' },
+            { header: 'To' },
+            { header: 'Days', align: 'right' },
+            { header: 'Hours', align: 'right' },
+            { header: 'Status' },
+            {},
+          ]}
+          items={list}
+          renderRow={renderItem}
+          emptyMessage="No workdays"
         />
-      </Box>
-    </Root>
+      </TableCard>
+      <FlockPagination
+        currentPage={page + 1}
+        numberOfItems={count}
+        itemsPerPage={WORK_DAY_PAGE_SIZE}
+        changePageCb={setPage}
+      />
+    </Box>
   );
 }

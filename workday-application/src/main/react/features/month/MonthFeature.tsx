@@ -4,7 +4,6 @@ import { Box, CardContent } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
@@ -22,15 +21,14 @@ import {
   YAxis,
 } from 'recharts';
 import { AggregationClient } from '../../clients/AggregationClient';
+import { useChartColors } from '../../theme/chartColors';
 
-/**
- * @return {null}
- */
 export function MonthFeature() {
   const [date, setDate] = useState(dayjs().startOf('month'));
   const [totalPerPersonState, setTotalPerPersonState] = useState<any>();
   const [clientHourOverviewState, setClientHourOverviewState] = useState<any>();
 
+  const colors = useChartColors();
   const history = useHistory();
 
   useEffect(() => {
@@ -70,6 +68,7 @@ export function MonthFeature() {
         it.total -
           (it.workDays +
             it.leaveDayUsed +
+            it.paidLeaveHours +
             it.sickDays +
             it.event +
             it.paidParentalLeaveUsed +
@@ -84,10 +83,20 @@ export function MonthFeature() {
   );
 
   const renderChart = (x) => {
+    if (x.length === 0)
+      return (
+        <Typography color="text.secondary" variant="body2">
+          No persons in this group for this month.
+        </Typography>
+      );
     const height = 50 + x.length * 50;
     return (
       <ResponsiveContainer height={height}>
-        <BarChart data={x} layout="vertical">
+        <BarChart
+          data={x}
+          layout="vertical"
+          margin={{ top: 8, right: 28, bottom: 0, left: 8 }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" />
           <YAxis type="category" dataKey="name" width={150} />
@@ -100,43 +109,43 @@ export function MonthFeature() {
             stackId="days"
             dataKey="workDays"
             name="worked hours"
-            fill="#1de8b5"
+            fill={colors.worked}
           />
           <Bar
             stackId="days"
             dataKey="leaveDayUsed"
             name="leave hours"
-            fill="#42a5f5"
+            fill={colors.leave}
           />
           <Bar
             stackId="days"
             dataKey="paidParentalLeaveUsed"
             name="paid parental leave"
-            fill="#FFB6C1"
+            fill={colors.paidParentalLeave}
           />
           <Bar
             stackId="days"
             dataKey="unpaidParentalLeaveUsed"
             name="unpaid parental leave"
-            fill="#87CEFA"
+            fill={colors.unpaidParentalLeave}
           />
           <Bar
             stackId="days"
             dataKey="sickDays"
             name="sick hours"
-            fill="#ef5350"
+            fill={colors.sick}
           />
           <Bar
             stackId="days"
             dataKey="event"
             name="event hours"
-            fill="#fed766"
+            fill={colors.event}
           />
           <Bar
             stackId="days"
             dataKey="missing"
             name="missing hours"
-            fill="#9e9e9e"
+            fill={colors.missing}
           />
         </BarChart>
       </ResponsiveContainer>
@@ -150,26 +159,45 @@ export function MonthFeature() {
       style={{ paddingBottom: '1.5rem' }}
     >
       <Card>
-        <CardContent>
-          <Grid container spacing={1}>
-            <Grid size="grow">
-              <Typography variant="h6">
-                Month: {date.format('YYYY-MM')}
-              </Typography>
-              <Typography>
-                Total persons: {totalPerPersonData.length}
-              </Typography>
-              <Typography>Total hours: {totalHours}</Typography>
-            </Grid>
-            <Grid>
-              <IconButton onClick={handleMonth(-1)} size="large">
-                <BackIcon />
-              </IconButton>
-              <IconButton onClick={handleMonth(1)} size="large">
-                <NextIcon />
-              </IconButton>
-            </Grid>
-          </Grid>
+        <CardContent
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 2,
+            flexWrap: 'wrap',
+          }}
+        >
+          <Box>
+            <Typography
+              variant="overline"
+              color="text.secondary"
+              display="block"
+            >
+              Workforce overview
+            </Typography>
+            <Typography variant="h5">
+              Month: {date.format('YYYY-MM')}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Total persons: {totalPerPersonData.length} &middot; Total hours:{' '}
+              {totalHours}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <IconButton onClick={handleMonth(-1)} aria-label="Previous month">
+              <BackIcon />
+            </IconButton>
+            <Button
+              variant="text"
+              onClick={() => setDate(dayjs().startOf('month'))}
+            >
+              Today
+            </Button>
+            <IconButton onClick={handleMonth(1)} aria-label="Next month">
+              <NextIcon />
+            </IconButton>
+          </Box>
         </CardContent>
       </Card>
       <Card>

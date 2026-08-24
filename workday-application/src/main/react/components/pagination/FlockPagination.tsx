@@ -1,22 +1,7 @@
 // Deps
 
 import { Pagination } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import type React from 'react';
-
-const PREFIX = 'FlockPagination';
-
-const classes = {
-  pagination: `${PREFIX}pagination`,
-};
-
-const _StyledPagination = styled(Pagination)({
-  [`& .${classes.pagination}`]: {
-    '& .MuiPagination-ul': {
-      justifyContent: 'right',
-    },
-  },
-});
 
 interface FlockPaginationProps {
   currentPage: number;
@@ -38,10 +23,15 @@ export const FlockPagination: React.FC<FlockPaginationProps> = ({
     changePageCb(value - 1);
   };
 
+  const pageCount = Math.ceil(numberOfItems / itemsPerPage);
+  if (pageCount <= 1) {
+    return null;
+  }
+
   return (
     <Pagination
-      className={classes.pagination}
-      count={Math.ceil(numberOfItems / itemsPerPage)}
+      sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}
+      count={pageCount}
       page={currentPage}
       onChange={handleChangePage}
       color="primary"

@@ -51,8 +51,9 @@ test.describe
 
       await When_I_click_the_button(page, 'Add');
       const dialog = page.getByRole('dialog');
-      // The dialog header is "Create Event"; anchor the assertions on the
-      // Description input which only exists inside the form.
+      await expect(
+        dialog.getByText('Create Event', { exact: true }),
+      ).toBeVisible();
       await expect(dialog.getByLabel('Description')).toBeVisible();
 
       await dialog.getByLabel('Description').fill(EVENT_DESCRIPTION);
@@ -70,11 +71,11 @@ test.describe
       await expect(dialog).toBeHidden({ timeout: 10000 });
       await page.waitForLoadState('networkidle');
 
-      // Each event renders inside a Card. The seeded develop data inserts
+      // Each event renders as a table row. The seeded develop data inserts
       // ~27 events, so the new entry can sit one or two pages deep — walk
       // pagination to find the description.
       const eventCards = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: EVENT_DESCRIPTION });
       const eventCard = await findOnAnyPage(page, eventCards);
       await expect(eventCard).toContainText(EVENT_DESCRIPTION);
@@ -89,12 +90,15 @@ test.describe
       await page.waitForLoadState('networkidle');
 
       const eventCards = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: EVENT_DESCRIPTION });
       const eventCard = await findOnAnyPage(page, eventCards);
       await eventCard.click();
 
       const dialog = page.getByRole('dialog');
+      await expect(
+        dialog.getByText('Edit Event', { exact: true }),
+      ).toBeVisible();
       await expect(dialog.getByLabel('Description')).toBeVisible();
 
       const descriptionField = dialog.getByLabel('Description');
@@ -112,7 +116,7 @@ test.describe
       await page.waitForLoadState('networkidle');
 
       const updatedCards = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: EVENT_DESCRIPTION_UPDATED });
       await findOnAnyPage(page, updatedCards);
     });
@@ -126,7 +130,7 @@ test.describe
       await page.waitForLoadState('networkidle');
 
       const eventCards = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: EVENT_DESCRIPTION_UPDATED });
       const eventCard = await findOnAnyPage(page, eventCards);
       await eventCard.click();
@@ -157,7 +161,7 @@ test.describe
       await page.goto('/event');
       await page.waitForLoadState('networkidle');
       const remaining = page
-        .locator('.MuiCard-root:not(:has(.MuiCard-root))')
+        .locator('table tbody tr')
         .filter({ hasText: EVENT_DESCRIPTION_UPDATED });
       const maxPages = 25;
       for (let i = 0; i < maxPages; i++) {

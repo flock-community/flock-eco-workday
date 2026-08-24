@@ -47,6 +47,7 @@ import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.application.model.ContractType as ContractTypeInternal
 import community.flock.eco.workday.application.model.Person as PersonInternal
 import community.flock.eco.workday.application.services.ContractService as ContractDomainService
+import java.math.BigDecimal
 
 @RestController
 class ContractController(
@@ -228,7 +229,7 @@ class ContractController(
                     else -> null
                 },
             holidayHours = (this as? ContractInternal)?.holidayHours,
-            hackHours = (this as? ContractInternal)?.hackHours,
+            hackTimeBudget = (this as? ContractInternal)?.hackTimeBudget,
             hourlyRate = (this as? ContractExternal)?.hourlyRate,
             monthlyFee = (this as? ContractManagement)?.monthlyFee,
             monthlyCosts = (this as? ContractService)?.monthlyCosts,
@@ -239,6 +240,8 @@ class ContractController(
                     is ContractExternal -> billable
                     else -> null
                 },
+            trainingTimeBudget = (this as? ContractInternal)?.trainingTimeBudget,
+            trainingMoneyBudget = (this as? ContractInternal)?.trainingMoneyBudget?.toDouble(),
         )
 
     private fun ContractInternal.externalize(): ContractInternalApi =
@@ -252,8 +255,10 @@ class ContractController(
             monthlySalary = monthlySalary,
             hoursPerWeek = hoursPerWeek,
             holidayHours = holidayHours,
-            hackHours = hackHours,
+            hackTimeBudget = hackTimeBudget,
             billable = billable,
+            trainingTimeBudget = trainingTimeBudget,
+            trainingMoneyBudget = trainingMoneyBudget.toDouble(),
         )
 
     private fun ContractExternal.externalize(): ContractExternalApi =
@@ -330,8 +335,10 @@ class ContractController(
             from = from?.let(LocalDate::parse) ?: error("from is required"),
             to = to?.let(LocalDate::parse),
             holidayHours = holidayHours ?: 0,
-            hackHours = hackHours ?: 0,
+            hackTimeBudget = hackTimeBudget ?: 0,
             billable = billable ?: true,
+            trainingTimeBudget = trainingTimeBudget ?: 0,
+            trainingMoneyBudget = trainingMoneyBudget?.toBigDecimal() ?: BigDecimal.ZERO,
         )
 
     private fun ContractExternalFormApi.internalize() =

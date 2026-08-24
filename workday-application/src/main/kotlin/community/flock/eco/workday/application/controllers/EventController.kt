@@ -12,13 +12,15 @@ import community.flock.eco.workday.api.endpoint.PutEvent
 import community.flock.eco.workday.api.endpoint.SubscribeToEvent
 import community.flock.eco.workday.api.endpoint.UnsubscribeFromEvent
 import community.flock.eco.workday.application.authorities.EventAuthority
+import community.flock.eco.workday.application.forms.EventDayInput
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.forms.EventRatingForm
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.Event
+import community.flock.eco.workday.application.model.EventDay
 import community.flock.eco.workday.application.model.EventRating
 import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.Person
-import community.flock.eco.workday.application.repository.EventProjection
 import community.flock.eco.workday.application.services.EventRatingService
 import community.flock.eco.workday.application.services.EventService
 import community.flock.eco.workday.application.services.PersonService
@@ -32,9 +34,13 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
+import community.flock.eco.workday.api.model.BudgetCategory as BudgetCategoryApi
 import community.flock.eco.workday.api.model.Event as EventApi
+import community.flock.eco.workday.api.model.EventDay as EventDayApi
+import community.flock.eco.workday.api.model.EventDayForm as EventDayFormApi
 import community.flock.eco.workday.api.model.EventForm as EventFormApi
 import community.flock.eco.workday.api.model.EventFormType as EventFormTypeApi
 import community.flock.eco.workday.api.model.EventProjection as EventProjectionApi
@@ -65,10 +71,16 @@ class EventController(
         SecurityContextHolder.getContext().authentication
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
 
-    @PreAuthorize("hasAuthority('EventAuthority.READ')")
+    // SUBSCRIBE-only workers (the default employee authority set) may list events too:
+    // redact() below strips everything a non-attendee may not see.
+    @PreAuthorize("hasAnyAuthority('EventAuthority.READ', 'EventAuthority.SUBSCRIBE')")
     override suspend fun getEventAll(request: GetEventAll.Request): GetEventAll.Response<*> {
         val auth = authentication()
-        val page = eventService.findAll(request.queries.toPageable())
+        val pageable = request.queries.toPageable()
+        val page =
+            request.queries.year
+                ?.let { eventService.findAllByYear(it, pageable) }
+                ?: eventService.findAll(pageable)
         val body =
             page.content.map { event ->
                 if (!event.isAuthenticated(auth)) event.redact() else event
@@ -82,11 +94,12 @@ class EventController(
     @PreAuthorize("hasAuthority('EventAuthority.SUBSCRIBE')")
     override suspend fun getEventsByYear(request: GetEventsByYear.Request): GetEventsByYear.Response<*> {
         val year = request.queries.year ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "year is required")
+        val me = personService.findByUserCode(authentication().name)
         val projections =
             eventService
                 .findAllEventsOf(year)
-                .sortedBy { it.getFrom() }
-                .map { it.externalize() }
+                .sortedBy { it.from }
+                .map { it.toProjectionApi(me) }
         return GetEventsByYear.Response200(projections)
     }
 
@@ -125,7 +138,7 @@ class EventController(
         // generated interface; check the SUBSCRIBE authority explicitly.
         authentication().requireAuthority(EventAuthority.SUBSCRIBE)
         val person = currentPerson()
-        val event = eventService.subscribeToEvent(request.path.eventCode, person)
+        val event = eventService.subscribeToEvent(request.path.eventCode, person, request.body.hours)
         return SubscribeToEvent.Response200(event.externalize())
     }
 
@@ -180,7 +193,6 @@ class EventController(
             description = "N/A - $description",
             costs = 0.00,
             days = null,
-            persons = mutableListOf(),
             id = id,
             code = code,
             from = from,
@@ -198,8 +210,20 @@ class EventController(
             days = days?.toMutableList() ?: mutableListOf(),
             costs = costs ?: 0.0,
             personIds = personIds?.map(UUID::fromString) ?: emptyList(),
+            participants = participants?.mapNotNull { it.internalize() } ?: emptyList(),
             type = type?.toDomain() ?: EventType.GENERAL_EVENT,
         )
+
+    private fun EventDayFormApi.internalize(): EventDayInput? {
+        val personId = personId?.let(UUID::fromString) ?: return null
+        return EventDayInput(
+            personId = personId,
+            hours = hours ?: 0.0,
+            cost = cost?.let { BigDecimal.valueOf(it) },
+            days = days,
+            budgetCategory = budgetCategory?.toDomain(),
+        )
+    }
 
     private fun Event.externalize(): EventApi =
         EventApi(
@@ -213,7 +237,29 @@ class EventController(
             type = type.toApi(),
             days = days,
             persons = persons.map { it.externalize() },
+            eventDays = eventDays.map { it.externalize() },
         )
+
+    private fun EventDay.externalize(): EventDayApi =
+        EventDayApi(
+            personId = person.uuid.toString(),
+            hours = hours,
+            cost = cost?.toDouble(),
+            days = days,
+            budgetCategory = (budgetCategory ?: event.budgetCategory)?.toApi(),
+        )
+
+    private fun BudgetCategory.toApi(): BudgetCategoryApi =
+        when (this) {
+            BudgetCategory.HACK -> BudgetCategoryApi.HACK
+            BudgetCategory.TRAINING -> BudgetCategoryApi.TRAINING
+        }
+
+    private fun BudgetCategoryApi.toDomain(): BudgetCategory =
+        when (this) {
+            BudgetCategoryApi.HACK -> BudgetCategory.HACK
+            BudgetCategoryApi.TRAINING -> BudgetCategory.TRAINING
+        }
 
     private fun EventRating.externalize(): EventRatingApi =
         EventRatingApi(
@@ -221,22 +267,23 @@ class EventController(
             rating = rating,
         )
 
-    private fun EventProjection.externalize(): EventProjectionApi =
+    private fun Event.toProjectionApi(me: Person?): EventProjectionApi =
         EventProjectionApi(
-            type = getType().toProjectionApi(),
-            from = getFrom().toString(),
-            to = getTo().toString(),
-            code = getCode(),
-            description = getDescription(),
-            persons = getPersons().map { it.externalize() },
+            type = type.toProjectionApi(),
+            from = from.toString(),
+            to = to.toString(),
+            code = code,
+            description = description,
+            persons = persons.map { it.toProjectionApi() },
+            hours = eventDays.firstOrNull { it.person.uuid == me?.uuid }?.hours ?: hours,
         )
 
-    private fun community.flock.eco.workday.application.model.PersonProjection.externalize(): PersonProjectionApi =
+    private fun Person.toProjectionApi(): PersonProjectionApi =
         PersonProjectionApi(
-            uuid = getUuid().toString(),
-            firstname = getFirstname(),
-            lastname = getLastname(),
-            email = getEmail(),
+            uuid = uuid.toString(),
+            firstname = firstname,
+            lastname = lastname,
+            email = email,
         )
 
     private fun Person.externalize(): PersonApi =
@@ -286,11 +333,8 @@ class EventController(
         }
 
     private fun GetEventAll.Queries.toPageable(): Pageable {
-        // The React EventList always requests `from,desc` ordering (see
-        // EventClient.getAll). Hardcode the same sort here so behavior matches
-        // the pre-Wirespec controller, which auto-resolved Spring's Pageable.
-        val sort = Sort.by("from").descending().and(Sort.by("id"))
-        return PageRequest.of(page ?: 0, size ?: 10, sort)
+        val oldestFirst = Sort.by("from").ascending().and(Sort.by("id"))
+        return PageRequest.of(page ?: 0, size ?: 10, oldestFirst)
     }
 
     private fun Authentication.isAdmin(): Boolean =
