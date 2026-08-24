@@ -12,6 +12,6 @@ class CalendarService(
 ) {
     fun getCalendar() =
         leaveDayRepository
-            .findAllByStatusAndType(Status.APPROVED, LeaveDayType.HOLIDAY)
+            .findAllByStatusInAndType(listOf(Status.APPROVED, Status.DONE), LeaveDayType.HOLIDAY)
             .toCalendar()
 }

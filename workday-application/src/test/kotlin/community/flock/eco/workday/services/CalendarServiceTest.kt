@@ -5,6 +5,7 @@ import community.flock.eco.workday.application.model.LeaveDayType.HOLIDAY
 import community.flock.eco.workday.application.repository.LeaveDayRepository
 import community.flock.eco.workday.application.services.CalendarService
 import community.flock.eco.workday.domain.common.Status.APPROVED
+import community.flock.eco.workday.domain.common.Status.DONE
 import community.flock.eco.workday.model.aPerson
 import io.mockk.every
 import io.mockk.mockk
@@ -34,13 +35,13 @@ class CalendarServiceTest {
                     hours = 8.0,
                     person = aPerson(),
                     type = HOLIDAY,
-                    status = APPROVED,
+                    status = DONE,
                     from = LocalDate.of(2023, 3, 7),
                     to = LocalDate.of(2023, 3, 10),
                 ),
             )
 
-        every { leaveDayRepository.findAllByStatusAndType(APPROVED, HOLIDAY) }
+        every { leaveDayRepository.findAllByStatusInAndType(listOf(APPROVED, DONE), HOLIDAY) }
             .returns(holidays)
 
         val result = calendarService.getCalendar()
