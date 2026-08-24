@@ -28,8 +28,8 @@ interface LeaveDayRepository : JpaRepository<LeaveDay, Long> {
 
     fun findAllByStatus(status: Status): Iterable<LeaveDay>
 
-    fun findAllByStatusAndType(
-        status: Status,
+    fun findAllByStatusInAndType(
+        statuses: Collection<Status>,
         type: LeaveDayType,
     ): Iterable<LeaveDay>
 
