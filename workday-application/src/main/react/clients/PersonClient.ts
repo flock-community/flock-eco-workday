@@ -3,6 +3,23 @@ import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
 import { ISO_8601_DATE } from './util/DateFormats';
 
+/** Dutch postal address as returned by the API (see persons.ws). */
+export type Address = {
+  street: string;
+  houseNumber: string;
+  houseNumberAddition: string | null;
+  postalCode: string;
+  city: string;
+};
+
+export type AddressRequest = {
+  street?: string;
+  houseNumber?: string;
+  houseNumberAddition?: string;
+  postalCode?: string;
+  city?: string;
+};
+
 export type Person = {
   id: number;
   uuid: string;
@@ -22,6 +39,7 @@ export type Person = {
   reminders: boolean;
   receiveEmail: boolean;
   googleDriveId: string;
+  address: Address | null;
 };
 
 export type PersonLight = {
@@ -50,6 +68,7 @@ export type PersonRaw = {
   reminders: boolean;
   receiveEmail: boolean;
   googleDriveId: string;
+  address: Address | null;
 };
 
 export type PersonRequest = {
@@ -67,6 +86,7 @@ export type PersonRequest = {
   shoeSize?: string;
   shirtSize?: string;
   googleDriveId?: string;
+  address?: AddressRequest | null;
 };
 
 const path = '/api/persons';

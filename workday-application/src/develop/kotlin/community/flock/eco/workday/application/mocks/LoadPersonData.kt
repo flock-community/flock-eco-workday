@@ -1,5 +1,6 @@
 package community.flock.eco.workday.application.mocks
 
+import community.flock.eco.workday.application.model.Address
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.user.model.User
@@ -58,6 +59,7 @@ class LoadPersonData(
         active: Boolean = true,
         shoeSize: String? = null,
         shirtSize: String? = null,
+        address: Address? = null,
     ) = Person(
         firstname = firstname,
         lastname = lastname,
@@ -71,6 +73,7 @@ class LoadPersonData(
         lastActiveAt = if (!active) Instant.now().minus(Period.ofDays(180)) else null,
         shoeSize = shoeSize,
         shirtSize = shirtSize,
+        address = address,
     ).save()
 
     /**
@@ -93,6 +96,7 @@ class LoadPersonData(
                     active = it.active,
                     shoeSize = it.shoeSize,
                     shirtSize = it.shirtSize,
+                    address = it.address,
                 )
             }
         }

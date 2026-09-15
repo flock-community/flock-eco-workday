@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-036-person-address
+      author: willemveelenturf
+      comment: >-
+        Dutch postal address on Person, embedded in the person table: street, house number
+        with optional addition ("toevoeging"), postal code ("1234 AB") and city. All columns are
+        nullable because the address as a whole is optional.
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: street
+                  type: VARCHAR(255)
+              - column:
+                  name: house_number
+                  type: VARCHAR(10)
+              - column:
+                  name: house_number_addition
+                  type: VARCHAR(20)
+              - column:
+                  name: postal_code
+                  type: VARCHAR(10)
+              - column:
+                  name: city
+                  type: VARCHAR(255)

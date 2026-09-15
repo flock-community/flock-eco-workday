@@ -11,8 +11,20 @@ import {
   TableRow,
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import type { Person } from '../../clients/PersonClient';
+import type { Address, Person } from '../../clients/PersonClient';
 import { DMY_DATE } from '../../clients/util/DateFormats';
+import { formatAddressLines } from '../../features/person/address';
+
+const AddressLines = ({ address }: { address: Address | null }) => {
+  if (!address) return <>Unknown</>;
+  const [streetLine, cityLine] = formatAddressLines(address);
+  return (
+    <>
+      <div>{streetLine}</div>
+      <div>{cityLine}</div>
+    </>
+  );
+};
 
 type PersonWidgetProps = {
   person: Person;
@@ -54,6 +66,12 @@ export function PersonWidget({
               <TableRow>
                 <TableCell component="th">Email address</TableCell>
                 <TableCell>{person.email}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th">Address</TableCell>
+                <TableCell>
+                  <AddressLines address={person.address} />
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th">Date of birth</TableCell>

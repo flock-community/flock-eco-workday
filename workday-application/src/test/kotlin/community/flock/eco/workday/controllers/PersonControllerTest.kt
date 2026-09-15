@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.domain.person.Address
 import community.flock.eco.workday.user.forms.UserAccountPasswordForm
 import community.flock.eco.workday.user.services.UserAccountService
 import community.flock.eco.workday.user.services.UserSecurityService
@@ -300,6 +301,181 @@ class PersonControllerTest : WorkdayIntegrationTest() {
             .andExpect(status().isNotFound)
         // DRY-Bock
     }
+
+    @Test
+    fun `should store a trimmed and normalised Dutch address via POST-method`() {
+        val personForm =
+            aPersonForm().copy(
+                address =
+                    Address(
+                        street = " Sesamstraat ",
+                        houseNumber = " 12 ",
+                        houseNumberAddition = " A ",
+                        postalCode = "1234ab",
+                        city = " Hilversum ",
+                    ),
+            )
+
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(createUser())
+                    .content(mapper.writeValueAsString(personForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.address.street").value("Sesamstraat"))
+            .andExpect(jsonPath("\$.address.houseNumber").value("12"))
+            .andExpect(jsonPath("\$.address.houseNumberAddition").value("A"))
+            .andExpect(jsonPath("\$.address.postalCode").value("1234 AB"))
+            .andExpect(jsonPath("\$.address.city").value("Hilversum"))
+    }
+
+    @Test
+    fun `should return the stored address via GET-method and clear it via PUT-method with blank address fields`() {
+        val user = createUser()
+        val address =
+            Address(
+                street = "Sesamstraat",
+                houseNumber = "12",
+                houseNumberAddition = null,
+                postalCode = "1234 AB",
+                city = "Hilversum",
+            )
+        val uuid = createPerson(user, aPersonForm().copy(address = address)).get("uuid").textValue()
+
+        mvc
+            .perform(get("$baseUrl/$uuid").with(user).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.address.street").value("Sesamstraat"))
+            .andExpect(jsonPath("\$.address.houseNumber").value("12"))
+            .andExpect(jsonPath("\$.address.houseNumberAddition").isEmpty)
+            .andExpect(jsonPath("\$.address.postalCode").value("1234 AB"))
+            .andExpect(jsonPath("\$.address.city").value("Hilversum"))
+
+        val blankAddress = Address(street = "", houseNumber = " ", houseNumberAddition = null, postalCode = "", city = "")
+
+        mvc
+            .perform(
+                put("$baseUrl/$uuid")
+                    .with(user)
+                    .content(mapper.writeValueAsString(aPersonForm().copy(address = blankAddress)))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.address").isEmpty)
+
+        mvc
+            .perform(get("$baseUrl/$uuid").with(user).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.address").isEmpty)
+    }
+
+    @Test
+    fun `should reject an address with an invalid Dutch postal code via POST-method`() {
+        val personForm =
+            aPersonForm().copy(
+                address =
+                    Address(
+                        street = "Sesamstraat",
+                        houseNumber = "12",
+                        houseNumberAddition = null,
+                        postalCode = "12345",
+                        city = "Hilversum",
+                    ),
+            )
+
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(createUser())
+                    .content(mapper.writeValueAsString(personForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `should reject an address with a non-numeric house number via POST-method`() {
+        val personForm =
+            aPersonForm().copy(
+                address =
+                    Address(
+                        street = "Sesamstraat",
+                        houseNumber = "12A",
+                        houseNumberAddition = null,
+                        postalCode = "1234 AB",
+                        city = "Hilversum",
+                    ),
+            )
+
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(createUser())
+                    .content(mapper.writeValueAsString(personForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `should reject an incomplete address via PUT-method`() {
+        val user = createUser()
+        val uuid = createPerson(user, aPersonForm()).get("uuid").textValue()
+        val incompleteAddress = Address(street = "Sesamstraat", houseNumber = "", houseNumberAddition = null, postalCode = "", city = "")
+
+        mvc
+            .perform(
+                put("$baseUrl/$uuid")
+                    .with(user)
+                    .content(mapper.writeValueAsString(aPersonForm().copy(address = incompleteAddress)))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isBadRequest)
+
+        mvc
+            .perform(get("$baseUrl/$uuid").with(user).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.address").isEmpty)
+    }
+
+    private fun aPersonForm() =
+        PersonForm(
+            firstname = "Morris",
+            lastname = "Moss",
+            email = "",
+            position = "",
+            number = null,
+            userCode = null,
+            active = true,
+        )
+
+    private fun createPerson(
+        user: RequestPostProcessor,
+        personForm: PersonForm,
+    ): JsonNode =
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user)
+                    .content(mapper.writeValueAsString(personForm))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andReturn()
+            .response
+            .contentAsString
+            .let(mapper::readTree)
 
     @Test
     fun `should return an error while trying to get a non-existing person via GET-request`() {

@@ -34,7 +34,8 @@ type PersonForm {
   receiveEmail: Boolean?,
   shoeSize: String?,
   shirtSize: String?,
-  googleDriveId: String?
+  googleDriveId: String?,
+  address: Address?
 }
 type Person {
   id: Integer?,
@@ -53,8 +54,16 @@ type Person {
   shoeSize: String?,
   shirtSize: String?,
   googleDriveId: String?,
+  address: Address?,
   user: User?,
   fullName: String?
+}
+type Address {
+  street: String?,
+  houseNumber: String?,
+  houseNumberAddition: String?,
+  postalCode: String?,
+  city: String?
 }
 type PersonEvent {
   person: Person?,

@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.services
 
 import community.flock.eco.workday.application.forms.PersonForm
+import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.core.utils.toNullable
@@ -44,6 +45,7 @@ class PersonService(
             shirtSize = form.shirtSize,
             user = user,
             googleDriveId = form.googleDriveId,
+            address = form.address?.toEntity(),
         )
     }
 
@@ -141,6 +143,10 @@ class PersonService(
             lastActiveAt = if (form.active) null else Instant.now(),
             reminders = form.reminders,
             receiveEmail = form.receiveEmail,
+            shoeSize = form.shoeSize,
+            shirtSize = form.shirtSize,
+            googleDriveId = form.googleDriveId,
+            address = form.address?.toEntity(),
         ).save()
     }
 

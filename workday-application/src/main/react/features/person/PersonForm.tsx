@@ -1,4 +1,4 @@
-import { FormControl } from '@mui/material';
+import { FormControl, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Field, Form, Formik } from 'formik';
 import { CheckboxWithLabel, TextField as FormikTextField } from 'formik-mui';
@@ -6,6 +6,7 @@ import { DatePickerField } from '../../components/fields/DatePickerField';
 import { ShirtSizeSelectorField } from '../../components/fields/ShirtSizeSelectorField';
 import { ShoeSizeSelectorField } from '../../components/fields/ShoeSizeSelectorField';
 import { UserSelectorField } from '../../components/fields/UserSelectorField';
+import { toAddressFormValues } from './address';
 import { PERSON_FORM_SCHEMA } from './schema';
 
 export const PERSON_FORM_ID = 'person-form';
@@ -61,6 +62,68 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
               id="number"
               label="number"
               name="number"
+              component={FormikTextField}
+            />
+          </FormControl>
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <Typography variant="overline" color="text.secondary">
+            Address
+          </Typography>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <FormControl fullWidth>
+            <Field
+              id="address.street"
+              type="text"
+              label="Street"
+              name="address.street"
+              component={FormikTextField}
+            />
+          </FormControl>
+        </Grid>
+        <Grid size={{ xs: 6, sm: 3 }}>
+          <FormControl fullWidth>
+            <Field
+              id="address.houseNumber"
+              type="text"
+              label="House number"
+              name="address.houseNumber"
+              inputProps={{ inputMode: 'numeric' }}
+              component={FormikTextField}
+            />
+          </FormControl>
+        </Grid>
+        <Grid size={{ xs: 6, sm: 3 }}>
+          <FormControl fullWidth>
+            <Field
+              id="address.houseNumberAddition"
+              type="text"
+              label="Addition"
+              name="address.houseNumberAddition"
+              component={FormikTextField}
+            />
+          </FormControl>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <FormControl fullWidth>
+            <Field
+              id="address.postalCode"
+              type="text"
+              label="Postal code"
+              name="address.postalCode"
+              placeholder="1234 AB"
+              component={FormikTextField}
+            />
+          </FormControl>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 8 }}>
+          <FormControl fullWidth>
+            <Field
+              id="address.city"
+              type="text"
+              label="City"
+              name="address.city"
               component={FormikTextField}
             />
           </FormControl>
@@ -142,6 +205,7 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
         active: true,
         ...item,
         userCode: item?.user?.id,
+        address: toAddressFormValues(item?.address),
       }}
       onSubmit={onSubmit}
       validationSchema={PERSON_FORM_SCHEMA}

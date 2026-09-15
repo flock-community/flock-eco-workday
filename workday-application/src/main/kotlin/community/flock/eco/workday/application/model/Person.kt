@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.workday.core.model.AbstractIdEntity
 import community.flock.eco.workday.user.model.User
 import jakarta.persistence.Column
+import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.OneToOne
@@ -33,6 +34,8 @@ class Person(
     val shoeSize: String? = null,
     val shirtSize: String? = null,
     val googleDriveId: String? = null,
+    @Embedded
+    val address: Address? = null,
     @OneToOne(fetch = FetchType.EAGER)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)

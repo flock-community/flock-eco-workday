@@ -1,5 +1,6 @@
 package community.flock.eco.workday.application.mocks
 
+import community.flock.eco.workday.application.model.Address
 import java.time.LocalDate
 
 enum class Role {
@@ -16,7 +17,17 @@ data class User(
     val joinDate: LocalDate? = null,
     val shoeSize: String? = null,
     val shirtSize: String? = null,
+    val address: Address? = null,
 )
+
+private val sesamstraat =
+    Address(
+        street = "Sesamstraat",
+        houseNumber = "123",
+        houseNumberAddition = null,
+        postalCode = "1234 AB",
+        city = "Hilversum",
+    )
 
 val users =
     listOf(
@@ -25,6 +36,7 @@ val users =
             "Dog",
             birthdate = LocalDate.of(1980, 5, 8),
             joinDate = LocalDate.of(2000, 5, 8),
+            address = sesamstraat.copy(houseNumber = "1"),
         ),
         User(
             "Ieniemienie",
@@ -40,7 +52,20 @@ val users =
             shoeSize = "53",
             shirtSize = "XXXXL",
         ),
-        User("Bert", "Muppets", role = Role.ADMIN, shoeSize = "36,5", shirtSize = "M"),
-        User("Ernie", "Muppets", shoeSize = "36,5", shirtSize = "M"),
+        User(
+            "Bert",
+            "Muppets",
+            role = Role.ADMIN,
+            shoeSize = "36,5",
+            shirtSize = "M",
+            address = sesamstraat.copy(houseNumberAddition = "A"),
+        ),
+        User(
+            "Ernie",
+            "Muppets",
+            shoeSize = "36,5",
+            shirtSize = "M",
+            address = sesamstraat.copy(houseNumberAddition = "B"),
+        ),
         User("Aart", "Staartjes", active = false),
     )

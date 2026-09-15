@@ -22,6 +22,7 @@ data class Person(
     val shoeSize: String?,
     val shirtSize: String?,
     val googleDriveId: String?,
+    val address: Address?,
     val user: User?,
 ) {
     fun getFullName(): String = "$firstname $lastname"

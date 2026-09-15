@@ -5,6 +5,7 @@ import { DialogBody } from '@workday-core/components/dialog/DialogHeader';
 import type { Dayjs } from 'dayjs';
 import { PersonClient, type PersonRequest } from '../../clients/PersonClient';
 import { ISO_8601_DATE } from '../../clients/util/DateFormats';
+import { type AddressFormValues, toAddressRequest } from './address';
 import { PERSON_FORM_ID, PersonForm } from './PersonForm';
 
 type PersonDialogProps = {
@@ -17,9 +18,13 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
     onClose();
   };
 
-  type PersonRequestRaw = PersonRequest & {
+  type PersonRequestRaw = Omit<
+    PersonRequest,
+    'birthdate' | 'joinDate' | 'address'
+  > & {
     birthdate?: Dayjs;
     joinDate?: Dayjs;
+    address?: AddressFormValues;
   };
 
   const handleSubmit = (values: PersonRequestRaw) => {
@@ -38,6 +43,7 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
       shoeSize: values.shoeSize,
       shirtSize: values.shirtSize,
       googleDriveId: values.googleDriveId,
+      address: toAddressRequest(values.address),
     };
 
     if (item) {

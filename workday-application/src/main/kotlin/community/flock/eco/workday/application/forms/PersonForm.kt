@@ -1,5 +1,6 @@
 package community.flock.eco.workday.application.forms
 
+import community.flock.eco.workday.domain.person.Address
 import java.time.LocalDate
 
 data class PersonForm(
@@ -17,4 +18,5 @@ data class PersonForm(
     val shoeSize: String? = null,
     val shirtSize: String? = null,
     val googleDriveId: String? = null,
+    val address: Address? = null,
 )
