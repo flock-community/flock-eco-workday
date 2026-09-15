@@ -1,6 +1,7 @@
 package community.flock.eco.workday.repository
 
 import community.flock.eco.workday.WorkdayIntegrationTest
+import community.flock.eco.workday.application.model.Address
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.PersonRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -44,6 +45,53 @@ class PersonRepositoryTest(
 
         val res = repository.findByUuid(person.uuid)
         assertThat(res).isNotEmpty
+    }
+
+    @Test
+    fun `should persist and hydrate an embedded address`() {
+        val address =
+            Address(
+                street = "Sesamstraat",
+                houseNumber = "123",
+                houseNumberAddition = "A",
+                postalCode = "1234 AB",
+                city = "Hilversum",
+            )
+        val person =
+            Person(
+                firstname = "Bert",
+                lastname = "Muppets",
+                email = "bert@sesam.straat",
+                position = "",
+                number = null,
+                user = null,
+                address = address,
+            )
+
+        repository.save(person)
+
+        val res = repository.findByUuid(person.uuid)
+        assertThat(res).isNotEmpty
+        assertThat(res.get().address).isEqualTo(address)
+    }
+
+    @Test
+    fun `should hydrate a person without address as address null`() {
+        val person =
+            Person(
+                firstname = "Ernie",
+                lastname = "Muppets",
+                email = "ernie@sesam.straat",
+                position = "",
+                number = null,
+                user = null,
+            )
+
+        repository.save(person)
+
+        val res = repository.findByUuid(person.uuid)
+        assertThat(res).isNotEmpty
+        assertThat(res.get().address).isNull()
     }
 
     @Test

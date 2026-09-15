@@ -12,6 +12,7 @@ import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.PersonEvent
 import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.domain.person.Address
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
 import org.springframework.data.domain.Page
@@ -26,11 +27,13 @@ import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
+import community.flock.eco.workday.api.model.Address as AddressApi
 import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.api.model.PersonEvent as PersonEventApi
 import community.flock.eco.workday.api.model.PersonEventEventType as PersonEventEventTypeApi
 import community.flock.eco.workday.api.model.PersonForm as PersonFormApi
 import community.flock.eco.workday.api.model.User as UserApi
+import community.flock.eco.workday.application.model.Address as AddressEntity
 
 @RestController
 class PersonController(
@@ -186,10 +189,20 @@ class PersonController(
             shoeSize = shoeSize,
             shirtSize = shirtSize,
             googleDriveId = googleDriveId,
+            address = address?.externalize(),
             user = user?.externalize(),
             fullName = listOfNotNull(firstname, lastname).joinToString(" ").ifBlank { null },
         )
     }
+
+    private fun AddressEntity.externalize(): AddressApi =
+        AddressApi(
+            street = street,
+            houseNumber = houseNumber,
+            houseNumberAddition = houseNumberAddition,
+            postalCode = postalCode,
+            city = city,
+        )
 
     private fun User.externalize(): UserApi {
         val created: LocalDateTime? = created
@@ -230,5 +243,61 @@ class PersonController(
             shoeSize = shoeSize,
             shirtSize = shirtSize,
             googleDriveId = googleDriveId,
+            address = address?.internalize(),
         )
+
+    /**
+     * An address is optional as a whole: all-blank fields mean "no address" (null).
+     * Anything else must be a complete, valid Dutch address, otherwise the request
+     * is rejected with a 400 so that half-filled addresses never reach the database.
+     */
+    private fun AddressApi.internalize(): Address? {
+        val street = street?.trim().orEmpty()
+        val houseNumber = houseNumber?.trim().orEmpty()
+        val houseNumberAddition = houseNumberAddition?.trim()?.ifBlank { null }
+        val postalCode = postalCode?.trim().orEmpty()
+        val city = city?.trim().orEmpty()
+
+        if (listOf(street, houseNumber, houseNumberAddition.orEmpty(), postalCode, city).all { it.isBlank() }) {
+            return null
+        }
+
+        val missing =
+            listOfNotNull(
+                "street".takeIf { street.isBlank() },
+                "houseNumber".takeIf { houseNumber.isBlank() },
+                "postalCode".takeIf { postalCode.isBlank() },
+                "city".takeIf { city.isBlank() },
+            )
+        if (missing.isNotEmpty()) {
+            throw badRequest("Address is incomplete, missing: ${missing.joinToString()}")
+        }
+        if (street.length > MAX_ADDRESS_LINE_LENGTH || city.length > MAX_ADDRESS_LINE_LENGTH) {
+            throw badRequest("Street and city may be at most $MAX_ADDRESS_LINE_LENGTH characters")
+        }
+        if ((houseNumberAddition?.length ?: 0) > MAX_HOUSE_NUMBER_ADDITION_LENGTH) {
+            throw badRequest("House number addition may be at most $MAX_HOUSE_NUMBER_ADDITION_LENGTH characters")
+        }
+
+        return Address(
+            street = street,
+            houseNumber =
+                Address.normalizeHouseNumber(houseNumber)
+                    ?: throw badRequest(
+                        "House number must be a number between 1 and 99999; put letters or suffixes in houseNumberAddition",
+                    ),
+            houseNumberAddition = houseNumberAddition,
+            postalCode =
+                Address.normalizePostalCode(postalCode)
+                    ?: throw badRequest("Postal code must be a Dutch postal code such as 1234 AB"),
+            city = city,
+        )
+    }
+
+    private fun badRequest(reason: String) = ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
+
+    companion object {
+        private const val MAX_ADDRESS_LINE_LENGTH = 255
+        private const val MAX_HOUSE_NUMBER_ADDITION_LENGTH = 20
+    }
 }

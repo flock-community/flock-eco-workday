@@ -1,7 +1,9 @@
 package community.flock.eco.workday.application.mappers
 
+import community.flock.eco.workday.domain.person.Address
 import community.flock.eco.workday.domain.person.Person
 import community.flock.eco.workday.user.mappers.toDomain
+import community.flock.eco.workday.application.model.Address as AddressEntity
 import community.flock.eco.workday.application.model.Person as PersonEntity
 
 fun PersonEntity.toDomain() =
@@ -22,5 +24,24 @@ fun PersonEntity.toDomain() =
         shoeSize = shoeSize,
         shirtSize = shirtSize,
         googleDriveId = googleDriveId,
+        address = address?.toDomain(),
         user = user?.toDomain(),
+    )
+
+fun AddressEntity.toDomain() =
+    Address(
+        street = street,
+        houseNumber = houseNumber,
+        houseNumberAddition = houseNumberAddition,
+        postalCode = postalCode,
+        city = city,
+    )
+
+fun Address.toEntity() =
+    AddressEntity(
+        street = street,
+        houseNumber = houseNumber,
+        houseNumberAddition = houseNumberAddition,
+        postalCode = postalCode,
+        city = city,
     )

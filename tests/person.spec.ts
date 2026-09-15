@@ -10,11 +10,20 @@ const ADMIN_USERNAME = 'bert';
 const EDIT_BUTTON = 'button:has(svg[data-testid="CreateIcon"])';
 const DELETE_BUTTON = 'button:has(svg[data-testid="DeleteRoundedIcon"])';
 
+type AddressData = {
+  street: string;
+  houseNumber: string;
+  houseNumberAddition: string;
+  postalCode: string;
+  city: string;
+};
+
 type PersonData = {
   firstname: string;
   lastname: string;
   email: string;
   number: string;
+  address: AddressData;
 };
 
 function buildPersonData(suffix: string): PersonData {
@@ -24,7 +33,32 @@ function buildPersonData(suffix: string): PersonData {
     lastname: `${suffix}${stamp.slice(-4)}`,
     email: `e2e.${suffix.toLowerCase()}.${stamp}@example.com`,
     number: stamp.slice(-5),
+    address: {
+      street: `Teststraat${stamp.slice(-4)}`,
+      houseNumber: '12',
+      houseNumberAddition: 'A',
+      // Entered without a space and in lower case: the backend normalises it to "1234 AB"
+      postalCode: '1234ab',
+      city: 'Hilversum',
+    },
   };
+}
+
+async function fillAddress(page: Page, address: AddressData) {
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('textbox', { name: 'Street' }).fill(address.street);
+  // "House number" is a prefix of no other label, but keep the match exact so a
+  // future "House number addition" label cannot make this ambiguous.
+  await dialog
+    .getByRole('textbox', { name: 'House number', exact: true })
+    .fill(address.houseNumber);
+  await dialog
+    .getByRole('textbox', { name: 'Addition' })
+    .fill(address.houseNumberAddition);
+  await dialog
+    .getByRole('textbox', { name: 'Postal code' })
+    .fill(address.postalCode);
+  await dialog.getByRole('textbox', { name: 'City' }).fill(address.city);
 }
 
 async function fillPersonForm(page: Page, data: PersonData) {
@@ -32,7 +66,11 @@ async function fillPersonForm(page: Page, data: PersonData) {
   await dialog.getByRole('textbox', { name: 'firstname' }).fill(data.firstname);
   await dialog.getByRole('textbox', { name: 'lastname' }).fill(data.lastname);
   await dialog.getByRole('textbox', { name: 'email' }).fill(data.email);
-  await dialog.getByRole('textbox', { name: 'number' }).fill(data.number);
+  // Exact: "number" is also a substring of the "House number" address field
+  await dialog
+    .getByRole('textbox', { name: 'number', exact: true })
+    .fill(data.number);
+  await fillAddress(page, data.address);
 }
 
 async function openCreateDialog(page: Page) {
@@ -115,6 +153,14 @@ test.describe('Person flow', () => {
     await expect(
       page.getByRole('cell', { name: data.email, exact: true }),
     ).toBeVisible();
+    // The Dutch address is shown on two lines, with the postal code normalised
+    // to "1234 AB" and the single-letter addition glued to the house number
+    await expect(
+      page.getByText(`${data.address.street} 12A`, { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText('1234 AB Hilversum', { exact: true }),
+    ).toBeVisible();
     // New persons default to active = true
     await expect(page.getByRole('cell', { name: 'Yes' }).first()).toBeVisible();
   });
@@ -133,10 +179,18 @@ test.describe('Person flow', () => {
     const updatedFirstname = `Updated${original.firstname}`;
     const updatedEmail = `updated.${original.email}`;
     const dialog = page.getByRole('dialog');
+    // The stored address is pre-filled in the edit dialog
+    await expect(dialog.getByRole('textbox', { name: 'Street' })).toHaveValue(
+      original.address.street,
+    );
+    await expect(
+      dialog.getByRole('textbox', { name: 'Postal code' }),
+    ).toHaveValue('1234 AB');
     await dialog
       .getByRole('textbox', { name: 'firstname' })
       .fill(updatedFirstname);
     await dialog.getByRole('textbox', { name: 'email' }).fill(updatedEmail);
+    await dialog.getByRole('textbox', { name: 'City' }).fill('Amsterdam');
     await saveDialog(page);
 
     // Details page reloads with new values in the PersonWidget
@@ -144,6 +198,9 @@ test.describe('Person flow', () => {
       page.getByText(`${updatedFirstname} ${original.lastname}`).first(),
     ).toBeVisible();
     await expect(page.getByText(updatedEmail)).toBeVisible();
+    await expect(
+      page.getByText('1234 AB Amsterdam', { exact: true }),
+    ).toBeVisible();
 
     // And the list reflects them too
     await page.goto(PERSON_URL);
@@ -239,6 +296,41 @@ test.describe('Person flow', () => {
     // Dialog stays open because validation prevents submit
     await expect(dialog).toBeVisible();
     await expect(page.getByText('Create Person')).toBeVisible();
+  });
+
+  test('blocks submission when the address is incomplete', async ({ page }) => {
+    const data = buildPersonData('Address');
+
+    await openCreateDialog(page);
+    const dialog = page.getByRole('dialog');
+    await dialog
+      .getByRole('textbox', { name: 'firstname' })
+      .fill(data.firstname);
+    await dialog.getByRole('textbox', { name: 'lastname' }).fill(data.lastname);
+    // Only a street: the other address fields are now required
+    await dialog
+      .getByRole('textbox', { name: 'Street' })
+      .fill(data.address.street);
+    await dialog.getByRole('button', { name: 'Save' }).click();
+
+    await expect(dialog).toBeVisible();
+    await expect(
+      dialog.getByText('House number is required when an address is given'),
+    ).toBeVisible();
+    await expect(
+      dialog.getByText('Postal code is required when an address is given'),
+    ).toBeVisible();
+    await expect(
+      dialog.getByText('City is required when an address is given'),
+    ).toBeVisible();
+
+    // A non-Dutch postal code is rejected as well
+    await fillAddress(page, { ...data.address, postalCode: 'SW1A 1AA' });
+    await dialog.getByRole('button', { name: 'Save' }).click();
+    await expect(dialog).toBeVisible();
+    await expect(
+      dialog.getByText('Use a Dutch postal code such as 1234 AB'),
+    ).toBeVisible();
   });
 
   test('search filters the person list to the matching entry', async ({

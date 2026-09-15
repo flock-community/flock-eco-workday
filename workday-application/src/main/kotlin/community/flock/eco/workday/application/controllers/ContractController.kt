@@ -323,6 +323,7 @@ class ContractController(
             shoeSize = shoeSize,
             shirtSize = shirtSize,
             googleDriveId = googleDriveId,
+            address = null,
             user = null,
             fullName = "$firstname $lastname",
         )
