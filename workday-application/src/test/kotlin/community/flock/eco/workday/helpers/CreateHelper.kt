@@ -5,6 +5,7 @@ import community.flock.eco.workday.application.forms.ClientForm
 import community.flock.eco.workday.application.forms.ContractExternalForm
 import community.flock.eco.workday.application.forms.ContractInternalForm
 import community.flock.eco.workday.application.forms.EventForm
+import community.flock.eco.workday.application.forms.LaptopForm
 import community.flock.eco.workday.application.forms.LeaveDayForm
 import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.forms.SickDayForm
@@ -13,11 +14,13 @@ import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.model.Assignment
 import community.flock.eco.workday.application.model.Client
 import community.flock.eco.workday.application.model.EventType
+import community.flock.eco.workday.application.model.Laptop
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.AssignmentService
 import community.flock.eco.workday.application.services.ClientService
 import community.flock.eco.workday.application.services.ContractService
 import community.flock.eco.workday.application.services.EventService
+import community.flock.eco.workday.application.services.LaptopService
 import community.flock.eco.workday.application.services.LeaveDayService
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.SickDayService
@@ -46,6 +49,7 @@ class CreateHelper(
     private val leaveDayService: LeaveDayService,
     private val workDayService: WorkDayService,
     private val eventService: EventService,
+    private val laptopService: LaptopService,
 ) {
     fun createUser(authorities: Set<Authority>) = createUserEntity(authorities).toDomain()
 
@@ -77,6 +81,21 @@ class CreateHelper(
         } ?: error("Cannot create client")
 
     fun createPerson() = createPersonEntity().toDomain()
+
+    fun createLaptop(
+        name: String = "MacBook Pro ${UUID.randomUUID()}",
+        serialNumber: String = UUID.randomUUID().toString(),
+        contractSigned: Boolean = false,
+        person: Person? = null,
+    ): Laptop =
+        LaptopForm(
+            name = name,
+            serialNumber = serialNumber,
+            contractSigned = contractSigned,
+            personId = person?.uuid,
+        ).run {
+            laptopService.create(this)
+        }
 
     fun createPersonEntity() = createPersonEntity(UUID.randomUUID().toString(), UUID.randomUUID().toString())
 

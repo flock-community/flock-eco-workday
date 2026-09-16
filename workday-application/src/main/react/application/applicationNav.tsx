@@ -9,6 +9,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import ContractIcon from '@mui/icons-material/Description';
 import HealingIcon from '@mui/icons-material/Healing';
 import HomeIcon from '@mui/icons-material/Home';
+import LaptopIcon from '@mui/icons-material/Laptop';
 import ExpensesIcon from '@mui/icons-material/Payments';
 import UserIcon from '@mui/icons-material/Person';
 import BudgetIcon from '@mui/icons-material/Savings';
@@ -136,6 +137,12 @@ export const navSections: NavSection[] = [
         icon: UserIcon,
         url: '/person',
         authority: 'PersonAuthority.READ',
+      },
+      {
+        name: 'Laptops',
+        icon: LaptopIcon,
+        url: '/laptops',
+        authority: 'LaptopAuthority.READ',
       },
       {
         name: 'Users',

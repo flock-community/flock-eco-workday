@@ -1,0 +1,73 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-037-laptop-1
+      author: willemveelenturf
+      comment: >-
+        Register company laptops. A laptop has a name and a unique serial number,
+        can optionally be handed out to a person (person_id) and tracks whether
+        that person signed the laptop contract (contract_signed).
+      changes:
+        - createTable:
+            tableName: laptop
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: laptopPK
+              - column:
+                  name: code
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: laptop_code_unique
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: serial_number
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: laptop_serial_number_unique
+              - column:
+                  name: contract_signed
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: person_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            baseColumnNames: person_id
+            baseTableName: laptop
+            constraintName: FK_laptop_person
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: person
+            validate: true
+        - createIndex:
+            indexName: laptop_person_id_index
+            tableName: laptop
+            columns:
+              - column:
+                  name: person_id
+  - changeSet:
+      id: db.changelog-037-laptop-2
+      author: willemveelenturf
+      comment: Hibernate 6 entity-specific sequence for laptop ids (see db.changelog-026).
+      changes:
+        - createSequence:
+            sequenceName: laptop_seq
+            startValue: 1
+            incrementBy: 50
