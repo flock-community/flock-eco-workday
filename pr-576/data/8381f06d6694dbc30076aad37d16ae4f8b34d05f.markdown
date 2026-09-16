@@ -1,0 +1,311 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: sickday.spec.ts >> SickdayController /api/sickdays >> Admin filters sick days by personId and approves (GET + PUT /api/sickdays)
+- Location: tests/sickday.spec.ts:82:5
+
+# Error details
+
+```
+Error: findOnAnyPage: could not find locator within 25 pages
+```
+
+# Page snapshot
+
+```yaml
+- main [ref=e2]:
+  - navigation "Main navigation" [ref=e3]:
+    - generic [ref=e4]:
+      - link "Home" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "Flock" [ref=e6]
+      - generic [ref=e11]:
+        - paragraph [ref=e12]: Bert
+        - paragraph [ref=e13]: Flock · admin
+    - generic [ref=e14]:
+      - link "Home" [ref=e15] [cursor=pointer]:
+        - /url: /
+        - img [ref=e16]
+        - generic [ref=e18]: Home
+      - link "Month" [ref=e19] [cursor=pointer]:
+        - /url: /month
+        - img [ref=e20]
+        - generic [ref=e23]: Month
+      - link "Todo" [ref=e24] [cursor=pointer]:
+        - /url: /todo
+        - img [ref=e25]
+        - generic [ref=e27]: Todo
+      - link "Budget" [ref=e28] [cursor=pointer]:
+        - /url: /budget
+        - img [ref=e29]
+        - generic [ref=e31]: Budget
+    - generic [ref=e32]:
+      - paragraph [ref=e33]: Time & expenses
+      - link "Workdays" [ref=e34] [cursor=pointer]:
+        - /url: /workdays
+        - img [ref=e35]
+        - generic [ref=e37]: Workdays
+      - link "Leave days" [ref=e38] [cursor=pointer]:
+        - /url: /leave-days
+        - img [ref=e39]
+        - generic [ref=e41]: Leave days
+      - link "Sickdays" [ref=e42] [cursor=pointer]:
+        - /url: /sickdays
+        - img [ref=e43]
+        - generic [ref=e45]: Sickdays
+      - link "Expenses" [ref=e46] [cursor=pointer]:
+        - /url: /expenses
+        - img [ref=e47]
+        - generic [ref=e49]: Expenses
+      - link "Events" [ref=e50] [cursor=pointer]:
+        - /url: /event
+        - img [ref=e51]
+        - generic [ref=e53]: Events
+    - generic [ref=e54]:
+      - paragraph [ref=e55]: Clients & work
+      - link "Clients" [ref=e56] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e57]
+        - generic [ref=e59]: Clients
+      - link "Projects" [ref=e60] [cursor=pointer]:
+        - /url: /projects
+        - img [ref=e61]
+        - generic [ref=e63]: Projects
+      - link "Assignments" [ref=e64] [cursor=pointer]:
+        - /url: /assignments
+        - img [ref=e65]
+        - generic [ref=e67]: Assignments
+      - link "Contracts" [ref=e68] [cursor=pointer]:
+        - /url: /contracts
+        - img [ref=e69]
+        - generic [ref=e71]: Contracts
+    - generic [ref=e72]:
+      - paragraph [ref=e73]: People & insight
+      - link "Persons" [ref=e74] [cursor=pointer]:
+        - /url: /person
+        - img [ref=e75]
+        - generic [ref=e77]: Persons
+      - link "Laptops" [ref=e78] [cursor=pointer]:
+        - /url: /laptops
+        - img [ref=e79]
+        - generic [ref=e81]: Laptops
+      - link "Users" [ref=e82] [cursor=pointer]:
+        - /url: /users
+        - img [ref=e83]
+        - generic [ref=e85]: Users
+      - link "Dashboard" [ref=e86] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e87]
+        - generic [ref=e89]: Dashboard
+      - button "Reports" [ref=e90] [cursor=pointer]:
+        - img [ref=e91]
+        - generic [ref=e93]: Reports
+        - img [ref=e94]
+    - link "Profile" [ref=e96] [cursor=pointer]:
+      - /url: /profile
+      - img [ref=e97]
+      - generic [ref=e99]: Profile
+  - generic [ref=e102]:
+    - link "Flock. Workday" [ref=e103] [cursor=pointer]:
+      - /url: /
+      - generic [ref=e104]:
+        - generic [ref=e105]: Flock.
+        - generic [ref=e106]: Workday
+    - button "Switch to dark mode" [ref=e107] [cursor=pointer]:
+      - img [ref=e108]
+    - button [ref=e111] [cursor=pointer]:
+      - img [ref=e112]
+  - generic [ref=e114]:
+    - generic [ref=e121]:
+      - generic [ref=e122]: Select person
+      - generic [ref=e123]:
+        - combobox "Select person" [ref=e124]: Ernie Muppets
+        - button "Open" [ref=e126] [cursor=pointer]:
+          - img [ref=e127]
+        - group:
+          - generic: Select person
+    - generic [ref=e129]:
+      - generic [ref=e130]:
+        - generic [ref=e131]:
+          - heading "Sick days" [level=6] [ref=e133]
+          - button "Add" [ref=e135] [cursor=pointer]:
+            - img [ref=e137]
+            - text: Add
+        - table [ref=e141]:
+          - rowgroup [ref=e142]:
+            - row "Description From To Days Hours Status" [ref=e143]:
+              - columnheader "Description" [ref=e144]
+              - columnheader "From" [ref=e145]
+              - columnheader "To" [ref=e146]
+              - columnheader "Days" [ref=e147]
+              - columnheader "Hours" [ref=e148]
+              - columnheader "Status" [ref=e149]
+              - columnheader [ref=e150]
+          - rowgroup [ref=e151]:
+            - row "Cough for Ernie 27-05-2024 03-06-2024 6 64 REQUESTED" [ref=e152]:
+              - cell "Cough for Ernie" [ref=e153]
+              - cell "27-05-2024" [ref=e154]
+              - cell "03-06-2024" [ref=e155]
+              - cell "6" [ref=e156]
+              - cell "64" [ref=e157]
+              - cell "REQUESTED" [ref=e158]:
+                - button "REQUESTED" [ref=e160] [cursor=pointer]
+              - cell [ref=e161]:
+                - button [ref=e162] [cursor=pointer]:
+                  - img [ref=e163]
+            - row "Runny nose for Ernie 17-02-2024 21-02-2024 3 40 REQUESTED" [ref=e165]:
+              - cell "Runny nose for Ernie" [ref=e166]
+              - cell "17-02-2024" [ref=e167]
+              - cell "21-02-2024" [ref=e168]
+              - cell "3" [ref=e169]
+              - cell "40" [ref=e170]
+              - cell "REQUESTED" [ref=e171]:
+                - button "REQUESTED" [ref=e173] [cursor=pointer]
+              - cell [ref=e174]:
+                - button [ref=e175] [cursor=pointer]:
+                  - img [ref=e176]
+            - row "Cough for Ernie 19-06-2023 21-06-2023 3 24 REQUESTED" [ref=e178]:
+              - cell "Cough for Ernie" [ref=e179]
+              - cell "19-06-2023" [ref=e180]
+              - cell "21-06-2023" [ref=e181]
+              - cell "3" [ref=e182]
+              - cell "24" [ref=e183]
+              - cell "REQUESTED" [ref=e184]:
+                - button "REQUESTED" [ref=e186] [cursor=pointer]
+              - cell [ref=e187]:
+                - button [ref=e188] [cursor=pointer]:
+                  - img [ref=e189]
+            - row "Runny nose for Ernie 11-03-2023 15-03-2023 3 40 REQUESTED" [ref=e191]:
+              - cell "Runny nose for Ernie" [ref=e192]
+              - cell "11-03-2023" [ref=e193]
+              - cell "15-03-2023" [ref=e194]
+              - cell "3" [ref=e195]
+              - cell "40" [ref=e196]
+              - cell "REQUESTED" [ref=e197]:
+                - button "REQUESTED" [ref=e199] [cursor=pointer]
+              - cell [ref=e200]:
+                - button [ref=e201] [cursor=pointer]:
+                  - img [ref=e202]
+            - row "Cough for Ernie 15-04-2022 23-04-2022 6 72 REQUESTED" [ref=e204]:
+              - cell "Cough for Ernie" [ref=e205]
+              - cell "15-04-2022" [ref=e206]
+              - cell "23-04-2022" [ref=e207]
+              - cell "6" [ref=e208]
+              - cell "72" [ref=e209]
+              - cell "REQUESTED" [ref=e210]:
+                - button "REQUESTED" [ref=e212] [cursor=pointer]
+              - cell [ref=e213]:
+                - button [ref=e214] [cursor=pointer]:
+                  - img [ref=e215]
+            - row "Runny nose for Ernie 05-01-2022 05-01-2022 1 8 REQUESTED" [ref=e217]:
+              - cell "Runny nose for Ernie" [ref=e218]
+              - cell "05-01-2022" [ref=e219]
+              - cell "05-01-2022" [ref=e220]
+              - cell "1" [ref=e221]
+              - cell "8" [ref=e222]
+              - cell "REQUESTED" [ref=e223]:
+                - button "REQUESTED" [ref=e225] [cursor=pointer]
+              - cell [ref=e226]:
+                - button [ref=e227] [cursor=pointer]:
+                  - img [ref=e228]
+            - row "Cough for Ernie 18-04-2021 26-04-2021 6 72 REQUESTED" [ref=e230]:
+              - cell "Cough for Ernie" [ref=e231]
+              - cell "18-04-2021" [ref=e232]
+              - cell "26-04-2021" [ref=e233]
+              - cell "6" [ref=e234]
+              - cell "72" [ref=e235]
+              - cell "REQUESTED" [ref=e236]:
+                - button "REQUESTED" [ref=e238] [cursor=pointer]
+              - cell [ref=e239]:
+                - button [ref=e240] [cursor=pointer]:
+                  - img [ref=e241]
+            - row "Runny nose for Ernie 08-01-2021 10-01-2021 1 24 REQUESTED" [ref=e243]:
+              - cell "Runny nose for Ernie" [ref=e244]
+              - cell "08-01-2021" [ref=e245]
+              - cell "10-01-2021" [ref=e246]
+              - cell "1" [ref=e247]
+              - cell "24" [ref=e248]
+              - cell "REQUESTED" [ref=e249]:
+                - button "REQUESTED" [ref=e251] [cursor=pointer]
+              - cell [ref=e252]:
+                - button [ref=e253] [cursor=pointer]:
+                  - img [ref=e254]
+      - navigation "pagination navigation" [ref=e256]:
+        - list [ref=e257]:
+          - listitem [ref=e258]:
+            - button "Go to previous page" [ref=e259] [cursor=pointer]:
+              - img [ref=e260]
+          - listitem [ref=e262]:
+            - button "Go to page 1" [ref=e263] [cursor=pointer]: "1"
+          - listitem [ref=e264]:
+            - button "page 2" [ref=e265] [cursor=pointer]: "2"
+          - listitem [ref=e266]:
+            - button "Go to next page" [disabled]:
+              - img
+```
+
+# Test source
+
+```ts
+  1  | import { expect, type Locator, type Page } from '@playwright/test';
+  2  | 
+  3  | // Walk the FlockPagination ("Go to next page") until `locator` resolves.
+  4  | // The WorkDay/SickDay/LeaveDay listings are server-paginated and the seeded
+  5  | // mock data spreads many entries across years for every fixture user, so a
+  6  | // run-specific entry can sit several pages deep.
+  7  | export async function findOnAnyPage(
+  8  |   page: Page,
+  9  |   locator: Locator,
+  10 |   maxPages = 25,
+  11 | ): Promise<Locator> {
+  12 |   for (let i = 0; i < maxPages; i++) {
+  13 |     const nextBtn = page.getByRole('button', { name: 'Go to next page' });
+  14 |     // networkidle fires when the fetch settles, not when React has painted the
+  15 |     // rows, so poll until the target row or the pager is on screen — otherwise
+  16 |     // the count() below races the render and reports a false "not found".
+  17 |     await expect
+  18 |       .poll(
+  19 |         async () => (await locator.count()) > 0 || (await nextBtn.count()) > 0,
+  20 |         { timeout: 15000 },
+  21 |       )
+  22 |       .toBe(true);
+  23 |     if ((await locator.count()) > 0) {
+  24 |       return locator.first();
+  25 |     }
+  26 |     if (!(await nextBtn.isVisible()) || !(await nextBtn.isEnabled())) {
+> 27 |       throw new Error(
+     |             ^ Error: findOnAnyPage: could not find locator within 25 pages
+  28 |         `findOnAnyPage: could not find locator within ${maxPages} pages`,
+  29 |       );
+  30 |     }
+  31 |     await nextBtn.click();
+  32 |     await page.waitForLoadState('networkidle');
+  33 |   }
+  34 |   throw new Error('findOnAnyPage: exceeded the page-walk safety limit');
+  35 | }
+  36 | 
+  37 | export async function selectPersonInLayout(page: Page, personName: string) {
+  38 |   await page.getByRole('combobox').first().click();
+  39 |   await page.getByRole('option', { name: personName }).click();
+  40 |   await page.waitForLoadState('networkidle');
+  41 | }
+  42 | 
+  43 | export async function changeStatusOnLocator(
+  44 |   page: Page,
+  45 |   locator: Locator,
+  46 |   fromStatus: string,
+  47 |   toStatus: string,
+  48 | ) {
+  49 |   await expect(locator).toBeVisible();
+  50 |   await locator.getByRole('button', { name: fromStatus }).click();
+  51 |   await page.getByRole('menuitem', { name: toStatus }).click();
+  52 |   await page.waitForLoadState('networkidle');
+  53 |   await expect(locator.getByRole('button', { name: toStatus })).toBeVisible();
+  54 | }
+  55 | 
+```
