@@ -11,6 +11,7 @@ import { EventRatingFeature } from '../features/event_rating/EventRatingFeature'
 import ExpensePage from '../features/expense/ExpensePage';
 import LeaveDayPage from '../features/holiday/LeaveDayPage';
 import { HomeFeature } from '../features/home/HomeFeature';
+import { LaptopFeature } from '../features/laptop/LaptopFeature';
 import { MonthFeature } from '../features/month/MonthFeature';
 import { PersonFeature } from '../features/person/PersonFeature';
 import { ProfileFeature } from '../features/profile/ProfileFeature';
@@ -57,6 +58,7 @@ export const AuthenticatedApplication = () => {
         <Route path="/expenses" component={ExpensePage} />
         <Route path="/users" exact component={UserFeature} />
         <Route path="/person" component={PersonFeature} />
+        <Route path="/laptops" exact component={LaptopFeature} />
         <Route path="/profile" component={ProfileFeature} />
         <Route path="/event" component={EventFeature} />
         <Route path="/budget" component={BudgetPage} />

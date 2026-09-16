@@ -106,3 +106,6 @@ databaseChangeLog:
   - include:
       file: db.changelog-036-person-address.yaml
       relativeToChangelogFile: true
+  - include:
+      file: db.changelog-037-laptop.yaml
+      relativeToChangelogFile: true
