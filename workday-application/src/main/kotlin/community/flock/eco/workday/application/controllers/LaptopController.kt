@@ -13,12 +13,14 @@ import community.flock.eco.workday.application.services.LaptopSerialNumberInUseE
 import community.flock.eco.workday.application.services.LaptopService
 import community.flock.eco.workday.application.services.LaptopValidationException
 import community.flock.eco.workday.application.utils.parseSort
+import community.flock.wirespec.kotlin.Wirespec
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.time.LocalDate
 import java.util.UUID
 import community.flock.eco.workday.api.model.Laptop as LaptopApi
 import community.flock.eco.workday.api.model.LaptopForm as LaptopFormApi
@@ -112,6 +114,7 @@ class LaptopController(
             name = name,
             serialNumber = serialNumber,
             contractSigned = contractSigned,
+            purchaseDate = purchaseDate?.toString(),
             person = person?.externalize(),
         )
 
@@ -138,16 +141,32 @@ class LaptopController(
             fullName = "$firstname $lastname",
         )
 
+    /**
+     * The contract (laptops.ws) states which fields are required and what their values
+     * look like; a body that misses a required field never gets here (see
+     * [WirespecRequestBodyAdvice]), the refined types are checked with [validated].
+     * A laptop is registered with an unsigned contract unless stated otherwise.
+     */
     private fun LaptopFormApi.internalize() =
         LaptopForm(
-            name = name.orEmpty(),
-            serialNumber = serialNumber.orEmpty(),
+            name = name.validated("name").value.trim(),
+            serialNumber = serialNumber.validated("serialNumber").value.trim(),
             contractSigned = contractSigned ?: false,
-            personId =
-                personId?.takeIf { it.isNotBlank() }?.let {
-                    it.toUuidOrNull() ?: throw LaptopInvalidInputException("personId must be a UUID")
+            purchaseDate =
+                purchaseDate?.validated("purchaseDate")?.value?.let {
+                    // The pattern fixes the shape, the calendar decides whether 2024-13-45 exists
+                    runCatching { LocalDate.parse(it) }.getOrElse { throw LaptopInvalidInputException("purchaseDate is not a valid date") }
                 },
+            personId = personId?.validated("personId")?.value?.let(UUID::fromString),
         )
+
+    /** Applies the refined type's pattern from the contract; a violation is a 400 with the field name. */
+    private fun <T : Wirespec.Refined<String>> T.validated(field: String): T =
+        when {
+            validate() -> this
+            value.isBlank() -> throw LaptopInvalidInputException("$field is required")
+            else -> throw LaptopInvalidInputException("$field is invalid")
+        }
 
     private fun GetLaptopAll.Queries.toPageable(): Pageable = PageRequest.of(page ?: 0, size ?: 20, parseSort(sort?.split(",")))
 

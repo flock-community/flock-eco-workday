@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDate
 import java.util.UUID
 
 class LaptopControllerTest(
@@ -36,6 +37,7 @@ class LaptopControllerTest(
         name: String? = "MacBook Pro 16",
         serialNumber: String? = "C02XK1ABCD01",
         contractSigned: Boolean? = false,
+        purchaseDate: String? = null,
         personId: String? = null,
     ): String =
         mapper.writeValueAsString(
@@ -43,6 +45,7 @@ class LaptopControllerTest(
                 "name" to name,
                 "serialNumber" to serialNumber,
                 "contractSigned" to contractSigned,
+                "purchaseDate" to purchaseDate,
                 "personId" to personId,
             ),
         )
@@ -56,7 +59,7 @@ class LaptopControllerTest(
             .perform(
                 post(baseUrl)
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
-                    .content(laptopJson(contractSigned = true, personId = person.uuid.toString()))
+                    .content(laptopJson(contractSigned = true, purchaseDate = "2024-05-03", personId = person.uuid.toString()))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
             ).asyncDispatch()
@@ -67,12 +70,13 @@ class LaptopControllerTest(
             .andExpect(jsonPath("$.name").value("MacBook Pro 16"))
             .andExpect(jsonPath("$.serialNumber").value("C02XK1ABCD01"))
             .andExpect(jsonPath("$.contractSigned").value(true))
+            .andExpect(jsonPath("$.purchaseDate").value("2024-05-03"))
             .andExpect(jsonPath("$.person.uuid").value(person.uuid.toString()))
             .andExpect(jsonPath("$.person.fullName").value("Tommy Dog"))
     }
 
     @Test
-    fun `a laptop does not need a person and defaults to an unsigned contract`() {
+    fun `a laptop does not need a person, a purchase date or a contract flag`() {
         val adminUser = createHelper.createUserEntity(adminAuthorities)
 
         mvc
@@ -87,7 +91,69 @@ class LaptopControllerTest(
             .andExpect(jsonPath("$.name").value("Spare laptop"))
             .andExpect(jsonPath("$.serialNumber").value("SPARE-01"))
             .andExpect(jsonPath("$.contractSigned").value(false))
+            .andExpect(jsonPath("$.purchaseDate").doesNotExist())
             .andExpect(jsonPath("$.person").doesNotExist())
+    }
+
+    @Test
+    fun `POST with a purchase date that is not a date is a 400`() {
+        val adminUser = createHelper.createUserEntity(adminAuthorities)
+
+        // Not the contract's yyyy-MM-dd shape
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .content(laptopJson(purchaseDate = "03-05-2024"))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("purchaseDate is invalid"))
+
+        // Right shape, but no such day on the calendar
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .content(laptopJson(purchaseDate = "2024-13-45"))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("purchaseDate is not a valid date"))
+    }
+
+    @Test
+    fun `POST that leaves out a required field of the contract is a 400`() {
+        val adminUser = createHelper.createUserEntity(adminAuthorities)
+
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .content(mapper.writeValueAsString(mapOf("serialNumber" to "NO-NAME-01", "contractSigned" to false)))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("name is required"))
+    }
+
+    @Test
+    fun `POST with a name longer than the contract allows is a 400`() {
+        val adminUser = createHelper.createUserEntity(adminAuthorities)
+
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .content(laptopJson(name = "x".repeat(256)))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("name is invalid"))
     }
 
     @Test
@@ -142,7 +208,7 @@ class LaptopControllerTest(
                     .accept(APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.message").value("personId must be a UUID"))
+            .andExpect(jsonPath("$.message").value("personId is invalid"))
     }
 
     @Test
@@ -244,7 +310,13 @@ class LaptopControllerTest(
         val adminUser = createHelper.createUserEntity(adminAuthorities)
         val tommy = createHelper.createPersonEntity("Tommy", "Dog")
         val pino = createHelper.createPersonEntity("Pino", "Woodpecker")
-        val laptop = createHelper.createLaptop(name = "MacBook Air", serialNumber = "AIR-01", person = tommy)
+        val laptop =
+            createHelper.createLaptop(
+                name = "MacBook Air",
+                serialNumber = "AIR-01",
+                purchaseDate = LocalDate.of(2023, 1, 1),
+                person = tommy,
+            )
 
         mvc
             .perform(
@@ -256,6 +328,7 @@ class LaptopControllerTest(
                             // Keeping its own serial number (in another case) is not a conflict
                             serialNumber = "air-01",
                             contractSigned = true,
+                            purchaseDate = "2024-05-03",
                             personId = pino.uuid.toString(),
                         ),
                     ).contentType(APPLICATION_JSON)
@@ -266,6 +339,7 @@ class LaptopControllerTest(
             .andExpect(jsonPath("$.name").value("MacBook Air 13"))
             .andExpect(jsonPath("$.serialNumber").value("air-01"))
             .andExpect(jsonPath("$.contractSigned").value(true))
+            .andExpect(jsonPath("$.purchaseDate").value("2024-05-03"))
             .andExpect(jsonPath("$.person.uuid").value(pino.uuid.toString()))
     }
 
@@ -273,7 +347,13 @@ class LaptopControllerTest(
     fun `PUT without a person takes the laptop back in`() {
         val adminUser = createHelper.createUserEntity(adminAuthorities)
         val tommy = createHelper.createPersonEntity("Tommy", "Dog")
-        val laptop = createHelper.createLaptop(serialNumber = "AIR-02", contractSigned = true, person = tommy)
+        val laptop =
+            createHelper.createLaptop(
+                serialNumber = "AIR-02",
+                contractSigned = true,
+                purchaseDate = LocalDate.of(2023, 1, 1),
+                person = tommy,
+            )
 
         mvc
             .perform(
@@ -285,6 +365,7 @@ class LaptopControllerTest(
             ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.contractSigned").value(false))
+            .andExpect(jsonPath("$.purchaseDate").doesNotExist())
             .andExpect(jsonPath("$.person").doesNotExist())
     }
 
@@ -401,5 +482,13 @@ class LaptopControllerTest(
             .andExpect(status().isForbidden)
     }
 
-    private fun ResultActions.asyncDispatch(): ResultActions = mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
+    /**
+     * Wirespec handlers are suspend functions, so a handled request completes through an
+     * async dispatch. A body that the contract rejects never reaches the handler: the
+     * 400 is written synchronously and there is nothing to dispatch.
+     */
+    private fun ResultActions.asyncDispatch(): ResultActions {
+        val result = andReturn()
+        return if (result.request.isAsyncStarted) mvc.perform(MockMvcRequestBuilders.asyncDispatch(result)) else this
+    }
 }

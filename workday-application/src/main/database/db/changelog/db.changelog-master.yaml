@@ -109,3 +109,6 @@ databaseChangeLog:
   - include:
       file: db.changelog-037-laptop.yaml
       relativeToChangelogFile: true
+  - include:
+      file: db.changelog-038-laptop-purchase-date-and-authorities.yaml
+      relativeToChangelogFile: true

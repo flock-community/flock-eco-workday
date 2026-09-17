@@ -2,6 +2,7 @@ import { FormControl } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Field, Form, Formik } from 'formik';
 import { CheckboxWithLabel, TextField } from 'formik-mui';
+import { DatePickerField } from '../../components/fields/DatePickerField';
 import { PersonSelectorField } from '../../components/fields/PersonSelectorField';
 import { LAPTOP_FORM_SCHEMA, type LaptopFormValues } from './schema';
 
@@ -14,7 +15,7 @@ type LaptopFormProps = {
 
 export function LaptopForm({ value, onSubmit }: LaptopFormProps) {
   const handleSubmit = (values: LaptopFormValues, { setSubmitting }) => {
-    onSubmit(LAPTOP_FORM_SCHEMA.cast(values));
+    onSubmit(LAPTOP_FORM_SCHEMA.cast(values) as LaptopFormValues);
     setSubmitting(false);
   };
 
@@ -44,6 +45,9 @@ export function LaptopForm({ value, onSubmit }: LaptopFormProps) {
               fullWidth
               component={TextField}
             />
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <DatePickerField name="purchaseDate" label="Purchase date" />
           </Grid>
           <Grid size={{ xs: 12 }}>
             <PersonSelectorField name="personId" label="Person" fullWidth />

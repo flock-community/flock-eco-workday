@@ -1,5 +1,8 @@
 import { expect, type Page, test } from '@playwright/test';
-import { Given_I_am_logged_in_as_user } from './steps/workdaySteps';
+import {
+  Given_I_am_logged_in_as_user,
+  selectDateInPicker,
+} from './steps/workdaySteps';
 
 const LAPTOP_URL = '/laptops';
 const ADMIN_USERNAME = 'bert';
@@ -77,6 +80,7 @@ test.describe('Laptop registration', () => {
     const tommysLaptop = laptopRow(page, 'MacBook Pro 16 (2023)');
     await expect(tommysLaptop).toBeVisible();
     await expect(tommysLaptop).toContainText('C02XK1ABCD01');
+    await expect(tommysLaptop).toContainText('14-11-2023');
     await expect(tommysLaptop).toContainText('Tommy Dog');
     await expect(tommysLaptop).toContainText('Signed');
 
@@ -85,6 +89,7 @@ test.describe('Laptop registration', () => {
     await expect(pinosLaptop).toContainText('Not signed');
 
     const spare = laptopRow(page, 'MacBook Pro 14 (2022) spare');
+    await expect(spare).toContainText('Unknown');
     await expect(spare).toContainText('Unassigned');
   });
 
@@ -95,6 +100,7 @@ test.describe('Laptop registration', () => {
 
     await openCreateDialog(page);
     await fillLaptopForm(page, data);
+    await selectDateInPicker(page, 'Purchase date', 3, 5, 2024);
     await selectPerson(page, 'Ernie Muppets');
     await page.getByRole('checkbox', { name: 'Contract signed' }).check();
     await saveDialog(page);
@@ -102,8 +108,15 @@ test.describe('Laptop registration', () => {
     const row = laptopRow(page, data.name);
     await expect(row).toBeVisible({ timeout: 30000 });
     await expect(row).toContainText(data.serialNumber);
+    await expect(row).toContainText('03-05-2024');
     await expect(row).toContainText('Ernie Muppets');
     await expect(row).toContainText('Signed');
+
+    // The edit dialog is pre-filled with the purchase date
+    await openEditDialog(page, data.name);
+    await expect(
+      page.getByRole('dialog').getByLabel('Purchase date', { exact: true }),
+    ).toHaveValue('03-05-2024');
   });
 
   test('registers a laptop that nobody has yet', async ({ page }) => {
@@ -112,6 +125,7 @@ test.describe('Laptop registration', () => {
     await createLaptop(page, data);
 
     const row = laptopRow(page, data.name);
+    await expect(row).toContainText('Unknown');
     await expect(row).toContainText('Unassigned');
     await expect(row).toContainText('Not signed');
   });

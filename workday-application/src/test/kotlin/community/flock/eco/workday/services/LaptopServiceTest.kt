@@ -4,7 +4,6 @@ import community.flock.eco.workday.application.forms.LaptopForm
 import community.flock.eco.workday.application.model.Laptop
 import community.flock.eco.workday.application.repository.LaptopRepository
 import community.flock.eco.workday.application.repository.PersonRepository
-import community.flock.eco.workday.application.services.LaptopInvalidInputException
 import community.flock.eco.workday.application.services.LaptopPersonNotFoundException
 import community.flock.eco.workday.application.services.LaptopSerialNumberInUseException
 import community.flock.eco.workday.application.services.LaptopService
@@ -18,6 +17,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
 import kotlin.test.assertEquals
@@ -39,8 +39,15 @@ class LaptopServiceTest {
         name: String = "MacBook Pro",
         serialNumber: String = "C02XK1",
         contractSigned: Boolean = false,
+        purchaseDate: LocalDate? = null,
         personId: UUID? = null,
-    ) = LaptopForm(name = name, serialNumber = serialNumber, contractSigned = contractSigned, personId = personId)
+    ) = LaptopForm(
+        name = name,
+        serialNumber = serialNumber,
+        contractSigned = contractSigned,
+        purchaseDate = purchaseDate,
+        personId = personId,
+    )
 
     private fun stubSave() {
         val saved = slot<Laptop>()
@@ -56,12 +63,19 @@ class LaptopServiceTest {
 
         val laptop =
             laptopService.create(
-                form(name = "  MacBook Pro ", serialNumber = " C02XK1 ", contractSigned = true, personId = person.uuid),
+                form(
+                    name = "  MacBook Pro ",
+                    serialNumber = " C02XK1 ",
+                    contractSigned = true,
+                    purchaseDate = LocalDate.of(2024, 5, 3),
+                    personId = person.uuid,
+                ),
             )
 
         assertEquals("MacBook Pro", laptop.name)
         assertEquals("C02XK1", laptop.serialNumber)
         assertEquals(true, laptop.contractSigned)
+        assertEquals(LocalDate.of(2024, 5, 3), laptop.purchaseDate)
         assertSame(person, laptop.person)
     }
 
@@ -74,13 +88,6 @@ class LaptopServiceTest {
 
         assertNull(laptop.person)
         verify(exactly = 0) { personRepository.findByUuid(any()) }
-    }
-
-    @Test
-    fun `create rejects a blank name or serial number`() {
-        assertThrows<LaptopInvalidInputException> { laptopService.create(form(name = "  ")) }
-        assertThrows<LaptopInvalidInputException> { laptopService.create(form(serialNumber = "")) }
-        verify(exactly = 0) { laptopRepository.save(any()) }
     }
 
     @Test

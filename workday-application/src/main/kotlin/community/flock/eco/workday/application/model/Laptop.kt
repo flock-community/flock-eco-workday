@@ -6,13 +6,15 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.ManyToOne
+import java.time.LocalDate
 import java.util.UUID
 
 /**
  * A company laptop. The serial number identifies the physical device, the name is
- * how people refer to it. A laptop can be handed out to a person, in which case
- * the person has to sign a laptop contract; [contractSigned] tracks whether that
- * happened.
+ * how people refer to it and [purchaseDate] is the day it was bought (unknown for
+ * some older devices, hence optional). A laptop can be handed out to a person, in
+ * which case the person has to sign a laptop contract; [contractSigned] tracks
+ * whether that happened.
  */
 @Entity
 @EntityListeners(EventEntityListeners::class)
@@ -23,6 +25,7 @@ class Laptop(
     @Column(unique = true)
     val serialNumber: String,
     val contractSigned: Boolean = false,
+    val purchaseDate: LocalDate? = null,
     @ManyToOne
     val person: Person? = null,
 ) : AbstractCodeEntity(id, code) {
