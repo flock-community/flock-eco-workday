@@ -11,6 +11,7 @@ import {
 } from '../../clients/AggregationClient';
 import { ContractClient } from '../../clients/ContractClient';
 import { ExpenseClient } from '../../clients/ExpenseClient';
+import { type Laptop, LaptopClient } from '../../clients/LaptopClient';
 import {
   type PersonEvent,
   PersonEventClient,
@@ -21,6 +22,7 @@ import { HackDayEventsCard } from '../../components/hackday-card/HackDayEventsCa
 import { HackdayCard } from '../../components/hackday-card/HackdayCard';
 import { HolidayCard } from '../../components/holiday-card/HolidayCard';
 import { HoursOverviewCard } from '../../components/hours-overview-card/HoursOverviewCard';
+import { LaptopsCard } from '../../components/laptops-card/LaptopsCard';
 import { MissingHoursCard } from '../../components/missing-hours-card/MissingHoursCard';
 import PersonEvents from '../../components/person/PersonEvents';
 import { addError } from '../../hooks/ErrorHook';
@@ -49,6 +51,7 @@ export function HomeFeature() {
   const [personHolidayDetails, setPersonHolidayDetails] =
     useState<PersonHolidayDetails>();
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [laptops, setLaptops] = useState<Laptop[]>();
   const [hackdayRefreshKey, setHackdayRefreshKey] = useState(0);
 
   const [workDayOpen, setWorkDayOpen] = useState(false);
@@ -89,6 +92,7 @@ export function HomeFeature() {
       ExpenseClient.findAllByPersonIdNEW(status?.personId, 0, null).then(
         (res) => setExpenses(res.list),
       );
+      LaptopClient.findAllMine().then((res) => setLaptops(res));
     }
   }, [status, hasAccess, showContractsEnding, showPersonEvents, withinNWeek]);
 
@@ -200,6 +204,7 @@ export function HomeFeature() {
             >
               <MissingHoursCard totalPerPersonMe={totalPerPersonMe} />
               <HackDayEventsCard onToggle={handleHackdayToggle} />
+              <LaptopsCard items={laptops} />
             </div>
           </div>
         </section>

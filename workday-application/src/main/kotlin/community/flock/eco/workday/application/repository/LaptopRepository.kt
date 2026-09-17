@@ -18,5 +18,7 @@ interface LaptopRepository : JpaRepository<Laptop, Long> {
         pageable: Pageable,
     ): Page<Laptop>
 
+    fun findAllByPersonUserCodeOrderByNameAsc(userCode: String): List<Laptop>
+
     fun deleteByCode(code: String)
 }

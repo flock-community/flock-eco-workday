@@ -1,3 +1,4 @@
+import { ResourceClient } from '@workday-core';
 import dayjs, { type Dayjs } from 'dayjs';
 import InternalizingClient from '../utils/InternalizingClient';
 import type { LaptopForm } from '../wirespec/model';
@@ -52,7 +53,14 @@ const findAllByPersonId = (personId: string, page = 0) =>
     { personId },
   );
 
+/** The laptops handed out to the person of the current user, sorted by name. */
+const findAllMine = (): Promise<Laptop[]> =>
+  ResourceClient<LaptopRaw, LaptopRequest>(`${path}/me`)
+    .all()
+    .then((res) => res.body.map(internalize));
+
 export const LaptopClient = {
   ...internalizingClient,
   findAllByPersonId,
+  findAllMine,
 };
