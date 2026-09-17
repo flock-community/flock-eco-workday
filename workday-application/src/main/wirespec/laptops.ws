@@ -24,6 +24,7 @@ type LaptopForm {
   name: String?,
   serialNumber: String?,
   contractSigned: Boolean?,
+  purchaseDate: String?,
   personId: String?
 }
 type Laptop {
@@ -32,5 +33,6 @@ type Laptop {
   name: String?,
   serialNumber: String?,
   contractSigned: Boolean?,
+  purchaseDate: String?,
   person: Person?
 }

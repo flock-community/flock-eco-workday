@@ -10,6 +10,21 @@ describe('apiErrorMessage', () => {
     );
   });
 
+  it("appends the status of Spring's default error body", () => {
+    const forbidden = new Error(
+      JSON.stringify({ status: 403, error: 'Forbidden', path: '/api/laptops' }),
+    );
+    expect(apiErrorMessage(forbidden, 'The laptop could not be saved')).toBe(
+      'The laptop could not be saved (403: you are missing the required authority)',
+    );
+    const serverError = new Error(
+      JSON.stringify({ status: 500, error: 'Internal Server Error' }),
+    );
+    expect(apiErrorMessage(serverError, 'fb')).toBe(
+      'fb (500: Internal Server Error)',
+    );
+  });
+
   it('falls back when the body is not JSON', () => {
     expect(apiErrorMessage(new Error('<html>Bad gateway</html>'), 'fb')).toBe(
       'fb',
@@ -18,7 +33,7 @@ describe('apiErrorMessage', () => {
 
   it('falls back when the body has no usable message', () => {
     expect(
-      apiErrorMessage(new Error(JSON.stringify({ status: 500 })), 'fb'),
+      apiErrorMessage(new Error(JSON.stringify({ path: '/api' })), 'fb'),
     ).toBe('fb');
     expect(
       apiErrorMessage(new Error(JSON.stringify({ message: '  ' })), 'fb'),

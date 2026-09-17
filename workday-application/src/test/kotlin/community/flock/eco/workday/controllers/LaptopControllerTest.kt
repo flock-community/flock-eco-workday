@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDate
 import java.util.UUID
 
 class LaptopControllerTest(
@@ -36,6 +37,7 @@ class LaptopControllerTest(
         name: String? = "MacBook Pro 16",
         serialNumber: String? = "C02XK1ABCD01",
         contractSigned: Boolean? = false,
+        purchaseDate: String? = null,
         personId: String? = null,
     ): String =
         mapper.writeValueAsString(
@@ -43,6 +45,7 @@ class LaptopControllerTest(
                 "name" to name,
                 "serialNumber" to serialNumber,
                 "contractSigned" to contractSigned,
+                "purchaseDate" to purchaseDate,
                 "personId" to personId,
             ),
         )
@@ -56,7 +59,7 @@ class LaptopControllerTest(
             .perform(
                 post(baseUrl)
                     .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
-                    .content(laptopJson(contractSigned = true, personId = person.uuid.toString()))
+                    .content(laptopJson(contractSigned = true, purchaseDate = "2024-05-03", personId = person.uuid.toString()))
                     .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON),
             ).asyncDispatch()
@@ -67,6 +70,7 @@ class LaptopControllerTest(
             .andExpect(jsonPath("$.name").value("MacBook Pro 16"))
             .andExpect(jsonPath("$.serialNumber").value("C02XK1ABCD01"))
             .andExpect(jsonPath("$.contractSigned").value(true))
+            .andExpect(jsonPath("$.purchaseDate").value("2024-05-03"))
             .andExpect(jsonPath("$.person.uuid").value(person.uuid.toString()))
             .andExpect(jsonPath("$.person.fullName").value("Tommy Dog"))
     }
@@ -87,7 +91,24 @@ class LaptopControllerTest(
             .andExpect(jsonPath("$.name").value("Spare laptop"))
             .andExpect(jsonPath("$.serialNumber").value("SPARE-01"))
             .andExpect(jsonPath("$.contractSigned").value(false))
+            .andExpect(jsonPath("$.purchaseDate").doesNotExist())
             .andExpect(jsonPath("$.person").doesNotExist())
+    }
+
+    @Test
+    fun `POST with a purchase date that is not a date is a 400`() {
+        val adminUser = createHelper.createUserEntity(adminAuthorities)
+
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .content(laptopJson(purchaseDate = "03-05-2024"))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("purchaseDate must be a date formatted as yyyy-MM-dd"))
     }
 
     @Test
@@ -244,7 +265,13 @@ class LaptopControllerTest(
         val adminUser = createHelper.createUserEntity(adminAuthorities)
         val tommy = createHelper.createPersonEntity("Tommy", "Dog")
         val pino = createHelper.createPersonEntity("Pino", "Woodpecker")
-        val laptop = createHelper.createLaptop(name = "MacBook Air", serialNumber = "AIR-01", person = tommy)
+        val laptop =
+            createHelper.createLaptop(
+                name = "MacBook Air",
+                serialNumber = "AIR-01",
+                purchaseDate = LocalDate.of(2023, 1, 1),
+                person = tommy,
+            )
 
         mvc
             .perform(
@@ -256,6 +283,7 @@ class LaptopControllerTest(
                             // Keeping its own serial number (in another case) is not a conflict
                             serialNumber = "air-01",
                             contractSigned = true,
+                            purchaseDate = "2024-05-03",
                             personId = pino.uuid.toString(),
                         ),
                     ).contentType(APPLICATION_JSON)
@@ -266,6 +294,7 @@ class LaptopControllerTest(
             .andExpect(jsonPath("$.name").value("MacBook Air 13"))
             .andExpect(jsonPath("$.serialNumber").value("air-01"))
             .andExpect(jsonPath("$.contractSigned").value(true))
+            .andExpect(jsonPath("$.purchaseDate").value("2024-05-03"))
             .andExpect(jsonPath("$.person.uuid").value(pino.uuid.toString()))
     }
 
@@ -273,7 +302,13 @@ class LaptopControllerTest(
     fun `PUT without a person takes the laptop back in`() {
         val adminUser = createHelper.createUserEntity(adminAuthorities)
         val tommy = createHelper.createPersonEntity("Tommy", "Dog")
-        val laptop = createHelper.createLaptop(serialNumber = "AIR-02", contractSigned = true, person = tommy)
+        val laptop =
+            createHelper.createLaptop(
+                serialNumber = "AIR-02",
+                contractSigned = true,
+                purchaseDate = LocalDate.of(2023, 1, 1),
+                person = tommy,
+            )
 
         mvc
             .perform(
@@ -285,6 +320,7 @@ class LaptopControllerTest(
             ).asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.contractSigned").value(false))
+            .andExpect(jsonPath("$.purchaseDate").doesNotExist())
             .andExpect(jsonPath("$.person").doesNotExist())
     }
 

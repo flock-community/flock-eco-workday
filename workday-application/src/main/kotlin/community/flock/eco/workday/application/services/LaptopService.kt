@@ -75,6 +75,7 @@ class LaptopService(
             name = name,
             serialNumber = serialNumber,
             contractSigned = contractSigned,
+            purchaseDate = purchaseDate,
             person = personId?.let { findPerson(it) },
         )
     }

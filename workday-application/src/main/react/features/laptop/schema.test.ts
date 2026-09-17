@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {
   LAPTOP_FORM_SCHEMA,
   toLaptopFormValues,
@@ -14,11 +15,12 @@ const errorsOf = async (values: Record<string, unknown>) => {
 };
 
 describe('LAPTOP_FORM_SCHEMA', () => {
-  it('defaults to an empty, unsigned, unassigned laptop', () => {
+  it('defaults to an empty, unsigned, unassigned laptop without a purchase date', () => {
     expect(LAPTOP_FORM_SCHEMA.getDefault()).toEqual({
       name: '',
       serialNumber: '',
       contractSigned: false,
+      purchaseDate: null,
       personId: '',
     });
   });
@@ -35,44 +37,66 @@ describe('LAPTOP_FORM_SCHEMA', () => {
     ).resolves.toEqual(expect.arrayContaining(['name', 'serialNumber']));
   });
 
-  it('accepts a laptop without a person', async () => {
+  it('accepts a laptop without a person or purchase date', async () => {
     await expect(
       LAPTOP_FORM_SCHEMA.isValid({
         name: 'MacBook Pro',
         serialNumber: 'C02XK1',
         contractSigned: true,
+        purchaseDate: null,
         personId: '',
       }),
     ).resolves.toBe(true);
   });
+
+  it('accepts a valid purchase date and rejects an invalid one', async () => {
+    const valid = {
+      name: 'MacBook Pro',
+      serialNumber: 'C02XK1',
+      contractSigned: false,
+      personId: '',
+    };
+    await expect(
+      LAPTOP_FORM_SCHEMA.isValid({
+        ...valid,
+        purchaseDate: dayjs('2024-05-03'),
+      }),
+    ).resolves.toBe(true);
+    await expect(
+      errorsOf({ ...valid, purchaseDate: dayjs('not a date') }),
+    ).resolves.toEqual(['purchaseDate']);
+  });
 });
 
 describe('toLaptopRequest', () => {
-  it('trims text and leaves the person out when nobody has the laptop', () => {
+  it('trims text and leaves the person and date out when unknown', () => {
     expect(
       toLaptopRequest({
         name: ' MacBook Pro ',
         serialNumber: ' C02XK1 ',
         contractSigned: false,
+        purchaseDate: null,
         personId: '',
       }),
     ).toEqual({
       name: 'MacBook Pro',
       serialNumber: 'C02XK1',
       contractSigned: false,
+      purchaseDate: undefined,
       personId: undefined,
     });
   });
 
-  it('sends the person uuid when one is selected', () => {
-    expect(
-      toLaptopRequest({
-        name: 'MacBook Pro',
-        serialNumber: 'C02XK1',
-        contractSigned: true,
-        personId: 'b1b0f7e6-0c2e-4d7b-8c31-2f4ad4b3b1a0',
-      }).personId,
-    ).toBe('b1b0f7e6-0c2e-4d7b-8c31-2f4ad4b3b1a0');
+  it('sends the person uuid and the purchase date as an ISO date', () => {
+    const request = toLaptopRequest({
+      name: 'MacBook Pro',
+      serialNumber: 'C02XK1',
+      contractSigned: true,
+      purchaseDate: dayjs('2024-05-03'),
+      personId: 'b1b0f7e6-0c2e-4d7b-8c31-2f4ad4b3b1a0',
+    });
+    expect(request.personId).toBe('b1b0f7e6-0c2e-4d7b-8c31-2f4ad4b3b1a0');
+    expect(request.purchaseDate).toBe('2024-05-03');
   });
 });
 
@@ -83,19 +107,21 @@ describe('toLaptopFormValues', () => {
     name: 'ThinkPad',
     serialNumber: 'PF3',
     contractSigned: true,
+    purchaseDate: null,
     person: null,
   };
 
-  it('maps an unassigned laptop to an empty person', () => {
+  it('maps an unassigned laptop without a date to empty form values', () => {
     expect(toLaptopFormValues(laptop)).toEqual({
       name: 'ThinkPad',
       serialNumber: 'PF3',
       contractSigned: true,
+      purchaseDate: null,
       personId: '',
     });
   });
 
-  it('maps the linked person to its uuid', () => {
+  it('maps the linked person to its uuid and keeps the purchase date', () => {
     const person = {
       uuid: 'b1b0f7e6-0c2e-4d7b-8c31-2f4ad4b3b1a0',
       email: 'tommy@sesam.straat',
@@ -104,8 +130,9 @@ describe('toLaptopFormValues', () => {
       fullName: 'Tommy Dog',
       active: true,
     };
-    expect(toLaptopFormValues({ ...laptop, person }).personId).toBe(
-      person.uuid,
-    );
+    const purchaseDate = dayjs('2024-05-03');
+    const values = toLaptopFormValues({ ...laptop, person, purchaseDate });
+    expect(values.personId).toBe(person.uuid);
+    expect(values.purchaseDate).toBe(purchaseDate);
   });
 });

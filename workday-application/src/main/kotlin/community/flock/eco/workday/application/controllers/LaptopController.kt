@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.time.LocalDate
 import java.util.UUID
 import community.flock.eco.workday.api.model.Laptop as LaptopApi
 import community.flock.eco.workday.api.model.LaptopForm as LaptopFormApi
@@ -112,6 +113,7 @@ class LaptopController(
             name = name,
             serialNumber = serialNumber,
             contractSigned = contractSigned,
+            purchaseDate = purchaseDate?.toString(),
             person = person?.externalize(),
         )
 
@@ -143,6 +145,10 @@ class LaptopController(
             name = name.orEmpty(),
             serialNumber = serialNumber.orEmpty(),
             contractSigned = contractSigned ?: false,
+            purchaseDate =
+                purchaseDate?.takeIf { it.isNotBlank() }?.let {
+                    it.toLocalDateOrNull() ?: throw LaptopInvalidInputException("purchaseDate must be a date formatted as yyyy-MM-dd")
+                },
             personId =
                 personId?.takeIf { it.isNotBlank() }?.let {
                     it.toUuidOrNull() ?: throw LaptopInvalidInputException("personId must be a UUID")
@@ -152,4 +158,6 @@ class LaptopController(
     private fun GetLaptopAll.Queries.toPageable(): Pageable = PageRequest.of(page ?: 0, size ?: 20, parseSort(sort?.split(",")))
 
     private fun String.toUuidOrNull(): UUID? = runCatching { UUID.fromString(trim()) }.getOrNull()
+
+    private fun String.toLocalDateOrNull(): LocalDate? = runCatching { LocalDate.parse(trim()) }.getOrNull()
 }

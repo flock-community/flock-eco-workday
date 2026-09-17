@@ -18,6 +18,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
 import kotlin.test.assertEquals
@@ -39,8 +40,15 @@ class LaptopServiceTest {
         name: String = "MacBook Pro",
         serialNumber: String = "C02XK1",
         contractSigned: Boolean = false,
+        purchaseDate: LocalDate? = null,
         personId: UUID? = null,
-    ) = LaptopForm(name = name, serialNumber = serialNumber, contractSigned = contractSigned, personId = personId)
+    ) = LaptopForm(
+        name = name,
+        serialNumber = serialNumber,
+        contractSigned = contractSigned,
+        purchaseDate = purchaseDate,
+        personId = personId,
+    )
 
     private fun stubSave() {
         val saved = slot<Laptop>()
@@ -56,12 +64,19 @@ class LaptopServiceTest {
 
         val laptop =
             laptopService.create(
-                form(name = "  MacBook Pro ", serialNumber = " C02XK1 ", contractSigned = true, personId = person.uuid),
+                form(
+                    name = "  MacBook Pro ",
+                    serialNumber = " C02XK1 ",
+                    contractSigned = true,
+                    purchaseDate = LocalDate.of(2024, 5, 3),
+                    personId = person.uuid,
+                ),
             )
 
         assertEquals("MacBook Pro", laptop.name)
         assertEquals("C02XK1", laptop.serialNumber)
         assertEquals(true, laptop.contractSigned)
+        assertEquals(LocalDate.of(2024, 5, 3), laptop.purchaseDate)
         assertSame(person, laptop.person)
     }
 

@@ -71,3 +71,49 @@ databaseChangeLog:
             sequenceName: laptop_seq
             startValue: 1
             incrementBy: 50
+  - changeSet:
+      id: db.changelog-037-laptop-3
+      author: willemveelenturf
+      comment: The day the laptop was bought. Optional, because it is not always known for older devices.
+      changes:
+        - addColumn:
+            tableName: laptop
+            columns:
+              - column:
+                  name: purchase_date
+                  type: DATE
+  - changeSet:
+      id: db.changelog-037-laptop-4
+      author: willemveelenturf
+      comment: >-
+        Hand the new LaptopAuthority.* to everybody who can already manage all persons
+        (PersonAuthority.ADMIN), so laptops can be registered right after the deploy
+        without touching every admin user by hand. Idempotent: users that already have
+        an authority are skipped.
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO user_authorities (user_id, authorities)
+              SELECT DISTINCT ua.user_id, 'LaptopAuthority.READ'
+              FROM user_authorities ua
+              WHERE ua.authorities = 'PersonAuthority.ADMIN'
+                AND NOT EXISTS (
+                  SELECT 1 FROM user_authorities x
+                  WHERE x.user_id = ua.user_id AND x.authorities = 'LaptopAuthority.READ'
+                );
+              INSERT INTO user_authorities (user_id, authorities)
+              SELECT DISTINCT ua.user_id, 'LaptopAuthority.WRITE'
+              FROM user_authorities ua
+              WHERE ua.authorities = 'PersonAuthority.ADMIN'
+                AND NOT EXISTS (
+                  SELECT 1 FROM user_authorities x
+                  WHERE x.user_id = ua.user_id AND x.authorities = 'LaptopAuthority.WRITE'
+                );
+              INSERT INTO user_authorities (user_id, authorities)
+              SELECT DISTINCT ua.user_id, 'LaptopAuthority.ADMIN'
+              FROM user_authorities ua
+              WHERE ua.authorities = 'PersonAuthority.ADMIN'
+                AND NOT EXISTS (
+                  SELECT 1 FROM user_authorities x
+                  WHERE x.user_id = ua.user_id AND x.authorities = 'LaptopAuthority.ADMIN'
+                );

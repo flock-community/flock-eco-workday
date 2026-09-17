@@ -86,12 +86,14 @@ class CreateHelper(
         name: String = "MacBook Pro ${UUID.randomUUID()}",
         serialNumber: String = UUID.randomUUID().toString(),
         contractSigned: Boolean = false,
+        purchaseDate: LocalDate? = null,
         person: Person? = null,
     ): Laptop =
         LaptopForm(
             name = name,
             serialNumber = serialNumber,
             contractSigned = contractSigned,
+            purchaseDate = purchaseDate,
             personId = person?.uuid,
         ).run {
             laptopService.create(this)

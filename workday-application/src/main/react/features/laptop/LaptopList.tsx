@@ -14,6 +14,7 @@ import {
   type Laptop,
   LaptopClient,
 } from '../../clients/LaptopClient';
+import { DMY_DATE } from '../../clients/util/DateFormats';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { TableCard } from '../../components/TableCard';
 
@@ -64,6 +65,7 @@ export function LaptopList({
           columns={[
             { header: 'Name' },
             { header: 'Serial number' },
+            { header: 'Purchased' },
             { header: 'Person' },
             { header: 'Contract' },
           ]}
@@ -78,6 +80,15 @@ export function LaptopList({
               <TableCell>{it.name}</TableCell>
               <TableCell sx={{ fontFamily: 'monospace' }}>
                 {it.serialNumber}
+              </TableCell>
+              <TableCell>
+                {it.purchaseDate ? (
+                  it.purchaseDate.format(DMY_DATE)
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    Unknown
+                  </Typography>
+                )}
               </TableCell>
               <TableCell>
                 {it.person ? (
