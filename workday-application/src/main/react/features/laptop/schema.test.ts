@@ -49,6 +49,31 @@ describe('LAPTOP_FORM_SCHEMA', () => {
     ).resolves.toBe(true);
   });
 
+  it('applies the contract patterns: at most 255 characters, person must be a uuid', async () => {
+    const valid = {
+      name: 'MacBook Pro',
+      serialNumber: 'C02XK1',
+      contractSigned: false,
+      personId: '',
+    };
+    await expect(
+      errorsOf({
+        ...valid,
+        name: 'x'.repeat(256),
+        serialNumber: 'y'.repeat(256),
+      }),
+    ).resolves.toEqual(expect.arrayContaining(['name', 'serialNumber']));
+    await expect(
+      errorsOf({ ...valid, personId: 'not-a-uuid' }),
+    ).resolves.toEqual(['personId']);
+    await expect(
+      LAPTOP_FORM_SCHEMA.isValid({
+        ...valid,
+        personId: 'b1b0f7e6-0c2e-4d7b-8c31-2f4ad4b3b1a0',
+      }),
+    ).resolves.toBe(true);
+  });
+
   it('accepts a valid purchase date and rejects an invalid one', async () => {
     const valid = {
       name: 'MacBook Pro',

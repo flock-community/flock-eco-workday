@@ -20,12 +20,16 @@ endpoint DeleteLaptop DELETE /api/laptops/{code: String} -> {
   204 -> Unit
 }
 
+type LaptopName = String(/^(?!\s*$).{1,255}$/g)
+type LaptopSerialNumber = String(/^(?!\s*$).{1,255}$/g)
+type IsoDate = String(/^\d{4}-\d{2}-\d{2}$/g)
+
 type LaptopForm {
-  name: String?,
-  serialNumber: String?,
+  name: LaptopName,
+  serialNumber: LaptopSerialNumber,
   contractSigned: Boolean?,
-  purchaseDate: String?,
-  personId: String?
+  purchaseDate: IsoDate?,
+  personId: UUID?
 }
 type Laptop {
   id: Integer?,

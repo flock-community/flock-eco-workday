@@ -4,7 +4,6 @@ import community.flock.eco.workday.application.forms.LaptopForm
 import community.flock.eco.workday.application.model.Laptop
 import community.flock.eco.workday.application.repository.LaptopRepository
 import community.flock.eco.workday.application.repository.PersonRepository
-import community.flock.eco.workday.application.services.LaptopInvalidInputException
 import community.flock.eco.workday.application.services.LaptopPersonNotFoundException
 import community.flock.eco.workday.application.services.LaptopSerialNumberInUseException
 import community.flock.eco.workday.application.services.LaptopService
@@ -89,13 +88,6 @@ class LaptopServiceTest {
 
         assertNull(laptop.person)
         verify(exactly = 0) { personRepository.findByUuid(any()) }
-    }
-
-    @Test
-    fun `create rejects a blank name or serial number`() {
-        assertThrows<LaptopInvalidInputException> { laptopService.create(form(name = "  ")) }
-        assertThrows<LaptopInvalidInputException> { laptopService.create(form(serialNumber = "")) }
-        verify(exactly = 0) { laptopRepository.save(any()) }
     }
 
     @Test

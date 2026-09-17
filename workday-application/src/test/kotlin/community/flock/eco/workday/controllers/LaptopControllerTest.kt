@@ -76,7 +76,7 @@ class LaptopControllerTest(
     }
 
     @Test
-    fun `a laptop does not need a person and defaults to an unsigned contract`() {
+    fun `a laptop does not need a person, a purchase date or a contract flag`() {
         val adminUser = createHelper.createUserEntity(adminAuthorities)
 
         mvc
@@ -99,6 +99,7 @@ class LaptopControllerTest(
     fun `POST with a purchase date that is not a date is a 400`() {
         val adminUser = createHelper.createUserEntity(adminAuthorities)
 
+        // Not the contract's yyyy-MM-dd shape
         mvc
             .perform(
                 post(baseUrl)
@@ -108,7 +109,51 @@ class LaptopControllerTest(
                     .accept(APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.message").value("purchaseDate must be a date formatted as yyyy-MM-dd"))
+            .andExpect(jsonPath("$.message").value("purchaseDate is invalid"))
+
+        // Right shape, but no such day on the calendar
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .content(laptopJson(purchaseDate = "2024-13-45"))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("purchaseDate is not a valid date"))
+    }
+
+    @Test
+    fun `POST that leaves out a required field of the contract is a 400`() {
+        val adminUser = createHelper.createUserEntity(adminAuthorities)
+
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .content(mapper.writeValueAsString(mapOf("serialNumber" to "NO-NAME-01", "contractSigned" to false)))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("name is required"))
+    }
+
+    @Test
+    fun `POST with a name longer than the contract allows is a 400`() {
+        val adminUser = createHelper.createUserEntity(adminAuthorities)
+
+        mvc
+            .perform(
+                post(baseUrl)
+                    .with(user(CreateHelper.UserSecurity(adminUser.toDomain())))
+                    .content(laptopJson(name = "x".repeat(256)))
+                    .contentType(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("name is invalid"))
     }
 
     @Test
@@ -163,7 +208,7 @@ class LaptopControllerTest(
                     .accept(APPLICATION_JSON),
             ).asyncDispatch()
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.message").value("personId must be a UUID"))
+            .andExpect(jsonPath("$.message").value("personId is invalid"))
     }
 
     @Test
@@ -437,5 +482,13 @@ class LaptopControllerTest(
             .andExpect(status().isForbidden)
     }
 
-    private fun ResultActions.asyncDispatch(): ResultActions = mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
+    /**
+     * Wirespec handlers are suspend functions, so a handled request completes through an
+     * async dispatch. A body that the contract rejects never reaches the handler: the
+     * 400 is written synchronously and there is nothing to dispatch.
+     */
+    private fun ResultActions.asyncDispatch(): ResultActions {
+        val result = andReturn()
+        return if (result.request.isAsyncStarted) mvc.perform(MockMvcRequestBuilders.asyncDispatch(result)) else this
+    }
 }

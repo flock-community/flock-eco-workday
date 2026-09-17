@@ -56,13 +56,13 @@ class LaptopService(
     fun deleteByCode(code: String) = laptopRepository.deleteByCode(code)
 
     /**
-     * Validates the form and builds the laptop to persist. The serial number is
-     * trimmed and must be unique across laptops (ignoring case); when updating,
-     * the laptop being updated may of course keep its own serial number.
+     * Builds the laptop to persist. The serial number must be unique across laptops
+     * (ignoring case); when updating, the laptop being updated may of course keep its
+     * own serial number. Presence and shape of the fields are the contract's concern.
      */
     private fun LaptopForm.internalize(existing: Laptop? = null): Laptop {
-        val name = name.trim().ifEmpty { throw LaptopInvalidInputException("name is required") }
-        val serialNumber = serialNumber.trim().ifEmpty { throw LaptopInvalidInputException("serialNumber is required") }
+        val name = name.trim()
+        val serialNumber = serialNumber.trim()
 
         laptopRepository
             .findBySerialNumberIgnoreCase(serialNumber)
