@@ -1,6 +1,9 @@
 endpoint GetLaptopAll GET /api/laptops ? {page: Integer32?, size: Integer32?, sort: String?, personId: String?} -> {
   200 -> Laptop[] # { `x-total`: Integer32 }
 }
+endpoint GetLaptopMe GET /api/laptops/me -> {
+  200 -> Laptop[]
+}
 endpoint GetLaptopByCode GET /api/laptops/{code: String} -> {
   200 -> Laptop
   404 -> Error

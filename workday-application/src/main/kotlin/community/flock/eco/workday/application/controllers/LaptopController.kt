@@ -3,6 +3,7 @@ package community.flock.eco.workday.application.controllers
 import community.flock.eco.workday.api.endpoint.DeleteLaptop
 import community.flock.eco.workday.api.endpoint.GetLaptopAll
 import community.flock.eco.workday.api.endpoint.GetLaptopByCode
+import community.flock.eco.workday.api.endpoint.GetLaptopMe
 import community.flock.eco.workday.api.endpoint.PostLaptop
 import community.flock.eco.workday.api.endpoint.PutLaptop
 import community.flock.eco.workday.api.model.Error
@@ -18,6 +19,8 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
@@ -31,6 +34,7 @@ import community.flock.eco.workday.application.model.Person as PersonInternal
 class LaptopController(
     private val laptopService: LaptopService,
 ) : GetLaptopAll.Handler,
+    GetLaptopMe.Handler,
     GetLaptopByCode.Handler,
     PostLaptop.Handler,
     PutLaptop.Handler,
@@ -53,6 +57,17 @@ class LaptopController(
             xtotal = page.totalElements.toInt(),
         )
     }
+
+    /**
+     * The laptops handed out to the person of the current user. Seeing your own laptops
+     * takes no laptop authority: everybody may check which laptops they have and whether
+     * the contract for them is signed.
+     */
+    @PreAuthorize("isAuthenticated()")
+    override suspend fun getLaptopMe(request: GetLaptopMe.Request): GetLaptopMe.Response<*> =
+        GetLaptopMe.Response200(
+            laptopService.findAllByUserCode(authentication().name).map { it.externalize() },
+        )
 
     @PreAuthorize("hasAuthority('LaptopAuthority.READ')")
     override suspend fun getLaptopByCode(request: GetLaptopByCode.Request): GetLaptopByCode.Response<*> =
@@ -167,6 +182,10 @@ class LaptopController(
             value.isBlank() -> throw LaptopInvalidInputException("$field is required")
             else -> throw LaptopInvalidInputException("$field is invalid")
         }
+
+    private fun authentication(): Authentication =
+        SecurityContextHolder.getContext().authentication
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
 
     private fun GetLaptopAll.Queries.toPageable(): Pageable = PageRequest.of(page ?: 0, size ?: 20, parseSort(sort?.split(",")))
 

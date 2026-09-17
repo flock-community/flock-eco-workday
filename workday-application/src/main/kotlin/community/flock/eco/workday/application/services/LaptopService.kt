@@ -41,6 +41,12 @@ class LaptopService(
         pageable: Pageable,
     ): Page<Laptop> = laptopRepository.findAllByPersonUuid(personUuid, pageable)
 
+    /**
+     * The laptops handed out to the person behind the user with [userCode], sorted by
+     * name. A user without a person cannot have a laptop, so that is simply an empty list.
+     */
+    fun findAllByUserCode(userCode: String): List<Laptop> = laptopRepository.findAllByPersonUserCodeOrderByNameAsc(userCode)
+
     fun findByCode(code: String): Laptop? = laptopRepository.findByCode(code)
 
     @Transactional

@@ -1,12 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
-import {
-  Box,
-  Button,
-  Chip,
-  TableCell,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Box, Button, TableCell, TableRow, Typography } from '@mui/material';
 import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
 import {
@@ -17,6 +10,7 @@ import {
 import { DMY_DATE } from '../../clients/util/DateFormats';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { TableCard } from '../../components/TableCard';
+import { LaptopContractChip } from './LaptopContractChip';
 
 type LaptopListProps = {
   refresh?: boolean;
@@ -100,21 +94,7 @@ export function LaptopList({
                 )}
               </TableCell>
               <TableCell>
-                {it.contractSigned ? (
-                  <Chip
-                    label="Signed"
-                    color="success"
-                    variant="outlined"
-                    size="small"
-                  />
-                ) : (
-                  <Chip
-                    label="Not signed"
-                    color="warning"
-                    variant="outlined"
-                    size="small"
-                  />
-                )}
+                <LaptopContractChip signed={it.contractSigned} />
               </TableCell>
             </TableRow>
           )}

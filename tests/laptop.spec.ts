@@ -244,3 +244,56 @@ test.describe('Laptop registration', () => {
     await expect(laptopRow(page, data.name)).toHaveCount(0);
   });
 });
+
+// Regular workers have no laptop authority, so this is the only place they see their laptop.
+test.describe('Laptops on the home page', () => {
+  test.beforeEach(async ({ context }) => {
+    await context.clearCookies();
+  });
+
+  function myLaptopRow(page: Page, name: string) {
+    return page
+      .getByTestId('laptops-card')
+      .locator('table tbody tr')
+      .filter({ hasText: name })
+      .first();
+  }
+
+  test('a person sees their own laptop with the serial number and a signed contract', async ({
+    page,
+  }) => {
+    await Given_I_am_logged_in_as_user(page, 'tommy');
+
+    const card = page.getByTestId('laptops-card');
+    await expect(card.getByText('Laptops', { exact: true })).toBeVisible();
+
+    const row = myLaptopRow(page, 'MacBook Pro 16 (2023)');
+    await expect(row).toBeVisible();
+    await expect(row).toContainText('C02XK1ABCD01');
+    await expect(row.getByText('Signed', { exact: true })).toBeVisible();
+
+    // Laptops of other people are not theirs to see
+    await expect(card).not.toContainText('MacBook Air 13 (2024)');
+    await expect(card).not.toContainText('ThinkPad X1 Carbon');
+  });
+
+  test('a person sees when the contract for their laptop is not signed', async ({
+    page,
+  }) => {
+    await Given_I_am_logged_in_as_user(page, 'pino');
+
+    const row = myLaptopRow(page, 'MacBook Air 13 (2024)');
+    await expect(row).toBeVisible();
+    await expect(row).toContainText('C02XK1ABCD02');
+    await expect(row.getByText('Not signed', { exact: true })).toBeVisible();
+  });
+
+  test('a person without a laptop is told so', async ({ page }) => {
+    // Ieniemienie never gets a laptop, not in the seed data nor in the tests above
+    await Given_I_am_logged_in_as_user(page, 'ieniemienie');
+
+    await expect(
+      page.getByTestId('laptops-card').getByText('No laptop assigned to you.'),
+    ).toBeVisible();
+  });
+});

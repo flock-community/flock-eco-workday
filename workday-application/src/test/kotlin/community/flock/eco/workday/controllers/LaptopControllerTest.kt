@@ -482,6 +482,53 @@ class LaptopControllerTest(
             .andExpect(status().isForbidden)
     }
 
+    @Test
+    fun `GET me lists the laptops of the person behind the current user, no laptop authority needed`() {
+        val worker = createHelper.createUserEntity(emptySet())
+        val me = createHelper.createPersonEntity("Tommy", "Dog", worker.code)
+        val someoneElse = createHelper.createPersonEntity("Pino", "Woodpecker")
+        createHelper.createLaptop(name = "ThinkPad X1", serialNumber = "PF3ABCD03", contractSigned = false, person = me)
+        createHelper.createLaptop(name = "MacBook Pro 16", serialNumber = "C02XK1ABCD01", contractSigned = true, person = me)
+        createHelper.createLaptop(name = "MacBook Air 13", serialNumber = "C02XK1ABCD02", contractSigned = true, person = someoneElse)
+        createHelper.createLaptop(name = "Spare laptop", serialNumber = "SPARE-01")
+
+        mvc
+            .perform(
+                get("$baseUrl/me")
+                    .with(user(CreateHelper.UserSecurity(worker.toDomain())))
+                    .accept(APPLICATION_JSON),
+            ).asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[0].name").value("MacBook Pro 16"))
+            .andExpect(jsonPath("$[0].serialNumber").value("C02XK1ABCD01"))
+            .andExpect(jsonPath("$[0].contractSigned").value(true))
+            .andExpect(jsonPath("$[0].person.uuid").value(me.uuid.toString()))
+            .andExpect(jsonPath("$[1].name").value("ThinkPad X1"))
+            .andExpect(jsonPath("$[1].serialNumber").value("PF3ABCD03"))
+            .andExpect(jsonPath("$[1].contractSigned").value(false))
+    }
+
+    @Test
+    fun `GET me is empty for a person without laptops and for a user without a person`() {
+        val workerWithoutLaptops = createHelper.createUserEntity(emptySet())
+        createHelper.createPersonEntity("Ernie", "Muppets", workerWithoutLaptops.code)
+        val userWithoutPerson = createHelper.createUserEntity(emptySet())
+        createHelper.createLaptop(person = createHelper.createPersonEntity("Tommy", "Dog"))
+
+        listOf(workerWithoutLaptops, userWithoutPerson).forEach { current ->
+            mvc
+                .perform(
+                    get("$baseUrl/me")
+                        .with(user(CreateHelper.UserSecurity(current.toDomain())))
+                        .accept(APPLICATION_JSON),
+                ).asyncDispatch()
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.length()").value(0))
+        }
+    }
+
     /**
      * Wirespec handlers are suspend functions, so a handled request completes through an
      * async dispatch. A body that the contract rejects never reaches the handler: the
