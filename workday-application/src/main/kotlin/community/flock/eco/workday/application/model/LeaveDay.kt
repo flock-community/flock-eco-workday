@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import community.flock.eco.workday.common.Approve
+import community.flock.eco.workday.common.Status
 import community.flock.eco.workday.core.events.EventEntityListeners
-import community.flock.eco.workday.domain.common.Approve
-import community.flock.eco.workday.domain.common.Status
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.EnumType

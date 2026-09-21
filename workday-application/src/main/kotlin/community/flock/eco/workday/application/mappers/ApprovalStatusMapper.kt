@@ -1,7 +1,7 @@
 package community.flock.eco.workday.application.mappers
 
-import community.flock.eco.workday.domain.common.ApprovalStatus
-import community.flock.eco.workday.domain.common.Status
+import community.flock.eco.workday.common.ApprovalStatus
+import community.flock.eco.workday.common.Status
 
 fun ApprovalStatus.toEntity(): Status =
     when (this) {

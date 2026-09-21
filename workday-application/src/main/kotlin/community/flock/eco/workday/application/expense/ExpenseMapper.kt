@@ -6,11 +6,11 @@ import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.PersonService
-import community.flock.eco.workday.domain.common.ApprovalStatus
-import community.flock.eco.workday.domain.common.Document
-import community.flock.eco.workday.domain.common.Status
-import community.flock.eco.workday.domain.expense.CostExpense
-import community.flock.eco.workday.domain.expense.TravelExpense
+import community.flock.eco.workday.common.ApprovalStatus
+import community.flock.eco.workday.common.Document
+import community.flock.eco.workday.common.Status
+import community.flock.eco.workday.expense.domain.CostExpense
+import community.flock.eco.workday.expense.domain.TravelExpense
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.util.UUID

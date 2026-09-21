@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.config
 
-import community.flock.eco.workday.domain.common.ApplicationEventPublisher
+import community.flock.eco.workday.common.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.ApplicationEventPublisher as SpringApplicationEventPublisher

@@ -8,5 +8,7 @@
     </parent>
 
     <artifactId>domain</artifactId>
+    <name>Flock Eco Workday - Domain</name>
+    <description>The domain model: one package per slice, free of frameworks and libraries</description>
 
 </project>

@@ -13,8 +13,8 @@ import community.flock.eco.workday.application.model.Assignment
 import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.services.DocumentStorage
 import community.flock.eco.workday.application.services.WorkDayService
+import community.flock.eco.workday.common.Status
 import community.flock.eco.workday.core.utils.toResponse
-import community.flock.eco.workday.domain.common.Status
 import org.springframework.boot.web.server.MimeMappings
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -83,7 +83,8 @@ class WorkdayController(
     @PreAuthorize("hasAuthority('WorkDayAuthority.READ')")
     override suspend fun getWorkDayByCode(request: GetWorkDayByCode.Request): GetWorkDayByCode.Response<*> {
         val workDay =
-            service.findByCode(request.path.code)
+            service
+                .findByCode(request.path.code)
                 ?.applyAuthentication(authentication())
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "WorkDay not found")
         return GetWorkDayByCode.Response200(workDay.externalize())
@@ -101,7 +102,8 @@ class WorkdayController(
         val code = request.path.code
         val form = request.body.internalize()
         val existing =
-            service.findByCode(code)
+            service
+                .findByCode(code)
                 ?.applyAuthentication(auth)
                 ?.applyAllowedToUpdate(form.status, auth.isAdmin())
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "WorkDay not found")
@@ -117,7 +119,8 @@ class WorkdayController(
     @PreAuthorize("hasAuthority('WorkDayAuthority.WRITE')")
     override suspend fun deleteWorkDay(request: DeleteWorkDay.Request): DeleteWorkDay.Response<*> {
         val auth = authentication()
-        service.findByCode(request.path.code)
+        service
+            .findByCode(request.path.code)
             ?.applyAuthentication(auth)
             ?.run { service.deleteByCode(this.code) }
         return DeleteWorkDay.Response204(Unit)

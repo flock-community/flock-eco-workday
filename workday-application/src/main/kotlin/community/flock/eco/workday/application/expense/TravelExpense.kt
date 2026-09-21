@@ -1,8 +1,8 @@
 package community.flock.eco.workday.application.expense
 
 import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.common.Status
 import community.flock.eco.workday.core.events.EventEntityListeners
-import community.flock.eco.workday.domain.common.Status
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
 import java.time.LocalDate

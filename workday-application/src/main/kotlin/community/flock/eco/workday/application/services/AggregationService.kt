@@ -17,11 +17,11 @@ import community.flock.eco.workday.application.model.AggregationPerson
 import community.flock.eco.workday.application.model.AggregationPersonClientRevenueItem
 import community.flock.eco.workday.application.model.AggregationPersonClientRevenueOverview
 import community.flock.eco.workday.application.model.Assignment
+import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.ContractExternal
 import community.flock.eco.workday.application.model.ContractInternal
 import community.flock.eco.workday.application.model.ContractManagement
 import community.flock.eco.workday.application.model.ContractService
-import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.Day
 import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.model.Person
@@ -35,7 +35,7 @@ import community.flock.eco.workday.application.utils.DateUtils.isWorkingDay
 import community.flock.eco.workday.application.utils.DateUtils.toDateRange
 import community.flock.eco.workday.application.utils.NumericUtils.calculateRevenue
 import community.flock.eco.workday.application.utils.NumericUtils.sum
-import community.flock.eco.workday.domain.common.Status
+import community.flock.eco.workday.common.Status
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.BigInteger

@@ -20,6 +20,7 @@
     <properties>
         <biweekly.version>0.6.8</biweekly.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
+        <byterails.version>0.0.2</byterails.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
         <google-api-drive.version>v3-rev20251210-2.0.0</google-api-drive.version>
@@ -265,6 +266,13 @@
                     <version>${maven-resources-plugin.version}</version>
                 </plugin>
 
+                <!-- byterails Maven Plugin (architecture guardrails, checked on bytecode) -->
+                <plugin>
+                    <groupId>community.flock.byterails</groupId>
+                    <artifactId>byterails-maven-plugin</artifactId>
+                    <version>${byterails.version}</version>
+                </plugin>
+
                 <!-- Frontend Maven Plugin -->
                 <plugin>
                     <groupId>com.github.eirslett</groupId>
@@ -445,6 +453,46 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
+
+            <!--
+              byterails checks the compiled classes of every module against byterails.kts in the
+              repository root. The slices of the application are named here: each one is a package
+              under community.flock.eco.workday whose domain package is isolated from every framework
+              and library by the rules file. Bound to process-classes rather than the plugin's default
+              verify phase, so that ./mvnw package, which CI runs, enforces it. Skip with
+              -Dbyterails.skip=true, or keep the build green while looking at the violations with
+              -Dbyterails.reportOnly=true.
+            -->
+            <plugin>
+                <groupId>community.flock.byterails</groupId>
+                <artifactId>byterails-maven-plugin</artifactId>
+                <configuration>
+                    <basePackage>community.flock.eco.workday</basePackage>
+                    <slices>
+                        <slice>assignment</slice>
+                        <slice>client</slice>
+                        <slice>contract</slice>
+                        <slice>event</slice>
+                        <slice>expense</slice>
+                        <slice>laptop</slice>
+                        <slice>leaveday</slice>
+                        <slice>person</slice>
+                        <slice>project</slice>
+                        <slice>sickday</slice>
+                        <slice>user</slice>
+                        <slice>workday</slice>
+                    </slices>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>byterails-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>

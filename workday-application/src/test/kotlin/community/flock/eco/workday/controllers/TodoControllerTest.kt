@@ -14,11 +14,11 @@ import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.services.LeaveDayService
 import community.flock.eco.workday.application.services.SickDayService
 import community.flock.eco.workday.application.services.WorkDayService
+import community.flock.eco.workday.common.ApprovalStatus
+import community.flock.eco.workday.common.Status
 import community.flock.eco.workday.core.authorities.Authority
-import community.flock.eco.workday.domain.common.ApprovalStatus
-import community.flock.eco.workday.domain.common.Status
-import community.flock.eco.workday.domain.expense.CostExpense
-import community.flock.eco.workday.domain.expense.CostExpenseService
+import community.flock.eco.workday.expense.domain.CostExpense
+import community.flock.eco.workday.expense.domain.CostExpenseService
 import community.flock.eco.workday.helpers.CreateHelper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

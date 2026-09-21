@@ -1,7 +1,7 @@
 package community.flock.eco.workday.application.mappers
 
-import community.flock.eco.workday.domain.person.Address
-import community.flock.eco.workday.domain.person.Person
+import community.flock.eco.workday.person.domain.Address
+import community.flock.eco.workday.person.domain.Person
 import community.flock.eco.workday.user.mappers.toDomain
 import community.flock.eco.workday.application.model.Address as AddressEntity
 import community.flock.eco.workday.application.model.Person as PersonEntity

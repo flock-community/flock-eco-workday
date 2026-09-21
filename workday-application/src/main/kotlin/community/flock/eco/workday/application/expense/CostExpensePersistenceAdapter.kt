@@ -1,8 +1,8 @@
 package community.flock.eco.workday.application.expense
 
 import community.flock.eco.workday.application.model.Person
-import community.flock.eco.workday.domain.expense.CostExpense
-import community.flock.eco.workday.domain.expense.CostExpensePersistencePort
+import community.flock.eco.workday.expense.domain.CostExpense
+import community.flock.eco.workday.expense.domain.CostExpensePersistencePort
 import jakarta.persistence.EntityManager
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component

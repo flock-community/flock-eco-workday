@@ -1,9 +1,9 @@
 package community.flock.eco.workday.core.utils
 
-import community.flock.eco.workday.domain.common.Direction
-import community.flock.eco.workday.domain.common.Page
-import community.flock.eco.workday.domain.common.Pageable
-import community.flock.eco.workday.domain.common.Sort
+import community.flock.eco.workday.common.Direction
+import community.flock.eco.workday.common.Page
+import community.flock.eco.workday.common.Pageable
+import community.flock.eco.workday.common.Sort
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Page as PageEntity
 import org.springframework.data.domain.Sort as SpringSort

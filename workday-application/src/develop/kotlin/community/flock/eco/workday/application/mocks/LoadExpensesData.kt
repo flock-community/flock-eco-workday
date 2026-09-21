@@ -1,13 +1,13 @@
 package community.flock.eco.workday.application.mocks
 
 import community.flock.eco.workday.application.mappers.toDomain
-import community.flock.eco.workday.domain.common.ApprovalStatus
-import community.flock.eco.workday.domain.expense.CostExpense
-import community.flock.eco.workday.domain.expense.CostExpenseService
-import community.flock.eco.workday.domain.expense.Expense
-import community.flock.eco.workday.domain.expense.TravelExpense
-import community.flock.eco.workday.domain.expense.TravelExpenseService
-import community.flock.eco.workday.domain.person.Person
+import community.flock.eco.workday.common.ApprovalStatus
+import community.flock.eco.workday.expense.domain.CostExpense
+import community.flock.eco.workday.expense.domain.CostExpenseService
+import community.flock.eco.workday.expense.domain.Expense
+import community.flock.eco.workday.expense.domain.TravelExpense
+import community.flock.eco.workday.expense.domain.TravelExpenseService
+import community.flock.eco.workday.person.domain.Person
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.LocalDate
