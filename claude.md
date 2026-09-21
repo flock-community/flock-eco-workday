@@ -19,10 +19,11 @@ workday-application/    # ALL business logic goes here
 
 **Important**: `workday-core` and `workday-user` are frozen vendored modules. New features always go in `workday-application`.
 
-### Hexagonal rule (byterails)
-- `domain` holds plain Kotlin data classes and ports (`community.flock.eco.workday.domain.<slice>`): no JPA, Spring, Jackson or any other library.
-- [byterails](https://github.com/flock-community/byterails) enforces this on the compiled classes with its `hexagonal` rule set: the domain may only reference `kotlin`, `java.lang`, `java.util`, `java.time`, `java.math`, `java.text` and itself. The check runs in the `process-classes` phase of the `domain` module (so `./mvnw package` and CI run it) and fails the build on a violation; the report is in `domain/target/byterails/violations.json`.
-- JPA entities stay in `workday-application` (`application/model`, `application/expense`); `application/mappers` converts them with `toDomain()`.
+### Architecture rules (byterails)
+- `byterails.kts` at the repository root is the whitelist of what every package may reference; [byterails](https://github.com/flock-community/byterails) checks it on the compiled classes of every module in the `process-classes` phase (so `./mvnw package` and CI run it) and fails the build on a violation. The report of each module is in `target/byterails/violations.json`.
+- The `hexagonal` rule set isolates `domain`: plain Kotlin data classes and ports in `community.flock.eco.workday.domain.<slice>`, referencing only `kotlin`, `java.lang`, `java.util`, `java.time`, `java.math`, `java.text` and the domain itself. No JPA, Spring, Jackson or any other library.
+- Inside `workday-application` the layering is enforced: controllers never touch a repository or JPA, repositories see only the entities, mappers only entities and the domain, only `migrations` talks to Liquibase. JPA entities stay in `application/model` (expense entities in `application/expense`); `application/mappers` converts them with `toDomain()`.
+- When the build fails on a new reference, add an `allow` to `byterails.kts` only if the dependency fits the layering; otherwise move the code. Never extend the `// TODO` allows (existing shortcuts) and never put a library allow at the `application` root unless every layer may use it.
 
 ## Key Conventions & Patterns
 

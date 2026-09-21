@@ -11,36 +11,4 @@
     <name>Flock Eco Workday - Domain</name>
     <description>The domain model: one package per slice, free of frameworks and libraries</description>
 
-    <build>
-        <plugins>
-            <!--
-              byterails checks the compiled classes against its hexagonal rule set: everything under
-              community.flock.eco.workday.domain may only reference the language baseline (kotlin,
-              java.lang, java.util, java.time, java.math, java.text) and the domain itself. Bound to
-              process-classes rather than the plugin's default verify phase, so that ./mvnw package,
-              which CI runs, enforces it. Skip with -Dbyterails.skip=true, or keep the build green
-              while looking at the violations with -Dbyterails.reportOnly=true.
-            -->
-            <plugin>
-                <groupId>community.flock.byterails</groupId>
-                <artifactId>byterails-maven-plugin</artifactId>
-                <configuration>
-                    <basePackage>community.flock.eco.workday</basePackage>
-                    <defaultRules>
-                        <defaultRule>hexagonal</defaultRule>
-                    </defaultRules>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>byterails-check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>process-classes</phase>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>

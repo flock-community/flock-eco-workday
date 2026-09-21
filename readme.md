@@ -212,18 +212,22 @@ Spotless will also format pom files automatically, using the `sort-pom` plugin.
 
 ### Architecture guardrails (byterails)
 
-[byterails](https://github.com/flock-community/byterails) checks the compiled classes of the `domain` module against its `hexagonal` rule set: everything under `community.flock.eco.workday.domain` may only reference the language baseline (`kotlin`, `java.lang`, `java.util`, `java.time`, `java.math`, `java.text`) and the domain itself, so no JPA, Spring or other library can leak into the domain model. The check is bound to the `process-classes` phase of the `domain` module, fails the build on a violation and writes its report to `domain/target/byterails/violations.json`.
+[byterails](https://github.com/flock-community/byterails) checks the compiled classes of every module against the architecture rules in [`byterails.kts`](byterails.kts) at the repository root. It is a whitelist: a class may only reference what its package's declaration allows, and anything else fails the build. On top of the rules file, the `hexagonal` rule set isolates `community.flock.eco.workday.domain`: the domain may only reference the language baseline (`kotlin`, `java.lang`, `java.util`, `java.time`, `java.math`, `java.text`) and itself, so no JPA, Spring or other library can leak into the domain model.
+
+The rules file declares each package of the application (`controllers`, `services`, `repository`, `model`, `mappers`, ...) with the packages and libraries it may use, so it enforces the layering: controllers never touch a repository or JPA, repositories see only the entities, mappers only entities and the domain, and only `migrations` talks to Liquibase. The vendored `core` and `user` modules are declared as a whole, which still pins the direction between modules: `core` sees only the domain, `user` sees `core` and the domain, neither sees the application.
+
+The check is bound to the `process-classes` phase of every module, so `./mvnw package` (what CI runs) enforces it. A violation fails the build with the class, the reference and the allows in effect, and the report of each module is written to `target/byterails/violations.json`. When a new dependency is architecturally sound, add the `allow` to `byterails.kts`; otherwise move the code. The `// TODO` allows in the file are existing shortcuts that keep the build green until the code is untangled; do not add to them.
 
 ```bash
 # Run the check on its own
-./mvnw -pl domain process-classes
+./mvnw process-classes
 
 # Print the violations but keep the build green, or skip the check altogether
 ./mvnw package -Dbyterails.reportOnly=true
 ./mvnw package -Dbyterails.skip=true
 ```
 
-The rule set is configured on the `byterails-maven-plugin` in `domain/pom.xml` (`basePackage` and `defaultRules`); there is no `byterails.kts` yet, so the hexagonal rule set stands alone. To put other packages under byterails' whitelist, add a `byterails.kts` at the repository root and bind the plugin in those modules too.
+The plugin is configured once in the parent `pom.xml` (`basePackage` and `defaultRules`); the rules file is written relative to the base package `community.flock.eco.workday`.
 
 ### Frontend Linting (Biome)
 Workday uses [Biome](https://biomejs.dev/) for frontend code linting.
