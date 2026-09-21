@@ -3,7 +3,7 @@ package community.flock.eco.workday.application.expense
 import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.services.email.EmailService
-import community.flock.eco.workday.domain.common.ApprovalStatus
+import community.flock.eco.workday.common.ApprovalStatus
 import community.flock.eco.workday.model.aPerson
 import io.mockk.every
 import io.mockk.mockk
@@ -22,7 +22,7 @@ class TravelExpenseMailServiceTest {
     @Test
     fun `Send email`() {
         val travelExpense =
-            community.flock.eco.workday.domain.expense.TravelExpense(
+            community.flock.eco.workday.expense.domain.TravelExpense(
                 id = UUID.randomUUID(),
                 date = LocalDate.of(2025, 2, 13),
                 description = "Taxirit naar hoofdkantoor Coolblue",

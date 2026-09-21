@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.mappers
 
-import community.flock.eco.workday.domain.laptop.Laptop
+import community.flock.eco.workday.laptop.domain.Laptop
 import community.flock.eco.workday.application.model.Laptop as LaptopEntity
 
 fun LaptopEntity.toDomain() =

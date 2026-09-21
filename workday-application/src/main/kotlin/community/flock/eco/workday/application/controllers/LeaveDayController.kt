@@ -12,7 +12,7 @@ import community.flock.eco.workday.application.model.LeaveDay
 import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.services.LeaveDayService
 import community.flock.eco.workday.application.services.PersonService
-import community.flock.eco.workday.domain.common.Status
+import community.flock.eco.workday.common.Status
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -66,7 +66,8 @@ class LeaveDayController(
     @PreAuthorize("hasAuthority('LeaveDayAuthority.READ')")
     override suspend fun getLeaveDayByCode(request: GetLeaveDayByCode.Request): GetLeaveDayByCode.Response<*> {
         val leaveDay =
-            service.findByCode(request.path.code)
+            service
+                .findByCode(request.path.code)
                 ?.applyAuthentication(authentication())
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "LeaveDay not found")
         return GetLeaveDayByCode.Response200(leaveDay.externalize())
@@ -86,7 +87,8 @@ class LeaveDayController(
         val code = request.path.code
         val form = request.body.internalize()
         val existing =
-            service.findByCode(code)
+            service
+                .findByCode(code)
                 ?.applyAuthentication(auth)
                 ?.applyAllowedToUpdate(form.status, auth.isAdmin())
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "LeaveDay not found")
@@ -102,7 +104,8 @@ class LeaveDayController(
     @PreAuthorize("hasAuthority('LeaveDayAuthority.WRITE')")
     override suspend fun deleteLeaveDay(request: DeleteLeaveDay.Request): DeleteLeaveDay.Response<*> {
         val auth = authentication()
-        service.findByCode(request.path.code)
+        service
+            .findByCode(request.path.code)
             ?.applyAuthentication(auth)
             ?.run { service.deleteByCode(this.code) }
         return DeleteLeaveDay.Response204(Unit)

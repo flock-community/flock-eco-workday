@@ -1,6 +1,6 @@
 package community.flock.eco.workday.model
 
-import community.flock.eco.workday.domain.person.Address
+import community.flock.eco.workday.person.domain.Address
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

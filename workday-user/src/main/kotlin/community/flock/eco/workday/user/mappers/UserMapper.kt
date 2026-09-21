@@ -1,11 +1,11 @@
 package community.flock.eco.workday.user.mappers
 
-import community.flock.eco.workday.domain.user.User
-import community.flock.eco.workday.domain.user.UserAccount
-import community.flock.eco.workday.domain.user.UserAccountKey
-import community.flock.eco.workday.domain.user.UserAccountOauth
-import community.flock.eco.workday.domain.user.UserAccountOauthProvider
-import community.flock.eco.workday.domain.user.UserAccountPassword
+import community.flock.eco.workday.user.domain.User
+import community.flock.eco.workday.user.domain.UserAccount
+import community.flock.eco.workday.user.domain.UserAccountKey
+import community.flock.eco.workday.user.domain.UserAccountOauth
+import community.flock.eco.workday.user.domain.UserAccountOauthProvider
+import community.flock.eco.workday.user.domain.UserAccountPassword
 import community.flock.eco.workday.user.model.User as UserEntity
 import community.flock.eco.workday.user.model.UserAccount as UserAccountEntity
 import community.flock.eco.workday.user.model.UserAccountKey as UserAccountKeyEntity

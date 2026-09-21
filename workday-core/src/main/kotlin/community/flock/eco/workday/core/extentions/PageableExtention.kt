@@ -1,8 +1,8 @@
 package community.flock.eco.workday.core.extentions
 
+import community.flock.eco.workday.common.Direction
+import community.flock.eco.workday.common.Pageable
 import community.flock.eco.workday.core.utils.toNullable
-import community.flock.eco.workday.domain.common.Direction
-import community.flock.eco.workday.domain.common.Pageable
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 

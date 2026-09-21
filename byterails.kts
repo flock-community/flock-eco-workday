@@ -1,18 +1,113 @@
 // Architecture rules, checked on the compiled classes of every module by byterails
 // (https://github.com/flock-community/byterails). Prefixes are relative to the base package
-// community.flock.eco.workday, configured on the plugin in the parent pom together with the
-// `hexagonal` default rule set, which declares the isolated `domain` package: it may only use the
-// language baseline and itself, so no framework or library can leak into the domain model.
+// community.flock.eco.workday; the slices are named in the parent pom.
 //
 // byterails is a whitelist: a class may only reference what its package's declaration, the
 // enclosing declarations and the root block allow. A build failure names the class, the reference
 // and the allows in effect; extend the allow list here when the new dependency is architecturally
 // sound, or move the code. Rules marked TODO are existing shortcuts that keep the build green until
 // the code is untangled; do not add to them.
+
+/**
+ * The hexagonal rule for a domain package: isolated from everything but the language baseline
+ * (what byterails' `hexagonal` rule set allows) and the shared kernel and domains it names. Nothing
+ * in the baseline talks to the outside world, so no framework, library or adapter can leak in.
+ */
+fun PackageBuilder.domain(vararg uses: String) {
+    isolated()
+    allow("kotlin")
+    allow("org.jetbrains.annotations")
+    allow("java.lang")
+    allow("java.util")
+    allow("java.time")
+    allow("java.math")
+    allow("java.text")
+    uses.forEach { allow(it) }
+}
+
 byterails {
     allow("kotlin")
     allow("java")
     allow("org.jetbrains.annotations")
+
+    // The shared kernel of the domain: approval status, documents, pages, periods and the event
+    // publisher port. As isolated as a slice's domain.
+    pkg("common") { domain() }
+
+    // Every slice has a domain package (<slice>.domain) that is isolated: language baseline, the
+    // shared kernel and the domains of the reference slices it needs. The reference slices (user,
+    // person, client, project, assignment) never depend on the slices that record work against them.
+    pkg("user.domain") { domain() }
+    pkg("person.domain") { domain("common", "user.domain") }
+    pkg("client.domain") { domain() }
+    pkg("project.domain") { domain() }
+    pkg("assignment.domain") { domain("common", "person.domain", "client.domain", "project.domain") }
+    pkg("contract.domain") { domain("common", "person.domain") }
+    pkg("workday.domain") { domain("common", "assignment.domain") }
+    pkg("leaveday.domain") { domain("common", "person.domain") }
+    pkg("sickday.domain") { domain("common", "person.domain") }
+    pkg("event.domain") { domain("common", "person.domain") }
+    pkg("laptop.domain") { domain("common", "person.domain") }
+    pkg("expense.domain") { domain("common", "person.domain") }
+
+    // What every slice shares besides its domain: the slice root holds wiring and, in the vendored
+    // user slice, the application and infrastructure code declared below. Slices see each other's
+    // domain and nothing else.
+    slice {
+        exported("domain")
+        allow("common")
+        allow("core")
+        allow("org.springframework.boot")
+        allow("org.springframework.context")
+        allow("org.springframework.data")
+        allow("org.springframework.security")
+        allow("org.springframework.stereotype")
+    }
+
+    // The vendored user module is the user slice's application and infrastructure code, frozen.
+    pkg("user.authorities")
+    pkg("user.controllers") {
+        allow("user.exceptions")
+        allow("org.springframework.http")
+        allow("org.springframework.web")
+    }
+    pkg("user.events") {
+        allow("user.domain")
+        allow("user.model")
+    }
+    pkg("user.exceptions") {
+        allow("user.model")
+    }
+    pkg("user.filters") {
+        allow("user.model")
+        allow("user.services")
+        allow("jakarta.servlet")
+        allow("org.springframework.web")
+    }
+    pkg("user.forms") {
+        allow("user.model")
+    }
+    pkg("user.mappers") {
+        allow("user.domain")
+        allow("user.model")
+    }
+    pkg("user.model") {
+        allow("com.fasterxml.jackson")
+        allow("jakarta.persistence")
+    }
+    pkg("user.repositories") {
+        allow("user.model")
+    }
+    pkg("user.services") {
+        allow("user.events")
+        allow("user.exceptions")
+        allow("user.forms")
+        allow("user.model")
+        allow("user.repositories")
+        allow("jakarta.transaction")
+        allow("org.reflections")
+        allow("org.springframework.transaction")
+    }
 
     // Wirespec-generated API contract: shared with the frontend, so it knows nothing of the application.
     pkg("api") {
@@ -22,34 +117,15 @@ byterails {
         allow("org.springframework.web")
     }
 
-    // Vendored, frozen modules, declared as a whole. The dependency direction between modules is
-    // enforced: core sees only the domain, user sees core and the domain, neither sees the application.
+    // Vendored, frozen: base entities, events and utilities. Sees the shared kernel and nothing else of ours.
     pkg("core") {
-        allow("domain")
+        allow("common")
         allow("jakarta.mail")
         allow("jakarta.persistence")
         allow("org.springframework.context")
         allow("org.springframework.data")
         allow("org.springframework.http")
         allow("org.springframework.util")
-        allow("org.springframework.web")
-    }
-
-    pkg("user") {
-        allow("core")
-        allow("domain")
-        allow("com.fasterxml.jackson")
-        allow("jakarta.persistence")
-        allow("jakarta.servlet")
-        allow("jakarta.transaction")
-        allow("org.reflections")
-        allow("org.springframework.boot")
-        allow("org.springframework.context")
-        allow("org.springframework.data")
-        allow("org.springframework.http")
-        allow("org.springframework.security")
-        allow("org.springframework.stereotype")
-        allow("org.springframework.transaction")
         allow("org.springframework.web")
     }
 
@@ -73,10 +149,10 @@ byterails {
     // Spring, security, mail and Google wiring.
     pkg("application.config") {
         allow("application.google")
+        allow("common")
         allow("core.events")
         allow("core.model")
         allow("core.services")
-        allow("domain")
         allow("user.exceptions")
         allow("user.filters")
         allow("user.forms")
@@ -109,9 +185,12 @@ byterails {
         allow("application.model")
         allow("application.services")
         allow("application.utils")
+        allow("common")
         allow("core.authorities")
         allow("core.utils")
-        allow("domain")
+        allow("expense.domain")
+        allow("person.domain")
+        allow("user.domain")
         allow("user.exceptions")
         allow("user.forms")
         allow("user.model")
@@ -131,8 +210,8 @@ byterails {
         exclusive("biweekly")
     }
 
-    // The expense slice: JPA entities, persistence and mail adapters, mappers and the controller
-    // around the domain's expense services.
+    // The expense slice's adapters, still in the application module: JPA entities, persistence and
+    // mail adapters, mappers and the controller around the expense domain services.
     pkg("application.expense") {
         allow("api")
         allow("application.config")
@@ -142,10 +221,12 @@ byterails {
         allow("application.model")
         allow("application.services")
         allow("application.utils")
+        allow("common")
         allow("core.authorities")
         allow("core.events")
         allow("core.utils")
-        allow("domain")
+        allow("expense.domain")
+        allow("person.domain")
         allow("jakarta.persistence")
         allow("org.json")
         allow("org.springframework.data")
@@ -159,7 +240,8 @@ byterails {
     pkg("application.forms") {
         allow("application.interfaces")
         allow("application.model")
-        allow("domain")
+        allow("common")
+        allow("person.domain")
         allow("com.fasterxml.jackson")
     }
 
@@ -180,7 +262,7 @@ byterails {
         allow("application.model")
         allow("application.services") // TODO: FromToPeriod lives in services
         allow("application.utils")
-        allow("domain")
+        allow("common")
         allow("org.springframework.http") // TODO: approval checks throw ResponseStatusException
         allow("org.springframework.web")
     }
@@ -188,9 +270,20 @@ byterails {
     // Entity <-> domain conversion, one XxxMapper.kt per model.
     pkg("application.mappers") {
         allow("application.model")
-        allow("domain")
+        allow("assignment.domain")
+        allow("client.domain")
+        allow("common")
+        allow("contract.domain")
+        allow("event.domain")
+        allow("laptop.domain")
+        allow("leaveday.domain")
+        allow("person.domain")
+        allow("project.domain")
+        allow("sickday.domain")
+        allow("user.domain")
         allow("user.mappers")
         allow("user.model")
+        allow("workday.domain")
         naming { endsWith("MapperKt") }
     }
 
@@ -209,8 +302,10 @@ byterails {
         allow("application.repository")
         allow("application.services")
         allow("application.utils")
+        allow("common")
         allow("core.authorities")
-        allow("domain")
+        allow("expense.domain")
+        allow("person.domain")
         allow("user.forms")
         allow("user.model")
         allow("user.repositories")
@@ -223,9 +318,9 @@ byterails {
         allow("application.services.AggregationServiceKt") // TODO: Day counts working days through the aggregation service
         allow("application.services.FromToPeriod") // TODO: FromToPeriod lives in services
         allow("application.utils")
+        allow("common")
         allow("core.events")
         allow("core.model")
-        allow("domain")
         allow("user.model")
         allow("com.fasterxml.jackson")
         allow("jakarta.persistence")
@@ -235,7 +330,7 @@ byterails {
     // Spring Data repositories over the entities, nothing else.
     pkg("application.repository") {
         allow("application.model")
-        allow("domain")
+        allow("common")
         allow("org.springframework.data")
         naming { endsWith("Repository") }
     }
@@ -252,8 +347,9 @@ byterails {
         allow("application.model")
         allow("application.repository")
         allow("application.utils")
+        allow("common")
         allow("core.utils")
-        allow("domain")
+        allow("person.domain")
         allow("user.model")
         allow("user.repositories")
         allow("com.google.cloud")
@@ -269,7 +365,7 @@ byterails {
         allow("application.interfaces")
         allow("application.model")
         allow("application.services") // TODO: DateUtils counts working days through the aggregation service
-        allow("domain")
+        allow("common")
         allow("org.springframework.data")
     }
 }

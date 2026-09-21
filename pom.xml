@@ -457,19 +457,32 @@
 
             <!--
               byterails checks the compiled classes of every module against byterails.kts in the
-              repository root plus the hexagonal rule set, which isolates community.flock.eco.workday.domain.
-              Bound to process-classes rather than the plugin's default verify phase, so that ./mvnw package,
-              which CI runs, enforces it. Skip with -Dbyterails.skip=true, or keep the build green while
-              looking at the violations with -Dbyterails.reportOnly=true.
+              repository root. The slices of the application are named here: each one is a package
+              under community.flock.eco.workday whose domain package is isolated from every framework
+              and library by the rules file. Bound to process-classes rather than the plugin's default
+              verify phase, so that ./mvnw package, which CI runs, enforces it. Skip with
+              -Dbyterails.skip=true, or keep the build green while looking at the violations with
+              -Dbyterails.reportOnly=true.
             -->
             <plugin>
                 <groupId>community.flock.byterails</groupId>
                 <artifactId>byterails-maven-plugin</artifactId>
                 <configuration>
                     <basePackage>community.flock.eco.workday</basePackage>
-                    <defaultRules>
-                        <defaultRule>hexagonal</defaultRule>
-                    </defaultRules>
+                    <slices>
+                        <slice>assignment</slice>
+                        <slice>client</slice>
+                        <slice>contract</slice>
+                        <slice>event</slice>
+                        <slice>expense</slice>
+                        <slice>laptop</slice>
+                        <slice>leaveday</slice>
+                        <slice>person</slice>
+                        <slice>project</slice>
+                        <slice>sickday</slice>
+                        <slice>user</slice>
+                        <slice>workday</slice>
+                    </slices>
                 </configuration>
                 <executions>
                     <execution>

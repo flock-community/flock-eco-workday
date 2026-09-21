@@ -1,10 +1,10 @@
 package community.flock.eco.workday.application.mappers
 
-import community.flock.eco.workday.domain.event.BudgetCategory
-import community.flock.eco.workday.domain.event.Event
-import community.flock.eco.workday.domain.event.EventDay
-import community.flock.eco.workday.domain.event.EventRating
-import community.flock.eco.workday.domain.event.EventType
+import community.flock.eco.workday.event.domain.BudgetCategory
+import community.flock.eco.workday.event.domain.Event
+import community.flock.eco.workday.event.domain.EventDay
+import community.flock.eco.workday.event.domain.EventRating
+import community.flock.eco.workday.event.domain.EventType
 import community.flock.eco.workday.application.model.BudgetCategory as BudgetCategoryEntity
 import community.flock.eco.workday.application.model.Event as EventEntity
 import community.flock.eco.workday.application.model.EventDay as EventDayEntity

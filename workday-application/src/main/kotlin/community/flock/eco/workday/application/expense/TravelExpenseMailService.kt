@@ -3,8 +3,8 @@ package community.flock.eco.workday.application.expense
 import community.flock.eco.workday.application.config.properties.MailjetTemplateProperties
 import community.flock.eco.workday.application.services.email.EmailService
 import community.flock.eco.workday.application.utils.DateUtils.toHumanReadable
-import community.flock.eco.workday.domain.expense.TravelExpense
-import community.flock.eco.workday.domain.expense.TravelExpenseMailPort
+import community.flock.eco.workday.expense.domain.TravelExpense
+import community.flock.eco.workday.expense.domain.TravelExpenseMailPort
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service

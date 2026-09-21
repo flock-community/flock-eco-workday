@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.mappers
 
-import community.flock.eco.workday.domain.sickday.SickDay
+import community.flock.eco.workday.sickday.domain.SickDay
 import community.flock.eco.workday.application.model.SickDay as SickDayEntity
 
 fun SickDayEntity.toDomain() =

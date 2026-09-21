@@ -1,8 +1,8 @@
 package community.flock.eco.workday.application.mappers
 
 import community.flock.eco.workday.application.model.WorkDaySheet
-import community.flock.eco.workday.domain.common.Document
-import community.flock.eco.workday.domain.workday.WorkDay
+import community.flock.eco.workday.common.Document
+import community.flock.eco.workday.workday.domain.WorkDay
 import community.flock.eco.workday.application.model.WorkDay as WorkDayEntity
 
 fun WorkDayEntity.toDomain() =

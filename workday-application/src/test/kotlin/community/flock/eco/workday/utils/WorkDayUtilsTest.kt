@@ -3,7 +3,7 @@ package community.flock.eco.workday.utils
 import community.flock.eco.workday.application.model.Assignment
 import community.flock.eco.workday.application.model.WorkDay
 import community.flock.eco.workday.application.utils.toWorkWeeks
-import community.flock.eco.workday.domain.common.Status
+import community.flock.eco.workday.common.Status
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import java.time.LocalDate

@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.mappers
 
-import community.flock.eco.workday.domain.project.Project
+import community.flock.eco.workday.project.domain.Project
 import community.flock.eco.workday.application.model.Project as ProjectEntity
 
 fun ProjectEntity.toDomain() =

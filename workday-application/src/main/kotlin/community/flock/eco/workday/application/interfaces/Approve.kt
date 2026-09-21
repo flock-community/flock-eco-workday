@@ -1,10 +1,10 @@
 package community.flock.eco.workday.application.interfaces
 
 import community.flock.eco.workday.application.mappers.toDomain
-import community.flock.eco.workday.domain.common.Approvable
-import community.flock.eco.workday.domain.common.ApprovalStatus
-import community.flock.eco.workday.domain.common.Approve
-import community.flock.eco.workday.domain.common.Status
+import community.flock.eco.workday.common.Approvable
+import community.flock.eco.workday.common.ApprovalStatus
+import community.flock.eco.workday.common.Approve
+import community.flock.eco.workday.common.Status
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 

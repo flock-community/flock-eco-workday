@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.forms
 
-import community.flock.eco.workday.domain.person.Address
+import community.flock.eco.workday.person.domain.Address
 import java.time.LocalDate
 
 data class PersonForm(

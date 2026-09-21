@@ -11,9 +11,9 @@ import community.flock.eco.workday.application.model.Laptop
 import community.flock.eco.workday.application.model.LeaveDay
 import community.flock.eco.workday.application.model.LeaveDayType
 import community.flock.eco.workday.application.model.SickDay
-import community.flock.eco.workday.domain.common.ApprovalStatus
-import community.flock.eco.workday.domain.common.Document
-import community.flock.eco.workday.domain.common.Status
+import community.flock.eco.workday.common.ApprovalStatus
+import community.flock.eco.workday.common.Document
+import community.flock.eco.workday.common.Status
 import community.flock.eco.workday.model.aPerson
 import community.flock.eco.workday.model.aWorkDay
 import community.flock.eco.workday.model.anAssignment
@@ -24,11 +24,11 @@ import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
-import community.flock.eco.workday.domain.contract.ContractInternal as ContractInternalDomain
-import community.flock.eco.workday.domain.contract.ContractService as ContractServiceDomain
-import community.flock.eco.workday.domain.event.BudgetCategory as BudgetCategoryDomain
-import community.flock.eco.workday.domain.event.EventType as EventTypeDomain
-import community.flock.eco.workday.domain.leaveday.LeaveDayType as LeaveDayTypeDomain
+import community.flock.eco.workday.contract.domain.ContractInternal as ContractInternalDomain
+import community.flock.eco.workday.contract.domain.ContractService as ContractServiceDomain
+import community.flock.eco.workday.event.domain.BudgetCategory as BudgetCategoryDomain
+import community.flock.eco.workday.event.domain.EventType as EventTypeDomain
+import community.flock.eco.workday.leaveday.domain.LeaveDayType as LeaveDayTypeDomain
 
 class DomainMapperTest {
     private val from = LocalDate.of(2024, 3, 4)

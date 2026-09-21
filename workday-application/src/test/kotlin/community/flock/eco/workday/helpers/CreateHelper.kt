@@ -267,7 +267,7 @@ class CreateHelper(
     }
 
     class UserSecurity(
-        val user: community.flock.eco.workday.domain.user.User,
+        val user: community.flock.eco.workday.user.domain.User,
     ) : UserDetails {
         override fun getAuthorities() = user.authorities.map { SimpleGrantedAuthority(it) }
 

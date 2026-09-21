@@ -1,7 +1,7 @@
 package community.flock.eco.workday.application.mappers
 
-import community.flock.eco.workday.domain.leaveday.LeaveDay
-import community.flock.eco.workday.domain.leaveday.LeaveDayType
+import community.flock.eco.workday.leaveday.domain.LeaveDay
+import community.flock.eco.workday.leaveday.domain.LeaveDayType
 import community.flock.eco.workday.application.model.LeaveDay as LeaveDayEntity
 import community.flock.eco.workday.application.model.LeaveDayType as LeaveDayTypeEntity
 

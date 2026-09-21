@@ -1,0 +1,29 @@
+package community.flock.eco.workday.person.domain
+
+import community.flock.eco.workday.user.domain.User
+import java.time.Instant
+import java.time.LocalDate
+import java.util.UUID
+
+data class Person(
+    val internalId: Long,
+    val uuid: UUID,
+    val firstname: String,
+    val lastname: String,
+    val email: String,
+    val position: String,
+    val number: String?,
+    val birthdate: LocalDate?,
+    val joinDate: LocalDate?,
+    val active: Boolean,
+    val lastActiveAt: Instant?,
+    val reminders: Boolean,
+    val receiveEmail: Boolean,
+    val shoeSize: String?,
+    val shirtSize: String?,
+    val googleDriveId: String?,
+    val address: Address?,
+    val user: User?,
+) {
+    fun getFullName(): String = "$firstname $lastname"
+}

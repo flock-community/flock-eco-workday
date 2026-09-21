@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.services.PersonService
-import community.flock.eco.workday.domain.person.Address
+import community.flock.eco.workday.person.domain.Address
 import community.flock.eco.workday.user.forms.UserAccountPasswordForm
 import community.flock.eco.workday.user.services.UserAccountService
 import community.flock.eco.workday.user.services.UserSecurityService

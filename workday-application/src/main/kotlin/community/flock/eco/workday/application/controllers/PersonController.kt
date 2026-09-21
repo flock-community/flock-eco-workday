@@ -12,7 +12,7 @@ import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.PersonEvent
 import community.flock.eco.workday.application.services.PersonService
-import community.flock.eco.workday.domain.person.Address
+import community.flock.eco.workday.person.domain.Address
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
 import org.springframework.data.domain.Page

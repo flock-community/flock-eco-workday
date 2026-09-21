@@ -11,7 +11,7 @@ This file provides AI-specific guidance when working with the Flock Workday code
 ## Module Architecture
 
 ```
-domain/                 # Domain model, one package per slice, no frameworks or libraries
+domain/                 # Domain model, <slice>/domain per slice plus common, no frameworks or libraries
 workday-core/           # Vendored utilities (DO NOT add business logic here)
 workday-user/           # Vendored auth/user management (DO NOT add business logic here)
 workday-application/    # ALL business logic goes here
@@ -20,10 +20,11 @@ workday-application/    # ALL business logic goes here
 **Important**: `workday-core` and `workday-user` are frozen vendored modules. New features always go in `workday-application`.
 
 ### Architecture rules (byterails)
+- The application is cut into slices, named on the byterails plugin in the parent `pom.xml`: assignment, client, contract, event, expense, laptop, leaveday, person, project, sickday, user, workday. A slice is a package under `community.flock.eco.workday`; its domain model lives in `community.flock.eco.workday.<slice>.domain` in the `domain` module, the shared kernel (approval status, documents, pages, periods, ports) in `community.flock.eco.workday.common`.
 - `byterails.kts` at the repository root is the whitelist of what every package may reference; [byterails](https://github.com/flock-community/byterails) checks it on the compiled classes of every module in the `process-classes` phase (so `./mvnw package` and CI run it) and fails the build on a violation. The report of each module is in `target/byterails/violations.json`.
-- The `hexagonal` rule set isolates `domain`: plain Kotlin data classes and ports in `community.flock.eco.workday.domain.<slice>`, referencing only `kotlin`, `java.lang`, `java.util`, `java.time`, `java.math`, `java.text` and the domain itself. No JPA, Spring, Jackson or any other library.
-- Inside `workday-application` the layering is enforced: controllers never touch a repository or JPA, repositories see only the entities, mappers only entities and the domain, only `migrations` talks to Liquibase. JPA entities stay in `application/model` (expense entities in `application/expense`); `application/mappers` converts them with `toDomain()`.
-- When the build fails on a new reference, add an `allow` to `byterails.kts` only if the dependency fits the layering; otherwise move the code. Never extend the `// TODO` allows (existing shortcuts) and never put a library allow at the `application` root unless every layer may use it.
+- Every `<slice>.domain` and `common` is isolated: plain Kotlin referencing only `kotlin`, `java.lang`, `java.util`, `java.time`, `java.math`, `java.text`, `common` and the domains of the reference slices it names (user, person, client, project, assignment). No JPA, Spring, Jackson or any other library, and never a slice that records work (workday, leaveday, sickday, event, expense, laptop, contract).
+- Inside `workday-application` the layering is enforced: controllers never touch a repository or JPA, repositories see only the entities, mappers only entities and the domains, only `migrations` talks to Liquibase. JPA entities stay in `application/model` (expense entities in `application/expense`); `application/mappers` converts them with `toDomain()`.
+- When the build fails on a new reference, add an `allow` to `byterails.kts` only if the dependency fits the layering; otherwise move the code. Never extend the `// TODO` allows (existing shortcuts) and never put a library allow at the `application` root unless every layer may use it. A new slice is a `<slice>` in the pom plus its `pkg("<slice>.domain") { domain(...) }` in the rules file.
 
 ## Key Conventions & Patterns
 
@@ -68,7 +69,7 @@ workday-application/    # ALL business logic goes here
 
 ### Backend Code
 - Controllers/Services: `workday-application/src/main/kotlin/community/flock/eco/workday/`
-- Domain models: `domain/src/main/kotlin/community/flock/eco/workday/domain/<slice>/` (assignment, client, contract, event, expense, laptop, leaveday, person, project, sickday, user, workday; shared traits in `common/`)
+- Domain models: `domain/src/main/kotlin/community/flock/eco/workday/<slice>/domain/` (assignment, client, contract, event, expense, laptop, leaveday, person, project, sickday, user, workday); shared kernel in `domain/src/main/kotlin/community/flock/eco/workday/common/`
 - JPA entities: `workday-application/src/main/kotlin/community/flock/eco/workday/application/model/` (expense entities live in `application/expense/`)
 - Security config: `workday-user/src/main/kotlin/.../config/`
 

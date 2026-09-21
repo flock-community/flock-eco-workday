@@ -22,7 +22,7 @@ flock-eco-workday/
 
 ### Module Responsibilities
 
-- **domain**: The domain model of every slice (assignment, client, contract, event, expense, laptop, leave day, person, project, sick day, user, work day) as plain Kotlin, plus the ports the domain services need. It depends on nothing but the Kotlin standard library; see [Architecture guardrails](#architecture-guardrails-byterails).
+- **domain**: The domain model of every slice (`<slice>/domain`, for assignment, client, contract, event, expense, laptop, leave day, person, project, sick day, user and work day) as plain Kotlin, the shared kernel in `common`, plus the ports the domain services need. It depends on nothing but the Kotlin standard library; see [Architecture guardrails](#architecture-guardrails-byterails).
 - **workday-core**: Provides base utilities, common domain models, security configurations, and shared client utilities. Vendored from flock-eco-core for independence.
 - **workday-user**: Handles authentication, authorization, user management, and security. Vendored from flock-eco-feature-user for independence.
 - **workday-application**: Contains all business logic for workday management including people, contracts, assignments, projects, expenses, and integrations.
@@ -212,11 +212,13 @@ Spotless will also format pom files automatically, using the `sort-pom` plugin.
 
 ### Architecture guardrails (byterails)
 
-[byterails](https://github.com/flock-community/byterails) checks the compiled classes of every module against the architecture rules in [`byterails.kts`](byterails.kts) at the repository root. It is a whitelist: a class may only reference what its package's declaration allows, and anything else fails the build. On top of the rules file, the `hexagonal` rule set isolates `community.flock.eco.workday.domain`: the domain may only reference the language baseline (`kotlin`, `java.lang`, `java.util`, `java.time`, `java.math`, `java.text`) and itself, so no JPA, Spring or other library can leak into the domain model.
+[byterails](https://github.com/flock-community/byterails) checks the compiled classes of every module against the architecture rules in [`byterails.kts`](byterails.kts) at the repository root. It is a whitelist: a class may only reference what its package's declaration allows, and anything else fails the build.
 
-The rules file declares each package of the application (`controllers`, `services`, `repository`, `model`, `mappers`, ...) with the packages and libraries it may use, so it enforces the layering: controllers never touch a repository or JPA, repositories see only the entities, mappers only entities and the domain, and only `migrations` talks to Liquibase. The vendored `core` and `user` modules are declared as a whole, which still pins the direction between modules: `core` sees only the domain, `user` sees `core` and the domain, neither sees the application.
+The application is cut into slices, named on the plugin in the parent `pom.xml`: `assignment`, `client`, `contract`, `event`, `expense`, `laptop`, `leaveday`, `person`, `project`, `sickday`, `user` and `workday`. Each slice is a package under `community.flock.eco.workday` whose `domain` package (in the `domain` module, for example `community.flock.eco.workday.expense.domain`) is isolated: it may only reference the language baseline (`kotlin`, `java.lang`, `java.util`, `java.time`, `java.math`, `java.text`), the shared kernel `community.flock.eco.workday.common` and the domains of the reference slices it needs (`user`, `person`, `client`, `project`, `assignment`), which never depend on the slices that record work against them. No JPA, Spring or other library can leak into a domain model. Slices see each other's domain and nothing else.
 
-The check is bound to the `process-classes` phase of every module, so `./mvnw package` (what CI runs) enforces it. A violation fails the build with the class, the reference and the allows in effect, and the report of each module is written to `target/byterails/violations.json`. When a new dependency is architecturally sound, add the `allow` to `byterails.kts`; otherwise move the code. The `// TODO` allows in the file are existing shortcuts that keep the build green until the code is untangled; do not add to them.
+The rules file also declares each package of the application (`controllers`, `services`, `repository`, `model`, `mappers`, ...) with the packages and libraries it may use, so it enforces the layering: controllers never touch a repository or JPA, repositories see only the entities, mappers only entities and the domains, and only `migrations` talks to Liquibase. The vendored `core` module sees only the shared kernel; the vendored `user` module is the `user` slice's application and infrastructure code and is declared package by package.
+
+The check is bound to the `process-classes` phase of every module, so `./mvnw package` (what CI runs) enforces it. A violation fails the build with the class, the reference and the allows in effect, and the report of each module is written to `target/byterails/violations.json`. When a new dependency is architecturally sound, add the `allow` to `byterails.kts`; otherwise move the code. The `// TODO` allows in the file are existing shortcuts that keep the build green until the code is untangled; do not add to them. A new slice is a new `<slice>` in the pom plus its `pkg("<slice>.domain") { domain(...) }` line in the rules file.
 
 ```bash
 # Run the check on its own
@@ -226,8 +228,6 @@ The check is bound to the `process-classes` phase of every module, so `./mvnw pa
 ./mvnw package -Dbyterails.reportOnly=true
 ./mvnw package -Dbyterails.skip=true
 ```
-
-The plugin is configured once in the parent `pom.xml` (`basePackage` and `defaultRules`); the rules file is written relative to the base package `community.flock.eco.workday`.
 
 ### Frontend Linting (Biome)
 Workday uses [Biome](https://biomejs.dev/) for frontend code linting.

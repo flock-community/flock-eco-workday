@@ -1,10 +1,10 @@
 package community.flock.eco.workday.application.mappers
 
-import community.flock.eco.workday.domain.contract.Contract
-import community.flock.eco.workday.domain.contract.ContractExternal
-import community.flock.eco.workday.domain.contract.ContractInternal
-import community.flock.eco.workday.domain.contract.ContractManagement
-import community.flock.eco.workday.domain.contract.ContractService
+import community.flock.eco.workday.contract.domain.Contract
+import community.flock.eco.workday.contract.domain.ContractExternal
+import community.flock.eco.workday.contract.domain.ContractInternal
+import community.flock.eco.workday.contract.domain.ContractManagement
+import community.flock.eco.workday.contract.domain.ContractService
 import community.flock.eco.workday.application.model.Contract as ContractEntity
 import community.flock.eco.workday.application.model.ContractExternal as ContractExternalEntity
 import community.flock.eco.workday.application.model.ContractInternal as ContractInternalEntity

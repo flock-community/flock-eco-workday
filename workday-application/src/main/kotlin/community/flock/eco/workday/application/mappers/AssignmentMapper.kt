@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.mappers
 
-import community.flock.eco.workday.domain.assignment.Assignment
+import community.flock.eco.workday.assignment.domain.Assignment
 import community.flock.eco.workday.application.model.Assignment as AssignmentEntity
 
 fun AssignmentEntity.toDomain() =
