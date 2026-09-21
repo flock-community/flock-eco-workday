@@ -11,12 +11,18 @@ This file provides AI-specific guidance when working with the Flock Workday code
 ## Module Architecture
 
 ```
+domain/                 # Domain model, one package per slice, no frameworks or libraries
 workday-core/           # Vendored utilities (DO NOT add business logic here)
 workday-user/           # Vendored auth/user management (DO NOT add business logic here)
 workday-application/    # ALL business logic goes here
 ```
 
 **Important**: `workday-core` and `workday-user` are frozen vendored modules. New features always go in `workday-application`.
+
+### Hexagonal rule (byterails)
+- `domain` holds plain Kotlin data classes and ports (`community.flock.eco.workday.domain.<slice>`): no JPA, Spring, Jackson or any other library.
+- [byterails](https://github.com/flock-community/byterails) enforces this on the compiled classes with its `hexagonal` rule set: the domain may only reference `kotlin`, `java.lang`, `java.util`, `java.time`, `java.math`, `java.text` and itself. The check runs in the `process-classes` phase of the `domain` module (so `./mvnw package` and CI run it) and fails the build on a violation; the report is in `domain/target/byterails/violations.json`.
+- JPA entities stay in `workday-application` (`application/model`, `application/expense`); `application/mappers` converts them with `toDomain()`.
 
 ## Key Conventions & Patterns
 
@@ -61,7 +67,8 @@ workday-application/    # ALL business logic goes here
 
 ### Backend Code
 - Controllers/Services: `workday-application/src/main/kotlin/community/flock/eco/workday/`
-- Domain models: Look in domain-specific packages (e.g., `assignment/`, `expense/`, `person/`)
+- Domain models: `domain/src/main/kotlin/community/flock/eco/workday/domain/<slice>/` (assignment, client, contract, event, expense, laptop, leaveday, person, project, sickday, user, workday; shared traits in `common/`)
+- JPA entities: `workday-application/src/main/kotlin/community/flock/eco/workday/application/model/` (expense entities live in `application/expense/`)
 - Security config: `workday-user/src/main/kotlin/.../config/`
 
 ### Frontend Code

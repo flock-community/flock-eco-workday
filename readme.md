@@ -9,6 +9,7 @@ This project is structured as a **standalone multi-module Maven project**. The m
 ```
 flock-eco-workday/
 ├── pom.xml                    # Parent aggregator POM (no parent inheritance)
+├── domain/                    # Domain model, one package per slice, free of frameworks (checked by byterails)
 ├── workday-core/              # Core utilities, base entities (vendored from flock-eco-core)
 ├── workday-user/              # Authentication, authorization, user management (vendored from flock-eco-feature-user)
 └── workday-application/       # Main application code with all business logic
@@ -21,6 +22,7 @@ flock-eco-workday/
 
 ### Module Responsibilities
 
+- **domain**: The domain model of every slice (assignment, client, contract, event, expense, laptop, leave day, person, project, sick day, user, work day) as plain Kotlin, plus the ports the domain services need. It depends on nothing but the Kotlin standard library; see [Architecture guardrails](#architecture-guardrails-byterails).
 - **workday-core**: Provides base utilities, common domain models, security configurations, and shared client utilities. Vendored from flock-eco-core for independence.
 - **workday-user**: Handles authentication, authorization, user management, and security. Vendored from flock-eco-feature-user for independence.
 - **workday-application**: Contains all business logic for workday management including people, contracts, assignments, projects, expenses, and integrations.
@@ -207,6 +209,21 @@ By default, spotless will check for code style issues in maven's `verify` phase.
 ```
 
 Spotless will also format pom files automatically, using the `sort-pom` plugin.
+
+### Architecture guardrails (byterails)
+
+[byterails](https://github.com/flock-community/byterails) checks the compiled classes of the `domain` module against its `hexagonal` rule set: everything under `community.flock.eco.workday.domain` may only reference the language baseline (`kotlin`, `java.lang`, `java.util`, `java.time`, `java.math`, `java.text`) and the domain itself, so no JPA, Spring or other library can leak into the domain model. The check is bound to the `process-classes` phase of the `domain` module, fails the build on a violation and writes its report to `domain/target/byterails/violations.json`.
+
+```bash
+# Run the check on its own
+./mvnw -pl domain process-classes
+
+# Print the violations but keep the build green, or skip the check altogether
+./mvnw package -Dbyterails.reportOnly=true
+./mvnw package -Dbyterails.skip=true
+```
+
+The rule set is configured on the `byterails-maven-plugin` in `domain/pom.xml` (`basePackage` and `defaultRules`); there is no `byterails.kts` yet, so the hexagonal rule set stands alone. To put other packages under byterails' whitelist, add a `byterails.kts` at the repository root and bind the plugin in those modules too.
 
 ### Frontend Linting (Biome)
 Workday uses [Biome](https://biomejs.dev/) for frontend code linting.
