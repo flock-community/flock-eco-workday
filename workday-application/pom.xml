@@ -237,6 +237,36 @@
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
 
+            <!--
+              byterails checks the compiled classes of this module against /byterails.kts plus the
+              `kotlin` and `hexagonal` default rule sets: community.flock.eco.workday.domain may only
+              reference the language baseline (kotlin, java.lang, java.util, java.time, java.math,
+              java.text) and itself. Bound to process-classes rather than the plugin's default verify
+              phase, so every ./mvnw compile, test or package enforces it. Skip with
+              -Dbyterails.skip=true, or list the violations without failing the build with
+              -Dbyterails.reportOnly=true (report: target/byterails/violations.json).
+            -->
+            <plugin>
+                <groupId>community.flock.byterails</groupId>
+                <artifactId>byterails-maven-plugin</artifactId>
+                <configuration>
+                    <basePackage>community.flock.eco.workday</basePackage>
+                    <defaultRules>
+                        <defaultRule>kotlin</defaultRule>
+                        <defaultRule>hexagonal</defaultRule>
+                    </defaultRules>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>byterails-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>

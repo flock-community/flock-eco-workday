@@ -1,8 +1,8 @@
 package community.flock.eco.workday.application.utils
 
-import community.flock.eco.workday.core.model.Direction
-import community.flock.eco.workday.core.model.Pageable
-import community.flock.eco.workday.core.model.Sort
+import community.flock.eco.workday.domain.common.Direction
+import community.flock.eco.workday.domain.common.Pageable
+import community.flock.eco.workday.domain.common.Sort
 import org.springframework.data.domain.Sort as SpringSort
 
 fun toDomain(

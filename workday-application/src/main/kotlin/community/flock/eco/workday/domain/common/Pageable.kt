@@ -1,4 +1,4 @@
-package community.flock.eco.workday.core.model
+package community.flock.eco.workday.domain.common
 
 data class Pageable(
     val page: Int,

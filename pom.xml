@@ -19,6 +19,7 @@
     <properties>
         <biweekly.version>0.6.8</biweekly.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
+        <byterails.version>0.0.6</byterails.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
         <google-api-drive.version>v3-rev20251210-2.0.0</google-api-drive.version>
@@ -273,6 +274,13 @@
                         <nodeVersion>${node.version}</nodeVersion>
                         <npmVersion>${npm.version}</npmVersion>
                     </configuration>
+                </plugin>
+
+                <!-- byterails: architecture guardrails checked on bytecode, rules in /byterails.kts -->
+                <plugin>
+                    <groupId>community.flock.byterails</groupId>
+                    <artifactId>byterails-maven-plugin</artifactId>
+                    <version>${byterails.version}</version>
                 </plugin>
 
                 <!-- Wirespec Maven Plugin (Workday-specific) -->

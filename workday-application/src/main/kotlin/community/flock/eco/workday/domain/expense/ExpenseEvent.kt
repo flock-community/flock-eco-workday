@@ -1,7 +1,7 @@
 package community.flock.eco.workday.domain.expense
 
-import community.flock.eco.workday.core.events.Event
 import community.flock.eco.workday.domain.common.ApprovalStatus
+import community.flock.eco.workday.domain.common.Event
 
 sealed interface ExpenseEvent<T : ApprovalStatus> : Event {
     val entity: Expense<T>
