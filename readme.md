@@ -208,6 +208,31 @@ By default, spotless will check for code style issues in maven's `verify` phase.
 
 Spotless will also format pom files automatically, using the `sort-pom` plugin.
 
+### Architecture Rules (byterails)
+
+`workday-application` is checked on bytecode by [byterails](https://github.com/flock-community/byterails)
+in the `process-classes` phase, so every `./mvnw compile`, `test` or `package` enforces the rules. The
+rules are `byterails.kts` at the root plus the `kotlin` and `hexagonal` default rule sets configured on
+the plugin in `workday-application/pom.xml`. The `hexagonal` set isolates `community.flock.eco.workday.domain`:
+a class in it may only reference `kotlin`, `java.lang`, `java.util`, `java.time`, `java.math`, `java.text`
+and the domain itself, never Spring, JPA, `workday-core` or `workday-user`.
+
+```bash
+# List violations without failing the build
+./mvnw compile -Dbyterails.reportOnly=true
+
+# Skip the check
+./mvnw compile -Dbyterails.skip=true
+```
+
+The JSON report lands in `workday-application/target/byterails/violations.json`.
+
+The domain has one package per functional slice (`assignment`, `budget`, `client`, `contract`, `event`,
+`expense`, `laptop`, `leaveday`, `person`, `project`, `sickday`, `todo`, `user`, `workday`, plus `common`
+for the shared traits). `byterails.kts` declares every slice with the slices it may build on, so a slice
+cannot reach any other; a new slice is a new `slice("name", ...)` line. The JPA entities are mapped to
+the domain by `toDomain()` extensions in `application.mappers`.
+
 ### Frontend Linting (Biome)
 Workday uses [Biome](https://biomejs.dev/) for frontend code linting.
 

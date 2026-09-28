@@ -27,7 +27,6 @@ import community.flock.eco.workday.application.services.SickDayService
 import community.flock.eco.workday.application.services.WorkDayService
 import community.flock.eco.workday.core.authorities.Authority
 import community.flock.eco.workday.user.forms.UserForm
-import community.flock.eco.workday.user.mappers.toDomain
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
 import org.springframework.security.core.authority.SimpleGrantedAuthority

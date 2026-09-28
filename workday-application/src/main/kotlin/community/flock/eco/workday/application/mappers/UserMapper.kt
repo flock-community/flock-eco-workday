@@ -1,4 +1,4 @@
-package community.flock.eco.workday.user.mappers
+package community.flock.eco.workday.application.mappers
 
 import community.flock.eco.workday.domain.user.User
 import community.flock.eco.workday.domain.user.UserAccount

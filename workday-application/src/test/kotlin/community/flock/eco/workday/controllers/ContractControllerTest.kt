@@ -7,8 +7,8 @@ import community.flock.eco.workday.application.forms.ContractExternalForm
 import community.flock.eco.workday.application.forms.ContractInternalForm
 import community.flock.eco.workday.application.forms.ContractManagementForm
 import community.flock.eco.workday.application.forms.ContractServiceForm
+import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.user.mappers.toDomain
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON

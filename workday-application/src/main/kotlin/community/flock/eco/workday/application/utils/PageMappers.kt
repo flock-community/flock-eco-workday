@@ -1,4 +1,4 @@
-package community.flock.eco.workday.core.utils
+package community.flock.eco.workday.application.utils
 
 import community.flock.eco.workday.domain.common.Direction
 import community.flock.eco.workday.domain.common.Page

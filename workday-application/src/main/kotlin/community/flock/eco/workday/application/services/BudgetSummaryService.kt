@@ -1,8 +1,12 @@
 package community.flock.eco.workday.application.services
 
+import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.model.BudgetCategory
 import community.flock.eco.workday.application.model.ContractInternal
 import community.flock.eco.workday.application.utils.NumericUtils.sum
+import community.flock.eco.workday.domain.budget.PersonBudgetEvent
+import community.flock.eco.workday.domain.budget.PersonBudgetItem
+import community.flock.eco.workday.domain.budget.PersonBudgetSummary
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -45,7 +49,7 @@ class BudgetSummaryService(
                         from = day.event.from,
                         hours = day.hours,
                         cost = day.cost,
-                        category = day.budgetCategory ?: day.event.budgetCategory!!,
+                        category = (day.budgetCategory ?: day.event.budgetCategory!!).toDomain(),
                     )
                 }
 
@@ -56,27 +60,4 @@ class BudgetSummaryService(
             events = events,
         )
     }
-}
-
-data class PersonBudgetSummary(
-    val hackTimeBudget: PersonBudgetItem,
-    val trainingTimeBudget: PersonBudgetItem,
-    val trainingMoneyBudget: PersonBudgetItem,
-    val events: List<PersonBudgetEvent>,
-)
-
-data class PersonBudgetEvent(
-    val eventCode: String,
-    val description: String,
-    val from: LocalDate,
-    val hours: Double,
-    val cost: BigDecimal?,
-    val category: BudgetCategory,
-)
-
-data class PersonBudgetItem(
-    val budget: BigDecimal,
-    val used: BigDecimal,
-) {
-    val available: BigDecimal get() = budget - used
 }

@@ -25,6 +25,14 @@ workday-application/    # ALL business logic goes here
 - `community.flock.eco.workday.user.*` - User/auth (vendored, avoid modifying)
 - `community.flock.eco.workday.*` - Application code (this is where work happens)
 
+### Architecture Rules (byterails)
+- `workday-application` is checked on bytecode by byterails in `process-classes`, so every `./mvnw compile|test|package` enforces it
+- Rules: `byterails.kts` at the root plus the `kotlin` and `hexagonal` default rule sets on the plugin in `workday-application/pom.xml`
+- `community.flock.eco.workday.domain` is isolated: only `kotlin`, `java.lang`, `java.util`, `java.time`, `java.math`, `java.text` and the domain itself. No Spring, JPA, `workday-core` or `workday-user` types in the domain; adapters in `application` bridge them (e.g. `application.utils.PageMappers`, `ApplicationEventPublisherConfiguration`)
+- The domain has one package per functional slice: `common`, `user`, `person`, `client`, `project`, `assignment`, `contract`, `workday`, `leaveday`, `sickday`, `event`, `expense`, `laptop`, `budget`, `todo`. Each is declared in `byterails.kts` with the slices it may use; a slice cannot reach any other. A new slice is a new `slice("name", ...)` line there
+- Domain classes are plain data classes mapped from the JPA entities by `toDomain()` extensions in `application.mappers` (one file per slice); `aggregation` stays an application read model
+- `-Dbyterails.reportOnly=true` lists violations without failing; `-Dbyterails.skip=true` skips the check
+
 ### API Pattern: Wirespec
 - Contract definitions: `workday-application/src/main/wirespec/*.ws`
 - After modifying `.ws` files, run: `npm run generate` (TypeScript) and rebuild (Kotlin auto-generates)

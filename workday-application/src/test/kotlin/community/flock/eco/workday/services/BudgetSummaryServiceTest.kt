@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import java.math.BigDecimal
 import java.time.LocalDate
 import kotlin.test.assertEquals
+import community.flock.eco.workday.domain.event.BudgetCategory as BudgetCategoryDomain
 
 @Transactional
 class BudgetSummaryServiceTest(
@@ -109,11 +110,11 @@ class BudgetSummaryServiceTest(
         assertEquals(2, events.size)
 
         val hack = events[0]
-        assertEquals(BudgetCategory.HACK, hack.category)
+        assertEquals(BudgetCategoryDomain.HACK, hack.category)
         assertEquals(8.0, hack.hours)
 
         val training = events[1]
-        assertEquals(BudgetCategory.TRAINING, training.category)
+        assertEquals(BudgetCategoryDomain.TRAINING, training.category)
         assertEquals(16.0, training.hours)
         assertEquals(BigDecimal("1000.00"), training.cost)
     }
@@ -204,11 +205,11 @@ class BudgetSummaryServiceTest(
 
         val events = budgetSummaryService.getSummary(person.uuid, year).events
 
-        val hack = events.single { it.category == BudgetCategory.HACK }
+        val hack = events.single { it.category == BudgetCategoryDomain.HACK }
         assertEquals(2.0, hack.hours)
         assertEquals(null, hack.cost)
 
-        val training = events.single { it.category == BudgetCategory.TRAINING }
+        val training = events.single { it.category == BudgetCategoryDomain.TRAINING }
         assertEquals(6.0, training.hours)
         assertEquals(BigDecimal("1000.00"), training.cost)
     }
