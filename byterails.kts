@@ -18,9 +18,37 @@ byterails {
         allow("org.springframework")
     }
 
-    // Everything else: Spring wiring, JPA entities, services, controllers and the adapters that
-    // implement the domain's ports. Only the domain boundary is enforced for now.
+    // Spring wiring, JPA entities, services, controllers and the adapters that implement the
+    // domain's ports. Only the domain boundary is enforced for now.
     pkg("application") {
         allowAnything()
     }
+
+    // The domain, one package per functional slice of the application. Each slice is isolated like
+    // the domain itself, gets the language baseline, and names the slices it builds on; it cannot
+    // reach any other slice. The graph has no cycles: `common` and `user` are leaves, `person` is
+    // what most slices hang off, `todo` and `budget` are read models over the others.
+    val baseline = listOf("kotlin", "org.jetbrains.annotations", "java.lang", "java.util", "java.time", "java.math", "java.text")
+    fun slice(name: String, vararg uses: String) =
+        pkg("domain.$name") {
+            isolated()
+            baseline.forEach { allow(it) }
+            uses.forEach { allow("domain.$it") }
+        }
+
+    slice("common") // Period, Day, Hours, Hourly, Monthly, Approvable, ApprovalStatus, Document, Page, Event
+    slice("user") // users, accounts and groups
+    slice("person", "user") // people, their address and the user they log in as
+    slice("client") // clients the people work for
+    slice("project") // projects that group assignments
+    slice("assignment", "common", "client", "person", "project") // a person at a client for a period and rate
+    slice("contract", "common", "person") // internal, external, management and service contracts
+    slice("workday", "common", "assignment") // hours worked on an assignment, with their sheets
+    slice("leaveday", "common", "person") // holidays, plus days and (un)paid leave
+    slice("sickday", "common", "person") // sick leave
+    slice("event", "common", "person") // hack days, conferences and other events, with their attendees
+    slice("expense", "common", "person") // cost and travel expenses, their services and ports
+    slice("laptop", "person") // laptops handed out to people
+    slice("budget", "event") // what a person spent of their hack and training budget
+    slice("todo", "person", "assignment", "leaveday", "sickday", "workday", "expense") // registrations awaiting approval
 }

@@ -227,6 +227,12 @@ and the domain itself, never Spring, JPA, `workday-core` or `workday-user`.
 
 The JSON report lands in `workday-application/target/byterails/violations.json`.
 
+The domain has one package per functional slice (`assignment`, `budget`, `client`, `contract`, `event`,
+`expense`, `laptop`, `leaveday`, `person`, `project`, `sickday`, `todo`, `user`, `workday`, plus `common`
+for the shared traits). `byterails.kts` declares every slice with the slices it may build on, so a slice
+cannot reach any other; a new slice is a new `slice("name", ...)` line. The JPA entities are mapped to
+the domain by `toDomain()` extensions in `application.mappers`.
+
 ### Frontend Linting (Biome)
 Workday uses [Biome](https://biomejs.dev/) for frontend code linting.
 

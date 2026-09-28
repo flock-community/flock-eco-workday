@@ -4,10 +4,10 @@ import community.flock.eco.workday.api.endpoint.BudgetSummary
 import community.flock.eco.workday.application.authorities.AggregationAuthority
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.BudgetSummaryService
-import community.flock.eco.workday.application.services.PersonBudgetEvent
-import community.flock.eco.workday.application.services.PersonBudgetItem
-import community.flock.eco.workday.application.services.PersonBudgetSummary
 import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.domain.budget.PersonBudgetEvent
+import community.flock.eco.workday.domain.budget.PersonBudgetItem
+import community.flock.eco.workday.domain.budget.PersonBudgetSummary
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
@@ -60,8 +60,7 @@ class BudgetController(
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found")
     }
 
-    private fun Authentication.canQueryOthers(): Boolean =
-        authorities.any { it.authority == AggregationAuthority.READ.toName() }
+    private fun Authentication.canQueryOthers(): Boolean = authorities.any { it.authority == AggregationAuthority.READ.toName() }
 }
 
 private fun PersonBudgetSummary.produce(): BudgetSummaryResponseApi =
