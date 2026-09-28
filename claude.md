@@ -41,7 +41,7 @@ Other slices may only use a slice's `model` and `service`. Shared code lives in
 `application.migrations` holds Liquibase custom changes referenced by class name: never move them.
 
 The rules live in `byterails.kts` at the root; the slices are listed in the root `pom.xml`.
-`./mvnw verify` fails on a violation; add `-Dbyterails.reportOnly=true` to only list them.
+`./mvnw package` fails on a violation; add `-Dbyterails.reportOnly=true` to only list them.
 A new slice is a new entry in the `<slices>` list of the root `pom.xml`.
 
 ### API Pattern: Wirespec

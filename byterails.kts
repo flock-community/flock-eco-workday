@@ -1,5 +1,5 @@
 // Architecture guardrails for Flock Workday, checked on bytecode by byterails
-// (https://github.com/flock-community/byterails) in the Maven `verify` phase.
+// (https://github.com/flock-community/byterails) in the Maven `package` phase.
 //
 // Declarations are relative to the base package `community.flock.eco.workday`, configured in the
 // root pom.xml together with the functional slices of the application:
@@ -21,7 +21,7 @@
 //   application.user         users, groups, authorities and login state
 //
 // Every slice gets the structure of the `slice { }` block below. Anything this file does not
-// mention is a violation: `./mvnw verify -Dbyterails.reportOnly=true` lists them without failing.
+// mention is a violation: `./mvnw package -Dbyterails.reportOnly=true` lists them without failing.
 byterails {
     // The Kotlin and Java standard libraries come from the `kotlin` default rule set (pom.xml).
     allow("org.slf4j")

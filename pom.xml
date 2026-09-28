@@ -270,6 +270,8 @@
                             <goals>
                                 <goal>check</goal>
                             </goals>
+                            <!-- CI builds with `package`, so check there instead of in the default `verify` -->
+                            <phase>package</phase>
                         </execution>
                     </executions>
                 </plugin>

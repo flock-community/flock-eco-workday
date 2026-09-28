@@ -44,11 +44,11 @@ security live in `application.config`. The framework-free `domain` module may de
 but the Kotlin and Java standard libraries.
 
 These rules are checked on the compiled classes by [byterails](https://github.com/flock-community/byterails)
-in the Maven `verify` phase. The rules are in [`byterails.kts`](byterails.kts), the list of slices in
+in the Maven `package` phase. The rules are in [`byterails.kts`](byterails.kts), the list of slices in
 the root `pom.xml`. To list violations without failing the build:
 
 ```bash
-./mvnw verify -Dbyterails.reportOnly=true
+./mvnw package -Dbyterails.reportOnly=true
 ```
 
 ## Prerequisites
