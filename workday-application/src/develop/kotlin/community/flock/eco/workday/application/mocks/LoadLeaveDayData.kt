@@ -1,9 +1,9 @@
 package community.flock.eco.workday.application.mocks
 
-import community.flock.eco.workday.application.forms.LeaveDayForm
-import community.flock.eco.workday.application.model.LeaveDayType
-import community.flock.eco.workday.application.model.Person
-import community.flock.eco.workday.application.services.LeaveDayService
+import community.flock.eco.workday.application.leaveday.model.LeaveDayType
+import community.flock.eco.workday.application.leaveday.service.LeaveDayForm
+import community.flock.eco.workday.application.leaveday.service.LeaveDayService
+import community.flock.eco.workday.application.person.model.Person
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component

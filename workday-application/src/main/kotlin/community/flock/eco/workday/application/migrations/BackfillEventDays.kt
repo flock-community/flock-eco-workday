@@ -63,7 +63,11 @@ class BackfillEventDays : CustomTaskChange {
             "SELECT NEXT VALUE FOR day_seq"
         }
 
-    private fun PreparedStatement.nextValue(): Long = executeQuery().use { it.next(); it.getLong(1) }
+    private fun PreparedStatement.nextValue(): Long =
+        executeQuery().use {
+            it.next()
+            it.getLong(1)
+        }
 
     private fun readDaysByEvent(connection: java.sql.Connection): Map<Long, List<Double>> =
         connection.prepareStatement("SELECT event_id, days FROM event_days").use { stmt ->

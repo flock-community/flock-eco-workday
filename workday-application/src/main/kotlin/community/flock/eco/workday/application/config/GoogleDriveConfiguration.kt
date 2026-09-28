@@ -1,9 +1,9 @@
 package community.flock.eco.workday.application.config
 
 import com.google.api.gax.core.CredentialsProvider
-import community.flock.eco.workday.application.google.WorkdayGoogleDrive
-import community.flock.eco.workday.application.google.WorkdayGoogleSheets
-import community.flock.eco.workday.application.google.sheets.WorkDaySheet
+import community.flock.eco.workday.application.common.google.WorkdayGoogleDrive
+import community.flock.eco.workday.application.common.google.WorkdayGoogleSheets
+import community.flock.eco.workday.application.workday.service.WorkDaySheetExportService
 import community.flock.eco.workday.user.services.UserAccountService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -37,5 +37,5 @@ class GoogleDriveConfiguration {
         workdayGoogleDrive: WorkdayGoogleDrive,
         workdayGoogleSheets: WorkdayGoogleSheets,
         @Value("\${google.drive.sheets.workday.templateId}") templateId: String,
-    ): WorkDaySheet = WorkDaySheet(workdayGoogleDrive, workdayGoogleSheets, templateId)
+    ): WorkDaySheetExportService = WorkDaySheetExportService(workdayGoogleDrive, workdayGoogleSheets, templateId)
 }

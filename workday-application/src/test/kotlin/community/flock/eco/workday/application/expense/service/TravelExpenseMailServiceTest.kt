@@ -1,0 +1,73 @@
+package community.flock.eco.workday.application.expense.service
+
+import community.flock.eco.workday.application.common.mail.EmailService
+import community.flock.eco.workday.application.common.properties.MailjetTemplateProperties
+import community.flock.eco.workday.application.expense.model.TravelExpense
+import community.flock.eco.workday.application.person.model.aPerson
+import community.flock.eco.workday.application.person.model.toDomain
+import community.flock.eco.workday.domain.common.ApprovalStatus
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.json.JSONObject
+import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.util.UUID
+
+class TravelExpenseMailServiceTest {
+    private val emailService: EmailService = mockk(relaxed = true)
+    private val mailjetTemplateProperties: MailjetTemplateProperties = mockk()
+
+    private val service = TravelExpenseMailService(emailService, mailjetTemplateProperties)
+
+    @Test
+    fun `Send email`() {
+        val travelExpense =
+            community.flock.eco.workday.domain.expense.TravelExpense(
+                id = UUID.randomUUID(),
+                date = LocalDate.of(2025, 2, 13),
+                description = "Taxirit naar hoofdkantoor Coolblue",
+                person = aPerson().toDomain(),
+                distance = 12.34,
+                allowance = 0.33,
+                status = ApprovalStatus.REQUESTED,
+            )
+
+        val expectedEmailMessage =
+            """
+            <p>Your travel expense for 'Taxirit naar hoofdkantoor Coolblue' has been updated.<p>
+            <div>
+                <p>Travel expense state:</p>
+                <ul>
+                    <li>Description: Taxirit naar hoofdkantoor Coolblue</li>
+                    <li>Issue date: 13-02-2025</li>
+                    <li>Distance: 12.34</li>
+                    <li>Allowance: 0.33</li>
+                    <li>Status: REQUESTED</li>
+                </ul>
+            </div>
+            """.trimIndent()
+        val templateVariables = JSONObject()
+        every {
+            emailService.createTemplateVariables(
+                travelExpense.person.firstname,
+                expectedEmailMessage,
+            )
+        }.returns(templateVariables)
+
+        val templateId = 3
+        every { mailjetTemplateProperties.updateTemplateId }.returns(templateId)
+
+        service.sendUpdate(travelExpense)
+
+        verify {
+            emailService.sendEmailMessage(
+                travelExpense.person.receiveEmail,
+                travelExpense.person.email,
+                "Travel expense update: Taxirit naar hoofdkantoor Coolblue",
+                templateVariables,
+                templateId,
+            )
+        }
+    }
+}

@@ -1,10 +1,10 @@
 package community.flock.eco.workday.helpers
 
-import community.flock.eco.workday.application.model.Assignment
-import community.flock.eco.workday.application.model.Contract
-import community.flock.eco.workday.application.model.LeaveDay
-import community.flock.eco.workday.application.model.SickDay
-import community.flock.eco.workday.application.model.WorkDay
+import community.flock.eco.workday.application.assignment.model.Assignment
+import community.flock.eco.workday.application.contract.model.Contract
+import community.flock.eco.workday.application.leaveday.model.LeaveDay
+import community.flock.eco.workday.application.sickday.model.SickDay
+import community.flock.eco.workday.application.workday.model.WorkDay
 import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
 import java.time.LocalDate

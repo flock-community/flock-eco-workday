@@ -20,6 +20,7 @@
     <properties>
         <biweekly.version>0.6.8</biweekly.version>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
+        <byterails.version>0.0.6</byterails.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
         <google-api-drive.version>v3-rev20251210-2.0.0</google-api-drive.version>
@@ -230,6 +231,45 @@
                                 <goal>test-compile</goal>
                             </goals>
                             <phase>test-compile</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- byterails: architecture guardrails checked on bytecode, rules in /byterails.kts -->
+                <plugin>
+                    <groupId>community.flock.byterails</groupId>
+                    <artifactId>byterails-maven-plugin</artifactId>
+                    <version>${byterails.version}</version>
+                    <configuration>
+                        <basePackage>community.flock.eco.workday</basePackage>
+                        <defaultRules>
+                            <defaultRule>kotlin</defaultRule>
+                        </defaultRules>
+                        <!-- The functional slices of the workday application, relative to the base package -->
+                        <slices>
+                            <slice>application.aggregation</slice>
+                            <slice>application.assignment</slice>
+                            <slice>application.budget</slice>
+                            <slice>application.client</slice>
+                            <slice>application.contract</slice>
+                            <slice>application.event</slice>
+                            <slice>application.expense</slice>
+                            <slice>application.laptop</slice>
+                            <slice>application.leaveday</slice>
+                            <slice>application.person</slice>
+                            <slice>application.project</slice>
+                            <slice>application.sickday</slice>
+                            <slice>application.todo</slice>
+                            <slice>application.user</slice>
+                            <slice>application.workday</slice>
+                        </slices>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>check</id>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
                         </execution>
                     </executions>
                 </plugin>

@@ -25,6 +25,32 @@ flock-eco-workday/
 - **workday-user**: Handles authentication, authorization, user management, and security. Vendored from flock-eco-feature-user for independence.
 - **workday-application**: Contains all business logic for workday management including people, contracts, assignments, projects, expenses, and integrations.
 
+### Functional slices
+
+The application code in `workday-application` is cut into vertical, functional slices under
+`community.flock.eco.workday.application`: `person`, `client`, `project`, `assignment`,
+`contract`, `workday`, `leaveday`, `sickday`, `event`, `expense`, `laptop`, `aggregation`,
+`budget`, `todo` and `user`. Each slice has the same layout:
+
+| Package | Holds | Visible to other slices |
+| --- | --- | --- |
+| `<slice>.model` | JPA entities, enums, authorities, entity-to-domain mappers | yes |
+| `<slice>.persistence` | Spring Data repositories, adapters for the domain ports | no |
+| `<slice>.service` | services, their input forms, mail notifications | yes |
+| `<slice>.web` | controllers implementing the Wirespec handlers | no |
+
+Code shared by every slice lives in `application.common`, which knows no slice; Spring wiring and
+security live in `application.config`. The framework-free `domain` module may depend on nothing
+but the Kotlin and Java standard libraries.
+
+These rules are checked on the compiled classes by [byterails](https://github.com/flock-community/byterails)
+in the Maven `verify` phase. The rules are in [`byterails.kts`](byterails.kts), the list of slices in
+the root `pom.xml`. To list violations without failing the build:
+
+```bash
+./mvnw verify -Dbyterails.reportOnly=true
+```
+
 ## Prerequisites
 
 ### Required

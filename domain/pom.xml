@@ -9,4 +9,13 @@
 
     <artifactId>domain</artifactId>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>community.flock.byterails</groupId>
+                <artifactId>byterails-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.mocks
 
-import community.flock.eco.workday.application.model.Address
+import community.flock.eco.workday.application.person.model.Address
 import java.time.LocalDate
 
 enum class Role {
