@@ -23,7 +23,26 @@ workday-application/    # ALL business logic goes here
 ### Package Structure
 - `community.flock.eco.workday.core.*` - Core utilities (vendored, avoid modifying)
 - `community.flock.eco.workday.user.*` - User/auth (vendored, avoid modifying)
-- `community.flock.eco.workday.*` - Application code (this is where work happens)
+- `community.flock.eco.workday.domain.*` - Framework-free domain module (`domain/`)
+- `community.flock.eco.workday.application.*` - Application code (this is where work happens)
+
+### Functional Slices (enforced by byterails)
+The application is cut into vertical slices under `community.flock.eco.workday.application`:
+`person`, `client`, `project`, `assignment`, `contract`, `workday`, `leaveday`, `sickday`,
+`event`, `expense`, `laptop`, `aggregation`, `budget`, `todo`, `user`. Every slice has the same layout:
+
+- `<slice>.model` - JPA entities, enums, authorities, entity-to-domain mappers (exported)
+- `<slice>.persistence` - Spring Data repositories and domain port adapters (private to the slice)
+- `<slice>.service` - services, their forms and mail notifications (exported)
+- `<slice>.web` - controllers implementing the Wirespec handlers (private to the slice)
+
+Other slices may only use a slice's `model` and `service`. Shared code lives in
+`application.common` (which may not depend on any slice), wiring in `application.config`.
+`application.migrations` holds Liquibase custom changes referenced by class name: never move them.
+
+The rules live in `byterails.kts` at the root; the slices are listed in the root `pom.xml`.
+`./mvnw package` fails on a violation; add `-Dbyterails.reportOnly=true` to only list them.
+A new slice is a new entry in the `<slices>` list of the root `pom.xml`.
 
 ### API Pattern: Wirespec
 - Contract definitions: `workday-application/src/main/wirespec/*.ws`
@@ -60,8 +79,9 @@ workday-application/    # ALL business logic goes here
 ## Finding Things
 
 ### Backend Code
-- Controllers/Services: `workday-application/src/main/kotlin/community/flock/eco/workday/`
-- Domain models: Look in domain-specific packages (e.g., `assignment/`, `expense/`, `person/`)
+- Code for a feature: `workday-application/src/main/kotlin/community/flock/eco/workday/application/<slice>/`
+- Shared code: `.../application/common/`, Spring wiring and security: `.../application/config/`
+- Architecture rules: `byterails.kts`
 - Security config: `workday-user/src/main/kotlin/.../config/`
 
 ### Frontend Code

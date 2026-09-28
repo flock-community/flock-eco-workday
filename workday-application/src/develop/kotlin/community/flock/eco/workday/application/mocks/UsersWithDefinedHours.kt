@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.mocks
 
-import community.flock.eco.workday.application.model.Person
+import community.flock.eco.workday.application.person.model.Person
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 
@@ -22,8 +22,9 @@ class UsersWithDefinedHours(
     // Lazy so it only resolves to Person rows after LoadPersonData has had a
     // chance to save them (which happens on the first boot with an empty DB).
     val persons: Set<Person> by lazy {
-        emails.mapNotNull { email ->
-            runCatching { loadPersonData.findPersonByUserEmail(email) }.getOrNull()
-        }.toSet()
+        emails
+            .mapNotNull { email ->
+                runCatching { loadPersonData.findPersonByUserEmail(email) }.getOrNull()
+            }.toSet()
     }
 }

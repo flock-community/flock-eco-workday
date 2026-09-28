@@ -1,0 +1,67 @@
+package community.flock.eco.workday.application.common.model
+
+import community.flock.eco.workday.application.common.util.DateUtils
+import community.flock.eco.workday.application.common.util.DateUtils.isWorkingDay
+import community.flock.eco.workday.application.common.util.countWorkDaysInPeriod
+import community.flock.eco.workday.core.events.EventEntityListeners
+import community.flock.eco.workday.core.model.AbstractCodeEntity
+import jakarta.persistence.ElementCollection
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.FetchType
+import jakarta.persistence.Inheritance
+import jakarta.persistence.InheritanceType
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.time.LocalDate
+import java.util.UUID
+
+@Entity
+@Inheritance(
+    strategy = InheritanceType.JOINED,
+)
+@EntityListeners(EventEntityListeners::class)
+abstract class Day(
+    id: Long = 0,
+    code: String = UUID.randomUUID().toString(),
+    override val from: LocalDate = LocalDate.now(),
+    override val to: LocalDate = LocalDate.now(),
+    override var hours: Double,
+    @ElementCollection(fetch = FetchType.EAGER)
+    override val days: MutableList<Double>? = null,
+) : AbstractCodeEntity(id, code),
+    Daily {
+    private fun getHoursPerDay(): Map<LocalDate, BigDecimal> {
+        val dateRange = this.toDateRange()
+        val positionalDays = days?.takeIf { it.size == dateRange.size }
+        return when (positionalDays) {
+            null -> {
+                val workingDaysCount = BigDecimal(countWorkDaysInPeriod(from, to))
+                val hoursADay =
+                    BigDecimal(hours)
+                        .divide(workingDaysCount, 10, RoundingMode.HALF_UP)
+                dateRange.associateWith {
+                    when (it.isWorkingDay()) {
+                        true -> hoursADay
+                        false -> BigDecimal("0.0")
+                    }
+                }
+            }
+            else ->
+                dateRange
+                    .mapIndexed { index, localDate ->
+                        localDate to positionalDays[index].toBigDecimal()
+                    }.toMap()
+        }
+    }
+
+    fun hoursPerDayInPeriod(
+        periodStart: LocalDate,
+        periodEnd: LocalDate,
+    ): Map<LocalDate, BigDecimal> {
+        val days = getHoursPerDay()
+        return DateUtils.dateRange(periodStart, periodEnd).associateWith {
+            (days[it] ?: BigDecimal("0.0"))
+        }
+    }
+}

@@ -1,8 +1,8 @@
 package community.flock.eco.workday.application.mocks
 
-import community.flock.eco.workday.application.model.Address
-import community.flock.eco.workday.application.model.Person
-import community.flock.eco.workday.application.repository.PersonRepository
+import community.flock.eco.workday.application.person.model.Address
+import community.flock.eco.workday.application.person.model.Person
+import community.flock.eco.workday.application.person.persistence.PersonRepository
 import community.flock.eco.workday.user.model.User
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component

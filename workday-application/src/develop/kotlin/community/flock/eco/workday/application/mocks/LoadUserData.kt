@@ -1,11 +1,11 @@
 package community.flock.eco.workday.application.mocks
 
-import community.flock.eco.workday.application.authorities.AssignmentAuthority
-import community.flock.eco.workday.application.authorities.EventAuthority
-import community.flock.eco.workday.application.authorities.LeaveDayAuthority
-import community.flock.eco.workday.application.authorities.SickdayAuthority
-import community.flock.eco.workday.application.authorities.WorkDayAuthority
-import community.flock.eco.workday.application.expense.ExpenseAuthority
+import community.flock.eco.workday.application.assignment.model.AssignmentAuthority
+import community.flock.eco.workday.application.event.model.EventAuthority
+import community.flock.eco.workday.application.expense.model.ExpenseAuthority
+import community.flock.eco.workday.application.leaveday.model.LeaveDayAuthority
+import community.flock.eco.workday.application.sickday.model.SickdayAuthority
+import community.flock.eco.workday.application.workday.model.WorkDayAuthority
 import community.flock.eco.workday.core.authorities.Authority
 import community.flock.eco.workday.user.forms.UserAccountPasswordForm
 import community.flock.eco.workday.user.model.User

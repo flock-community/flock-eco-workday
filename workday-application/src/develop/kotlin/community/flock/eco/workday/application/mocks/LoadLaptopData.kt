@@ -1,7 +1,7 @@
 package community.flock.eco.workday.application.mocks
 
-import community.flock.eco.workday.application.model.Laptop
-import community.flock.eco.workday.application.repository.LaptopRepository
+import community.flock.eco.workday.application.laptop.model.Laptop
+import community.flock.eco.workday.application.laptop.persistence.LaptopRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.LocalDate

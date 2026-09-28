@@ -1,7 +1,7 @@
 package community.flock.eco.workday.application.mocks
 
-import community.flock.eco.workday.application.model.Client
-import community.flock.eco.workday.application.repository.ClientRepository
+import community.flock.eco.workday.application.client.model.Client
+import community.flock.eco.workday.application.client.persistence.ClientRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 

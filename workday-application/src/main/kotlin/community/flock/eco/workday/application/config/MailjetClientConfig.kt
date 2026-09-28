@@ -4,7 +4,7 @@ import com.mailjet.client.ClientOptions
 import com.mailjet.client.MailjetClient
 import com.mailjet.client.MailjetRequest
 import com.mailjet.client.MailjetResponse
-import community.flock.eco.workday.application.config.properties.MailjetClientProperties
+import community.flock.eco.workday.application.common.properties.MailjetClientProperties
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

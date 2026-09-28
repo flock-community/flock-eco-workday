@@ -1,0 +1,303 @@
+package community.flock.eco.workday.application.person.web
+
+import community.flock.eco.workday.api.endpoint.DeletePerson
+import community.flock.eco.workday.api.endpoint.GetPersonAll
+import community.flock.eco.workday.api.endpoint.GetPersonByUuid
+import community.flock.eco.workday.api.endpoint.GetPersonMe
+import community.flock.eco.workday.api.endpoint.GetPersonSpecialDates
+import community.flock.eco.workday.api.endpoint.PostPerson
+import community.flock.eco.workday.api.endpoint.PutPerson
+import community.flock.eco.workday.application.person.model.Person
+import community.flock.eco.workday.application.person.model.PersonAuthority
+import community.flock.eco.workday.application.person.service.PersonEvent
+import community.flock.eco.workday.application.person.service.PersonForm
+import community.flock.eco.workday.application.person.service.PersonService
+import community.flock.eco.workday.domain.person.Address
+import community.flock.eco.workday.user.model.User
+import community.flock.eco.workday.user.services.UserService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.UUID
+import community.flock.eco.workday.api.model.Address as AddressApi
+import community.flock.eco.workday.api.model.Person as PersonApi
+import community.flock.eco.workday.api.model.PersonEvent as PersonEventApi
+import community.flock.eco.workday.api.model.PersonEventEventType as PersonEventEventTypeApi
+import community.flock.eco.workday.api.model.PersonForm as PersonFormApi
+import community.flock.eco.workday.api.model.User as UserApi
+import community.flock.eco.workday.application.person.model.Address as AddressEntity
+
+@RestController
+class PersonController(
+    private val service: PersonService,
+    private val userService: UserService,
+) : GetPersonAll.Handler,
+    GetPersonByUuid.Handler,
+    GetPersonMe.Handler,
+    GetPersonSpecialDates.Handler,
+    PostPerson.Handler,
+    PutPerson.Handler,
+    DeletePerson.Handler {
+    @PreAuthorize("isAuthenticated()")
+    override suspend fun getPersonMe(request: GetPersonMe.Request): GetPersonMe.Response<*> {
+        val user = currentUser() ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        val person =
+            service.findByUserCode(user.code)
+                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No person found for current user")
+        return GetPersonMe.Response200(person.externalize())
+    }
+
+    @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
+    override suspend fun getPersonAll(request: GetPersonAll.Request): GetPersonAll.Response<*> {
+        requireAuthority(PersonAuthority.ADMIN)
+        val q = request.queries
+        val pageable = q.toPageable()
+
+        val page: Page<Person> =
+            when {
+                q.search != null -> service.findAllByFullName(pageable, q.search)
+                q.active != null -> service.findAllByActive(pageable, q.active)
+                else -> service.findAll(pageable)
+            }
+        return GetPersonAll.Response200(
+            body = page.content.map { it.externalize() },
+            xtotal = page.totalElements.toInt(),
+        )
+    }
+
+    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
+    override suspend fun getPersonByUuid(request: GetPersonByUuid.Request): GetPersonByUuid.Response<*> {
+        val user = requireAuthority(PersonAuthority.READ)
+        val uuid = UUID.fromString(request.path.uuid)
+        val person =
+            when {
+                user.isAdmin() -> service.findByUuid(uuid)
+                else -> service.findByUserCode(user.code)
+            } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Item found with this PersonUui")
+        return GetPersonByUuid.Response200(person.externalize())
+    }
+
+    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
+    override suspend fun getPersonSpecialDates(request: GetPersonSpecialDates.Request): GetPersonSpecialDates.Response<*> {
+        requireAuthority(PersonAuthority.READ)
+        val start = LocalDate.parse(request.queries.start)
+        val end = LocalDate.parse(request.queries.end)
+        val events = service.findAllPersonEvents(start, end).map { it.externalize() }
+        return GetPersonSpecialDates.Response200(events)
+    }
+
+    @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
+    override suspend fun postPerson(request: PostPerson.Request): PostPerson.Response<*> {
+        val user = requireAuthority(PersonAuthority.WRITE)
+        val form = request.body.internalize()
+        val userCode = if (user.isAdmin()) form.userCode else user.code
+        val created = service.create(form.copy(userCode = userCode))
+        return PostPerson.Response200(created.externalize())
+    }
+
+    @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
+    override suspend fun putPerson(request: PutPerson.Request): PutPerson.Response<*> {
+        val user = requireAuthority(PersonAuthority.WRITE)
+        val form = request.body.internalize()
+        val userCode = if (user.isAdmin()) form.userCode else user.code
+        val uuid = UUID.fromString(request.path.uuid)
+        val updated =
+            service.update(uuid, form.copy(userCode = userCode))
+                ?: throw ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Cannot perform PUT on given item. PersonUui cannot be found. Use POST Method",
+                )
+        return PutPerson.Response200(updated.externalize())
+    }
+
+    @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
+    override suspend fun deletePerson(request: DeletePerson.Request): DeletePerson.Response<*> {
+        requireAuthority(PersonAuthority.ADMIN)
+        service.deleteByUuid(UUID.fromString(request.path.uuid))
+        return DeletePerson.Response204(Unit)
+    }
+
+    private fun currentUser(): User? =
+        SecurityContextHolder
+            .getContext()
+            .authentication
+            ?.name
+            ?.let(userService::findByCode)
+
+    private fun requireAuthority(authority: PersonAuthority): User {
+        val auth =
+            SecurityContextHolder.getContext().authentication
+                ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        if (!auth.authorities.map { it.authority }.contains(authority.toName())) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        }
+        return userService.findByCode(auth.name)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+    }
+
+    private fun User.isAdmin(): Boolean = authorities.contains(PersonAuthority.ADMIN.toName())
+
+    private fun GetPersonAll.Queries.toPageable(): Pageable {
+        val sort = sort?.takeIf { it.isNotBlank() }?.let(::parseSort) ?: Sort.unsorted()
+        return PageRequest.of(page ?: 0, size ?: 20, sort)
+    }
+
+    private fun parseSort(spec: String): Sort =
+        spec
+            .split(",")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .let { parts ->
+                when {
+                    parts.isEmpty() -> Sort.unsorted()
+                    parts.size == 1 -> Sort.by(parts[0])
+                    parts.last().equals("asc", ignoreCase = true) ->
+                        Sort.by(Sort.Direction.ASC, *parts.dropLast(1).toTypedArray())
+                    parts.last().equals("desc", ignoreCase = true) ->
+                        Sort.by(Sort.Direction.DESC, *parts.dropLast(1).toTypedArray())
+                    else -> Sort.by(*parts.toTypedArray())
+                }
+            }
+
+    private fun Person.externalize(): PersonApi {
+        // person/user columns lack NOT NULL; JPA can hydrate null into these non-null properties.
+        val uuid: UUID? = uuid
+        val firstname: String? = firstname
+        val lastname: String? = lastname
+        return PersonApi(
+            id = id,
+            uuid = uuid?.toString(),
+            firstname = firstname,
+            lastname = lastname,
+            email = email,
+            position = position,
+            number = number,
+            birthdate = birthdate?.toString(),
+            joinDate = joinDate?.toString(),
+            active = active,
+            lastActiveAt = lastActiveAt?.toString(),
+            reminders = reminders,
+            receiveEmail = receiveEmail,
+            shoeSize = shoeSize,
+            shirtSize = shirtSize,
+            googleDriveId = googleDriveId,
+            address = address?.externalize(),
+            user = user?.externalize(),
+            fullName = listOfNotNull(firstname, lastname).joinToString(" ").ifBlank { null },
+        )
+    }
+
+    private fun AddressEntity.externalize(): AddressApi =
+        AddressApi(
+            street = street,
+            houseNumber = houseNumber,
+            houseNumberAddition = houseNumberAddition,
+            postalCode = postalCode,
+            city = city,
+        )
+
+    private fun User.externalize(): UserApi {
+        val created: LocalDateTime? = created
+        return UserApi(
+            id = code,
+            name = name,
+            email = email,
+            authorities = authorities.toList(),
+            accounts = null,
+            created = created?.toString(),
+        )
+    }
+
+    private fun PersonEvent.externalize(): PersonEventApi =
+        PersonEventApi(
+            person = person.externalize(),
+            eventType =
+                when (eventType) {
+                    PersonEvent.EventType.BIRTHDAY -> PersonEventEventTypeApi.BIRTHDAY
+                    PersonEvent.EventType.JOIN_DAY -> PersonEventEventTypeApi.JOIN_DAY
+                },
+            eventDate = eventDate.toString(),
+        )
+
+    private fun PersonFormApi.internalize(): PersonForm =
+        PersonForm(
+            firstname = firstname ?: "",
+            lastname = lastname ?: "",
+            email = email ?: "",
+            position = position ?: "",
+            number = number,
+            birthdate = birthdate?.let(LocalDate::parse),
+            joinDate = joinDate?.let(LocalDate::parse),
+            active = active ?: true,
+            userCode = userCode,
+            reminders = reminders ?: false,
+            receiveEmail = receiveEmail ?: true,
+            shoeSize = shoeSize,
+            shirtSize = shirtSize,
+            googleDriveId = googleDriveId,
+            address = address?.internalize(),
+        )
+
+    /**
+     * An address is optional as a whole: all-blank fields mean "no address" (null).
+     * Anything else must be a complete, valid Dutch address, otherwise the request
+     * is rejected with a 400 so that half-filled addresses never reach the database.
+     */
+    private fun AddressApi.internalize(): Address? {
+        val street = street?.trim().orEmpty()
+        val houseNumber = houseNumber?.trim().orEmpty()
+        val houseNumberAddition = houseNumberAddition?.trim()?.ifBlank { null }
+        val postalCode = postalCode?.trim().orEmpty()
+        val city = city?.trim().orEmpty()
+
+        if (listOf(street, houseNumber, houseNumberAddition.orEmpty(), postalCode, city).all { it.isBlank() }) {
+            return null
+        }
+
+        val missing =
+            listOfNotNull(
+                "street".takeIf { street.isBlank() },
+                "houseNumber".takeIf { houseNumber.isBlank() },
+                "postalCode".takeIf { postalCode.isBlank() },
+                "city".takeIf { city.isBlank() },
+            )
+        if (missing.isNotEmpty()) {
+            throw badRequest("Address is incomplete, missing: ${missing.joinToString()}")
+        }
+        if (street.length > MAX_ADDRESS_LINE_LENGTH || city.length > MAX_ADDRESS_LINE_LENGTH) {
+            throw badRequest("Street and city may be at most $MAX_ADDRESS_LINE_LENGTH characters")
+        }
+        if ((houseNumberAddition?.length ?: 0) > MAX_HOUSE_NUMBER_ADDITION_LENGTH) {
+            throw badRequest("House number addition may be at most $MAX_HOUSE_NUMBER_ADDITION_LENGTH characters")
+        }
+
+        return Address(
+            street = street,
+            houseNumber =
+                Address.normalizeHouseNumber(houseNumber)
+                    ?: throw badRequest(
+                        "House number must be a number between 1 and 99999; put letters or suffixes in houseNumberAddition",
+                    ),
+            houseNumberAddition = houseNumberAddition,
+            postalCode =
+                Address.normalizePostalCode(postalCode)
+                    ?: throw badRequest("Postal code must be a Dutch postal code such as 1234 AB"),
+            city = city,
+        )
+    }
+
+    private fun badRequest(reason: String) = ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
+
+    companion object {
+        private const val MAX_ADDRESS_LINE_LENGTH = 255
+        private const val MAX_HOUSE_NUMBER_ADDITION_LENGTH = 20
+    }
+}

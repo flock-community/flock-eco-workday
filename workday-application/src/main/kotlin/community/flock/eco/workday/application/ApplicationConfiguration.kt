@@ -1,11 +1,12 @@
 package community.flock.eco.workday.application
 
+import community.flock.eco.workday.application.common.properties.ApplicationConstants
+import community.flock.eco.workday.application.common.properties.PropertyConfig
 import community.flock.eco.workday.application.config.ApplicationEventPublisherConfiguration
+import community.flock.eco.workday.application.config.ExpenseConfiguration
 import community.flock.eco.workday.application.config.GoogleDriveConfiguration
 import community.flock.eco.workday.application.config.MailjetClientConfig
 import community.flock.eco.workday.application.config.cloud.StubCloudConfiguration
-import community.flock.eco.workday.application.config.properties.PropertyConfig
-import community.flock.eco.workday.application.expense.ExpenseConfiguration
 import community.flock.eco.workday.user.UserConfiguration
 import community.flock.wirespec.integration.spring.kotlin.configuration.EnableWirespecController
 import community.flock.wirespec.integration.spring.kotlin.configuration.WirespecSerializationConfiguration

@@ -1,15 +1,15 @@
 package community.flock.eco.workday.application.mocks
 
-import community.flock.eco.workday.application.forms.LeaveDayForm
-import community.flock.eco.workday.application.forms.SickDayForm
-import community.flock.eco.workday.application.forms.WorkDayForm
-import community.flock.eco.workday.application.forms.WorkDaySheetForm
-import community.flock.eco.workday.application.model.LeaveDayType
-import community.flock.eco.workday.application.model.Person
-import community.flock.eco.workday.application.services.LeaveDayService
-import community.flock.eco.workday.application.services.SickDayService
-import community.flock.eco.workday.application.services.WorkDayService
-import community.flock.eco.workday.application.utils.DateUtils.isWorkingDay
+import community.flock.eco.workday.application.common.util.DateUtils.isWorkingDay
+import community.flock.eco.workday.application.leaveday.model.LeaveDayType
+import community.flock.eco.workday.application.leaveday.service.LeaveDayForm
+import community.flock.eco.workday.application.leaveday.service.LeaveDayService
+import community.flock.eco.workday.application.person.model.Person
+import community.flock.eco.workday.application.sickday.service.SickDayForm
+import community.flock.eco.workday.application.sickday.service.SickDayService
+import community.flock.eco.workday.application.workday.service.WorkDayForm
+import community.flock.eco.workday.application.workday.service.WorkDayService
+import community.flock.eco.workday.application.workday.service.WorkDaySheetForm
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -155,7 +155,11 @@ class LoadRealisticHoursData(
         return block.toSet()
     }
 
-    private fun paintWorkedHours(days: List<LocalDate>, assignmentCode: String, hoursPerDay: Double = 8.0) {
+    private fun paintWorkedHours(
+        days: List<LocalDate>,
+        assignmentCode: String,
+        hoursPerDay: Double = 8.0,
+    ) {
         if (days.isEmpty()) return
         workDayService.create(
             WorkDayForm(
@@ -183,6 +187,5 @@ class LoadRealisticHoursData(
     private fun LocalDate.daysTo(other: LocalDate): Sequence<LocalDate> =
         generateSequence(this) { it.plusDays(1) }.takeWhile { !it.isAfter(other) }
 
-    private fun LocalDate.workingDaysTo(other: LocalDate): Sequence<LocalDate> =
-        daysTo(other).filter { it.isWorkingDay() }
+    private fun LocalDate.workingDaysTo(other: LocalDate): Sequence<LocalDate> = daysTo(other).filter { it.isWorkingDay() }
 }

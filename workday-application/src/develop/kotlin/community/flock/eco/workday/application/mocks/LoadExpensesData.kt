@@ -1,6 +1,6 @@
 package community.flock.eco.workday.application.mocks
 
-import community.flock.eco.workday.application.mappers.toDomain
+import community.flock.eco.workday.application.person.model.toDomain
 import community.flock.eco.workday.domain.common.ApprovalStatus
 import community.flock.eco.workday.domain.expense.CostExpense
 import community.flock.eco.workday.domain.expense.CostExpenseService

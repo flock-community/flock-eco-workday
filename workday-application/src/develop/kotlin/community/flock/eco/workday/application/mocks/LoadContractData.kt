@@ -1,12 +1,12 @@
 package community.flock.eco.workday.application.mocks
 
-import community.flock.eco.workday.application.model.Contract
-import community.flock.eco.workday.application.model.ContractExternal
-import community.flock.eco.workday.application.model.ContractInternal
-import community.flock.eco.workday.application.model.ContractManagement
-import community.flock.eco.workday.application.model.ContractService
-import community.flock.eco.workday.application.model.ContractType
-import community.flock.eco.workday.application.repository.ContractRepository
+import community.flock.eco.workday.application.contract.model.Contract
+import community.flock.eco.workday.application.contract.model.ContractExternal
+import community.flock.eco.workday.application.contract.model.ContractInternal
+import community.flock.eco.workday.application.contract.model.ContractManagement
+import community.flock.eco.workday.application.contract.model.ContractService
+import community.flock.eco.workday.application.contract.model.ContractType
+import community.flock.eco.workday.application.contract.persistence.ContractRepository
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
