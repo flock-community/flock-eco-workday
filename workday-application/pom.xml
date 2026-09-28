@@ -52,12 +52,6 @@
             <artifactId>wirespec-jvm</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>flock.community.eco.workday</groupId>
-            <artifactId>domain</artifactId>
-            <version>develop-SNAPSHOT</version>
-        </dependency>
-
         <!-- Workday vendored modules -->
         <dependency>
             <groupId>flock.community.eco.workday</groupId>

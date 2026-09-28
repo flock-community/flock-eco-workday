@@ -1,6 +1,6 @@
 package community.flock.eco.workday.core.events
 
-import community.flock.eco.workday.domain.common.Event
+import community.flock.eco.workday.core.events.Event
 
 sealed class StorageEvent(
     open val entity: Any,

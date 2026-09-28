@@ -3,7 +3,7 @@ package community.flock.eco.workday.controllers
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.authorities.AggregationAuthority
 import community.flock.eco.workday.helpers.CreateHelper
-import community.flock.eco.workday.user.mappers.toDomain
+import community.flock.eco.workday.application.mappers.toDomain
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
