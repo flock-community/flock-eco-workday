@@ -1,0 +1,223 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-039-cv-1
+      author: willemveelenturf
+      comment: >-
+        Curricula vitae. A person has at most one CV per language (NL or EN) with a
+        place, phone number, profile text (summary) and education, subjects and
+        languages as free text; name, e-mail and date of birth come from the person. A CV is personal data, so it is deleted with its person.
+      changes:
+        - createTable:
+            tableName: cv
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: cvPK
+              - column:
+                  name: code
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: cv_code_unique
+              - column:
+                  name: person_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language
+                  type: VARCHAR(2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: place
+                  type: VARCHAR(255)
+              - column:
+                  name: phone
+                  type: VARCHAR(255)
+              - column:
+                  name: summary
+                  type: VARCHAR(10000)
+              - column:
+                  name: education
+                  type: VARCHAR(2000)
+              - column:
+                  name: subjects
+                  type: VARCHAR(2000)
+              - column:
+                  name: languages
+                  type: VARCHAR(2000)
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: person_id
+            baseTableName: cv
+            constraintName: FK_cv_person
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: person
+            onDelete: CASCADE
+            validate: true
+        - addUniqueConstraint:
+            tableName: cv
+            columnNames: person_id, language
+            constraintName: cv_person_language_unique
+  - changeSet:
+      id: db.changelog-039-cv-2
+      author: willemveelenturf
+      comment: >-
+        The working experience on a CV, in the order the CV lists it (experience_order).
+        A month is stored as its first day; no to_month means it is the current job.
+      changes:
+        - createTable:
+            tableName: cv_experience
+            columns:
+              - column:
+                  name: cv_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: experience_order
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: from_month
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: to_month
+                  type: DATE
+              - column:
+                  name: role
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: client
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: employer
+                  type: VARCHAR(255)
+              - column:
+                  name: technologies
+                  type: VARCHAR(1000)
+              - column:
+                  name: description
+                  type: VARCHAR(10000)
+        - addPrimaryKey:
+            tableName: cv_experience
+            columnNames: cv_id, experience_order
+            constraintName: cv_experiencePK
+        - addForeignKeyConstraint:
+            baseColumnNames: cv_id
+            baseTableName: cv_experience
+            constraintName: FK_cv_experience_cv
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: cv
+            onDelete: CASCADE
+            validate: true
+  - changeSet:
+      id: db.changelog-039-cv-3
+      author: willemveelenturf
+      comment: >-
+        The skills matrix of a CV, in the order the CV lists it (skill_order): a skill
+        in a category, rated 1 to 5 stars (skill_level), or without a rating.
+      changes:
+        - createTable:
+            tableName: cv_skill
+            columns:
+              - column:
+                  name: cv_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: skill_order
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: VARCHAR(255)
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: skill_level
+                  type: INTEGER
+        - addPrimaryKey:
+            tableName: cv_skill
+            columnNames: cv_id, skill_order
+            constraintName: cv_skillPK
+        - addForeignKeyConstraint:
+            baseColumnNames: cv_id
+            baseTableName: cv_skill
+            constraintName: FK_cv_skill_cv
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: cv
+            onDelete: CASCADE
+            validate: true
+  - changeSet:
+      id: db.changelog-039-cv-4
+      author: willemveelenturf
+      comment: Hibernate 6 entity-specific sequence for cv ids (see db.changelog-026).
+      changes:
+        - createSequence:
+            sequenceName: cv_seq
+            startValue: 1
+            incrementBy: 50
+  - changeSet:
+      id: db.changelog-039-cv-5
+      author: willemveelenturf
+      comment: >-
+        Everybody who writes hours (WorkDayAuthority.WRITE) gets CvAuthority.READ and
+        WRITE to maintain their own CV; everybody who can manage all persons
+        (PersonAuthority.ADMIN) also gets CvAuthority.ADMIN to maintain all CVs.
+        Idempotent: users that already have an authority are skipped.
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO user_authorities (user_id, authorities)
+              SELECT DISTINCT ua.user_id, 'CvAuthority.READ'
+              FROM user_authorities ua
+              WHERE ua.authorities IN ('WorkDayAuthority.WRITE', 'PersonAuthority.ADMIN')
+                AND NOT EXISTS (
+                  SELECT 1 FROM user_authorities x
+                  WHERE x.user_id = ua.user_id AND x.authorities = 'CvAuthority.READ'
+                );
+              INSERT INTO user_authorities (user_id, authorities)
+              SELECT DISTINCT ua.user_id, 'CvAuthority.WRITE'
+              FROM user_authorities ua
+              WHERE ua.authorities IN ('WorkDayAuthority.WRITE', 'PersonAuthority.ADMIN')
+                AND NOT EXISTS (
+                  SELECT 1 FROM user_authorities x
+                  WHERE x.user_id = ua.user_id AND x.authorities = 'CvAuthority.WRITE'
+                );
+              INSERT INTO user_authorities (user_id, authorities)
+              SELECT DISTINCT ua.user_id, 'CvAuthority.ADMIN'
+              FROM user_authorities ua
+              WHERE ua.authorities = 'PersonAuthority.ADMIN'
+                AND NOT EXISTS (
+                  SELECT 1 FROM user_authorities x
+                  WHERE x.user_id = ua.user_id AND x.authorities = 'CvAuthority.ADMIN'
+                );

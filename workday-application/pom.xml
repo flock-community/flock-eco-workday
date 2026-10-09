@@ -77,6 +77,11 @@
             <groupId>net.sf.biweekly</groupId>
             <artifactId>biweekly</artifactId>
         </dependency>
+        <!-- Reads the text of uploaded CV PDFs -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+        </dependency>
         <!-- Kotlin Coroutines Reactor Integration -->
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>

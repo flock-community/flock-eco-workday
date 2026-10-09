@@ -3,6 +3,7 @@ import ReportIcon from '@mui/icons-material/Assessment';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import TodoIcon from '@mui/icons-material/AssignmentTurnedIn';
+import CvIcon from '@mui/icons-material/Badge';
 import ClientIcon from '@mui/icons-material/Business';
 import EventIcon from '@mui/icons-material/CalendarToday';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -143,6 +144,12 @@ export const navSections: NavSection[] = [
         icon: LaptopIcon,
         url: '/laptops',
         authority: 'LaptopAuthority.READ',
+      },
+      {
+        name: 'CVs',
+        icon: CvIcon,
+        url: '/cvs',
+        authority: 'CvAuthority.READ',
       },
       {
         name: 'Users',

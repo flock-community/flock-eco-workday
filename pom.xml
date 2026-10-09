@@ -40,6 +40,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <mockk.version>1.14.3</mockk.version>
         <node.version>v22.22.3</node.version>
+        <pdfbox.version>3.0.5</pdfbox.version>
         <npm.ci.skip>false</npm.ci.skip>
         <npm.version>10.9.8</npm.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -130,6 +131,11 @@
                 <groupId>net.sf.biweekly</groupId>
                 <artifactId>biweekly</artifactId>
                 <version>${biweekly.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${pdfbox.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>

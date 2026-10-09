@@ -4,6 +4,8 @@ import community.flock.eco.workday.application.forms.AssignmentForm
 import community.flock.eco.workday.application.forms.ClientForm
 import community.flock.eco.workday.application.forms.ContractExternalForm
 import community.flock.eco.workday.application.forms.ContractInternalForm
+import community.flock.eco.workday.application.forms.CvExperienceForm
+import community.flock.eco.workday.application.forms.CvForm
 import community.flock.eco.workday.application.forms.EventForm
 import community.flock.eco.workday.application.forms.LaptopForm
 import community.flock.eco.workday.application.forms.LeaveDayForm
@@ -13,12 +15,15 @@ import community.flock.eco.workday.application.forms.WorkDayForm
 import community.flock.eco.workday.application.mappers.toDomain
 import community.flock.eco.workday.application.model.Assignment
 import community.flock.eco.workday.application.model.Client
+import community.flock.eco.workday.application.model.Cv
+import community.flock.eco.workday.application.model.CvLanguage
 import community.flock.eco.workday.application.model.EventType
 import community.flock.eco.workday.application.model.Laptop
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.AssignmentService
 import community.flock.eco.workday.application.services.ClientService
 import community.flock.eco.workday.application.services.ContractService
+import community.flock.eco.workday.application.services.CvService
 import community.flock.eco.workday.application.services.EventService
 import community.flock.eco.workday.application.services.LaptopService
 import community.flock.eco.workday.application.services.LeaveDayService
@@ -35,6 +40,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
@@ -50,6 +56,7 @@ class CreateHelper(
     private val workDayService: WorkDayService,
     private val eventService: EventService,
     private val laptopService: LaptopService,
+    private val cvService: CvService,
 ) {
     fun createUser(authorities: Set<Authority>) = createUserEntity(authorities).toDomain()
 
@@ -97,6 +104,30 @@ class CreateHelper(
             personId = person?.uuid,
         ).run {
             laptopService.create(this)
+        }
+
+    fun createCv(
+        person: Person,
+        language: CvLanguage = CvLanguage.NL,
+        summary: String? = "Engineer at heart.",
+        experiences: List<CvExperienceForm> =
+            listOf(
+                CvExperienceForm(
+                    from = YearMonth.of(2024, 8),
+                    role = "Software Engineer",
+                    client = "ING",
+                    employer = "Flock",
+                    technologies = listOf("Kotlin", "React"),
+                ),
+            ),
+    ): Cv =
+        CvForm(
+            personId = person.uuid,
+            language = language,
+            summary = summary,
+            experiences = experiences,
+        ).run {
+            cvService.create(this)
         }
 
     fun createPersonEntity() = createPersonEntity(UUID.randomUUID().toString(), UUID.randomUUID().toString())

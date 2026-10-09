@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.mocks
 
 import community.flock.eco.workday.application.authorities.AssignmentAuthority
+import community.flock.eco.workday.application.authorities.CvAuthority
 import community.flock.eco.workday.application.authorities.EventAuthority
 import community.flock.eco.workday.application.authorities.LeaveDayAuthority
 import community.flock.eco.workday.application.authorities.SickdayAuthority
@@ -39,6 +40,8 @@ class LoadUserData(
             ExpenseAuthority.WRITE,
             AssignmentAuthority.READ,
             EventAuthority.SUBSCRIBE,
+            CvAuthority.READ,
+            CvAuthority.WRITE,
         )
 
     private val allAuthorities = userAuthorityService.allAuthorities()
