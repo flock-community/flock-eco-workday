@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {
   clientText,
+  cvUrl,
   linkify,
   monthsWorked,
   paragraphs,
@@ -72,5 +73,17 @@ describe('linkify', () => {
 
   it('leaves text without links alone', () => {
     expect(linkify('Plain text')).toEqual([{ text: 'Plain text' }]);
+  });
+});
+
+describe('cvUrl', () => {
+  it('links to the CV of a person in a language', () => {
+    expect(cvUrl('p-1', 'EN', 'me')).toBe('/cvs?personId=p-1&language=EN');
+    expect(cvUrl('p-1', null, 'me', '/cvs/new')).toBe('/cvs/new?personId=p-1');
+  });
+
+  it('leaves out your own person, which only admins could look up', () => {
+    expect(cvUrl('me', 'NL', 'me')).toBe('/cvs?language=NL');
+    expect(cvUrl(undefined, undefined, 'me')).toBe('/cvs');
   });
 });

@@ -146,7 +146,7 @@ export const navSections: NavSection[] = [
         authority: 'LaptopAuthority.READ',
       },
       {
-        name: 'CVs',
+        name: 'CV',
         icon: CvIcon,
         url: '/cvs',
         authority: 'CvAuthority.READ',

@@ -54,6 +54,23 @@ export const CV_LANGUAGES: { value: CvLanguage; label: string }[] = [
   { value: 'EN', label: 'English' },
 ];
 
+/**
+ * The CV page of a person, in a language. The current user's own person ([me]) is
+ * left out: that is the default, and only admins may look up a person by id.
+ */
+export function cvUrl(
+  personId: string | null | undefined,
+  language: CvLanguage | null | undefined,
+  me: string | null | undefined,
+  page = '/cvs',
+): string {
+  const params = new URLSearchParams();
+  if (personId && personId !== me) params.set('personId', personId);
+  if (language) params.set('language', language);
+  const query = params.toString();
+  return query ? `${page}?${query}` : page;
+}
+
 /** A month on the wire is `yyyy-MM`; on a CV it reads `MM-yyyy`. */
 export const YEAR_MONTH = 'YYYY-MM';
 export const CV_MONTH = 'MM-YYYY';

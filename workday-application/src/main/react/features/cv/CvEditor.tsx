@@ -23,10 +23,10 @@ import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { type Cv, CvClient } from '../../clients/CvClient';
 import { apiErrorMessage } from '../../clients/util/ApiErrorMessage';
 import { MonthPickerField } from '../../components/fields/MonthPickerField';
-import { PersonSelectorField } from '../../components/fields/PersonSelectorField';
+import { usePerson } from '../../hooks/PersonHook';
 import { useLoginStatus } from '../../hooks/StatusHook';
-import type { CvImportState } from './CvList';
-import { CV_LANGUAGES } from './cvText';
+import type { CvImport, CvLanguage } from '../../wirespec/model';
+import { CV_LANGUAGES, cvUrl } from './cvText';
 import {
   CV_FORM_SCHEMA,
   type CvFormValues,
@@ -36,6 +36,12 @@ import {
   toCvFormValues,
   toCvRequest,
 } from './schema';
+
+/** A CV read from a PDF, handed to the editor to start a new CV with. */
+export type CvImportState = {
+  imported: CvImport;
+  fileName: string;
+};
 
 function Section({
   title,
@@ -64,16 +70,20 @@ function Section({
 }
 
 /**
- * Writes a CV: personal details, profile text and working experience. A new CV can
- * start from a PDF import (passed in the location state by the CV list).
+ * Writes a CV: personal details, profile text and working experience. A new CV is
+ * for the selected person (`?personId=`, else yourself) in `?language=`, and can
+ * start from a PDF import passed in the location state.
  */
 export function CvEditor() {
   const { code } = useParams<{ code?: string }>();
   const history = useHistory();
   const location = useLocation<CvImportState | undefined>();
+  const [person] = usePerson();
   const status = useLoginStatus();
-  const isAdmin = status?.authorities?.includes('CvAuthority.ADMIN') ?? false;
   const imported = code ? undefined : location.state;
+  const requestedLanguage = new URLSearchParams(location.search).get(
+    'language',
+  ) as CvLanguage | null;
 
   const [cv, setCv] = useState<Cv | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -93,12 +103,30 @@ export function CvEditor() {
   const initialValues = useMemo<CvFormValues>(() => {
     const defaults = CV_FORM_SCHEMA.getDefault() as CvFormValues;
     if (cv) return toCvFormValues(cv);
+    const personId = person?.uuid ?? '';
+    const language = requestedLanguage ?? defaults.language;
     if (imported) {
       const values = fromCvImport(imported.imported);
-      return { ...values, personId: values.personId || status?.personId || '' };
+      return {
+        ...values,
+        personId,
+        language: imported.imported.language ?? language,
+      };
     }
-    return { ...defaults, personId: status?.personId ?? '' };
-  }, [cv, imported, status?.personId]);
+    return { ...defaults, personId, language };
+  }, [cv, imported, person?.uuid, requestedLanguage]);
+
+  const personName = cv?.person?.fullName ?? person?.fullName ?? '';
+  const personId = cv?.person?.uuid ?? person?.uuid;
+  const me = status?.personId;
+  const back = cvUrl(personId, cv?.language ?? requestedLanguage, me);
+  // The PDF names somebody else than the person this CV is being written for
+  const otherPerson =
+    imported?.imported.personId &&
+    person?.uuid &&
+    imported.imported.personId !== person.uuid
+      ? (imported.imported.name ?? 'somebody else')
+      : null;
 
   const handleSubmit = (
     values: CvFormValues,
@@ -108,7 +136,9 @@ export function CvEditor() {
     const body = toCvRequest(values);
     const request = code ? CvClient.put(code, body) : CvClient.post(body);
     request
-      .then((saved) => history.push(`/cvs/${saved.code}`))
+      .then((saved) =>
+        history.push(cvUrl(saved.person?.uuid, saved.language, me)),
+      )
       .catch((err) => {
         setError(apiErrorMessage(err, 'The CV could not be saved'));
         setSubmitting(false);
@@ -118,21 +148,21 @@ export function CvEditor() {
   const handleDelete = () => {
     if (!code) return;
     CvClient.delete(code)
-      .then(() => history.push('/cvs'))
+      .then(() => history.push(cvUrl(personId, null, me)))
       .catch((err) => {
         setDeleteOpen(false);
         setError(apiErrorMessage(err, 'The CV could not be deleted'));
       });
   };
 
-  if (code && !cv) {
+  if ((code && !cv) || (!code && !person)) {
     return error ? <Alert severity="error">{error}</Alert> : <AlignedLoader />;
   }
 
   return (
     <Box sx={{ pb: 6 }}>
       <Typography variant="h4" component="h1" sx={{ mb: 1 }}>
-        {code ? `CV of ${cv?.person?.fullName ?? ''}` : 'New CV'}
+        {code ? `CV of ${personName}` : `New CV of ${personName}`}
       </Typography>
       {imported && (
         <Alert severity="info" sx={{ mb: 2 }}>
@@ -140,6 +170,12 @@ export function CvEditor() {
           {imported.imported.name ? ` (${imported.imported.name})` : ''}. Check
           the details below; nothing is stored until you save. The skills are
           not read from the PDF (their stars are images), so add those below.
+        </Alert>
+      )}
+      {otherPerson && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          This PDF looks like the CV of {otherPerson}, but you are writing the
+          CV of {personName}.
         </Alert>
       )}
       {error && (
@@ -161,16 +197,7 @@ export function CvEditor() {
                 subtitle="Name, e-mail and date of birth come from the person"
               >
                 <Grid container spacing={2}>
-                  {isAdmin && (
-                    <Grid size={{ xs: 12, sm: 8 }}>
-                      <PersonSelectorField
-                        name="personId"
-                        label="Person"
-                        fullWidth
-                      />
-                    </Grid>
-                  )}
-                  <Grid size={{ xs: 12, sm: isAdmin ? 4 : 12 }}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <Field
                       component={TextField}
                       select
@@ -185,7 +212,7 @@ export function CvEditor() {
                       ))}
                     </Field>
                   </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <Field
                       component={TextField}
                       name="place"
@@ -193,7 +220,7 @@ export function CvEditor() {
                       fullWidth
                     />
                   </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <Field
                       component={TextField}
                       name="phone"
@@ -452,11 +479,7 @@ export function CvEditor() {
                   </Button>
                 )}
                 <Box sx={{ flexGrow: 1 }} />
-                <Button
-                  onClick={() => history.push(code ? `/cvs/${code}` : '/cvs')}
-                >
-                  Cancel
-                </Button>
+                <Button onClick={() => history.push(back)}>Cancel</Button>
                 <Button
                   type="submit"
                   variant="contained"

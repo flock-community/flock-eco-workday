@@ -9,8 +9,6 @@ export type CvRequest = CvForm;
 
 const path = '/api/cvs';
 
-export const CV_PAGE_SIZE = 15;
-
 const internalizingClient = InternalizingClient<CvRequest, Cv, Cv>(
   path,
   (it) => it,
