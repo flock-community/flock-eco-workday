@@ -39,7 +39,8 @@ class CvControllerTest(
 ) : WorkdayIntegrationTest() {
     private val baseUrl: String = "/api/cvs"
 
-    private val adminAuthorities = setOf(CvAuthority.READ, CvAuthority.WRITE, CvAuthority.ADMIN)
+    // ADMIN on its own reads and writes every CV
+    private val adminAuthorities = setOf(CvAuthority.ADMIN)
     private val workerAuthorities = setOf(CvAuthority.READ, CvAuthority.WRITE)
 
     private val ingExperience =
@@ -54,6 +55,7 @@ class CvControllerTest(
         )
 
     private fun cvJson(
+        name: String? = "Algemeen",
         language: String? = "NL",
         personId: String? = null,
         place: String? = "Hilversum",
@@ -68,6 +70,7 @@ class CvControllerTest(
         mapper.writeValueAsString(
             mapOf(
                 "personId" to personId,
+                "name" to name,
                 "language" to language,
                 "place" to place,
                 "phone" to null,
@@ -157,20 +160,119 @@ class CvControllerTest(
     }
 
     @Test
-    fun `a person has one CV per language`() {
+    fun `a person can have several versions of a CV, each with its own name`() {
         val (worker, person) = aWorker()
-        createHelper.createCv(person, CvLanguage.NL)
+        createHelper.createCv(person, CvLanguage.NL, name = "Algemeen 2025")
 
         mvc
-            .perform(post(baseUrl).asUser(worker).json(cvJson(language = "NL")))
+            .perform(post(baseUrl).asUser(worker).json(cvJson(name = " algemeen 2025 ")))
             .asyncDispatch()
             .andExpect(status().isConflict)
-            .andExpect(jsonPath("$.message").value("Tommy Dog already has a NL CV"))
+            .andExpect(jsonPath("$.message").value("Tommy Dog already has a CV named 'algemeen 2025'"))
 
+        // Another Dutch one is fine, as long as it has a name of its own
         mvc
-            .perform(post(baseUrl).asUser(worker).json(cvJson(language = "EN")))
+            .perform(post(baseUrl).asUser(worker).json(cvJson(name = " Frontend ", language = "NL")))
             .asyncDispatch()
             .andExpect(status().isOk)
+            .andExpect(jsonPath("$.name").value("Frontend"))
+
+        mvc
+            .perform(get(baseUrl).asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(header().string("x-total", "2"))
+    }
+
+    @Test
+    fun `every save keeps the version before it, which can be read and restored`() {
+        val (worker, person) = aWorker()
+        val cv = createHelper.createCv(person, name = "Algemeen", summary = "First version.")
+
+        listOf("Second version.", "Third version.", "Third version.").forEach { summary ->
+            mvc
+                .perform(put("$baseUrl/${cv.code}").asUser(worker).json(cvJson(summary = summary)))
+                .asyncDispatch()
+                .andExpect(status().isOk)
+        }
+
+        // Saving without changes adds no version: the first and the second remain
+        val revisions =
+            mvc
+                .perform(get("$baseUrl/${cv.code}/revisions").asUser(worker).accept(APPLICATION_JSON))
+                .asyncDispatch()
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.length()").value(2))
+                .andReturn()
+                .response.contentAsString
+                .let { mapper.readTree(it) }
+        val first = revisions[1]["id"].asText()
+
+        mvc
+            .perform(get("$baseUrl/${cv.code}/revisions/$first").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.code").value(cv.code))
+            .andExpect(jsonPath("$.name").value("Algemeen"))
+            .andExpect(jsonPath("$.summary").value("First version."))
+            .andExpect(jsonPath("$.updatedAt").value(revisions[1]["savedAt"].asText()))
+
+        mvc
+            .perform(post("$baseUrl/${cv.code}/revisions/$first/restore").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.summary").value("First version."))
+
+        // Restoring kept the third version too
+        mvc
+            .perform(get("$baseUrl/${cv.code}/revisions").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(jsonPath("$.length()").value(3))
+
+        // Somebody else does not see the versions
+        val (other) = aWorker("Pino", "Woodpecker")
+        mvc
+            .perform(get("$baseUrl/${cv.code}/revisions").asUser(other).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isNotFound)
+        mvc
+            .perform(post("$baseUrl/${cv.code}/revisions/$first/restore").asUser(other).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `READ only reads your own CV and WRITE only writes it`() {
+        val reader = createHelper.createUserEntity(setOf(CvAuthority.READ))
+        val readersCv = createHelper.createCv(createHelper.createPersonEntity("Ernie", "Muppets", reader.code))
+        val writer = createHelper.createUserEntity(setOf(CvAuthority.WRITE))
+        val writersCv = createHelper.createCv(createHelper.createPersonEntity("Bert", "Muppets", writer.code))
+
+        mvc
+            .perform(get("$baseUrl/${readersCv.code}").asUser(reader).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+        mvc
+            .perform(put("$baseUrl/${readersCv.code}").asUser(reader).json(cvJson()))
+            .asyncDispatch()
+            .andExpect(status().isForbidden)
+        mvc
+            .perform(get("$baseUrl/${writersCv.code}").asUser(reader).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isNotFound)
+
+        mvc
+            .perform(put("$baseUrl/${writersCv.code}").asUser(writer).json(cvJson(summary = "Written.")))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.summary").value("Written."))
+        mvc
+            .perform(get("$baseUrl/${writersCv.code}").asUser(writer).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isForbidden)
+        mvc
+            .perform(put("$baseUrl/${readersCv.code}").asUser(writer).json(cvJson()))
+            .asyncDispatch()
+            .andExpect(status().isNotFound)
     }
 
     @Test
@@ -187,6 +289,8 @@ class CvControllerTest(
             cvJson(place = "x".repeat(256)) to "place may be at most 255 characters",
             cvJson(summary = "x".repeat(10001)) to "summary may be at most 10000 characters",
             cvJson(language = "DE") to "language is invalid",
+            cvJson(name = " ") to "name is required",
+            cvJson(name = "x".repeat(101)) to "name is invalid",
             cvJson(skills = listOf(mapOf("name" to "Kotlin", "level" to 6))) to "skills[0].level must be between 1 and 5",
             cvJson(skills = listOf(mapOf("name" to "", "level" to 3))) to "skills[0].name is required",
         ).forEach { (body, message) ->

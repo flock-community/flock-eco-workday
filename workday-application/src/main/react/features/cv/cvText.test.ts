@@ -77,13 +77,17 @@ describe('linkify', () => {
 });
 
 describe('cvUrl', () => {
-  it('links to the CV of a person in a language', () => {
-    expect(cvUrl('p-1', 'EN', 'me')).toBe('/cvs?personId=p-1&language=EN');
-    expect(cvUrl('p-1', null, 'me', '/cvs/new')).toBe('/cvs/new?personId=p-1');
+  it('links to a CV of a person', () => {
+    expect(cvUrl('p-1', 'me', { cv: 'cv-1' })).toBe(
+      '/cvs?personId=p-1&cv=cv-1',
+    );
+    expect(cvUrl('p-1', 'me', { copyFrom: 'cv-1' }, '/cvs/new')).toBe(
+      '/cvs/new?personId=p-1&copyFrom=cv-1',
+    );
   });
 
   it('leaves out your own person, which only admins could look up', () => {
-    expect(cvUrl('me', 'NL', 'me')).toBe('/cvs?language=NL');
-    expect(cvUrl(undefined, undefined, 'me')).toBe('/cvs');
+    expect(cvUrl('me', 'me', { cv: 'cv-1' })).toBe('/cvs?cv=cv-1');
+    expect(cvUrl(undefined, 'me', { cv: undefined })).toBe('/cvs');
   });
 });

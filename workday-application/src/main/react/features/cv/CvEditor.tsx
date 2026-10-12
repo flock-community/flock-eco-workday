@@ -25,7 +25,7 @@ import { apiErrorMessage } from '../../clients/util/ApiErrorMessage';
 import { MonthPickerField } from '../../components/fields/MonthPickerField';
 import { usePerson } from '../../hooks/PersonHook';
 import { useLoginStatus } from '../../hooks/StatusHook';
-import type { CvImport, CvLanguage } from '../../wirespec/model';
+import type { CvImport } from '../../wirespec/model';
 import { CV_LANGUAGES, cvUrl } from './cvText';
 import {
   CV_FORM_SCHEMA,
@@ -82,11 +82,13 @@ export function CvEditor() {
   const [person] = usePerson();
   const status = useLoginStatus();
   const imported = code ? undefined : location.state;
-  const requestedLanguage = new URLSearchParams(location.search).get(
-    'language',
-  ) as CvLanguage | null;
+  // A new version can start as a copy of an existing one
+  const copyFrom = code
+    ? null
+    : new URLSearchParams(location.search).get('copyFrom');
 
   const [cv, setCv] = useState<Cv | null>(null);
+  const [copy, setCopy] = useState<Cv | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -98,29 +100,37 @@ export function CvEditor() {
         .catch((err) =>
           setError(apiErrorMessage(err, 'The CV could not be loaded')),
         );
+    } else if (copyFrom) {
+      CvClient.get(copyFrom)
+        .then(setCopy)
+        .catch((err) =>
+          setError(apiErrorMessage(err, 'The CV could not be copied')),
+        );
     }
-  }, [code]);
+  }, [code, copyFrom]);
 
   const initialValues = useMemo<CvFormValues>(() => {
     const defaults = CV_FORM_SCHEMA.getDefault() as CvFormValues;
     if (cv) return toCvFormValues(cv);
+    if (copy) return { ...toCvFormValues(copy), name: `${copy.name} (copy)` };
     const personId = person?.uuid ?? '';
-    const language = requestedLanguage ?? defaults.language;
     if (imported) {
-      const values = fromCvImport(imported.imported);
+      // Named after the file, without .pdf: "CV - 2025 - NL"
+      const name = imported.fileName.replace(/\.pdf$/i, '').slice(0, 100);
+      const values = fromCvImport(imported.imported, name);
       return {
         ...values,
         personId,
-        language: imported.imported.language ?? language,
+        language: imported.imported.language ?? defaults.language,
       };
     }
-    return { ...defaults, personId, language };
-  }, [cv, imported, person?.uuid, requestedLanguage]);
+    return { ...defaults, personId };
+  }, [cv, copy, imported, person?.uuid]);
 
   const personName = cv?.person?.fullName ?? person?.fullName ?? '';
   const personId = cv?.person?.uuid ?? person?.uuid;
   const me = status?.personId;
-  const back = cvUrl(personId, cv?.language ?? requestedLanguage, me);
+  const back = cvUrl(personId, me, { cv: cv?.code ?? copy?.code });
   // The PDF names somebody else than the person this CV is being written for
   const otherPerson =
     imported?.imported.personId &&
@@ -138,7 +148,7 @@ export function CvEditor() {
     const request = code ? CvClient.put(code, body) : CvClient.post(body);
     request
       .then((saved) =>
-        history.push(cvUrl(saved.person?.uuid, saved.language, me)),
+        history.push(cvUrl(saved.person?.uuid, me, { cv: saved.code })),
       )
       .catch((err) => {
         setError(apiErrorMessage(err, 'The CV could not be saved'));
@@ -149,14 +159,14 @@ export function CvEditor() {
   const handleDelete = () => {
     if (!code) return;
     CvClient.delete(code)
-      .then(() => history.push(cvUrl(personId, null, me)))
+      .then(() => history.push(cvUrl(personId, me)))
       .catch((err) => {
         setDeleteOpen(false);
         setError(apiErrorMessage(err, 'The CV could not be deleted'));
       });
   };
 
-  if ((code && !cv) || (!code && !person)) {
+  if ((code && !cv) || (copyFrom && !copy) || (!code && !person)) {
     return error ? <Alert severity="error">{error}</Alert> : <AlignedLoader />;
   }
 
@@ -198,6 +208,17 @@ export function CvEditor() {
                 subtitle="Name, e-mail and date of birth come from the person"
               >
                 <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, sm: 8 }}>
+                    <Field
+                      component={TextField}
+                      name="name"
+                      label="Name of this version"
+                      helperText={
+                        'To tell your CVs apart, e.g. "2025 NL" or "Frontend EN"'
+                      }
+                      fullWidth
+                    />
+                  </Grid>
                   <Grid size={{ xs: 12, sm: 4 }}>
                     <Field
                       component={TextField}
@@ -213,7 +234,7 @@ export function CvEditor() {
                       ))}
                     </Field>
                   </Grid>
-                  <Grid size={{ xs: 12, sm: 4 }}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Field
                       component={TextField}
                       name="place"
@@ -221,7 +242,7 @@ export function CvEditor() {
                       fullWidth
                     />
                   </Grid>
-                  <Grid size={{ xs: 12, sm: 4 }}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Field
                       component={TextField}
                       name="phone"

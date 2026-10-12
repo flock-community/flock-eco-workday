@@ -149,7 +149,7 @@ export const navSections: NavSection[] = [
         name: 'CV',
         icon: CvIcon,
         url: '/cvs',
-        authority: 'CvAuthority.READ',
+        authority: 'CvAuthority.READ,CvAuthority.ADMIN',
       },
       {
         name: 'Users',
@@ -194,8 +194,10 @@ export function isActive(pathname: string, url: string) {
   return pathname === url || pathname.startsWith(`${url}/`);
 }
 
+// "A,B" means any of A and B, like UserAuthorityUtil
 const hasAuthority = (authorities: string[], authority?: string) =>
-  authority === undefined || authorities.includes(authority);
+  authority === undefined ||
+  authority.split(',').some((it) => authorities.includes(it.trim()));
 
 export function visibleSections(authorities: string[] = []): NavSection[] {
   return navSections

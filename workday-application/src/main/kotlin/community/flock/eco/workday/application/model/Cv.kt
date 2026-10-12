@@ -28,7 +28,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.util.UUID
 
-/** The language a CV is written in; a person has at most one CV per language. */
+/** The language a CV is written in. */
 enum class CvLanguage {
     NL,
     EN,
@@ -39,10 +39,13 @@ enum class CvLanguage {
  * details, a profile text ([summary]), the working experience, a skills matrix and
  * the [education], [subjects] of expertise and spoken [languages] as free text.
  * Name, e-mail and date of birth are not copied onto the CV; they come from the [person].
+ *
+ * A person can have several CVs, each a version with its own [name] (say "2025 NL" or
+ * "Frontend EN"); every save keeps the content before it as a [CvRevision].
  */
 @Entity
 @EntityListeners(EventEntityListeners::class)
-@Table(uniqueConstraints = [UniqueConstraint(name = "cv_person_language_unique", columnNames = ["person_id", "language"])])
+@Table(uniqueConstraints = [UniqueConstraint(name = "cv_person_name_unique", columnNames = ["person_id", "name"])])
 class Cv(
     id: Long = 0,
     code: String = UUID.randomUUID().toString(),
@@ -50,6 +53,8 @@ class Cv(
     @ManyToOne(optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     val person: Person,
+    @Column(length = CV_NAME_LENGTH)
+    val name: String,
     @Enumerated(EnumType.STRING)
     @Column(length = 2)
     val language: CvLanguage,
@@ -75,11 +80,13 @@ class Cv(
     val languages: String? = null,
     val updatedAt: Instant = Instant.now(),
 ) : AbstractCodeEntity(id, code) {
-    override fun toString(): String = "Cv(id=$id, code=$code, person=${person.uuid}, language=$language)"
+    override fun toString(): String = "Cv(id=$id, code=$code, person=${person.uuid}, name='$name', language=$language)"
 
     companion object {
         /** Room for a few paragraphs of profile or assignment text. */
         const val CV_TEXT_LENGTH = 10000
+
+        const val CV_NAME_LENGTH = 100
 
         /** Room for a list of degrees, subjects or languages. */
         const val CV_SECTION_LENGTH = 2000

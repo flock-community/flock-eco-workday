@@ -3,8 +3,11 @@ package community.flock.eco.workday.application.controllers
 import community.flock.eco.workday.api.endpoint.DeleteCv
 import community.flock.eco.workday.api.endpoint.GetCvAll
 import community.flock.eco.workday.api.endpoint.GetCvByCode
+import community.flock.eco.workday.api.endpoint.GetCvRevision
+import community.flock.eco.workday.api.endpoint.GetCvRevisions
 import community.flock.eco.workday.api.endpoint.PostCv
 import community.flock.eco.workday.api.endpoint.PostCvImport
+import community.flock.eco.workday.api.endpoint.PostCvRevisionRestore
 import community.flock.eco.workday.api.endpoint.PutCv
 import community.flock.eco.workday.api.model.Error
 import community.flock.eco.workday.application.authorities.CvAuthority
@@ -14,6 +17,7 @@ import community.flock.eco.workday.application.forms.CvSkillForm
 import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.model.CvExperience
 import community.flock.eco.workday.application.model.CvLanguage
+import community.flock.eco.workday.application.model.CvRevision
 import community.flock.eco.workday.application.services.CvImportException
 import community.flock.eco.workday.application.services.CvImportService
 import community.flock.eco.workday.application.services.CvInvalidInputException
@@ -40,14 +44,15 @@ import community.flock.eco.workday.api.model.CvExperienceForm as CvExperienceFor
 import community.flock.eco.workday.api.model.CvForm as CvFormApi
 import community.flock.eco.workday.api.model.CvImport as CvImportApi
 import community.flock.eco.workday.api.model.CvLanguage as CvLanguageApi
+import community.flock.eco.workday.api.model.CvRevision as CvRevisionApi
 import community.flock.eco.workday.api.model.CvSkill as CvSkillApi
 import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.application.model.Person as PersonInternal
 
 /**
- * CVs. Everybody with [CvAuthority.READ] / [CvAuthority.WRITE] maintains their own CVs;
- * with [CvAuthority.ADMIN] you see and maintain the CVs of everybody. A CV of somebody
- * else is reported as not found, so its existence does not leak.
+ * CVs. [CvAuthority.READ] lets you read your own CVs and [CvAuthority.WRITE] write
+ * them; [CvAuthority.ADMIN] reads and writes the CVs of everybody. A CV you may not
+ * use is reported as not found, so its existence does not leak.
  */
 @RestController
 class CvController(
@@ -59,8 +64,11 @@ class CvController(
     PostCv.Handler,
     PutCv.Handler,
     DeleteCv.Handler,
+    GetCvRevisions.Handler,
+    GetCvRevision.Handler,
+    PostCvRevisionRestore.Handler,
     PostCvImport.Handler {
-    @PreAuthorize("hasAuthority('CvAuthority.READ')")
+    @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
     override suspend fun getCvAll(request: GetCvAll.Request): GetCvAll.Response<*> {
         val auth = authentication()
         val q = request.queries
@@ -80,13 +88,13 @@ class CvController(
         )
     }
 
-    @PreAuthorize("hasAuthority('CvAuthority.READ')")
+    @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
     override suspend fun getCvByCode(request: GetCvByCode.Request): GetCvByCode.Response<*> =
-        findAccessible(request.path.code)
+        findReadable(request.path.code)
             ?.let { GetCvByCode.Response200(it.externalize()) }
             ?: GetCvByCode.Response404(Error("CV not found"))
 
-    @PreAuthorize("hasAuthority('CvAuthority.WRITE')")
+    @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
     override suspend fun postCv(request: PostCv.Request): PostCv.Response<*> =
         validated(
             onConflict = { PostCv.Response409(it) },
@@ -96,33 +104,58 @@ class CvController(
             PostCv.Response200(created.externalize())
         }
 
-    @PreAuthorize("hasAuthority('CvAuthority.WRITE')")
+    @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
     override suspend fun putCv(request: PutCv.Request): PutCv.Response<*> =
         validated(
             onConflict = { PutCv.Response409(it) },
             onBadRequest = { PutCv.Response400(it) },
         ) {
-            findAccessible(request.path.code)
+            findWritable(request.path.code)
                 ?.let { cvService.update(it.code, request.body.internalize()) }
                 ?.let { PutCv.Response200(it.externalize()) }
                 ?: PutCv.Response404(Error("CV not found"))
         }
 
-    @PreAuthorize("hasAuthority('CvAuthority.WRITE')")
+    @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
     override suspend fun deleteCv(request: DeleteCv.Request): DeleteCv.Response<*> =
-        findAccessible(request.path.code)
+        findWritable(request.path.code)
             ?.let {
                 cvService.deleteByCode(it.code)
                 DeleteCv.Response204(Unit)
             }
             ?: DeleteCv.Response404(Error("CV not found"))
 
+    @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
+    override suspend fun getCvRevisions(request: GetCvRevisions.Request): GetCvRevisions.Response<*> =
+        findReadable(request.path.code)
+            ?.let { cv -> GetCvRevisions.Response200(cvService.findRevisions(cv.code).map { it.externalize() }) }
+            ?: GetCvRevisions.Response404(Error("CV not found"))
+
+    @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
+    override suspend fun getCvRevision(request: GetCvRevision.Request): GetCvRevision.Response<*> =
+        findReadable(request.path.code)
+            ?.let { cv -> request.path.id.toUuidOrNull()?.let { cvService.findRevision(cv.code, it) } }
+            ?.let { GetCvRevision.Response200(it.externalize()) }
+            ?: GetCvRevision.Response404(Error("Version not found"))
+
+    /** Makes an earlier version the current one; the name it had may be taken by now (409). */
+    @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
+    override suspend fun postCvRevisionRestore(request: PostCvRevisionRestore.Request): PostCvRevisionRestore.Response<*> =
+        try {
+            findWritable(request.path.code)
+                ?.let { cv -> request.path.id.toUuidOrNull()?.let { cvService.restore(cv.code, it) } }
+                ?.let { PostCvRevisionRestore.Response200(it.externalize()) }
+                ?: PostCvRevisionRestore.Response404(Error("Version not found"))
+        } catch (e: CvAlreadyExistsException) {
+            PostCvRevisionRestore.Response409(Error(e.message))
+        }
+
     /**
      * Reads a CV in the Flock template from an uploaded PDF (base64) without storing
      * it; the editor shows the result to check and save. Only admins get the person
      * the CV belongs to looked up: everybody else always imports their own CV.
      */
-    @PreAuthorize("hasAuthority('CvAuthority.WRITE')")
+    @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
     override suspend fun postCvImport(request: PostCvImport.Request): PostCvImport.Response<*> {
         val pdf =
             runCatching { Base64.getDecoder().decode(request.body.pdf.substringAfter("base64,").trim()) }
@@ -150,12 +183,20 @@ class CvController(
         }
     }
 
-    /** The CV with [code], when the current user may see it: their own, or any for an admin. */
-    private fun findAccessible(code: String): Cv? {
+    /** The CV with [code], when the current user may read it: any for an admin, else their own with READ. */
+    private fun findReadable(code: String): Cv? {
         val auth = authentication()
         return cvService
             .findByCode(code)
-            ?.takeIf { auth.isAdmin() || auth.isAssociatedWith(it.person) }
+            ?.takeIf { auth.isAdmin() || (auth.has(CvAuthority.READ) && auth.isAssociatedWith(it.person)) }
+    }
+
+    /** The CV with [code], when the current user may write it: any for an admin, else their own with WRITE. */
+    private fun findWritable(code: String): Cv? {
+        val auth = authentication()
+        return cvService
+            .findByCode(code)
+            ?.takeIf { auth.isAdmin() || (auth.has(CvAuthority.WRITE) && auth.isAssociatedWith(it.person)) }
     }
 
     /**
@@ -180,6 +221,7 @@ class CvController(
         CvApi(
             id = id,
             code = code,
+            name = name,
             language = language.externalize(),
             place = place,
             phone = phone,
@@ -265,6 +307,7 @@ class CvController(
             }
         return CvForm(
             personId = personUuid,
+            name = name.validated("name").value.trim(),
             language = language.internalize(),
             place = place,
             phone = phone,
@@ -308,7 +351,13 @@ class CvController(
         personService.findByUserCode(name)?.uuid
             ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "User is not linked to a person")
 
-    private fun Authentication.isAdmin(): Boolean = authorities.any { it.authority == CvAuthority.ADMIN.toName() }
+    private fun Authentication.has(authority: CvAuthority): Boolean = authorities.any { it.authority == authority.toName() }
+
+    private fun Authentication.isAdmin(): Boolean = has(CvAuthority.ADMIN)
+
+    private fun CvRevision.externalize() = CvRevisionApi(id = id.toString(), savedAt = savedAt.toString())
+
+    private fun String.toUuidOrNull(): UUID? = runCatching { UUID.fromString(trim()) }.getOrNull()
 
     private fun authentication(): Authentication =
         SecurityContextHolder.getContext().authentication

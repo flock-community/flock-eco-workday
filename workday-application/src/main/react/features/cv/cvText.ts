@@ -55,19 +55,22 @@ export const CV_LANGUAGES: { value: CvLanguage; label: string }[] = [
 ];
 
 /**
- * The CV page of a person, in a language. The current user's own person ([me]) is
- * left out: that is the default, and only admins may look up a person by id.
+ * A CV page of a person, with more [params] such as the CV to show (`cv`). The
+ * current user's own person ([me]) is left out: that is the default, and only admins
+ * may look up a person by id.
  */
 export function cvUrl(
   personId: string | null | undefined,
-  language: CvLanguage | null | undefined,
   me: string | null | undefined,
+  params: Record<string, string | null | undefined> = {},
   page = '/cvs',
 ): string {
-  const params = new URLSearchParams();
-  if (personId && personId !== me) params.set('personId', personId);
-  if (language) params.set('language', language);
-  const query = params.toString();
+  const search = new URLSearchParams();
+  if (personId && personId !== me) search.set('personId', personId);
+  for (const [key, value] of Object.entries(params)) {
+    if (value) search.set(key, value);
+  }
+  const query = search.toString();
   return query ? `${page}?${query}` : page;
 }
 

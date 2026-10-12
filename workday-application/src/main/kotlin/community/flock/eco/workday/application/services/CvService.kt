@@ -5,17 +5,21 @@ import community.flock.eco.workday.application.forms.CvForm
 import community.flock.eco.workday.application.forms.CvSkillForm
 import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.model.CvExperience
-import community.flock.eco.workday.application.model.CvLanguage
+import community.flock.eco.workday.application.model.CvRevision
 import community.flock.eco.workday.application.model.CvSkill
+import community.flock.eco.workday.application.model.CvSnapshot
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.CvRepository
+import community.flock.eco.workday.application.repository.CvRevisionRepository
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.core.utils.toNullable
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.Instant
+import java.time.YearMonth
 import java.util.UUID
 
 /** Thrown when a CV form cannot be turned into a valid CV. */
@@ -33,12 +37,13 @@ class CvPersonNotFoundException(
 
 class CvAlreadyExistsException(
     person: Person,
-    language: CvLanguage,
-) : CvValidationException("${person.getFullName()} already has a $language CV")
+    name: String,
+) : CvValidationException("${person.getFullName()} already has a CV named '$name'")
 
 @Service
 class CvService(
     private val cvRepository: CvRepository,
+    private val cvRevisionRepository: CvRevisionRepository,
     private val personRepository: PersonRepository,
 ) {
     fun findAll(pageable: Pageable): Page<Cv> = cvRepository.findAll(pageable)
@@ -53,32 +58,76 @@ class CvService(
     @Transactional
     fun create(form: CvForm): Cv = form.internalize().save()
 
+    /** Saves [form] over the CV with [code]; what the CV held before becomes a revision. */
     @Transactional
     fun update(
         code: String,
         form: CvForm,
-    ): Cv? = findByCode(code)?.let { form.internalize(it).save() }
+    ): Cv? =
+        findByCode(code)?.let { existing ->
+            val updated = form.internalize(existing)
+            val before = existing.snapshot()
+            // Saving without changes adds no revision
+            if (before != updated.snapshot()) {
+                cvRevisionRepository.save(
+                    CvRevision(cv = existing, savedAt = existing.updatedAt, content = mapper.writeValueAsString(before)),
+                )
+            }
+            updated.save()
+        }
+
+    /** The earlier versions of the CV with [code], latest first. */
+    fun findRevisions(code: String): List<CvRevision> = cvRevisionRepository.findAllByCvCodeOrderBySavedAtDesc(code)
+
+    /** An earlier version of the CV with [code], as the CV it was then (not stored). */
+    fun findRevision(
+        code: String,
+        id: UUID,
+    ): Cv? =
+        cvRevisionRepository
+            .findByIdAndCvCode(id, code)
+            ?.let { revision ->
+                revision.snapshot().toForm(revision.cv.person.uuid).internalize(revision.cv, check = false)
+                    .copy(updatedAt = revision.savedAt)
+            }
+
+    /** Makes an earlier version the current one; the current one becomes a revision too. */
+    @Transactional
+    fun restore(
+        code: String,
+        id: UUID,
+    ): Cv? =
+        cvRevisionRepository
+            .findByIdAndCvCode(id, code)
+            ?.let { revision -> update(code, revision.snapshot().toForm(revision.cv.person.uuid)) }
 
     @Transactional
     fun deleteByCode(code: String) = cvRepository.deleteByCode(code)
 
     /**
-     * Builds the CV to persist. A person has one CV per language; when updating, the
-     * CV being updated may of course keep its own person and language. Experiences are
-     * kept newest first, the order in which a CV lists them.
+     * Builds the CV to persist. The names of the CVs of a person are unique (ignoring
+     * case); when updating, the CV being updated may of course keep its own name.
+     * Experiences are kept newest first, the order in which a CV lists them.
      */
-    private fun CvForm.internalize(existing: Cv? = null): Cv {
+    private fun CvForm.internalize(
+        existing: Cv? = null,
+        check: Boolean = true,
+    ): Cv {
         val person = findPerson(personId)
+        val name = name.trim()
 
-        cvRepository
-            .findByPersonUuidAndLanguage(person.uuid, language)
-            ?.takeIf { it.id != existing?.id }
-            ?.let { throw CvAlreadyExistsException(person, language) }
+        if (check) {
+            cvRepository
+                .findByPersonUuidAndNameIgnoreCase(person.uuid, name)
+                ?.takeIf { it.id != existing?.id }
+                ?.let { throw CvAlreadyExistsException(person, name) }
+        }
 
         return Cv(
             id = existing?.id ?: 0,
             code = existing?.code ?: UUID.randomUUID().toString(),
             person = person,
+            name = name.also { if (it.length > Cv.CV_NAME_LENGTH) throw CvInvalidInputException("name may be at most ${Cv.CV_NAME_LENGTH} characters") },
             language = language,
             place = place.cleaned("place", MAX_LINE_LENGTH),
             phone = phone.cleaned("phone", MAX_LINE_LENGTH),
@@ -149,7 +198,80 @@ class CvService(
 
     private fun Cv.save(): Cv = cvRepository.save(this)
 
+    private fun Cv.snapshot() =
+        CvSnapshot(
+            name = name,
+            language = language,
+            place = place,
+            phone = phone,
+            summary = summary,
+            experiences =
+                experiences.map {
+                    CvSnapshot.Experience(
+                        from = it.from.toString(),
+                        to = it.to?.toString(),
+                        role = it.role,
+                        client = it.client,
+                        employer = it.employer,
+                        technologies = it.technologies,
+                        description = it.description,
+                    )
+                },
+            skills = skills.map { CvSnapshot.Skill(category = it.category, name = it.name, level = it.level) },
+            education = education,
+            subjects = subjects,
+            languages = languages,
+        )
+
+    private fun CvRevision.snapshot(): CvSnapshot = mapper.readValue(content, CvSnapshot::class.java)
+
+    private fun CvSnapshot.toForm(personId: UUID) =
+        CvForm(
+            personId = personId,
+            name = name,
+            language = language,
+            place = place,
+            phone = phone,
+            summary = summary,
+            experiences =
+                experiences.map {
+                    CvExperienceForm(
+                        from = YearMonth.parse(it.from),
+                        to = it.to?.let(YearMonth::parse),
+                        role = it.role,
+                        client = it.client,
+                        employer = it.employer,
+                        technologies = it.technologies,
+                        description = it.description,
+                    )
+                },
+            skills = skills.map { CvSkillForm(category = it.category, name = it.name, level = it.level) },
+            education = education,
+            subjects = subjects,
+            languages = languages,
+        )
+
+    /** A copy with another [updatedAt]; [Cv] is no data class since it is an entity. */
+    private fun Cv.copy(updatedAt: Instant) =
+        Cv(
+            id = id,
+            code = code,
+            person = person,
+            name = name,
+            language = language,
+            place = place,
+            phone = phone,
+            summary = summary,
+            experiences = experiences,
+            skills = skills,
+            education = education,
+            subjects = subjects,
+            languages = languages,
+            updatedAt = updatedAt,
+        )
+
     companion object {
+        private val mapper = jacksonObjectMapper()
         private const val MAX_LINE_LENGTH = 255
         private const val MAX_TECHNOLOGIES_LENGTH = 1000
         private const val MAX_TECHNOLOGY_LENGTH = 100

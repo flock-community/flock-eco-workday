@@ -1,7 +1,6 @@
 package community.flock.eco.workday.application.repository
 
 import community.flock.eco.workday.application.model.Cv
-import community.flock.eco.workday.application.model.CvLanguage
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -12,9 +11,9 @@ import java.util.UUID
 interface CvRepository : JpaRepository<Cv, Long> {
     fun findByCode(code: String): Cv?
 
-    fun findByPersonUuidAndLanguage(
+    fun findByPersonUuidAndNameIgnoreCase(
         personUuid: UUID,
-        language: CvLanguage,
+        name: String,
     ): Cv?
 
     fun findAllByPersonUuid(

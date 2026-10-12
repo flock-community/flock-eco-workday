@@ -17,6 +17,15 @@ async function selectPerson(page: Page, name: string) {
   await page.waitForLoadState('networkidle');
 }
 
+/** The picker of the CV versions of the shown person. */
+const versionPicker = (page: Page) =>
+  page.getByRole('combobox', { name: 'CV' });
+
+async function selectVersion(page: Page, name: string) {
+  await versionPicker(page).click();
+  await page.getByRole('option', { name: new RegExp(`^${name} ·`) }).click();
+}
+
 async function fillMonth(page: Page, label: string, month: string) {
   const input = page.getByLabel(label, { exact: true }).first();
   await input.click();
@@ -40,7 +49,7 @@ test.describe('CV', () => {
     await context.clearCookies();
   });
 
-  test('a worker sees only their own CV, and writes, edits and deletes it', async ({
+  test('a worker writes their own CV, keeps versions of it and restores an earlier one', async ({
     page,
   }) => {
     await Given_I_am_logged_in_as_user(page, WORKER_USERNAME);
@@ -55,7 +64,7 @@ test.describe('CV', () => {
       page.getByRole('combobox', { name: 'Select person' }),
     ).toHaveCount(0);
     await expect(page.getByTestId('cv-empty')).toContainText(
-      'You have no Dutch CV yet',
+      'You have no CV yet',
     );
 
     await page.getByRole('link', { name: 'Write CV' }).click();
@@ -67,11 +76,15 @@ test.describe('CV', () => {
       .getByRole('textbox', { name: 'Profile' })
       .fill('Ernie is an engineer who likes rubber ducks.');
 
-    // Save without the required fields of an experience is refused in the form
+    // Save without a name or the required fields of an experience is refused in the form
     await page.getByRole('button', { name: 'Add experience' }).click();
     await page.getByRole('button', { name: 'Save' }).click();
+    await expect(page.getByText('Name is required')).toBeVisible();
     await expect(page.getByText('Role is required')).toBeVisible();
 
+    await page
+      .getByRole('textbox', { name: 'Name of this version' })
+      .fill('Algemeen');
     await fillMonth(page, 'From', '03-2021');
     await page.getByRole('textbox', { name: 'Role' }).fill('Backend engineer');
     await page.getByRole('textbox', { name: 'Client' }).fill('NS');
@@ -91,42 +104,64 @@ test.describe('CV', () => {
 
     // Back on the CV page, with the new CV
     const cv = page.getByRole('article');
+    await expect(versionPicker(page)).toHaveText(/Algemeen · Dutch/);
     await expect(
       cv.getByRole('heading', { name: 'Curriculum Vitae - Ernie Muppets' }),
     ).toBeVisible();
     await expect(cv.getByRole('table')).toContainText('03-2021 - nu');
     await expect(cv.getByRole('table')).toContainText('NS (via Flock)');
     await expect(cv.getByText('Kotlin, Spring Boot')).toBeVisible();
-    await expect(
-      cv.getByText('Ernie built the journey planner.'),
-    ).toBeVisible();
 
-    // Edit: make it the English CV and end the job
+    // Edit: make it English and end the job
     await page.getByRole('link', { name: 'Edit' }).click();
     await page.getByRole('combobox', { name: 'Language' }).click();
     await page.getByRole('option', { name: 'English' }).click();
     await fillMonth(page, 'To', '12-2023');
     await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByRole('tab', { name: 'English' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    await expect(versionPicker(page)).toHaveText(/Algemeen · English/);
     await expect(cv.getByText('Working experience')).toBeVisible();
     await expect(cv.getByRole('table')).toContainText('03-2021 - 12-2023');
     await expect(cv.getByRole('table')).toContainText('34');
 
-    // The Dutch one is gone now
-    await page.getByRole('tab', { name: 'Dutch' }).click();
-    await expect(page.getByTestId('cv-empty')).toContainText(
-      'You have no Dutch CV yet',
-    );
+    // The history has the version before the edit
+    await page.getByRole('button', { name: 'History' }).click();
+    await expect(page.getByRole('menuitem')).toHaveCount(2);
+    await page.getByRole('menuitem').nth(1).click();
+    await expect(
+      page.getByText('You are looking at the version saved'),
+    ).toBeVisible();
+    await expect(cv.getByRole('table')).toContainText('03-2021 - nu');
+    await expect(cv.getByText('Werkervaring')).toBeVisible();
 
-    // And delete the English one
-    await page.getByRole('tab', { name: 'English' }).click();
+    await page.getByRole('button', { name: 'Restore this version' }).click();
+    await expect(
+      page.getByText('You are looking at the version saved'),
+    ).toHaveCount(0);
+    await expect(versionPicker(page)).toHaveText(/Algemeen · Dutch/);
+    await expect(cv.getByRole('table')).toContainText('03-2021 - nu');
+
+    // A second version, starting as a copy of the first
+    await page.getByRole('button', { name: 'New version' }).click();
+    await page.getByRole('menuitem', { name: 'Copy of Algemeen' }).click();
+    const name = page.getByRole('textbox', { name: 'Name of this version' });
+    await expect(name).toHaveValue('Algemeen (copy)');
+    await expect(page.getByRole('textbox', { name: 'Place' })).toHaveValue(
+      'Hilversum',
+    );
+    await name.fill('Backend');
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(versionPicker(page)).toHaveText(/Backend · Dutch/);
+
+    // Both versions are there; switch between them
+    await selectVersion(page, 'Algemeen');
+    await expect(versionPicker(page)).toHaveText(/Algemeen · Dutch/);
+
+    // And delete them again
     await deleteShownCv(page);
-    await page.getByRole('tab', { name: 'English' }).click();
+    await expect(versionPicker(page)).toHaveText(/Backend · Dutch/);
+    await deleteShownCv(page);
     await expect(page.getByTestId('cv-empty')).toContainText(
-      'You have no English CV yet',
+      'You have no CV yet',
     );
   });
 
@@ -136,21 +171,14 @@ test.describe('CV', () => {
     await Given_I_am_logged_in_as_user(page, ADMIN_USERNAME);
     await goToCv(page);
 
-    // Bert only has an English CV, so that is the one shown
     const cv = page.getByRole('article');
-    await expect(page.getByRole('tab', { name: 'English' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    await expect(versionPicker(page)).toHaveText(/General · English/);
     await expect(
       cv.getByRole('heading', { name: 'Curriculum Vitae - Bert Muppets' }),
     ).toBeVisible();
 
     await selectPerson(page, 'Tommy Dog');
-    await expect(page.getByRole('tab', { name: 'Dutch' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    await expect(versionPicker(page)).toHaveText(/Algemeen 2025 · Dutch/);
     await expect(
       cv.getByRole('heading', { name: 'Curriculum Vitae - Tommy Dog' }),
     ).toBeVisible();
@@ -184,17 +212,16 @@ test.describe('CV', () => {
     ).toBeVisible();
     await expect(cv.getByRole('heading', { name: 'Opleiding' })).toBeVisible();
     await expect(cv.getByText('Engels – uitstekend')).toBeVisible();
+    // An admin writes anybody's CV
+    await expect(page.getByRole('link', { name: 'Edit' })).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Print or save as PDF' }),
     ).toBeEnabled();
-
-    await page.getByRole('tab', { name: 'English' }).click();
-    await expect(page.getByTestId('cv-empty')).toContainText(
-      'Tommy Dog has no English CV yet',
-    );
   });
 
-  test('a CV saved as PDF can be imported again', async ({ page }) => {
+  test('a CV saved as PDF can be imported again as a new version', async ({
+    page,
+  }) => {
     await Given_I_am_logged_in_as_user(page, ADMIN_USERNAME);
     await goToCv(page);
     await selectPerson(page, 'Tommy Dog');
@@ -214,8 +241,6 @@ test.describe('CV', () => {
       buffer: pdf,
     };
 
-    // Tommy has no English CV yet: start one from the PDF
-    await page.getByRole('tab', { name: 'English' }).click();
     await page.getByLabel('CV PDF').setInputFiles(file);
 
     await expect(
@@ -225,6 +250,10 @@ test.describe('CV', () => {
       page.getByText('Read from CV Tommy Dog NL.pdf (Tommy Dog)'),
     ).toBeVisible();
     await expect(page.getByText(/looks like the CV of/)).toHaveCount(0);
+    // The new version is named after the file
+    await expect(
+      page.getByRole('textbox', { name: 'Name of this version' }),
+    ).toHaveValue('CV Tommy Dog NL');
     await expect(page.getByRole('textbox', { name: 'Place' })).toHaveValue(
       'Hilversum',
     );
@@ -257,19 +286,26 @@ test.describe('CV', () => {
     // The stars of the skills are images, so skills are entered by hand
     await expect(page.getByTestId('cv-skill')).toHaveCount(0);
 
-    // The PDF is Dutch and Tommy already has a Dutch CV, so it cannot be stored
+    // A name that is taken is refused
+    await page
+      .getByRole('textbox', { name: 'Name of this version' })
+      .fill('algemeen 2025');
     await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByText('Tommy Dog already has a NL CV')).toBeVisible();
+    await expect(
+      page.getByText("Tommy Dog already has a CV named 'algemeen 2025'"),
+    ).toBeVisible();
 
-    // Cancel goes back to Tommy's CV page
-    await page.getByRole('button', { name: 'Cancel' }).click();
-    await expect(page.getByTestId('cv-empty')).toContainText(
-      'Tommy Dog has no English CV yet',
-    );
+    // Under its own name it is stored next to the other version
+    await page
+      .getByRole('textbox', { name: 'Name of this version' })
+      .fill('Imported');
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(versionPicker(page)).toHaveText(/Imported · Dutch/);
+    await deleteShownCv(page);
+    await expect(versionPicker(page)).toHaveText(/Algemeen 2025 · Dutch/);
 
     // Importing Tommy's PDF for somebody else gets a warning
     await selectPerson(page, 'Bert Muppets');
-    await page.getByRole('tab', { name: 'Dutch' }).click();
     await page.getByLabel('CV PDF').setInputFiles(file);
     await expect(
       page.getByRole('heading', { name: 'New CV of Bert Muppets' }),

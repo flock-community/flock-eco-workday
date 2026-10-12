@@ -20,6 +20,19 @@ endpoint DeleteCv DELETE /api/cvs/{code: String} -> {
   204 -> Unit
   404 -> Error
 }
+endpoint GetCvRevisions GET /api/cvs/{code: String}/revisions -> {
+  200 -> CvRevision[]
+  404 -> Error
+}
+endpoint GetCvRevision GET /api/cvs/{code: String}/revisions/{id: String} -> {
+  200 -> Cv
+  404 -> Error
+}
+endpoint PostCvRevisionRestore POST /api/cvs/{code: String}/revisions/{id: String}/restore -> {
+  200 -> Cv
+  404 -> Error
+  409 -> Error
+}
 endpoint PostCvImport POST CvImportForm /api/cvs/import -> {
   200 -> CvImport
   400 -> Error
@@ -27,6 +40,7 @@ endpoint PostCvImport POST CvImportForm /api/cvs/import -> {
 
 type YearMonth = String(/^\d{4}-(0[1-9]|1[0-2])$/g)
 type CvRequiredText = String(/^(?!\s*$).{1,255}$/g)
+type CvName = String(/^(?!\s*$).{1,100}$/g)
 
 enum CvLanguage {
   NL, EN
@@ -48,6 +62,7 @@ type CvSkillForm {
 }
 type CvForm {
   personId: UUID?,
+  name: CvName,
   language: CvLanguage,
   place: String?,
   phone: String?,
@@ -75,6 +90,7 @@ type CvSkill {
 type Cv {
   id: Integer?,
   code: String?,
+  name: String?,
   language: CvLanguage?,
   place: String?,
   phone: String?,
@@ -86,6 +102,10 @@ type Cv {
   languages: String?,
   updatedAt: String?,
   person: Person?
+}
+type CvRevision {
+  id: String,
+  savedAt: String
 }
 type CvImportForm {
   pdf: String

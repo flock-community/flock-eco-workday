@@ -109,6 +109,7 @@ class CreateHelper(
     fun createCv(
         person: Person,
         language: CvLanguage = CvLanguage.NL,
+        name: String = "CV $language",
         summary: String? = "Engineer at heart.",
         experiences: List<CvExperienceForm> =
             listOf(
@@ -123,6 +124,7 @@ class CreateHelper(
     ): Cv =
         CvForm(
             personId = person.uuid,
+            name = name,
             language = language,
             summary = summary,
             experiences = experiences,

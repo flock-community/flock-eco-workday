@@ -6,6 +6,7 @@ import java.util.UUID
 
 data class CvForm(
     val personId: UUID,
+    val name: String,
     val language: CvLanguage,
     val place: String? = null,
     val phone: String? = null,

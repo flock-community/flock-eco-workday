@@ -3,9 +3,10 @@ databaseChangeLog:
       id: db.changelog-039-cv-1
       author: willemveelenturf
       comment: >-
-        Curricula vitae. A person has at most one CV per language (NL or EN) with a
-        place, phone number, profile text (summary) and education, subjects and
-        languages as free text; name, e-mail and date of birth come from the person. A CV is personal data, so it is deleted with its person.
+        Curricula vitae. A person can have several, each with its own name and a
+        language (NL or EN), a place, phone number, profile text (summary) and
+        education, subjects and languages as free text; the name, e-mail and date of
+        birth on the CV come from the person. A CV is personal data, so it is deleted with its person.
       changes:
         - createTable:
             tableName: cv
@@ -27,6 +28,11 @@ databaseChangeLog:
               - column:
                   name: person_id
                   type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
                   constraints:
                     nullable: false
               - column:
@@ -69,8 +75,8 @@ databaseChangeLog:
             validate: true
         - addUniqueConstraint:
             tableName: cv
-            columnNames: person_id, language
-            constraintName: cv_person_language_unique
+            columnNames: person_id, name
+            constraintName: cv_person_name_unique
   - changeSet:
       id: db.changelog-039-cv-2
       author: willemveelenturf
@@ -180,6 +186,54 @@ databaseChangeLog:
   - changeSet:
       id: db.changelog-039-cv-4
       author: willemveelenturf
+      comment: >-
+        Earlier versions of a CV: on every save the content the CV held until then
+        is kept as a JSON snapshot, with the moment it was saved (saved_at).
+      changes:
+        - createTable:
+            tableName: cv_revision
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: cv_revisionPK
+              - column:
+                  name: cv_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: saved_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content
+                  type: TEXT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: cv_id
+            baseTableName: cv_revision
+            constraintName: FK_cv_revision_cv
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: cv
+            onDelete: CASCADE
+            validate: true
+        - createIndex:
+            indexName: cv_revision_cv_id_index
+            tableName: cv_revision
+            columns:
+              - column:
+                  name: cv_id
+  - changeSet:
+      id: db.changelog-039-cv-5
+      author: willemveelenturf
       comment: Hibernate 6 entity-specific sequence for cv ids (see db.changelog-026).
       changes:
         - createSequence:
@@ -187,7 +241,7 @@ databaseChangeLog:
             startValue: 1
             incrementBy: 50
   - changeSet:
-      id: db.changelog-039-cv-5
+      id: db.changelog-039-cv-6
       author: willemveelenturf
       comment: >-
         Everybody who writes hours (WorkDayAuthority.WRITE) gets CvAuthority.READ and

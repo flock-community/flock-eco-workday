@@ -2,6 +2,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 import { array, mixed, number, object, string } from 'yup';
 import type { Cv, CvImport, CvRequest } from '../../clients/CvClient';
 import type { CvExperience, CvLanguage } from '../../wirespec/model';
+import { validateCvName } from '../../wirespec/model/CvName';
 import { validateCvRequiredText } from '../../wirespec/model/CvRequiredText';
 import { validateUUID } from '../../wirespec/model/UUID';
 import { validateYearMonth } from '../../wirespec/model/YearMonth';
@@ -29,6 +30,8 @@ export type CvSkillValues = {
 export type CvFormValues = {
   /** The uuid of the person the CV is about; '' means the current user's own person. */
   personId: string;
+  /** Tells the versions of a person's CV apart, e.g. "2025 NL" or "Frontend EN". */
+  name: string;
   language: CvLanguage;
   place: string;
   phone: string;
@@ -137,6 +140,15 @@ export const CV_FORM_SCHEMA = object({
       'Pick a person from the list',
       (value) => !value || validateUUID(value),
     ),
+  name: string()
+    .trim()
+    .default('')
+    .required('Name is required')
+    .test(
+      'contract',
+      'Name may be at most 100 characters',
+      (value) => !value || validateCvName(value),
+    ),
   language: mixed<CvLanguage>()
     .oneOf(['NL', 'EN'], 'Pick a language')
     .default('NL'),
@@ -178,6 +190,7 @@ const toExperienceValues = (it: CvExperience): CvExperienceValues => ({
 
 export const toCvFormValues = (cv: Cv): CvFormValues => ({
   personId: cv.person?.uuid ?? '',
+  name: cv.name ?? '',
   language: cv.language ?? 'NL',
   place: cv.place ?? '',
   phone: cv.phone ?? '',
@@ -194,8 +207,9 @@ export const toCvFormValues = (cv: Cv): CvFormValues => ({
 });
 
 /** A CV read from a PDF, as the starting point of a new CV. */
-export const fromCvImport = (imported: CvImport): CvFormValues => ({
+export const fromCvImport = (imported: CvImport, name = ''): CvFormValues => ({
   personId: imported.personId ?? '',
+  name,
   language: imported.language ?? 'NL',
   place: imported.place ?? '',
   phone: imported.phone ?? '',
@@ -212,6 +226,7 @@ const optional = (value: string): string | undefined =>
 
 export const toCvRequest = (values: CvFormValues): CvRequest => ({
   personId: optional(values.personId),
+  name: values.name.trim(),
   language: values.language,
   place: optional(values.place),
   phone: optional(values.phone),

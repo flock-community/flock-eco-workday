@@ -27,6 +27,7 @@ const experience = {
 
 const values = (overrides: Partial<CvFormValues> = {}): CvFormValues => ({
   ...(CV_FORM_SCHEMA.getDefault() as CvFormValues),
+  name: 'Algemeen',
   ...overrides,
 });
 
@@ -34,6 +35,7 @@ describe('CV_FORM_SCHEMA', () => {
   it('defaults to an empty Dutch CV of your own', () => {
     expect(CV_FORM_SCHEMA.getDefault()).toEqual({
       personId: '',
+      name: '',
       language: 'NL',
       place: '',
       phone: '',
@@ -115,6 +117,13 @@ describe('CV_FORM_SCHEMA', () => {
     ).resolves.toEqual(['skills[0].name', 'skills[1].level']);
   });
 
+  it('requires a name of at most 100 characters for the version', async () => {
+    await expect(errorsOf(values({ name: '  ' }))).resolves.toEqual(['name']);
+    await expect(errorsOf(values({ name: 'x'.repeat(101) }))).resolves.toEqual([
+      'name',
+    ]);
+  });
+
   it('only accepts a uuid as person', async () => {
     await expect(errorsOf(values({ personId: 'tommy' }))).resolves.toEqual([
       'personId',
@@ -146,6 +155,7 @@ describe('toCvRequest', () => {
       ),
     ).toEqual({
       personId: undefined,
+      name: 'Algemeen',
       language: 'NL',
       place: 'Utrecht',
       phone: undefined,
