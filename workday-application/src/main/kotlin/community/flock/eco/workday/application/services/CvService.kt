@@ -1,5 +1,6 @@
 package community.flock.eco.workday.application.services
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import community.flock.eco.workday.application.forms.CvExperienceForm
 import community.flock.eco.workday.application.forms.CvForm
 import community.flock.eco.workday.application.forms.CvSkillForm
@@ -13,7 +14,6 @@ import community.flock.eco.workday.application.repository.CvRepository
 import community.flock.eco.workday.application.repository.CvRevisionRepository
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.core.utils.toNullable
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -88,7 +88,10 @@ class CvService(
         cvRevisionRepository
             .findByIdAndCvCode(id, code)
             ?.let { revision ->
-                revision.snapshot().toForm(revision.cv.person.uuid).internalize(revision.cv, check = false)
+                revision
+                    .snapshot()
+                    .toForm(revision.cv.person.uuid)
+                    .internalize(revision.cv, check = false)
                     .copy(updatedAt = revision.savedAt)
             }
 
@@ -128,7 +131,14 @@ class CvService(
             id = existing?.id ?: 0,
             code = existing?.code ?: UUID.randomUUID().toString(),
             person = person,
-            name = name.also { if (it.length > Cv.CV_NAME_LENGTH) throw CvInvalidInputException("name may be at most ${Cv.CV_NAME_LENGTH} characters") },
+            name =
+                name.also {
+                    if (it.length >
+                        Cv.CV_NAME_LENGTH
+                    ) {
+                        throw CvInvalidInputException("name may be at most ${Cv.CV_NAME_LENGTH} characters")
+                    }
+                },
             language = language,
             place = place.cleaned("place", MAX_LINE_LENGTH),
             phone = phone.cleaned("phone", MAX_LINE_LENGTH),

@@ -239,8 +239,7 @@ class AggregationControllerTest(
                 get("$baseUrl/total-per-person-me")
                     .with(user(CreateHelper.UserSecurity(regularUser.toDomain())))
                     .accept(APPLICATION_JSON),
-            )
-            .andExpect(status().isOk)
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(APPLICATION_JSON))
     }
 
@@ -348,5 +347,6 @@ class AggregationControllerTest(
             ).asyncDispatch()
             .andExpect(status().isForbidden)
     }
+
     private fun ResultActions.asyncDispatch(): ResultActions = mvc.perform(MockMvcRequestBuilders.asyncDispatch(this.andReturn()))
 }

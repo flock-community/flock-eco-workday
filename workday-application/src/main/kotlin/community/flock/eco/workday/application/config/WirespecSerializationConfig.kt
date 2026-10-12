@@ -17,6 +17,5 @@ import org.springframework.context.annotation.Primary
 class WirespecSerializationConfig {
     @Bean
     @Primary
-    fun lenientWirespecSerialization(objectMapper: ObjectMapper): WirespecSerialization =
-        WirespecSerialization(objectMapper)
+    fun lenientWirespecSerialization(objectMapper: ObjectMapper): WirespecSerialization = WirespecSerialization(objectMapper)
 }

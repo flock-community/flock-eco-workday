@@ -139,7 +139,8 @@ class KratosIdentityUserResolverTest {
         val user = userWithEmail("constraint@flock.community")
         every { userAccountService.findUserAccountOauthByReference("sub-constraint") } returnsMany
             listOf(null, oauth(user, "sub-constraint"))
-        every { userAccountService.createUserAccountOauth(any()) } throws DataIntegrityViolationException("uc_user_account_oauth_provider_reference")
+        every { userAccountService.createUserAccountOauth(any()) } throws
+            DataIntegrityViolationException("uc_user_account_oauth_provider_reference")
         expectUserinfo("token-constraint", withSuccess(userinfoBody("constraint@flock.community"), MediaType.APPLICATION_JSON))
 
         val resolved = resolver.resolve("sub-constraint", "token-constraint")

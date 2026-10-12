@@ -152,7 +152,12 @@ class CvImportServiceTest {
         )
         assertEquals(
             "No CV found in this PDF",
-            assertThrows<CvImportException> { cvImportService.read(pdf(listOf("Invoice 2024-001", "Total 12,50")), matchPerson = false) }.message,
+            assertThrows<CvImportException> {
+                cvImportService.read(
+                    pdf(listOf("Invoice 2024-001", "Total 12,50")),
+                    matchPerson = false,
+                )
+            }.message,
         )
         assertEquals(
             "The PDF may be at most 10 MB",

@@ -46,7 +46,14 @@ data class ParsedCv(
 object FlockCvParser {
     fun parse(text: String): ParsedCv {
         val lines = text.lines().map { it.normalized() }
-        val name = lines.firstNotNullOfOrNull { HEADER.matchEntire(it)?.groupValues?.get(1)?.trim() }
+        val name =
+            lines.firstNotNullOfOrNull {
+                HEADER
+                    .matchEntire(it)
+                    ?.groupValues
+                    ?.get(1)
+                    ?.trim()
+            }
         val footer = footerFor(name)
         val (content, sections) =
             splitSections(
@@ -66,7 +73,13 @@ object FlockCvParser {
         val details = mutableMapOf<String, String>()
         val summaryLines = mutableListOf<String>()
         content.subList(0, introEnd).forEach { line ->
-            val detail = PERSONAL_DETAILS.entries.firstNotNullOfOrNull { (key, regex) -> regex.matchEntire(line)?.let { key to it.groupValues[1].trim() } }
+            val detail =
+                PERSONAL_DETAILS.entries.firstNotNullOfOrNull { (key, regex) ->
+                    regex.matchEntire(line)?.let {
+                        key to
+                            it.groupValues[1].trim()
+                    }
+                }
             when {
                 // Personal details sit above the profile text; once that started, a line is text
                 detail != null && summaryLines.none { it.isNotBlank() } -> details.putIfAbsent(detail.first, detail.second)
@@ -291,7 +304,15 @@ object FlockCvParser {
     /** "ING (via Flock.)" is client ING via employer Flock; a row may mark a job as "<company> employer". */
     private fun parseClient(value: String): Client {
         val trimmed = value.trim()
-        VIA.matchEntire(trimmed)?.let { return Client(it.groupValues[1].trim(), it.groupValues[2].trim().trimEnd('.').trim()) }
+        VIA.matchEntire(trimmed)?.let {
+            return Client(
+                it.groupValues[1].trim(),
+                it.groupValues[2]
+                    .trim()
+                    .trimEnd('.')
+                    .trim(),
+            )
+        }
         return Client(EMPLOYER_SUFFIX.replace(trimmed, "").ifBlank { trimmed }, null)
     }
 
@@ -436,15 +457,18 @@ object FlockCvParser {
 
     /** Words in client names that do not tell one client from another. */
     private val GENERIC_WORDS = setOf("via", "flock", "the", "bv", "nv", "com", "nl", "and", "en")
+
     // A CV printed from the browser can carry its print header (date, time, title) and footer (address, page of pages)
-    private val BROWSER_HEADER = Regex("^\\d{1,2}[-/.]\\d{1,2}[-/.]\\d{2,4},?\\s+\\d{1,2}:\\d{2}(\\s*[AP]M)?(\\s.*)?$", RegexOption.IGNORE_CASE)
+    private val BROWSER_HEADER =
+        Regex("^\\d{1,2}[-/.]\\d{1,2}[-/.]\\d{2,4},?\\s+\\d{1,2}:\\d{2}(\\s*[AP]M)?(\\s.*)?$", RegexOption.IGNORE_CASE)
     private val BROWSER_FOOTER = Regex("^(https?|file):\\S*\\s+\\d+/\\d+$", RegexOption.IGNORE_CASE)
     private val HEADER = Regex("^Curriculum Vitae$DASH(.+)$", RegexOption.IGNORE_CASE)
     private val WORKING_EXPERIENCE = Regex("^(working experience|work experience|werkervaring)$", RegexOption.IGNORE_CASE)
     private val PERIOD = Regex("^(?:period|periode):?\\s+($START_PATTERN)$DASH($END_PATTERN)$", RegexOption.IGNORE_CASE)
     private val CLIENT = Regex("^(?:client|klant|employer|werkgever|opdrachtgever):?\\s+(.+)$", RegexOption.IGNORE_CASE)
     private val ROLE = Regex("^(?:role|rol|function|functie):?\\s+(.+)$", RegexOption.IGNORE_CASE)
-    private val TECHNOLOGIES = Regex("^(?:technologies|technology|technologie|technologieën|techniques|technieken):?\\s+(.+)$", RegexOption.IGNORE_CASE)
+    private val TECHNOLOGIES =
+        Regex("^(?:technologies|technology|technologie|technologieën|techniques|technieken):?\\s+(.+)$", RegexOption.IGNORE_CASE)
     private val ROW = Regex("^($MONTH_PATTERN)$DASH($END_PATTERN)\\s+(.+?)\\s+(\\d+)\\s+(.+)$", RegexOption.IGNORE_CASE)
     private val VIA = Regex("^(.+?)\\s*\\(via\\s+(.+)\\)$", RegexOption.IGNORE_CASE)
     private val EMPLOYER_SUFFIX = Regex("\\s+\\(?(employer|werkgever)\\)?$", RegexOption.IGNORE_CASE)
@@ -459,6 +483,8 @@ object FlockCvParser {
             BIRTHDATE to Regex("^(?:date of birth|birth date|geboortedatum):?\\s+(.+)$", RegexOption.IGNORE_CASE),
         )
 
-    private val DUTCH_WORDS = setOf("de", "het", "een", "en", "van", "met", "voor", "op", "dat", "te", "zijn", "werd", "wordt", "bij", "naar", "niet")
-    private val ENGLISH_WORDS = setOf("the", "and", "of", "a", "with", "for", "on", "that", "to", "was", "were", "at", "by", "not", "he", "she")
+    private val DUTCH_WORDS =
+        setOf("de", "het", "een", "en", "van", "met", "voor", "op", "dat", "te", "zijn", "werd", "wordt", "bij", "naar", "niet")
+    private val ENGLISH_WORDS =
+        setOf("the", "and", "of", "a", "with", "for", "on", "that", "to", "was", "were", "at", "by", "not", "he", "she")
 }

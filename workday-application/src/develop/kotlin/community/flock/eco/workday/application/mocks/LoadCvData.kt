@@ -101,7 +101,9 @@ class LoadCvData(
                         CvSkill("Frameworks", "Spring", 5),
                         CvSkill("Frameworks", "React", 4),
                     ),
-                education = "Master, Business Information Management, Rotterdam (2012)\nHBO Bachelor, Information and Communication, Rotterdam (2010)",
+                education =
+                    "Master, Business Information Management, Rotterdam (2012)\n" +
+                        "HBO Bachelor, Information and Communication, Rotterdam (2010)",
                 subjects = "IT Security; Identification; Authentication; API",
                 languages = "Nederlands – moedertaal\nEngels – uitstekend",
             ).save()
@@ -111,7 +113,9 @@ class LoadCvData(
                 name = "General",
                 language = CvLanguage.EN,
                 place = "Hilversum",
-                summary = "Bert Muppets is a pragmatic backend engineer who likes his systems the way he likes his paperclips: well organised.",
+                summary =
+                    "Bert Muppets is a pragmatic backend engineer who likes his systems the way he likes his" +
+                        " paperclips: well organised.",
                 experiences =
                     listOf(
                         CvExperience(

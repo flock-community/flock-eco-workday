@@ -72,7 +72,7 @@ class FlockCvParserTest {
 
         Een dataplatform voor demografische informatie.
 
-        Period ${zws} 03-2016 - 12-2017
+        Period $zws 03-2016 - 12-2017
         Employer$zws ING Mobile
         Role$zws Lead engineer
         Technologies$zws Ionic, Angular

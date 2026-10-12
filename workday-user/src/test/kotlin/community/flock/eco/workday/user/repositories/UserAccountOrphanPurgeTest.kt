@@ -40,8 +40,12 @@ class UserAccountOrphanPurgeTest(
 
         // User.accounts is an EAGER, JOINED-polymorphic @OneToMany: loading the user force-initialises it,
         // and the orphan base row has no subclass row, so Hibernate cannot resolve a concrete persister.
-        assertThatThrownBy { userRepository.findById(user.id).orElseThrow().accounts.size }
-            .isInstanceOf(RuntimeException::class.java)
+        assertThatThrownBy {
+            userRepository
+                .findById(user.id)
+                .orElseThrow()
+                .accounts.size
+        }.isInstanceOf(RuntimeException::class.java)
     }
 
     @Test

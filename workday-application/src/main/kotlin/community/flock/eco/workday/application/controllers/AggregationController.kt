@@ -141,9 +141,7 @@ class AggregationController(
         )
 
     @PreAuthorize("hasAuthority('AggregationAuthority.READ')")
-    override suspend fun hourClientOverviewEmployee(
-        request: HourClientOverviewEmployee.Request,
-    ): HourClientOverviewEmployee.Response<*> {
+    override suspend fun hourClientOverviewEmployee(request: HourClientOverviewEmployee.Request): HourClientOverviewEmployee.Response<*> {
         val yearMonth = YearMonth.of(request.queries.year, request.queries.month)
         val from = yearMonth.atDay(1)
         val to = yearMonth.atEndOfMonth()

@@ -105,7 +105,8 @@ class EventController(
 
     override suspend fun getEventByCode(request: GetEventByCode.Request): GetEventByCode.Response<*> {
         val event =
-            eventService.findByCode(request.path.code)
+            eventService
+                .findByCode(request.path.code)
                 ?.applyAuthentication(authentication())
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found")
         return GetEventByCode.Response200(event.externalize())
@@ -126,7 +127,8 @@ class EventController(
     @PreAuthorize("hasAuthority('EventAuthority.WRITE')")
     override suspend fun deleteEvent(request: DeleteEvent.Request): DeleteEvent.Response<*> {
         val auth = authentication()
-        eventService.findByCode(request.path.code)
+        eventService
+            .findByCode(request.path.code)
             ?.applyAuthentication(auth)
             ?.run { eventService.deleteByCode(this.code) }
         return DeleteEvent.Response204(Unit)
@@ -145,7 +147,8 @@ class EventController(
     override suspend fun unsubscribeFromEvent(request: UnsubscribeFromEvent.Request): UnsubscribeFromEvent.Response<*> {
         val auth = authentication().requireAuthority(EventAuthority.SUBSCRIBE)
         val person = currentPerson()
-        eventService.findByCode(request.path.eventCode)
+        eventService
+            .findByCode(request.path.eventCode)
             ?.applyAuthentication(auth)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found")
         val event = eventService.unsubscribeFromEvent(request.path.eventCode, person)
@@ -168,8 +171,9 @@ class EventController(
             eventRatingService.create(
                 EventRatingForm(
                     eventCode = request.path.code,
-                    personId = request.body.personId?.let(UUID::fromString)
-                        ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "personId is required"),
+                    personId =
+                        request.body.personId?.let(UUID::fromString)
+                            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "personId is required"),
                     rating = request.body.rating ?: 0,
                 ),
             )

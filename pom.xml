@@ -40,9 +40,9 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <mockk.version>1.14.3</mockk.version>
         <node.version>v22.22.3</node.version>
-        <pdfbox.version>3.0.5</pdfbox.version>
         <npm.ci.skip>false</npm.ci.skip>
         <npm.version>10.9.8</npm.version>
+        <pdfbox.version>3.0.5</pdfbox.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <reflections.version>0.10.2</reflections.version>

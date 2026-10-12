@@ -3,8 +3,8 @@ package community.flock.eco.workday.services
 import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.interfaces.Period
 import community.flock.eco.workday.application.model.Assignment
-import community.flock.eco.workday.application.model.ContractType
 import community.flock.eco.workday.application.model.BudgetCategory
+import community.flock.eco.workday.application.model.ContractType
 import community.flock.eco.workday.application.model.Event
 import community.flock.eco.workday.application.model.EventDay
 import community.flock.eco.workday.application.model.EventType

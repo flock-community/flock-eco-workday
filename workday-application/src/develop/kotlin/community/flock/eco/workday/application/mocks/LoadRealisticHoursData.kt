@@ -155,7 +155,11 @@ class LoadRealisticHoursData(
         return block.toSet()
     }
 
-    private fun paintWorkedHours(days: List<LocalDate>, assignmentCode: String, hoursPerDay: Double = 8.0) {
+    private fun paintWorkedHours(
+        days: List<LocalDate>,
+        assignmentCode: String,
+        hoursPerDay: Double = 8.0,
+    ) {
         if (days.isEmpty()) return
         workDayService.create(
             WorkDayForm(
@@ -183,6 +187,5 @@ class LoadRealisticHoursData(
     private fun LocalDate.daysTo(other: LocalDate): Sequence<LocalDate> =
         generateSequence(this) { it.plusDays(1) }.takeWhile { !it.isAfter(other) }
 
-    private fun LocalDate.workingDaysTo(other: LocalDate): Sequence<LocalDate> =
-        daysTo(other).filter { it.isWorkingDay() }
+    private fun LocalDate.workingDaysTo(other: LocalDate): Sequence<LocalDate> = daysTo(other).filter { it.isWorkingDay() }
 }

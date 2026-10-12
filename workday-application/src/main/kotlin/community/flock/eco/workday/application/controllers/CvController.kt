@@ -18,10 +18,10 @@ import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.model.CvExperience
 import community.flock.eco.workday.application.model.CvLanguage
 import community.flock.eco.workday.application.model.CvRevision
+import community.flock.eco.workday.application.services.CvAlreadyExistsException
 import community.flock.eco.workday.application.services.CvImportException
 import community.flock.eco.workday.application.services.CvImportService
 import community.flock.eco.workday.application.services.CvInvalidInputException
-import community.flock.eco.workday.application.services.CvAlreadyExistsException
 import community.flock.eco.workday.application.services.CvService
 import community.flock.eco.workday.application.services.CvValidationException
 import community.flock.eco.workday.application.services.PersonService
@@ -134,8 +134,11 @@ class CvController(
     @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
     override suspend fun getCvRevision(request: GetCvRevision.Request): GetCvRevision.Response<*> =
         findReadable(request.path.code)
-            ?.let { cv -> request.path.id.toUuidOrNull()?.let { cvService.findRevision(cv.code, it) } }
-            ?.let { GetCvRevision.Response200(it.externalize()) }
+            ?.let { cv ->
+                request.path.id
+                    .toUuidOrNull()
+                    ?.let { cvService.findRevision(cv.code, it) }
+            }?.let { GetCvRevision.Response200(it.externalize()) }
             ?: GetCvRevision.Response404(Error("Version not found"))
 
     /** Makes an earlier version the current one; the name it had may be taken by now (409). */
@@ -143,8 +146,11 @@ class CvController(
     override suspend fun postCvRevisionRestore(request: PostCvRevisionRestore.Request): PostCvRevisionRestore.Response<*> =
         try {
             findWritable(request.path.code)
-                ?.let { cv -> request.path.id.toUuidOrNull()?.let { cvService.restore(cv.code, it) } }
-                ?.let { PostCvRevisionRestore.Response200(it.externalize()) }
+                ?.let { cv ->
+                    request.path.id
+                        .toUuidOrNull()
+                        ?.let { cvService.restore(cv.code, it) }
+                }?.let { PostCvRevisionRestore.Response200(it.externalize()) }
                 ?: PostCvRevisionRestore.Response404(Error("Version not found"))
         } catch (e: CvAlreadyExistsException) {
             PostCvRevisionRestore.Response409(Error(e.message))
@@ -158,8 +164,13 @@ class CvController(
     @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
     override suspend fun postCvImport(request: PostCvImport.Request): PostCvImport.Response<*> {
         val pdf =
-            runCatching { Base64.getDecoder().decode(request.body.pdf.substringAfter("base64,").trim()) }
-                .getOrElse { return PostCvImport.Response400(Error("pdf is not valid base64")) }
+            runCatching {
+                Base64.getDecoder().decode(
+                    request.body.pdf
+                        .substringAfter("base64,")
+                        .trim(),
+                )
+            }.getOrElse { return PostCvImport.Response400(Error("pdf is not valid base64")) }
         return try {
             val imported = cvImportService.read(pdf, matchPerson = authentication().isAdmin())
             val cv = imported.cv
