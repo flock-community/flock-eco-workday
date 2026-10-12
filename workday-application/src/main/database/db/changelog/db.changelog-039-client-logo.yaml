@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: db.changelog-039-client-logo
+      author: claude
+      comment: >-
+        Optional logo on Client, embedded in the client table: the original file name and the
+        document storage reference of the uploaded image.
+      changes:
+        - addColumn:
+            tableName: client
+            columns:
+              - column:
+                  name: logo_name
+                  type: VARCHAR(255)
+              - column:
+                  name: logo_file
+                  type: UUID

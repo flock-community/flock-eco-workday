@@ -15,10 +15,16 @@ endpoint DeleteClient DELETE /api/clients/{code: String} -> {
 }
 
 type ClientForm {
-  name: String?
+  name: String?,
+  logo: ClientLogo?
 }
 type Client {
   id: Integer?,
   code: String?,
-  name: String?
+  name: String?,
+  logo: ClientLogo?
+}
+type ClientLogo {
+  name: String,
+  file: UUID
 }

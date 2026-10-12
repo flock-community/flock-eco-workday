@@ -37,7 +37,6 @@ import java.io.File
 import java.time.LocalDate
 import java.util.UUID
 import community.flock.eco.workday.api.model.Assignment as AssignmentApi
-import community.flock.eco.workday.api.model.Client as ClientApi
 import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.api.model.Project as ProjectApi
 import community.flock.eco.workday.api.model.WorkDay as WorkDayApi
@@ -45,7 +44,6 @@ import community.flock.eco.workday.api.model.WorkDayForm as WorkDayFormApi
 import community.flock.eco.workday.api.model.WorkDayFormStatus as WorkDayFormStatusApi
 import community.flock.eco.workday.api.model.WorkDaySheet as WorkDaySheetApi
 import community.flock.eco.workday.api.model.WorkDayStatus as WorkDayStatusApi
-import community.flock.eco.workday.application.model.Client as ClientInternal
 import community.flock.eco.workday.application.model.Person as PersonInternal
 import community.flock.eco.workday.application.model.Project as ProjectInternal
 
@@ -195,12 +193,10 @@ class WorkdayController(
             hoursPerWeek = hoursPerWeek,
             totalHours = null,
             totalCosts = null,
-            client = client.externalize(),
+            client = client.produce(),
             person = person.externalize(),
             project = project?.externalize(),
         )
-
-    private fun ClientInternal.externalize() = ClientApi(id = id, code = code, name = name)
 
     private fun ProjectInternal.externalize() = ProjectApi(id = id, code = code, name = name)
 

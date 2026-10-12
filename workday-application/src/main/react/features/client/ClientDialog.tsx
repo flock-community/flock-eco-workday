@@ -24,8 +24,8 @@ export function ClientDialog({ open, code, onClose }: ClientDialogProps) {
     }
   }, [code]);
 
-  const handleSubmit = (value: { name: string }) => {
-    const body: ClientRequest = { name: value.name };
+  const handleSubmit = (value: Pick<ClientRequest, 'name' | 'logo'>) => {
+    const body: ClientRequest = { name: value.name, logo: value.logo };
     if (code) {
       ClientClient.put(code, body).then(() => onClose?.());
     } else {

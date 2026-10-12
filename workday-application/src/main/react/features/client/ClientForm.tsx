@@ -3,6 +3,7 @@ import { TextField } from 'formik-mui';
 import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { ClientClient } from '../../clients/ClientClient';
+import { ClientLogoField } from './ClientLogoField';
 
 export const CLIENT_FORM_ID = 'client-form-id';
 type ClientFormProps = {
@@ -41,6 +42,7 @@ export function ClientForm({ code, value, onSubmit }: ClientFormProps) {
         fullWidth
         component={TextField}
       />
+      <ClientLogoField name="logo" />
     </Form>
   );
 

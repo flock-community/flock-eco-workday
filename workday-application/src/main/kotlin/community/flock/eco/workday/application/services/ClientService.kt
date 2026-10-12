@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class ClientService(
@@ -51,7 +52,9 @@ class ClientService(
     private fun ClientForm.internalize(it: Client? = null) =
         Client(
             id = it?.id ?: 0,
+            code = it?.code ?: UUID.randomUUID().toString(),
             name = this.name,
+            logo = this.logo,
         )
 
     private fun Client.save() = clientRepository.save(this)

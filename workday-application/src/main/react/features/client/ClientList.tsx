@@ -1,8 +1,13 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Box, Button, TableCell, TableRow } from '@mui/material';
+import BusinessIcon from '@mui/icons-material/Business';
+import { Avatar, Box, Button, TableCell, TableRow } from '@mui/material';
 import { DataTable } from '@workday-core/components/DataTable';
 import { useEffect, useState } from 'react';
-import { type Client, ClientClient } from '../../clients/ClientClient';
+import {
+  type Client,
+  ClientClient,
+  clientLogoUrl,
+} from '../../clients/ClientClient';
 import { FlockPagination } from '../../components/pagination/FlockPagination';
 import { TableCard } from '../../components/TableCard';
 import { isDefined } from '../../utils/validation';
@@ -55,7 +60,7 @@ export function ClientList({
         loading={loading}
       >
         <DataTable
-          columns={[{ header: 'Name' }]}
+          columns={[{ header: 'Logo' }, { header: 'Name' }]}
           items={list}
           renderRow={(it) => (
             <TableRow
@@ -64,6 +69,16 @@ export function ClientList({
               sx={{ cursor: 'pointer' }}
               onClick={handleItem(it)}
             >
+              <TableCell sx={{ width: 72 }}>
+                <Avatar
+                  variant="rounded"
+                  alt={it.name}
+                  src={it.logo ? clientLogoUrl(it.logo) : undefined}
+                  slotProps={{ img: { sx: { objectFit: 'contain' } } }}
+                >
+                  <BusinessIcon />
+                </Avatar>
+              </TableCell>
               <TableCell>{it.name}</TableCell>
             </TableRow>
           )}
