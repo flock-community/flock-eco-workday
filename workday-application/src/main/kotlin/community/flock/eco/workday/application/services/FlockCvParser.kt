@@ -93,7 +93,13 @@ object FlockCvParser {
             language = detectLanguage(listOfNotNull(summary) + experiences.mapNotNull { it.description }, blocks.any { it.current }),
             summary = summary,
             experiences = experiences,
-            skills = (sections[SKILLS].orEmpty() + sections[SKILL_LIST].orEmpty()).flatMap { parseSkills(it) }.distinctBy { it.name.lowercase() },
+            skills =
+                (sections[SKILLS].orEmpty() + sections[SKILL_LIST].orEmpty())
+                    .flatMap {
+                        parseSkills(
+                            it,
+                        )
+                    }.distinctBy { it.name.lowercase() },
             education =
                 listOfNotNull(
                     sections[EDUCATION]?.toEntries(unbulleted = { toText() }),
@@ -278,14 +284,27 @@ object FlockCvParser {
     }
 
     private val Client.words: Set<String>
-        get() = name.lowercase().split(NON_WORD).filter { it.length > 1 && it !in GENERIC_WORDS }.toSet()
+        get() =
+            name
+                .lowercase()
+                .split(NON_WORD)
+                .filter { it.length > 1 && it !in GENERIC_WORDS }
+                .toSet()
 
     /** "React *****" or, as a CV printed from Workday has it, "Kotlin ★★★★★ Git ★★★★": a skill with its rating. */
     private fun parseSkills(line: String): List<CvSkillForm> =
         RATED_SKILL
             .findAll(line)
-            .map { CvSkillForm(name = it.groupValues[1].trim().trimStart(*BULLETS).trim(), level = it.groupValues[2].length) }
-            .filter { it.name.isNotEmpty() && it.name.length <= 255 }
+            .map {
+                CvSkillForm(
+                    name =
+                        it.groupValues[1]
+                            .trim()
+                            .trimStart(*BULLETS)
+                            .trim(),
+                    level = it.groupValues[2].length,
+                )
+            }.filter { it.name.isNotEmpty() && it.name.length <= 255 }
             .toList()
 
     /** "ING (via Flock.)" is client ING via employer Flock; a row may mark a job as "<company> employer". */
@@ -348,7 +367,9 @@ object FlockCvParser {
      * entry runs on until the next bullet; without bullets every line is an entry,
      * unless [unbulleted] says otherwise.
      */
-    private fun List<String>.toEntries(unbulleted: List<String>.() -> String? = { filter { it.isNotBlank() }.joinToString("\n").ifBlank { null } }): String? {
+    private fun List<String>.toEntries(
+        unbulleted: List<String>.() -> String? = { filter { it.isNotBlank() }.joinToString("\n").ifBlank { null } },
+    ): String? {
         val lines = filter { it.isNotBlank() }
         if (lines.none { it.startsWith(BULLETS) }) return unbulleted()
         return lines
@@ -403,7 +424,11 @@ object FlockCvParser {
             // A heading of its own, without a value: the "Technologies: ..." of a block has one
             SKILL_LIST to Regex("^(technologies|technologieën|technieken)$", RegexOption.IGNORE_CASE),
             EDUCATION to Regex("^(education|opleiding|opleidingen)$", RegexOption.IGNORE_CASE),
-            TRAINING to Regex("^(training|trainingen|trainings|courses|cursussen|certifications|certificeringen)$", RegexOption.IGNORE_CASE),
+            TRAINING to
+                Regex(
+                    "^(training|trainingen|trainings|courses|cursussen|certifications|certificeringen)$",
+                    RegexOption.IGNORE_CASE,
+                ),
             SUBJECTS to Regex("^(subjects|expertise|kennisgebieden)$", RegexOption.IGNORE_CASE),
             LANGUAGES to Regex("^(language|languages|taal|talen)$", RegexOption.IGNORE_CASE),
         )
@@ -427,8 +452,22 @@ object FlockCvParser {
     /** English and Dutch month names, by their first three letters. */
     private val MONTH_NAMES =
         mapOf(
-            "jan" to 1, "feb" to 2, "mar" to 3, "maa" to 3, "mrt" to 3, "apr" to 4, "may" to 5, "mei" to 5,
-            "jun" to 6, "jul" to 7, "aug" to 8, "sep" to 9, "oct" to 10, "okt" to 10, "nov" to 11, "dec" to 12,
+            "jan" to 1,
+            "feb" to 2,
+            "mar" to 3,
+            "maa" to 3,
+            "mrt" to 3,
+            "apr" to 4,
+            "may" to 5,
+            "mei" to 5,
+            "jun" to 6,
+            "jul" to 7,
+            "aug" to 8,
+            "sep" to 9,
+            "oct" to 10,
+            "okt" to 10,
+            "nov" to 11,
+            "dec" to 12,
         )
     private val PAGE_NUMBER = Regex("^\\d{1,3}$")
     private val BULLETS = charArrayOf('●', '•', '▪', '◦', '-', '*')

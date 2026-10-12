@@ -38,7 +38,9 @@ class LogoControllerTest(
     private val baseUrl = "/api/logos"
 
     private val png = byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 0x0D)
-    private val svg = """<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10"/></svg>""".toByteArray()
+    private val svg =
+        """<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10"/></svg>"""
+            .toByteArray()
 
     private fun logoJson(
         name: String? = "ING ${UUID.randomUUID()}",
@@ -121,7 +123,8 @@ class LogoControllerTest(
             logoJson(name = " ") to (400 to "name is required"),
             logoJson(name = "x".repeat(101)) to (400 to "name may be at most 100 characters"),
             logoJson(image = null) to (400 to "image is required"),
-            logoJson(image = "<html><script>alert(1)</script></html>".toByteArray()) to (400 to "image must be a PNG, JPEG, GIF, WebP or SVG"),
+            logoJson(image = "<html><script>alert(1)</script></html>".toByteArray()) to
+                (400 to "image must be a PNG, JPEG, GIF, WebP or SVG"),
             logoJson(image = png + ByteArray(512 * 1024)) to (400 to "image may be at most 512 KB"),
         ).forEach { (body, expected) ->
             mvc
@@ -183,7 +186,13 @@ class LogoControllerTest(
             .asyncDispatch()
             .andExpect(status().isNotFound)
 
-        assertNull(cvService.findByCode(cv.code)!!.experiences.single().logoId)
+        assertNull(
+            cvService
+                .findByCode(cv.code)!!
+                .experiences
+                .single()
+                .logoId,
+        )
     }
 
     @Test

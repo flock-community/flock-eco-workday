@@ -81,6 +81,7 @@ class LogoService(
         /** What the bytes are, not what the upload claims: the image is served as this type. */
         fun contentTypeOf(data: ByteArray): String? {
             fun startsWith(vararg bytes: Int) = data.size >= bytes.size && bytes.indices.all { data[it] == bytes[it].toByte() }
+
             fun ascii(
                 from: Int,
                 text: String,
