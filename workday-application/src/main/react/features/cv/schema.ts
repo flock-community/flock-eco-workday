@@ -1,14 +1,12 @@
 import dayjs, { type Dayjs } from 'dayjs';
 import { array, mixed, number, object, string } from 'yup';
-import type { Cv, CvImport, CvRequest } from '../../clients/CvClient';
-import type { Logo } from '../../clients/LogoClient';
+import type { Cv, CvRequest } from '../../clients/CvClient';
 import type { CvExperience, CvLanguage } from '../../wirespec/model';
 import { validateCvName } from '../../wirespec/model/CvName';
 import { validateCvRequiredText } from '../../wirespec/model/CvRequiredText';
 import { validateUUID } from '../../wirespec/model/UUID';
 import { validateYearMonth } from '../../wirespec/model/YearMonth';
 import { parseYearMonth, YEAR_MONTH } from './cvText';
-import { matchLogo } from './logos';
 
 export type CvExperienceValues = {
   /** First month of the job; the day is ignored. */
@@ -211,35 +209,6 @@ export const toCvFormValues = (cv: Cv): CvFormValues => ({
   education: cv.education ?? '',
   subjects: cv.subjects ?? '',
   languages: cv.languages ?? '',
-});
-
-/**
- * A CV read from a PDF, as the starting point of a new CV. Assignments get the logo
- * of their client when the shared collection has one.
- */
-export const fromCvImport = (
-  imported: CvImport,
-  name = '',
-  logos: Logo[] = [],
-): CvFormValues => ({
-  personId: imported.personId ?? '',
-  name,
-  language: imported.language ?? 'NL',
-  place: imported.place ?? '',
-  phone: imported.phone ?? '',
-  summary: imported.summary ?? '',
-  experiences: (imported.experiences ?? []).map((it) => ({
-    ...toExperienceValues(it),
-    logoId: matchLogo(it.client, logos)?.id ?? '',
-  })),
-  skills: (imported.skills ?? []).map((it) => ({
-    category: it.category ?? '',
-    name: it.name ?? '',
-    level: it.level ?? null,
-  })),
-  education: imported.education ?? '',
-  subjects: imported.subjects ?? '',
-  languages: imported.languages ?? '',
 });
 
 const optional = (value: string): string | undefined =>

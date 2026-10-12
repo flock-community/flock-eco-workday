@@ -25,26 +25,17 @@ import { apiErrorMessage } from '../../clients/util/ApiErrorMessage';
 import { MonthPickerField } from '../../components/fields/MonthPickerField';
 import { usePerson } from '../../hooks/PersonHook';
 import { useLoginStatus } from '../../hooks/StatusHook';
-import type { CvImport } from '../../wirespec/model';
 import { CV_LANGUAGES, cvUrl } from './cvText';
 import { LogoField } from './LogoField';
-import { useLogos } from './logos';
 import {
   CV_FORM_SCHEMA,
   type CvFormValues,
   emptyExperience,
   emptySkill,
-  fromCvImport,
   toCvFormValues,
   toCvRequest,
 } from './schema';
 import { TechnologiesField } from './TechnologiesField';
-
-/** A CV read from a PDF, handed to the editor to start a new CV with. */
-export type CvImportState = {
-  imported: CvImport;
-  fileName: string;
-};
 
 function Section({
   title,
@@ -74,17 +65,14 @@ function Section({
 
 /**
  * Writes a CV: personal details, profile text and working experience. A new CV is
- * for the selected person (`?personId=`, else yourself) in `?language=`, and can
- * start from a PDF import passed in the location state.
+ * for the selected person (`?personId=`, else yourself) in `?language=`.
  */
 export function CvEditor() {
   const { code } = useParams<{ code?: string }>();
   const history = useHistory();
-  const location = useLocation<CvImportState | undefined>();
+  const location = useLocation();
   const [person] = usePerson();
-  const [logos] = useLogos();
   const status = useLoginStatus();
-  const imported = code ? undefined : location.state;
   // A new version can start as a copy of an existing one
   const copyFrom = code
     ? null
@@ -117,30 +105,13 @@ export function CvEditor() {
     if (cv) return toCvFormValues(cv);
     if (copy) return { ...toCvFormValues(copy), name: `${copy.name} (copy)` };
     const personId = person?.uuid ?? '';
-    if (imported) {
-      // Named after the file, without .pdf: "CV - 2025 - NL"
-      const name = imported.fileName.replace(/\.pdf$/i, '').slice(0, 100);
-      const values = fromCvImport(imported.imported, name, logos ?? []);
-      return {
-        ...values,
-        personId,
-        language: imported.imported.language ?? defaults.language,
-      };
-    }
     return { ...defaults, personId };
-  }, [cv, copy, imported, person?.uuid, logos]);
+  }, [cv, copy, person?.uuid]);
 
   const personName = cv?.person?.fullName ?? person?.fullName ?? '';
   const personId = cv?.person?.uuid ?? person?.uuid;
   const me = status?.personId;
   const back = cvUrl(personId, me, { cv: cv?.code ?? copy?.code });
-  // The PDF names somebody else than the person this CV is being written for
-  const otherPerson =
-    imported?.imported.personId &&
-    person?.uuid &&
-    imported.imported.personId !== person.uuid
-      ? (imported.imported.name ?? 'somebody else')
-      : null;
 
   const handleSubmit = (
     values: CvFormValues,
@@ -169,13 +140,7 @@ export function CvEditor() {
       });
   };
 
-  // An import waits for the logos, to match them to its clients
-  if (
-    (code && !cv) ||
-    (copyFrom && !copy) ||
-    (!code && !person) ||
-    (imported && logos == null)
-  ) {
+  if ((code && !cv) || (copyFrom && !copy) || (!code && !person)) {
     return error ? <Alert severity="error">{error}</Alert> : <AlignedLoader />;
   }
 
@@ -184,21 +149,6 @@ export function CvEditor() {
       <Typography variant="h4" component="h1" sx={{ mb: 1 }}>
         {code ? `CV of ${personName}` : `New CV of ${personName}`}
       </Typography>
-      {imported && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Read from {imported.fileName}
-          {imported.imported.name ? ` (${imported.imported.name})` : ''}. Check
-          the details below; nothing is stored until you save.
-          {imported.imported.skills.length === 0 &&
-            ' The skills could not be read from the PDF (their stars are images), so add those below.'}
-        </Alert>
-      )}
-      {otherPerson && (
-        <Alert severity="warning" sx={{ mb: 2 }}>
-          This PDF looks like the CV of {otherPerson}, but you are writing the
-          CV of {personName}.
-        </Alert>
-      )}
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
