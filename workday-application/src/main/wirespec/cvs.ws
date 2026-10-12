@@ -33,10 +33,6 @@ endpoint PostCvRevisionRestore POST /api/cvs/{code: String}/revisions/{id: Strin
   404 -> Error
   409 -> Error
 }
-endpoint PostCvImport POST CvImportForm /api/cvs/import -> {
-  200 -> CvImport
-  400 -> Error
-}
 
 type YearMonth = String(/^\d{4}-(0[1-9]|1[0-2])$/g)
 type CvRequiredText = String(/^(?!\s*$).{1,255}$/g)
@@ -108,21 +104,4 @@ type Cv {
 type CvRevision {
   id: String,
   savedAt: String
-}
-type CvImportForm {
-  pdf: String
-}
-type CvImport {
-  personId: String?,
-  name: String?,
-  email: String?,
-  language: CvLanguage?,
-  place: String?,
-  phone: String?,
-  summary: String?,
-  experiences: CvExperience[],
-  skills: CvSkill[],
-  education: String?,
-  subjects: String?,
-  languages: String?
 }

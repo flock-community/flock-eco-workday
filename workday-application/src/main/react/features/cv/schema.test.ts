@@ -1,10 +1,9 @@
 import dayjs from 'dayjs';
-import type { Cv, CvImport } from '../../clients/CvClient';
+import type { Cv } from '../../clients/CvClient';
 import {
   CV_FORM_SCHEMA,
   type CvFormValues,
   emptyExperience,
-  fromCvImport,
   toCvFormValues,
   toCvRequest,
 } from './schema';
@@ -188,8 +187,8 @@ describe('toCvRequest', () => {
   });
 });
 
-describe('toCvFormValues and fromCvImport', () => {
-  const stored: CvImport['experiences'] = [
+describe('toCvFormValues', () => {
+  const stored: NonNullable<Cv['experiences']> = [
     {
       from: '2024-08',
       to: undefined,
@@ -223,43 +222,5 @@ describe('toCvFormValues and fromCvImport', () => {
     expect(form.experiences[0].from?.format('YYYY-MM')).toBe('2024-08');
     expect(form.experiences[0].to).toBeNull();
     expect(form.experiences[0].technologies).toEqual(['Kotlin', 'React']);
-  });
-
-  it('starts a new CV from an import, falling back to Dutch', () => {
-    const imported = {
-      personId: null,
-      name: 'Tommy Dog',
-      language: null,
-      summary: 'Engineer.',
-      experiences: stored,
-      skills: [{ category: null, name: 'React', level: 5 }],
-    } as unknown as CvImport;
-    const form = fromCvImport(imported);
-    expect(form.personId).toBe('');
-    expect(form.language).toBe('NL');
-    expect(form.summary).toBe('Engineer.');
-    expect(form.experiences).toHaveLength(1);
-    expect(toCvRequest(form).experiences?.[0]).toEqual({
-      from: '2024-08',
-      to: undefined,
-      role: 'Software Engineer',
-      client: 'ING',
-      employer: 'Flock',
-      technologies: ['Kotlin', 'React'],
-      description: 'Built things.',
-      logoId: undefined,
-    });
-    expect(form.skills).toEqual([{ category: '', name: 'React', level: 5 }]);
-  });
-
-  it('gives an imported assignment the logo of its client', () => {
-    const imported = { experiences: stored, skills: [] } as unknown as CvImport;
-    const logos = [
-      { id: 'logo-dhl', name: 'DHL', contentType: 'image/png', updatedAt: '' },
-      { id: 'logo-ing', name: 'ING', contentType: 'image/png', updatedAt: '' },
-    ];
-    const form = fromCvImport(imported, 'CV', logos);
-    expect(form.experiences[0].logoId).toBe('logo-ing');
-    expect(toCvRequest(form).experiences?.[0].logoId).toBe('logo-ing');
   });
 });

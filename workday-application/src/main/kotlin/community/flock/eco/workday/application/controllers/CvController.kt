@@ -6,7 +6,6 @@ import community.flock.eco.workday.api.endpoint.GetCvByCode
 import community.flock.eco.workday.api.endpoint.GetCvRevision
 import community.flock.eco.workday.api.endpoint.GetCvRevisions
 import community.flock.eco.workday.api.endpoint.PostCv
-import community.flock.eco.workday.api.endpoint.PostCvImport
 import community.flock.eco.workday.api.endpoint.PostCvRevisionRestore
 import community.flock.eco.workday.api.endpoint.PutCv
 import community.flock.eco.workday.api.model.Error
@@ -18,8 +17,6 @@ import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.model.CvExperience
 import community.flock.eco.workday.application.model.CvLanguage
 import community.flock.eco.workday.application.model.CvRevision
-import community.flock.eco.workday.application.services.CvImportException
-import community.flock.eco.workday.application.services.CvImportService
 import community.flock.eco.workday.application.services.CvInvalidInputException
 import community.flock.eco.workday.application.services.CvAlreadyExistsException
 import community.flock.eco.workday.application.services.CvService
@@ -36,13 +33,11 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.time.YearMonth
-import java.util.Base64
 import java.util.UUID
 import community.flock.eco.workday.api.model.Cv as CvApi
 import community.flock.eco.workday.api.model.CvExperience as CvExperienceApi
 import community.flock.eco.workday.api.model.CvExperienceForm as CvExperienceFormApi
 import community.flock.eco.workday.api.model.CvForm as CvFormApi
-import community.flock.eco.workday.api.model.CvImport as CvImportApi
 import community.flock.eco.workday.api.model.CvLanguage as CvLanguageApi
 import community.flock.eco.workday.api.model.CvRevision as CvRevisionApi
 import community.flock.eco.workday.api.model.CvSkill as CvSkillApi
@@ -57,7 +52,6 @@ import community.flock.eco.workday.application.model.Person as PersonInternal
 @RestController
 class CvController(
     private val cvService: CvService,
-    private val cvImportService: CvImportService,
     private val personService: PersonService,
 ) : GetCvAll.Handler,
     GetCvByCode.Handler,
@@ -66,8 +60,7 @@ class CvController(
     DeleteCv.Handler,
     GetCvRevisions.Handler,
     GetCvRevision.Handler,
-    PostCvRevisionRestore.Handler,
-    PostCvImport.Handler {
+    PostCvRevisionRestore.Handler {
     @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
     override suspend fun getCvAll(request: GetCvAll.Request): GetCvAll.Response<*> {
         val auth = authentication()
@@ -150,40 +143,6 @@ class CvController(
             PostCvRevisionRestore.Response409(Error(e.message))
         }
 
-    /**
-     * Reads a CV in the Flock template from an uploaded PDF (base64) without storing
-     * it; the editor shows the result to check and save. Only admins get the person
-     * the CV belongs to looked up: everybody else always imports their own CV.
-     */
-    @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
-    override suspend fun postCvImport(request: PostCvImport.Request): PostCvImport.Response<*> {
-        val pdf =
-            runCatching { Base64.getDecoder().decode(request.body.pdf.substringAfter("base64,").trim()) }
-                .getOrElse { return PostCvImport.Response400(Error("pdf is not valid base64")) }
-        return try {
-            val imported = cvImportService.read(pdf, matchPerson = authentication().isAdmin())
-            val cv = imported.cv
-            PostCvImport.Response200(
-                CvImportApi(
-                    personId = imported.person?.uuid?.toString(),
-                    name = cv.name,
-                    email = cv.email,
-                    language = cv.language?.externalize(),
-                    place = cv.place,
-                    phone = cv.phone,
-                    summary = cv.summary,
-                    experiences = cv.experiences.map { it.externalize() },
-                    skills = cv.skills.map { CvSkillApi(category = it.category, name = it.name, level = it.level) },
-                    education = cv.education,
-                    subjects = cv.subjects,
-                    languages = cv.languages,
-                ),
-            )
-        } catch (e: CvImportException) {
-            PostCvImport.Response400(Error(e.message))
-        }
-    }
-
     /** The CV with [code], when the current user may read it: any for an admin, else their own with READ. */
     private fun findReadable(code: String): Cv? {
         val auth = authentication()
@@ -246,18 +205,6 @@ class CvController(
             technologies = technologies,
             description = description,
             logoId = logoId?.toString(),
-        )
-
-    private fun CvExperienceForm.externalize() =
-        CvExperienceApi(
-            from = from.toString(),
-            to = to?.toString(),
-            role = role,
-            client = client,
-            employer = employer,
-            technologies = technologies,
-            description = description,
-            logoId = null,
         )
 
     private fun CvLanguage.externalize() =

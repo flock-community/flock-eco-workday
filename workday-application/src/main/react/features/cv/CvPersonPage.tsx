@@ -2,7 +2,6 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import HistoryIcon from '@mui/icons-material/History';
 import PrintIcon from '@mui/icons-material/Print';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
 import {
   Alert,
   Box,
@@ -19,21 +18,14 @@ import {
 } from '@mui/material';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import dayjs from 'dayjs';
-import {
-  type ChangeEvent,
-  type MouseEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { Link as RouterLink, useHistory, useLocation } from 'react-router-dom';
+import { type MouseEvent, useEffect, useState } from 'react';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { type Cv, CvClient, type CvRevision } from '../../clients/CvClient';
 import type { Person } from '../../clients/PersonClient';
 import { apiErrorMessage } from '../../clients/util/ApiErrorMessage';
 import PersonLayout from '../../components/layouts/PersonLayout';
 import { useLoginStatus } from '../../hooks/StatusHook';
 import { CvDocument } from './CvDocument';
-import type { CvImportState } from './CvEditor';
 import { CV_LANGUAGES, cvUrl } from './cvText';
 
 const CV_PRINT_ROOT = 'cv-print-root';
@@ -83,10 +75,8 @@ const languageLabel = (cv: Cv) =>
   CV_LANGUAGES.find((it) => it.value === cv.language)?.label ?? cv.language;
 
 function PersonCv({ person }: { person: Person }) {
-  const history = useHistory();
   const location = useLocation();
   const status = useLoginStatus();
-  const fileInput = useRef<HTMLInputElement>(null);
   // Kept with the person they belong to, so another person's CVs never show
   const [loaded, setLoaded] = useState<{ personId: string; cvs: Cv[] } | null>(
     null,
@@ -197,25 +187,6 @@ function PersonCv({ person }: { person: Person }) {
       .finally(() => setBusy(false));
   };
 
-  const handleImport = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (!file) return;
-    setError(null);
-    setBusy(true);
-    CvClient.importPdf(file)
-      .then((imported) =>
-        history.push(newUrl(), {
-          imported,
-          fileName: file.name,
-        } satisfies CvImportState),
-      )
-      .catch((err) =>
-        setError(apiErrorMessage(err, `${file.name} could not be imported`)),
-      )
-      .finally(() => setBusy(false));
-  };
-
   const newActions = canWrite && (
     <>
       <Button
@@ -242,14 +213,6 @@ function PersonCv({ person }: { person: Person }) {
             Copy of {current.name}
           </MenuItem>
         )}
-        <MenuItem
-          onClick={() => {
-            setNewMenu(null);
-            fileInput.current?.click();
-          }}
-        >
-          From a PDF…
-        </MenuItem>
       </Menu>
     </>
   );
@@ -257,14 +220,6 @@ function PersonCv({ person }: { person: Person }) {
   return (
     <Box sx={{ pb: 6 }}>
       {printStyles}
-      <input
-        ref={fileInput}
-        type="file"
-        accept="application/pdf,.pdf"
-        hidden
-        aria-label="CV PDF"
-        onChange={handleImport}
-      />
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
           {error}
@@ -403,8 +358,7 @@ function PersonCv({ person }: { person: Person }) {
             {canWrite ? (
               <>
                 <Typography color="text.secondary" sx={{ mb: 2 }}>
-                  Write it here, or start from the PDF of an existing CV in the
-                  Flock template.
+                  Write it here.
                 </Typography>
                 <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
                   <Button
@@ -414,14 +368,6 @@ function PersonCv({ person }: { person: Person }) {
                     startIcon={<EditIcon />}
                   >
                     Write CV
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<UploadFileIcon />}
-                    onClick={() => fileInput.current?.click()}
-                    disabled={busy}
-                  >
-                    {busy ? 'Importing…' : 'Import PDF'}
                   </Button>
                 </Stack>
               </>

@@ -8,11 +8,6 @@ import community.flock.eco.workday.application.model.CvLanguage
 import community.flock.eco.workday.application.services.LogoService
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.user.mappers.toDomain
-import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.pdmodel.PDPage
-import org.apache.pdfbox.pdmodel.PDPageContentStream
-import org.apache.pdfbox.pdmodel.font.PDType1Font
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -29,8 +24,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.io.ByteArrayOutputStream
-import java.util.Base64
 import java.util.UUID
 import community.flock.eco.workday.user.model.User as UserEntity
 
@@ -447,94 +440,6 @@ class CvControllerTest(
             .asyncDispatch()
             .andExpect(status().isForbidden)
     }
-
-    @Test
-    fun `import reads a PDF in the Flock template without storing it and finds the person for an admin`() {
-        val admin = createHelper.createUserEntity(adminAuthorities)
-        val (worker, person) = aWorker("Ernie", "Muppets")
-        val pdf =
-            pdf(
-                "Curriculum Vitae - Ernie Muppets",
-                "Name Ernie Muppets",
-                "Place Hilversum",
-                "",
-                "Ernie is an engineer who likes rubber ducks and clean code.",
-                "",
-                "Working experience",
-                "Period Function Months Employer / client",
-                "08-2024 - now Software Engineer 8 ING (via Flock)",
-                "",
-                "Period 08-2024 - now",
-                "Client ING (via Flock)",
-                "Role Software Engineer",
-                "Technologies Kotlin, React",
-                "",
-                "Rebuilt the business portal of the bank.",
-            )
-        val body = mapper.writeValueAsString(mapOf("pdf" to Base64.getEncoder().encodeToString(pdf)))
-
-        mvc
-            .perform(post("$baseUrl/import").asUser(admin).json(body))
-            .asyncDispatch()
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.personId").value(person.uuid.toString()))
-            .andExpect(jsonPath("$.name").value("Ernie Muppets"))
-            .andExpect(jsonPath("$.language").value("EN"))
-            .andExpect(jsonPath("$.place").value("Hilversum"))
-            .andExpect(jsonPath("$.summary").value("Ernie is an engineer who likes rubber ducks and clean code."))
-            .andExpect(jsonPath("$.experiences[0].from").value("2024-08"))
-            .andExpect(jsonPath("$.experiences[0].client").value("ING"))
-            .andExpect(jsonPath("$.experiences[0].employer").value("Flock"))
-            .andExpect(jsonPath("$.experiences[0].technologies[1]").value("React"))
-            .andExpect(jsonPath("$.experiences[0].description").value("Rebuilt the business portal of the bank."))
-
-        // A worker always imports their own CV, so nobody is looked up
-        mvc
-            .perform(post("$baseUrl/import").asUser(worker).json(body))
-            .asyncDispatch()
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.personId").doesNotExist())
-
-        mvc
-            .perform(get(baseUrl).asUser(admin).accept(APPLICATION_JSON))
-            .asyncDispatch()
-            .andExpect(header().string("x-total", "0"))
-    }
-
-    @Test
-    fun `import rejects what is not a CV PDF`() {
-        val (worker) = aWorker()
-
-        listOf(
-            "%%%" to "pdf is not valid base64",
-            Base64.getEncoder().encodeToString("not a pdf".toByteArray()) to "The file is not a readable PDF",
-            Base64.getEncoder().encodeToString(pdf("Invoice 2024-001", "Total 12,50")) to "No CV found in this PDF",
-        ).forEach { (pdf, message) ->
-            mvc
-                .perform(post("$baseUrl/import").asUser(worker).json(mapper.writeValueAsString(mapOf("pdf" to pdf))))
-                .asyncDispatch()
-                .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value(message))
-        }
-    }
-
-    private fun pdf(vararg lines: String): ByteArray =
-        PDDocument().use { document ->
-            val page = PDPage()
-            document.addPage(page)
-            PDPageContentStream(document, page).use { stream ->
-                stream.beginText()
-                stream.setFont(PDType1Font(Standard14Fonts.FontName.HELVETICA), 10f)
-                stream.setLeading(14f)
-                stream.newLineAtOffset(50f, 740f)
-                lines.forEach {
-                    stream.showText(it)
-                    stream.newLine()
-                }
-                stream.endText()
-            }
-            ByteArrayOutputStream().also { document.save(it) }.toByteArray()
-        }
 
     /**
      * Wirespec handlers are suspend functions, so a handled request completes through an
