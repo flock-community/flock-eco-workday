@@ -37,7 +37,8 @@ class LogoController(
     PutLogo.Handler,
     DeleteLogo.Handler {
     @PreAuthorize("isAuthenticated()")
-    override suspend fun getLogoAll(request: GetLogoAll.Request): GetLogoAll.Response<*> = GetLogoAll.Response200(logoService.findAll().map { it.externalize() })
+    override suspend fun getLogoAll(request: GetLogoAll.Request): GetLogoAll.Response<*> =
+        GetLogoAll.Response200(logoService.findAll().map { it.externalize() })
 
     @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
     override suspend fun postLogo(request: PostLogo.Request): PostLogo.Response<*> =
