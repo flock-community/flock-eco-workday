@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.services
 
 import community.flock.eco.workday.application.forms.CvExperienceForm
+import community.flock.eco.workday.application.forms.CvSkillForm
 import community.flock.eco.workday.application.model.CvLanguage
 import java.time.YearMonth
 
@@ -13,6 +14,7 @@ data class ParsedCv(
     val language: CvLanguage? = null,
     val summary: String? = null,
     val experiences: List<CvExperienceForm> = emptyList(),
+    val skills: List<CvSkillForm> = emptyList(),
     val education: String? = null,
     val subjects: String? = null,
     val languages: String? = null,
@@ -33,8 +35,9 @@ data class ParsedCv(
  *   followed by the description;
  * - the Skills matrix and the Education, Subjects and Language sections.
  *
- * The skills matrix is not read: its ratings are star images, and its two columns of
- * categories and skills do not survive as text.
+ * Variants of the template are read too: periods as "July 2025 - present", a bare page
+ * number as footer, a Training section, and skills listed as "React *****". A skills
+ * matrix whose ratings are star images is not read: the stars do not survive as text.
  *
  * The blocks are the primary source; a table row without a block (typically an old job
  * that got no write-up) becomes an experience without a description. Labels are
@@ -46,7 +49,12 @@ object FlockCvParser {
         val name = lines.firstNotNullOfOrNull { HEADER.matchEntire(it)?.groupValues?.get(1)?.trim() }
         val footer = footerFor(name)
         val (content, sections) =
-            splitSections(lines.filterNot { HEADER.matches(it) || footer.matches(it) || BROWSER_HEADER.matches(it) || BROWSER_FOOTER.matches(it) })
+            splitSections(
+                lines.filterNot {
+                    HEADER.matches(it) || footer.matches(it) || PAGE_NUMBER.matches(it) ||
+                        BROWSER_HEADER.matches(it) || BROWSER_FOOTER.matches(it)
+                },
+            )
 
         val headingIndex = content.indexOfFirst { WORKING_EXPERIENCE.matches(it) }
         val firstBlockIndex = content.indexOfFirst { PERIOD.matches(it) }
@@ -85,9 +93,14 @@ object FlockCvParser {
             language = detectLanguage(listOfNotNull(summary) + experiences.mapNotNull { it.description }, blocks.any { it.current }),
             summary = summary,
             experiences = experiences,
-            education = sections[EDUCATION]?.toText(),
-            subjects = sections[SUBJECTS]?.toLines(),
-            languages = sections[LANGUAGES]?.toLines(),
+            skills = (sections[SKILLS].orEmpty() + sections[SKILL_LIST].orEmpty()).flatMap { parseSkills(it) }.distinctBy { it.name.lowercase() },
+            education =
+                listOfNotNull(
+                    sections[EDUCATION]?.toEntries(unbulleted = { toText() }),
+                    sections[TRAINING]?.toEntries(unbulleted = { toText() })?.let { "Training\n$it" },
+                ).joinToString("\n\n").ifBlank { null },
+            subjects = sections[SUBJECTS]?.toEntries(),
+            languages = sections[LANGUAGES]?.toEntries(),
         )
     }
 
@@ -163,7 +176,15 @@ object FlockCvParser {
             val line = lines[index]
             CLIENT.matchEntire(line)?.let { client = parseClient(it.groupValues[1]) }
                 ?: ROLE.matchEntire(line)?.let { role = it.groupValues[1].trim() }
-                ?: TECHNOLOGIES.matchEntire(line)?.let { technologies = parseTechnologies(it.groupValues[1]) }
+                ?: TECHNOLOGIES.matchEntire(line)?.let {
+                    // A long list wraps: a line ending in a comma goes on on the next one
+                    var value = it.groupValues[1].trim()
+                    while (value.endsWith(",") && index + 1 < lines.size && lines[index + 1].isNotBlank()) {
+                        index++
+                        value += " " + lines[index]
+                    }
+                    technologies = parseTechnologies(value)
+                }
                 ?: break
             index++
         }
@@ -208,11 +229,16 @@ object FlockCvParser {
                 sameClient.firstOrNull { it.from == row.from }
                     ?: sameClient.firstOrNull { it.to != null && it.to == row.to }
                     ?: sameClient.singleOrNull()
-            if (block != null) {
-                unmatched.remove(block)
-                rowsByBlock[block] = row
-            } else {
-                rowsWithoutBlock.add(row)
+                    // "FLOCK - Bol.com" in the table is "Bol.com" in its block: a shared name in the same period
+                    ?: unmatched.firstOrNull { it.overlaps(row) && it.sharesNameWith(row) }
+            when {
+                block != null -> {
+                    unmatched.remove(block)
+                    rowsByBlock[block] = row
+                }
+                // One row can sum up several blocks for the same client
+                blocks.any { it.overlaps(row) && it.sharesNameWith(row) } -> Unit
+                else -> rowsWithoutBlock.add(row)
             }
         }
 
@@ -244,6 +270,24 @@ object FlockCvParser {
         return (fromBlocks + fromRows).sortedWith(compareByDescending<CvExperienceForm> { it.from }.thenByDescending { it.to == null })
     }
 
+    private fun Block.overlaps(row: Row): Boolean = from <= (row.to ?: YearMonth.of(9999, 12)) && row.from <= (to ?: YearMonth.of(9999, 12))
+
+    private fun Block.sharesNameWith(row: Row): Boolean {
+        val words = client?.words.orEmpty()
+        return row.client.words.any { it in words }
+    }
+
+    private val Client.words: Set<String>
+        get() = name.lowercase().split(NON_WORD).filter { it.length > 1 && it !in GENERIC_WORDS }.toSet()
+
+    /** "React *****" or, as a CV printed from Workday has it, "Kotlin ★★★★★ Git ★★★★": a skill with its rating. */
+    private fun parseSkills(line: String): List<CvSkillForm> =
+        RATED_SKILL
+            .findAll(line)
+            .map { CvSkillForm(name = it.groupValues[1].trim().trimStart(*BULLETS).trim(), level = it.groupValues[2].length) }
+            .filter { it.name.isNotEmpty() && it.name.length <= 255 }
+            .toList()
+
     /** "ING (via Flock.)" is client ING via employer Flock; a row may mark a job as "<company> employer". */
     private fun parseClient(value: String): Client {
         val trimmed = value.trim()
@@ -259,11 +303,16 @@ object FlockCvParser {
         return Regex("^$owner\\s+(page|pagina)\\s+\\d+$", RegexOption.IGNORE_CASE)
     }
 
-    /** "08-2024" is August 2024; "now" and its Dutch counterparts mean no end yet. */
-    private fun parseMonth(value: String): YearMonth? =
+    /** "08-2024" and "August 2024" are August 2024; "now", "present" and their Dutch counterparts mean no end yet. */
+    private fun parseMonth(value: String): YearMonth? {
         MONTH.matchEntire(value.trim())?.let {
-            runCatching { YearMonth.of(it.groupValues[2].toInt(), it.groupValues[1].toInt()) }.getOrNull()
+            return runCatching { YearMonth.of(it.groupValues[2].toInt(), it.groupValues[1].toInt()) }.getOrNull()
         }
+        return NAMED_MONTH.matchEntire(value.trim())?.let {
+            val month = MONTH_NAMES[it.groupValues[1].lowercase().take(3)] ?: return null
+            YearMonth.of(it.groupValues[2].toInt(), month)
+        }
+    }
 
     /**
      * Rebuilds paragraphs from the extracted lines. Blank lines separate paragraphs;
@@ -294,8 +343,27 @@ object FlockCvParser {
             .joinToString("\n\n")
             .ifBlank { null }
 
-    /** List-like sections (subjects, languages) keep one entry per line. */
-    private fun List<String>.toLines(): String? = filter { it.isNotBlank() }.joinToString("\n").ifBlank { null }
+    /**
+     * List-like sections keep one entry per line. In a bulleted list ("● Msc. ...") an
+     * entry runs on until the next bullet; without bullets every line is an entry,
+     * unless [unbulleted] says otherwise.
+     */
+    private fun List<String>.toEntries(unbulleted: List<String>.() -> String? = { filter { it.isNotBlank() }.joinToString("\n").ifBlank { null } }): String? {
+        val lines = filter { it.isNotBlank() }
+        if (lines.none { it.startsWith(BULLETS) }) return unbulleted()
+        return lines
+            .fold(mutableListOf<String>()) { entries, line ->
+                if (line.startsWith(BULLETS) || entries.isEmpty()) {
+                    entries.add(line.trimStart(*BULLETS).trim())
+                } else {
+                    entries[entries.lastIndex] = "${entries.last()} $line"
+                }
+                entries
+            }.joinToString("\n")
+            .ifBlank { null }
+    }
+
+    private fun String.startsWith(chars: CharArray) = isNotEmpty() && this[0] in chars
 
     private fun detectLanguage(
         texts: List<String>,
@@ -323,6 +391,8 @@ object FlockCvParser {
     private const val MAIL = "mail"
     private const val BIRTHDATE = "birthdate"
     private const val SKILLS = "skills"
+    private const val SKILL_LIST = "skill list"
+    private const val TRAINING = "training"
     private const val EDUCATION = "education"
     private const val SUBJECTS = "subjects"
     private const val LANGUAGES = "languages"
@@ -330,7 +400,10 @@ object FlockCvParser {
     private val SECTIONS =
         mapOf(
             SKILLS to Regex("^(skills|vaardigheden|competenties)$", RegexOption.IGNORE_CASE),
+            // A heading of its own, without a value: the "Technologies: ..." of a block has one
+            SKILL_LIST to Regex("^(technologies|technologieën|technieken)$", RegexOption.IGNORE_CASE),
             EDUCATION to Regex("^(education|opleiding|opleidingen)$", RegexOption.IGNORE_CASE),
+            TRAINING to Regex("^(training|trainingen|trainings|courses|cursussen|certifications|certificeringen)$", RegexOption.IGNORE_CASE),
             SUBJECTS to Regex("^(subjects|expertise|kennisgebieden)$", RegexOption.IGNORE_CASE),
             LANGUAGES to Regex("^(language|languages|taal|talen)$", RegexOption.IGNORE_CASE),
         )
@@ -345,14 +418,30 @@ object FlockCvParser {
 
     private const val DASH = "\\s*[-–—]\\s*"
     private const val MONTH_PATTERN = "\\d{1,2}-\\d{4}"
-    private const val END_PATTERN = "$MONTH_PATTERN|now|present|today|current|nu|heden|huidig"
+    private const val MONTH_NAME_PATTERN = "[a-z]{3,9}\\.?\\s+\\d{4}"
+    private const val START_PATTERN = "$MONTH_PATTERN|$MONTH_NAME_PATTERN"
+    private const val END_PATTERN = "$MONTH_PATTERN|$MONTH_NAME_PATTERN|now|present|today|current|nu|heden|huidig"
     private val MONTH = Regex("^(\\d{1,2})-(\\d{4})$")
+    private val NAMED_MONTH = Regex("^([a-z]{3,9})\\.?\\s+(\\d{4})$", RegexOption.IGNORE_CASE)
+
+    /** English and Dutch month names, by their first three letters. */
+    private val MONTH_NAMES =
+        mapOf(
+            "jan" to 1, "feb" to 2, "mar" to 3, "maa" to 3, "mrt" to 3, "apr" to 4, "may" to 5, "mei" to 5,
+            "jun" to 6, "jul" to 7, "aug" to 8, "sep" to 9, "oct" to 10, "okt" to 10, "nov" to 11, "dec" to 12,
+        )
+    private val PAGE_NUMBER = Regex("^\\d{1,3}$")
+    private val BULLETS = charArrayOf('●', '•', '▪', '◦', '-', '*')
+    private val RATED_SKILL = Regex("([^*★]+?)\\s*([*★]{1,5})(?=\\s|$)")
+
+    /** Words in client names that do not tell one client from another. */
+    private val GENERIC_WORDS = setOf("via", "flock", "the", "bv", "nv", "com", "nl", "and", "en")
     // A CV printed from the browser can carry its print header (date, time, title) and footer (address, page of pages)
     private val BROWSER_HEADER = Regex("^\\d{1,2}[-/.]\\d{1,2}[-/.]\\d{2,4},?\\s+\\d{1,2}:\\d{2}(\\s*[AP]M)?(\\s.*)?$", RegexOption.IGNORE_CASE)
     private val BROWSER_FOOTER = Regex("^(https?|file):\\S*\\s+\\d+/\\d+$", RegexOption.IGNORE_CASE)
     private val HEADER = Regex("^Curriculum Vitae$DASH(.+)$", RegexOption.IGNORE_CASE)
     private val WORKING_EXPERIENCE = Regex("^(working experience|work experience|werkervaring)$", RegexOption.IGNORE_CASE)
-    private val PERIOD = Regex("^(?:period|periode):?\\s+($MONTH_PATTERN)$DASH($END_PATTERN)$", RegexOption.IGNORE_CASE)
+    private val PERIOD = Regex("^(?:period|periode):?\\s+($START_PATTERN)$DASH($END_PATTERN)$", RegexOption.IGNORE_CASE)
     private val CLIENT = Regex("^(?:client|klant|employer|werkgever|opdrachtgever):?\\s+(.+)$", RegexOption.IGNORE_CASE)
     private val ROLE = Regex("^(?:role|rol|function|functie):?\\s+(.+)$", RegexOption.IGNORE_CASE)
     private val TECHNOLOGIES = Regex("^(?:technologies|technology|technologie|technologieën|techniques|technieken):?\\s+(.+)$", RegexOption.IGNORE_CASE)

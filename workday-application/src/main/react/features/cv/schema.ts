@@ -1,12 +1,14 @@
 import dayjs, { type Dayjs } from 'dayjs';
 import { array, mixed, number, object, string } from 'yup';
 import type { Cv, CvImport, CvRequest } from '../../clients/CvClient';
+import type { Logo } from '../../clients/LogoClient';
 import type { CvExperience, CvLanguage } from '../../wirespec/model';
 import { validateCvName } from '../../wirespec/model/CvName';
 import { validateCvRequiredText } from '../../wirespec/model/CvRequiredText';
 import { validateUUID } from '../../wirespec/model/UUID';
 import { validateYearMonth } from '../../wirespec/model/YearMonth';
 import { parseYearMonth, YEAR_MONTH } from './cvText';
+import { matchLogo } from './logos';
 
 export type CvExperienceValues = {
   /** First month of the job; the day is ignored. */
@@ -18,6 +20,8 @@ export type CvExperienceValues = {
   employer: string;
   technologies: string[];
   description: string;
+  /** The id of the logo shown with the assignment; '' for none. */
+  logoId: string;
 };
 
 export type CvSkillValues = {
@@ -110,6 +114,7 @@ export const CV_EXPERIENCE_SCHEMA = object({
       .required(),
   ).default([]),
   description: text('Description'),
+  logoId: string().default(''),
 });
 
 export const CV_SKILL_SCHEMA = object({
@@ -176,6 +181,7 @@ export const emptyExperience = (): CvExperienceValues => ({
   employer: '',
   technologies: [],
   description: '',
+  logoId: '',
 });
 
 const toExperienceValues = (it: CvExperience): CvExperienceValues => ({
@@ -186,6 +192,7 @@ const toExperienceValues = (it: CvExperience): CvExperienceValues => ({
   employer: it.employer ?? '',
   technologies: it.technologies ?? [],
   description: it.description ?? '',
+  logoId: it.logoId ?? '',
 });
 
 export const toCvFormValues = (cv: Cv): CvFormValues => ({
@@ -206,16 +213,30 @@ export const toCvFormValues = (cv: Cv): CvFormValues => ({
   languages: cv.languages ?? '',
 });
 
-/** A CV read from a PDF, as the starting point of a new CV. */
-export const fromCvImport = (imported: CvImport, name = ''): CvFormValues => ({
+/**
+ * A CV read from a PDF, as the starting point of a new CV. Assignments get the logo
+ * of their client when the shared collection has one.
+ */
+export const fromCvImport = (
+  imported: CvImport,
+  name = '',
+  logos: Logo[] = [],
+): CvFormValues => ({
   personId: imported.personId ?? '',
   name,
   language: imported.language ?? 'NL',
   place: imported.place ?? '',
   phone: imported.phone ?? '',
   summary: imported.summary ?? '',
-  experiences: (imported.experiences ?? []).map(toExperienceValues),
-  skills: [],
+  experiences: (imported.experiences ?? []).map((it) => ({
+    ...toExperienceValues(it),
+    logoId: matchLogo(it.client, logos)?.id ?? '',
+  })),
+  skills: (imported.skills ?? []).map((it) => ({
+    category: it.category ?? '',
+    name: it.name ?? '',
+    level: it.level ?? null,
+  })),
   education: imported.education ?? '',
   subjects: imported.subjects ?? '',
   languages: imported.languages ?? '',
@@ -241,6 +262,7 @@ export const toCvRequest = (values: CvFormValues): CvRequest => ({
       .map((tech) => tech.trim())
       .filter((tech) => tech !== ''),
     description: optional(it.description),
+    logoId: it.logoId || undefined,
   })),
   skills: values.skills.map((it) => ({
     category: optional(it.category),

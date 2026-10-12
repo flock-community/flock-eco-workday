@@ -5,6 +5,7 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.authorities.CvAuthority
 import community.flock.eco.workday.application.authorities.PersonAuthority
 import community.flock.eco.workday.application.model.CvLanguage
+import community.flock.eco.workday.application.services.LogoService
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.user.mappers.toDomain
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -30,12 +31,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.io.ByteArrayOutputStream
 import java.util.Base64
+import java.util.UUID
 import community.flock.eco.workday.user.model.User as UserEntity
 
 class CvControllerTest(
     @Autowired private val mvc: MockMvc,
     @Autowired private val mapper: ObjectMapper,
     @Autowired private val createHelper: CreateHelper,
+    @Autowired private val logoService: LogoService,
 ) : WorkdayIntegrationTest() {
     private val baseUrl: String = "/api/cvs"
 
@@ -241,6 +244,18 @@ class CvControllerTest(
     }
 
     @Test
+    fun `an assignment shows a logo from the shared collection`() {
+        val (worker) = aWorker()
+        val logo = logoService.create("ING ${UUID.randomUUID()}", byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 0xFF.toByte(), 0))
+
+        mvc
+            .perform(post(baseUrl).asUser(worker).json(cvJson(experiences = listOf(ingExperience + ("logoId" to logo.id.toString())))))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.experiences[0].logoId").value(logo.id.toString()))
+    }
+
+    @Test
     fun `READ only reads your own CV and WRITE only writes it`() {
         val reader = createHelper.createUserEntity(setOf(CvAuthority.READ))
         val readersCv = createHelper.createCv(createHelper.createPersonEntity("Ernie", "Muppets", reader.code))
@@ -289,6 +304,8 @@ class CvControllerTest(
             cvJson(place = "x".repeat(256)) to "place may be at most 255 characters",
             cvJson(summary = "x".repeat(10001)) to "summary may be at most 10000 characters",
             cvJson(language = "DE") to "language is invalid",
+            cvJson(experiences = listOf(ingExperience + ("logoId" to UUID.randomUUID().toString()))) to
+                "experiences[0].logoId is not a known logo",
             cvJson(name = " ") to "name is required",
             cvJson(name = "x".repeat(101)) to "name is invalid",
             cvJson(skills = listOf(mapOf("name" to "Kotlin", "level" to 6))) to "skills[0].level must be between 1 and 5",

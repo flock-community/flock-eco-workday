@@ -2,9 +2,11 @@ import { Box, Link } from '@mui/material';
 import dayjs from 'dayjs';
 import { Fragment } from 'react';
 import type { Cv } from '../../clients/CvClient';
+import { type Logo, LogoClient } from '../../clients/LogoClient';
 import { DMY_DATE } from '../../clients/util/DateFormats';
 import { FlockDisc } from '../../components/FlockDisc';
 import { brand } from '../../theme/tokens';
+import type { CvExperience } from '../../wirespec/model';
 import {
   CV_LABELS,
   clientText,
@@ -14,6 +16,7 @@ import {
   paragraphs,
   periodText,
 } from './cvText';
+import { useLogos } from './logos';
 
 // The CV is a document: it keeps its paper colours in dark mode and when printed.
 const paper = '#fffdf5';
@@ -69,6 +72,10 @@ export function CvDocument({ cv }: CvDocumentProps) {
   const labels = CV_LABELS[language];
   const name = cv.person?.fullName ?? '';
   const experiences = cv.experiences ?? [];
+  const [logos] = useLogos();
+  // A logo deleted since shows nothing
+  const logoOf = (it: CvExperience) =>
+    it.logoId ? logos?.find((logo) => logo.id === it.logoId) : undefined;
   const skills = cv.skills ?? [];
   const birthdate = cv.person?.birthdate
     ? dayjs(cv.person.birthdate).format(DMY_DATE)
@@ -219,7 +226,7 @@ export function CvDocument({ cv }: CvDocumentProps) {
       )}
 
       {experiences
-        .filter((it) => it.description || it.technologies?.length)
+        .filter((it) => it.description || it.technologies?.length || logoOf(it))
         .map((it) => (
           <Box
             component="section"
@@ -227,30 +234,55 @@ export function CvDocument({ cv }: CvDocumentProps) {
             sx={{ mb: 3.5 }}
           >
             <Box
-              component="dl"
               sx={{
-                display: 'grid',
-                gridTemplateColumns: 'minmax(7.5em, max-content) 1fr',
-                columnGap: 1,
-                m: 0,
+                display: 'flex',
+                gap: 2,
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
                 mb: 1.5,
                 breakInside: 'avoid',
                 breakAfter: 'avoid',
-                '& dt': { fontWeight: 700 },
-                '& dt, & dd': { m: 0 },
               }}
             >
-              <dt>{labels.period}</dt>
-              <dd>{periodText(it.from, it.to, language)}</dd>
-              <dt>{labels.client}</dt>
-              <dd>{clientText(it.client, it.employer)}</dd>
-              <dt>{labels.role}</dt>
-              <dd>{it.role}</dd>
-              {it.technologies?.length > 0 && (
-                <>
-                  <dt>{labels.technologies}</dt>
-                  <dd>{it.technologies.join(', ')}</dd>
-                </>
+              <Box
+                component="dl"
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'minmax(7.5em, max-content) 1fr',
+                  columnGap: 1,
+                  m: 0,
+                  mb: 0,
+                  breakInside: 'avoid',
+                  breakAfter: 'avoid',
+                  '& dt': { fontWeight: 700 },
+                  '& dt, & dd': { m: 0 },
+                }}
+              >
+                <dt>{labels.period}</dt>
+                <dd>{periodText(it.from, it.to, language)}</dd>
+                <dt>{labels.client}</dt>
+                <dd>{clientText(it.client, it.employer)}</dd>
+                <dt>{labels.role}</dt>
+                <dd>{it.role}</dd>
+                {it.technologies?.length > 0 && (
+                  <>
+                    <dt>{labels.technologies}</dt>
+                    <dd>{it.technologies.join(', ')}</dd>
+                  </>
+                )}
+              </Box>
+              {logoOf(it) && (
+                <Box
+                  component="img"
+                  src={LogoClient.imageUrl(logoOf(it) as Logo)}
+                  alt={`Logo ${logoOf(it)?.name}`}
+                  sx={{
+                    maxHeight: '64px',
+                    maxWidth: '150px',
+                    objectFit: 'contain',
+                    flexShrink: 0,
+                  }}
+                />
               )}
             </Box>
             <Box sx={{ textAlign: 'justify' }}>

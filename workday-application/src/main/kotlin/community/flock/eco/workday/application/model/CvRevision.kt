@@ -48,6 +48,7 @@ data class CvSnapshot(
         val employer: String? = null,
         val technologies: List<String> = emptyList(),
         val description: String? = null,
+        val logoId: String? = null,
     )
 
     data class Skill(

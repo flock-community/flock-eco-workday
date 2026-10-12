@@ -1,6 +1,7 @@
 package community.flock.eco.workday.services
 
 import community.flock.eco.workday.application.forms.CvExperienceForm
+import community.flock.eco.workday.application.forms.CvSkillForm
 import community.flock.eco.workday.application.model.CvLanguage
 import community.flock.eco.workday.application.services.FlockCvParser
 import org.junit.jupiter.api.Test
@@ -264,6 +265,116 @@ class FlockCvParserTest {
         assertEquals("Hilversum", printed.place)
         assertEquals("Tommy is an engineer.", printed.summary)
         assertEquals("Built the journey planner.", printed.experiences.single().description)
+    }
+
+    @Test
+    fun `reads the variant of the template with month names, page numbers and rated skills`() {
+        val variant =
+            FlockCvParser.parse(
+                """
+                Curriculum Vitae - Pino Woodpecker
+                Name:$zws Pino Woodpecker
+                Place: Utrecht
+                Telephone: 06 12345678
+                Date of Birth: 01-01-1990
+
+                Pino is a proactive engineer who is recognized for bringing clarity to the code.
+
+                Work experience
+                Period Job Title Months Client/Company
+                07-2025 - current Senior Fullstack Engineer 13 FLOCK - Bol.com
+                11-2024 - 07-2025 Senior Fullstack Engineer 8 FLOCK - ING
+                12-2017 - 06-2019 Medior Software Engineer 17 DVJ Insight, Utrecht
+                1
+                Curriculum Vitae - Pino Woodpecker
+                Period: July 2025 - present
+                Client: Bol.com
+                Role: Fullstack Engineer
+                Technologies: Kotlin, React
+
+                Built the supplier portal.
+
+                Period: March 2025 - July 2025
+                Client: ING, Amsterdam (via Flock.)
+                Role: Fullstack Engineer
+                Technologies: Lit web components, Typescript, Azure DevOps,
+                Docker, Storybook
+
+                Migrated the business portal.
+                2
+                Period: December 2024 - maart 2025
+                Client: ING, Amsterdam (via Flock.)
+                Role: Senior Software Engineer
+                Technologies: Docker, Bash
+
+                Made the platform run locally.
+
+                Education
+                ● Msc. Applied Cognitive Psychology, Leiden
+                September 2016 — February 2017
+                ● Bsc. Psychology, Utrecht University
+                Training
+                ● Scrum certified
+                Technologies
+                ● React ***** 
+                ● Angular ****
+                Languages
+                ● Dutch *****
+                3
+                """.trimIndent(),
+            )
+
+        assertEquals("Utrecht", variant.place)
+        assertEquals("06 12345678", variant.phone)
+        assertEquals("Pino is a proactive engineer who is recognized for bringing clarity to the code.", variant.summary)
+        assertEquals(CvLanguage.EN, variant.language)
+
+        // The table rows of Bol.com and ING are the blocks; the one of DVJ has none
+        assertEquals(
+            listOf(
+                CvExperienceForm(
+                    from = YearMonth.of(2025, 7),
+                    role = "Fullstack Engineer",
+                    client = "Bol.com",
+                    technologies = listOf("Kotlin", "React"),
+                    description = "Built the supplier portal.",
+                ),
+                CvExperienceForm(
+                    from = YearMonth.of(2025, 3),
+                    to = YearMonth.of(2025, 7),
+                    role = "Fullstack Engineer",
+                    client = "ING, Amsterdam",
+                    employer = "Flock",
+                    technologies = listOf("Lit web components", "Typescript", "Azure DevOps", "Docker", "Storybook"),
+                    description = "Migrated the business portal.",
+                ),
+                CvExperienceForm(
+                    from = YearMonth.of(2024, 12),
+                    to = YearMonth.of(2025, 3),
+                    role = "Senior Software Engineer",
+                    client = "ING, Amsterdam",
+                    employer = "Flock",
+                    technologies = listOf("Docker", "Bash"),
+                    description = "Made the platform run locally.",
+                ),
+                CvExperienceForm(
+                    from = YearMonth.of(2017, 12),
+                    to = YearMonth.of(2019, 6),
+                    role = "Medior Software Engineer",
+                    client = "DVJ Insight, Utrecht",
+                ),
+            ),
+            variant.experiences,
+        )
+        assertEquals(
+            listOf(CvSkillForm(name = "React", level = 5), CvSkillForm(name = "Angular", level = 4)),
+            variant.skills,
+        )
+        assertEquals(
+            "Msc. Applied Cognitive Psychology, Leiden September 2016 — February 2017\nBsc. Psychology, Utrecht University\n\nTraining\nScrum certified",
+            variant.education,
+        )
+        assertEquals("Dutch *****", variant.languages)
     }
 
     @Test

@@ -53,7 +53,8 @@ type CvExperienceForm {
   client: CvRequiredText,
   employer: String?,
   technologies: String[]?,
-  description: String?
+  description: String?,
+  logoId: UUID?
 }
 type CvSkillForm {
   category: String?,
@@ -80,7 +81,8 @@ type CvExperience {
   client: String,
   employer: String?,
   technologies: String[],
-  description: String?
+  description: String?,
+  logoId: String?
 }
 type CvSkill {
   category: String?,
@@ -119,6 +121,7 @@ type CvImport {
   phone: String?,
   summary: String?,
   experiences: CvExperience[],
+  skills: CvSkill[],
   education: String?,
   subjects: String?,
   languages: String?

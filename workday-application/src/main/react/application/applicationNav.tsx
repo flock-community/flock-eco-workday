@@ -6,6 +6,7 @@ import TodoIcon from '@mui/icons-material/AssignmentTurnedIn';
 import CvIcon from '@mui/icons-material/Badge';
 import ClientIcon from '@mui/icons-material/Business';
 import EventIcon from '@mui/icons-material/CalendarToday';
+import LogoIcon from '@mui/icons-material/Collections';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ContractIcon from '@mui/icons-material/Description';
 import HealingIcon from '@mui/icons-material/Healing';
@@ -150,6 +151,12 @@ export const navSections: NavSection[] = [
         icon: CvIcon,
         url: '/cvs',
         authority: 'CvAuthority.READ,CvAuthority.ADMIN',
+      },
+      {
+        name: 'Logos',
+        icon: LogoIcon,
+        url: '/cv-logos',
+        authority: 'CvAuthority.WRITE,CvAuthority.ADMIN',
       },
       {
         name: 'Users',

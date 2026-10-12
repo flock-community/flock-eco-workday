@@ -32,4 +32,5 @@ data class CvExperienceForm(
     val employer: String? = null,
     val technologies: List<String> = emptyList(),
     val description: String? = null,
+    val logoId: UUID? = null,
 )

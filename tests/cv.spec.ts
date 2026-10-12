@@ -100,6 +100,23 @@ test.describe('CV', () => {
     await page
       .getByRole('textbox', { name: 'Description' })
       .fill('Ernie built the journey planner.');
+
+    // A logo the shared collection does not have yet is added from here
+    const logoName = `NS ${Date.now()}`;
+    await page.getByRole('button', { name: 'Add logo' }).click();
+    const logoDialog = page.getByRole('dialog');
+    await expect(logoDialog.getByRole('textbox', { name: 'Name' })).toHaveValue(
+      'NS',
+    );
+    await logoDialog.getByRole('textbox', { name: 'Name' }).fill(logoName);
+    await logoDialog
+      .getByLabel('Logo image')
+      .setInputFiles('tests/files/timesheet.png');
+    await logoDialog.getByRole('button', { name: 'Save' }).click();
+    await expect(logoDialog).toBeHidden();
+    await expect(page.getByRole('combobox', { name: 'Logo' })).toHaveValue(
+      logoName,
+    );
     await page.getByRole('button', { name: 'Save' }).click();
 
     // Back on the CV page, with the new CV
@@ -111,6 +128,9 @@ test.describe('CV', () => {
     await expect(cv.getByRole('table')).toContainText('03-2021 - nu');
     await expect(cv.getByRole('table')).toContainText('NS (via Flock)');
     await expect(cv.getByText('Kotlin, Spring Boot')).toBeVisible();
+    await expect(
+      cv.getByRole('img', { name: `Logo ${logoName}` }),
+    ).toBeVisible();
 
     // Edit: make it English and end the job
     await page.getByRole('link', { name: 'Edit' }).click();
@@ -212,6 +232,8 @@ test.describe('CV', () => {
     ).toBeVisible();
     await expect(cv.getByRole('heading', { name: 'Opleiding' })).toBeVisible();
     await expect(cv.getByText('Engels – uitstekend')).toBeVisible();
+    // The ING assignments show the logo of ING from the shared collection
+    await expect(cv.getByRole('img', { name: 'Logo ING' })).toHaveCount(2);
     // An admin writes anybody's CV
     await expect(page.getByRole('link', { name: 'Edit' })).toBeVisible();
     await expect(
@@ -268,6 +290,10 @@ test.describe('CV', () => {
     await expect(latest.getByRole('textbox', { name: 'Via' })).toHaveValue(
       'Flock',
     );
+    // The logo comes from the shared collection, by the name of the client
+    await expect(latest.getByRole('combobox', { name: 'Logo' })).toHaveValue(
+      'ING',
+    );
     await expect(latest.locator('.MuiChip-label')).toHaveText([
       'Webcomponents',
       'Typescript',
@@ -283,8 +309,14 @@ test.describe('CV', () => {
     await expect(page.getByRole('textbox', { name: 'Languages' })).toHaveValue(
       'Nederlands – moedertaal\nEngels – uitstekend',
     );
-    // The stars of the skills are images, so skills are entered by hand
-    await expect(page.getByTestId('cv-skill')).toHaveCount(0);
+    // The stars of a CV printed from Workday are text, so its skills come along
+    await expect(page.getByTestId('cv-skill')).toHaveCount(10);
+    await expect(
+      page
+        .getByTestId('cv-skill')
+        .first()
+        .getByRole('textbox', { name: 'Skill' }),
+    ).toHaveValue('Kotlin');
 
     // A name that is taken is refused
     await page
@@ -315,5 +347,59 @@ test.describe('CV', () => {
         'This PDF looks like the CV of Tommy Dog, but you are writing the CV of Bert Muppets.',
       ),
     ).toBeVisible();
+  });
+});
+
+test.describe('Logos', () => {
+  test.beforeEach(async ({ context }) => {
+    await context.clearCookies();
+  });
+
+  test('a CV admin keeps the shared collection of logos', async ({ page }) => {
+    await Given_I_am_logged_in_as_user(page, ADMIN_USERNAME);
+    await page.getByRole('link', { name: 'Logos', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Logos' })).toBeVisible();
+    for (const name of ['ING', 'DHL', 'bol.com']) {
+      await expect(page.getByRole('img', { name, exact: true })).toBeVisible();
+    }
+
+    const name = `Osiris ${Date.now()}`;
+    await page.getByRole('button', { name: 'Add logo' }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByRole('textbox', { name: 'Name' }).fill(name);
+    await dialog
+      .getByLabel('Logo image')
+      .setInputFiles('tests/files/timesheet.png');
+    await dialog.getByRole('button', { name: 'Save' }).click();
+    await expect(page.getByRole('img', { name, exact: true })).toBeVisible();
+
+    // A name in use is refused
+    await page.getByRole('button', { name: 'Add logo' }).click();
+    await dialog.getByRole('textbox', { name: 'Name' }).fill('ing');
+    await dialog
+      .getByLabel('Logo image')
+      .setInputFiles('tests/files/timesheet.png');
+    await dialog.getByRole('button', { name: 'Save' }).click();
+    await expect(
+      dialog.getByText("There already is a logo named 'ing'"),
+    ).toBeVisible();
+    await dialog.getByRole('button', { name: 'Cancel' }).click();
+
+    // Rename, then delete
+    await page.getByRole('button', { name: `Change ${name}` }).click();
+    await dialog.getByRole('textbox', { name: 'Name' }).fill(`${name} BV`);
+    await dialog.getByRole('button', { name: 'Save' }).click();
+    await expect(
+      page.getByRole('img', { name: `${name} BV`, exact: true }),
+    ).toBeVisible();
+
+    await page.getByRole('button', { name: `Delete ${name} BV` }).click();
+    await page
+      .getByRole('dialog')
+      .getByRole('button', { name: 'Confirm' })
+      .click();
+    await expect(
+      page.getByRole('img', { name: `${name} BV`, exact: true }),
+    ).toHaveCount(0);
   });
 });

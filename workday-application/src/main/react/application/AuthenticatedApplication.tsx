@@ -6,6 +6,7 @@ import BudgetPage from '../features/budget/BudgetPage';
 import { ClientFeature } from '../features/client/ClientFeature';
 import ContractPage from '../features/contract/ContractPage';
 import { CvFeature } from '../features/cv/CvFeature';
+import { LogosPage } from '../features/cv/LogosPage';
 import { DashboardFeature } from '../features/dashboard/DashboardFeature';
 import { EventFeature } from '../features/event/EventFeature';
 import { EventRatingFeature } from '../features/event_rating/EventRatingFeature';
@@ -61,6 +62,7 @@ export const AuthenticatedApplication = () => {
         <Route path="/person" component={PersonFeature} />
         <Route path="/laptops" exact component={LaptopFeature} />
         <Route path="/cvs" component={CvFeature} />
+        <Route path="/cv-logos" exact component={LogosPage} />
         <Route path="/profile" component={ProfileFeature} />
         <Route path="/event" component={EventFeature} />
         <Route path="/budget" component={BudgetPage} />

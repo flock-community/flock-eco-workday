@@ -173,6 +173,7 @@ class CvController(
                     phone = cv.phone,
                     summary = cv.summary,
                     experiences = cv.experiences.map { it.externalize() },
+                    skills = cv.skills.map { CvSkillApi(category = it.category, name = it.name, level = it.level) },
                     education = cv.education,
                     subjects = cv.subjects,
                     languages = cv.languages,
@@ -244,6 +245,7 @@ class CvController(
             employer = employer,
             technologies = technologies,
             description = description,
+            logoId = logoId?.toString(),
         )
 
     private fun CvExperienceForm.externalize() =
@@ -255,6 +257,7 @@ class CvController(
             employer = employer,
             technologies = technologies,
             description = description,
+            logoId = null,
         )
 
     private fun CvLanguage.externalize() =
@@ -336,6 +339,7 @@ class CvController(
             employer = employer,
             technologies = technologies.orEmpty(),
             description = description,
+            logoId = logoId?.validated("$field.logoId")?.value?.let(UUID::fromString),
         )
 
     /** Applies the refined type's pattern from the contract; a violation is a 400 with the field name. */

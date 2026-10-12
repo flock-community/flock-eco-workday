@@ -2,8 +2,6 @@ package community.flock.eco.workday.application.model
 
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.core.model.AbstractCodeEntity
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
@@ -21,8 +19,10 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OrderColumn
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
+import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
+import org.hibernate.type.SqlTypes
 import java.time.Instant
 import java.time.LocalDate
 import java.time.YearMonth
@@ -109,11 +109,14 @@ class CvExperience(
     val role: String,
     val client: String,
     val employer: String? = null,
-    @Column(length = 1000)
-    @Convert(converter = TechnologiesConverter::class)
+    /** An array column (TEXT[]), so a technology can hold any character, commas too. */
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(nullable = false)
     val technologies: List<String> = emptyList(),
     @Column(length = Cv.CV_TEXT_LENGTH)
     val description: String? = null,
+    /** The [Logo] to show with the assignment; a deleted logo leaves none. */
+    val logoId: UUID? = null,
 )
 
 /**
@@ -134,24 +137,4 @@ class YearMonthConverter : AttributeConverter<YearMonth?, LocalDate?> {
     override fun convertToDatabaseColumn(attribute: YearMonth?): LocalDate? = attribute?.atDay(1)
 
     override fun convertToEntityAttribute(dbData: LocalDate?): YearMonth? = dbData?.let(YearMonth::from)
-}
-
-/** Technologies are stored as a JSON array of strings, so a technology may hold a comma. */
-@Converter
-class TechnologiesConverter : AttributeConverter<List<String>, String?> {
-    override fun convertToDatabaseColumn(attribute: List<String>?): String? =
-        attribute?.takeIf { it.isNotEmpty() }?.let(mapper::writeValueAsString)
-
-    override fun convertToEntityAttribute(dbData: String?): List<String> =
-        when {
-            dbData.isNullOrBlank() -> emptyList()
-            dbData.trimStart().startsWith("[") -> mapper.readValue(dbData, STRINGS)
-            // Comma separated, as before the JSON array
-            else -> dbData.split(",").map { it.trim() }.filter { it.isNotEmpty() }
-        }
-
-    companion object {
-        private val mapper = ObjectMapper()
-        private val STRINGS = object : TypeReference<List<String>>() {}
-    }
 }

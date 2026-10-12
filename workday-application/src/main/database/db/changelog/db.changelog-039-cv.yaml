@@ -1,4 +1,13 @@
 databaseChangeLog:
+  # Technologies are an array of text; the two databases spell that differently
+  - property:
+      name: cv.technologies.type
+      value: TEXT[]
+      dbms: postgresql
+  - property:
+      name: cv.technologies.type
+      value: VARCHAR ARRAY
+      dbms: h2
   - changeSet:
       id: db.changelog-039-cv-1
       author: willemveelenturf
@@ -120,7 +129,9 @@ databaseChangeLog:
                   type: VARCHAR(255)
               - column:
                   name: technologies
-                  type: VARCHAR(1000)
+                  type: ${cv.technologies.type}
+                  constraints:
+                    nullable: false
               - column:
                   name: description
                   type: VARCHAR(10000)

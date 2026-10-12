@@ -15,6 +15,7 @@ import java.time.YearMonth
 class LoadCvData(
     private val cvRepository: CvRepository,
     private val loadPersonData: LoadPersonData,
+    private val loadLogoData: LoadLogoData,
     loadData: LoadData,
 ) {
     val data: MutableSet<Cv> = mutableSetOf()
@@ -40,6 +41,7 @@ class LoadCvData(
                             role = "Software Engineer",
                             client = "ING",
                             employer = "Flock",
+                            logoId = logo("ING"),
                             technologies = listOf("Webcomponents", "Typescript", "MSW", "Wirespec", "Docker", "Playwright", "Storybook"),
                             description =
                                 """
@@ -56,6 +58,7 @@ class LoadCvData(
                             role = "Software Engineer",
                             client = "DHL",
                             employer = "Flock",
+                            logoId = logo("DHL"),
                             technologies = listOf("Typescript", "React", "MUI", "Java", "Spring Boot", "Postgres", "Kafka", "Azure"),
                             description =
                                 """
@@ -68,6 +71,7 @@ class LoadCvData(
                             role = "Tech lead",
                             client = "ING Touchpoint",
                             employer = "Flock",
+                            logoId = logo("ING"),
                             technologies = listOf("Webcomponents", "Lit-Html", "Azure"),
                             description =
                                 """
@@ -115,6 +119,7 @@ class LoadCvData(
                             role = "Backend engineer",
                             client = "bol.com",
                             employer = "Flock",
+                            logoId = logo("bol.com"),
                             technologies = listOf("Kotlin", "Spring Boot", "Kafka"),
                             description = "Bert builds the services behind the order pipeline of the webshop.",
                         ),
@@ -122,6 +127,8 @@ class LoadCvData(
             ).save()
         }
     }
+
+    private fun logo(name: String) = loadLogoData.findByName(name)?.id
 
     private fun Cv.save(): Cv =
         cvRepository

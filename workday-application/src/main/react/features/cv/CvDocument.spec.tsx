@@ -48,8 +48,56 @@ const cv = (overrides: Partial<Cv> = {}): Cv =>
   }) as Cv;
 
 describe('CvDocument', () => {
+  beforeEach(() => {
+    // The shared logos
+    const logos = [
+      {
+        id: 'logo-ing',
+        name: 'ING',
+        contentType: 'image/svg+xml',
+        updatedAt: '2025-01-01T00:00:00Z',
+      },
+    ];
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        headers: new Map(),
+        json: () => Promise.resolve(logos),
+      }),
+    ) as jest.Mock;
+  });
+
   afterEach(() => {
     cleanup();
+  });
+
+  it('shows the logo of an assignment next to it', async () => {
+    render(
+      <CvDocument
+        cv={cv({
+          experiences: [
+            {
+              from: '2022-12',
+              to: '2024-07',
+              role: 'Software Engineer',
+              client: 'ING',
+              employer: 'Flock',
+              technologies: ['Kotlin'],
+              description: 'Werkte aan Baker.',
+              logoId: 'logo-ing',
+            },
+          ],
+        })}
+      />,
+    );
+
+    expect(
+      await screen.findByRole('img', { name: 'Logo ING' }),
+    ).toHaveAttribute(
+      'src',
+      '/api/logos/logo-ing/image?v=2025-01-01T00%3A00%3A00Z',
+    );
   });
 
   it('shows the personal details with the labels of the CV language', () => {

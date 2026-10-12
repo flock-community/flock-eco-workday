@@ -198,6 +198,7 @@ describe('toCvFormValues and fromCvImport', () => {
       employer: 'Flock',
       technologies: ['Kotlin', 'React'],
       description: 'Built things.',
+      logoId: undefined,
     },
   ];
 
@@ -231,6 +232,7 @@ describe('toCvFormValues and fromCvImport', () => {
       language: null,
       summary: 'Engineer.',
       experiences: stored,
+      skills: [{ category: null, name: 'React', level: 5 }],
     } as unknown as CvImport;
     const form = fromCvImport(imported);
     expect(form.personId).toBe('');
@@ -245,6 +247,19 @@ describe('toCvFormValues and fromCvImport', () => {
       employer: 'Flock',
       technologies: ['Kotlin', 'React'],
       description: 'Built things.',
+      logoId: undefined,
     });
+    expect(form.skills).toEqual([{ category: '', name: 'React', level: 5 }]);
+  });
+
+  it('gives an imported assignment the logo of its client', () => {
+    const imported = { experiences: stored, skills: [] } as unknown as CvImport;
+    const logos = [
+      { id: 'logo-dhl', name: 'DHL', contentType: 'image/png', updatedAt: '' },
+      { id: 'logo-ing', name: 'ING', contentType: 'image/png', updatedAt: '' },
+    ];
+    const form = fromCvImport(imported, 'CV', logos);
+    expect(form.experiences[0].logoId).toBe('logo-ing');
+    expect(toCvRequest(form).experiences?.[0].logoId).toBe('logo-ing');
   });
 });

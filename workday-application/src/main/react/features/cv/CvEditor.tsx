@@ -27,6 +27,8 @@ import { usePerson } from '../../hooks/PersonHook';
 import { useLoginStatus } from '../../hooks/StatusHook';
 import type { CvImport } from '../../wirespec/model';
 import { CV_LANGUAGES, cvUrl } from './cvText';
+import { LogoField } from './LogoField';
+import { useLogos } from './logos';
 import {
   CV_FORM_SCHEMA,
   type CvFormValues,
@@ -80,6 +82,7 @@ export function CvEditor() {
   const history = useHistory();
   const location = useLocation<CvImportState | undefined>();
   const [person] = usePerson();
+  const [logos] = useLogos();
   const status = useLoginStatus();
   const imported = code ? undefined : location.state;
   // A new version can start as a copy of an existing one
@@ -117,7 +120,7 @@ export function CvEditor() {
     if (imported) {
       // Named after the file, without .pdf: "CV - 2025 - NL"
       const name = imported.fileName.replace(/\.pdf$/i, '').slice(0, 100);
-      const values = fromCvImport(imported.imported, name);
+      const values = fromCvImport(imported.imported, name, logos ?? []);
       return {
         ...values,
         personId,
@@ -125,7 +128,7 @@ export function CvEditor() {
       };
     }
     return { ...defaults, personId };
-  }, [cv, copy, imported, person?.uuid]);
+  }, [cv, copy, imported, person?.uuid, logos]);
 
   const personName = cv?.person?.fullName ?? person?.fullName ?? '';
   const personId = cv?.person?.uuid ?? person?.uuid;
@@ -166,7 +169,13 @@ export function CvEditor() {
       });
   };
 
-  if ((code && !cv) || (copyFrom && !copy) || (!code && !person)) {
+  // An import waits for the logos, to match them to its clients
+  if (
+    (code && !cv) ||
+    (copyFrom && !copy) ||
+    (!code && !person) ||
+    (imported && logos == null)
+  ) {
     return error ? <Alert severity="error">{error}</Alert> : <AlignedLoader />;
   }
 
@@ -179,8 +188,9 @@ export function CvEditor() {
         <Alert severity="info" sx={{ mb: 2 }}>
           Read from {imported.fileName}
           {imported.imported.name ? ` (${imported.imported.name})` : ''}. Check
-          the details below; nothing is stored until you save. The skills are
-          not read from the PDF (their stars are images), so add those below.
+          the details below; nothing is stored until you save.
+          {imported.imported.skills.length === 0 &&
+            ' The skills could not be read from the PDF (their stars are images), so add those below.'}
         </Alert>
       )}
       {otherPerson && (
@@ -351,6 +361,13 @@ export function CvEditor() {
                                     label="Via"
                                     helperText="The employer, e.g. Flock"
                                     fullWidth
+                                  />
+                                </Grid>
+                                <Grid size={{ xs: 12 }}>
+                                  <LogoField
+                                    name={`${prefix}.logoId`}
+                                    client={values.experiences[index].client}
+                                    canAdd
                                   />
                                 </Grid>
                                 <Grid size={{ xs: 12 }}>

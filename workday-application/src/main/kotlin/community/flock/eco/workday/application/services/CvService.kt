@@ -45,6 +45,7 @@ class CvService(
     private val cvRepository: CvRepository,
     private val cvRevisionRepository: CvRevisionRepository,
     private val personRepository: PersonRepository,
+    private val logoService: LogoService,
 ) {
     fun findAll(pageable: Pageable): Page<Cv> = cvRepository.findAll(pageable)
 
@@ -154,9 +155,8 @@ class CvService(
                 throw CvInvalidInputException("$field.technologies[$index] may be at most $MAX_TECHNOLOGY_LENGTH characters")
             }
         }
-        // Stored as a JSON array in a column of MAX_TECHNOLOGIES_LENGTH
-        if (technologies.sumOf { it.length + JSON_OVERHEAD } > MAX_TECHNOLOGIES_LENGTH) {
-            throw CvInvalidInputException("$field.technologies are too many to store")
+        if (technologies.size > MAX_TECHNOLOGIES) {
+            throw CvInvalidInputException("$field.technologies may be at most $MAX_TECHNOLOGIES")
         }
         return CvExperience(
             from = from,
@@ -166,6 +166,7 @@ class CvService(
             employer = employer.cleaned("$field.employer", MAX_LINE_LENGTH),
             technologies = technologies,
             description = description.cleaned("$field.description", Cv.CV_TEXT_LENGTH),
+            logoId = logoId?.also { if (!logoService.exists(it)) throw CvInvalidInputException("$field.logoId is not a known logo") },
         )
     }
 
@@ -215,6 +216,7 @@ class CvService(
                         employer = it.employer,
                         technologies = it.technologies,
                         description = it.description,
+                        logoId = it.logoId?.toString(),
                     )
                 },
             skills = skills.map { CvSnapshot.Skill(category = it.category, name = it.name, level = it.level) },
@@ -243,6 +245,8 @@ class CvService(
                         employer = it.employer,
                         technologies = it.technologies,
                         description = it.description,
+                        // A logo deleted since is left out
+                        logoId = it.logoId?.let(UUID::fromString)?.takeIf(logoService::exists),
                     )
                 },
             skills = skills.map { CvSkillForm(category = it.category, name = it.name, level = it.level) },
@@ -273,11 +277,8 @@ class CvService(
     companion object {
         private val mapper = jacksonObjectMapper()
         private const val MAX_LINE_LENGTH = 255
-        private const val MAX_TECHNOLOGIES_LENGTH = 1000
+        private const val MAX_TECHNOLOGIES = 50
         private const val MAX_TECHNOLOGY_LENGTH = 100
-
-        /** Quotes and separator around every technology in the JSON array. */
-        private const val JSON_OVERHEAD = 4
         private const val MIN_LEVEL = 1
         private const val MAX_LEVEL = 5
 
