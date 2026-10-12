@@ -75,6 +75,18 @@ describe('CV_FORM_SCHEMA', () => {
     ).resolves.toEqual([]);
   });
 
+  it('limits the length of a technology', async () => {
+    await expect(
+      errorsOf(
+        values({
+          experiences: [
+            { ...experience, technologies: ['Kotlin', 'x'.repeat(101)] },
+          ],
+        }),
+      ),
+    ).resolves.toEqual(['experiences[0].technologies[1]']);
+  });
+
   it('applies the length limits of the contract', async () => {
     await expect(
       errorsOf(
@@ -111,7 +123,7 @@ describe('CV_FORM_SCHEMA', () => {
 });
 
 describe('toCvRequest', () => {
-  it('writes months as yyyy-MM, splits technologies and drops empty fields', () => {
+  it('writes months as yyyy-MM, trims technologies and drops empty fields', () => {
     expect(
       toCvRequest(
         values({
@@ -126,7 +138,7 @@ describe('toCvRequest', () => {
               ...experience,
               to: dayjs('2025-03-01'),
               employer: 'Flock',
-              technologies: 'Kotlin, , Typescript ,React',
+              technologies: ['Kotlin', ' ', ' Typescript ', 'HTML, CSS'],
               description: '  Built things.  ',
             },
           ],
@@ -152,7 +164,7 @@ describe('toCvRequest', () => {
           role: 'Software Engineer',
           client: 'ING',
           employer: 'Flock',
-          technologies: ['Kotlin', 'Typescript', 'React'],
+          technologies: ['Kotlin', 'Typescript', 'HTML, CSS'],
           description: 'Built things.',
         },
       ],
@@ -199,7 +211,7 @@ describe('toCvFormValues and fromCvImport', () => {
     });
     expect(form.experiences[0].from?.format('YYYY-MM')).toBe('2024-08');
     expect(form.experiences[0].to).toBeNull();
-    expect(form.experiences[0].technologies).toBe('Kotlin, React');
+    expect(form.experiences[0].technologies).toEqual(['Kotlin', 'React']);
   });
 
   it('starts a new CV from an import, falling back to Dutch', () => {

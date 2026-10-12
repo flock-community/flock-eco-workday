@@ -76,9 +76,14 @@ test.describe('CV', () => {
     await page.getByRole('textbox', { name: 'Role' }).fill('Backend engineer');
     await page.getByRole('textbox', { name: 'Client' }).fill('NS');
     await page.getByRole('textbox', { name: 'Via' }).fill('Flock');
-    await page
-      .getByRole('textbox', { name: 'Technologies' })
-      .fill('Kotlin, Spring Boot');
+    // Each technology becomes a chip: a comma or enter ends it
+    const technologies = page.getByRole('combobox', { name: 'Technologies' });
+    await technologies.pressSequentially('Kotlin,');
+    await technologies.pressSequentially('Spring Boot');
+    await technologies.press('Enter');
+    await expect(
+      page.getByTestId('cv-experience').locator('.MuiChip-label'),
+    ).toHaveText(['Kotlin', 'Spring Boot']);
     await page
       .getByRole('textbox', { name: 'Description' })
       .fill('Ernie built the journey planner.');
@@ -234,11 +239,15 @@ test.describe('CV', () => {
     await expect(latest.getByRole('textbox', { name: 'Via' })).toHaveValue(
       'Flock',
     );
-    await expect(
-      latest.getByRole('textbox', { name: 'Technologies' }),
-    ).toHaveValue(
-      'Webcomponents, Typescript, MSW, Wirespec, Docker, Playwright, Storybook',
-    );
+    await expect(latest.locator('.MuiChip-label')).toHaveText([
+      'Webcomponents',
+      'Typescript',
+      'MSW',
+      'Wirespec',
+      'Docker',
+      'Playwright',
+      'Storybook',
+    ]);
     await expect(page.getByRole('textbox', { name: 'Education' })).toHaveValue(
       /^Master, Business Information Management, Rotterdam \(2012\)/,
     );

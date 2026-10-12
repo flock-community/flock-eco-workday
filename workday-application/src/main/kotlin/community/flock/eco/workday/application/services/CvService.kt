@@ -99,9 +99,15 @@ class CvService(
         if (to != null && to.isBefore(from)) {
             throw CvInvalidInputException("$field.to may not be before $field.from")
         }
-        val technologies = technologies.flatMap { it.split(",") }.map { it.trim() }.filter { it.isNotEmpty() }.distinct()
-        if (technologies.joinToString(",").length > MAX_TECHNOLOGIES_LENGTH) {
-            throw CvInvalidInputException("$field.technologies may be at most $MAX_TECHNOLOGIES_LENGTH characters")
+        val technologies = technologies.map { it.trim() }.filter { it.isNotEmpty() }.distinct()
+        technologies.forEachIndexed { index, it ->
+            if (it.length > MAX_TECHNOLOGY_LENGTH) {
+                throw CvInvalidInputException("$field.technologies[$index] may be at most $MAX_TECHNOLOGY_LENGTH characters")
+            }
+        }
+        // Stored as a JSON array in a column of MAX_TECHNOLOGIES_LENGTH
+        if (technologies.sumOf { it.length + JSON_OVERHEAD } > MAX_TECHNOLOGIES_LENGTH) {
+            throw CvInvalidInputException("$field.technologies are too many to store")
         }
         return CvExperience(
             from = from,
@@ -146,6 +152,10 @@ class CvService(
     companion object {
         private const val MAX_LINE_LENGTH = 255
         private const val MAX_TECHNOLOGIES_LENGTH = 1000
+        private const val MAX_TECHNOLOGY_LENGTH = 100
+
+        /** Quotes and separator around every technology in the JSON array. */
+        private const val JSON_OVERHEAD = 4
         private const val MIN_LEVEL = 1
         private const val MAX_LEVEL = 5
 

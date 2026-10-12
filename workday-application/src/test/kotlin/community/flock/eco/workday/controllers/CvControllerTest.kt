@@ -49,7 +49,7 @@ class CvControllerTest(
             "role" to " Software Engineer ",
             "client" to "ING",
             "employer" to "Flock",
-            "technologies" to listOf("Kotlin, React", " Typescript ", ""),
+            "technologies" to listOf("Kotlin", " React ", "", "Kotlin", "HTML, CSS"),
             "description" to "Rebuilt the business portal.\n\nhttps://www.flock.community/cases/ing-front-end-team",
         )
 
@@ -94,7 +94,7 @@ class CvControllerTest(
     private fun MockHttpServletRequestBuilder.json(body: String) = content(body).contentType(APPLICATION_JSON).accept(APPLICATION_JSON)
 
     @Test
-    fun `a worker writes their own CV, newest experience first with the technologies split`() {
+    fun `a worker writes their own CV, newest experience first with the technologies trimmed`() {
         val (worker, person) = aWorker()
         val older = ingExperience + mapOf("from" to "2020-06", "to" to "2022-11", "client" to "DHL", "description" to null)
 
@@ -116,7 +116,7 @@ class CvControllerTest(
             .andExpect(jsonPath("$.experiences[0].technologies.length()").value(3))
             .andExpect(jsonPath("$.experiences[0].technologies[0]").value("Kotlin"))
             .andExpect(jsonPath("$.experiences[0].technologies[1]").value("React"))
-            .andExpect(jsonPath("$.experiences[0].technologies[2]").value("Typescript"))
+            .andExpect(jsonPath("$.experiences[0].technologies[2]").value("HTML, CSS"))
             .andExpect(jsonPath("$.experiences[1].client").value("DHL"))
             .andExpect(jsonPath("$.experiences[1].to").value("2022-11"))
             .andExpect(jsonPath("$.skills.length()").value(2))
@@ -182,6 +182,8 @@ class CvControllerTest(
             cvJson(experiences = listOf(ingExperience + ("from" to "08-2024"))) to "experiences[0].from is invalid",
             cvJson(experiences = listOf(ingExperience + mapOf("from" to "2024-08", "to" to "2024-07"))) to
                 "experiences[0].to may not be before experiences[0].from",
+            cvJson(experiences = listOf(ingExperience + ("technologies" to listOf("Kotlin", "x".repeat(101))))) to
+                "experiences[0].technologies[1] may be at most 100 characters",
             cvJson(place = "x".repeat(256)) to "place may be at most 255 characters",
             cvJson(summary = "x".repeat(10001)) to "summary may be at most 10000 characters",
             cvJson(language = "DE") to "language is invalid",

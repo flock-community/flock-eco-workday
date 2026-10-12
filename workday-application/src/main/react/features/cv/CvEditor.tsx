@@ -36,6 +36,7 @@ import {
   toCvFormValues,
   toCvRequest,
 } from './schema';
+import { TechnologiesField } from './TechnologiesField';
 
 /** A CV read from a PDF, handed to the editor to start a new CV with. */
 export type CvImportState = {
@@ -332,12 +333,15 @@ export function CvEditor() {
                                   />
                                 </Grid>
                                 <Grid size={{ xs: 12 }}>
-                                  <Field
-                                    component={TextField}
+                                  <TechnologiesField
                                     name={`${prefix}.technologies`}
-                                    label="Technologies"
-                                    helperText="Comma separated"
-                                    fullWidth
+                                    suggestions={[
+                                      ...new Set(
+                                        values.experiences.flatMap(
+                                          (it) => it.technologies,
+                                        ),
+                                      ),
+                                    ].sort()}
                                   />
                                 </Grid>
                                 <Grid size={{ xs: 12 }}>

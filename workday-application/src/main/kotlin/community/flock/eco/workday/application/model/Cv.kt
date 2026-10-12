@@ -2,6 +2,8 @@ package community.flock.eco.workday.application.model
 
 import community.flock.eco.workday.core.events.EventEntityListeners
 import community.flock.eco.workday.core.model.AbstractCodeEntity
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
@@ -127,15 +129,22 @@ class YearMonthConverter : AttributeConverter<YearMonth?, LocalDate?> {
     override fun convertToEntityAttribute(dbData: LocalDate?): YearMonth? = dbData?.let(YearMonth::from)
 }
 
-/** Technologies are stored comma separated; a technology itself never holds a comma. */
+/** Technologies are stored as a JSON array of strings, so a technology may hold a comma. */
 @Converter
 class TechnologiesConverter : AttributeConverter<List<String>, String?> {
-    override fun convertToDatabaseColumn(attribute: List<String>?): String? = attribute?.takeIf { it.isNotEmpty() }?.joinToString(",")
+    override fun convertToDatabaseColumn(attribute: List<String>?): String? =
+        attribute?.takeIf { it.isNotEmpty() }?.let(mapper::writeValueAsString)
 
     override fun convertToEntityAttribute(dbData: String?): List<String> =
-        dbData
-            ?.split(",")
-            ?.map { it.trim() }
-            ?.filter { it.isNotEmpty() }
-            ?: emptyList()
+        when {
+            dbData.isNullOrBlank() -> emptyList()
+            dbData.trimStart().startsWith("[") -> mapper.readValue(dbData, STRINGS)
+            // Comma separated, as before the JSON array
+            else -> dbData.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        }
+
+    companion object {
+        private val mapper = ObjectMapper()
+        private val STRINGS = object : TypeReference<List<String>>() {}
+    }
 }

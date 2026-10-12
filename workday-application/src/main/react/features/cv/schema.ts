@@ -15,8 +15,7 @@ export type CvExperienceValues = {
   role: string;
   client: string;
   employer: string;
-  /** Comma separated. */
-  technologies: string;
+  technologies: string[];
   description: string;
 };
 
@@ -101,7 +100,12 @@ export const CV_EXPERIENCE_SCHEMA = object({
   role: requiredLine('Role'),
   client: requiredLine('Client'),
   employer: line('Employer'),
-  technologies: string().default(''),
+  technologies: array(
+    string()
+      .trim()
+      .max(100, 'A technology may be at most 100 characters')
+      .required(),
+  ).default([]),
   description: text('Description'),
 });
 
@@ -158,7 +162,7 @@ export const emptyExperience = (): CvExperienceValues => ({
   role: '',
   client: '',
   employer: '',
-  technologies: '',
+  technologies: [],
   description: '',
 });
 
@@ -168,7 +172,7 @@ const toExperienceValues = (it: CvExperience): CvExperienceValues => ({
   role: it.role ?? '',
   client: it.client ?? '',
   employer: it.employer ?? '',
-  technologies: (it.technologies ?? []).join(', '),
+  technologies: it.technologies ?? [],
   description: it.description ?? '',
 });
 
@@ -219,7 +223,6 @@ export const toCvRequest = (values: CvFormValues): CvRequest => ({
     client: it.client.trim(),
     employer: optional(it.employer),
     technologies: it.technologies
-      .split(',')
       .map((tech) => tech.trim())
       .filter((tech) => tech !== ''),
     description: optional(it.description),
