@@ -30,6 +30,7 @@
     "dayjs": "^1.11.1",
     "formik": "^2.2.6",
     "formik-mui": "^5.0.0-alpha.0",
+    "markdown-to-jsx": "^9.10.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.8",

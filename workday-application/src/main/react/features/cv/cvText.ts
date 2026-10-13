@@ -151,3 +151,10 @@ export function linkify(line: string): TextPart[] {
   if (last < line.length) parts.push({ text: line.slice(last) });
   return parts;
 }
+
+/**
+ * Turns each single line break within a block of Markdown into a hard break (two
+ * trailing spaces), so a description renders its lines the way they were typed.
+ */
+export const markdownLineBreaks = (text: string): string =>
+  text.replace(/\r\n?/g, '\n').replace(/([^\n])[ \t]*\n(?=[^\n])/g, '$1  \n');
