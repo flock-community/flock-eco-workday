@@ -1,5 +1,7 @@
 import {
   Autocomplete,
+  Box,
+  Button,
   Card,
   CardContent,
   FormControl,
@@ -8,6 +10,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { type Person, PersonClient } from '../../clients/PersonClient';
@@ -30,18 +33,16 @@ export function PersonSelector({
 }: PersonSelectorProps) {
   const [items, setItems] = useState<any>();
   const [state, setState] = useState<any>(value);
+  const [showInactive, setShowInactive] = useState(false);
 
   useEffect(() => {
-    PersonClient.queryByPage(
-      {
-        page: 0,
-        size: 100,
-        sort: 'firstname',
-      },
-      {
-        active: true,
-      },
-    ).then((res) => setItems(res.list));
+    // Load inactive persons as well, so they can be shown on request and an
+    // already selected inactive person still resolves to a name.
+    PersonClient.findAllByPage({
+      page: 0,
+      size: 1000,
+      sort: 'firstname',
+    }).then((res) => setItems(res.list));
   }, []);
 
   useEffect(() => {
@@ -54,8 +55,36 @@ export function PersonSelector({
     onChange(selected);
   }
 
+  function isSelected(uuid: string) {
+    return Array.isArray(state) ? state.includes(uuid) : state === uuid;
+  }
+
+  // Inactive persons are hidden unless requested, but a selected inactive
+  // person stays in the list so the current value keeps being displayed.
+  const options: Person[] = (items || []).filter(
+    (it: Person) => showInactive || it.active || isSelected(it.uuid),
+  );
+
   function renderString(it: any) {
     return `${it.firstname} ${it.lastname}`;
+  }
+
+  function renderOptionLabel(item: Person) {
+    return (
+      <>
+        {renderString(item)}
+        {!item.active && (
+          <Typography
+            component="span"
+            variant="caption"
+            color="text.secondary"
+            sx={{ ml: 1 }}
+          >
+            inactive
+          </Typography>
+        )}
+      </>
+    );
   }
 
   function renderValue(values: any) {
@@ -71,21 +100,26 @@ export function PersonSelector({
     }
   }
 
-  function renderMenuItem(item: Person, key: string) {
+  function renderMenuItem(item: Person, key: number) {
     return (
       <MenuItem key={`person-selector-menu-item-${key}`} value={item.uuid}>
-        {renderString(item)}
+        {renderOptionLabel(item)}
       </MenuItem>
     );
   }
 
-  const singleInput = items && (
+  const singleInput = (
     <Autocomplete
       fullWidth
       size={props.size}
-      options={items}
+      options={options}
       getOptionLabel={renderString}
-      value={items.find((it) => it.uuid === state) ?? null}
+      renderOption={({ key, ...optionProps }, option) => (
+        <li key={key} {...optionProps}>
+          {renderOptionLabel(option)}
+        </li>
+      )}
+      value={options.find((it) => it.uuid === state) ?? null}
       isOptionEqualToValue={(option, selected) => option.uuid === selected.uuid}
       onChange={(_event, option) => {
         const uuid = option?.uuid ?? '';
@@ -98,7 +132,7 @@ export function PersonSelector({
     />
   );
 
-  const multipleInput = items && (
+  const multipleInput = (
     <FormControl fullWidth {...props}>
       <InputLabel shrink>{label}</InputLabel>
       <Select
@@ -109,12 +143,27 @@ export function PersonSelector({
         renderValue={renderValue}
         multiple
       >
-        {(items || []).map(renderMenuItem)}
+        {options.map(renderMenuItem)}
       </Select>
     </FormControl>
   );
 
-  const selectInput = multiple ? multipleInput : singleInput;
+  const selectInput = items && (
+    <Box
+      sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}
+    >
+      <Box sx={{ flex: '1 1 240px', minWidth: 0 }}>
+        {multiple ? multipleInput : singleInput}
+      </Box>
+      <Button
+        size="small"
+        onClick={() => setShowInactive((it) => !it)}
+        sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
+      >
+        {showInactive ? 'Hide inactive persons' : 'Show inactive persons'}
+      </Button>
+    </Box>
+  );
 
   return embedded ? (
     <div>{selectInput}</div>
