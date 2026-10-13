@@ -5,14 +5,20 @@ description: Insert a resume (usually a Flock CV PDF) into Workday as a CV throu
 
 # Flock CV: insert and edit
 
-Works against a running Workday backend (`cd workday-application && ../mvnw spring-boot:run -Pdevelop`,
-port 8080). Everything goes through the API, never the database, so validation, revisions and
-permissions apply.
+Works against a running Workday backend, by default production (`https://workday.flock.community`),
+or a local dev instance (`cd workday-application && ../mvnw spring-boot:run -Pdevelop`, port 8080).
+Everything goes through the API, never the database, so validation, revisions and permissions apply.
 
 The helper `scripts/cvapi.py` (stdlib only, run with `python3 -I`) wraps every call this needs.
-Set `WORKDAY_TOKEN` to the token the user gives; `WORKDAY_URL` defaults to `http://localhost:8080`.
-Run it without arguments for the command list. Keep intermediate files (extracted images, JSON
-forms) in the scratchpad, not in the repo.
+Set `WORKDAY_TOKEN` to the token the user gives; if unset, it falls back to the contents of
+`~/.secrets/WORKDAY_TOKEN`. `WORKDAY_URL` defaults to production, `https://workday.flock.community`;
+when left at that default, a call that can't even connect (no HTTP response at all - DNS failure,
+connection refused, TLS failure, ...) retries once against `http://localhost:8080` for local
+development. An HTTP error response (4xx/5xx) from production is not retried, since the server was
+reached. Set `WORKDAY_URL=http://localhost:8080` yourself to target the local dev server directly and
+skip that fallback (useful when you expect production to be reachable too and don't want the two
+confused). Run it without arguments for the command list. Keep intermediate files (extracted images,
+JSON forms) in the scratchpad, not in the repo.
 
 Reading the PDF (the `text`, `parse` and `extract-images` commands, implemented in
 `scripts/cvtext.py`) shells out to **poppler**'s `pdftotext` and `pdfimages` CLIs. **Before the
@@ -29,21 +35,30 @@ assignment's text) and the column order of a two-column tech grid; everything el
 as before. Treat every hint as a starting point to verify, not a certainty — more so than usual
 when a page holds more than one assignment (see "Logos" below).
 
-## Before you start: token and CV name
+## Before you start: resume file, token and CV name
 
 Ask for what is missing **once, at the start**, in a single message, so the user is not interrupted
-halfway through. Anything that needs no input (finding the PDF, reading it, extracting images) may
-already be done before or while waiting.
+halfway through. Anything that needs no input (reading the PDF once you have it, extracting images)
+may already be done before or while waiting.
 
-1. **Token.** Use a token the user already gave in this conversation, or `$WORKDAY_TOKEN` if it is set
-   in the environment (`echo ${WORKDAY_TOKEN:+set}`; never print the value). If neither exists, ask the
-   user for a Workday API token as a **plain text message, not `AskUserQuestion`** — pasting a secret
-   isn't a multiple-choice decision, and a question with only one real option is invalid input and gets
-   rejected before the user ever sees it. Stop until they give it: never guess, borrow one from a file
-   or config, or continue without it. Mention that an admin token (`CvAuthority.ADMIN`) is needed to put
-   the CV on someone else's person. Shell state does not persist between Bash calls, so prefix every
-   `cvapi.py` call with `WORKDAY_TOKEN=<token>`. If a call answers 401/403, say the token is invalid or
-   lacks rights and ask for another one.
+0. **Resume file.** Never guess where the resume lives — don't search Downloads, the repo, or
+   anywhere else on disk, and don't assume a file path mentioned earlier in the conversation is still
+   the right one unless the user is pointing back at it for this request. Fold this into the same
+   opening message as the token/name asks below: ask how they want to supply it (a file path,
+   drag-and-drop into the conversation, or pasted text). Nothing that needs the resume (parsing it,
+   reading it, extracting its images) can start until they answer.
+1. **Token.** Use a token the user already gave in this conversation, `$WORKDAY_TOKEN` if it is set
+   in the environment (`echo ${WORKDAY_TOKEN:+set}`; never print the value), or the contents of
+   `~/.secrets/WORKDAY_TOKEN` if that file exists (`cvapi.py` checks it itself as a fallback, in that
+   order — you don't need to read the file yourself, just know it's checked). If none of those exist,
+   ask the user for a Workday API token as a **plain text message, not `AskUserQuestion`** — pasting a
+   secret isn't a multiple-choice decision, and a question with only one real option is invalid input
+   and gets rejected before the user ever sees it. Stop until they give it: never guess, borrow one from
+   another file or config, or continue without it. Mention that an admin token (`CvAuthority.ADMIN`) is
+   needed to put the CV on someone else's person. Shell state does not persist between Bash calls, so
+   prefix every `cvapi.py` call with `WORKDAY_TOKEN=<token>`, unless you're relying on the
+   `~/.secrets/WORKDAY_TOKEN` fallback, in which case no env prefix is needed. If a call answers
+   401/403, say the token is invalid or lacks rights and ask for another one.
 2. **CV name** (only when inserting a new CV; skip it for an edit unless the user wants a rename).
    Unless the user already named it, ask with `AskUserQuestion` (it has 3 genuinely distinct options,
    so it's a valid question on its own) using these options:

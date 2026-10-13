@@ -21,7 +21,10 @@ Check both are on PATH (`which pdftotext pdfimages`) before running any PDF comm
 missing, ask the user for y/n permission to install poppler before installing it yourself. See
 SKILL.md.
 
-Environment: WORKDAY_TOKEN (required), WORKDAY_URL (default http://localhost:8080).
+Environment: WORKDAY_TOKEN (required; falls back to the contents of ~/.secrets/WORKDAY_TOKEN
+if unset), WORKDAY_URL (default https://workday.flock.community; if left at that default and
+the request can't even connect - no server reachable, not an HTTP error - it retries once
+against http://localhost:8080). Set WORKDAY_URL explicitly to skip that fallback.
 """
 
 import base64
@@ -37,25 +40,59 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.dont_write_bytecode = True
 import cvtext  # noqa: E402
 
-BASE = os.environ.get("WORKDAY_URL", "http://localhost:8080").rstrip("/")
+PROD_URL = "https://workday.flock.community"
+LOCAL_URL = "http://localhost:8080"
+
+_env_url = os.environ.get("WORKDAY_URL")
+BASE = (_env_url or PROD_URL).rstrip("/")
+# Only fall back to localhost when the caller didn't pin WORKDAY_URL themselves.
+ALLOW_LOCAL_FALLBACK = not _env_url
+
+SECRETS_TOKEN_FILE = os.path.join(os.path.expanduser("~"), ".secrets", "WORKDAY_TOKEN")
+
+
+def get_token():
+    token = os.environ.get("WORKDAY_TOKEN")
+    if token:
+        return token
+    try:
+        with open(SECRETS_TOKEN_FILE) as f:
+            return f.read().strip() or None
+    except OSError:
+        return None
 
 
 def call(method, path, body=None):
-    token = os.environ.get("WORKDAY_TOKEN")
+    global BASE
+    token = get_token()
     if not token:
-        sys.exit("Set WORKDAY_TOKEN to a user key token")
-    req = urllib.request.Request(
-        BASE + path,
-        method=method,
-        data=None if body is None else json.dumps(body, ensure_ascii=False).encode(),
-        headers={"Authorization": f"TOKEN {token}", "Content-Type": "application/json"},
-    )
-    try:
+        sys.exit(f"Set WORKDAY_TOKEN to a user key token, or put it in {SECRETS_TOKEN_FILE}")
+    data = None if body is None else json.dumps(body, ensure_ascii=False).encode()
+    headers = {"Authorization": f"TOKEN {token}", "Content-Type": "application/json"}
+
+    def attempt(base):
+        req = urllib.request.Request(base + path, method=method, data=data, headers=headers)
         with urllib.request.urlopen(req) as res:
             raw = res.read()
             return json.loads(raw) if raw else None
+
+    try:
+        return attempt(BASE)
     except urllib.error.HTTPError as e:
         sys.exit(f"{method} {path} -> {e.code}: {e.read().decode(errors='replace')}")
+    except urllib.error.URLError as e:
+        # Not an HTTP error response - the request never reached a server (DNS failure,
+        # connection refused, ...), so retrying elsewhere can't double-submit anything.
+        if not (ALLOW_LOCAL_FALLBACK and BASE != LOCAL_URL):
+            sys.exit(f"{method} {path} -> could not connect to {BASE}: {e.reason}")
+        print(f"Could not reach {BASE} ({e.reason}), falling back to {LOCAL_URL}", file=sys.stderr)
+        BASE = LOCAL_URL
+        try:
+            return attempt(BASE)
+        except urllib.error.HTTPError as e2:
+            sys.exit(f"{method} {path} -> {e2.code}: {e2.read().decode(errors='replace')}")
+        except urllib.error.URLError as e2:
+            sys.exit(f"{method} {path} -> could not connect to {BASE} either: {e2.reason}")
 
 
 def out(value):
