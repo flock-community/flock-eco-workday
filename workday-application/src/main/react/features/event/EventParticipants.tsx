@@ -282,10 +282,12 @@ export function EventParticipants({
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    PersonClient.queryByPage(
-      { page: 0, size: 200, sort: 'firstname' },
-      { active: true },
-    ).then((res: { list: Person[] }) => {
+    // Inactive persons included, the person selector can add them as attendees
+    PersonClient.findAllByPage({
+      page: 0,
+      size: 1000,
+      sort: 'firstname',
+    }).then((res: { list: Person[] }) => {
       setPeople((prev) => {
         const merged = new Map(prev.map((p) => [p.uuid, p]));
         for (const p of res.list) merged.set(p.uuid, p);

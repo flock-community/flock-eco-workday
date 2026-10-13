@@ -32,11 +32,13 @@ const persons = [
   }),
 ];
 
-const openOptions = () =>
-  fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' });
+const openOptions = async () =>
+  fireEvent.keyDown(await screen.findByRole('combobox'), { key: 'ArrowDown' });
 
 const optionNames = () =>
-  screen.getAllByRole('option').map((it) => it.textContent);
+  within(screen.getByRole('listbox'))
+    .getAllByRole('option')
+    .map((it) => it.textContent);
 
 describe('PersonSelector', () => {
   beforeEach(() => {
@@ -52,19 +54,35 @@ describe('PersonSelector', () => {
   it('only offers active persons by default', async () => {
     render(<PersonSelector onChange={jest.fn()} embedded />);
 
-    await screen.findByRole('button', { name: 'Show inactive persons' });
-    openOptions();
+    await openOptions();
 
     expect(optionNames()).toEqual(['Ernie Muppets']);
+  });
+
+  it('shows the inactive persons toggle inside the dropdown', async () => {
+    render(<PersonSelector onChange={jest.fn()} embedded />);
+
+    await screen.findByRole('combobox');
+    expect(
+      screen.queryByRole('button', { name: 'Show inactive persons' }),
+    ).not.toBeInTheDocument();
+
+    await openOptions();
+
+    expect(
+      within(screen.getByRole('presentation')).getByRole('button', {
+        name: 'Show inactive persons',
+      }),
+    ).toBeInTheDocument();
   });
 
   it('offers inactive persons after clicking show inactive persons', async () => {
     render(<PersonSelector onChange={jest.fn()} embedded />);
 
+    await openOptions();
     fireEvent.click(
-      await screen.findByRole('button', { name: 'Show inactive persons' }),
+      screen.getByRole('button', { name: 'Show inactive persons' }),
     );
-    openOptions();
 
     expect(optionNames()).toEqual(['Ernie Muppets', 'Oscar Grouchinactive']);
 
@@ -75,26 +93,36 @@ describe('PersonSelector', () => {
     expect(optionNames()).toEqual(['Ernie Muppets']);
   });
 
+  it('keeps the focus in the input when pressing the toggle, so the dropdown stays open', async () => {
+    render(<PersonSelector onChange={jest.fn()} embedded />);
+
+    await openOptions();
+    const toggle = screen.getByRole('button', {
+      name: 'Show inactive persons',
+    });
+
+    // fireEvent returns false when the default action was prevented
+    expect(fireEvent.mouseDown(toggle)).toBe(false);
+  });
+
   it('keeps showing a selected inactive person while inactive persons are hidden', async () => {
     render(<PersonSelector value="oscar" onChange={jest.fn()} embedded />);
 
-    await screen.findByRole('button', { name: 'Show inactive persons' });
-
-    expect(screen.getByRole('combobox')).toHaveValue('Oscar Grouch');
+    expect(await screen.findByRole('combobox')).toHaveValue('Oscar Grouch');
   });
 
   it('offers inactive persons in the multiple selector after clicking show inactive persons', async () => {
-    render(<PersonSelector onChange={jest.fn()} embedded multiple />);
+    const onChange = jest.fn();
+    render(<PersonSelector onChange={onChange} embedded multiple />);
+
+    fireEvent.mouseDown(await screen.findByRole('combobox'));
+    expect(optionNames()).toEqual(['Ernie Muppets']);
 
     fireEvent.click(
-      await screen.findByRole('button', { name: 'Show inactive persons' }),
+      screen.getByRole('button', { name: 'Show inactive persons' }),
     );
-    fireEvent.mouseDown(screen.getByRole('combobox'));
 
-    const listbox = within(screen.getByRole('listbox'));
-    expect(listbox.getAllByRole('option').map((it) => it.textContent)).toEqual([
-      'Ernie Muppets',
-      'Oscar Grouchinactive',
-    ]);
+    expect(optionNames()).toEqual(['Ernie Muppets', 'Oscar Grouchinactive']);
+    expect(onChange).not.toHaveBeenCalled();
   });
 });

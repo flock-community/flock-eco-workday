@@ -8,12 +8,56 @@ import {
   type FormControlProps,
   InputLabel,
   MenuItem,
+  MenuList,
+  type MenuListProps,
+  Paper,
+  type PaperProps,
   Select,
   TextField,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import {
+  createContext,
+  forwardRef,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { type Person, PersonClient } from '../../clients/PersonClient';
+
+// Slot components need a stable identity, so the footer of the dropdown (the
+// inactive persons toggle) reaches them through context.
+const DropdownFooterContext = createContext<ReactNode>(null);
+
+// Paper slot of the autocomplete
+const PaperWithFooter = forwardRef<HTMLDivElement, PaperProps>(
+  function PaperWithFooter({ children, ...props }, ref) {
+    const footer = useContext(DropdownFooterContext);
+    return (
+      <Paper ref={ref} {...props}>
+        {children}
+        {footer}
+      </Paper>
+    );
+  },
+);
+
+// List slot of the select menu, the footer goes below the list in the menu's
+// paper. The menu passes its ownerState to custom slots, which MenuList must
+// not receive.
+const MenuListWithFooter = forwardRef<
+  HTMLUListElement,
+  MenuListProps & { ownerState?: unknown }
+>(function MenuListWithFooter({ ownerState: _ownerState, ...props }, ref) {
+  const footer = useContext(DropdownFooterContext);
+  return (
+    <>
+      <MenuList ref={ref} sx={{ outline: 0 }} {...props} />
+      {footer}
+    </>
+  );
+});
 
 export type PersonSelectorProps = FormControlProps & {
   value?: string;
@@ -108,10 +152,35 @@ export function PersonSelector({
     );
   }
 
+  const inactiveToggle = (
+    <Box
+      sx={{
+        position: 'sticky',
+        bottom: 0,
+        p: 1,
+        borderTop: 1,
+        borderColor: 'divider',
+        bgcolor: 'background.paper',
+      }}
+    >
+      <Button
+        variant="text"
+        size="small"
+        // Keep the focus in the input, otherwise the autocomplete closes
+        // before the click arrives
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={() => setShowInactive((it) => !it)}
+      >
+        {showInactive ? 'Hide inactive persons' : 'Show inactive persons'}
+      </Button>
+    </Box>
+  );
+
   const singleInput = (
     <Autocomplete
       fullWidth
       size={props.size}
+      slots={{ paper: PaperWithFooter }}
       options={options}
       getOptionLabel={renderString}
       renderOption={({ key, ...optionProps }, option) => (
@@ -141,6 +210,7 @@ export function PersonSelector({
         onChange={handleChange}
         displayEmpty
         renderValue={renderValue}
+        MenuProps={{ slots: { list: MenuListWithFooter } }}
         multiple
       >
         {options.map(renderMenuItem)}
@@ -148,29 +218,17 @@ export function PersonSelector({
     </FormControl>
   );
 
-  const selectInput = items && (
-    <Box
-      sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}
-    >
-      <Box sx={{ flex: '1 1 240px', minWidth: 0 }}>
-        {multiple ? multipleInput : singleInput}
-      </Box>
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={() => setShowInactive((it) => !it)}
-        sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
-      >
-        {showInactive ? 'Hide inactive persons' : 'Show inactive persons'}
-      </Button>
-    </Box>
-  );
+  const selectInput = items && (multiple ? multipleInput : singleInput);
 
-  return embedded ? (
-    <div>{selectInput}</div>
-  ) : (
-    <Card>
-      <CardContent>{selectInput}</CardContent>
-    </Card>
+  return (
+    <DropdownFooterContext.Provider value={inactiveToggle}>
+      {embedded ? (
+        <div>{selectInput}</div>
+      ) : (
+        <Card>
+          <CardContent>{selectInput}</CardContent>
+        </Card>
+      )}
+    </DropdownFooterContext.Provider>
   );
 }
