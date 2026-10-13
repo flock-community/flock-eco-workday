@@ -14,6 +14,7 @@ Those degrade to page- and order-based heuristics (see compute_logo_hints and sp
 more manual verification than before, especially on a page that holds more than one assignment.
 """
 
+import base64
 import datetime
 import hashlib
 import os
@@ -156,6 +157,7 @@ TECH_NAMES = {
 }
 BULLET = re.compile(r"^[\s·⋅•‣▪◦●○■□⁃∙\-–*]+\s*")
 STARS = re.compile(r"\s*([*★☆⭐]{1,5}|\(?([1-5])\s*/\s*5\)?)\s*$")
+RATING_CELL = re.compile(r"^\s*([*★☆⭐]{1,5}|\(?[1-5]\s*/\s*5\)?)\s*$")
 CVHEADER_RE = re.compile(r"^(curriculum vitae|cv)\s*[-–:]\s*(.+)$", re.I)
 PAGENUM_RE = re.compile(r"^(page|pagina)?\s*\d{1,3}(\s*(/|of|van)\s*\d{1,3})?$", re.I)
 
@@ -281,10 +283,16 @@ def resolve_dates(text, months, notes, label):
 
 def split_items(texts):
     """List items from a section's entry texts, in document order. Each tab-joined cell (see
-    cells_of) becomes its own item; there is no column-major grid reordering without coordinates."""
+    cells_of) becomes its own item; there is no column-major grid reordering without coordinates.
+    A cell that is purely a star/x-of-5 rating is a second column for the item before it (e.g. a
+    name and its rating split by the 2+-space gap cells_of uses), not a bullet of its own -- BULLET
+    would otherwise strip it down to nothing, since '*' is also a bullet character."""
     out = []
     for t in texts:
-        for cell_text in t.split("\t"):
+        for i, cell_text in enumerate(t.split("\t")):
+            if i > 0 and RATING_CELL.match(cell_text) and out:
+                out[-1] = out[-1] + " " + cell_text.strip()
+                continue
             item = clean(BULLET.sub("", cell_text).replace("\t", " "))
             if item:
                 out.append(item)
@@ -359,6 +367,10 @@ def build_entries(pdf_path):
                 flush()
                 entries.append((page_no, cell_text))
                 continue
+            if buf and BULLET.match(cell_text):
+                # a new bullet starts a new list item; it doesn't continue whatever was buffered
+                # (which may itself be a single-line bullet with no continuation of its own).
+                flush()
             buf.append(cell_text)
         flush()
     return entries, repeated
@@ -379,19 +391,24 @@ def render_text(pdf_path):
 # Logo hints (page- and content-based, no placement coordinates)
 
 
+PHOTO_CONTENT_TYPES = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg"}
+
+
 def compute_logo_hints(pdf_path, exps, notes):
-    """[[filename, ...], ...] aligned with exps: candidate logo images per experience's page.
-    Decoration (header logo, background) is detected by the same image bytes repeating across
-    pages, and a page-1 photo by being the largest non-decoration image there -- coarser than the
-    old box-proximity match, and unable to split several assignments sharing one page, so every
-    hint still needs a manual look (see SKILL.md)."""
+    """([filename, ...], ...] aligned with exps, data-url-or-None): candidate logo images per
+    experience's page, and the CV's `photo` field (a `data:<type>;base64,...` string) taken from
+    the person's photo on page 1. Decoration (header logo, background) is detected by the same
+    image bytes repeating across pages, and the photo by being the largest non-decoration image
+    on page 1 -- coarser than the old box-proximity match, and unable to split several assignments
+    sharing one page, so every hint still needs a manual look (see SKILL.md)."""
     with tempfile.TemporaryDirectory() as tmp:
         imgs = extract_all_images(pdf_path, tmp)
         info = []
         for page, num, name in imgs:
             with open(os.path.join(tmp, name), "rb") as f:
                 data = f.read()
-            info.append({"page": page, "name": name, "size": len(data), "hash": hashlib.sha1(data).hexdigest()})
+            info.append({"page": page, "name": name, "size": len(data), "hash": hashlib.sha1(data).hexdigest(),
+                         "data": data})
 
     by_hash = {}
     for it in info:
@@ -421,9 +438,19 @@ def compute_logo_hints(pdf_path, exps, notes):
             notes.add(f"page {e['page']}: {exps_per_page[e['page']]} assignments share logo image(s) "
                       f"{', '.join(cands)} on that page; without placement coordinates, matching each "
                       f"image to the right assignment needs a manual check")
+
+    photo_data_url = None
     if photo:
-        notes.add(f"page 1 has a photo ({photo['name']}); the CV has no field for it")
-    return hints
+        ext = photo["name"].rsplit(".", 1)[-1].lower()
+        content_type = PHOTO_CONTENT_TYPES.get(ext)
+        if content_type:
+            encoded = base64.b64encode(photo["data"]).decode()
+            photo_data_url = f"data:{content_type};base64,{encoded}"
+            notes.add(f"page 1 photo ({photo['name']}) added as the CV's photo")
+        else:
+            notes.add(f"page 1 has a photo ({photo['name']}), but its format ({ext}) is not one the "
+                       f"CV photo accepts (PNG or JPEG); add it by hand")
+    return hints, photo_data_url
 
 
 # ---------------------------------------------------------------------------------------------
@@ -604,7 +631,7 @@ def parse_resume(pdf_path, notes):
                              "description": "\n\n".join(t.replace("\t", " ") for _, t in desc) or None,
                              "logoId": None})
 
-    logo_hints = compute_logo_hints(pdf_path, exps, notes)
+    logo_hints, photo = compute_logo_hints(pdf_path, exps, notes)
     for i, hint in enumerate(logo_hints):
         client = experiences[i]["client"]
         same = [j + 1 for j, h in enumerate(logo_hints) if h and j != i and experiences[j]["client"].lower() == client.lower()]
@@ -681,5 +708,6 @@ def parse_resume(pdf_path, notes):
         "education": "\n".join(education) or None,
         "subjects": "\n".join(subjects) or None,
         "languages": "\n".join(languages) or None,
+        "photo": photo,
     }
     return form, full_name, logo_hints
