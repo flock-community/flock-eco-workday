@@ -7,8 +7,7 @@ import org.springframework.stereotype.Component
 
 /**
  * Seed logos for the CV assignments: plain coloured placeholders, no brand artwork. They
- * hold no text, since text in an SVG stays text in a printed CV (and would be read back
- * by the PDF import).
+ * hold no text, since text in an SVG stays text in a printed CV.
  */
 @Component
 @ConditionalOnProperty(prefix = "flock.eco.workday", name = ["develop"])

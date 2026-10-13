@@ -53,14 +53,14 @@ class Cv(
     @ManyToOne(optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     val person: Person,
-    @Column(length = CV_NAME_LENGTH)
+    @Column(length = NAME_LENGTH)
     val name: String,
     @Enumerated(EnumType.STRING)
     @Column(length = 2)
     val language: CvLanguage,
     val place: String? = null,
     val phone: String? = null,
-    @Column(length = CV_TEXT_LENGTH)
+    @Column(length = TEXT_LENGTH)
     val summary: String? = null,
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "cv_experience", joinColumns = [JoinColumn(name = "cv_id")])
@@ -72,11 +72,11 @@ class Cv(
     @OrderColumn(name = "skill_order")
     @OnDelete(action = OnDeleteAction.CASCADE)
     val skills: List<CvSkill> = emptyList(),
-    @Column(length = CV_SECTION_LENGTH)
+    @Column(length = SECTION_LENGTH)
     val education: String? = null,
-    @Column(length = CV_SECTION_LENGTH)
+    @Column(length = SECTION_LENGTH)
     val subjects: String? = null,
-    @Column(length = CV_SECTION_LENGTH)
+    @Column(length = SECTION_LENGTH)
     val languages: String? = null,
     val updatedAt: Instant = Instant.now(),
 ) : AbstractCodeEntity(id, code) {
@@ -84,12 +84,12 @@ class Cv(
 
     companion object {
         /** Room for a few paragraphs of profile or assignment text. */
-        const val CV_TEXT_LENGTH = 10000
+        const val TEXT_LENGTH = 10000
 
-        const val CV_NAME_LENGTH = 100
+        const val NAME_LENGTH = 100
 
         /** Room for a list of degrees, subjects or languages. */
-        const val CV_SECTION_LENGTH = 2000
+        const val SECTION_LENGTH = 2000
     }
 }
 
@@ -113,7 +113,7 @@ class CvExperience(
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(nullable = false)
     val technologies: List<String> = emptyList(),
-    @Column(length = Cv.CV_TEXT_LENGTH)
+    @Column(length = Cv.TEXT_LENGTH)
     val description: String? = null,
     /** The [Logo] to show with the assignment; a deleted logo leaves none. */
     val logoId: UUID? = null,

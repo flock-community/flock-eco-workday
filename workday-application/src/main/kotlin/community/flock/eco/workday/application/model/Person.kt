@@ -41,13 +41,9 @@ class Person(
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)
     val user: User?,
-    /** The content type the photo's bytes turned out to be; null alongside [photoData]. */
+    @Embedded
     @JsonIgnore
-    var photoContentType: String? = null,
-    /** The person's photo, shown in the header of each of their CVs. */
-    @JsonIgnore
-    @Column(length = PHOTO_MAX_SIZE)
-    var photoData: ByteArray? = null,
+    val photo: Photo? = null,
 ) : AbstractIdEntity(id) {
     fun getFullName(): String = "$firstname $lastname"
 
@@ -62,11 +58,6 @@ class Person(
     }
 
     override fun toString(): String = "Person(id=$id, uuid=$uuid, firstname='$firstname', lastname='$lastname', email='$email')"
-
-    companion object {
-        /** The photo is small: half a megabyte is plenty, same ceiling as a [Logo]. */
-        const val PHOTO_MAX_SIZE = 512 * 1024
-    }
 }
 
 /**

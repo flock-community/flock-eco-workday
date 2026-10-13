@@ -9,8 +9,6 @@ import java.util.UUID
 interface CvRevisionRepository : JpaRepository<CvRevision, UUID> {
     fun findAllByCvCodeOrderBySavedAtDesc(code: String): List<CvRevision>
 
-    fun findFirstByCvCodeOrderBySavedAtDesc(code: String): CvRevision?
-
     fun findByIdAndCvCode(
         id: UUID,
         code: String,

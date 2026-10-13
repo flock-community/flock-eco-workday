@@ -13,8 +13,7 @@ import community.flock.eco.workday.application.forms.PhotoChange
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.PersonEvent
 import community.flock.eco.workday.application.services.PersonService
-import community.flock.eco.workday.application.services.decodeImage
-import community.flock.eco.workday.application.services.photoDataUrl
+import community.flock.eco.workday.application.utils.decodeBase64Image
 import community.flock.eco.workday.domain.person.Address
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
@@ -195,7 +194,7 @@ class PersonController(
             address = address?.externalize(),
             user = user?.externalize(),
             fullName = listOfNotNull(firstname, lastname).joinToString(" ").ifBlank { null },
-            photo = photoDataUrl(),
+            photo = photo?.toDataUrl(),
         )
     }
 
@@ -260,7 +259,7 @@ class PersonController(
             this == null -> PhotoChange.Keep
             isBlank() -> PhotoChange.Remove
             else ->
-                runCatching { PhotoChange.Replace(decodeImage(this)) }
+                runCatching { PhotoChange.Replace(decodeBase64Image()) }
                     .getOrElse { throw badRequest("photo is not valid base64") }
         }
 

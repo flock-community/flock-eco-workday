@@ -5,11 +5,13 @@ import community.flock.eco.workday.api.endpoint.GetLogoAll
 import community.flock.eco.workday.api.endpoint.PostLogo
 import community.flock.eco.workday.api.endpoint.PutLogo
 import community.flock.eco.workday.api.model.Error
+import community.flock.eco.workday.api.model.LogoName
 import community.flock.eco.workday.application.model.Logo
 import community.flock.eco.workday.application.services.LogoInvalidInputException
 import community.flock.eco.workday.application.services.LogoNameInUseException
 import community.flock.eco.workday.application.services.LogoService
 import community.flock.eco.workday.application.services.LogoValidationException
+import community.flock.eco.workday.application.utils.decodeBase64Image
 import org.springframework.http.CacheControl
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -19,10 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 import java.time.Duration
-import java.util.Base64
-import java.util.UUID
 import community.flock.eco.workday.api.model.Logo as LogoApi
-import community.flock.eco.workday.api.model.LogoForm as LogoFormApi
 
 /**
  * The logos everybody shares for their CVs. Anybody signed in sees them; whoever may
@@ -43,9 +42,8 @@ class LogoController(
     @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
     override suspend fun postLogo(request: PostLogo.Request): PostLogo.Response<*> =
         validated(onConflict = { PostLogo.Response409(it) }, onBadRequest = { PostLogo.Response400(it) }) {
-            val body = request.body
-            val image = body.image?.let { decode(it) } ?: throw LogoInvalidInputException("image is required")
-            PostLogo.Response200(logoService.create(body.name.validated(), image).externalize())
+            val image = request.body.image?.decoded() ?: throw LogoInvalidInputException("image is required")
+            PostLogo.Response200(logoService.create(request.body.name.validated(), image).externalize())
         }
 
     @PreAuthorize("hasAuthority('CvAuthority.ADMIN')")
@@ -53,7 +51,7 @@ class LogoController(
         validated(onConflict = { PutLogo.Response409(it) }, onBadRequest = { PutLogo.Response400(it) }) {
             val id = request.path.id.toUuidOrNull() ?: return PutLogo.Response404(Error("Logo not found"))
             logoService
-                .update(id, request.body.name.validated(), request.body.image?.let { decode(it) })
+                .update(id, request.body.name.validated(), request.body.image?.decoded())
                 ?.let { PutLogo.Response200(it.externalize()) }
                 ?: PutLogo.Response404(Error("Logo not found"))
         }
@@ -100,7 +98,7 @@ class LogoController(
             onBadRequest(Error(e.message))
         }
 
-    private fun community.flock.eco.workday.api.model.LogoName.validated(): String =
+    private fun LogoName.validated(): String =
         when {
             validate() -> value.trim()
             value.isBlank() -> throw LogoInvalidInputException("name is required")
@@ -108,8 +106,8 @@ class LogoController(
         }
 
     /** The image as base64, optionally as a data URL (`data:image/png;base64,...`). */
-    private fun decode(image: String): ByteArray =
-        runCatching { Base64.getDecoder().decode(image.substringAfter("base64,").trim()) }
+    private fun String.decoded(): ByteArray =
+        runCatching { decodeBase64Image() }
             .getOrElse { throw LogoInvalidInputException("image is not valid base64") }
 
     private fun Logo.externalize() =
@@ -119,6 +117,4 @@ class LogoController(
             contentType = contentType,
             updatedAt = updatedAt.toString(),
         )
-
-    private fun String.toUuidOrNull(): UUID? = runCatching { UUID.fromString(trim()) }.getOrNull()
 }

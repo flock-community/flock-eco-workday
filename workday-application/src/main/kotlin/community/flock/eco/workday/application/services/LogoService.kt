@@ -2,7 +2,9 @@ package community.flock.eco.workday.application.services
 
 import community.flock.eco.workday.application.model.Logo
 import community.flock.eco.workday.application.repository.LogoRepository
+import community.flock.eco.workday.application.utils.imageContentType
 import jakarta.transaction.Transactional
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.UUID
@@ -27,7 +29,7 @@ class LogoService(
     /** By name, ignoring case: bol.com among the B's. */
     fun findAll(): List<Logo> = logoRepository.findAll().sortedBy { it.name.lowercase() }
 
-    fun findById(id: UUID): Logo? = logoRepository.findById(id).orElse(null)
+    fun findById(id: UUID): Logo? = logoRepository.findByIdOrNull(id)
 
     fun exists(id: UUID): Boolean = logoRepository.existsById(id)
 
@@ -59,13 +61,11 @@ class LogoService(
         image: ByteArray?,
     ): Logo {
         val trimmed = name.trim()
-        logoRepository
-            .findByNameIgnoreCase(trimmed)
-            ?.takeIf { it.id != existing?.id }
-            ?.let { throw LogoNameInUseException(trimmed) }
+        val namesake = logoRepository.findByNameIgnoreCase(trimmed)
+        if (namesake != null && namesake.id != existing?.id) throw LogoNameInUseException(trimmed)
         val data = image ?: existing?.data ?: throw LogoInvalidInputException("image is required")
         if (data.size > Logo.MAX_SIZE) throw LogoInvalidInputException("image may be at most ${Logo.MAX_SIZE / 1024} KB")
-        val contentType = contentTypeOf(data) ?: throw LogoInvalidInputException("image must be a PNG, JPEG, GIF, WebP or SVG")
+        val contentType = data.imageContentType() ?: throw LogoInvalidInputException("image must be a PNG, JPEG, GIF, WebP or SVG")
         return logoRepository.save(
             Logo(
                 id = existing?.id ?: UUID.randomUUID(),
@@ -75,30 +75,5 @@ class LogoService(
                 updatedAt = Instant.now(),
             ),
         )
-    }
-
-    companion object {
-        /** What the bytes are, not what the upload claims: the image is served as this type. */
-        fun contentTypeOf(data: ByteArray): String? {
-            fun startsWith(vararg bytes: Int) = data.size >= bytes.size && bytes.indices.all { data[it] == bytes[it].toByte() }
-
-            fun ascii(
-                from: Int,
-                text: String,
-            ) = data.size >= from + text.length && String(data, from, text.length, Charsets.US_ASCII) == text
-            return when {
-                startsWith(0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A) -> "image/png"
-                startsWith(0xFF, 0xD8, 0xFF) -> "image/jpeg"
-                ascii(0, "GIF87a") || ascii(0, "GIF89a") -> "image/gif"
-                ascii(0, "RIFF") && ascii(8, "WEBP") -> "image/webp"
-                isSvg(data) -> "image/svg+xml"
-                else -> null
-            }
-        }
-
-        private fun isSvg(data: ByteArray): Boolean {
-            val head = String(data, 0, minOf(data.size, 2048), Charsets.UTF_8).trimStart('﻿', ' ', '\n', '\r', '\t')
-            return head.startsWith("<") && Regex("<svg[\\s>]", RegexOption.IGNORE_CASE).containsMatchIn(head)
-        }
     }
 }

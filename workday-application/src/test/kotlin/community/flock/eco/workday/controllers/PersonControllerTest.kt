@@ -449,7 +449,7 @@ class PersonControllerTest : WorkdayIntegrationTest() {
             .andExpect(jsonPath("\$.address").isEmpty)
     }
 
-    // A 1x1 transparent PNG, the smallest valid image LogoService.contentTypeOf recognises
+    // A 1x1 transparent PNG, the smallest valid image imageContentType recognises
     private val aPngDataUrl =
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg=="
 

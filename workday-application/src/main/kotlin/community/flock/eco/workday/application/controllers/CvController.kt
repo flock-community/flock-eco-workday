@@ -17,12 +17,12 @@ import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.model.CvExperience
 import community.flock.eco.workday.application.model.CvLanguage
 import community.flock.eco.workday.application.model.CvRevision
+import community.flock.eco.workday.application.model.CvSkill
 import community.flock.eco.workday.application.services.CvAlreadyExistsException
 import community.flock.eco.workday.application.services.CvInvalidInputException
 import community.flock.eco.workday.application.services.CvService
 import community.flock.eco.workday.application.services.CvValidationException
 import community.flock.eco.workday.application.services.PersonService
-import community.flock.eco.workday.application.services.photoDataUrl
 import community.flock.eco.workday.application.utils.parseSort
 import community.flock.wirespec.kotlin.Wirespec
 import org.springframework.data.domain.PageRequest
@@ -42,7 +42,9 @@ import community.flock.eco.workday.api.model.CvForm as CvFormApi
 import community.flock.eco.workday.api.model.CvLanguage as CvLanguageApi
 import community.flock.eco.workday.api.model.CvRevision as CvRevisionApi
 import community.flock.eco.workday.api.model.CvSkill as CvSkillApi
+import community.flock.eco.workday.api.model.CvSkillForm as CvSkillFormApi
 import community.flock.eco.workday.api.model.Person as PersonApi
+import community.flock.eco.workday.api.model.UUID as UUIDApi
 import community.flock.eco.workday.application.model.Person as PersonInternal
 
 /**
@@ -65,16 +67,17 @@ class CvController(
     @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
     override suspend fun getCvAll(request: GetCvAll.Request): GetCvAll.Response<*> {
         val auth = authentication()
-        val q = request.queries
-        val pageable = q.toPageable()
-        val page =
+        val pageable = request.queries.toPageable()
+        // An admin sees the CVs of everybody, or of the person asked for; everybody else their own
+        val personUuid =
             when {
-                auth.isAdmin() ->
-                    when (val personId = q.personId) {
-                        null -> cvService.findAll(pageable)
-                        else -> cvService.findAllByPersonUuid(personId.toUuidOrBadRequest("personId"), pageable)
-                    }
-                else -> cvService.findAllByPersonUuid(auth.ownPersonUuid(), pageable)
+                auth.isAdmin() -> request.queries.personId?.toUuidOrBadRequest("personId")
+                else -> auth.ownPersonUuid()
+            }
+        val page =
+            when (personUuid) {
+                null -> cvService.findAll(pageable)
+                else -> cvService.findAllByPersonUuid(personUuid, pageable)
             }
         return GetCvAll.Response200(
             body = page.content.map { it.externalize() },
@@ -94,8 +97,7 @@ class CvController(
             onConflict = { PostCv.Response409(it) },
             onBadRequest = { PostCv.Response400(it) },
         ) {
-            val created = cvService.create(request.body.internalize())
-            PostCv.Response200(created.externalize())
+            PostCv.Response200(cvService.create(request.body.internalize()).externalize())
         }
 
     @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
@@ -113,8 +115,8 @@ class CvController(
     @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
     override suspend fun deleteCv(request: DeleteCv.Request): DeleteCv.Response<*> =
         findWritable(request.path.code)
-            ?.let {
-                cvService.deleteByCode(it.code)
+            ?.let { cv ->
+                cvService.deleteByCode(cv.code)
                 DeleteCv.Response204(Unit)
             }
             ?: DeleteCv.Response404(Error("CV not found"))
@@ -131,7 +133,7 @@ class CvController(
             ?.let { cv ->
                 request.path.id
                     .toUuidOrNull()
-                    ?.let { cvService.findRevision(cv.code, it) }
+                    ?.let { id -> cvService.findRevision(cv.code, id) }
             }?.let { GetCvRevision.Response200(it.externalize()) }
             ?: GetCvRevision.Response404(Error("Version not found"))
 
@@ -143,33 +145,32 @@ class CvController(
                 ?.let { cv ->
                     request.path.id
                         .toUuidOrNull()
-                        ?.let { cvService.restore(cv.code, it) }
+                        ?.let { id -> cvService.restore(cv.code, id) }
                 }?.let { PostCvRevisionRestore.Response200(it.externalize()) }
                 ?: PostCvRevisionRestore.Response404(Error("Version not found"))
         } catch (e: CvAlreadyExistsException) {
             PostCvRevisionRestore.Response409(Error(e.message))
         }
 
-    /** The CV with [code], when the current user may read it: any for an admin, else their own with READ. */
-    private fun findReadable(code: String): Cv? {
-        val auth = authentication()
-        return cvService
-            .findByCode(code)
-            ?.takeIf { auth.isAdmin() || (auth.has(CvAuthority.READ) && auth.isAssociatedWith(it.person)) }
-    }
+    private fun findReadable(code: String): Cv? = findAccessible(code, CvAuthority.READ)
 
-    /** The CV with [code], when the current user may write it: any for an admin, else their own with WRITE. */
-    private fun findWritable(code: String): Cv? {
+    private fun findWritable(code: String): Cv? = findAccessible(code, CvAuthority.WRITE)
+
+    /** The CV with [code], when the current user may use it: any for an admin, else their own with [authority]. */
+    private fun findAccessible(
+        code: String,
+        authority: CvAuthority,
+    ): Cv? {
         val auth = authentication()
         return cvService
             .findByCode(code)
-            ?.takeIf { auth.isAdmin() || (auth.has(CvAuthority.WRITE) && auth.isAssociatedWith(it.person)) }
+            ?.takeIf { auth.isAdmin() || (auth.has(authority) && auth.isAssociatedWith(it.person)) }
     }
 
     /**
      * Runs [block] and turns the validation failures of the CV service into the typed
-     * error responses of the contract: a second CV in the same language for a person
-     * is a 409, anything else that is wrong with the input is a 400.
+     * error responses of the contract: a second CV with the same name for a person is a
+     * 409, anything else that is wrong with the input is a 400.
      */
     private inline fun <R> validated(
         onConflict: (Error) -> R,
@@ -194,7 +195,7 @@ class CvController(
             phone = phone,
             summary = summary,
             experiences = experiences.map { it.externalize() },
-            skills = skills.map { CvSkillApi(category = it.category, name = it.name, level = it.level) },
+            skills = skills.map { it.externalize() },
             education = education,
             subjects = subjects,
             languages = languages,
@@ -213,6 +214,8 @@ class CvController(
             description = description,
             logoId = logoId?.toString(),
         )
+
+    private fun CvSkill.externalize() = CvSkillApi(category = category, name = name, level = level)
 
     private fun CvLanguage.externalize() =
         when (this) {
@@ -247,43 +250,28 @@ class CvController(
             googleDriveId = googleDriveId,
             address = null,
             user = null,
-            fullName = "$firstname $lastname",
-            photo = photoDataUrl(),
+            fullName = getFullName(),
+            photo = photo?.toDataUrl(),
         )
 
     /**
      * The contract (cvs.ws) states which fields are required and what their values look
-     * like; the refined types are checked here. An admin may write the CV of any person
-     * (their own when no person is given); everybody else always writes their own.
+     * like; the refined types are checked here.
      */
-    private fun CvFormApi.internalize(): CvForm {
-        val auth = authentication()
-        val personUuid =
-            when {
-                auth.isAdmin() -> personId?.validated("personId")?.value?.let(UUID::fromString) ?: auth.ownPersonUuid()
-                else -> auth.ownPersonUuid()
-            }
-        return CvForm(
-            personId = personUuid,
+    private fun CvFormApi.internalize(): CvForm =
+        CvForm(
+            personId = authentication().personToWrite(personId),
             name = name.validated("name").value.trim(),
             language = language.internalize(),
             place = place,
             phone = phone,
             summary = summary,
-            experiences = experiences.orEmpty().mapIndexed { index, it -> it.internalize("experiences[$index]") },
-            skills =
-                skills.orEmpty().mapIndexed { index, it ->
-                    CvSkillForm(
-                        category = it.category,
-                        name = it.name.validated("skills[$index].name").value,
-                        level = it.level,
-                    )
-                },
+            experiences = experiences.orEmpty().mapIndexed { index, experience -> experience.internalize("experiences[$index]") },
+            skills = skills.orEmpty().mapIndexed { index, skill -> skill.internalize("skills[$index]") },
             education = education,
             subjects = subjects,
             languages = languages,
         )
-    }
 
     private fun CvExperienceFormApi.internalize(field: String) =
         CvExperienceForm(
@@ -297,6 +285,13 @@ class CvController(
             logoId = logoId?.validated("$field.logoId")?.value?.let(UUID::fromString),
         )
 
+    private fun CvSkillFormApi.internalize(field: String) =
+        CvSkillForm(
+            category = category,
+            name = name.validated("$field.name").value,
+            level = level,
+        )
+
     /** Applies the refined type's pattern from the contract; a violation is a 400 with the field name. */
     private fun <T : Wirespec.Refined<String>> T.validated(field: String): T =
         when {
@@ -304,6 +299,18 @@ class CvController(
             value.isBlank() -> throw CvInvalidInputException("$field is required")
             else -> throw CvInvalidInputException("$field is invalid")
         }
+
+    /**
+     * The person whose CV the current user writes: an admin may write the CV of any person
+     * (their own when no person is given); everybody else always writes their own.
+     */
+    private fun Authentication.personToWrite(personId: UUIDApi?): UUID =
+        personId
+            ?.takeIf { isAdmin() }
+            ?.validated("personId")
+            ?.value
+            ?.let(UUID::fromString)
+            ?: ownPersonUuid()
 
     /** The person behind the current user; writing or listing your own CVs takes one. */
     private fun Authentication.ownPersonUuid(): UUID =
@@ -316,8 +323,6 @@ class CvController(
 
     private fun CvRevision.externalize() = CvRevisionApi(id = id.toString(), savedAt = savedAt.toString())
 
-    private fun String.toUuidOrNull(): UUID? = runCatching { UUID.fromString(trim()) }.getOrNull()
-
     private fun authentication(): Authentication =
         SecurityContextHolder.getContext().authentication
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
@@ -325,6 +330,5 @@ class CvController(
     private fun GetCvAll.Queries.toPageable(): Pageable = PageRequest.of(page ?: 0, size ?: 20, parseSort(sort?.split(",")))
 
     private fun String.toUuidOrBadRequest(field: String): UUID =
-        runCatching { UUID.fromString(trim()) }
-            .getOrElse { throw ResponseStatusException(HttpStatus.BAD_REQUEST, "$field must be a UUID") }
+        toUuidOrNull() ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "$field must be a UUID")
 }

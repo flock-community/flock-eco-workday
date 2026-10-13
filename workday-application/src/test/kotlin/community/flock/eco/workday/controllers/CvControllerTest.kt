@@ -5,6 +5,7 @@ import community.flock.eco.workday.WorkdayIntegrationTest
 import community.flock.eco.workday.application.authorities.CvAuthority
 import community.flock.eco.workday.application.authorities.PersonAuthority
 import community.flock.eco.workday.application.model.CvLanguage
+import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.LogoService
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.user.mappers.toDomain
@@ -83,7 +84,7 @@ class CvControllerTest(
     private fun aWorker(
         firstname: String = "Tommy",
         lastname: String = "Dog",
-    ): Pair<UserEntity, community.flock.eco.workday.application.model.Person> {
+    ): Pair<UserEntity, Person> {
         val user = createHelper.createUserEntity(workerAuthorities)
         return user to createHelper.createPersonEntity(firstname, lastname, user.code)
     }
