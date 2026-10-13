@@ -228,6 +228,7 @@ class WorkdayController(
             address = null,
             user = null,
             fullName = "$firstname $lastname",
+            photo = null,
         )
 
     private fun Status.toApi(): WorkDayStatusApi =

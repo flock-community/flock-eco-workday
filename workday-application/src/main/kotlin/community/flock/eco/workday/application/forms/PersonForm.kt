@@ -1,5 +1,6 @@
 package community.flock.eco.workday.application.forms
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import community.flock.eco.workday.domain.person.Address
 import java.time.LocalDate
 
@@ -19,4 +20,21 @@ data class PersonForm(
     val shirtSize: String? = null,
     val googleDriveId: String? = null,
     val address: Address? = null,
+    /** What saving does to the person's photo. */
+    @get:JsonIgnore
+    val photo: PhotoChange = PhotoChange.Keep,
 )
+
+/** The photo is shown in the header of each of the person's CVs. */
+sealed interface PhotoChange {
+    /** Leaves the photo as it is. */
+    data object Keep : PhotoChange
+
+    /** Removes the photo. */
+    data object Remove : PhotoChange
+
+    /** Replaces the photo with these bytes. */
+    class Replace(
+        val data: ByteArray,
+    ) : PhotoChange
+}

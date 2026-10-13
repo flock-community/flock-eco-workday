@@ -208,6 +208,43 @@ test.describe('Person flow', () => {
     await expect(page.getByText(updatedEmail)).toBeVisible();
   });
 
+  test('adds, replaces and removes the photo on a person', async ({ page }) => {
+    const data = buildPersonData('Photo');
+    await createPerson(page, data);
+    await openPersonDetails(page, data);
+
+    await page.locator(EDIT_BUTTON).first().click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+
+    await expect(
+      dialog.getByRole('button', { name: 'Add photo' }),
+    ).toBeVisible();
+    await dialog.getByLabel('Photo').setInputFiles('tests/files/timesheet.png');
+    await expect(
+      dialog.getByRole('button', { name: 'Replace photo' }),
+    ).toBeVisible();
+    await saveDialog(page);
+
+    // It survives a reopen of the edit dialog
+    await page.locator(EDIT_BUTTON).first().click();
+    await expect(
+      dialog.getByRole('button', { name: 'Replace photo' }),
+    ).toBeVisible();
+
+    // Removing it takes it off the person
+    await dialog.getByRole('button', { name: 'Remove photo' }).click();
+    await expect(
+      dialog.getByRole('button', { name: 'Add photo' }),
+    ).toBeVisible();
+    await saveDialog(page);
+
+    await page.locator(EDIT_BUTTON).first().click();
+    await expect(
+      dialog.getByRole('button', { name: 'Add photo' }),
+    ).toBeVisible();
+  });
+
   test('shows the associated user in the form when editing a person', async ({
     page,
   }) => {

@@ -20,12 +20,17 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
 
   type PersonRequestRaw = Omit<
     PersonRequest,
-    'birthdate' | 'joinDate' | 'address'
+    'birthdate' | 'joinDate' | 'address' | 'photo'
   > & {
     birthdate?: Dayjs;
     joinDate?: Dayjs;
     address?: AddressFormValues;
+    /** '' means unchanged, null means removed, else a data URL to replace it with. */
+    photo?: string | null;
   };
+
+  const optional = (value: string | undefined): string | undefined =>
+    value?.trim() === '' ? undefined : value?.trim();
 
   const handleSubmit = (values: PersonRequestRaw) => {
     const body: PersonRequest = {
@@ -44,6 +49,8 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
       shirtSize: values.shirtSize,
       googleDriveId: values.googleDriveId,
       address: toAddressRequest(values.address),
+      // Left out, the person keeps their photo; an empty string removes it
+      photo: values.photo === null ? '' : optional(values.photo),
     };
 
     if (item) {

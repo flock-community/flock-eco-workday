@@ -326,6 +326,7 @@ class ContractController(
             address = null,
             user = null,
             fullName = "$firstname $lastname",
+            photo = null,
         )
 
     private fun ContractInternalFormApi.internalize() =

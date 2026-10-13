@@ -100,6 +100,34 @@ describe('CvDocument', () => {
     );
   });
 
+  it('shows the photo in the header when the CV has one', () => {
+    render(
+      <CvDocument
+        cv={cv({
+          person: {
+            fullName: 'Tommy Dog',
+            email: 'tommy@sesam.straat',
+            birthdate: '1980-05-08',
+            photo: 'data:image/png;base64,abc',
+          } as Cv['person'],
+        })}
+      />,
+    );
+
+    expect(screen.getByRole('img', { name: 'Tommy Dog' })).toHaveAttribute(
+      'src',
+      'data:image/png;base64,abc',
+    );
+  });
+
+  it('shows no photo when the CV has none', () => {
+    render(<CvDocument cv={cv()} />);
+
+    expect(
+      screen.queryByRole('img', { name: 'Tommy Dog' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('shows the personal details with the labels of the CV language', () => {
     render(<CvDocument cv={cv()} />);
 

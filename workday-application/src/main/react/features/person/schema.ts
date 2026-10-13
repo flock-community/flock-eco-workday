@@ -58,6 +58,11 @@ const _defaultObject = {
   shoeSize: string().default('').nullable(),
   shirtSize: string().default('').nullable(),
   address: ADDRESS_FORM_SCHEMA,
+  /**
+   * The photo as a data URL (`data:image/png;base64,...`); '' means none, null means it
+   * was removed. Left out of a save, the person keeps their photo.
+   */
+  photo: string().nullable().default(''),
 };
 
 const PERSON_SCHEMA = object(_defaultObject)

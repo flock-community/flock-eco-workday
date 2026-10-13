@@ -17,6 +17,7 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -446,6 +447,96 @@ class PersonControllerTest : WorkdayIntegrationTest() {
             .asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(jsonPath("\$.address").isEmpty)
+    }
+
+    // A 1x1 transparent PNG, the smallest valid image LogoService.contentTypeOf recognises
+    private val aPngDataUrl =
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg=="
+
+    private fun MockHttpServletRequestBuilder.json(body: String) = content(body).contentType(APPLICATION_JSON).accept(APPLICATION_JSON)
+
+    /**
+     * A raw JSON body matching the wire contract (persons.ws), used instead of serialising
+     * [PersonForm] directly: its `photo` is a [PhotoChange], which has no plain-string shape.
+     */
+    private fun personJson(
+        firstname: String? = "Morris",
+        lastname: String? = "Moss",
+        photo: String? = null,
+    ): String =
+        mapper.writeValueAsString(
+            mapOf(
+                "firstname" to firstname,
+                "lastname" to lastname,
+                "email" to "",
+                "position" to "",
+                "number" to null,
+                "userCode" to null,
+                "active" to true,
+                "photo" to photo,
+            ),
+        )
+
+    @Test
+    fun `the photo is kept when left out of a PUT and removed when empty`() {
+        val user = createUser()
+
+        val uuid =
+            mvc
+                .perform(post(baseUrl).with(user).json(personJson(photo = aPngDataUrl)))
+                .asyncDispatch()
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("\$.photo").value(aPngDataUrl))
+                .andReturn()
+                .response.contentAsString
+                .let { mapper.readTree(it)["uuid"].asText() }
+
+        // Leaving photo out of a PUT keeps it
+        mvc
+            .perform(put("$baseUrl/$uuid").with(user).json(personJson()))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.photo").value(aPngDataUrl))
+
+        // An empty photo removes it
+        mvc
+            .perform(put("$baseUrl/$uuid").with(user).json(personJson(photo = "")))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.photo").doesNotExist())
+
+        mvc
+            .perform(get("$baseUrl/$uuid").with(user).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.photo").doesNotExist())
+    }
+
+    @Test
+    fun `a photo over 512 KB is rejected`() {
+        val user = createUser()
+        val tooBig = "data:image/png;base64," + "A".repeat(700_000)
+
+        mvc
+            .perform(post(baseUrl).with(user).json(personJson(photo = tooBig)))
+            .asyncDispatch()
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `a photo that is not a real image is rejected`() {
+        val user = createUser()
+
+        mvc
+            .perform(post(baseUrl).with(user).json(personJson(photo = "data:image/png;base64,not-valid-base64!!")))
+            .asyncDispatch()
+            .andExpect(status().isBadRequest)
+
+        val notAnImage = "data:text/plain;base64,${java.util.Base64.getEncoder().encodeToString("not an image".toByteArray())}"
+        mvc
+            .perform(post(baseUrl).with(user).json(personJson(photo = notAnImage)))
+            .asyncDispatch()
+            .andExpect(status().isBadRequest)
     }
 
     private fun aPersonForm() =

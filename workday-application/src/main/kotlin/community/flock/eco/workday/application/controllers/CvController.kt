@@ -22,6 +22,7 @@ import community.flock.eco.workday.application.services.CvInvalidInputException
 import community.flock.eco.workday.application.services.CvService
 import community.flock.eco.workday.application.services.CvValidationException
 import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.application.services.photoDataUrl
 import community.flock.eco.workday.application.utils.parseSort
 import community.flock.wirespec.kotlin.Wirespec
 import org.springframework.data.domain.PageRequest
@@ -247,6 +248,7 @@ class CvController(
             address = null,
             user = null,
             fullName = "$firstname $lastname",
+            photo = photoDataUrl(),
         )
 
     /**

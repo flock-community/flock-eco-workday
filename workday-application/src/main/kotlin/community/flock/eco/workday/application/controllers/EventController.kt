@@ -311,6 +311,7 @@ class EventController(
             address = null,
             user = null,
             fullName = "$firstname $lastname",
+            photo = null,
         )
 
     private fun EventType.toApi(): EventTypeApi =

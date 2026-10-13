@@ -40,6 +40,7 @@ export type Person = {
   receiveEmail: boolean;
   googleDriveId: string;
   address: Address | null;
+  photo: string | null;
 };
 
 export type PersonLight = {
@@ -69,6 +70,7 @@ export type PersonRaw = {
   receiveEmail: boolean;
   googleDriveId: string;
   address: Address | null;
+  photo: string | null;
 };
 
 export type PersonRequest = {
@@ -87,6 +89,8 @@ export type PersonRequest = {
   shirtSize?: string;
   googleDriveId?: string;
   address?: AddressRequest | null;
+  /** Left out, the person keeps their photo; an empty string removes it. */
+  photo?: string;
 };
 
 const path = '/api/persons';

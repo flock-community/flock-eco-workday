@@ -35,7 +35,8 @@ type PersonForm {
   shoeSize: String?,
   shirtSize: String?,
   googleDriveId: String?,
-  address: Address?
+  address: Address?,
+  photo: String?
 }
 type Person {
   id: Integer?,
@@ -56,7 +57,8 @@ type Person {
   googleDriveId: String?,
   address: Address?,
   user: User?,
-  fullName: String?
+  fullName: String?,
+  photo: String?
 }
 type Address {
   street: String?,
