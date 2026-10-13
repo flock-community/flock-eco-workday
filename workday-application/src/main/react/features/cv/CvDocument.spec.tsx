@@ -167,6 +167,39 @@ describe('CvDocument', () => {
     expect(screen.getAllByText('Information Makers')).toHaveLength(1);
   });
 
+  it('renders a description written in Markdown, without its raw HTML', () => {
+    render(
+      <CvDocument
+        cv={cv({
+          experiences: [
+            {
+              from: '2022-12',
+              to: '2024-07',
+              role: 'Software Engineer',
+              client: 'ING',
+              employer: 'Flock',
+              technologies: [],
+              description:
+                'Werkte aan **Baker**:\n\n- de API\n- de [docs](https://ing-bank.github.io/baker/)\n\nRegel een\nregel twee <script>alert(1)</script>',
+              logoId: undefined,
+            },
+          ],
+        })}
+      />,
+    );
+
+    expect(screen.getByText('Baker').tagName).toBe('STRONG');
+    const items = screen.getAllByRole('listitem');
+    expect(items.map((it) => it.textContent)).toEqual(['de API', 'de docs']);
+    expect(screen.getByRole('link', { name: 'docs' })).toHaveAttribute(
+      'target',
+      '_blank',
+    );
+    const lines = screen.getByText(/Regel een/);
+    expect(lines.querySelector('br')).not.toBeNull();
+    expect(document.querySelector('script')).toBeNull();
+  });
+
   it('shows the skills per category with their stars, and the other sections', () => {
     render(<CvDocument cv={cv()} />);
 

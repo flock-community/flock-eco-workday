@@ -3,6 +3,7 @@ import {
   clientText,
   cvUrl,
   linkify,
+  markdownLineBreaks,
   monthsWorked,
   paragraphs,
   periodText,
@@ -89,5 +90,13 @@ describe('cvUrl', () => {
   it('leaves out your own person, which only admins could look up', () => {
     expect(cvUrl('me', 'me', { cv: 'cv-1' })).toBe('/cvs?cv=cv-1');
     expect(cvUrl(undefined, 'me', { cv: undefined })).toBe('/cvs');
+  });
+});
+
+describe('markdownLineBreaks', () => {
+  it('keeps single line breaks as hard breaks and leaves blank lines alone', () => {
+    expect(markdownLineBreaks('een\r\ntwee\n\n- a\n- b')).toBe(
+      'een  \ntwee\n\n- a  \n- b',
+    );
   });
 });

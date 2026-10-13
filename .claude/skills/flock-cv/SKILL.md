@@ -96,7 +96,7 @@ PDF once you have it, extracting images) may already be done before or while wai
 | `name` | Title of the CV, not the person's name (e.g. "General", "Cees Jansen - 08-2026"). 1-100 chars, **unique per person** (409 otherwise). |
 | `language` | `EN` or `NL`, the language the CV is written in. |
 | `place`, `phone`, `summary` | Plain text; summary keeps paragraphs as `\n\n`. |
-| `experiences[]` | Newest first. `from`/`to` are `yyyy-MM`; `to: null` means "present". `role` and `client` required (max 255). `employer` is who the person worked through ("via Flock", "via Capgemini"), null when hired directly. `technologies` is a list of strings. `logoId` is a logo UUID or null. |
+| `experiences[]` | Newest first. `from`/`to` are `yyyy-MM`; `to: null` means "present". `role` and `client` required (max 255). `employer` is who the person worked through ("via Flock", "via Capgemini"), null when hired directly. `technologies` is a list of strings. `logoId` is a logo UUID or null. `description` is **Markdown**: paragraphs separated by `\n\n`, bullet lists as `- item` lines (one `\n` between items, a blank line before and after the list), `**bold**`, `*italic*`, `[text](https://...)` links (bare URLs are linked too). A single `\n` inside a paragraph renders as a line break. Raw HTML is not rendered; keep it to these basics so the CV prints cleanly. |
 | `skills[]` | `{category, name, level}`. The CV groups by category in order of first appearance. Level 1-5 = number of stars; `level` is optional, so an unrated list gets `null`. |
 | `education`, `subjects`, `languages` | Free text, one entry per line. |
 | `photo` | Not a real `CvForm` field — the API stores it on the person (`PersonForm.photo` via `PUT /api/persons/{uuid}`), shown in the header of each of their CVs, so all CVs of a person share it. `cvapi.py create`/`put` accept it as a convenience key in `form.json` anyway: they strip it out before posting the CV and apply it to the person afterwards (see `set_person_photo` in `cvapi.py`), so you can keep treating it as part of the form. A base64 string, optionally a data URL (`data:image/png;base64,...`); PNG, JPEG, GIF, WebP or SVG, at most 512 KB (same ceiling as a logo). Left out of `form.json` entirely leaves the person's photo as it is; `""` removes it. |
@@ -124,8 +124,9 @@ section, or the work-experience overview table. Tell the user these were left ou
      line (rare, but it happens) can land in the wrong field \u2014 this is the main thing to double-check.
    - **Header** `Name/Place/Telephone/Date of Birth` (EN and NL labels) and the summary paragraphs.
    - **Assignments** start at each `Period` field; `Client`, `Role`, `Technologies` (also when the
-     list wraps onto a short, non-sentence-like next line) and the description paragraphs follow. A
-     paragraph cut by a page break is joined (noted).
+     list wraps onto a short, non-sentence-like next line) and the description paragraphs follow,
+     written as Markdown: bulleted lines (`•`, `-`, `▪`, ...) become a `- ` list. A paragraph cut by a
+     page break is joined (noted).
    - **Employer**: `Flock - Aigentic` -> client `Aigentic`, employer `Flock`; `(via Capgemini)` in the
      client, role or description -> employer `Capgemini` (removed from the client); otherwise the
      overview table (`FLOCK - Bol.com`), also when one row covers several assignments at that client.

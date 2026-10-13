@@ -7,6 +7,7 @@ import { DMY_DATE } from '../../clients/util/DateFormats';
 import { FlockDisc } from '../../components/FlockDisc';
 import { brand } from '../../theme/tokens';
 import type { CvExperience } from '../../wirespec/model';
+import { CvMarkdown } from './CvMarkdown';
 import {
   CV_LABELS,
   clientText,
@@ -309,7 +310,7 @@ export function CvDocument({ cv }: CvDocumentProps) {
               )}
             </Box>
             <Box sx={{ textAlign: 'justify' }}>
-              <Text value={it.description} />
+              <CvMarkdown value={it.description} />
             </Box>
           </Box>
         ))}
