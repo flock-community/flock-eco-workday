@@ -7,9 +7,12 @@ Usage: python3 -I cvapi.py <command> [args]
   logos                       the shared logo collection
   list [PERSON_UUID]          CVs (all for an admin, or of one person)
   get CODE                    a CV as the API returns it
-  get-form CODE               a CV as an editable CvForm (with personId and logoIds kept)
-  create FORM.json            POST /api/cvs
-  put CODE FORM.json          PUT /api/cvs/CODE (a full replacement, see SKILL.md)
+  get-form CODE               a CV as an editable CvForm (with personId, logoIds and photo kept)
+  create FORM.json            POST /api/cvs; a `photo` in the form is applied to the person after
+  put CODE FORM.json          PUT /api/cvs/CODE (a full replacement, see SKILL.md); same for `photo`
+  set-photo PERSON_UUID [IMG] the person's photo directly: replaces it with IMG, or removes it when
+                               IMG is omitted. create/put call this for you when form.json has a
+                               `photo`; use it standalone to fix up a photo without touching the CV.
   upload-logo NAME IMAGE      POST /api/logos (png, jpeg, gif, webp or svg, max 512 KB)
   data-url IMAGE              an image file as a `data:<type>;base64,...` string, for form.json's `photo`
   text PDF                    the resume's text in reading order (one paragraph or table row per line)
@@ -105,7 +108,12 @@ def data_url(path):
 
 
 def to_form(cv):
-    """The Cv response turned into the CvForm a PUT takes; personId keeps the owner."""
+    """The Cv response turned into the CvForm a PUT takes; personId keeps the owner.
+
+    The photo lives on the person, not in the Cv response, so it's fetched separately
+    (the GET /api/cvs response never carries it, unlike Cv's other fields).
+    """
+    person = call("GET", f"/api/persons/{cv['person']['uuid']}")
     return {
         "personId": cv["person"]["uuid"],
         "name": cv["name"],
@@ -121,8 +129,44 @@ def to_form(cv):
         "education": cv.get("education"),
         "subjects": cv.get("subjects"),
         "languages": cv.get("languages"),
-        "photo": cv.get("photo"),
+        "photo": person.get("photo"),
     }
+
+
+# A form.json's "photo" key may be: absent (keep as is), "" (remove), or a data URL (replace).
+# This sentinel tells "absent" apart from "present but falsy", which json.load can't do with None.
+_NO_PHOTO_KEY = object()
+
+
+def set_person_photo(person_uuid, photo_value):
+    """Applies photo_value ("" removes it, a data URL replaces it) to a person's photo.
+
+    PUT /api/persons/{uuid} is a full replacement of the person (see PersonService.render),
+    so every other field is round-tripped from a fresh GET first - including userCode, taken
+    from the nested user's `id` (which is the backing User.code, not the display name), so
+    the login user stays linked to this person.
+    """
+    person = call("GET", f"/api/persons/{person_uuid}")
+    user = person.get("user")
+    form = {
+        "firstname": person.get("firstname"),
+        "lastname": person.get("lastname"),
+        "email": person.get("email"),
+        "position": person.get("position"),
+        "number": person.get("number"),
+        "birthdate": person.get("birthdate"),
+        "joinDate": person.get("joinDate"),
+        "active": person.get("active"),
+        "userCode": user["id"] if user else None,
+        "reminders": person.get("reminders"),
+        "receiveEmail": person.get("receiveEmail"),
+        "shoeSize": person.get("shoeSize"),
+        "shirtSize": person.get("shirtSize"),
+        "googleDriveId": person.get("googleDriveId"),
+        "address": person.get("address"),
+        "photo": photo_value,
+    }
+    return call("PUT", f"/api/persons/{person_uuid}", form)
 
 
 def main():
@@ -149,14 +193,29 @@ def main():
     elif cmd == "get-form":
         out(to_form(call("GET", f"/api/cvs/{args[0]}")))
     elif cmd == "create":
-        cv = call("POST", "/api/cvs", json.load(open(args[0])))
+        form = json.load(open(args[0]))
+        photo = form.pop("photo", _NO_PHOTO_KEY)
+        cv = call("POST", "/api/cvs", form)
         print(cv["code"], cv["name"], "| person", cv["person"]["firstname"], cv["person"]["lastname"])
+        if photo not in (_NO_PHOTO_KEY, None, ""):
+            set_person_photo(cv["person"]["uuid"], photo)
+            print("photo applied to", cv["person"]["firstname"], cv["person"]["lastname"])
     elif cmd == "put":
         form = json.load(open(args[1]))
         if not form.get("personId"):
             sys.exit("personId is missing: without it the CV moves to the person behind the token (use get-form)")
+        photo = form.pop("photo", _NO_PHOTO_KEY)
         cv = call("PUT", f"/api/cvs/{args[0]}", form)
         print(cv["code"], cv["name"], "| person", cv["person"]["firstname"], cv["person"]["lastname"])
+        if photo is not _NO_PHOTO_KEY:
+            set_person_photo(cv["person"]["uuid"], photo or "")
+            verb = "applied to" if photo else "removed from"
+            print("photo", verb, cv["person"]["firstname"], cv["person"]["lastname"])
+    elif cmd == "set-photo":
+        photo = data_url(args[1]) if len(args) > 1 else ""
+        person = set_person_photo(args[0], photo)
+        verb = "set on" if photo else "removed from"
+        print("photo", verb, person["firstname"], person["lastname"])
     elif cmd == "upload-logo":
         logo = call("POST", "/api/logos", {"name": args[0], "image": data_url(args[1])})
         print(logo["id"], logo["name"], logo["contentType"])
