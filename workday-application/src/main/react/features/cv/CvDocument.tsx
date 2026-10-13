@@ -282,6 +282,8 @@ export function CvDocument({ cv }: CvDocumentProps) {
                     pt: '13.5pt',
                     mb: '27pt',
                     breakInside: 'avoid',
+                    // The assignments always start on a page of their own
+                    breakAfter: 'page',
                   }}
                 >
                   <Box
