@@ -1,6 +1,6 @@
 import { Box, Link } from '@mui/material';
 import dayjs from 'dayjs';
-import { Fragment } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import type { Cv } from '../../clients/CvClient';
 import { type Logo, LogoClient } from '../../clients/LogoClient';
 import { DMY_DATE } from '../../clients/util/DateFormats';
@@ -13,21 +13,65 @@ import {
   clientText,
   groupSkills,
   linkify,
+  longPeriodText,
   monthsWorked,
   paragraphs,
   periodText,
 } from './cvText';
 import { useLogos } from './logos';
 
-// The CV is a document: it keeps its paper colours in dark mode and when printed.
-const paper = '#fffdf5';
-const ink = brand.ink;
-const rule = '#8a877a';
+// The CV is a document in the Flock template: it keeps its paper colours in dark
+// mode and when printed. Sizes are in points, as in the template.
+const paper = '#ffffff';
+const ink = '#000000';
+const rule = '#9e9e9e';
+const muted = '#434343';
+const bodyFont = 'Verdana, "DejaVu Sans", Geneva, sans-serif';
+const titleFont =
+  '"Trebuchet MS", "Lucida Grande", Tahoma, "DejaVu Sans", sans-serif';
+const headingFont = 'Arial, Helvetica, "Liberation Sans", sans-serif';
+/** The yellow band along the left edge of every page. */
+const band = '3mm';
+/** The page margins left and right of the text. */
+const sideMargin = '25mm';
+
+/**
+ * Printed, every page gets the yellow band along its left edge and its number at the
+ * bottom right, in the page margins (the CSS paged media margin boxes).
+ */
+const pageStyles = `
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm ${sideMargin} 20mm;
+    @bottom-right {
+      content: counter(page);
+      font: 10pt ${headingFont};
+      color: ${ink};
+      vertical-align: top;
+      padding-top: 6mm;
+    }
+${[
+  'top-left-corner',
+  'left-top',
+  'left-middle',
+  'left-bottom',
+  'bottom-left-corner',
+]
+  .map(
+    (box) =>
+      `    @${box} { content: ''; background: linear-gradient(to right, ${brand.yellow} ${band}, transparent ${band}); }`,
+  )
+  .join('\n')}
+  }
+}
+`;
 
 type CvDocumentProps = {
   cv: Cv;
 };
 
+/** Paragraphs of text with clickable links; a single line break stays a line break. */
 function Text({ value }: { value: string | null | undefined }) {
   return (
     <>
@@ -46,7 +90,7 @@ function Text({ value }: { value: string | null | undefined }) {
                     href={part.href}
                     target="_blank"
                     rel="noreferrer"
-                    sx={{ color: '#1a56c4' }}
+                    sx={{ color: '#1155cc' }}
                   >
                     {part.text}
                   </Link>
@@ -64,9 +108,10 @@ function Text({ value }: { value: string | null | undefined }) {
 }
 
 /**
- * A CV in the Flock template: personal details, profile, an overview of the working
- * experience and a section per assignment. Rendered as an A4 sheet on screen; the
- * same markup is what gets printed (or saved as PDF), with the header on every page.
+ * A CV in the Flock template: personal details with the photo, profile, an overview
+ * of the working experience, a section per assignment, and the skills, education and
+ * languages as lists. Rendered as a sheet on screen; the same markup is what gets
+ * printed (or saved as PDF), with the name and the Flock logo on top of every page.
  */
 export function CvDocument({ cv }: CvDocumentProps) {
   const language = cv.language ?? 'NL';
@@ -98,30 +143,36 @@ export function CvDocument({ cv }: CvDocumentProps) {
       sx={{
         bgcolor: paper,
         color: ink,
-        fontFamily: 'Verdana, "DejaVu Sans", Geneva, sans-serif',
-        fontSize: '10pt',
-        lineHeight: 1.45,
+        fontFamily: bodyFont,
+        fontSize: '9pt',
+        lineHeight: 1.5,
         width: '100%',
         maxWidth: '210mm',
         mx: 'auto',
-        px: { xs: 3, sm: '18mm' },
-        py: { xs: 3, sm: '16mm' },
+        // The yellow band of the template along the left edge of the sheet
+        borderLeft: `${band} solid ${brand.yellow}`,
+        pl: { xs: 3, sm: `calc(${sideMargin} - ${band})` },
+        pr: { xs: 3, sm: sideMargin },
+        pt: { xs: 2, sm: '10mm' },
+        pb: { xs: 3, sm: '20mm' },
         boxShadow:
           '0 1px 2px rgba(28,27,20,0.08), 0 8px 28px rgba(28,27,20,0.10)',
-        borderRadius: '4px',
-        '& p': { m: 0, mb: '0.9em' },
+        printColorAdjust: 'exact',
+        WebkitPrintColorAdjust: 'exact',
+        '& p': { m: 0, mb: '1.5em' },
         '@media print': {
           maxWidth: 'none',
           p: 0,
+          border: 'none',
           boxShadow: 'none',
-          borderRadius: 0,
           bgcolor: 'transparent',
         },
       }}
     >
+      <style>{pageStyles}</style>
       {/*
         A layout table: when printed, the browser repeats its head at the top of every
-        page, so each page of the CV starts with the name, photo and Flock logo.
+        page, so each page of the CV starts with the name and the Flock logo.
       */}
       <Box
         component="table"
@@ -148,22 +199,27 @@ export function CvDocument({ cv }: CvDocumentProps) {
                   justifyContent: 'space-between',
                   gap: 2,
                   borderBottom: `1px solid ${rule}`,
-                  pb: 1,
-                  mb: 3,
+                  pb: '10pt',
+                  mb: '18pt',
                 }}
               >
                 <Box
                   component="h1"
                   sx={{
                     m: 0,
-                    fontFamily: 'Tahoma, Verdana, "DejaVu Sans", sans-serif',
+                    fontFamily: titleFont,
                     fontSize: '17pt',
                     fontWeight: 400,
+                    lineHeight: 1.2,
                   }}
                 >
                   {labels.title} - {name}
                 </Box>
-                <FlockDisc width={56} height={56} style={{ flexShrink: 0 }} />
+                <FlockDisc
+                  width="54pt"
+                  height="54pt"
+                  style={{ flexShrink: 0, marginBottom: '8pt' }}
+                />
               </Box>
             </th>
           </tr>
@@ -179,11 +235,12 @@ export function CvDocument({ cv }: CvDocumentProps) {
                   alt={name}
                   sx={{
                     float: 'right',
-                    width: '36mm',
-                    height: '36mm',
+                    width: '32mm',
+                    height: '32mm',
                     objectFit: 'cover',
-                    ml: 3,
-                    mb: 2,
+                    mt: '8pt',
+                    ml: '12pt',
+                    mb: '8pt',
                   }}
                 />
               )}
@@ -191,11 +248,9 @@ export function CvDocument({ cv }: CvDocumentProps) {
                 component="dl"
                 sx={{
                   display: 'grid',
-                  gridTemplateColumns: 'max-content 1fr',
-                  columnGap: 6,
-                  rowGap: 1,
+                  gridTemplateColumns: '144pt 1fr',
                   m: 0,
-                  mb: 4,
+                  mb: '13.5pt',
                   '& dt, & dd': { m: 0 },
                   '& dd': { overflowWrap: 'anywhere' },
                 }}
@@ -204,14 +259,17 @@ export function CvDocument({ cv }: CvDocumentProps) {
                   .filter(([, value]) => value)
                   .map(([label, value]) => (
                     <Fragment key={label}>
-                      <dt>{label}</dt>
+                      <dt>{label}:</dt>
                       <dd>{value}</dd>
                     </Fragment>
                   ))}
               </Box>
 
               {cv.summary && (
-                <Box component="section" sx={{ mb: 3, textAlign: 'justify' }}>
+                <Box
+                  component="section"
+                  sx={{ fontStyle: 'italic', textAlign: 'justify' }}
+                >
                   <Text value={cv.summary} />
                 </Box>
               )}
@@ -219,11 +277,16 @@ export function CvDocument({ cv }: CvDocumentProps) {
               {experiences.length > 0 && (
                 <Box
                   component="section"
-                  sx={{ mb: 4, breakInside: 'avoid', clear: 'both' }}
+                  sx={{
+                    clear: 'both',
+                    pt: '13.5pt',
+                    mb: '27pt',
+                    breakInside: 'avoid',
+                  }}
                 >
                   <Box
                     component="h2"
-                    sx={{ fontSize: '10pt', fontWeight: 700, m: 0, mb: 1.5 }}
+                    sx={{ fontSize: '9pt', fontWeight: 700, m: 0 }}
                   >
                     {labels.workingExperience}
                   </Box>
@@ -232,28 +295,27 @@ export function CvDocument({ cv }: CvDocumentProps) {
                     sx={{
                       width: '100%',
                       borderCollapse: 'collapse',
-                      fontSize: '9.5pt',
                       '& th, & td': {
                         border: `1px solid ${ink}`,
-                        px: 0.5,
-                        py: 0,
+                        px: '4.5pt',
+                        py: '5pt',
                         textAlign: 'left',
-                        fontWeight: 400,
                         verticalAlign: 'top',
                       },
-                      '& th': {
-                        bgcolor: brand.yellow,
-                        printColorAdjust: 'exact',
-                        WebkitPrintColorAdjust: 'exact',
-                      },
-                      '& .months': { textAlign: 'right', width: '4.5em' },
+                      '& th': { fontSize: '8pt', fontWeight: 700 },
                     }}
                   >
+                    <colgroup>
+                      <col style={{ width: '24%' }} />
+                      <col style={{ width: '32%' }} />
+                      <col style={{ width: '10%' }} />
+                      <col style={{ width: '34%' }} />
+                    </colgroup>
                     <thead>
                       <tr>
                         <th>{labels.period}</th>
                         <th>{labels.function}</th>
-                        <th className="months">{labels.months}</th>
+                        <th>{labels.months}</th>
                         <th>{labels.clientColumn}</th>
                       </tr>
                     </thead>
@@ -262,9 +324,7 @@ export function CvDocument({ cv }: CvDocumentProps) {
                         <tr key={`${it.from}-${it.to}-${it.client}-${it.role}`}>
                           <td>{periodText(it.from, it.to, language)}</td>
                           <td>{it.role}</td>
-                          <td className="months">
-                            {monthsWorked(it.from, it.to)}
-                          </td>
+                          <td>{monthsWorked(it.from, it.to)}</td>
                           <td>{clientText(it.client, it.employer)}</td>
                         </tr>
                       ))}
@@ -282,7 +342,7 @@ export function CvDocument({ cv }: CvDocumentProps) {
                   <Box
                     component="section"
                     key={`${it.from}-${it.to}-${it.client}-${it.role}`}
-                    sx={{ mb: 3.5 }}
+                    sx={{ clear: 'both', mb: '13.5pt' }}
                   >
                     <Box
                       sx={{
@@ -290,7 +350,7 @@ export function CvDocument({ cv }: CvDocumentProps) {
                         gap: 2,
                         alignItems: 'flex-start',
                         justifyContent: 'space-between',
-                        mb: 1.5,
+                        mb: '13.5pt',
                         breakInside: 'avoid',
                         breakAfter: 'avoid',
                       }}
@@ -299,25 +359,24 @@ export function CvDocument({ cv }: CvDocumentProps) {
                         component="dl"
                         sx={{
                           display: 'grid',
-                          gridTemplateColumns: 'minmax(7.5em, max-content) 1fr',
-                          columnGap: 1,
+                          gridTemplateColumns: 'max-content 1fr',
+                          columnGap: '4pt',
                           m: 0,
-                          mb: 0,
-                          breakInside: 'avoid',
-                          breakAfter: 'avoid',
-                          '& dt': { fontWeight: 700 },
+                          lineHeight: 1.35,
+                          '& dt': { fontWeight: 700, minWidth: '82pt' },
+                          '& dd': { fontStyle: 'italic' },
                           '& dt, & dd': { m: 0 },
                         }}
                       >
-                        <dt>{labels.period}</dt>
-                        <dd>{periodText(it.from, it.to, language)}</dd>
-                        <dt>{labels.client}</dt>
+                        <dt>{labels.period}:</dt>
+                        <dd>{longPeriodText(it.from, it.to, language)}</dd>
+                        <dt>{labels.client}:</dt>
                         <dd>{clientText(it.client, it.employer)}</dd>
-                        <dt>{labels.role}</dt>
+                        <dt>{labels.role}:</dt>
                         <dd>{it.role}</dd>
                         {it.technologies?.length > 0 && (
                           <>
-                            <dt>{labels.technologies}</dt>
+                            <dt>{labels.technologies}:</dt>
                             <dd>{it.technologies.join(', ')}</dd>
                           </>
                         )}
@@ -328,89 +387,46 @@ export function CvDocument({ cv }: CvDocumentProps) {
                           src={LogoClient.imageUrl(logoOf(it) as Logo)}
                           alt={`Logo ${logoOf(it)?.name}`}
                           sx={{
-                            maxHeight: '64px',
-                            maxWidth: '150px',
+                            maxHeight: '48pt',
+                            maxWidth: '90pt',
                             objectFit: 'contain',
                             flexShrink: 0,
                           }}
                         />
                       )}
                     </Box>
-                    <Box sx={{ textAlign: 'justify' }}>
-                      <CvMarkdown value={it.description} />
-                    </Box>
+                    <CvMarkdown value={it.description} />
                   </Box>
                 ))}
 
-              {skills.length > 0 && (
-                <Box component="section" sx={{ mb: 3.5 }}>
-                  <SectionHeading>{labels.skills}</SectionHeading>
-                  <Box
-                    sx={{
-                      display: 'grid',
-                      gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-                      gap: 2,
-                      alignItems: 'start',
-                    }}
-                  >
-                    {groupSkills(skills).map((group) => (
+              <TextSections label={labels.education} value={cv.education} />
+              {groupSkills(skills).map((group) => (
+                <Section
+                  key={group.category ?? ''}
+                  heading={group.category ?? labels.skills}
+                >
+                  <List>
+                    {group.skills.map((skill) => (
                       <Box
-                        component="table"
-                        key={group.category ?? ''}
+                        component="li"
+                        key={skill.name}
                         sx={{
-                          width: '100%',
-                          borderCollapse: 'collapse',
-                          breakInside: 'avoid',
-                          '& th, & td': {
-                            border: `1px solid ${ink}`,
-                            px: 0.75,
-                            py: 0.25,
-                            textAlign: 'left',
+                          '& > span:first-of-type': {
+                            display: 'inline-block',
+                            width: '1.5in',
                           },
-                          '& th': { fontWeight: 700 },
                         }}
                       >
-                        {group.category && (
-                          <thead>
-                            <tr>
-                              <th colSpan={2}>{group.category}</th>
-                            </tr>
-                          </thead>
-                        )}
-                        <tbody>
-                          {group.skills.map((skill) => (
-                            <tr key={skill.name}>
-                              <td>{skill.name}</td>
-                              <td style={{ width: '6.5em' }}>
-                                <Stars level={skill.level} />
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
+                        <span>{skill.name}</span>
+                        <Stars level={skill.level} />
                       </Box>
                     ))}
-                  </Box>
-                </Box>
-              )}
+                  </List>
+                </Section>
+              ))}
 
-              {(
-                [
-                  [labels.education, cv.education],
-                  [labels.subjects, cv.subjects],
-                  [labels.languages, cv.languages],
-                ] as const
-              )
-                .filter(([, value]) => value)
-                .map(([label, value]) => (
-                  <Box
-                    component="section"
-                    key={label}
-                    sx={{ mb: 2.5, breakInside: 'avoid' }}
-                  >
-                    <SectionHeading>{label}</SectionHeading>
-                    <Text value={value} />
-                  </Box>
-                ))}
+              <TextSections label={labels.subjects} value={cv.subjects} />
+              <TextSections label={labels.languages} value={cv.languages} />
             </td>
           </tr>
         </tbody>
@@ -419,15 +435,79 @@ export function CvDocument({ cv }: CvDocumentProps) {
   );
 }
 
-function SectionHeading({ children }: { children: string }) {
+/**
+ * A free text section as headed bullet lists. A later block of lines starts with its own
+ * heading, like Training below Education.
+ */
+function TextSections({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | null | undefined;
+}) {
+  return paragraphs(value).map((block, index) => {
+    const lines = block.split('\n');
+    const [heading, items] =
+      index === 0 ? [label, lines] : [lines[0], lines.slice(1)];
+    return (
+      <Section key={heading} heading={heading}>
+        {items.length > 0 && (
+          <List>
+            {items.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </List>
+        )}
+      </Section>
+    );
+  });
+}
+
+/** A section below the assignments, with its heading in the template's style. */
+function Section({
+  heading,
+  children,
+}: {
+  heading: string;
+  children: ReactNode;
+}) {
   return (
-    <Box component="h2" sx={{ fontSize: '10pt', fontWeight: 700, m: 0, mb: 1 }}>
+    <Box
+      component="section"
+      sx={{ clear: 'both', mb: '18pt', breakInside: 'avoid' }}
+    >
+      <Box
+        component="h2"
+        sx={{
+          fontFamily: headingFont,
+          fontSize: '13pt',
+          fontWeight: 400,
+          color: muted,
+          m: 0,
+          mb: '8pt',
+        }}
+      >
+        {heading}
+      </Box>
       {children}
     </Box>
   );
 }
 
-/** The rating of a skill as stars, the way the CV template shows it. */
+/** A bulleted list, indented like in the template. */
+function List({ children }: { children: ReactNode }) {
+  return (
+    <Box
+      component="ul"
+      sx={{ m: 0, pl: '36pt', '& li': { pl: '4pt' }, listStyle: 'disc' }}
+    >
+      {children}
+    </Box>
+  );
+}
+
+/** The rating of a skill as asterisks, the way the CV template shows it. */
 function Stars({ level }: { level: number | null | undefined }) {
   if (!level) return null;
   return (
@@ -435,14 +515,9 @@ function Stars({ level }: { level: number | null | undefined }) {
       component="span"
       role="img"
       aria-label={`${level} of 5`}
-      sx={{
-        color: brand.yellowDark,
-        letterSpacing: '0.1em',
-        printColorAdjust: 'exact',
-        WebkitPrintColorAdjust: 'exact',
-      }}
+      sx={{ letterSpacing: '0.12em' }}
     >
-      {'★'.repeat(level)}
+      {'*'.repeat(level)}
     </Box>
   );
 }

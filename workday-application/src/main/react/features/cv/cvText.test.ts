@@ -3,6 +3,7 @@ import {
   clientText,
   cvUrl,
   linkify,
+  longPeriodText,
   markdownLineBreaks,
   monthsWorked,
   paragraphs,
@@ -28,6 +29,17 @@ describe('monthsWorked', () => {
   });
 });
 
+describe('longPeriodText', () => {
+  it('writes the months out in the language of the CV', () => {
+    expect(longPeriodText('2026-01', '2026-09', 'EN')).toBe(
+      'January 2026 - September 2026',
+    );
+    expect(longPeriodText('2024-08', undefined, 'NL')).toBe(
+      'augustus 2024 - nu',
+    );
+  });
+});
+
 describe('periodText', () => {
   it('writes months the way the CV template does', () => {
     expect(periodText('2022-12', '2024-07', 'NL')).toBe('12-2022 - 07-2024');
@@ -35,7 +47,7 @@ describe('periodText', () => {
 
   it('says now in the language of the CV', () => {
     expect(periodText('2024-08', undefined, 'NL')).toBe('08-2024 - nu');
-    expect(periodText('2024-08', undefined, 'EN')).toBe('08-2024 - now');
+    expect(periodText('2024-08', undefined, 'EN')).toBe('08-2024 - current');
   });
 });
 
