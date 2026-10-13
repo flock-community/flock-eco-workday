@@ -162,30 +162,7 @@ export function CvDocument({ cv }: CvDocumentProps) {
                 >
                   {labels.title} - {name}
                 </Box>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5,
-                    flexShrink: 0,
-                  }}
-                >
-                  {cv.person?.photo && (
-                    <Box
-                      component="img"
-                      src={cv.person.photo}
-                      alt={name}
-                      sx={{
-                        width: 64,
-                        height: 64,
-                        borderRadius: '4px',
-                        objectFit: 'cover',
-                        flexShrink: 0,
-                      }}
-                    />
-                  )}
-                  <FlockDisc width={56} height={56} style={{ flexShrink: 0 }} />
-                </Box>
+                <FlockDisc width={56} height={56} style={{ flexShrink: 0 }} />
               </Box>
             </th>
           </tr>
@@ -193,6 +170,22 @@ export function CvDocument({ cv }: CvDocumentProps) {
         <tbody>
           <tr>
             <td>
+              {/* Only on the first page, beside the personal details and the profile */}
+              {cv.person?.photo && (
+                <Box
+                  component="img"
+                  src={cv.person.photo}
+                  alt={name}
+                  sx={{
+                    float: 'right',
+                    width: '36mm',
+                    height: '36mm',
+                    objectFit: 'cover',
+                    ml: 3,
+                    mb: 2,
+                  }}
+                />
+              )}
               <Box
                 component="dl"
                 sx={{
@@ -223,7 +216,10 @@ export function CvDocument({ cv }: CvDocumentProps) {
               )}
 
               {experiences.length > 0 && (
-                <Box component="section" sx={{ mb: 4, breakInside: 'avoid' }}>
+                <Box
+                  component="section"
+                  sx={{ mb: 4, breakInside: 'avoid', clear: 'both' }}
+                >
                   <Box
                     component="h2"
                     sx={{ fontSize: '10pt', fontWeight: 700, m: 0, mb: 1.5 }}
