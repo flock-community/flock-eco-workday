@@ -65,7 +65,7 @@ function Text({ value }: { value: string | null | undefined }) {
 /**
  * A CV in the Flock template: personal details, profile, an overview of the working
  * experience and a section per assignment. Rendered as an A4 sheet on screen; the
- * same markup is what gets printed (or saved as PDF).
+ * same markup is what gets printed (or saved as PDF), with the header on every page.
  */
 export function CvDocument({ cv }: CvDocumentProps) {
   const language = cv.language ?? 'NL';
@@ -118,271 +118,306 @@ export function CvDocument({ cv }: CvDocumentProps) {
         },
       }}
     >
+      {/*
+        A layout table: when printed, the browser repeats its head at the top of every
+        page, so each page of the CV starts with the name, photo and Flock logo.
+      */}
       <Box
-        component="header"
+        component="table"
+        role="presentation"
         sx={{
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'space-between',
-          gap: 2,
-          borderBottom: `1px solid ${rule}`,
-          pb: 1,
-          mb: 3,
+          width: '100%',
+          borderCollapse: 'collapse',
+          '& > thead > tr > th, & > tbody > tr > td': {
+            p: 0,
+            textAlign: 'left',
+            fontWeight: 'inherit',
+            verticalAlign: 'top',
+          },
         }}
       >
-        <Box
-          component="h1"
-          sx={{
-            m: 0,
-            fontFamily: 'Tahoma, Verdana, "DejaVu Sans", sans-serif',
-            fontSize: '17pt',
-            fontWeight: 400,
-          }}
-        >
-          {labels.title} - {name}
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-            flexShrink: 0,
-          }}
-        >
-          {cv.person?.photo && (
-            <Box
-              component="img"
-              src={cv.person.photo}
-              alt={name}
-              sx={{
-                width: 64,
-                height: 64,
-                borderRadius: '4px',
-                objectFit: 'cover',
-                flexShrink: 0,
-              }}
-            />
-          )}
-          <FlockDisc width={56} height={56} style={{ flexShrink: 0 }} />
-        </Box>
-      </Box>
-
-      <Box
-        component="dl"
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: 'max-content 1fr',
-          columnGap: 6,
-          rowGap: 1,
-          m: 0,
-          mb: 4,
-          '& dt, & dd': { m: 0 },
-          '& dd': { overflowWrap: 'anywhere' },
-        }}
-      >
-        {details
-          .filter(([, value]) => value)
-          .map(([label, value]) => (
-            <Fragment key={label}>
-              <dt>{label}</dt>
-              <dd>{value}</dd>
-            </Fragment>
-          ))}
-      </Box>
-
-      {cv.summary && (
-        <Box component="section" sx={{ mb: 3, textAlign: 'justify' }}>
-          <Text value={cv.summary} />
-        </Box>
-      )}
-
-      {experiences.length > 0 && (
-        <Box component="section" sx={{ mb: 4, breakInside: 'avoid' }}>
-          <Box
-            component="h2"
-            sx={{ fontSize: '10pt', fontWeight: 700, m: 0, mb: 1.5 }}
-          >
-            {labels.workingExperience}
-          </Box>
-          <Box
-            component="table"
-            sx={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              fontSize: '9.5pt',
-              '& th, & td': {
-                border: `1px solid ${ink}`,
-                px: 0.5,
-                py: 0,
-                textAlign: 'left',
-                fontWeight: 400,
-                verticalAlign: 'top',
-              },
-              '& th': {
-                bgcolor: brand.yellow,
-                printColorAdjust: 'exact',
-                WebkitPrintColorAdjust: 'exact',
-              },
-              '& .months': { textAlign: 'right', width: '4.5em' },
-            }}
-          >
-            <thead>
-              <tr>
-                <th>{labels.period}</th>
-                <th>{labels.function}</th>
-                <th className="months">{labels.months}</th>
-                <th>{labels.clientColumn}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {experiences.map((it) => (
-                <tr key={`${it.from}-${it.to}-${it.client}-${it.role}`}>
-                  <td>{periodText(it.from, it.to, language)}</td>
-                  <td>{it.role}</td>
-                  <td className="months">{monthsWorked(it.from, it.to)}</td>
-                  <td>{clientText(it.client, it.employer)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Box>
-        </Box>
-      )}
-
-      {experiences
-        .filter((it) => it.description || it.technologies?.length || logoOf(it))
-        .map((it) => (
-          <Box
-            component="section"
-            key={`${it.from}-${it.to}-${it.client}-${it.role}`}
-            sx={{ mb: 3.5 }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                gap: 2,
-                alignItems: 'flex-start',
-                justifyContent: 'space-between',
-                mb: 1.5,
-                breakInside: 'avoid',
-                breakAfter: 'avoid',
-              }}
-            >
+        <thead>
+          <tr>
+            <th>
+              <Box
+                component="header"
+                sx={{
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  justifyContent: 'space-between',
+                  gap: 2,
+                  borderBottom: `1px solid ${rule}`,
+                  pb: 1,
+                  mb: 3,
+                }}
+              >
+                <Box
+                  component="h1"
+                  sx={{
+                    m: 0,
+                    fontFamily: 'Tahoma, Verdana, "DejaVu Sans", sans-serif',
+                    fontSize: '17pt',
+                    fontWeight: 400,
+                  }}
+                >
+                  {labels.title} - {name}
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                    flexShrink: 0,
+                  }}
+                >
+                  {cv.person?.photo && (
+                    <Box
+                      component="img"
+                      src={cv.person.photo}
+                      alt={name}
+                      sx={{
+                        width: 64,
+                        height: 64,
+                        borderRadius: '4px',
+                        objectFit: 'cover',
+                        flexShrink: 0,
+                      }}
+                    />
+                  )}
+                  <FlockDisc width={56} height={56} style={{ flexShrink: 0 }} />
+                </Box>
+              </Box>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
               <Box
                 component="dl"
                 sx={{
                   display: 'grid',
-                  gridTemplateColumns: 'minmax(7.5em, max-content) 1fr',
-                  columnGap: 1,
+                  gridTemplateColumns: 'max-content 1fr',
+                  columnGap: 6,
+                  rowGap: 1,
                   m: 0,
-                  mb: 0,
-                  breakInside: 'avoid',
-                  breakAfter: 'avoid',
-                  '& dt': { fontWeight: 700 },
+                  mb: 4,
                   '& dt, & dd': { m: 0 },
+                  '& dd': { overflowWrap: 'anywhere' },
                 }}
               >
-                <dt>{labels.period}</dt>
-                <dd>{periodText(it.from, it.to, language)}</dd>
-                <dt>{labels.client}</dt>
-                <dd>{clientText(it.client, it.employer)}</dd>
-                <dt>{labels.role}</dt>
-                <dd>{it.role}</dd>
-                {it.technologies?.length > 0 && (
-                  <>
-                    <dt>{labels.technologies}</dt>
-                    <dd>{it.technologies.join(', ')}</dd>
-                  </>
-                )}
-              </Box>
-              {logoOf(it) && (
-                <Box
-                  component="img"
-                  src={LogoClient.imageUrl(logoOf(it) as Logo)}
-                  alt={`Logo ${logoOf(it)?.name}`}
-                  sx={{
-                    maxHeight: '64px',
-                    maxWidth: '150px',
-                    objectFit: 'contain',
-                    flexShrink: 0,
-                  }}
-                />
-              )}
-            </Box>
-            <Box sx={{ textAlign: 'justify' }}>
-              <Text value={it.description} />
-            </Box>
-          </Box>
-        ))}
-
-      {skills.length > 0 && (
-        <Box component="section" sx={{ mb: 3.5 }}>
-          <SectionHeading>{labels.skills}</SectionHeading>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-              gap: 2,
-              alignItems: 'start',
-            }}
-          >
-            {groupSkills(skills).map((group) => (
-              <Box
-                component="table"
-                key={group.category ?? ''}
-                sx={{
-                  width: '100%',
-                  borderCollapse: 'collapse',
-                  breakInside: 'avoid',
-                  '& th, & td': {
-                    border: `1px solid ${ink}`,
-                    px: 0.75,
-                    py: 0.25,
-                    textAlign: 'left',
-                  },
-                  '& th': { fontWeight: 700 },
-                }}
-              >
-                {group.category && (
-                  <thead>
-                    <tr>
-                      <th colSpan={2}>{group.category}</th>
-                    </tr>
-                  </thead>
-                )}
-                <tbody>
-                  {group.skills.map((skill) => (
-                    <tr key={skill.name}>
-                      <td>{skill.name}</td>
-                      <td style={{ width: '6.5em' }}>
-                        <Stars level={skill.level} />
-                      </td>
-                    </tr>
+                {details
+                  .filter(([, value]) => value)
+                  .map(([label, value]) => (
+                    <Fragment key={label}>
+                      <dt>{label}</dt>
+                      <dd>{value}</dd>
+                    </Fragment>
                   ))}
-                </tbody>
               </Box>
-            ))}
-          </Box>
-        </Box>
-      )}
 
-      {(
-        [
-          [labels.education, cv.education],
-          [labels.subjects, cv.subjects],
-          [labels.languages, cv.languages],
-        ] as const
-      )
-        .filter(([, value]) => value)
-        .map(([label, value]) => (
-          <Box
-            component="section"
-            key={label}
-            sx={{ mb: 2.5, breakInside: 'avoid' }}
-          >
-            <SectionHeading>{label}</SectionHeading>
-            <Text value={value} />
-          </Box>
-        ))}
+              {cv.summary && (
+                <Box component="section" sx={{ mb: 3, textAlign: 'justify' }}>
+                  <Text value={cv.summary} />
+                </Box>
+              )}
+
+              {experiences.length > 0 && (
+                <Box component="section" sx={{ mb: 4, breakInside: 'avoid' }}>
+                  <Box
+                    component="h2"
+                    sx={{ fontSize: '10pt', fontWeight: 700, m: 0, mb: 1.5 }}
+                  >
+                    {labels.workingExperience}
+                  </Box>
+                  <Box
+                    component="table"
+                    sx={{
+                      width: '100%',
+                      borderCollapse: 'collapse',
+                      fontSize: '9.5pt',
+                      '& th, & td': {
+                        border: `1px solid ${ink}`,
+                        px: 0.5,
+                        py: 0,
+                        textAlign: 'left',
+                        fontWeight: 400,
+                        verticalAlign: 'top',
+                      },
+                      '& th': {
+                        bgcolor: brand.yellow,
+                        printColorAdjust: 'exact',
+                        WebkitPrintColorAdjust: 'exact',
+                      },
+                      '& .months': { textAlign: 'right', width: '4.5em' },
+                    }}
+                  >
+                    <thead>
+                      <tr>
+                        <th>{labels.period}</th>
+                        <th>{labels.function}</th>
+                        <th className="months">{labels.months}</th>
+                        <th>{labels.clientColumn}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {experiences.map((it) => (
+                        <tr key={`${it.from}-${it.to}-${it.client}-${it.role}`}>
+                          <td>{periodText(it.from, it.to, language)}</td>
+                          <td>{it.role}</td>
+                          <td className="months">
+                            {monthsWorked(it.from, it.to)}
+                          </td>
+                          <td>{clientText(it.client, it.employer)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Box>
+                </Box>
+              )}
+
+              {experiences
+                .filter(
+                  (it) =>
+                    it.description || it.technologies?.length || logoOf(it),
+                )
+                .map((it) => (
+                  <Box
+                    component="section"
+                    key={`${it.from}-${it.to}-${it.client}-${it.role}`}
+                    sx={{ mb: 3.5 }}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        gap: 2,
+                        alignItems: 'flex-start',
+                        justifyContent: 'space-between',
+                        mb: 1.5,
+                        breakInside: 'avoid',
+                        breakAfter: 'avoid',
+                      }}
+                    >
+                      <Box
+                        component="dl"
+                        sx={{
+                          display: 'grid',
+                          gridTemplateColumns: 'minmax(7.5em, max-content) 1fr',
+                          columnGap: 1,
+                          m: 0,
+                          mb: 0,
+                          breakInside: 'avoid',
+                          breakAfter: 'avoid',
+                          '& dt': { fontWeight: 700 },
+                          '& dt, & dd': { m: 0 },
+                        }}
+                      >
+                        <dt>{labels.period}</dt>
+                        <dd>{periodText(it.from, it.to, language)}</dd>
+                        <dt>{labels.client}</dt>
+                        <dd>{clientText(it.client, it.employer)}</dd>
+                        <dt>{labels.role}</dt>
+                        <dd>{it.role}</dd>
+                        {it.technologies?.length > 0 && (
+                          <>
+                            <dt>{labels.technologies}</dt>
+                            <dd>{it.technologies.join(', ')}</dd>
+                          </>
+                        )}
+                      </Box>
+                      {logoOf(it) && (
+                        <Box
+                          component="img"
+                          src={LogoClient.imageUrl(logoOf(it) as Logo)}
+                          alt={`Logo ${logoOf(it)?.name}`}
+                          sx={{
+                            maxHeight: '64px',
+                            maxWidth: '150px',
+                            objectFit: 'contain',
+                            flexShrink: 0,
+                          }}
+                        />
+                      )}
+                    </Box>
+                    <Box sx={{ textAlign: 'justify' }}>
+                      <Text value={it.description} />
+                    </Box>
+                  </Box>
+                ))}
+
+              {skills.length > 0 && (
+                <Box component="section" sx={{ mb: 3.5 }}>
+                  <SectionHeading>{labels.skills}</SectionHeading>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                      gap: 2,
+                      alignItems: 'start',
+                    }}
+                  >
+                    {groupSkills(skills).map((group) => (
+                      <Box
+                        component="table"
+                        key={group.category ?? ''}
+                        sx={{
+                          width: '100%',
+                          borderCollapse: 'collapse',
+                          breakInside: 'avoid',
+                          '& th, & td': {
+                            border: `1px solid ${ink}`,
+                            px: 0.75,
+                            py: 0.25,
+                            textAlign: 'left',
+                          },
+                          '& th': { fontWeight: 700 },
+                        }}
+                      >
+                        {group.category && (
+                          <thead>
+                            <tr>
+                              <th colSpan={2}>{group.category}</th>
+                            </tr>
+                          </thead>
+                        )}
+                        <tbody>
+                          {group.skills.map((skill) => (
+                            <tr key={skill.name}>
+                              <td>{skill.name}</td>
+                              <td style={{ width: '6.5em' }}>
+                                <Stars level={skill.level} />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              )}
+
+              {(
+                [
+                  [labels.education, cv.education],
+                  [labels.subjects, cv.subjects],
+                  [labels.languages, cv.languages],
+                ] as const
+              )
+                .filter(([, value]) => value)
+                .map(([label, value]) => (
+                  <Box
+                    component="section"
+                    key={label}
+                    sx={{ mb: 2.5, breakInside: 'avoid' }}
+                  >
+                    <SectionHeading>{label}</SectionHeading>
+                    <Text value={value} />
+                  </Box>
+                ))}
+            </td>
+          </tr>
+        </tbody>
+      </Box>
     </Box>
   );
 }
