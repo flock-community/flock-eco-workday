@@ -29,14 +29,14 @@ export const CV_LABELS = {
     title: 'Curriculum Vitae',
     name: 'Name',
     place: 'Place',
-    phone: 'Phone',
+    phone: 'Telephone',
     mail: 'Mail',
-    birthdate: 'Date of birth',
-    workingExperience: 'Working experience',
+    birthdate: 'Date of Birth',
+    workingExperience: 'Work experience',
     period: 'Period',
-    function: 'Function',
+    function: 'Job Title',
     months: 'Months',
-    clientColumn: 'Employer / client',
+    clientColumn: 'Client/Company',
     client: 'Client',
     role: 'Role',
     technologies: 'Technologies',
@@ -44,7 +44,7 @@ export const CV_LABELS = {
     education: 'Education',
     subjects: 'Subjects',
     languages: 'Languages',
-    now: 'now',
+    now: 'current',
     page: 'page',
   },
 } as const satisfies Record<CvLanguage, Record<string, string>>;
@@ -106,6 +106,52 @@ export function periodText(
   return `${parseYearMonth(from).format(CV_MONTH)} - ${end}`;
 }
 
+const MONTH_NAMES: Record<CvLanguage, string[]> = {
+  NL: [
+    'januari',
+    'februari',
+    'maart',
+    'april',
+    'mei',
+    'juni',
+    'juli',
+    'augustus',
+    'september',
+    'oktober',
+    'november',
+    'december',
+  ],
+  EN: [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ],
+};
+
+const monthName = (value: string, language: CvLanguage): string => {
+  const month = parseYearMonth(value);
+  return `${MONTH_NAMES[language][month.month()]} ${month.year()}`;
+};
+
+/** `January 2026 - September 2026`, `augustus 2024 - nu`: the period above an assignment. */
+export function longPeriodText(
+  from: string,
+  to: string | null | undefined,
+  language: CvLanguage,
+): string {
+  const end = to ? monthName(to, language) : CV_LABELS[language].now;
+  return `${monthName(from, language)} - ${end}`;
+}
+
 /** `ING (via Flock)`, or just the client without an employer in between. */
 export const clientText = (
   client: string,
@@ -151,3 +197,10 @@ export function linkify(line: string): TextPart[] {
   if (last < line.length) parts.push({ text: line.slice(last) });
   return parts;
 }
+
+/**
+ * Turns each single line break within a block of Markdown into a hard break (two
+ * trailing spaces), so a description renders its lines the way they were typed.
+ */
+export const markdownLineBreaks = (text: string): string =>
+  text.replace(/\r\n?/g, '\n').replace(/([^\n])[ \t]*\n(?=[^\n])/g, '$1  \n');

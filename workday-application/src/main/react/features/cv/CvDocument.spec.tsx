@@ -100,7 +100,7 @@ describe('CvDocument', () => {
     );
   });
 
-  it('shows the photo in the header when the CV has one', () => {
+  it('shows the photo on the first page when the CV has one', () => {
     render(
       <CvDocument
         cv={cv({
@@ -134,7 +134,7 @@ describe('CvDocument', () => {
     expect(
       screen.getByRole('heading', { name: 'Curriculum Vitae - Tommy Dog' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Woonplaats')).toBeInTheDocument();
+    expect(screen.getByText('Woonplaats:')).toBeInTheDocument();
     expect(screen.getByText('Hilversum')).toBeInTheDocument();
     expect(screen.getByText('tommy@sesam.straat')).toBeInTheDocument();
     expect(screen.getByText('08-05-1980')).toBeInTheDocument();
@@ -167,23 +167,56 @@ describe('CvDocument', () => {
     expect(screen.getAllByText('Information Makers')).toHaveLength(1);
   });
 
+  it('renders a description written in Markdown, without its raw HTML', () => {
+    render(
+      <CvDocument
+        cv={cv({
+          experiences: [
+            {
+              from: '2022-12',
+              to: '2024-07',
+              role: 'Software Engineer',
+              client: 'ING',
+              employer: 'Flock',
+              technologies: [],
+              description:
+                'Werkte aan **Baker**:\n\n- de API\n- de [docs](https://ing-bank.github.io/baker/)\n\nRegel een\nregel twee <script>alert(1)</script>',
+              logoId: undefined,
+            },
+          ],
+        })}
+      />,
+    );
+
+    expect(screen.getByText('Baker').tagName).toBe('STRONG');
+    const items = within(
+      screen.getByText('de API').closest('ul') as HTMLElement,
+    ).getAllByRole('listitem');
+    expect(items.map((it) => it.textContent)).toEqual(['de API', 'de docs']);
+    expect(screen.getByRole('link', { name: 'docs' })).toHaveAttribute(
+      'target',
+      '_blank',
+    );
+    const lines = screen.getByText(/Regel een/);
+    expect(lines.querySelector('br')).not.toBeNull();
+    expect(document.querySelector('script')).toBeNull();
+  });
+
   it('shows the skills per category with their stars, and the other sections', () => {
     render(<CvDocument cv={cv()} />);
 
-    expect(
-      screen.getByRole('heading', { name: 'Vaardigheden' }),
-    ).toBeInTheDocument();
     const programming = screen
-      .getByRole('columnheader', { name: 'Programming' })
-      .closest('table') as HTMLElement;
+      .getByRole('heading', { name: 'Programming' })
+      .closest('section') as HTMLElement;
     expect(
       within(programming)
-        .getAllByRole('row')
+        .getAllByRole('listitem')
         .map((it) => it.textContent),
-    ).toEqual(['Programming', 'Kotlin★★★★★', 'Java★★★']);
+    ).toEqual(['Kotlin*****', 'Java***']);
     expect(
       within(programming).getByRole('img', { name: '5 of 5' }),
     ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Tools' })).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: 'Opleiding' }),
     ).toBeInTheDocument();
@@ -206,8 +239,8 @@ describe('CvDocument', () => {
       />,
     );
 
-    expect(screen.getByText('Place')).toBeInTheDocument();
-    expect(screen.queryByText('Phone')).not.toBeInTheDocument();
+    expect(screen.getByText('Place:')).toBeInTheDocument();
+    expect(screen.queryByText('Telephone:')).not.toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 });

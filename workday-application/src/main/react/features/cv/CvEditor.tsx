@@ -337,6 +337,7 @@ export function CvEditor() {
                                     component={TextField}
                                     name={`${prefix}.description`}
                                     label="Description"
+                                    helperText="Markdown: - bullets, **bold**, *italic*, [link](https://…)"
                                     multiline
                                     minRows={4}
                                     fullWidth

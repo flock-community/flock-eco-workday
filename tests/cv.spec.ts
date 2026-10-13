@@ -139,7 +139,7 @@ test.describe('CV', () => {
     await fillMonth(page, 'To', '12-2023');
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(versionPicker(page)).toHaveText(/Algemeen · English/);
-    await expect(cv.getByText('Working experience')).toBeVisible();
+    await expect(cv.getByText('Work experience')).toBeVisible();
     await expect(cv.getByRole('table')).toContainText('03-2021 - 12-2023');
     await expect(cv.getByRole('table')).toContainText('34');
 

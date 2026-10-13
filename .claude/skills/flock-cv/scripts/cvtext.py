@@ -457,6 +457,28 @@ def compute_logo_hints(pdf_path, exps, notes):
 # Resume parser (Flock template, EN and NL)
 
 
+MD_BULLET = re.compile(r"^\s*[·⋅•‣▪◦●○■□⁃∙\-–*]+\s+")
+
+
+def description_markdown(paragraphs):
+    """The description of an assignment as Markdown (what the CV renders): paragraphs separated by
+    a blank line, and each run of bulleted paragraphs as one `- ` list."""
+    blocks, in_list = [], False
+    for text in paragraphs:
+        text = text.replace("\t", " ").strip()
+        item = MD_BULLET.sub("", text, count=1)
+        if item != text and item:
+            if in_list:
+                blocks[-1] += "\n- " + item
+            else:
+                blocks.append("- " + item)
+            in_list = True
+        elif text:
+            blocks.append(text)
+            in_list = False
+    return "\n\n".join(blocks) or None
+
+
 def parse_resume(pdf_path, notes):
     entries, repeated = build_entries(pdf_path)
 
@@ -628,7 +650,7 @@ def parse_resume(pdf_path, notes):
             notes.add(f"{label}: role or client missing; fill it in before creating the CV")
         experiences.append({"from": frm, "to": to, "role": role[:255], "client": client[:255],
                              "employer": employer, "technologies": techs,
-                             "description": "\n\n".join(t.replace("\t", " ") for _, t in desc) or None,
+                             "description": description_markdown(t for _, t in desc),
                              "logoId": None})
 
     logo_hints, photo = compute_logo_hints(pdf_path, exps, notes)

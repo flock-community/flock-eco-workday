@@ -40,7 +40,6 @@ const printStyles = (
   <GlobalStyles
     styles={{
       '@media print': {
-        '@page': { size: 'A4', margin: '16mm 18mm' },
         body: { background: 'none !important' },
         [`#index > :not(.${CV_PRINT_ROOT})`]: { display: 'none !important' },
         [`#index.content-grid, .${CV_PRINT_ROOT}.content-grid`]: {
