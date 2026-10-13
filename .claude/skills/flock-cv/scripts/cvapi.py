@@ -11,6 +11,7 @@ Usage: python3 -I cvapi.py <command> [args]
   create FORM.json            POST /api/cvs
   put CODE FORM.json          PUT /api/cvs/CODE (a full replacement, see SKILL.md)
   upload-logo NAME IMAGE      POST /api/logos (png, jpeg, gif, webp or svg, max 512 KB)
+  data-url IMAGE              an image file as a `data:<type>;base64,...` string, for form.json's `photo`
   text PDF                    the resume's text in reading order (one paragraph or table row per line)
   parse PDF [NAME [PERSON]]   a CvForm draft parsed from the resume; notes on what to check on stderr
   extract-images PDF OUTDIR   every image in the PDF as PNG/JPEG/TIFF (poppler's "-all" mode)
@@ -83,6 +84,7 @@ def to_form(cv):
         "education": cv.get("education"),
         "subjects": cv.get("subjects"),
         "languages": cv.get("languages"),
+        "photo": cv.get("photo"),
     }
 
 
@@ -121,6 +123,8 @@ def main():
     elif cmd == "upload-logo":
         logo = call("POST", "/api/logos", {"name": args[0], "image": data_url(args[1])})
         print(logo["id"], logo["name"], logo["contentType"])
+    elif cmd == "data-url":
+        print(data_url(args[0]))
     elif cmd == "text":
         sys.stdout.write(cvtext.render_text(args[0]))
     elif cmd == "parse":

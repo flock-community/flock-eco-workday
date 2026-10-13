@@ -2,6 +2,7 @@ package community.flock.eco.workday.application.model
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonIdentityReference
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import community.flock.eco.workday.core.model.AbstractIdEntity
 import community.flock.eco.workday.user.model.User
@@ -40,6 +41,13 @@ class Person(
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "code")
     @JsonIdentityReference(alwaysAsId = true)
     val user: User?,
+    /** The content type the photo's bytes turned out to be; null alongside [photoData]. */
+    @JsonIgnore
+    var photoContentType: String? = null,
+    /** The person's photo, shown in the header of each of their CVs. */
+    @JsonIgnore
+    @Column(length = PHOTO_MAX_SIZE)
+    var photoData: ByteArray? = null,
 ) : AbstractIdEntity(id) {
     fun getFullName(): String = "$firstname $lastname"
 
@@ -54,6 +62,11 @@ class Person(
     }
 
     override fun toString(): String = "Person(id=$id, uuid=$uuid, firstname='$firstname', lastname='$lastname', email='$email')"
+
+    companion object {
+        /** The photo is small: half a megabyte is plenty, same ceiling as a [Logo]. */
+        const val PHOTO_MAX_SIZE = 512 * 1024
+    }
 }
 
 /**

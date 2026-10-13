@@ -3,6 +3,7 @@ package community.flock.eco.workday.application.services
 import community.flock.eco.workday.application.forms.CvExperienceForm
 import community.flock.eco.workday.application.forms.CvForm
 import community.flock.eco.workday.application.forms.CvSkillForm
+import community.flock.eco.workday.application.forms.PhotoChange
 import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.model.CvExperience
 import community.flock.eco.workday.application.model.CvRevision
@@ -20,7 +21,14 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.time.YearMonth
+import java.util.Base64
 import java.util.UUID
+
+/** The photo as a data URL the browser can use directly as an `<img src>`; null without one. */
+fun Person.photoDataUrl(): String? = photoData?.let { data -> "data:$photoContentType;base64,${Base64.getEncoder().encodeToString(data)}" }
+
+/** The image bytes of a base64 string, optionally a data URL (`data:image/png;base64,...`). */
+fun decodeImage(value: String): ByteArray = Base64.getDecoder().decode(value.substringAfter("base64,").trim())
 
 /** Thrown when a CV form cannot be turned into a valid CV. */
 sealed class CvValidationException(
@@ -57,7 +65,7 @@ class CvService(
     fun findByCode(code: String): Cv? = cvRepository.findByCode(code)
 
     @Transactional
-    fun create(form: CvForm): Cv = form.internalize().save()
+    fun create(form: CvForm): Cv = form.internalize().also { it.person.change(form.photo) }.save()
 
     /** Saves [form] over the CV with [code]; what the CV held before becomes a revision. */
     @Transactional
@@ -67,6 +75,7 @@ class CvService(
     ): Cv? =
         findByCode(code)?.let { existing ->
             val updated = form.internalize(existing)
+            updated.person.change(form.photo)
             val before = existing.snapshot()
             // Saving without changes adds no revision
             if (before != updated.snapshot()) {
@@ -143,6 +152,30 @@ class CvService(
             languages = languages.cleaned("languages", Cv.CV_SECTION_LENGTH),
             updatedAt = Instant.now(),
         )
+    }
+
+    /** Applies [photo] to the person; saved along with the CV, in the same transaction. */
+    private fun Person.change(photo: PhotoChange) {
+        when (photo) {
+            PhotoChange.Keep -> Unit
+            PhotoChange.Remove -> {
+                photoContentType = null
+                photoData = null
+            }
+            is PhotoChange.Replace -> {
+                photoContentType = photoContentType(photo.data)
+                photoData = photo.data
+            }
+        }
+    }
+
+    /** The photo's content type, after checking it is a real image within [Person.PHOTO_MAX_SIZE]. */
+    private fun photoContentType(photo: ByteArray): String {
+        if (photo.size > Person.PHOTO_MAX_SIZE) {
+            throw CvInvalidInputException("photo may be at most ${Person.PHOTO_MAX_SIZE / 1024} KB")
+        }
+        return LogoService.contentTypeOf(photo)
+            ?: throw CvInvalidInputException("photo must be a PNG, JPEG, GIF, WebP or SVG")
     }
 
     private fun CvExperienceForm.internalize(field: String): CvExperience {

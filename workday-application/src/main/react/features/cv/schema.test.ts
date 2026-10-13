@@ -44,6 +44,7 @@ describe('CV_FORM_SCHEMA', () => {
       education: '',
       subjects: '',
       languages: '',
+      photo: '',
     });
   });
 
@@ -185,6 +186,14 @@ describe('toCvRequest', () => {
       toCvRequest(values({ experiences: [experience] })).experiences?.[0].to,
     ).toBeUndefined();
   });
+
+  it('carries the photo through, leaves it out when untouched and empties it when removed', () => {
+    expect(
+      toCvRequest(values({ photo: 'data:image/png;base64,abc' })).photo,
+    ).toBe('data:image/png;base64,abc');
+    expect(toCvRequest(values({ photo: '' })).photo).toBeUndefined();
+    expect(toCvRequest(values({ photo: null })).photo).toBe('');
+  });
 });
 
 describe('toCvFormValues', () => {
@@ -222,5 +231,21 @@ describe('toCvFormValues', () => {
     expect(form.experiences[0].from?.format('YYYY-MM')).toBe('2024-08');
     expect(form.experiences[0].to).toBeNull();
     expect(form.experiences[0].technologies).toEqual(['Kotlin', 'React']);
+  });
+
+  it('reads the photo back, or an empty string when the CV has none', () => {
+    const base = {
+      code: 'cv-1',
+      language: 'NL' as const,
+      experiences: [],
+      person: { uuid: '9b2f6c3e-4d1a-4a8e-9c1b-2f3e4d5a6b7c' },
+    };
+    expect(
+      toCvFormValues({
+        ...base,
+        photo: 'data:image/png;base64,abc',
+      } as unknown as Cv).photo,
+    ).toBe('data:image/png;base64,abc');
+    expect(toCvFormValues(base as unknown as Cv).photo).toBe('');
   });
 });

@@ -46,6 +46,8 @@ class PersonService(
             user = user,
             googleDriveId = form.googleDriveId,
             address = form.address?.toEntity(),
+            photoContentType = photoContentType,
+            photoData = photoData,
         )
     }
 

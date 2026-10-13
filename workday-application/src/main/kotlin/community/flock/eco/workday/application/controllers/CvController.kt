@@ -13,6 +13,7 @@ import community.flock.eco.workday.application.authorities.CvAuthority
 import community.flock.eco.workday.application.forms.CvExperienceForm
 import community.flock.eco.workday.application.forms.CvForm
 import community.flock.eco.workday.application.forms.CvSkillForm
+import community.flock.eco.workday.application.forms.PhotoChange
 import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.model.CvExperience
 import community.flock.eco.workday.application.model.CvLanguage
@@ -22,6 +23,8 @@ import community.flock.eco.workday.application.services.CvAlreadyExistsException
 import community.flock.eco.workday.application.services.CvService
 import community.flock.eco.workday.application.services.CvValidationException
 import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.application.services.decodeImage
+import community.flock.eco.workday.application.services.photoDataUrl
 import community.flock.eco.workday.application.utils.parseSort
 import community.flock.wirespec.kotlin.Wirespec
 import org.springframework.data.domain.PageRequest
@@ -191,6 +194,7 @@ class CvController(
             education = education,
             subjects = subjects,
             languages = languages,
+            photo = person.photoDataUrl(),
             updatedAt = updatedAt.toString(),
             person = person.externalize(),
         )
@@ -274,8 +278,22 @@ class CvController(
             education = education,
             subjects = subjects,
             languages = languages,
+            photo = photo.toPhotoChange(),
         )
     }
+
+    /**
+     * The photo belongs to the person: left out it stays as it is, an empty string removes
+     * it, else it is base64, optionally a data URL (`data:image/png;base64,...`).
+     */
+    private fun String?.toPhotoChange(): PhotoChange =
+        when {
+            this == null -> PhotoChange.Keep
+            isBlank() -> PhotoChange.Remove
+            else ->
+                runCatching { PhotoChange.Replace(decodeImage(this)) }
+                    .getOrElse { throw CvInvalidInputException("photo is not valid base64") }
+        }
 
     private fun CvExperienceFormApi.internalize(field: String) =
         CvExperienceForm(

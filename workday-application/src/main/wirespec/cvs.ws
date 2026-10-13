@@ -68,7 +68,8 @@ type CvForm {
   skills: CvSkillForm[]?,
   education: String?,
   subjects: String?,
-  languages: String?
+  languages: String?,
+  photo: String?
 }
 type CvExperience {
   from: String,
@@ -98,6 +99,7 @@ type Cv {
   education: String?,
   subjects: String?,
   languages: String?,
+  photo: String?,
   updatedAt: String?,
   person: Person?
 }

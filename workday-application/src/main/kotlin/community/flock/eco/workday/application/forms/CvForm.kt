@@ -16,7 +16,23 @@ data class CvForm(
     val education: String? = null,
     val subjects: String? = null,
     val languages: String? = null,
+    /** What saving does to the photo of the person the CV belongs to. */
+    val photo: PhotoChange = PhotoChange.Keep,
 )
+
+/** The photo lives on the person, so every CV of that person shows the same one. */
+sealed interface PhotoChange {
+    /** Leaves the person's photo as it is. */
+    data object Keep : PhotoChange
+
+    /** Removes the person's photo. */
+    data object Remove : PhotoChange
+
+    /** Replaces the person's photo with these bytes. */
+    class Replace(
+        val data: ByteArray,
+    ) : PhotoChange
+}
 
 data class CvSkillForm(
     val category: String? = null,

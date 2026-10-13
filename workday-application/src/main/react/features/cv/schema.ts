@@ -43,6 +43,11 @@ export type CvFormValues = {
   education: string;
   subjects: string;
   languages: string;
+  /**
+   * The person's photo as a data URL (`data:image/png;base64,...`); '' means none, null
+   * means it was removed. The photo belongs to the person, so it shows on all their CVs.
+   */
+  photo: string | null;
 };
 
 const LINE = 255;
@@ -163,6 +168,7 @@ export const CV_FORM_SCHEMA = object({
   education: section('Education'),
   subjects: section('Subjects'),
   languages: section('Languages'),
+  photo: string().nullable().default(''),
 });
 
 export const emptySkill = (category = ''): CvSkillValues => ({
@@ -209,6 +215,7 @@ export const toCvFormValues = (cv: Cv): CvFormValues => ({
   education: cv.education ?? '',
   subjects: cv.subjects ?? '',
   languages: cv.languages ?? '',
+  photo: cv.photo ?? '',
 });
 
 const optional = (value: string): string | undefined =>
@@ -241,4 +248,6 @@ export const toCvRequest = (values: CvFormValues): CvRequest => ({
   education: optional(values.education),
   subjects: optional(values.subjects),
   languages: optional(values.languages),
+  // Left out, the person keeps their photo; an empty string removes it
+  photo: values.photo === null ? '' : optional(values.photo),
 });

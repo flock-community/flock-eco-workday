@@ -27,6 +27,7 @@ import { usePerson } from '../../hooks/PersonHook';
 import { useLoginStatus } from '../../hooks/StatusHook';
 import { CV_LANGUAGES, cvUrl } from './cvText';
 import { LogoField } from './LogoField';
+import { PhotoField } from './PhotoField';
 import {
   CV_FORM_SCHEMA,
   type CvFormValues,
@@ -168,6 +169,9 @@ export function CvEditor() {
                 subtitle="Name, e-mail and date of birth come from the person"
               >
                 <Grid container spacing={2}>
+                  <Grid size={{ xs: 12 }}>
+                    <PhotoField name="photo" />
+                  </Grid>
                   <Grid size={{ xs: 12, sm: 8 }}>
                     <Field
                       component={TextField}

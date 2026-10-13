@@ -50,6 +50,10 @@ class CvControllerTest(
             "description" to "Rebuilt the business portal.\n\nhttps://www.flock.community/cases/ing-front-end-team",
         )
 
+    // A 1x1 transparent PNG, the smallest valid image LogoService.contentTypeOf recognises
+    private val aPngDataUrl =
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg=="
+
     private fun cvJson(
         name: String? = "Algemeen",
         language: String? = "NL",
@@ -62,6 +66,7 @@ class CvControllerTest(
                 mapOf("category" to "Programming", "name" to "Kotlin", "level" to 5),
                 mapOf("category" to " ", "name" to " Git ", "level" to null),
             ),
+        photo: String? = null,
     ): String =
         mapper.writeValueAsString(
             mapOf(
@@ -76,6 +81,7 @@ class CvControllerTest(
                 "education" to "Master, Business Information Management, Rotterdam (2012)",
                 "subjects" to null,
                 "languages" to "Dutch – Native\nEnglish – Excellent",
+                "photo" to photo,
             ),
         )
 
@@ -249,6 +255,60 @@ class CvControllerTest(
     }
 
     @Test
+    fun `the photo belongs to the person, kept when left out and removed when empty`() {
+        val (worker) = aWorker()
+
+        val code =
+            mvc
+                .perform(post(baseUrl).asUser(worker).json(cvJson(photo = aPngDataUrl)))
+                .asyncDispatch()
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.photo").value(aPngDataUrl))
+                .andReturn()
+                .response.contentAsString
+                .let { mapper.readTree(it)["code"].asText() }
+
+        // Another CV of the same person shows the same photo
+        mvc
+            .perform(post(baseUrl).asUser(worker).json(cvJson(name = "English")))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.photo").value(aPngDataUrl))
+
+        // Leaving photo out of a PUT keeps it
+        mvc
+            .perform(put("$baseUrl/$code").asUser(worker).json(cvJson()))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.photo").value(aPngDataUrl))
+
+        // An empty photo removes it, from every CV of the person
+        mvc
+            .perform(put("$baseUrl/$code").asUser(worker).json(cvJson(photo = "")))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.photo").doesNotExist())
+
+        mvc
+            .perform(get("$baseUrl/$code").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.photo").doesNotExist())
+    }
+
+    @Test
+    fun `a photo over 512 KB is rejected`() {
+        val (worker) = aWorker()
+        val tooBig = "data:image/png;base64," + "A".repeat(700_000)
+
+        mvc
+            .perform(post(baseUrl).asUser(worker).json(cvJson(photo = tooBig)))
+            .asyncDispatch()
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("photo may be at most 512 KB"))
+    }
+
+    @Test
     fun `READ only reads your own CV and WRITE only writes it`() {
         val reader = createHelper.createUserEntity(setOf(CvAuthority.READ))
         val readersCv = createHelper.createCv(createHelper.createPersonEntity("Ernie", "Muppets", reader.code))
@@ -303,6 +363,9 @@ class CvControllerTest(
             cvJson(name = "x".repeat(101)) to "name is invalid",
             cvJson(skills = listOf(mapOf("name" to "Kotlin", "level" to 6))) to "skills[0].level must be between 1 and 5",
             cvJson(skills = listOf(mapOf("name" to "", "level" to 3))) to "skills[0].name is required",
+            cvJson(photo = "data:image/png;base64,not-valid-base64!!") to "photo is not valid base64",
+            cvJson(photo = "data:text/plain;base64,${java.util.Base64.getEncoder().encodeToString("not an image".toByteArray())}") to
+                "photo must be a PNG, JPEG, GIF, WebP or SVG",
         ).forEach { (body, message) ->
             mvc
                 .perform(post(baseUrl).asUser(worker).json(body))

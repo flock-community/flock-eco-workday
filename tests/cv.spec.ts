@@ -185,6 +185,50 @@ test.describe('CV', () => {
     );
   });
 
+  test('a worker adds, replaces and removes the photo on their CV', async ({
+    page,
+  }) => {
+    await Given_I_am_logged_in_as_user(page, WORKER_USERNAME);
+    const leftovers = await (await page.request.get('/api/cvs')).json();
+    for (const cv of leftovers)
+      await page.request.delete(`/api/cvs/${cv.code}`);
+
+    await goToCv(page);
+    await page.getByRole('link', { name: 'Write CV' }).click();
+    await page
+      .getByRole('textbox', { name: 'Name of this version' })
+      .fill('Algemeen');
+
+    await expect(page.getByRole('button', { name: 'Add photo' })).toBeVisible();
+    await page.getByLabel('Photo').setInputFiles('tests/files/timesheet.png');
+    await expect(
+      page.getByRole('button', { name: 'Replace photo' }),
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Save' }).click();
+
+    // The photo shows in the header of the saved CV
+    const cv = page.getByRole('article');
+    await expect(cv.getByRole('img', { name: 'Ernie Muppets' })).toBeVisible();
+
+    // It survives an edit that does not touch it
+    await page.getByRole('link', { name: 'Edit' }).click();
+    await page.getByRole('textbox', { name: 'Place' }).fill('Hilversum');
+    await expect(
+      page.getByRole('button', { name: 'Replace photo' }),
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(cv.getByRole('img', { name: 'Ernie Muppets' })).toBeVisible();
+
+    // Removing it takes it off the CV
+    await page.getByRole('link', { name: 'Edit' }).click();
+    await page.getByRole('button', { name: 'Remove photo' }).click();
+    await expect(page.getByRole('button', { name: 'Add photo' })).toBeVisible();
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(cv.getByRole('img', { name: 'Ernie Muppets' })).toHaveCount(0);
+
+    await deleteShownCv(page);
+  });
+
   test('an admin starts on their own CV and picks whose CV to read', async ({
     page,
   }) => {
