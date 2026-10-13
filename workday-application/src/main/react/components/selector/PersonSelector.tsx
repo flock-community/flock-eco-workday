@@ -157,7 +157,8 @@ export function PersonSelector({
       sx={{
         position: 'sticky',
         bottom: 0,
-        p: 1,
+        px: 1,
+        py: 0.5,
         borderTop: 1,
         borderColor: 'divider',
         bgcolor: 'background.paper',
@@ -170,6 +171,12 @@ export function PersonSelector({
         // before the click arrives
         onMouseDown={(event) => event.preventDefault()}
         onClick={() => setShowInactive((it) => !it)}
+        sx={{
+          px: 1,
+          typography: 'caption',
+          color: 'text.secondary',
+          '&:hover': { color: 'text.primary' },
+        }}
       >
         {showInactive ? 'Hide inactive persons' : 'Show inactive persons'}
       </Button>
