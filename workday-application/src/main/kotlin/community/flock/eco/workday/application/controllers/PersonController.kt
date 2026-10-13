@@ -9,9 +9,12 @@ import community.flock.eco.workday.api.endpoint.PostPerson
 import community.flock.eco.workday.api.endpoint.PutPerson
 import community.flock.eco.workday.application.authorities.PersonAuthority
 import community.flock.eco.workday.application.forms.PersonForm
+import community.flock.eco.workday.application.forms.PhotoChange
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.PersonEvent
 import community.flock.eco.workday.application.services.PersonService
+import community.flock.eco.workday.application.services.decodeImage
+import community.flock.eco.workday.application.services.photoDataUrl
 import community.flock.eco.workday.domain.person.Address
 import community.flock.eco.workday.user.model.User
 import community.flock.eco.workday.user.services.UserService
@@ -192,6 +195,7 @@ class PersonController(
             address = address?.externalize(),
             user = user?.externalize(),
             fullName = listOfNotNull(firstname, lastname).joinToString(" ").ifBlank { null },
+            photo = photoDataUrl(),
         )
     }
 
@@ -244,7 +248,21 @@ class PersonController(
             shirtSize = shirtSize,
             googleDriveId = googleDriveId,
             address = address?.internalize(),
+            photo = photo.toPhotoChange(),
         )
+
+    /**
+     * The photo belongs to the person: left out it stays as it is, an empty string removes
+     * it, else it is base64, optionally a data URL (`data:image/png;base64,...`).
+     */
+    private fun String?.toPhotoChange(): PhotoChange =
+        when {
+            this == null -> PhotoChange.Keep
+            isBlank() -> PhotoChange.Remove
+            else ->
+                runCatching { PhotoChange.Replace(decodeImage(this)) }
+                    .getOrElse { throw badRequest("photo is not valid base64") }
+        }
 
     /**
      * An address is optional as a whole: all-blank fields mean "no address" (null).

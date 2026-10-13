@@ -80,6 +80,10 @@ describe('PERSON_FORM_SCHEMA', () => {
     expect(PERSON_FORM_SCHEMA.getDefault().address).toEqual(emptyAddress);
   });
 
+  it('defaults to no photo', () => {
+    expect(PERSON_FORM_SCHEMA.getDefault().photo).toBe('');
+  });
+
   it('accepts a person with a complete address', async () => {
     await expect(
       PERSON_FORM_SCHEMA.isValid({

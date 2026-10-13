@@ -3,8 +3,10 @@ import ReportIcon from '@mui/icons-material/Assessment';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import TodoIcon from '@mui/icons-material/AssignmentTurnedIn';
+import CvIcon from '@mui/icons-material/Badge';
 import ClientIcon from '@mui/icons-material/Business';
 import EventIcon from '@mui/icons-material/CalendarToday';
+import LogoIcon from '@mui/icons-material/Collections';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ContractIcon from '@mui/icons-material/Description';
 import HealingIcon from '@mui/icons-material/Healing';
@@ -145,6 +147,18 @@ export const navSections: NavSection[] = [
         authority: 'LaptopAuthority.READ',
       },
       {
+        name: 'CV',
+        icon: CvIcon,
+        url: '/cvs',
+        authority: 'CvAuthority.READ,CvAuthority.ADMIN',
+      },
+      {
+        name: 'Logos',
+        icon: LogoIcon,
+        url: '/cv-logos',
+        authority: 'CvAuthority.WRITE,CvAuthority.ADMIN',
+      },
+      {
         name: 'Users',
         icon: UserIcon,
         url: '/users',
@@ -187,8 +201,10 @@ export function isActive(pathname: string, url: string) {
   return pathname === url || pathname.startsWith(`${url}/`);
 }
 
+// "A,B" means any of A and B, like UserAuthorityUtil
 const hasAuthority = (authorities: string[], authority?: string) =>
-  authority === undefined || authorities.includes(authority);
+  authority === undefined ||
+  authority.split(',').some((it) => authorities.includes(it.trim()));
 
 export function visibleSections(authorities: string[] = []): NavSection[] {
   return navSections

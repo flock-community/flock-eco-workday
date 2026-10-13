@@ -63,7 +63,8 @@ class SickdayController(
     @PreAuthorize("hasAuthority('SickdayAuthority.READ')")
     override suspend fun getSickDayByCode(request: GetSickDayByCode.Request): GetSickDayByCode.Response<*> {
         val sickDay =
-            service.findByCode(request.path.code)
+            service
+                .findByCode(request.path.code)
                 ?.applyAuthentication(authentication())
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "SickDay not found")
         return GetSickDayByCode.Response200(sickDay.externalize())
@@ -83,7 +84,8 @@ class SickdayController(
         val code = request.path.code
         val form = request.body.internalize()
         val existing =
-            service.findByCode(code)
+            service
+                .findByCode(code)
                 ?.applyAuthentication(auth)
                 ?.applyAllowedToUpdate(form.status, auth.isAdmin())
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "SickDay not found")
@@ -99,7 +101,8 @@ class SickdayController(
     @PreAuthorize("hasAuthority('SickdayAuthority.WRITE')")
     override suspend fun deleteSickDay(request: DeleteSickDay.Request): DeleteSickDay.Response<*> {
         val auth = authentication()
-        service.findByCode(request.path.code)
+        service
+            .findByCode(request.path.code)
             ?.applyAuthentication(auth)
             ?.run { service.deleteByCode(this.code) }
         return DeleteSickDay.Response204(Unit)

@@ -172,6 +172,7 @@ class AssignmentController(
             address = null,
             user = null,
             fullName = "$firstname $lastname",
+            photo = null,
         )
 
     private fun AssignmentFormApi.internalize() =
@@ -186,6 +187,5 @@ class AssignmentController(
             to = to?.let(LocalDate::parse),
         )
 
-    private fun GetAssignmentAll.Queries.toPageable(): Pageable =
-        PageRequest.of(page ?: 0, size ?: 20, parseSort(sort))
+    private fun GetAssignmentAll.Queries.toPageable(): Pageable = PageRequest.of(page ?: 0, size ?: 20, parseSort(sort))
 }

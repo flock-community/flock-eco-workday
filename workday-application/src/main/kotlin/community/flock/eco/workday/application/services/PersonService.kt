@@ -1,6 +1,7 @@
 package community.flock.eco.workday.application.services
 
 import community.flock.eco.workday.application.forms.PersonForm
+import community.flock.eco.workday.application.forms.PhotoChange
 import community.flock.eco.workday.application.mappers.toEntity
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.PersonRepository
@@ -8,11 +9,20 @@ import community.flock.eco.workday.core.utils.toNullable
 import community.flock.eco.workday.user.repositories.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 import java.time.LocalDate
+import java.util.Base64
 import java.util.UUID
+
+/** The photo as a data URL the browser can use directly as an `<img src>`; null without one. */
+fun Person.photoDataUrl(): String? = photoData?.let { data -> "data:$photoContentType;base64,${Base64.getEncoder().encodeToString(data)}" }
+
+/** The image bytes of a base64 string, optionally a data URL (`data:image/png;base64,...`). */
+fun decodeImage(value: String): ByteArray = Base64.getDecoder().decode(value.substringAfter("base64,").trim())
 
 @Service
 @Transactional
@@ -46,7 +56,33 @@ class PersonService(
             user = user,
             googleDriveId = form.googleDriveId,
             address = form.address?.toEntity(),
-        )
+            photoContentType = photoContentType,
+            photoData = photoData,
+        ).apply { change(form.photo) }
+    }
+
+    /** Applies [photo] to the person; saved along with the rest of the form. */
+    private fun Person.change(photo: PhotoChange) {
+        when (photo) {
+            PhotoChange.Keep -> Unit
+            PhotoChange.Remove -> {
+                photoContentType = null
+                photoData = null
+            }
+            is PhotoChange.Replace -> {
+                photoContentType = photoContentType(photo.data)
+                photoData = photo.data
+            }
+        }
+    }
+
+    /** The photo's content type, after checking it is a real image within [Person.PHOTO_MAX_SIZE]. */
+    private fun photoContentType(photo: ByteArray): String {
+        if (photo.size > Person.PHOTO_MAX_SIZE) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "photo may be at most ${Person.PHOTO_MAX_SIZE / 1024} KB")
+        }
+        return LogoService.contentTypeOf(photo)
+            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "photo must be a PNG, JPEG, GIF, WebP or SVG")
     }
 
     /**
@@ -147,7 +183,7 @@ class PersonService(
             shirtSize = form.shirtSize,
             googleDriveId = form.googleDriveId,
             address = form.address?.toEntity(),
-        ).save()
+        ).apply { change(form.photo) }.save()
     }
 
     fun update(

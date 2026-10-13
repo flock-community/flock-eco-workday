@@ -1,0 +1,31 @@
+databaseChangeLog:
+  # Bytes in the row (at most 512 KB, same ceiling as a logo); BLOB would make Postgres
+  # keep a large object (oid)
+  - property:
+      name: person.photo_data.type
+      value: BYTEA
+      dbms: postgresql
+  - property:
+      name: person.photo_data.type
+      value: VARBINARY(524288)
+      dbms: h2
+  - changeSet:
+      id: db.changelog-041-person-photo-1
+      author: claude
+      comment: >-
+        The person's photo, shown in the header of each of their CVs. Optional: a person
+        has none until one is added.
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: photo_content_type
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: photo_data
+                  type: ${person.photo_data.type}
+                  constraints:
+                    nullable: true

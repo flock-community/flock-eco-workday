@@ -15,6 +15,8 @@ interface PersonRepository : JpaRepository<Person, Long> {
 
     fun findByUserCode(userCode: String): Optional<Person>
 
+    fun findFirstByEmailIgnoreCase(email: String): Person?
+
     fun existsByUuid(uuid: UUID): Boolean
 
     fun deleteByUuid(uuid: UUID): Unit

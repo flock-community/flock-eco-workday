@@ -60,8 +60,7 @@ class BudgetController(
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found")
     }
 
-    private fun Authentication.canQueryOthers(): Boolean =
-        authorities.any { it.authority == AggregationAuthority.READ.toName() }
+    private fun Authentication.canQueryOthers(): Boolean = authorities.any { it.authority == AggregationAuthority.READ.toName() }
 }
 
 private fun PersonBudgetSummary.produce(): BudgetSummaryResponseApi =

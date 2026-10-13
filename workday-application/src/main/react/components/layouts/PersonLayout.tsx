@@ -9,12 +9,15 @@ type PageProps = {
   requireAuthority: string;
   children: any;
   actions?: ReactNode;
+  /** Extra class on the root, for page specific (print) styles. */
+  className?: string;
 };
 
 export default function PersonLayout({
   requireAuthority,
   children,
   actions,
+  className,
 }: PageProps) {
   const [person, setPerson] = usePerson();
 
@@ -23,7 +26,11 @@ export default function PersonLayout({
   };
 
   return (
-    <Box className={'full-width content-grid'}>
+    <Box
+      className={['full-width content-grid', className]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <UserAuthorityUtil has={requireAuthority}>
         <Card>
           <CardContent>

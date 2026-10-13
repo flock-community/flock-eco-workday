@@ -7,6 +7,7 @@ import { ShirtSizeSelectorField } from '../../components/fields/ShirtSizeSelecto
 import { ShoeSizeSelectorField } from '../../components/fields/ShoeSizeSelectorField';
 import { UserSelectorField } from '../../components/fields/UserSelectorField';
 import { toAddressFormValues } from './address';
+import { PhotoField } from './PhotoField';
 import { PERSON_FORM_SCHEMA } from './schema';
 
 export const PERSON_FORM_ID = 'person-form';
@@ -20,6 +21,9 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
   const form = () => (
     <Form id={PERSON_FORM_ID}>
       <Grid container size={{ xs: 12 }} spacing={2}>
+        <Grid size={{ xs: 12 }}>
+          <PhotoField name="photo" />
+        </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
           <FormControl fullWidth>
             <Field
@@ -206,6 +210,7 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
         ...item,
         userCode: item?.user?.id,
         address: toAddressFormValues(item?.address),
+        photo: item?.photo ?? '',
       }}
       onSubmit={onSubmit}
       validationSchema={PERSON_FORM_SCHEMA}

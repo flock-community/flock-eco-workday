@@ -31,6 +31,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 import community.flock.eco.workday.api.model.Contract as ContractApi
@@ -47,7 +48,6 @@ import community.flock.eco.workday.api.model.Person as PersonApi
 import community.flock.eco.workday.application.model.ContractType as ContractTypeInternal
 import community.flock.eco.workday.application.model.Person as PersonInternal
 import community.flock.eco.workday.application.services.ContractService as ContractDomainService
-import java.math.BigDecimal
 
 @RestController
 class ContractController(
@@ -326,6 +326,7 @@ class ContractController(
             address = null,
             user = null,
             fullName = "$firstname $lastname",
+            photo = null,
         )
 
     private fun ContractInternalFormApi.internalize() =
@@ -368,6 +369,5 @@ class ContractController(
             to = to?.let(LocalDate::parse),
         )
 
-    private fun GetContractAll.Queries.toPageable(): Pageable =
-        PageRequest.of(page ?: 0, size ?: 20, parseSort(sort))
+    private fun GetContractAll.Queries.toPageable(): Pageable = PageRequest.of(page ?: 0, size ?: 20, parseSort(sort))
 }

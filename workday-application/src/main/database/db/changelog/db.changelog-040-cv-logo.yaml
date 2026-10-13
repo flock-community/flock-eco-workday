@@ -1,0 +1,63 @@
+databaseChangeLog:
+  # Bytes in the row (at most 512 KB); BLOB would make Postgres keep a large object (oid)
+  - property:
+      name: logo.data.type
+      value: BYTEA
+      dbms: postgresql
+  - property:
+      name: logo.data.type
+      value: VARBINARY(524288)
+      dbms: h2
+  - changeSet:
+      id: db.changelog-040-cv-logo-1
+      author: willemveelenturf
+      comment: >-
+        Company logos everybody shares, to show with the assignments on a CV. The
+        image is stored as is (at most 512 KB), with the type its bytes turned out
+        to be.
+      changes:
+        - createTable:
+            tableName: logo
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: logoPK
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: logo_name_unique
+              - column:
+                  name: content_type
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: data
+                  type: ${logo.data.type}
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: db.changelog-040-cv-logo-2
+      author: willemveelenturf
+      comment: >-
+        The logo shown with an assignment on a CV. No foreign key: deleting a logo
+        clears it from the assignments, and CV history may refer to logos since deleted.
+      changes:
+        - addColumn:
+            tableName: cv_experience
+            columns:
+              - column:
+                  name: logo_id
+                  type: UUID

@@ -1,5 +1,6 @@
 package community.flock.eco.workday.application.controllers
 
+import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.exc.InvalidNullException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import community.flock.eco.workday.api.model.Error
@@ -32,6 +33,22 @@ class WirespecRequestBodyAdvice {
                 e is InvalidNullException -> "$field is required"
                 else -> "$field is invalid"
             }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Error(message))
+    }
+
+    /**
+     * Any other value Jackson cannot map, such as an unknown enum constant: wirespec's
+     * enum deserializer fails with a bare [JsonMappingException] rather than a
+     * [MismatchedInputException]. The more specific handler above wins for those.
+     */
+    @ExceptionHandler(JsonMappingException::class)
+    fun onJsonMapping(e: JsonMappingException): ResponseEntity<Error> {
+        val field =
+            e.path
+                .mapNotNull { it.fieldName }
+                .joinToString(".")
+                .ifBlank { null }
+        val message = field?.let { "$it is invalid" } ?: "Request body is invalid"
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Error(message))
     }
 }

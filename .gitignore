@@ -61,3 +61,5 @@ gha-creds-*.json
 # H2 dev database + local document storage (anchored so it does NOT catch src/main/database changelogs)
 /database/
 /workday-application/database/
+
+__pycache__/
