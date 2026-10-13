@@ -97,7 +97,7 @@ may already be done before or while waiting.
 | `experiences[]` | Newest first. `from`/`to` are `yyyy-MM`; `to: null` means "present". `role` and `client` required (max 255). `employer` is who the person worked through ("via Flock", "via Capgemini"), null when hired directly. `technologies` is a list of strings. `logoId` is a logo UUID or null. |
 | `skills[]` | `{category, name, level}`. The CV groups by category in order of first appearance. Level 1-5 = number of stars; `level` is optional, so an unrated list gets `null`. |
 | `education`, `subjects`, `languages` | Free text, one entry per line. |
-| `photo` | The person's photo, shown in the header of each of their CVs: it is stored on the person, not the CV, so all CVs of a person share it. A base64 string, optionally a data URL (`data:image/png;base64,...`); PNG, JPEG, GIF, WebP or SVG, at most 512 KB (same ceiling as a logo). `null`/omitted leaves the person's photo as it is; `""` removes it. |
+| `photo` | Not a real `CvForm` field — the API stores it on the person (`PersonForm.photo` via `PUT /api/persons/{uuid}`), shown in the header of each of their CVs, so all CVs of a person share it. `cvapi.py create`/`put` accept it as a convenience key in `form.json` anyway: they strip it out before posting the CV and apply it to the person afterwards (see `set_person_photo` in `cvapi.py`), so you can keep treating it as part of the form. A base64 string, optionally a data URL (`data:image/png;base64,...`); PNG, JPEG, GIF, WebP or SVG, at most 512 KB (same ceiling as a logo). Left out of `form.json` entirely leaves the person's photo as it is; `""` removes it. |
 
 There is no field for: date of birth (that lives on the person), e-mail (person), a "Motivation"
 section, or the work-experience overview table. Tell the user these were left out.
@@ -160,10 +160,14 @@ section, or the work-experience overview table. Tell the user these were left ou
 4. **Logos and photo.** See "Logos" below. Every experience with a logo hint gets a `logoId`. The
    photo is already in `form["photo"]` when `parse` found one — confirm it against the resume (Read
    the hinted image file) rather than trusting it blindly, same as a logo.
-5. **Create**: `cvapi.py create form.json` prints `CODE NAME | person FIRST LAST` (not JSON). A 400
+5. **Create**: `cvapi.py create form.json` prints `CODE NAME | person FIRST LAST` (not JSON), plus a
+   `photo applied to FIRST LAST` line when `form.json` had one — that's a second request against
+   `PUT /api/persons/{uuid}` under the hood, since the photo lives on the person, not the CV. A 400
    names the offending field; a 409 is a name collision.
 6. **Verify** with `cvapi.py get CODE > stored.json`: count of experiences and skills, every `logoId`
-   set, and the stored summary and descriptions equal to those in `form.json`.
+   set, and the stored summary and descriptions equal to those in `form.json`. The photo doesn't
+   come back from `get` (it's not part of the Cv response) — check it with `get-form CODE`, whose
+   `photo` is fetched from the person, instead.
 
 ## Logos
 
@@ -207,11 +211,14 @@ section, or the work-experience overview table. Tell the user these were left ou
 Pitfalls:
 - **Always send `personId`** on a PUT. Without it an admin token moves the CV to the admin's own
   person. `get-form` includes it and `put` refuses a form without it.
-- Leaving `experiences`, `skills` or a text field out of the form clears it. Leaving `photo` out
-  keeps the person's photo (it belongs to the person, shared by all their CVs); send `"photo": ""`
-  to remove it. `get-form` carries the existing `photo` forward, which is harmless.
-- To **add or replace** the person's photo from an image file (not a PDF import), set
-  `form["photo"]` to the output of `cvapi.py data-url path.png` before `put`.
+- Leaving `experiences`, `skills` or a text field out of the form clears it. `photo` is different
+  since it isn't really part of the CV (see the field table above): leaving it out of `form.json`
+  keeps the person's photo as is, and `put` only touches it when the key is present — `""` removes
+  it, a data URL replaces it. `get-form` fetches the person's current photo and fills it in, so a
+  round-tripped form is a no-op on the photo unless you change that key yourself.
+- To **add, replace or remove** the person's photo on its own — without touching the CV at all —
+  use `cvapi.py set-photo PERSON_UUID path.png` (or `set-photo PERSON_UUID` with no image to
+  remove it), rather than going through `form.json` and `put`.
 - Every save creates a revision (`GET /api/cvs/{code}/revisions`), so a bad edit can be undone with
   `POST /api/cvs/{code}/revisions/{id}/restore`.
 - Renaming a CV to a name its person already uses gives a 409.
