@@ -156,6 +156,7 @@ export function PersonSelector({
         {multiple ? multipleInput : singleInput}
       </Box>
       <Button
+        variant="outlined"
         size="small"
         onClick={() => setShowInactive((it) => !it)}
         sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
