@@ -6,6 +6,7 @@ import {
   CardContent,
   Chip,
   FormControlLabel,
+  ListSubheader,
   MenuItem,
   Stack,
   Switch,
@@ -29,6 +30,7 @@ import {
   type SkillDiff,
   type TextDiff,
 } from './cvDiff';
+import { cvLanguageLabel } from './cvText';
 
 const SAVED_AT = 'DD-MM-YYYY HH:mm';
 const CURRENT = 'current';
@@ -48,16 +50,24 @@ const storedMode = (): DiffMode => {
   }
 };
 
+/** Another CV of the person is picked by its code, apart from the versions of this one. */
+const OTHER = 'cv:';
+
 /**
- * Shows the changes between two versions of a CV from its history, field by field
- * and section by section: inline, with the removed text struck through and the added
- * text marked, or side by side, the older version left and the newer one right.
+ * Shows the changes between two versions of a CV, field by field and section by
+ * section: inline, with the removed text struck through and the added text marked, or
+ * side by side, the first version left and the second one right. A version is one from
+ * the history of this CV, or another CV of the same person, such as a general CV and
+ * the one tailored for a client.
  */
 export function CvCompare({
   current,
+  others = [],
   from: initialFrom,
 }: {
   current: Cv;
+  /** The person's other CVs, to compare this one with. */
+  others?: Cv[];
   /** The id of the earlier version to start from; the latest one by default. */
   from?: string;
 }) {
@@ -71,6 +81,7 @@ export function CvCompare({
 
   const code = current.code;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the other CVs only give the first pick
   useEffect(() => {
     if (!code) return;
     setRevisions(null);
@@ -78,7 +89,12 @@ export function CvCompare({
     CvClient.revisions(code)
       .then((list) => {
         setRevisions(list);
-        setFrom((it) => it ?? list[0]?.id ?? null);
+        setFrom(
+          (it) =>
+            it ??
+            list[0]?.id ??
+            (others[0]?.code ? OTHER + others[0].code : null),
+        );
       })
       .catch((err) =>
         setError(apiErrorMessage(err, 'The history could not be loaded')),
@@ -89,7 +105,7 @@ export function CvCompare({
   useEffect(() => {
     if (!code) return;
     for (const id of [from, to]) {
-      if (!id || id === CURRENT || loaded[id]) continue;
+      if (!id || id === CURRENT || id.startsWith(OTHER) || loaded[id]) continue;
       CvClient.revision(code, id)
         .then((cv) => setLoaded((it) => ({ ...it, [id]: cv })))
         .catch((err) =>
@@ -99,7 +115,13 @@ export function CvCompare({
   }, [code, from, to, loaded]);
 
   const version = (id: string | null) =>
-    id === CURRENT ? current : id ? loaded[id] : undefined;
+    id === CURRENT
+      ? current
+      : id?.startsWith(OTHER)
+        ? others.find((it) => OTHER + it.code === id)
+        : id
+          ? loaded[id]
+          : undefined;
   const before = version(from);
   const after = version(to);
 
@@ -118,7 +140,7 @@ export function CvCompare({
     }
   };
 
-  const options = [
+  const history = [
     {
       id: CURRENT,
       label: current.updatedAt
@@ -130,6 +152,19 @@ export function CvCompare({
       label: `Saved ${dayjs(it.savedAt).format(SAVED_AT)}`,
     })),
   ];
+  const otherOptions = others
+    .filter((it) => it.code)
+    .map((it) => ({
+      id: OTHER + it.code,
+      label: `${it.name} · ${cvLanguageLabel(it)}`,
+    }));
+  // Above each side of the comparison: which CV, and which version of it
+  const title = (id: string | null) => {
+    const own = history.find((it) => it.id === id);
+    if (own) return `${current.name} · ${own.label}`;
+    return otherOptions.find((it) => it.id === id)?.label ?? '';
+  };
+  const comparable = (revisions?.length ?? 0) > 0 || otherOptions.length > 0;
 
   const picker = (
     label: string,
@@ -142,9 +177,27 @@ export function CvCompare({
       label={label}
       value={value ?? ''}
       onChange={(event) => onChange(event.target.value)}
+      // With other CVs to pick, say which CV a version is of
+      slotProps={{
+        select: {
+          renderValue: (it) =>
+            otherOptions.length > 0
+              ? title(it as string)
+              : history.find((own) => own.id === it)?.label,
+        },
+      }}
       sx={{ minWidth: 260 }}
     >
-      {options.map((it) => (
+      {otherOptions.length > 0 && (
+        <ListSubheader>{current.name} (this CV)</ListSubheader>
+      )}
+      {history.map((it) => (
+        <MenuItem key={it.id} value={it.id}>
+          {it.label}
+        </MenuItem>
+      ))}
+      {otherOptions.length > 0 && <ListSubheader>Other CVs</ListSubheader>}
+      {otherOptions.map((it) => (
         <MenuItem key={it.id} value={it.id}>
           {it.label}
         </MenuItem>
@@ -160,13 +213,14 @@ export function CvCompare({
         </Alert>
       )}
       {revisions == null && !error && <AlignedLoader />}
-      {revisions?.length === 0 && (
+      {revisions != null && !comparable && (
         <Alert severity="info">
-          This CV has no earlier versions yet. Once it has been saved again, you
-          can compare the versions here.
+          This CV has no earlier versions yet. Once it has been saved again, or
+          once there is another CV to compare it with, you can compare them
+          here.
         </Alert>
       )}
-      {revisions != null && revisions.length > 0 && (
+      {revisions != null && comparable && (
         <>
           <Stack
             direction="row"
@@ -211,8 +265,8 @@ export function CvCompare({
               mode={mode}
               onlyChanges={onlyChanges}
               labels={{
-                before: options.find((it) => it.id === from)?.label ?? '',
-                after: options.find((it) => it.id === to)?.label ?? '',
+                before: title(from),
+                after: title(to),
               }}
             />
           )}

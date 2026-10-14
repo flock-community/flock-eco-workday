@@ -1,6 +1,6 @@
 import type { Cv } from '../../clients/CvClient';
 import type { CvExperience, CvSkill } from '../../wirespec/model';
-import { CV_LANGUAGES, periodText } from './cvText';
+import { cvLanguageLabel, periodText } from './cvText';
 
 export type DiffPart = { kind: 'same' | 'added' | 'removed'; text: string };
 
@@ -158,11 +158,6 @@ export type CvDiff = {
 
 const norm = (value: string | null | undefined) =>
   (value ?? '').trim().toLowerCase();
-
-const languageLabel = (cv: Cv) =>
-  CV_LANGUAGES.find((it) => it.value === cv.language)?.label ??
-  cv.language ??
-  '';
 
 const period = (it: CvExperience | undefined, cv: Cv) =>
   it ? periodText(it.from, it.to, cv.language ?? 'NL') : '';
@@ -323,7 +318,7 @@ export function diffCv(before: Cv, after: Cv): CvDiff {
     { label: 'Name of this version', diff: diffText(before.name, after.name) },
     {
       label: 'Language',
-      diff: diffText(languageLabel(before), languageLabel(after)),
+      diff: diffText(cvLanguageLabel(before), cvLanguageLabel(after)),
     },
     { label: 'Place', diff: diffText(before.place, after.place) },
     { label: 'Phone', diff: diffText(before.phone, after.phone) },

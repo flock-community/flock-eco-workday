@@ -54,6 +54,12 @@ export const CV_LANGUAGES: { value: CvLanguage; label: string }[] = [
   { value: 'EN', label: 'English' },
 ];
 
+/** `Dutch`, `English`: the language a CV is written in. */
+export const cvLanguageLabel = (cv: { language?: CvLanguage | null }): string =>
+  CV_LANGUAGES.find((it) => it.value === cv.language)?.label ??
+  cv.language ??
+  '';
+
 /**
  * A CV page of a person, with more [params] such as the CV to show (`cv`). The
  * current user's own person ([me]) is left out: that is the default, and only admins

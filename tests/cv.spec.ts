@@ -183,6 +183,12 @@ test.describe('CV', () => {
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(versionPicker(page)).toHaveText(/Backend · Dutch/);
 
+    // Without a history of its own, the copy is compared with the other CV
+    await page.getByRole('button', { name: 'Compare versions' }).click();
+    await expect(compare.locator('del', { hasText: 'Algemeen' })).toBeVisible();
+    await expect(compare.locator('ins', { hasText: 'Backend' })).toBeVisible();
+    await page.getByRole('button', { name: 'Close comparison' }).click();
+
     // Both versions are there; switch between them
     await selectVersion(page, 'Algemeen');
     await expect(versionPicker(page)).toHaveText(/Algemeen · Dutch/);

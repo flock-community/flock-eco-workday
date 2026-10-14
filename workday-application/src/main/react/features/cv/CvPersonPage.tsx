@@ -28,7 +28,7 @@ import PersonLayout from '../../components/layouts/PersonLayout';
 import { useLoginStatus } from '../../hooks/StatusHook';
 import { CvCompare } from './CvCompare';
 import { CvDocument } from './CvDocument';
-import { CV_LANGUAGES, cvUrl } from './cvText';
+import { cvLanguageLabel, cvUrl } from './cvText';
 
 const CV_PRINT_ROOT = 'cv-print-root';
 const SAVED_AT = 'DD-MM-YYYY HH:mm';
@@ -77,9 +77,6 @@ export function CvPersonPage() {
     </PersonLayout>
   );
 }
-
-const languageLabel = (cv: Cv) =>
-  CV_LANGUAGES.find((it) => it.value === cv.language)?.label ?? cv.language;
 
 function PersonCv({ person }: { person: Person }) {
   const location = useLocation();
@@ -257,7 +254,7 @@ function PersonCv({ person }: { person: Person }) {
           >
             {cvs.map((it) => (
               <MenuItem key={it.code} value={it.code}>
-                {it.name} · {languageLabel(it)}
+                {it.name} · {cvLanguageLabel(it)}
               </MenuItem>
             ))}
           </TextField>
@@ -384,6 +381,7 @@ function PersonCv({ person }: { person: Person }) {
           // A new start point starts the comparison over
           key={compare.from ?? ''}
           current={current}
+          others={cvs?.filter((it) => it.code !== current.code)}
           from={compare.from}
         />
       ) : (
