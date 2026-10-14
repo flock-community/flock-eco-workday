@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import {
   clientText,
   cvUrl,
+  groupSkills,
   linkify,
   longPeriodText,
   markdownLineBreaks,
@@ -110,5 +111,31 @@ describe('markdownLineBreaks', () => {
     expect(markdownLineBreaks('een\r\ntwee\n\n- a\n- b')).toBe(
       'een  \ntwee\n\n- a  \n- b',
     );
+  });
+});
+
+describe('groupSkills', () => {
+  it('groups by category with the best rated skills first', () => {
+    expect(
+      groupSkills([
+        { category: 'Programming', name: 'Java', level: 3 },
+        { category: 'Tools', name: 'Git', level: 4 },
+        { category: 'Programming', name: 'Kotlin', level: 5 },
+        { category: 'Programming', name: 'Go', level: 3 },
+      ]),
+    ).toEqual([
+      {
+        category: 'Programming',
+        skills: [
+          { category: 'Programming', name: 'Kotlin', level: 5 },
+          { category: 'Programming', name: 'Java', level: 3 },
+          { category: 'Programming', name: 'Go', level: 3 },
+        ],
+      },
+      {
+        category: 'Tools',
+        skills: [{ category: 'Tools', name: 'Git', level: 4 }],
+      },
+    ]);
   });
 });

@@ -160,16 +160,22 @@ export const clientText = (
 
 export type SkillGroup<T> = { category: string | undefined; skills: T[] };
 
-/** Groups skills by category, in the order the categories first appear. */
-export function groupSkills<T extends { category?: string | null }>(
-  skills: T[],
-): SkillGroup<T>[] {
+/**
+ * Groups skills by category, in the order the categories first appear, with the best
+ * rated skills first in each group.
+ */
+export function groupSkills<
+  T extends { category?: string | null; level?: number | null },
+>(skills: T[]): SkillGroup<T>[] {
   const groups: SkillGroup<T>[] = [];
   for (const skill of skills) {
     const category = skill.category?.trim() || undefined;
     const group = groups.find((it) => it.category === category);
     if (group) group.skills.push(skill);
     else groups.push({ category, skills: [skill] });
+  }
+  for (const group of groups) {
+    group.skills.sort((a, b) => (b.level ?? 0) - (a.level ?? 0));
   }
   return groups;
 }
