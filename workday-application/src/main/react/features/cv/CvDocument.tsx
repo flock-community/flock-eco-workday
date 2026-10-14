@@ -422,9 +422,11 @@ export function CvDocument({ cv }: CvDocumentProps) {
                         component="li"
                         key={skill.name}
                         sx={{
+                          // Room for long names, which push their stars aside
                           '& > span:first-of-type': {
                             display: 'inline-block',
-                            width: '1.5in',
+                            minWidth: '2in',
+                            pr: '18pt',
                           },
                         }}
                       >
