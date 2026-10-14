@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import EditIcon from '@mui/icons-material/Edit';
 import HistoryIcon from '@mui/icons-material/History';
 import PrintIcon from '@mui/icons-material/Print';
@@ -25,6 +26,7 @@ import type { Person } from '../../clients/PersonClient';
 import { apiErrorMessage } from '../../clients/util/ApiErrorMessage';
 import PersonLayout from '../../components/layouts/PersonLayout';
 import { useLoginStatus } from '../../hooks/StatusHook';
+import { CvCompare } from './CvCompare';
 import { CvDocument } from './CvDocument';
 import { CV_LANGUAGES, cvUrl } from './cvText';
 
@@ -91,6 +93,8 @@ function PersonCv({ person }: { person: Person }) {
   const [revision, setRevision] = useState<Cv | null>(null);
   const [newMenu, setNewMenu] = useState<HTMLElement | null>(null);
   const [historyMenu, setHistoryMenu] = useState<HTMLElement | null>(null);
+  // Comparing two versions; `from` is the earlier version to start from, if any
+  const [compare, setCompare] = useState<{ from?: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -131,6 +135,7 @@ function PersonCv({ person }: { person: Person }) {
   useEffect(() => {
     setRevisions(null);
     setRevision(null);
+    setCompare(null);
   }, [current?.code]);
 
   // The document title becomes the file name when the CV is saved as PDF
@@ -161,6 +166,7 @@ function PersonCv({ person }: { person: Person }) {
 
   const showRevision = (it: CvRevision) => {
     setHistoryMenu(null);
+    setCompare(null);
     if (!current?.code) return;
     CvClient.revision(current.code, it.id)
       .then((cv) => setRevision({ ...cv, code: it.id }))
@@ -262,6 +268,16 @@ function PersonCv({ person }: { person: Person }) {
           >
             History
           </Button>
+          <Button
+            startIcon={<CompareArrowsIcon />}
+            onClick={() => {
+              setRevision(null);
+              setCompare(compare ? null : {});
+            }}
+            aria-pressed={Boolean(compare)}
+          >
+            {compare ? 'Close comparison' : 'Compare versions'}
+          </Button>
           <Menu
             anchorEl={historyMenu}
             open={Boolean(historyMenu)}
@@ -272,6 +288,7 @@ function PersonCv({ person }: { person: Person }) {
               onClick={() => {
                 setHistoryMenu(null);
                 setRevision(null);
+                setCompare(null);
               }}
             >
               <ListItemText
@@ -300,7 +317,7 @@ function PersonCv({ person }: { person: Person }) {
           </Menu>
           <Box sx={{ flexGrow: 1 }} />
           {newActions}
-          {canWrite && !revision && (
+          {canWrite && !revision && !compare && (
             <Button
               component={RouterLink}
               to={`/cvs/${current.code}/edit`}
@@ -340,6 +357,16 @@ function PersonCv({ person }: { person: Person }) {
               <Button
                 color="inherit"
                 size="small"
+                onClick={() => {
+                  setCompare({ from: revision.code ?? undefined });
+                  setRevision(null);
+                }}
+              >
+                Compare with current
+              </Button>
+              <Button
+                color="inherit"
+                size="small"
                 onClick={() => setRevision(null)}
               >
                 Back to current
@@ -352,7 +379,16 @@ function PersonCv({ person }: { person: Person }) {
         </Alert>
       )}
 
-      {shown && <CvDocument cv={shown} />}
+      {compare && current ? (
+        <CvCompare
+          // A new start point starts the comparison over
+          key={compare.from ?? ''}
+          current={current}
+          from={compare.from}
+        />
+      ) : (
+        shown && <CvDocument cv={shown} />
+      )}
 
       {cvs != null && !current && (
         <Card data-testid="cv-empty">

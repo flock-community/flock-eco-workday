@@ -143,6 +143,17 @@ test.describe('CV', () => {
     await expect(cv.getByRole('table')).toContainText('03-2021 - 12-2023');
     await expect(cv.getByRole('table')).toContainText('34');
 
+    // Compare the version before the edit with the current one
+    await page.getByRole('button', { name: 'Compare versions' }).click();
+    const compare = page.getByTestId('cv-compare');
+    await expect(compare.locator('del', { hasText: 'Dutch' })).toBeVisible();
+    await expect(compare.locator('ins', { hasText: 'English' })).toBeVisible();
+    await expect(compare.locator('ins', { hasText: '12-2023' })).toBeVisible();
+    await page.getByRole('button', { name: 'Side by side' }).click();
+    await expect(compare.getByText('Dutch')).toBeVisible();
+    await page.getByRole('button', { name: 'Close comparison' }).click();
+    await expect(compare).toHaveCount(0);
+
     // The history has the version before the edit
     await page.getByRole('button', { name: 'History' }).click();
     await expect(page.getByRole('menuitem')).toHaveCount(2);
