@@ -237,6 +237,41 @@ class CvControllerTest(
     }
 
     @Test
+    fun `an earlier version still opens after a logo on it was deleted`() {
+        val (worker) = aWorker()
+        val logo = logoService.create("NS ${UUID.randomUUID()}", byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 0xFF.toByte(), 0))
+        val withLogo = listOf(ingExperience + ("logoId" to logo.id.toString()))
+        val code =
+            mvc
+                .perform(post(baseUrl).asUser(worker).json(cvJson(experiences = withLogo)))
+                .asyncDispatch()
+                .andExpect(status().isOk)
+                .andReturn()
+                .response.contentAsString
+                .let { mapper.readTree(it)["code"].asText() }
+        mvc
+            .perform(put("$baseUrl/$code").asUser(worker).json(cvJson(summary = "Edited.", experiences = withLogo)))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+        logoService.delete(logo.id)
+
+        val revision =
+            mvc
+                .perform(get("$baseUrl/$code/revisions").asUser(worker).accept(APPLICATION_JSON))
+                .asyncDispatch()
+                .andExpect(jsonPath("$.length()").value(1))
+                .andReturn()
+                .response.contentAsString
+                .let { mapper.readTree(it)[0]["id"].asText() }
+        mvc
+            .perform(get("$baseUrl/$code/revisions/$revision").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.summary").value("Engineer at heart."))
+            .andExpect(jsonPath("$.experiences[0].client").value("ING"))
+    }
+
+    @Test
     fun `an assignment shows a logo from the shared collection`() {
         val (worker) = aWorker()
         val logo = logoService.create("ING ${UUID.randomUUID()}", byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 0xFF.toByte(), 0))
