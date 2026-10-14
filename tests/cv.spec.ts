@@ -222,12 +222,14 @@ test.describe('CV', () => {
         name: 'https://www.flock.community/cases/ing-front-end-team',
       }),
     ).toBeVisible();
+    // The skills are listed per category, each under a heading of its own
+    const programming = cv
+      .locator('section')
+      .filter({ has: page.getByRole('heading', { name: 'Programming' }) });
     await expect(
-      cv.getByRole('heading', { name: 'Vaardigheden' }),
-    ).toBeVisible();
-    await expect(
-      cv
-        .getByRole('row', { name: /Kotlin/ })
+      programming
+        .getByRole('listitem')
+        .filter({ hasText: 'Kotlin' })
         .getByRole('img', { name: '5 of 5' }),
     ).toBeVisible();
     await expect(cv.getByRole('heading', { name: 'Opleiding' })).toBeVisible();
