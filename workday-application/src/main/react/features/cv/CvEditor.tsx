@@ -25,7 +25,7 @@ import { apiErrorMessage } from '../../clients/util/ApiErrorMessage';
 import { MonthPickerField } from '../../components/fields/MonthPickerField';
 import { usePerson } from '../../hooks/PersonHook';
 import { useLoginStatus } from '../../hooks/StatusHook';
-import { CV_LANGUAGES, cvUrl } from './cvText';
+import { CV_LANGUAGES, cvLink, cvUrl } from './cvText';
 import { LogoField } from './LogoField';
 import {
   CV_FORM_SCHEMA,
@@ -111,7 +111,8 @@ export function CvEditor() {
   const personName = cv?.person?.fullName ?? person?.fullName ?? '';
   const personId = cv?.person?.uuid ?? person?.uuid;
   const me = status?.personId;
-  const back = cvUrl(personId, me, { cv: cv?.code ?? copy?.code });
+  const backTo = cv?.code ?? copy?.code;
+  const back = backTo ? cvLink(backTo) : cvUrl(personId, me);
 
   const handleSubmit = (
     values: CvFormValues,
@@ -122,7 +123,9 @@ export function CvEditor() {
     const request = code ? CvClient.put(code, body) : CvClient.post(body);
     request
       .then((saved) =>
-        history.push(cvUrl(saved.person?.uuid, me, { cv: saved.code })),
+        history.push(
+          saved.code ? cvLink(saved.code) : cvUrl(saved.person?.uuid, me),
+        ),
       )
       .catch((err) => {
         setError(apiErrorMessage(err, 'The CV could not be saved'));

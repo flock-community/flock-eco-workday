@@ -80,6 +80,34 @@ export function cvUrl(
   return query ? `${page}?${query}` : page;
 }
 
+/** What a link to a CV opens: an earlier version of it, or a comparison. */
+export type CvView = {
+  /** The id of an earlier version to show. */
+  version?: string | null;
+  /** Compare versions, optionally starting `from` one and going `to` another. */
+  compare?: boolean;
+  from?: string | null;
+  to?: string | null;
+};
+
+/**
+ * The link to a CV: `/cvs/{code}`, which opens it for whoever may read it, whoever's CV
+ * it is. An earlier version is `?version={id}`, a comparison `/cvs/{code}/compare`.
+ */
+export function cvLink(code: string, view: CvView = {}): string {
+  const base = `/cvs/${encodeURIComponent(code)}`;
+  const search = new URLSearchParams();
+  if (view.compare) {
+    if (view.from) search.set('from', view.from);
+    if (view.to) search.set('to', view.to);
+  } else if (view.version) {
+    search.set('version', view.version);
+  }
+  const query = search.toString();
+  const page = view.compare ? `${base}/compare` : base;
+  return query ? `${page}?${query}` : page;
+}
+
 /** A month on the wire is `yyyy-MM`; on a CV it reads `MM-yyyy`. */
 export const YEAR_MONTH = 'YYYY-MM';
 export const CV_MONTH = 'MM-YYYY';

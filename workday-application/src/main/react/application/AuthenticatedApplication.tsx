@@ -1,6 +1,6 @@
 import { UserFeature } from '@workday-user';
 import { useEffect, useState } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 import AssignmentPage from '../features/assignments/AssignmentPage';
 import BudgetPage from '../features/budget/BudgetPage';
 import { ClientFeature } from '../features/client/ClientFeature';
@@ -27,9 +27,19 @@ import WorkDayPage from '../features/workday/WorkDayPage';
 import { ApplicationDrawer } from './ApplicationDrawer';
 import { ApplicationLayout } from './ApplicationLayout';
 import { ApplicationSidebar } from './ApplicationSidebar';
+import { takeReturnTo } from './returnTo';
 
 export const AuthenticatedApplication = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
+  const history = useHistory();
+
+  // Logged in after following a link: go where it pointed
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only right after logging in
+  useEffect(() => {
+    const returnTo = takeReturnTo();
+    if (returnTo && history.location.pathname === '/')
+      history.replace(returnTo);
+  }, []);
 
   useEffect(() => {
     const grid = document.getElementById('index');

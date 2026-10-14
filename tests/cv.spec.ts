@@ -40,7 +40,8 @@ async function deleteShownCv(page: Page) {
     .getByRole('dialog')
     .getByRole('button', { name: 'Confirm' })
     .click();
-  await expect(page).toHaveURL(/\/cvs(\?|$)/);
+  // Back on the CV page, which then links to the CV it shows, if any
+  await expect(page).toHaveURL(/\/cvs(\/[^/?]+)?(\?|$)/);
   await page.waitForLoadState('networkidle');
 }
 
@@ -258,6 +259,40 @@ test.describe('CV', () => {
     await expect(
       page.getByRole('button', { name: 'Print or save as PDF' }),
     ).toBeEnabled();
+  });
+
+  test('a link to a CV opens that CV, also after logging in', async ({
+    page,
+    context,
+  }) => {
+    await Given_I_am_logged_in_as_user(page, ADMIN_USERNAME);
+    await goToCv(page);
+    await selectPerson(page, 'Tommy Dog');
+    await expect(versionPicker(page)).toHaveText(/Algemeen 2025 · Dutch/);
+    // The address links to the CV shown
+    await expect(page).toHaveURL(/\/cvs\/[^/?]+$/);
+    const link = new URL(page.url()).pathname;
+
+    // Comparing it has a link of its own
+    await page.getByRole('button', { name: 'Compare versions' }).click();
+    await expect(page).toHaveURL(new RegExp(`${link}/compare`));
+    await page.goBack();
+    await expect(page).toHaveURL(new RegExp(`${link}$`));
+
+    // Logged out, the link leads to the login page and then to the CV
+    await context.clearCookies();
+    await page.goto(link);
+    await page.getByLabel('Username').fill(`${ADMIN_USERNAME}@sesam.straat`);
+    await page.getByLabel('Password').fill(ADMIN_USERNAME);
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await expect(page).toHaveURL(new RegExp(`${link}$`));
+    // Somebody else's CV: the admin is switched to that person
+    await expect(versionPicker(page)).toHaveText(/Algemeen 2025 · Dutch/);
+    await expect(
+      page
+        .getByRole('article')
+        .getByRole('heading', { name: 'Curriculum Vitae - Tommy Dog' }),
+    ).toBeVisible();
   });
 });
 

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
+import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -18,6 +20,11 @@ import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache
+import org.springframework.security.web.util.matcher.AndRequestMatcher
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher
 
 @Configuration
 @EnableWebSecurity
@@ -57,6 +64,11 @@ class WebSecurityConfig {
             // API-key requests still redirect as before, rather than the resource server's 401.
             http.exceptionHandling { it.authenticationEntryPoint(LoginUrlAuthenticationEntryPoint("/")) }
         }
+
+        // Remember the page someone opened before logging in, such as a link to a CV, and
+        // go there once they are logged in; the API and other non-page requests are not
+        // remembered, so a background call never becomes the page to land on.
+        http.requestCache { it.requestCache(pageRequestCache()) }
 
         http
             .cors(withDefaults())
@@ -102,7 +114,7 @@ class WebSecurityConfig {
         when (loginType.uppercase()) {
             "GOOGLE" ->
                 userSecurityService.googleLogin(http, {
-                    defaultSuccessUrl("/", true)
+                    defaultSuccessUrl("/")
                 }) {
                     logout { logout ->
                         logout.logoutSuccessUrl("/")
@@ -114,19 +126,34 @@ class WebSecurityConfig {
                 userSecurityService.databaseLogin(http) {
                     loginPage("/")
                     loginProcessingUrl("/login")
-                    defaultSuccessUrl("/", true)
+                    defaultSuccessUrl("/")
                 }
 
             else ->
                 userSecurityService.testLogin(http) {
                     loginPage("/")
                     loginProcessingUrl("/login")
-                    defaultSuccessUrl("/", true)
+                    defaultSuccessUrl("/")
                 }
         }
 
         return http.build()
     }
+
+    private fun pageRequestCache() =
+        HttpSessionRequestCache().apply {
+            setRequestMatcher(
+                AndRequestMatcher(
+                    AntPathRequestMatcher("/**", HttpMethod.GET.name()),
+                    NegatedRequestMatcher(AntPathRequestMatcher("/api/**")),
+                    MediaTypeRequestMatcher(MediaType.TEXT_HTML).apply {
+                        setIgnoredMediaTypes(setOf(MediaType.ALL))
+                    },
+                ),
+            )
+            // Keep the link as it was, without the `continue` parameter
+            setMatchingRequestParameterName(null)
+        }
 
     companion object {
         private val SWAGGER_WHITELIST =
