@@ -18,7 +18,14 @@ import {
 } from '@mui/material';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import dayjs from 'dayjs';
-import { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
+import {
+  Fragment,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { type Cv, CvClient, type CvRevision } from '../../clients/CvClient';
 import { apiErrorMessage } from '../../clients/util/ApiErrorMessage';
 import {
@@ -101,16 +108,22 @@ export function CvCompare({
       );
   }, [code]);
 
+  // The versions being loaded, so each one is requested only once
+  const loading = useRef(new Set<string>());
+
   // Load the picked versions that are not loaded yet
   useEffect(() => {
     if (!code) return;
     for (const id of [from, to]) {
-      if (!id || id === CURRENT || id.startsWith(OTHER) || loaded[id]) continue;
+      if (!id || id === CURRENT || id.startsWith(OTHER)) continue;
+      if (loaded[id] || loading.current.has(id)) continue;
+      loading.current.add(id);
       CvClient.revision(code, id)
         .then((cv) => setLoaded((it) => ({ ...it, [id]: cv })))
         .catch((err) =>
           setError(apiErrorMessage(err, 'The version could not be loaded')),
-        );
+        )
+        .finally(() => loading.current.delete(id));
     }
   }, [code, from, to, loaded]);
 

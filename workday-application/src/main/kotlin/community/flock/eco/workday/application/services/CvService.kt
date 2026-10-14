@@ -12,6 +12,7 @@ import community.flock.eco.workday.application.model.CvSnapshot
 import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.repository.CvRepository
 import community.flock.eco.workday.application.repository.CvRevisionRepository
+import community.flock.eco.workday.application.repository.CvRevisionSummary
 import community.flock.eco.workday.application.repository.PersonRepository
 import community.flock.eco.workday.core.utils.toNullable
 import jakarta.transaction.Transactional
@@ -77,21 +78,24 @@ class CvService(
             updated.save()
         }
 
-    /** The earlier versions of the CV with [code], latest first. */
-    fun findRevisions(code: String): List<CvRevision> = cvRevisionRepository.findAllByCvCodeOrderBySavedAtDesc(code)
+    /** When the earlier versions of the CV with [code] were saved, latest first. */
+    fun findRevisions(code: String): List<CvRevisionSummary> = cvRevisionRepository.findAllByCvCodeOrderBySavedAtDesc(code)
 
-    /** An earlier version of the CV with [code], as the CV it was then (not stored). */
+    /**
+     * An earlier version of [cv], as the CV it was then (not stored). It is built on the
+     * [cv] already loaded, so its person (and photo) is not loaded once more.
+     */
     fun findRevision(
-        code: String,
+        cv: Cv,
         id: UUID,
     ): Cv? =
         cvRevisionRepository
-            .findByIdAndCvCode(id, code)
+            .findContentByIdAndCvCode(id, cv.code)
             ?.let { revision ->
-                revision
-                    .snapshot()
-                    .toForm(revision.cv.person.uuid)
-                    .internalize(revision.cv, check = false)
+                mapper
+                    .readValue(revision.content, CvSnapshot::class.java)
+                    .toForm(cv.person.uuid)
+                    .internalize(cv, check = false, person = cv.person)
                     .copy(updatedAt = revision.savedAt)
             }
 
@@ -116,8 +120,8 @@ class CvService(
     private fun CvForm.internalize(
         existing: Cv? = null,
         check: Boolean = true,
+        person: Person = findPerson(personId),
     ): Cv {
-        val person = findPerson(personId)
         val name = name.trim()
 
         if (check) {
@@ -145,7 +149,7 @@ class CvService(
             summary = summary.cleaned("summary", Cv.CV_TEXT_LENGTH),
             experiences =
                 experiences
-                    .mapIndexed { index, it -> it.internalize("experiences[$index]") }
+                    .mapIndexed { index, it -> it.internalize("experiences[$index]", check) }
                     .sortedWith(NEWEST_FIRST),
             skills = skills.mapIndexed { index, it -> it.internalize("skills[$index]") },
             education = education.cleaned("education", Cv.CV_SECTION_LENGTH),
@@ -155,7 +159,11 @@ class CvService(
         )
     }
 
-    private fun CvExperienceForm.internalize(field: String): CvExperience {
+    /** With [check] off (an earlier version), a logo deleted since is kept rather than refused. */
+    private fun CvExperienceForm.internalize(
+        field: String,
+        check: Boolean,
+    ): CvExperience {
         if (to != null && to.isBefore(from)) {
             throw CvInvalidInputException("$field.to may not be before $field.from")
         }
@@ -176,7 +184,14 @@ class CvService(
             employer = employer.cleaned("$field.employer", MAX_LINE_LENGTH),
             technologies = technologies,
             description = description.cleaned("$field.description", Cv.CV_TEXT_LENGTH),
-            logoId = logoId?.also { if (!logoService.exists(it)) throw CvInvalidInputException("$field.logoId is not a known logo") },
+            logoId =
+                logoId?.also {
+                    if (check &&
+                        !logoService.exists(it)
+                    ) {
+                        throw CvInvalidInputException("$field.logoId is not a known logo")
+                    }
+                },
         )
     }
 

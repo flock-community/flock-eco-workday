@@ -16,7 +16,7 @@ import community.flock.eco.workday.application.forms.CvSkillForm
 import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.model.CvExperience
 import community.flock.eco.workday.application.model.CvLanguage
-import community.flock.eco.workday.application.model.CvRevision
+import community.flock.eco.workday.application.repository.CvRevisionSummary
 import community.flock.eco.workday.application.services.CvAlreadyExistsException
 import community.flock.eco.workday.application.services.CvInvalidInputException
 import community.flock.eco.workday.application.services.CvService
@@ -131,7 +131,7 @@ class CvController(
             ?.let { cv ->
                 request.path.id
                     .toUuidOrNull()
-                    ?.let { cvService.findRevision(cv.code, it) }
+                    ?.let { cvService.findRevision(cv, it) }
             }?.let { GetCvRevision.Response200(it.externalize()) }
             ?: GetCvRevision.Response404(Error("Version not found"))
 
@@ -314,7 +314,7 @@ class CvController(
 
     private fun Authentication.isAdmin(): Boolean = has(CvAuthority.ADMIN)
 
-    private fun CvRevision.externalize() = CvRevisionApi(id = id.toString(), savedAt = savedAt.toString())
+    private fun CvRevisionSummary.externalize() = CvRevisionApi(id = id.toString(), savedAt = savedAt.toString())
 
     private fun String.toUuidOrNull(): UUID? = runCatching { UUID.fromString(trim()) }.getOrNull()
 
