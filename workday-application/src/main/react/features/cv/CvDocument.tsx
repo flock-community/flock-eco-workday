@@ -199,8 +199,8 @@ export function CvDocument({ cv }: CvDocumentProps) {
                   justifyContent: 'space-between',
                   gap: 2,
                   borderBottom: `1px solid ${rule}`,
-                  pb: '10pt',
-                  mb: '18pt',
+                  pb: '6pt',
+                  mb: '14pt',
                 }}
               >
                 <Box
@@ -216,9 +216,9 @@ export function CvDocument({ cv }: CvDocumentProps) {
                   {labels.title} - {name}
                 </Box>
                 <FlockDisc
-                  width="54pt"
-                  height="54pt"
-                  style={{ flexShrink: 0, marginBottom: '8pt' }}
+                  width="36pt"
+                  height="36pt"
+                  style={{ flexShrink: 0 }}
                 />
               </Box>
             </th>
