@@ -340,11 +340,20 @@ export function CvDocument({ cv }: CvDocumentProps) {
                   (it) =>
                     it.description || it.technologies?.length || logoOf(it),
                 )
-                .map((it) => (
+                .map((it, index) => (
                   <Box
                     component="section"
                     key={`${it.from}-${it.to}-${it.client}-${it.role}`}
-                    sx={{ clear: 'both', mb: '13.5pt' }}
+                    sx={{
+                      clear: 'both',
+                      mb: '13.5pt',
+                      // The grey rule of the header between assignments, after a blank line
+                      ...(index > 0 && {
+                        mt: '27pt',
+                        pt: '13.5pt',
+                        borderTop: `1px solid ${rule}`,
+                      }),
+                    }}
                   >
                     <Box
                       sx={{
