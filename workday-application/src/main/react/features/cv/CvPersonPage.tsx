@@ -40,7 +40,13 @@ const printStyles = (
   <GlobalStyles
     styles={{
       '@media print': {
-        body: { background: 'none !important' },
+        // The CV prints on white paper, also in dark mode: the dark colour scheme
+        // would otherwise paint the page dark when background graphics are printed
+        ':root': {
+          colorScheme: 'only light !important',
+          background: '#ffffff !important',
+        },
+        body: { background: '#ffffff !important' },
         [`#index > :not(.${CV_PRINT_ROOT})`]: { display: 'none !important' },
         [`#index.content-grid, .${CV_PRINT_ROOT}.content-grid`]: {
           display: 'block !important',
