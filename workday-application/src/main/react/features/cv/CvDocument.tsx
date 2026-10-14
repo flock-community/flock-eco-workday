@@ -216,8 +216,8 @@ export function CvDocument({ cv }: CvDocumentProps) {
                   {labels.title} - {name}
                 </Box>
                 <FlockDisc
-                  width="36pt"
-                  height="36pt"
+                  width="44pt"
+                  height="44pt"
                   style={{ flexShrink: 0 }}
                 />
               </Box>
