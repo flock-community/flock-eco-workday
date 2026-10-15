@@ -31,7 +31,10 @@ import {
   ApiKeyClient,
   type GeneratedKey,
 } from '../../clients/ApiKeyClient';
+import { type Person, PersonClient } from '../../clients/PersonClient';
+import { PersonWidget } from '../../components/person-widget/PersonWidget';
 import { useUserMe } from '../../hooks/UserMeHook';
+import { PersonDialog } from '../person/PersonDialog';
 
 export function ProfileFeature() {
   const [user] = useUserMe();
@@ -42,10 +45,21 @@ export function ProfileFeature() {
   const [newKey, setNewKey] = useState<GeneratedKey | null>(null);
   const [revokeKey, setRevokeKey] = useState<ApiKeyAccount | null>(null);
   const [copied, setCopied] = useState(false);
+  // Everybody may edit their own personal details, whatever rights they have on persons
+  const [person, setPerson] = useState<Person | null>(null);
+  const [personOpen, setPersonOpen] = useState(false);
 
   useEffect(() => {
     ApiKeyClient.fetchMyKeys().then(setKeys);
   }, [refresh]);
+
+  useEffect(() => {
+    if (!personOpen) {
+      PersonClient.me()
+        .then(setPerson)
+        .catch(() => setPerson(null));
+    }
+  }, [personOpen]);
 
   const handleGenerate = () => {
     ApiKeyClient.generateKey(label).then((key) => {
@@ -102,6 +116,13 @@ export function ProfileFeature() {
           </Table>
         </CardContent>
       </Card>
+
+      {person && (
+        <PersonWidget
+          person={person}
+          handleEditDialog={() => setPersonOpen(true)}
+        />
+      )}
 
       <Card>
         <CardHeader
@@ -170,6 +191,15 @@ export function ProfileFeature() {
           </Box>
         </CardContent>
       </Card>
+
+      {person && (
+        <PersonDialog
+          open={personOpen}
+          onClose={() => setPersonOpen(false)}
+          item={person}
+          personalOnly
+        />
+      )}
 
       {/* Generate Key Dialog */}
       <Dialog

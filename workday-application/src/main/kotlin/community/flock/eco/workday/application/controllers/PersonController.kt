@@ -7,8 +7,6 @@ import community.flock.eco.workday.api.endpoint.GetPersonMe
 import community.flock.eco.workday.api.endpoint.GetPersonSpecialDates
 import community.flock.eco.workday.api.endpoint.PostPerson
 import community.flock.eco.workday.api.endpoint.PutPerson
-import community.flock.eco.workday.api.endpoint.PutPersonPhoto
-import community.flock.eco.workday.application.authorities.CvAuthority
 import community.flock.eco.workday.application.authorities.PersonAuthority
 import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.forms.PhotoChange
@@ -16,7 +14,6 @@ import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.PersonEvent
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.decodeImage
-import community.flock.eco.workday.application.services.isUser
 import community.flock.eco.workday.application.services.photoDataUrl
 import community.flock.eco.workday.domain.person.Address
 import community.flock.eco.workday.user.model.User
@@ -51,7 +48,6 @@ class PersonController(
     GetPersonSpecialDates.Handler,
     PostPerson.Handler,
     PutPerson.Handler,
-    PutPersonPhoto.Handler,
     DeletePerson.Handler {
     @PreAuthorize("isAuthenticated()")
     override suspend fun getPersonMe(request: GetPersonMe.Request): GetPersonMe.Response<*> {
@@ -80,9 +76,10 @@ class PersonController(
         )
     }
 
-    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
+    /** Person readers see their own person, admins anybody's; everybody may read their own. */
+    @PreAuthorize("hasAuthority('PersonAuthority.READ') or @personSecurity.isOwnPerson(authentication, #request.path.uuid)")
     override suspend fun getPersonByUuid(request: GetPersonByUuid.Request): GetPersonByUuid.Response<*> {
-        val user = requireAuthority(PersonAuthority.READ)
+        val user = currentUser() ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         val uuid = UUID.fromString(request.path.uuid)
         val person =
             when {
@@ -110,41 +107,28 @@ class PersonController(
         return PostPerson.Response200(created.externalize())
     }
 
-    @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
+    /**
+     * Person writers save the whole form. Everybody may also edit their own personal details;
+     * without [PersonAuthority.WRITE] the fields only an admin sets are kept as they are.
+     */
+    @PreAuthorize("hasAuthority('PersonAuthority.WRITE') or @personSecurity.isOwnPerson(authentication, #request.path.uuid)")
     override suspend fun putPerson(request: PutPerson.Request): PutPerson.Response<*> {
-        val user = requireAuthority(PersonAuthority.WRITE)
+        val user = currentUser() ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         val form = request.body.internalize()
-        val userCode = if (user.isAdmin()) form.userCode else user.code
         val uuid = UUID.fromString(request.path.uuid)
+        val allowed =
+            when {
+                user.isAdmin() -> form
+                user.authorities.contains(PersonAuthority.WRITE.toName()) -> form.copy(userCode = user.code)
+                else -> service.findByUuid(uuid)?.let { form.personalDetailsOf(it) }
+            }
         val updated =
-            service.update(uuid, form.copy(userCode = userCode))
+            allowed?.let { service.update(uuid, it) }
                 ?: throw ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Cannot perform PUT on given item. PersonUui cannot be found. Use POST Method",
                 )
         return PutPerson.Response200(updated.externalize())
-    }
-
-    /**
-     * Everybody may change their own photo, which only shows on their CVs, without the right
-     * to edit the rest of their person; person and CV admins may change anybody's.
-     */
-    @PreAuthorize("isAuthenticated()")
-    override suspend fun putPersonPhoto(request: PutPersonPhoto.Request): PutPersonPhoto.Response<*> {
-        val user = currentUser() ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
-        val uuid = UUID.fromString(request.path.uuid)
-        val person =
-            service.findByUuid(uuid)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Item found with this PersonUui")
-        val mayChange =
-            person.isUser(user.code) ||
-                user.authorities.contains(PersonAuthority.ADMIN.toName()) ||
-                user.authorities.contains(CvAuthority.ADMIN.toName())
-        if (!mayChange) throw ResponseStatusException(HttpStatus.FORBIDDEN)
-        val updated =
-            service.updatePhoto(uuid, request.body.photo.toPhotoChange())
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Item found with this PersonUui")
-        return PutPersonPhoto.Response200(updated.externalize())
     }
 
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")
@@ -335,6 +319,23 @@ class PersonController(
                 Address.normalizePostalCode(postalCode)
                     ?: throw badRequest("Postal code must be a Dutch postal code such as 1234 AB"),
             city = city,
+        )
+    }
+
+    /**
+     * Only the personal details of this form, the rest kept as [person] has it: who someone is
+     * and works as (number, position, join date, active, login user, Drive folder) is up to an admin.
+     */
+    private fun PersonForm.personalDetailsOf(person: Person): PersonForm {
+        // person columns lack NOT NULL; JPA can hydrate null into this non-null property.
+        val position: String? = person.position
+        return copy(
+            number = person.number,
+            position = position.orEmpty(),
+            joinDate = person.joinDate,
+            active = person.active,
+            userCode = person.user?.code,
+            googleDriveId = person.googleDriveId,
         )
     }
 

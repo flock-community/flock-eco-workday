@@ -141,10 +141,33 @@ _NO_PHOTO_KEY = object()
 def set_person_photo(person_uuid, photo_value):
     """Applies photo_value ("" removes it, a data URL replaces it) to a person's photo.
 
-    PUT /api/persons/{uuid}/photo touches only the photo, and anybody may use it on their own
-    person (person and CV admins on anybody's), so no person-edit rights are needed.
+    PUT /api/persons/{uuid} is a full replacement of the person (see PersonService.render),
+    so every other field is round-tripped from a fresh GET first - including userCode, taken
+    from the nested user's `id` (which is the backing User.code, not the display name), so
+    the login user stays linked to this person. Without person-edit rights this works on your
+    own person, where the fields only an admin may change are kept as they are anyway.
     """
-    return call("PUT", f"/api/persons/{person_uuid}/photo", {"photo": photo_value})
+    person = call("GET", f"/api/persons/{person_uuid}")
+    user = person.get("user")
+    form = {
+        "firstname": person.get("firstname"),
+        "lastname": person.get("lastname"),
+        "email": person.get("email"),
+        "position": person.get("position"),
+        "number": person.get("number"),
+        "birthdate": person.get("birthdate"),
+        "joinDate": person.get("joinDate"),
+        "active": person.get("active"),
+        "userCode": user["id"] if user else None,
+        "reminders": person.get("reminders"),
+        "receiveEmail": person.get("receiveEmail"),
+        "shoeSize": person.get("shoeSize"),
+        "shirtSize": person.get("shirtSize"),
+        "googleDriveId": person.get("googleDriveId"),
+        "address": person.get("address"),
+        "photo": photo_value,
+    }
+    return call("PUT", f"/api/persons/{person_uuid}", form)
 
 
 def main():

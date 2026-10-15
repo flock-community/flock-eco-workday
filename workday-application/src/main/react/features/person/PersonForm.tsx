@@ -15,9 +15,11 @@ export const PERSON_FORM_ID = 'person-form';
 type PersonFormProps = {
   item: any;
   onSubmit: (item: any) => void;
+  /** Only the person's own details, without the fields only an admin sets. */
+  personalOnly?: boolean;
 };
 
-export function PersonForm({ item, onSubmit }: PersonFormProps) {
+export function PersonForm({ item, onSubmit, personalOnly }: PersonFormProps) {
   const form = () => (
     <Form id={PERSON_FORM_ID}>
       <Grid container size={{ xs: 12 }} spacing={2}>
@@ -60,16 +62,20 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
             />
           </FormControl>
         </Grid>
-        <Grid size={{ xs: 12 }}>
-          <FormControl fullWidth>
-            <Field
-              id="number"
-              label="number"
-              name="number"
-              component={FormikTextField}
-            />
-          </FormControl>
-        </Grid>
+        {!personalOnly && (
+          <>
+            <Grid size={{ xs: 12 }}>
+              <FormControl fullWidth>
+                <Field
+                  id="number"
+                  label="number"
+                  name="number"
+                  component={FormikTextField}
+                />
+              </FormControl>
+            </Grid>
+          </>
+        )}
         <Grid size={{ xs: 12 }}>
           <Typography variant="overline" color="text.secondary">
             Address
@@ -135,14 +141,18 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
         <Grid size={{ xs: 12 }}>
           <DatePickerField name="birthdate" label="Birthdate" />
         </Grid>
-        <Grid size={{ xs: 12 }}>
-          <DatePickerField name="joinDate" label="Join date" />
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <FormControl fullWidth>
-            <UserSelectorField name="userCode" />
-          </FormControl>
-        </Grid>
+        {!personalOnly && (
+          <>
+            <Grid size={{ xs: 12 }}>
+              <DatePickerField name="joinDate" label="Join date" />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <FormControl fullWidth>
+                <UserSelectorField name="userCode" />
+              </FormControl>
+            </Grid>
+          </>
+        )}
 
         <Grid size={{ xs: 12, sm: 6 }}>
           <FormControl fullWidth>
@@ -156,17 +166,21 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
           </FormControl>
         </Grid>
 
-        <Grid size={{ xs: 12 }}>
-          <FormControl fullWidth>
-            <Field
-              id="googleDriveId"
-              type="text"
-              label="Google Drive map Id"
-              name="googleDriveId"
-              component={FormikTextField}
-            />
-          </FormControl>
-        </Grid>
+        {!personalOnly && (
+          <>
+            <Grid size={{ xs: 12 }}>
+              <FormControl fullWidth>
+                <Field
+                  id="googleDriveId"
+                  type="text"
+                  label="Google Drive map Id"
+                  name="googleDriveId"
+                  component={FormikTextField}
+                />
+              </FormControl>
+            </Grid>
+          </>
+        )}
 
         <Grid size={{ xs: 12 }}>
           <FormControl fullWidth>
@@ -188,16 +202,20 @@ export function PersonForm({ item, onSubmit }: PersonFormProps) {
             />
           </FormControl>
         </Grid>
-        <Grid size={{ xs: 12 }}>
-          <FormControl fullWidth>
-            <Field
-              name="active"
-              type="checkbox"
-              Label={{ label: 'Active' }}
-              component={CheckboxWithLabel}
-            />
-          </FormControl>
-        </Grid>
+        {!personalOnly && (
+          <>
+            <Grid size={{ xs: 12 }}>
+              <FormControl fullWidth>
+                <Field
+                  name="active"
+                  type="checkbox"
+                  Label={{ label: 'Active' }}
+                  component={CheckboxWithLabel}
+                />
+              </FormControl>
+            </Grid>
+          </>
+        )}
       </Grid>
     </Form>
   );

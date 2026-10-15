@@ -13,7 +13,6 @@ import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
@@ -513,7 +512,7 @@ class PersonControllerTest : WorkdayIntegrationTest() {
             .andExpect(jsonPath("\$.photo").doesNotExist())
     }
 
-    /** A login user holding only [authorities], with the person linked to it. */
+    /** A login user holding only [authorities], with a person linked to it. */
     private fun createLinkedUser(vararg authorities: String): Pair<RequestPostProcessor, UUID> {
         val account =
             userAccountService.createUserAccountPassword(
@@ -531,67 +530,88 @@ class PersonControllerTest : WorkdayIntegrationTest() {
                     lastname = "Trenneman",
                     email = "roy@it.com",
                     position = "Support",
-                    number = null,
+                    number = "42",
                     userCode = account.user.code,
                     active = true,
+                    googleDriveId = "drive",
                 ),
             )
         return user(UserSecurityService.UserSecurityPassword(account)) to person.uuid
     }
 
-    private fun photoJson(photo: String) = mapper.writeValueAsString(mapOf("photo" to photo))
+    /** The form a person sends to change their own details, trying to change admin fields too. */
+    private fun ownDetailsJson(photo: String? = null): String =
+        mapper.writeValueAsString(
+            mapOf(
+                "firstname" to "Maurice",
+                "lastname" to "Moss",
+                "email" to "moss@it.com",
+                "birthdate" to "1980-01-02",
+                "shoeSize" to "44",
+                "shirtSize" to "L",
+                "receiveEmail" to false,
+                "address" to
+                    mapOf(
+                        "street" to "Carenza Lane",
+                        "houseNumber" to "12",
+                        "postalCode" to "1234 AB",
+                        "city" to "London",
+                    ),
+                "photo" to photo,
+                // Only an admin may change these, so they are kept as they are
+                "position" to "Boss",
+                "number" to "1",
+                "joinDate" to "2000-01-01",
+                "active" to false,
+                "userCode" to null,
+                "googleDriveId" to "other",
+            ),
+        )
 
     @Test
-    fun `a person without person rights may set and remove their own photo, nothing else changes`() {
+    fun `a person without person rights may read and edit their own personal details`() {
         val (user, uuid) = createLinkedUser("CvAuthority.READ", "CvAuthority.WRITE")
 
         mvc
-            .perform(put("$baseUrl/$uuid/photo").with(user).json(photoJson(aPngDataUrl)))
+            .perform(get("$baseUrl/$uuid").with(user).accept(APPLICATION_JSON))
             .asyncDispatch()
             .andExpect(status().isOk)
-            .andExpect(jsonPath("\$.photo").value(aPngDataUrl))
             .andExpect(jsonPath("\$.firstname").value("Roy"))
-            .andExpect(jsonPath("\$.position").value("Support"))
-            .andExpect(jsonPath("\$.user").exists())
 
         mvc
-            .perform(put("$baseUrl/$uuid/photo").with(user).json(photoJson("")))
+            .perform(put("$baseUrl/$uuid").with(user).json(ownDetailsJson(photo = aPngDataUrl)))
             .asyncDispatch()
             .andExpect(status().isOk)
-            .andExpect(jsonPath("\$.photo").doesNotExist())
+            .andExpect(jsonPath("\$.firstname").value("Maurice"))
+            .andExpect(jsonPath("\$.lastname").value("Moss"))
+            .andExpect(jsonPath("\$.email").value("moss@it.com"))
+            .andExpect(jsonPath("\$.birthdate").value("1980-01-02"))
+            .andExpect(jsonPath("\$.shoeSize").value("44"))
+            .andExpect(jsonPath("\$.receiveEmail").value(false))
+            .andExpect(jsonPath("\$.address.city").value("London"))
+            .andExpect(jsonPath("\$.photo").value(aPngDataUrl))
+            .andExpect(jsonPath("\$.position").value("Support"))
+            .andExpect(jsonPath("\$.number").value("42"))
+            .andExpect(jsonPath("\$.joinDate").doesNotExist())
+            .andExpect(jsonPath("\$.active").value(true))
+            .andExpect(jsonPath("\$.googleDriveId").value("drive"))
+            .andExpect(jsonPath("\$.user").exists())
     }
 
     @Test
-    fun `a person without admin rights may not set the photo of somebody else`() {
-        val (user, _) = createLinkedUser("CvAuthority.READ", "CvAuthority.WRITE", "PersonAuthority.WRITE")
-        val other = personService.findAll(PageRequest.of(0, 1)).content.first()
+    fun `a person without person rights may not read or edit somebody else`() {
+        val (user, _) = createLinkedUser("CvAuthority.READ", "CvAuthority.WRITE")
+        val (_, other) = createLinkedUser()
 
         mvc
-            .perform(put("$baseUrl/${other.uuid}/photo").with(user).json(photoJson(aPngDataUrl)))
+            .perform(get("$baseUrl/$other").with(user).accept(APPLICATION_JSON))
             .asyncDispatch()
             .andExpect(status().isForbidden)
-    }
-
-    @Test
-    fun `a CV admin may set the photo of somebody else`() {
-        val (_, uuid) = createLinkedUser()
-        val (admin, _) = createLinkedUser("CvAuthority.ADMIN")
 
         mvc
-            .perform(put("$baseUrl/$uuid/photo").with(admin).json(photoJson(aPngDataUrl)))
+            .perform(put("$baseUrl/$other").with(user).json(ownDetailsJson()))
             .asyncDispatch()
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("\$.photo").value(aPngDataUrl))
-    }
-
-    @Test
-    fun `a photo that is not an image is rejected on the photo endpoint`() {
-        val (user, uuid) = createLinkedUser()
-
-        mvc
-            .perform(put("$baseUrl/$uuid/photo").with(user).json(photoJson("data:image/png;base64,aGVsbG8=")))
-            .asyncDispatch()
-            .andExpect(status().isBadRequest)
+            .andExpect(status().isForbidden)
     }
 
     @Test
