@@ -71,17 +71,11 @@ export const PersonDialog = ({
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogHeader
         icon={<PersonAdd />}
-        headline={
-          personalOnly
-            ? 'Edit your details'
-            : item
-              ? 'Edit person'
-              : 'Create person'
-        }
+        headline={personalOnly ? 'Edit your details' : 'Create Person'}
         subheadline={
           personalOnly
             ? 'Change your personal details'
-            : 'Fill out the form to save the person'
+            : 'Fill out the form to create a person'
         }
         onClose={onClose}
       />
