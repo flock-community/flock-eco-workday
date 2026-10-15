@@ -12,8 +12,15 @@ type PersonDialogProps = {
   open: boolean;
   onClose: () => void;
   item?: any;
+  /** Edits the person's own details only, leaving out what only an admin sets. */
+  personalOnly?: boolean;
 };
-export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
+export const PersonDialog = ({
+  open,
+  onClose,
+  item,
+  personalOnly,
+}: PersonDialogProps) => {
   const successfulSubmit = () => {
     onClose();
   };
@@ -64,12 +71,20 @@ export const PersonDialog = ({ open, onClose, item }: PersonDialogProps) => {
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogHeader
         icon={<PersonAdd />}
-        headline="Create Person"
-        subheadline="Fill out the form to create a person"
+        headline={personalOnly ? 'Edit your details' : 'Create Person'}
+        subheadline={
+          personalOnly
+            ? 'Change your personal details'
+            : 'Fill out the form to create a person'
+        }
         onClose={onClose}
       />
       <DialogBody>
-        <PersonForm item={item} onSubmit={handleSubmit} />
+        <PersonForm
+          item={item}
+          onSubmit={handleSubmit}
+          personalOnly={personalOnly}
+        />
       </DialogBody>
       <Divider />
       <DialogFooter formId={PERSON_FORM_ID} onClose={onClose} />

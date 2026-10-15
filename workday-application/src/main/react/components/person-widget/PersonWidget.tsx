@@ -29,7 +29,8 @@ const AddressLines = ({ address }: { address: Address | null }) => {
 type PersonWidgetProps = {
   person: Person;
   handleEditDialog: any;
-  handleDelDialog: any;
+  /** Left out, the person cannot be deleted from here. */
+  handleDelDialog?: any;
 };
 export function PersonWidget({
   person,
@@ -45,9 +46,11 @@ export function PersonWidget({
             <IconButton onClick={handleEditDialog} size="large">
               <CreateIcon />
             </IconButton>
-            <IconButton onClick={handleDelDialog} size="large">
-              <DeleteRoundedIcon />
-            </IconButton>
+            {handleDelDialog && (
+              <IconButton onClick={handleDelDialog} size="large">
+                <DeleteRoundedIcon />
+              </IconButton>
+            )}
           </>
         }
       />

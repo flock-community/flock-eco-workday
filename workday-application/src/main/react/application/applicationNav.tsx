@@ -138,7 +138,7 @@ export const navSections: NavSection[] = [
         name: 'Persons',
         icon: UserIcon,
         url: '/person',
-        authority: 'PersonAuthority.READ',
+        authority: 'PersonAuthority.ADMIN',
       },
       {
         name: 'Laptops',

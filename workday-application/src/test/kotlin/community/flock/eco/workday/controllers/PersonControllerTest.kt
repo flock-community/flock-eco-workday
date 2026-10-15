@@ -512,6 +512,123 @@ class PersonControllerTest : WorkdayIntegrationTest() {
             .andExpect(jsonPath("\$.photo").doesNotExist())
     }
 
+    /** A login user holding only [authorities], with a person linked to it. */
+    private fun createLinkedUser(vararg authorities: String): Pair<RequestPostProcessor, UUID> {
+        val account =
+            userAccountService.createUserAccountPassword(
+                UserAccountPasswordForm(
+                    email = UUID.randomUUID().toString(),
+                    name = "Linked",
+                    authorities = authorities.toSet(),
+                    password = "secret",
+                ),
+            )
+        val person =
+            personService.create(
+                PersonForm(
+                    firstname = "Roy",
+                    lastname = "Trenneman",
+                    email = "roy@it.com",
+                    position = "Support",
+                    number = "42",
+                    userCode = account.user.code,
+                    active = true,
+                    googleDriveId = "drive",
+                ),
+            )
+        return user(UserSecurityService.UserSecurityPassword(account)) to person.uuid
+    }
+
+    /** The form a person sends to change their own details, trying to change admin fields too. */
+    private fun ownDetailsJson(photo: String? = null): String =
+        mapper.writeValueAsString(
+            mapOf(
+                "firstname" to "Maurice",
+                "lastname" to "Moss",
+                "email" to "moss@it.com",
+                "birthdate" to "1980-01-02",
+                "shoeSize" to "44",
+                "shirtSize" to "L",
+                "receiveEmail" to false,
+                "address" to
+                    mapOf(
+                        "street" to "Carenza Lane",
+                        "houseNumber" to "12",
+                        "postalCode" to "1234 AB",
+                        "city" to "London",
+                    ),
+                "photo" to photo,
+                // Only an admin may change these, so they are kept as they are
+                "position" to "Boss",
+                "number" to "1",
+                "joinDate" to "2000-01-01",
+                "active" to false,
+                "userCode" to null,
+                "googleDriveId" to "other",
+            ),
+        )
+
+    @Test
+    fun `a person with person read and write rights may edit only their own personal details`() {
+        val (user, uuid) = createLinkedUser("PersonAuthority.READ", "PersonAuthority.WRITE")
+
+        mvc
+            .perform(get("$baseUrl/$uuid").with(user).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.firstname").value("Roy"))
+
+        mvc
+            .perform(put("$baseUrl/$uuid").with(user).json(ownDetailsJson(photo = aPngDataUrl)))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.firstname").value("Maurice"))
+            .andExpect(jsonPath("\$.lastname").value("Moss"))
+            .andExpect(jsonPath("\$.email").value("moss@it.com"))
+            .andExpect(jsonPath("\$.birthdate").value("1980-01-02"))
+            .andExpect(jsonPath("\$.shoeSize").value("44"))
+            .andExpect(jsonPath("\$.receiveEmail").value(false))
+            .andExpect(jsonPath("\$.address.city").value("London"))
+            .andExpect(jsonPath("\$.photo").value(aPngDataUrl))
+            .andExpect(jsonPath("\$.position").value("Support"))
+            .andExpect(jsonPath("\$.number").value("42"))
+            .andExpect(jsonPath("\$.joinDate").doesNotExist())
+            .andExpect(jsonPath("\$.active").value(true))
+            .andExpect(jsonPath("\$.googleDriveId").value("drive"))
+            .andExpect(jsonPath("\$.user").exists())
+    }
+
+    @Test
+    fun `a person with person read and write rights may not edit somebody else`() {
+        val (user, _) = createLinkedUser("PersonAuthority.READ", "PersonAuthority.WRITE")
+        val (_, other) = createLinkedUser()
+
+        mvc
+            .perform(put("$baseUrl/$other").with(user).json(ownDetailsJson()))
+            .asyncDispatch()
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `a person without both person read and write rights may not read or edit their own details`() {
+        listOf(arrayOf("CvAuthority.READ", "CvAuthority.WRITE"), arrayOf("PersonAuthority.READ"), arrayOf("PersonAuthority.WRITE"))
+            .forEach { authorities ->
+                val (user, uuid) = createLinkedUser(*authorities)
+
+                mvc
+                    .perform(put("$baseUrl/$uuid").with(user).json(ownDetailsJson()))
+                    .asyncDispatch()
+                    .andExpect(status().isForbidden)
+
+                if ("PersonAuthority.READ" !in authorities) {
+                    mvc
+                        .perform(get("$baseUrl/$uuid").with(user).accept(APPLICATION_JSON))
+                        .asyncDispatch()
+                        .andExpect(status().isForbidden)
+                }
+            }
+    }
+
     @Test
     fun `a photo over 512 KB is rejected`() {
         val user = createUser()

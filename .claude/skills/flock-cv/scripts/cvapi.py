@@ -110,10 +110,10 @@ def data_url(path):
 def to_form(cv):
     """The Cv response turned into the CvForm a PUT takes; personId keeps the owner.
 
-    The photo lives on the person, not in the Cv response, so it's fetched separately
-    (the GET /api/cvs response never carries it, unlike Cv's other fields).
+    The photo lives on the person, not the CV; the Cv response carries it on its person, so
+    no person read (and no person rights) is needed.
     """
-    person = call("GET", f"/api/persons/{cv['person']['uuid']}")
+    person = cv["person"]
     return {
         "personId": cv["person"]["uuid"],
         "name": cv["name"],
@@ -144,7 +144,8 @@ def set_person_photo(person_uuid, photo_value):
     PUT /api/persons/{uuid} is a full replacement of the person (see PersonService.render),
     so every other field is round-tripped from a fresh GET first - including userCode, taken
     from the nested user's `id` (which is the backing User.code, not the display name), so
-    the login user stays linked to this person.
+    the login user stays linked to this person. Without being a person admin this needs person
+    read and write rights and works on your own person only, keeping the admin-only fields.
     """
     person = call("GET", f"/api/persons/{person_uuid}")
     user = person.get("user")

@@ -14,6 +14,7 @@ import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.PersonEvent
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.decodeImage
+import community.flock.eco.workday.application.services.isUser
 import community.flock.eco.workday.application.services.photoDataUrl
 import community.flock.eco.workday.domain.person.Address
 import community.flock.eco.workday.user.model.User
@@ -106,14 +107,28 @@ class PersonController(
         return PostPerson.Response200(created.externalize())
     }
 
-    @PreAuthorize("hasAuthority('PersonAuthority.WRITE')")
+    /**
+     * Admins save the whole form of anybody. Who may read and write persons without being an
+     * admin edits only their own personal details: the fields only an admin sets are kept.
+     */
+    @PreAuthorize(
+        "hasAuthority('PersonAuthority.ADMIN') or (hasAuthority('PersonAuthority.READ') and hasAuthority('PersonAuthority.WRITE'))",
+    )
     override suspend fun putPerson(request: PutPerson.Request): PutPerson.Response<*> {
-        val user = requireAuthority(PersonAuthority.WRITE)
+        val user = currentUser() ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         val form = request.body.internalize()
-        val userCode = if (user.isAdmin()) form.userCode else user.code
         val uuid = UUID.fromString(request.path.uuid)
+        val allowed =
+            when {
+                user.isAdmin() -> form
+                else ->
+                    service.findByUuid(uuid)?.let { person ->
+                        if (!person.isUser(user.code)) throw ResponseStatusException(HttpStatus.FORBIDDEN)
+                        form.personalDetailsOf(person)
+                    }
+            }
         val updated =
-            service.update(uuid, form.copy(userCode = userCode))
+            allowed?.let { service.update(uuid, it) }
                 ?: throw ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Cannot perform PUT on given item. PersonUui cannot be found. Use POST Method",
@@ -309,6 +324,23 @@ class PersonController(
                 Address.normalizePostalCode(postalCode)
                     ?: throw badRequest("Postal code must be a Dutch postal code such as 1234 AB"),
             city = city,
+        )
+    }
+
+    /**
+     * Only the personal details of this form, the rest kept as [person] has it: who someone is
+     * and works as (number, position, join date, active, login user, Drive folder) is up to an admin.
+     */
+    private fun PersonForm.personalDetailsOf(person: Person): PersonForm {
+        // person columns lack NOT NULL; JPA can hydrate null into this non-null property.
+        val position: String? = person.position
+        return copy(
+            number = person.number,
+            position = position.orEmpty(),
+            joinDate = person.joinDate,
+            active = person.active,
+            userCode = person.user?.code,
+            googleDriveId = person.googleDriveId,
         )
     }
 
