@@ -76,10 +76,9 @@ class PersonController(
         )
     }
 
-    /** Person readers see their own person, admins anybody's; everybody may read their own. */
-    @PreAuthorize("hasAuthority('PersonAuthority.READ') or @personSecurity.isOwnPerson(authentication, #request.path.uuid)")
+    @PreAuthorize("hasAuthority('PersonAuthority.READ')")
     override suspend fun getPersonByUuid(request: GetPersonByUuid.Request): GetPersonByUuid.Response<*> {
-        val user = currentUser() ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        val user = requireAuthority(PersonAuthority.READ)
         val uuid = UUID.fromString(request.path.uuid)
         val person =
             when {
@@ -108,10 +107,13 @@ class PersonController(
     }
 
     /**
-     * Person writers save the whole form. Everybody may also edit their own personal details;
-     * without [PersonAuthority.WRITE] the fields only an admin sets are kept as they are.
+     * Admins save the whole form of anybody. Who may read and write persons without being an
+     * admin edits only their own personal details: the fields only an admin sets are kept.
      */
-    @PreAuthorize("hasAuthority('PersonAuthority.WRITE') or @personSecurity.isOwnPerson(authentication, #request.path.uuid)")
+    @PreAuthorize(
+        "hasAuthority('PersonAuthority.ADMIN') or (hasAuthority('PersonAuthority.READ') and " +
+            "hasAuthority('PersonAuthority.WRITE') and @personSecurity.isOwnPerson(authentication, #request.path.uuid))",
+    )
     override suspend fun putPerson(request: PutPerson.Request): PutPerson.Response<*> {
         val user = currentUser() ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         val form = request.body.internalize()
@@ -119,7 +121,6 @@ class PersonController(
         val allowed =
             when {
                 user.isAdmin() -> form
-                user.authorities.contains(PersonAuthority.WRITE.toName()) -> form.copy(userCode = user.code)
                 else -> service.findByUuid(uuid)?.let { form.personalDetailsOf(it) }
             }
         val updated =

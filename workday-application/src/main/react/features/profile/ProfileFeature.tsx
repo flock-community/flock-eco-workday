@@ -33,6 +33,7 @@ import {
 } from '../../clients/ApiKeyClient';
 import { type Person, PersonClient } from '../../clients/PersonClient';
 import { PersonWidget } from '../../components/person-widget/PersonWidget';
+import { useLoginStatus } from '../../hooks/StatusHook';
 import { useUserMe } from '../../hooks/UserMeHook';
 import { PersonDialog } from '../person/PersonDialog';
 
@@ -45,7 +46,12 @@ export function ProfileFeature() {
   const [newKey, setNewKey] = useState<GeneratedKey | null>(null);
   const [revokeKey, setRevokeKey] = useState<ApiKeyAccount | null>(null);
   const [copied, setCopied] = useState(false);
-  // Everybody may edit their own personal details, whatever rights they have on persons
+  const status = useLoginStatus();
+  // Admins, and who may read and write persons, see and edit their own personal details
+  const mayEditOwnDetails =
+    status?.authorities?.includes('PersonAuthority.ADMIN') ||
+    (status?.authorities?.includes('PersonAuthority.READ') &&
+      status?.authorities?.includes('PersonAuthority.WRITE'));
   const [person, setPerson] = useState<Person | null>(null);
   const [personOpen, setPersonOpen] = useState(false);
 
@@ -54,12 +60,12 @@ export function ProfileFeature() {
   }, [refresh]);
 
   useEffect(() => {
-    if (!personOpen) {
+    if (mayEditOwnDetails && !personOpen) {
       PersonClient.me()
         .then(setPerson)
         .catch(() => setPerson(null));
     }
-  }, [personOpen]);
+  }, [mayEditOwnDetails, personOpen]);
 
   const handleGenerate = () => {
     ApiKeyClient.generateKey(label).then((key) => {
@@ -117,7 +123,7 @@ export function ProfileFeature() {
         </CardContent>
       </Card>
 
-      {person && (
+      {mayEditOwnDetails && person && (
         <PersonWidget
           person={person}
           handleEditDialog={() => setPersonOpen(true)}
@@ -192,7 +198,7 @@ export function ProfileFeature() {
         </CardContent>
       </Card>
 
-      {person && (
+      {mayEditOwnDetails && person && (
         <PersonDialog
           open={personOpen}
           onClose={() => setPersonOpen(false)}

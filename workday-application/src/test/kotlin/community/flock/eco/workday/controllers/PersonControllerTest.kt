@@ -569,8 +569,8 @@ class PersonControllerTest : WorkdayIntegrationTest() {
         )
 
     @Test
-    fun `a person without person rights may read and edit their own personal details`() {
-        val (user, uuid) = createLinkedUser("CvAuthority.READ", "CvAuthority.WRITE")
+    fun `a person with person read and write rights may edit only their own personal details`() {
+        val (user, uuid) = createLinkedUser("PersonAuthority.READ", "PersonAuthority.WRITE")
 
         mvc
             .perform(get("$baseUrl/$uuid").with(user).accept(APPLICATION_JSON))
@@ -599,19 +599,34 @@ class PersonControllerTest : WorkdayIntegrationTest() {
     }
 
     @Test
-    fun `a person without person rights may not read or edit somebody else`() {
-        val (user, _) = createLinkedUser("CvAuthority.READ", "CvAuthority.WRITE")
+    fun `a person with person read and write rights may not edit somebody else`() {
+        val (user, _) = createLinkedUser("PersonAuthority.READ", "PersonAuthority.WRITE")
         val (_, other) = createLinkedUser()
-
-        mvc
-            .perform(get("$baseUrl/$other").with(user).accept(APPLICATION_JSON))
-            .asyncDispatch()
-            .andExpect(status().isForbidden)
 
         mvc
             .perform(put("$baseUrl/$other").with(user).json(ownDetailsJson()))
             .asyncDispatch()
             .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `a person without both person read and write rights may not read or edit their own details`() {
+        listOf(arrayOf("CvAuthority.READ", "CvAuthority.WRITE"), arrayOf("PersonAuthority.READ"), arrayOf("PersonAuthority.WRITE"))
+            .forEach { authorities ->
+                val (user, uuid) = createLinkedUser(*authorities)
+
+                mvc
+                    .perform(put("$baseUrl/$uuid").with(user).json(ownDetailsJson()))
+                    .asyncDispatch()
+                    .andExpect(status().isForbidden)
+
+                if ("PersonAuthority.READ" !in authorities) {
+                    mvc
+                        .perform(get("$baseUrl/$uuid").with(user).accept(APPLICATION_JSON))
+                        .asyncDispatch()
+                        .andExpect(status().isForbidden)
+                }
+            }
     }
 
     @Test

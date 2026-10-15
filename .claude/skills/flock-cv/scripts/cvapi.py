@@ -144,8 +144,8 @@ def set_person_photo(person_uuid, photo_value):
     PUT /api/persons/{uuid} is a full replacement of the person (see PersonService.render),
     so every other field is round-tripped from a fresh GET first - including userCode, taken
     from the nested user's `id` (which is the backing User.code, not the display name), so
-    the login user stays linked to this person. Without person-edit rights this works on your
-    own person, where the fields only an admin may change are kept as they are anyway.
+    the login user stays linked to this person. Without being a person admin this needs person
+    read and write rights and works on your own person only, keeping the admin-only fields.
     """
     person = call("GET", f"/api/persons/{person_uuid}")
     user = person.get("user")
