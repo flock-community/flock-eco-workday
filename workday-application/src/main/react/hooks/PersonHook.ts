@@ -21,15 +21,22 @@ export function usePerson(): [Person | null, (personId: string) => void] {
 
   useEffect(() => {
     const listener = (it: SetStateAction<Person | null>) => setState(it);
-    if (store === null && listeners.length === 0) {
+    const params = new URLSearchParams(location.search);
+    const personId = params.get('personId');
+    // A person in the link wins; loading yourself too could overwrite them
+    if (store === null && listeners.length === 0 && !personId) {
       if (status?.loggedIn) {
         PersonClient.me().then(update);
       }
     }
-    const params = new URLSearchParams(location.search);
-    const personId = params.get('personId');
     if (personId) {
-      PersonClient.get(personId).then(update);
+      PersonClient.get(personId)
+        .then(update)
+        // A person you may not look up: then you are the one shown
+        .catch(() => {
+          if (store === null && status?.loggedIn)
+            PersonClient.me().then(update);
+        });
     }
     listeners.push(listener);
     return () => {

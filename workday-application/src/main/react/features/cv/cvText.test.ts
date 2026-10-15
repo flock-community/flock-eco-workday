@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {
   clientText,
+  cvLink,
   cvUrl,
   groupSkills,
   linkify,
@@ -103,6 +104,27 @@ describe('cvUrl', () => {
   it('leaves out your own person, which only admins could look up', () => {
     expect(cvUrl('me', 'me', { cv: 'cv-1' })).toBe('/cvs?cv=cv-1');
     expect(cvUrl(undefined, 'me', { cv: undefined })).toBe('/cvs');
+  });
+});
+
+describe('cvLink', () => {
+  it('links to a CV by its code', () => {
+    expect(cvLink('cv-1')).toBe('/cvs/cv-1');
+  });
+
+  it('links to an earlier version of a CV', () => {
+    expect(cvLink('cv-1', { version: 'r-1' })).toBe('/cvs/cv-1?version=r-1');
+  });
+
+  it('links to a comparison, with the versions it compares', () => {
+    expect(cvLink('cv-1', { compare: true })).toBe('/cvs/cv-1/compare');
+    expect(
+      cvLink('cv-1', { compare: true, from: 'cv:cv-2', to: 'current' }),
+    ).toBe('/cvs/cv-1/compare?from=cv%3Acv-2&to=current');
+    // A comparison shows no single version
+    expect(cvLink('cv-1', { compare: true, version: 'r-1' })).toBe(
+      '/cvs/cv-1/compare',
+    );
   });
 });
 

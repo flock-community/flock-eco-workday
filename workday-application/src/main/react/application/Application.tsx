@@ -4,13 +4,19 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import UserAuthorityUtil from '@workday-user/user_utils/UserAuthorityUtil';
-import React, { useEffect } from 'react';
-import { Redirect, Route, BrowserRouter as Router } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import {
+  Redirect,
+  Route,
+  BrowserRouter as Router,
+  useLocation,
+} from 'react-router-dom';
 import { ErrorStack } from '../components/error/ErrorBarStack';
 import { LoginFeature } from '../features/login/LoginFeature';
 import { useError } from '../hooks/ErrorHook';
 import { useLoginStatus } from '../hooks/StatusHook';
 import { ColorModeProvider } from '../theme/ColorMode';
+import { rememberReturnTo } from './returnTo';
 import 'dayjs/locale/nl';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -65,6 +71,14 @@ export const Application = () => {
 };
 
 const UnauthenticatedApplication = () => {
+  const location = useLocation();
+  // The page a link pointed to, before going to the login page
+  const [target] = useState(() => location.pathname + location.search);
+
+  useEffect(() => {
+    if (target !== '/' && !target.startsWith('/auth')) rememberReturnTo(target);
+  }, [target]);
+
   return (
     <Box className={'full-width'} style={{ rowGap: 0 }}>
       <Redirect to="/auth" exact />

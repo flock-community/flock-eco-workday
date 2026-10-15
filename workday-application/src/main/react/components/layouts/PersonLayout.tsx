@@ -11,6 +11,8 @@ type PageProps = {
   actions?: ReactNode;
   /** Extra class on the root, for page specific (print) styles. */
   className?: string;
+  /** Instead of switching to the picked person here, such as by following a link. */
+  onChangePerson?: (personId: string) => void;
 };
 
 export default function PersonLayout({
@@ -18,11 +20,14 @@ export default function PersonLayout({
   children,
   actions,
   className,
+  onChangePerson,
 }: PageProps) {
   const [person, setPerson] = usePerson();
 
   const handleChangePerson = (personId) => {
-    if (personId) setPerson(personId);
+    if (!personId) return;
+    if (onChangePerson) onChangePerson(personId);
+    else setPerson(personId);
   };
 
   return (
@@ -56,7 +61,7 @@ export default function PersonLayout({
         style={{ paddingBottom: '1.5rem' }}
       >
         {person ? (
-          children(person)
+          children(person, setPerson)
         ) : (
           <Typography variant="caption">No person selected</Typography>
         )}

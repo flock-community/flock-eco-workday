@@ -40,7 +40,8 @@ import {
 import { cvLanguageLabel } from './cvText';
 
 const SAVED_AT = 'DD-MM-YYYY HH:mm';
-const CURRENT = 'current';
+/** The current version of the CV, as a version to compare. */
+export const CURRENT = 'current';
 
 export type DiffMode = 'inline' | 'side-by-side';
 type Side = 'before' | 'after';
@@ -71,16 +72,25 @@ export function CvCompare({
   current,
   others = [],
   from: initialFrom,
+  to: initialTo,
+  onPick,
 }: {
   current: Cv;
   /** The person's other CVs, to compare this one with. */
   others?: Cv[];
-  /** The id of the earlier version to start from; the latest one by default. */
+  /**
+   * The version to start from: the id of an earlier version, [CURRENT], or `cv:` and
+   * the code of another CV; the latest earlier version by default.
+   */
   from?: string;
+  /** The version to compare it with, like [from]; the current version by default. */
+  to?: string;
+  /** Called with the versions compared, whenever they change. */
+  onPick?: (from: string, to: string) => void;
 }) {
   const [revisions, setRevisions] = useState<CvRevision[] | null>(null);
   const [from, setFrom] = useState<string | null>(initialFrom ?? null);
-  const [to, setTo] = useState<string>(CURRENT);
+  const [to, setTo] = useState<string>(initialTo ?? CURRENT);
   const [loaded, setLoaded] = useState<Record<string, Cv>>({});
   const [mode, setMode] = useState<DiffMode>(storedMode);
   const [onlyChanges, setOnlyChanges] = useState(true);
@@ -107,6 +117,11 @@ export function CvCompare({
         setError(apiErrorMessage(err, 'The history could not be loaded')),
       );
   }, [code]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only tell when the versions change
+  useEffect(() => {
+    if (from) onPick?.(from, to);
+  }, [from, to]);
 
   // The versions being loaded, so each one is requested only once
   const loading = useRef(new Set<string>());

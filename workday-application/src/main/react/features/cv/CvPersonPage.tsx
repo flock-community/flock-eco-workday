@@ -2,6 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import EditIcon from '@mui/icons-material/Edit';
 import HistoryIcon from '@mui/icons-material/History';
+import LinkIcon from '@mui/icons-material/Link';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Alert,
@@ -15,20 +16,26 @@ import {
   MenuItem,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { AlignedLoader } from '@workday-core/components/AlignedLoader';
 import dayjs from 'dayjs';
-import { type MouseEvent, useEffect, useState } from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { type MouseEvent, useEffect, useRef, useState } from 'react';
+import {
+  Link as RouterLink,
+  useHistory,
+  useLocation,
+  useParams,
+} from 'react-router-dom';
 import { type Cv, CvClient, type CvRevision } from '../../clients/CvClient';
 import type { Person } from '../../clients/PersonClient';
 import { apiErrorMessage } from '../../clients/util/ApiErrorMessage';
 import PersonLayout from '../../components/layouts/PersonLayout';
 import { useLoginStatus } from '../../hooks/StatusHook';
-import { CvCompare } from './CvCompare';
+import { CURRENT, CvCompare } from './CvCompare';
 import { CvDocument } from './CvDocument';
-import { cvLanguageLabel, cvUrl } from './cvText';
+import { type CvView, cvLanguageLabel, cvLink, cvUrl } from './cvText';
 
 const CV_PRINT_ROOT = 'cv-print-root';
 const SAVED_AT = 'DD-MM-YYYY HH:mm';
@@ -66,34 +73,52 @@ const printStyles = (
  * The CVs of the current user; an admin picks whose CVs to see, like on the other
  * person pages. A person can have several versions of a CV, each with a name and a
  * history of earlier saves.
+ *
+ * Every CV has its own link, `/cvs/{code}`, which opens it for whoever may read it:
+ * an admin following a link to somebody else's CV switches to that person. An
+ * earlier version and a comparison have a link of their own as well (see [cvLink]).
  */
 export function CvPersonPage() {
+  const history = useHistory();
+
   return (
     <PersonLayout
       requireAuthority="CvAuthority.ADMIN"
       className={CV_PRINT_ROOT}
+      // Picking somebody else opens their CVs, as a link to them would
+      onChangePerson={(personId) => history.push(`/cvs?personId=${personId}`)}
     >
-      {(person: Person) => <PersonCv person={person} />}
+      {(person: Person, setPerson: (personId: string) => void) => (
+        <PersonCv person={person} setPerson={setPerson} />
+      )}
     </PersonLayout>
   );
 }
 
-function PersonCv({ person }: { person: Person }) {
+function PersonCv({
+  person,
+  setPerson,
+}: {
+  person: Person;
+  setPerson: (personId: string) => void;
+}) {
+  const history = useHistory();
   const location = useLocation();
+  const { code: linkedCode } = useParams<{ code?: string }>();
   const status = useLoginStatus();
   // Kept with the person they belong to, so another person's CVs never show
   const [loaded, setLoaded] = useState<{ personId: string; cvs: Cv[] } | null>(
     null,
   );
-  const [chosen, setChosen] = useState<string | null>(null);
   const [revisions, setRevisions] = useState<CvRevision[] | null>(null);
   const [revision, setRevision] = useState<Cv | null>(null);
   const [newMenu, setNewMenu] = useState<HTMLElement | null>(null);
   const [historyMenu, setHistoryMenu] = useState<HTMLElement | null>(null);
-  // Comparing two versions; `from` is the earlier version to start from, if any
-  const [compare, setCompare] = useState<{ from?: string } | null>(null);
+  const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The CV codes looked up to find whose CV a link is to, so that happens once
+  const lookedUp = useRef(new Set<string>());
 
   const me = status?.personId;
   const isMe = me === person.uuid;
@@ -103,14 +128,19 @@ function PersonCv({ person }: { person: Person }) {
   const canWrite =
     isAdmin || (isMe && authorities.includes('CvAuthority.WRITE'));
 
-  // A link to a CV (?personId=...&cv=...) opens that CV for that person
+  // What the link opens: the CV, an earlier version of it, or a comparison
   const params = new URLSearchParams(location.search);
   const linkedPerson = params.get('personId');
-  const linked =
-    !linkedPerson || linkedPerson === person.uuid ? params.get('cv') : null;
+  // Links from before CVs had their own path: /cvs?personId=...&cv=...
+  const linked = linkedCode ?? params.get('cv');
+  const version = params.get('version');
+  const comparing = location.pathname.endsWith('/compare');
+  const compareFrom = params.get('from');
+  const compareTo = params.get('to');
+  // An admin's link to a person: wait until that person is the one shown
+  const waiting = isAdmin && !!linkedPerson && linkedPerson !== person.uuid;
 
   useEffect(() => {
-    setChosen(null);
     setError(null);
     CvClient.queryByPage(
       { page: 0, size: 100, sort: 'updatedAt,desc' },
@@ -122,18 +152,66 @@ function PersonCv({ person }: { person: Person }) {
       );
   }, [person.uuid]);
 
-  const cvs = loaded?.personId === person.uuid ? loaded.cvs : null;
+  const cvs = !waiting && loaded?.personId === person.uuid ? loaded.cvs : null;
   const current =
-    cvs?.find((it) => it.code === (chosen ?? linked)) ?? cvs?.[0] ?? null;
-  const shown = revision ?? current;
+    (linked ? cvs?.find((it) => it.code === linked) : cvs?.[0]) ?? null;
+  // A link to a CV of somebody else than the person shown
+  const elsewhere = !waiting && cvs != null && !!linked && !current;
+
+  // Find whose CV the link is to, and show that person
+  useEffect(() => {
+    if (!elsewhere || !linked || lookedUp.current.has(linked)) return;
+    lookedUp.current.add(linked);
+    CvClient.get(linked)
+      .then((cv) => {
+        const owner = cv.person?.uuid;
+        if (owner && owner !== person.uuid) setPerson(owner);
+        else setError('This CV could not be found');
+      })
+      .catch((err) =>
+        setError(apiErrorMessage(err, 'This CV could not be found')),
+      );
+  }, [elsewhere, linked, person.uuid, setPerson]);
+
+  // The address always links to what is shown, so it can be shared as it is
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only follows what is shown
+  useEffect(() => {
+    if (waiting || !current?.code) return;
+    if (current.code === linkedCode && !linkedPerson) return;
+    history.replace(
+      cvLink(current.code, {
+        version,
+        compare: comparing,
+        from: compareFrom,
+        to: compareTo,
+      }),
+    );
+  }, [waiting, current?.code, linkedCode, linkedPerson]);
 
   // Another CV means another history
   // biome-ignore lint/correctness/useExhaustiveDependencies: only reset when the CV changes
   useEffect(() => {
     setRevisions(null);
-    setRevision(null);
-    setCompare(null);
   }, [current?.code]);
+
+  // The earlier version the link is to
+  useEffect(() => {
+    setRevision(null);
+    if (!current?.code || !version || comparing) return;
+    let live = true;
+    CvClient.revision(current.code, version)
+      .then((cv) => live && setRevision({ ...cv, code: version }))
+      .catch(
+        (err) =>
+          live &&
+          setError(apiErrorMessage(err, 'The version could not be loaded')),
+      );
+    return () => {
+      live = false;
+    };
+  }, [current?.code, version, comparing]);
+
+  const shown = comparing ? null : version ? revision : current;
 
   // The document title becomes the file name when the CV is saved as PDF
   useEffect(() => {
@@ -147,6 +225,20 @@ function PersonCv({ person }: { person: Person }) {
 
   const newUrl = (params: Record<string, string | undefined> = {}) =>
     cvUrl(person.uuid, me, params, '/cvs/new');
+
+  const open = (view: CvView = {}) => {
+    if (current?.code) history.push(cvLink(current.code, view));
+  };
+
+  const copyLink = () => {
+    navigator.clipboard
+      ?.writeText(window.location.href)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => setError('The link could not be copied'));
+  };
 
   const openHistory = (event: MouseEvent<HTMLElement>) => {
     const anchor = event.currentTarget;
@@ -163,13 +255,7 @@ function PersonCv({ person }: { person: Person }) {
 
   const showRevision = (it: CvRevision) => {
     setHistoryMenu(null);
-    setCompare(null);
-    if (!current?.code) return;
-    CvClient.revision(current.code, it.id)
-      .then((cv) => setRevision({ ...cv, code: it.id }))
-      .catch((err) =>
-        setError(apiErrorMessage(err, 'The version could not be loaded')),
-      );
+    open({ version: it.id });
   };
 
   const restoreRevision = () => {
@@ -187,7 +273,7 @@ function PersonCv({ person }: { person: Person }) {
               ],
             },
         );
-        setRevision(null);
+        open();
       })
       .catch((err) =>
         setError(apiErrorMessage(err, 'The version could not be restored')),
@@ -249,7 +335,7 @@ function PersonCv({ person }: { person: Person }) {
             size="small"
             label="CV"
             value={current.code}
-            onChange={(event) => setChosen(event.target.value)}
+            onChange={(event) => history.push(cvLink(event.target.value))}
             sx={{ minWidth: 260 }}
           >
             {cvs.map((it) => (
@@ -267,13 +353,10 @@ function PersonCv({ person }: { person: Person }) {
           </Button>
           <Button
             startIcon={<CompareArrowsIcon />}
-            onClick={() => {
-              setRevision(null);
-              setCompare(compare ? null : {});
-            }}
-            aria-pressed={Boolean(compare)}
+            onClick={() => open({ compare: !comparing })}
+            aria-pressed={comparing}
           >
-            {compare ? 'Close comparison' : 'Compare versions'}
+            {comparing ? 'Close comparison' : 'Compare versions'}
           </Button>
           <Menu
             anchorEl={historyMenu}
@@ -281,11 +364,10 @@ function PersonCv({ person }: { person: Person }) {
             onClose={() => setHistoryMenu(null)}
           >
             <MenuItem
-              selected={!revision}
+              selected={!version || comparing}
               onClick={() => {
                 setHistoryMenu(null);
-                setRevision(null);
-                setCompare(null);
+                open();
               }}
             >
               <ListItemText
@@ -300,7 +382,7 @@ function PersonCv({ person }: { person: Person }) {
             {revisions?.map((it) => (
               <MenuItem
                 key={it.id}
-                selected={revision?.code === it.id}
+                selected={!comparing && version === it.id}
                 onClick={() => showRevision(it)}
               >
                 <ListItemText
@@ -314,7 +396,7 @@ function PersonCv({ person }: { person: Person }) {
           </Menu>
           <Box sx={{ flexGrow: 1 }} />
           {newActions}
-          {canWrite && !revision && !compare && (
+          {canWrite && !version && !comparing && (
             <Button
               component={RouterLink}
               to={`/cvs/${current.code}/edit`}
@@ -324,6 +406,11 @@ function PersonCv({ person }: { person: Person }) {
               Edit
             </Button>
           )}
+          <Tooltip title="Copy a link to what is shown here">
+            <Button startIcon={<LinkIcon />} onClick={copyLink}>
+              {copied ? 'Link copied' : 'Copy link'}
+            </Button>
+          </Tooltip>
           <Button
             variant="contained"
             startIcon={<PrintIcon />}
@@ -334,7 +421,7 @@ function PersonCv({ person }: { person: Person }) {
         </Stack>
       )}
 
-      {revision && (
+      {revision && shown === revision && (
         <Alert
           className="cv-actions"
           severity="info"
@@ -354,18 +441,13 @@ function PersonCv({ person }: { person: Person }) {
               <Button
                 color="inherit"
                 size="small"
-                onClick={() => {
-                  setCompare({ from: revision.code ?? undefined });
-                  setRevision(null);
-                }}
+                onClick={() =>
+                  open({ compare: true, from: revision.code, to: CURRENT })
+                }
               >
                 Compare with current
               </Button>
-              <Button
-                color="inherit"
-                size="small"
-                onClick={() => setRevision(null)}
-              >
+              <Button color="inherit" size="small" onClick={() => open()}>
                 Back to current
               </Button>
             </Stack>
@@ -376,19 +458,27 @@ function PersonCv({ person }: { person: Person }) {
         </Alert>
       )}
 
-      {compare && current ? (
+      {comparing && current ? (
         <CvCompare
-          // A new start point starts the comparison over
-          key={compare.from ?? ''}
+          key={current.code}
           current={current}
           others={cvs?.filter((it) => it.code !== current.code)}
-          from={compare.from}
+          from={compareFrom ?? undefined}
+          to={compareTo ?? undefined}
+          // Picking other versions changes the link, without a step back for each
+          onPick={(from, to) =>
+            current.code &&
+            history.replace(cvLink(current.code, { compare: true, from, to }))
+          }
         />
       ) : (
         shown && <CvDocument cv={shown} />
       )}
 
-      {cvs != null && !current && (
+      {((elsewhere && !error) || (version && !shown && !error)) &&
+        !comparing && <AlignedLoader />}
+
+      {cvs != null && !current && !linked && (
         <Card data-testid="cv-empty">
           <CardContent>
             <Typography variant="h6" component="h2" sx={{ mb: 1 }}>
