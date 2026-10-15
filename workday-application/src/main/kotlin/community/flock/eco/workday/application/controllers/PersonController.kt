@@ -14,6 +14,7 @@ import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.PersonEvent
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.decodeImage
+import community.flock.eco.workday.application.services.isUser
 import community.flock.eco.workday.application.services.photoDataUrl
 import community.flock.eco.workday.domain.person.Address
 import community.flock.eco.workday.user.model.User
@@ -111,8 +112,7 @@ class PersonController(
      * admin edits only their own personal details: the fields only an admin sets are kept.
      */
     @PreAuthorize(
-        "hasAuthority('PersonAuthority.ADMIN') or (hasAuthority('PersonAuthority.READ') and " +
-            "hasAuthority('PersonAuthority.WRITE') and @personSecurity.isOwnPerson(authentication, #request.path.uuid))",
+        "hasAuthority('PersonAuthority.ADMIN') or (hasAuthority('PersonAuthority.READ') and hasAuthority('PersonAuthority.WRITE'))",
     )
     override suspend fun putPerson(request: PutPerson.Request): PutPerson.Response<*> {
         val user = currentUser() ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
@@ -121,7 +121,11 @@ class PersonController(
         val allowed =
             when {
                 user.isAdmin() -> form
-                else -> service.findByUuid(uuid)?.let { form.personalDetailsOf(it) }
+                else ->
+                    service.findByUuid(uuid)?.let { person ->
+                        if (!person.isUser(user.code)) throw ResponseStatusException(HttpStatus.FORBIDDEN)
+                        form.personalDetailsOf(person)
+                    }
             }
         val updated =
             allowed?.let { service.update(uuid, it) }
