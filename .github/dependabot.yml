@@ -1,0 +1,39 @@
+# Bundle all updates: per ecosystem, one PR for version updates and one for security updates.
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      npm-version-updates:
+        applies-to: version-updates
+        patterns: ["*"]
+      npm-security-updates:
+        applies-to: security-updates
+        patterns: ["*"]
+
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      maven-version-updates:
+        applies-to: version-updates
+        patterns: ["*"]
+      maven-security-updates:
+        applies-to: security-updates
+        patterns: ["*"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions-version-updates:
+        applies-to: version-updates
+        patterns: ["*"]
+      github-actions-security-updates:
+        applies-to: security-updates
+        patterns: ["*"]
