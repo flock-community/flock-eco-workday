@@ -110,10 +110,10 @@ def data_url(path):
 def to_form(cv):
     """The Cv response turned into the CvForm a PUT takes; personId keeps the owner.
 
-    The photo lives on the person, not in the Cv response, so it's fetched separately
-    (the GET /api/cvs response never carries it, unlike Cv's other fields).
+    The photo lives on the person, not the CV; the Cv response carries it on its person, so
+    no person read (and no person rights) is needed.
     """
-    person = call("GET", f"/api/persons/{cv['person']['uuid']}")
+    person = cv["person"]
     return {
         "personId": cv["person"]["uuid"],
         "name": cv["name"],
@@ -141,32 +141,10 @@ _NO_PHOTO_KEY = object()
 def set_person_photo(person_uuid, photo_value):
     """Applies photo_value ("" removes it, a data URL replaces it) to a person's photo.
 
-    PUT /api/persons/{uuid} is a full replacement of the person (see PersonService.render),
-    so every other field is round-tripped from a fresh GET first - including userCode, taken
-    from the nested user's `id` (which is the backing User.code, not the display name), so
-    the login user stays linked to this person.
+    PUT /api/persons/{uuid}/photo touches only the photo, and anybody may use it on their own
+    person (person and CV admins on anybody's), so no person-edit rights are needed.
     """
-    person = call("GET", f"/api/persons/{person_uuid}")
-    user = person.get("user")
-    form = {
-        "firstname": person.get("firstname"),
-        "lastname": person.get("lastname"),
-        "email": person.get("email"),
-        "position": person.get("position"),
-        "number": person.get("number"),
-        "birthdate": person.get("birthdate"),
-        "joinDate": person.get("joinDate"),
-        "active": person.get("active"),
-        "userCode": user["id"] if user else None,
-        "reminders": person.get("reminders"),
-        "receiveEmail": person.get("receiveEmail"),
-        "shoeSize": person.get("shoeSize"),
-        "shirtSize": person.get("shirtSize"),
-        "googleDriveId": person.get("googleDriveId"),
-        "address": person.get("address"),
-        "photo": photo_value,
-    }
-    return call("PUT", f"/api/persons/{person_uuid}", form)
+    return call("PUT", f"/api/persons/{person_uuid}/photo", {"photo": photo_value})
 
 
 def main():

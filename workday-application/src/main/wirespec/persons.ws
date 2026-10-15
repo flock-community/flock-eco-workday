@@ -16,6 +16,9 @@ endpoint PostPerson POST PersonForm /api/persons -> {
 endpoint PutPerson PUT PersonForm /api/persons/{uuid: String} -> {
   200 -> Person
 }
+endpoint PutPersonPhoto PUT PersonPhotoForm /api/persons/{uuid: String}/photo -> {
+  200 -> Person
+}
 endpoint DeletePerson DELETE /api/persons/{uuid: String} -> {
   204 -> Unit
 }
@@ -37,6 +40,9 @@ type PersonForm {
   googleDriveId: String?,
   address: Address?,
   photo: String?
+}
+type PersonPhotoForm {
+  photo: String
 }
 type Person {
   id: Integer?,

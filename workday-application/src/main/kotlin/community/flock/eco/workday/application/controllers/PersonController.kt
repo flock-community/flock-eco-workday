@@ -7,6 +7,8 @@ import community.flock.eco.workday.api.endpoint.GetPersonMe
 import community.flock.eco.workday.api.endpoint.GetPersonSpecialDates
 import community.flock.eco.workday.api.endpoint.PostPerson
 import community.flock.eco.workday.api.endpoint.PutPerson
+import community.flock.eco.workday.api.endpoint.PutPersonPhoto
+import community.flock.eco.workday.application.authorities.CvAuthority
 import community.flock.eco.workday.application.authorities.PersonAuthority
 import community.flock.eco.workday.application.forms.PersonForm
 import community.flock.eco.workday.application.forms.PhotoChange
@@ -14,6 +16,7 @@ import community.flock.eco.workday.application.model.Person
 import community.flock.eco.workday.application.services.PersonEvent
 import community.flock.eco.workday.application.services.PersonService
 import community.flock.eco.workday.application.services.decodeImage
+import community.flock.eco.workday.application.services.isUser
 import community.flock.eco.workday.application.services.photoDataUrl
 import community.flock.eco.workday.domain.person.Address
 import community.flock.eco.workday.user.model.User
@@ -48,6 +51,7 @@ class PersonController(
     GetPersonSpecialDates.Handler,
     PostPerson.Handler,
     PutPerson.Handler,
+    PutPersonPhoto.Handler,
     DeletePerson.Handler {
     @PreAuthorize("isAuthenticated()")
     override suspend fun getPersonMe(request: GetPersonMe.Request): GetPersonMe.Response<*> {
@@ -119,6 +123,28 @@ class PersonController(
                     "Cannot perform PUT on given item. PersonUui cannot be found. Use POST Method",
                 )
         return PutPerson.Response200(updated.externalize())
+    }
+
+    /**
+     * Everybody may change their own photo, which only shows on their CVs, without the right
+     * to edit the rest of their person; person and CV admins may change anybody's.
+     */
+    @PreAuthorize("isAuthenticated()")
+    override suspend fun putPersonPhoto(request: PutPersonPhoto.Request): PutPersonPhoto.Response<*> {
+        val user = currentUser() ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        val uuid = UUID.fromString(request.path.uuid)
+        val person =
+            service.findByUuid(uuid)
+                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Item found with this PersonUui")
+        val mayChange =
+            person.isUser(user.code) ||
+                user.authorities.contains(PersonAuthority.ADMIN.toName()) ||
+                user.authorities.contains(CvAuthority.ADMIN.toName())
+        if (!mayChange) throw ResponseStatusException(HttpStatus.FORBIDDEN)
+        val updated =
+            service.updatePhoto(uuid, request.body.photo.toPhotoChange())
+                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No Item found with this PersonUui")
+        return PutPersonPhoto.Response200(updated.externalize())
     }
 
     @PreAuthorize("hasAuthority('PersonAuthority.ADMIN')")

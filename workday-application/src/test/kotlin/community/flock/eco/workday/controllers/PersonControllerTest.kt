@@ -13,6 +13,7 @@ import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
@@ -510,6 +511,87 @@ class PersonControllerTest : WorkdayIntegrationTest() {
             .asyncDispatch()
             .andExpect(status().isOk)
             .andExpect(jsonPath("\$.photo").doesNotExist())
+    }
+
+    /** A login user holding only [authorities], with the person linked to it. */
+    private fun createLinkedUser(vararg authorities: String): Pair<RequestPostProcessor, UUID> {
+        val account =
+            userAccountService.createUserAccountPassword(
+                UserAccountPasswordForm(
+                    email = UUID.randomUUID().toString(),
+                    name = "Linked",
+                    authorities = authorities.toSet(),
+                    password = "secret",
+                ),
+            )
+        val person =
+            personService.create(
+                PersonForm(
+                    firstname = "Roy",
+                    lastname = "Trenneman",
+                    email = "roy@it.com",
+                    position = "Support",
+                    number = null,
+                    userCode = account.user.code,
+                    active = true,
+                ),
+            )
+        return user(UserSecurityService.UserSecurityPassword(account)) to person.uuid
+    }
+
+    private fun photoJson(photo: String) = mapper.writeValueAsString(mapOf("photo" to photo))
+
+    @Test
+    fun `a person without person rights may set and remove their own photo, nothing else changes`() {
+        val (user, uuid) = createLinkedUser("CvAuthority.READ", "CvAuthority.WRITE")
+
+        mvc
+            .perform(put("$baseUrl/$uuid/photo").with(user).json(photoJson(aPngDataUrl)))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.photo").value(aPngDataUrl))
+            .andExpect(jsonPath("\$.firstname").value("Roy"))
+            .andExpect(jsonPath("\$.position").value("Support"))
+            .andExpect(jsonPath("\$.user").exists())
+
+        mvc
+            .perform(put("$baseUrl/$uuid/photo").with(user).json(photoJson("")))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.photo").doesNotExist())
+    }
+
+    @Test
+    fun `a person without admin rights may not set the photo of somebody else`() {
+        val (user, _) = createLinkedUser("CvAuthority.READ", "CvAuthority.WRITE", "PersonAuthority.WRITE")
+        val other = personService.findAll(PageRequest.of(0, 1)).content.first()
+
+        mvc
+            .perform(put("$baseUrl/${other.uuid}/photo").with(user).json(photoJson(aPngDataUrl)))
+            .asyncDispatch()
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `a CV admin may set the photo of somebody else`() {
+        val (_, uuid) = createLinkedUser()
+        val (admin, _) = createLinkedUser("CvAuthority.ADMIN")
+
+        mvc
+            .perform(put("$baseUrl/$uuid/photo").with(admin).json(photoJson(aPngDataUrl)))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("\$.photo").value(aPngDataUrl))
+    }
+
+    @Test
+    fun `a photo that is not an image is rejected on the photo endpoint`() {
+        val (user, uuid) = createLinkedUser()
+
+        mvc
+            .perform(put("$baseUrl/$uuid/photo").with(user).json(photoJson("data:image/png;base64,aGVsbG8=")))
+            .asyncDispatch()
+            .andExpect(status().isBadRequest)
     }
 
     @Test

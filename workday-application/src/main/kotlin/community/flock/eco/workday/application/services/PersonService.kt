@@ -191,6 +191,12 @@ class PersonService(
         form: PersonForm,
     ): Person? = findByUuid(code)?.render(form)?.save()
 
+    /** Applies [photo] to the person's photo only, leaving every other field as it is. */
+    fun updatePhoto(
+        code: UUID,
+        photo: PhotoChange,
+    ): Person? = findByUuid(code)?.apply { change(photo) }?.save()
+
     @Transactional
     fun deleteByUuid(uuid: UUID) = repository.deleteByUuid(uuid)
 }
