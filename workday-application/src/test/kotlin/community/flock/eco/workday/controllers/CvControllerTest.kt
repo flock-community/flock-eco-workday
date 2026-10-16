@@ -8,6 +8,7 @@ import community.flock.eco.workday.application.model.CvLanguage
 import community.flock.eco.workday.application.services.LogoService
 import community.flock.eco.workday.helpers.CreateHelper
 import community.flock.eco.workday.user.mappers.toDomain
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -54,6 +55,7 @@ class CvControllerTest(
         name: String? = "Algemeen",
         language: String? = "NL",
         personId: String? = null,
+        basedOn: String? = null,
         place: String? = "Hilversum",
         summary: String? = "Engineer at heart.",
         experiences: List<Map<String, Any?>> = listOf(ingExperience),
@@ -76,6 +78,7 @@ class CvControllerTest(
                 "education" to "Master, Business Information Management, Rotterdam (2012)",
                 "subjects" to null,
                 "languages" to "Dutch – Native\nEnglish – Excellent",
+                "basedOn" to basedOn,
             ),
         )
 
@@ -87,6 +90,20 @@ class CvControllerTest(
         val user = createHelper.createUserEntity(workerAuthorities)
         return user to createHelper.createPersonEntity(firstname, lastname, user.code)
     }
+
+    private fun postCv(
+        user: UserEntity,
+        body: String,
+    ): Map<String, Any?> = mvc.perform(post(baseUrl).asUser(user).json(body)).asyncDispatch().toMap()
+
+    private fun getCv(
+        user: UserEntity,
+        code: String,
+    ): Map<String, Any?> = mvc.perform(get("$baseUrl/$code").asUser(user).accept(APPLICATION_JSON)).asyncDispatch().toMap()
+
+    @Suppress("UNCHECKED_CAST")
+    private fun ResultActions.toMap(): Map<String, Any?> =
+        mapper.readValue(andExpect(status().isOk).andReturn().response.contentAsString, Map::class.java) as Map<String, Any?>
 
     private fun MockHttpServletRequestBuilder.asUser(user: UserEntity) = with(user(CreateHelper.UserSecurity(user.toDomain())))
 
@@ -177,6 +194,156 @@ class CvControllerTest(
             .perform(get(baseUrl).asUser(worker).accept(APPLICATION_JSON))
             .asyncDispatch()
             .andExpect(header().string("x-total", "2"))
+    }
+
+    @Test
+    fun `the first CV in a language is the base, the next ones are copies of it`() {
+        val (worker) = aWorker()
+
+        val base = postCv(worker, cvJson(name = "Algemeen"))
+        assertThat(base["base"]).isEqualTo(true)
+        assertThat(base["basedOn"]).isNull()
+
+        mvc
+            .perform(post(baseUrl).asUser(worker).json(cvJson(name = "Frontend")))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.base").value(false))
+            .andExpect(jsonPath("$.basedOn").value(base["code"]))
+            // Not copied from the base, so there is no version of it to compare with
+            .andExpect(jsonPath("$.basedOnUpdatedAt").doesNotExist())
+
+        // English has a base of its own
+        mvc
+            .perform(post(baseUrl).asUser(worker).json(cvJson(name = "General", language = "EN")))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.base").value(true))
+            .andExpect(jsonPath("$.basedOn").doesNotExist())
+    }
+
+    @Test
+    fun `a copy is always made of the base, in its language`() {
+        val (worker, person) = aWorker()
+        val base = createHelper.createCv(person, name = "Algemeen")
+        val copy = createHelper.createCv(person, name = "ING")
+        val someoneElses = createHelper.createCv(createHelper.createPersonEntity("Pino", "Woodpecker"))
+
+        // The copy remembers which version of the base it was made of
+        val baseSavedAt = getCv(worker, base.code)["updatedAt"]
+        mvc
+            .perform(post(baseUrl).asUser(worker).json(cvJson(name = "Rabobank", basedOn = base.code)))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.base").value(false))
+            .andExpect(jsonPath("$.basedOn").value(base.code))
+            .andExpect(jsonPath("$.basedOnUpdatedAt").value(baseSavedAt))
+
+        listOf(
+            cvJson(name = "Copy of a copy", basedOn = copy.code) to "basedOn is not a base CV; a copy is always made of the base",
+            cvJson(name = "English", language = "EN", basedOn = base.code) to "A copy of a base CV is in its language (NL)",
+            cvJson(name = "Somebody else", basedOn = someoneElses.code) to "basedOn is not a CV of Tommy Dog",
+        ).forEach { (body, message) ->
+            mvc
+                .perform(post(baseUrl).asUser(worker).json(body))
+                .asyncDispatch()
+                .andExpect(status().isBadRequest)
+                .andExpect(jsonPath("$.message").value(message))
+        }
+    }
+
+    @Test
+    fun `a base with copies is not deleted and keeps its language, a copy keeps the language of its base`() {
+        val (worker, person) = aWorker()
+        val base = createHelper.createCv(person, name = "Algemeen")
+        val copy = createHelper.createCv(person, name = "ING")
+        val baseHasCopies = "'Algemeen' is the base of other CVs; make one of those the base before"
+
+        mvc
+            .perform(delete("$baseUrl/${base.code}").asUser(worker))
+            .asyncDispatch()
+            .andExpect(status().isConflict)
+            .andExpect(jsonPath("$.message").value("$baseHasCopies deleting it"))
+        mvc
+            .perform(put("$baseUrl/${base.code}").asUser(worker).json(cvJson(name = "Algemeen", language = "EN")))
+            .asyncDispatch()
+            .andExpect(status().isConflict)
+            .andExpect(jsonPath("$.message").value("$baseHasCopies changing its language"))
+        mvc
+            .perform(put("$baseUrl/${copy.code}").asUser(worker).json(cvJson(name = "ING", language = "EN")))
+            .asyncDispatch()
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("A copy of a base CV is in its language (NL)"))
+
+        // Saving a copy keeps it a copy of the same base
+        mvc
+            .perform(put("$baseUrl/${copy.code}").asUser(worker).json(cvJson(name = "ING", summary = "Tailored.")))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.basedOn").value(base.code))
+
+        // Without copies a base can be deleted
+        listOf(copy, base).forEach {
+            mvc
+                .perform(delete("$baseUrl/${it.code}").asUser(worker))
+                .asyncDispatch()
+                .andExpect(status().isNoContent)
+        }
+    }
+
+    @Test
+    fun `a base on its own may change language, and becomes a copy where there is a base already`() {
+        val (worker, person) = aWorker()
+        val english = createHelper.createCv(person, CvLanguage.EN, name = "General")
+        val dutch = createHelper.createCv(person, CvLanguage.NL, name = "Algemeen")
+
+        mvc
+            .perform(put("$baseUrl/${dutch.code}").asUser(worker).json(cvJson(name = "Algemeen", language = "EN")))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.base").value(false))
+            .andExpect(jsonPath("$.basedOn").value(english.code))
+    }
+
+    @Test
+    fun `an admin makes another CV the base, the others become copies of it`() {
+        val admin = createHelper.createUserEntity(adminAuthorities)
+        val (worker, person) = aWorker()
+        val oldBase = createHelper.createCv(person, name = "Algemeen")
+        val ing = createHelper.createCv(person, name = "ING")
+        val newBase = createHelper.createCv(person, name = "Algemeen 2026")
+        val english = createHelper.createCv(person, CvLanguage.EN, name = "General")
+
+        mvc
+            .perform(post("$baseUrl/${newBase.code}/base").asUser(worker).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isForbidden)
+
+        mvc
+            .perform(post("$baseUrl/${newBase.code}/base").asUser(admin).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.base").value(true))
+            .andExpect(jsonPath("$.basedOn").doesNotExist())
+
+        listOf(oldBase, ing).forEach {
+            mvc
+                .perform(get("$baseUrl/${it.code}").asUser(admin).accept(APPLICATION_JSON))
+                .asyncDispatch()
+                .andExpect(jsonPath("$.base").value(false))
+                .andExpect(jsonPath("$.basedOn").value(newBase.code))
+                .andExpect(jsonPath("$.basedOnUpdatedAt").doesNotExist())
+        }
+        // Another language has a base of its own
+        mvc
+            .perform(get("$baseUrl/${english.code}").asUser(admin).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(jsonPath("$.base").value(true))
+
+        mvc
+            .perform(post("$baseUrl/${UUID.randomUUID()}/base").asUser(admin).accept(APPLICATION_JSON))
+            .asyncDispatch()
+            .andExpect(status().isNotFound)
     }
 
     @Test

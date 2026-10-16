@@ -19,6 +19,11 @@ endpoint PutCv PUT CvForm /api/cvs/{code: String} -> {
 endpoint DeleteCv DELETE /api/cvs/{code: String} -> {
   204 -> Unit
   404 -> Error
+  409 -> Error
+}
+endpoint PostCvBase POST /api/cvs/{code: String}/base -> {
+  200 -> Cv
+  404 -> Error
 }
 endpoint GetCvRevisions GET /api/cvs/{code: String}/revisions -> {
   200 -> CvRevision[]
@@ -68,7 +73,8 @@ type CvForm {
   skills: CvSkillForm[]?,
   education: String?,
   subjects: String?,
-  languages: String?
+  languages: String?,
+  basedOn: String?
 }
 type CvExperience {
   from: String,
@@ -99,7 +105,10 @@ type Cv {
   subjects: String?,
   languages: String?,
   updatedAt: String?,
-  person: Person?
+  person: Person?,
+  base: Boolean?,
+  basedOn: String?,
+  basedOnUpdatedAt: String?
 }
 type CvRevision {
   id: String,

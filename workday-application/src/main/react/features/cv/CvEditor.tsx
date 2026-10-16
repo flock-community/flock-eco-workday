@@ -73,7 +73,7 @@ export function CvEditor() {
   const location = useLocation();
   const [person] = usePerson();
   const status = useLoginStatus();
-  // A new version can start as a copy of an existing one
+  // A new version can start as a copy of an existing one, normally the base
   const copyFrom = code
     ? null
     : new URLSearchParams(location.search).get('copyFrom');
@@ -103,7 +103,13 @@ export function CvEditor() {
   const initialValues = useMemo<CvFormValues>(() => {
     const defaults = CV_FORM_SCHEMA.getDefault() as CvFormValues;
     if (cv) return toCvFormValues(cv);
-    if (copy) return { ...toCvFormValues(copy), name: `${copy.name} (copy)` };
+    if (copy) {
+      return {
+        ...toCvFormValues(copy),
+        name: `${copy.name} (copy)`,
+        basedOn: copy.base && copy.code ? copy.code : '',
+      };
+    }
     const personId = person?.uuid ?? '';
     return { ...defaults, personId };
   }, [cv, copy, person?.uuid]);
@@ -188,6 +194,13 @@ export function CvEditor() {
                       select
                       name="language"
                       label="Language"
+                      // A copy is in the language of its base
+                      disabled={values.basedOn !== '' || !!cv?.basedOn}
+                      helperText={
+                        values.basedOn !== '' || cv?.basedOn
+                          ? 'The language of the base'
+                          : undefined
+                      }
                       fullWidth
                     >
                       {CV_LANGUAGES.map((it) => (

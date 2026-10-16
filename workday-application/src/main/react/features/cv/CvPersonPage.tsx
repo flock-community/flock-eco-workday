@@ -11,6 +11,7 @@ import {
   Card,
   CardContent,
   GlobalStyles,
+  Link,
   ListItemText,
   Menu,
   MenuItem,
@@ -35,7 +36,14 @@ import PersonLayout from '../../components/layouts/PersonLayout';
 import { useLoginStatus } from '../../hooks/StatusHook';
 import { CURRENT, CvCompare } from './CvCompare';
 import { CvDocument } from './CvDocument';
-import { type CvView, cvLanguageLabel, cvLink, cvUrl } from './cvText';
+import {
+  baseOf,
+  type CvView,
+  cvLanguageLabel,
+  cvLink,
+  cvUrl,
+  suggestedBase,
+} from './cvText';
 
 const CV_PRINT_ROOT = 'cv-print-root';
 const SAVED_AT = 'DD-MM-YYYY HH:mm';
@@ -77,6 +85,9 @@ const printStyles = (
  * Every CV has its own link, `/cvs/{code}`, which opens it for whoever may read it:
  * an admin following a link to somebody else's CV switches to that person. An
  * earlier version and a comparison have a link of their own as well (see [cvLink]).
+ *
+ * Per language one CV is the base and the others are copies of it; a new copy is made
+ * of the base. Where there is no base yet, an admin picks one (Workday suggests one).
  */
 export function CvPersonPage() {
   const history = useHistory();
@@ -116,6 +127,8 @@ function PersonCv({
   const [historyMenu, setHistoryMenu] = useState<HTMLElement | null>(null);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
+  // Counts up to load the CVs again, after the base changed
+  const [reload, setReload] = useState(0);
   const [error, setError] = useState<string | null>(null);
   // The CV codes looked up to find whose CV a link is to, so that happens once
   const lookedUp = useRef(new Set<string>());
@@ -140,6 +153,7 @@ function PersonCv({
   // An admin's link to a person: wait until that person is the one shown
   const waiting = isAdmin && !!linkedPerson && linkedPerson !== person.uuid;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reload loads them again
   useEffect(() => {
     setError(null);
     CvClient.queryByPage(
@@ -150,11 +164,19 @@ function PersonCv({
       .catch((err) =>
         setError(apiErrorMessage(err, 'The CVs could not be loaded')),
       );
-  }, [person.uuid]);
+  }, [person.uuid, reload]);
 
   const cvs = !waiting && loaded?.personId === person.uuid ? loaded.cvs : null;
   const current =
     (linked ? cvs?.find((it) => it.code === linked) : cvs?.[0]) ?? null;
+  // The base in the language of the CV shown; a new version is a copy of it
+  const base = current && cvs ? baseOf(cvs, current.language) : undefined;
+  const suggested =
+    current && cvs ? suggestedBase(cvs, current.language) : undefined;
+  const copies = base
+    ? (cvs ?? []).filter((it) => it.basedOn === base.code)
+    : [];
+  const copyOf = base ?? current;
   // A link to a CV of somebody else than the person shown
   const elsewhere = !waiting && cvs != null && !!linked && !current;
 
@@ -281,6 +303,90 @@ function PersonCv({
       .finally(() => setBusy(false));
   };
 
+  const makeBase = (cv: Cv) => {
+    if (!cv.code) return;
+    setBusy(true);
+    CvClient.makeBase(cv.code)
+      .then(() => setReload((it) => it + 1))
+      .catch((err) =>
+        setError(apiErrorMessage(err, 'The base could not be changed')),
+      )
+      .finally(() => setBusy(false));
+  };
+
+  const language = current ? cvLanguageLabel(current) : '';
+  const baseLine = current && cvs != null && !version && !comparing && (
+    <Box className="cv-actions" data-testid="cv-base" sx={{ mb: 2 }}>
+      {current.base ? (
+        <Typography variant="body2" color="text.secondary">
+          The base CV in {language}: keep this one up to date, copies are made
+          of it.{' '}
+          {copies.length === 0
+            ? 'No copies yet.'
+            : copies.length === 1
+              ? '1 copy.'
+              : `${copies.length} copies.`}
+        </Typography>
+      ) : base?.code ? (
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Typography variant="body2" color="text.secondary">
+            A copy of the base CV{' '}
+            <Link component={RouterLink} to={cvLink(base.code)}>
+              {base.name}
+            </Link>
+            {current.basedOnUpdatedAt
+              ? `, made of its version saved ${dayjs(current.basedOnUpdatedAt).format(SAVED_AT)}`
+              : ''}
+            .
+          </Typography>
+          {isAdmin && (
+            <Button
+              size="small"
+              onClick={() => makeBase(current)}
+              disabled={busy}
+            >
+              Make this the base
+            </Button>
+          )}
+        </Stack>
+      ) : (
+        <Alert
+          severity="warning"
+          action={
+            isAdmin &&
+            suggested && (
+              <Stack direction="row" spacing={1}>
+                <Button
+                  color="inherit"
+                  size="small"
+                  onClick={() => makeBase(suggested)}
+                  disabled={busy}
+                >
+                  Make {suggested.name} the base
+                </Button>
+                {suggested.code !== current.code && (
+                  <Button
+                    color="inherit"
+                    size="small"
+                    onClick={() => makeBase(current)}
+                    disabled={busy}
+                  >
+                    Make this the base
+                  </Button>
+                )}
+              </Stack>
+            )
+          }
+        >
+          There is no base CV in {language} yet.{' '}
+          {isAdmin && suggested
+            ? `Workday suggests ${suggested.name}, the one saved last.`
+            : 'An admin picks which CV is the base.'}
+        </Alert>
+      )}
+    </Box>
+  );
+
   const newActions = canWrite && (
     <>
       <Button
@@ -299,12 +405,12 @@ function PersonCv({
         <MenuItem component={RouterLink} to={newUrl()}>
           Empty CV
         </MenuItem>
-        {current && (
+        {copyOf && (
           <MenuItem
             component={RouterLink}
-            to={newUrl({ copyFrom: current.code })}
+            to={newUrl({ copyFrom: copyOf.code })}
           >
-            Copy of {current.name}
+            {copyOf.base ? 'Copy of the base' : 'Copy of'} {copyOf.name}
           </MenuItem>
         )}
       </Menu>
@@ -341,6 +447,7 @@ function PersonCv({
             {cvs.map((it) => (
               <MenuItem key={it.code} value={it.code}>
                 {it.name} · {cvLanguageLabel(it)}
+                {it.base ? ' · Base' : ''}
               </MenuItem>
             ))}
           </TextField>
@@ -420,6 +527,8 @@ function PersonCv({
           </Button>
         </Stack>
       )}
+
+      {baseLine}
 
       {revision && shown === revision && (
         <Alert

@@ -6,6 +6,7 @@ import community.flock.eco.workday.api.endpoint.GetCvByCode
 import community.flock.eco.workday.api.endpoint.GetCvRevision
 import community.flock.eco.workday.api.endpoint.GetCvRevisions
 import community.flock.eco.workday.api.endpoint.PostCv
+import community.flock.eco.workday.api.endpoint.PostCvBase
 import community.flock.eco.workday.api.endpoint.PostCvRevisionRestore
 import community.flock.eco.workday.api.endpoint.PutCv
 import community.flock.eco.workday.api.model.Error
@@ -17,7 +18,7 @@ import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.model.CvExperience
 import community.flock.eco.workday.application.model.CvLanguage
 import community.flock.eco.workday.application.repository.CvRevisionSummary
-import community.flock.eco.workday.application.services.CvAlreadyExistsException
+import community.flock.eco.workday.application.services.CvConflictException
 import community.flock.eco.workday.application.services.CvInvalidInputException
 import community.flock.eco.workday.application.services.CvService
 import community.flock.eco.workday.application.services.CvValidationException
@@ -48,7 +49,8 @@ import community.flock.eco.workday.application.model.Person as PersonInternal
 /**
  * CVs. [CvAuthority.READ] lets you read your own CVs and [CvAuthority.WRITE] write
  * them; [CvAuthority.ADMIN] reads and writes the CVs of everybody. A CV you may not
- * use is reported as not found, so its existence does not leak.
+ * use is reported as not found, so its existence does not leak. Which CV of a person
+ * is the base in a language is up to an admin.
  */
 @RestController
 class CvController(
@@ -61,7 +63,8 @@ class CvController(
     DeleteCv.Handler,
     GetCvRevisions.Handler,
     GetCvRevision.Handler,
-    PostCvRevisionRestore.Handler {
+    PostCvRevisionRestore.Handler,
+    PostCvBase.Handler {
     @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
     override suspend fun getCvAll(request: GetCvAll.Request): GetCvAll.Response<*> {
         val auth = authentication()
@@ -112,12 +115,23 @@ class CvController(
 
     @PreAuthorize("hasAnyAuthority('CvAuthority.WRITE', 'CvAuthority.ADMIN')")
     override suspend fun deleteCv(request: DeleteCv.Request): DeleteCv.Response<*> =
-        findWritable(request.path.code)
-            ?.let {
-                cvService.deleteByCode(it.code)
-                DeleteCv.Response204(Unit)
-            }
-            ?: DeleteCv.Response404(Error("CV not found"))
+        try {
+            findWritable(request.path.code)
+                ?.let {
+                    cvService.deleteByCode(it.code)
+                    DeleteCv.Response204(Unit)
+                }
+                ?: DeleteCv.Response404(Error("CV not found"))
+        } catch (e: CvConflictException) {
+            DeleteCv.Response409(Error(e.message))
+        }
+
+    @PreAuthorize("hasAuthority('CvAuthority.ADMIN')")
+    override suspend fun postCvBase(request: PostCvBase.Request): PostCvBase.Response<*> =
+        cvService
+            .makeBase(request.path.code)
+            ?.let { PostCvBase.Response200(it.externalize()) }
+            ?: PostCvBase.Response404(Error("CV not found"))
 
     @PreAuthorize("hasAnyAuthority('CvAuthority.READ', 'CvAuthority.ADMIN')")
     override suspend fun getCvRevisions(request: GetCvRevisions.Request): GetCvRevisions.Response<*> =
@@ -146,7 +160,7 @@ class CvController(
                         ?.let { cvService.restore(cv.code, it) }
                 }?.let { PostCvRevisionRestore.Response200(it.externalize()) }
                 ?: PostCvRevisionRestore.Response404(Error("Version not found"))
-        } catch (e: CvAlreadyExistsException) {
+        } catch (e: CvConflictException) {
             PostCvRevisionRestore.Response409(Error(e.message))
         }
 
@@ -168,8 +182,8 @@ class CvController(
 
     /**
      * Runs [block] and turns the validation failures of the CV service into the typed
-     * error responses of the contract: a second CV in the same language for a person
-     * is a 409, anything else that is wrong with the input is a 400.
+     * error responses of the contract: a clash with the other CVs of the person (a name
+     * taken, a base with copies) is a 409, anything else wrong with the input is a 400.
      */
     private inline fun <R> validated(
         onConflict: (Error) -> R,
@@ -178,7 +192,7 @@ class CvController(
     ): R =
         try {
             block()
-        } catch (e: CvAlreadyExistsException) {
+        } catch (e: CvConflictException) {
             onConflict(Error(e.message))
         } catch (e: CvValidationException) {
             onBadRequest(Error(e.message))
@@ -200,6 +214,9 @@ class CvController(
             languages = languages,
             updatedAt = updatedAt.toString(),
             person = person.externalize(),
+            base = base,
+            basedOn = basedOn?.code,
+            basedOnUpdatedAt = basedOnUpdatedAt?.toString(),
         )
 
     private fun CvExperience.externalize() =
@@ -282,6 +299,7 @@ class CvController(
             education = education,
             subjects = subjects,
             languages = languages,
+            basedOn = basedOn?.trim()?.ifEmpty { null },
         )
     }
 

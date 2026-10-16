@@ -43,6 +43,8 @@ export type CvFormValues = {
   education: string;
   subjects: string;
   languages: string;
+  /** The code of the base CV a new CV is a copy of; '' when it is none. */
+  basedOn: string;
 };
 
 const LINE = 255;
@@ -163,6 +165,7 @@ export const CV_FORM_SCHEMA = object({
   education: section('Education'),
   subjects: section('Subjects'),
   languages: section('Languages'),
+  basedOn: string().default(''),
 });
 
 export const emptySkill = (category = ''): CvSkillValues => ({
@@ -209,6 +212,7 @@ export const toCvFormValues = (cv: Cv): CvFormValues => ({
   education: cv.education ?? '',
   subjects: cv.subjects ?? '',
   languages: cv.languages ?? '',
+  basedOn: '',
 });
 
 const optional = (value: string): string | undefined =>
@@ -241,4 +245,5 @@ export const toCvRequest = (values: CvFormValues): CvRequest => ({
   education: optional(values.education),
   subjects: optional(values.subjects),
   languages: optional(values.languages),
+  basedOn: optional(values.basedOn),
 });

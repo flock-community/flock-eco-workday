@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import {
+  baseOf,
   clientText,
   cvLink,
   cvUrl,
@@ -10,7 +11,39 @@ import {
   monthsWorked,
   paragraphs,
   periodText,
+  suggestedBase,
 } from './cvText';
+
+describe('baseOf and suggestedBase', () => {
+  const cvs = [
+    {
+      code: 'nl-old',
+      language: 'NL' as const,
+      updatedAt: '2025-01-01T10:00:00Z',
+    },
+    {
+      code: 'nl-new',
+      language: 'NL' as const,
+      updatedAt: '2026-03-01T10:00:00Z',
+    },
+    {
+      code: 'en',
+      language: 'EN' as const,
+      base: true,
+      updatedAt: '2024-01-01T10:00:00Z',
+    },
+  ];
+
+  it('finds the base of a language', () => {
+    expect(baseOf(cvs, 'EN')?.code).toBe('en');
+    expect(baseOf(cvs, 'NL')).toBeUndefined();
+  });
+
+  it('suggests the CV saved last as base, only where there is none', () => {
+    expect(suggestedBase(cvs, 'NL')?.code).toBe('nl-new');
+    expect(suggestedBase(cvs, 'EN')).toBeUndefined();
+  });
+});
 
 describe('monthsWorked', () => {
   const today = dayjs('2025-04-15');

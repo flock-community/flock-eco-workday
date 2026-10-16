@@ -6,6 +6,7 @@ import community.flock.eco.workday.application.forms.CvForm
 import community.flock.eco.workday.application.forms.CvSkillForm
 import community.flock.eco.workday.application.model.Cv
 import community.flock.eco.workday.application.model.CvExperience
+import community.flock.eco.workday.application.model.CvLanguage
 import community.flock.eco.workday.application.model.CvRevision
 import community.flock.eco.workday.application.model.CvSkill
 import community.flock.eco.workday.application.model.CvSnapshot
@@ -36,10 +37,20 @@ class CvPersonNotFoundException(
     personId: UUID,
 ) : CvValidationException("Person $personId not found")
 
+/** The CV cannot be saved or deleted as asked because of the other CVs of the person. */
+open class CvConflictException(
+    message: String,
+) : CvValidationException(message)
+
 class CvAlreadyExistsException(
     person: Person,
     name: String,
-) : CvValidationException("${person.getFullName()} already has a CV named '$name'")
+) : CvConflictException("${person.getFullName()} already has a CV named '$name'")
+
+class CvBaseHasCopiesException(
+    cv: Cv,
+    action: String,
+) : CvConflictException("'${cv.name}' is the base of other CVs; make one of those the base before $action")
 
 @Service
 class CvService(
@@ -57,8 +68,17 @@ class CvService(
 
     fun findByCode(code: String): Cv? = cvRepository.findByCode(code)
 
+    /**
+     * A new CV is a copy of the base it names ([CvForm.basedOn]). Without one it becomes a
+     * copy of the base in its language, or the base itself when it is the first CV of the
+     * person in that language.
+     */
     @Transactional
-    fun create(form: CvForm): Cv = form.internalize().save()
+    fun create(form: CvForm): Cv {
+        val person = findPerson(form.personId)
+        val link = form.basedOn?.let { copyOf(it, person, form.language) } ?: placeIn(person, form.language)
+        return form.internalize(person = person, link = link).save()
+    }
 
     /** Saves [form] over the CV with [code]; what the CV held before becomes a revision. */
     @Transactional
@@ -67,7 +87,7 @@ class CvService(
         form: CvForm,
     ): Cv? =
         findByCode(code)?.let { existing ->
-            val updated = form.internalize(existing)
+            val updated = form.internalize(existing, link = existing.linkFor(form.language))
             val before = existing.snapshot()
             // Saving without changes adds no revision
             if (before != updated.snapshot()) {
@@ -109,8 +129,84 @@ class CvService(
             .findByIdAndCvCode(id, code)
             ?.let { revision -> update(code, revision.snapshot().toForm(revision.cv.person.uuid)) }
 
+    /**
+     * Makes the CV with [code] the base in its language: the base before it and the
+     * copies of that become copies of this one. Only an admin decides which CV is the base.
+     */
     @Transactional
-    fun deleteByCode(code: String) = cvRepository.deleteByCode(code)
+    fun makeBase(code: String): Cv? =
+        findByCode(code)?.let { cv ->
+            if (!cv.base) {
+                // Others first: two bases in a language would break the unique constraint
+                cvRepository.makeCopiesOf(cv, cv.person, cv.language, cv.id)
+                cvRepository.makeBase(cv.id)
+            }
+            findByCode(code)
+        }
+
+    /** A base cannot be deleted while there are copies of it; make another CV the base first. */
+    @Transactional
+    fun deleteByCode(code: String) {
+        findByCode(code)
+            ?.takeIf { it.base && cvRepository.existsByBasedOn(it) }
+            ?.let { throw CvBaseHasCopiesException(it, "deleting it") }
+        cvRepository.deleteByCode(code)
+    }
+
+    /** A copy of the base with [code], as it was saved last: always of the base, never of a copy. */
+    private fun copyOf(
+        code: String,
+        person: Person,
+        language: CvLanguage,
+    ): CvLink {
+        val base =
+            cvRepository
+                .findByCode(code)
+                ?.takeIf { it.person.id == person.id }
+                ?: throw CvInvalidInputException("basedOn is not a CV of ${person.getFullName()}")
+        if (!base.base) throw CvInvalidInputException("basedOn is not a base CV; a copy is always made of the base")
+        if (base.language != language) throw CvInvalidInputException("A copy of a base CV is in its language (${base.language})")
+        return CvLink(basedOn = base, basedOnUpdatedAt = base.updatedAt)
+    }
+
+    /**
+     * Where a CV in [language] belongs without a base to copy: a copy of the base in that
+     * language, the base itself when the person has no CV in it yet, or neither when there
+     * are CVs in it from before bases existed and an admin still has to pick one.
+     */
+    private fun placeIn(
+        person: Person,
+        language: CvLanguage,
+    ): CvLink =
+        cvRepository.findByPersonUuidAndLanguageAndBase(person.uuid, language, true)?.let { CvLink(basedOn = it) }
+            ?: if (cvRepository.existsByPersonUuidAndLanguage(person.uuid, language)) CvLink.NONE else CvLink(base = true)
+
+    /**
+     * The link of this CV once it is saved in [language]. A copy keeps the language of its
+     * base, and a base with copies keeps its language too; a CV on its own may move.
+     */
+    private fun Cv.linkFor(language: CvLanguage): CvLink {
+        val copyOf = basedOn
+        return when {
+            language == this.language -> link()
+            copyOf != null -> throw CvInvalidInputException("A copy of a base CV is in its language (${copyOf.language})")
+            base && cvRepository.existsByBasedOn(this) -> throw CvBaseHasCopiesException(this, "changing its language")
+            else -> placeIn(person, language)
+        }
+    }
+
+    private fun Cv.link() = CvLink(base = base, basedOn = basedOn, basedOnUpdatedAt = basedOnUpdatedAt)
+
+    /** Whether a CV is the base, or else which base it is a copy of and since when. */
+    private data class CvLink(
+        val base: Boolean = false,
+        val basedOn: Cv? = null,
+        val basedOnUpdatedAt: Instant? = null,
+    ) {
+        companion object {
+            val NONE = CvLink()
+        }
+    }
 
     /**
      * Builds the CV to persist. The names of the CVs of a person are unique (ignoring
@@ -121,6 +217,7 @@ class CvService(
         existing: Cv? = null,
         check: Boolean = true,
         person: Person = findPerson(personId),
+        link: CvLink = existing?.link() ?: CvLink.NONE,
     ): Cv {
         val name = name.trim()
 
@@ -156,6 +253,9 @@ class CvService(
             subjects = subjects.cleaned("subjects", Cv.CV_SECTION_LENGTH),
             languages = languages.cleaned("languages", Cv.CV_SECTION_LENGTH),
             updatedAt = Instant.now(),
+            base = link.base,
+            basedOn = link.basedOn,
+            basedOnUpdatedAt = link.basedOnUpdatedAt,
         )
     }
 
@@ -297,6 +397,9 @@ class CvService(
             subjects = subjects,
             languages = languages,
             updatedAt = updatedAt,
+            base = base,
+            basedOn = basedOn,
+            basedOnUpdatedAt = basedOnUpdatedAt,
         )
 
     companion object {

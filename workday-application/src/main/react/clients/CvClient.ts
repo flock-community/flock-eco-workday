@@ -33,9 +33,17 @@ const restore = (code: string, id: string): Promise<Cv> =>
     .then(checkResponse)
     .then((res) => res.body);
 
+/** Makes a CV the base in its language; the other CVs in it become copies of it. */
+const makeBase = (code: string): Promise<Cv> =>
+  fetch(`${path}/${code}/base`, { method: 'POST' })
+    .then((it) => validateResponse<Cv>(it))
+    .then(checkResponse)
+    .then((res) => res.body);
+
 export const CvClient = {
   ...internalizingClient,
   revisions,
   revision,
   restore,
+  makeBase,
 };
